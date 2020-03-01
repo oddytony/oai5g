@@ -10,7 +10,7 @@ public:
   void display();
   statistics();
   ~statistics();
-private:
+public:
   uint32_t        gNB_connected;
   uint32_t        UE_connected;
   uint32_t        UE_registred;

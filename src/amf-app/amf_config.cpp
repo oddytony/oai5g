@@ -4,7 +4,8 @@
 #include "string.hpp"
 #include "thread_sched.hpp"
 #include "amf_app.hpp"
-  #include "if.hpp"
+#include "if.hpp"
+#include "3gpp_ts24501.hpp"
 extern "C"{
   #include <arpa/inet.h>
   #include <stdbool.h>
@@ -97,6 +98,7 @@ namespace config{
         const Setting & item = plmn_list_cfg[i];
         item.lookupValue(AMF_CONFIG_STRING_MCC, plmn_item.mcc);
         item.lookupValue(AMF_CONFIG_STRING_MNC, plmn_item.mnc);
+        item.lookupValue(AMF_CONFIG_STRING_TAC, plmn_item.tac);
         const Setting &slice_list_cfg = plmn_list_cfg[i][AMF_CONFIG_STRING_SliceSupportList];
         int numOfSlice = slice_list_cfg.getLength();
         for(int j=0;j<numOfSlice;j++){
@@ -119,8 +121,61 @@ namespace config{
       Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
       return -1;
     }
+    try{
+      const Setting &core_config = amf_cfg[AMF_CONFIG_STRING_CORE_CONFIGURATION];
+      core_config.lookupValue(AMF_CONFIG_STRING_EMERGENCY_SUPPORT, is_emergency_support);
+    }catch(const SettingNotFoundException &nfex){
+      Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+      return -1;
+    }
+    try{
+      const Setting &auth = amf_cfg[AMF_CONFIG_STRING_AUTHENTICATION];
+      auth.lookupValue(AMF_CONFIG_STRING_AUTH_MYSQL_SERVER, auth_para.mysql_server);
+      auth.lookupValue(AMF_CONFIG_STRING_AUTH_MYSQL_USER, auth_para.mysql_user);
+      auth.lookupValue(AMF_CONFIG_STRING_AUTH_MYSQL_PASS, auth_para.mysql_pass);
+      auth.lookupValue(AMF_CONFIG_STRING_AUTH_MYSQL_DB, auth_para.mysql_db);
+      auth.lookupValue(AMF_CONFIG_STRING_AUTH_OPERATOR_KEY, auth_para.operator_key);
+      auth.lookupValue(AMF_CONFIG_STRING_AUTH_RANDOM, auth_para.random);
+    }catch(const SettingNotFoundException &nfex){
+      Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+      return -1;
+    }
+    try{
+      const Setting &nas = amf_cfg[AMF_CONFIG_STRING_NAS];
+      const Setting &intAlg = nas[AMF_CONFIG_STRING_NAS_SUPPORTED_INTEGRITY_ALGORITHM_LIST];
 
+      int intCount = intAlg.getLength();
+      for(int i=0; i<intCount; i++){
+      string intAlgStr = intAlg[i];
+        if(!intAlgStr.compare("NIA0"))
+          nas_cfg.prefered_integrity_algorithm[i] = IA0_5G;
+        if(!intAlgStr.compare("NIA1"))
+          nas_cfg.prefered_integrity_algorithm[i] = IA1_128_5G;
+        if(!intAlgStr.compare("NIA2"))
+          nas_cfg.prefered_integrity_algorithm[i] = IA2_128_5G;
+      }
+      for(int i=intCount; i<8; i++){
+        nas_cfg.prefered_integrity_algorithm[i] = IA0_5G;
+      }
+      const Setting &encAlg = nas[AMF_CONFIG_STRING_NAS_SUPPORTED_CIPHERING_ALGORITHM_LIST];
+      int encCount = encAlg.getLength();
+      for(int i=0; i<encCount; i++){
+      string encAlgStr = encAlg[i];
+        if(!encAlgStr.compare("NEA0"))
+          nas_cfg.prefered_ciphering_algorithm[i] = EA0_5G;
+        if(!encAlgStr.compare("NEA1"))
+          nas_cfg.prefered_ciphering_algorithm[i] = EA1_128_5G;
+        if(!encAlgStr.compare("NEA2"))
+          nas_cfg.prefered_ciphering_algorithm[i] = EA2_128_5G;
+      }
+      for(int i=encCount; i<8; i++){
+        nas_cfg.prefered_ciphering_algorithm[i] = EA0_5G;
+      }
 
+    }catch(const SettingNotFoundException &nfex){
+      Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+      return -1;
+    }
   }
 
   void amf_config::display(){
@@ -137,11 +192,19 @@ namespace config{
     Logger::config().info( "- PLMNSupportList ................: ");
     for(int i=0;i<plmn_list.size();i++){
       Logger::config().info( "   [%s] [%s] ", plmn_list[i].mcc.c_str(),plmn_list[i].mnc.c_str());
+      Logger::config().info( "   tac[%d]", plmn_list[i].tac);
       Logger::config().info( "   - SliceSupportList ............: ");
       for(int j=0;j<plmn_list[i].slice_list.size();j++){
         Logger::config().info( "     [%s] [%s] ", plmn_list[i].slice_list[j].sST.c_str(),plmn_list[i].slice_list[j].sD.c_str());
       }
     }
+    Logger::config().info( "- Emergency Support ...............: %s", is_emergency_support.c_str());
+    Logger::config().info( "- MYSQL server ....................: %s", auth_para.mysql_server.c_str());
+    Logger::config().info( "- MYSQL user ......................: %s", auth_para.mysql_user.c_str());
+    Logger::config().info( "- MYSQL pass ......................: %s", auth_para.mysql_pass.c_str());
+    Logger::config().info( "- MYSQL db ........................: %s", auth_para.mysql_db.c_str());
+    Logger::config().info( "- operator key ....................: %s", auth_para.operator_key.c_str());
+    Logger::config().info( "- random ..........................: %s", auth_para.random.c_str());
   }
 
   int amf_config::load_interface(const libconfig::Setting& if_cfg, interface_cfg_t& cfg){

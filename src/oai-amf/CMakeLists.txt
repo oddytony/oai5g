@@ -90,7 +90,19 @@ file(GLOB AMF_NAS_SRC
   ${SRC_TOP_DIR}/nas/nas_context.cpp
 )
 ###end for
-
+### for libnas
+include_directories(${SRC_TOP_DIR}/nas/common)
+include_directories(${SRC_TOP_DIR}/nas/ies)
+include_directories(${SRC_TOP_DIR}/nas/msgs)
+include_directories(${SRC_TOP_DIR}/nas/utils)
+file(GLOB NAS_SRC
+  ${SRC_TOP_DIR}/nas/common/*.cpp
+  ${SRC_TOP_DIR}/nas/ies/*.cpp
+  ${SRC_TOP_DIR}/nas/msgs/*.cpp
+  ${SRC_TOP_DIR}/nas/utils/*.cpp
+  ${SRC_TOP_DIR}/nas/utils/*.c
+)
+###end for
 
 ### for amf_app
 include_directories(${SRC_TOP_DIR}/amf-app)
@@ -117,6 +129,7 @@ file(GLOB BSTR_SRC
 file(GLOB UTILS_SRC
   ${SRC_TOP_DIR}/utils/string.cpp
   ${SRC_TOP_DIR}/utils/if.cpp
+  ${SRC_TOP_DIR}/utils/backtrace.c
 )
 ##end for utils/bstr
 
@@ -137,6 +150,15 @@ include_directories(${SRC_TOP_DIR}/ngap/libngap)
 file(GLOB LIB_NGAP_SRC ${SRC_TOP_DIR}/ngap/libngap/*.c)
 ###end
 
+### for encapsulated ngap message
+include_directories(${SRC_TOP_DIR}/ngap/ngapIEs)
+include_directories(${SRC_TOP_DIR}/ngap/ngapMsgs)
+file(GLOB NGAP_MSGS_IES_SRC 
+  ${SRC_TOP_DIR}/ngap/ngapIEs/*.cpp
+  ${SRC_TOP_DIR}/ngap/ngapMsgs/*.cpp
+)
+### end for
+
 ### for itti
 include_directories(${SRC_TOP_DIR}/itti)
 file(GLOB ITTI_SRC 
@@ -144,6 +166,19 @@ file(GLOB ITTI_SRC
   ${SRC_TOP_DIR}/itti/itti_msg.cpp
 )
 ###end for itti
+
+### for authentication 
+include_directories(${SRC_TOP_DIR}/secu_algorithms/5gaka)
+file(GLOB 5GAKA_SRC ${SRC_TOP_DIR}/secu_algorithms/5gaka/*.cpp)
+###end for
+
+### for nas algorithms
+include_directories(${SRC_TOP_DIR}/secu_algorithms/nas_enc_int)
+file(GLOB NAS_ALG_SRC 
+  ${SRC_TOP_DIR}/secu_algorithms/nas_enc_int/*.cpp
+  ${SRC_TOP_DIR}/secu_algorithms/nas_enc_int/*.c
+)
+###end
 
 ###  for log
 add_library( LOG STATIC
@@ -162,10 +197,87 @@ pkg_search_module(CONFIG REQUIRED libconfig++)
 include_directories(${CONFIG_INCLUDE_DIRS})
 ### end for config
 
+### for context
+include_directories(${SRC_TOP_DIR}/contexts)
+file(GLOB CTXS_SRC ${SRC_TOP_DIR}/contexts/*.cpp)
+###end 
+
+###for N11(smf client)
+include_directories(${SRC_TOP_DIR}/sbi/smf_client)
+include_directories(${SRC_TOP_DIR}/sbi/smf_client/api)
+include_directories(${SRC_TOP_DIR}/sbi/smf_client/model)
+file(GLOB SMF_CLIENT_SRC 
+  ${SRC_TOP_DIR}/sbi/smf_client/*.cpp
+  ${SRC_TOP_DIR}/sbi/smf_client/api/*.cpp
+  ${SRC_TOP_DIR}/sbi/smf_client/model/*.cpp
+)
+###end
+
+###for amf server
+include_directories(${SRC_TOP_DIR}/sbi/amf_server/api)
+include_directories(${SRC_TOP_DIR}/sbi/amf_server/impl)
+include_directories(${SRC_TOP_DIR}/sbi/amf_server/model)
+file(GLOB AMF_SERVER_SRC 
+  ${SRC_TOP_DIR}/sbi/amf_server/api/*.cpp
+  ${SRC_TOP_DIR}/sbi/amf_server/impl/*.cpp
+  ${SRC_TOP_DIR}/sbi/amf_server/model/*.cpp
+)
+###end
+
+### for mysqp handlers
+file(GLOB MYSQL_HANDLERS_SRC 
+  ${SRC_TOP_DIR}/amf-app/mysql_db.cpp
+)
+###end
+
+### for sha-256 algorithms
+### end
+
+pkg_search_module(CRYPTO libcrypto REQUIRED)
+include_directories(${CRYPTO_INCLUDE_DIRS})
+
+pkg_search_module(OPENSSL openssl REQUIRED)
+include_directories(${OPENSSL_INCLUDE_DIRS})
+
+pkg_search_module(NETTLE nettle)
+if(NOT ${NETTLE_FOUND})
+  message("PACKAGE nettle not found: some targets will fail")
+else()
+  include_directories(${NETTLE_INCLUDE_DIRS})
+endif()
+
+pkg_search_module(NETTLE nettle)
+if(NOT ${NETTLE_FOUND})
+  message( FATAL_ERROR "PACKAGE nettle not found: some targets will fail. Run SCRIPTS/build_mme -i or SCRIPTS/build_hss -i  again!")
+else()
+  include_directories(${NETTLE_INCLUDE_DIRS})
+endif()
+
+message ("NETTLE VERSION_INSTALLED  = ${NETTLE_VERSION}")
+
+string(REGEX REPLACE "([0-9]+).*" "\\1" NETTLE_VERSION_MAJOR ${NETTLE_VERSION})
+string(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" NETTLE_VERSION_MINOR ${NETTLE_VERSION})
+message ("NETTLE_VERSION_MAJOR = ${NETTLE_VERSION_MAJOR}")
+message ("NETTLE_VERSION_MINOR = ${NETTLE_VERSION_MINOR}")
+
+if ("${NETTLE_VERSION_MAJOR}" STREQUAL "" OR "${NETTLE_VERSION_MINOR}" STREQUAL "")
+  message( FATAL_ERROR "The nettle version not detected properly. Try to run SCRIPTS/build_mme -i or SCRIPTS/build_hss -i again" )
+endif()
+
+add_definitions("-DNETTLE_VERSION_MAJOR=${NETTLE_VERSION_MAJOR}")
+add_definitions("-DNETTLE_VERSION_MINOR=${NETTLE_VERSION_MINOR}")
+
+INCLUDE(FindMySQL)
+IF( NOT MySQL_FOUND )
+  MESSAGE( SEND_ERROR "MySQL Client is required" )
+ENDIF( NOT MySQL_FOUND )
+
 add_executable(amf
 	${SRC_TOP_DIR}/oai-amf/main.cpp 
         ${COMMON_SRC} ${BSTR_SRC} ${SCTP_SRC} ${NGAP_SRC} ${ITTI_SRC} ${AMF_APP_SRC} ${UTILS_SRC} ${LIB_NGAP_SRC} ${AMF_NAS_SRC}	
-  )
+        ${NGAP_MSGS_IES_SRC} ${CTXS_SRC} ${5GAKA_SRC} ${NAS_SRC} ${SMF_CLIENT_SRC} 
+        ${MYSQL_HANDLERS_SRC} ${NAS_ALG_SRC} ${AMF_SERVER_SRC} 
+)
 
 # LOG from oai-amf/CMakeLists.txt
-target_link_libraries(amf -Wl,--start-group LOG OPTIONS CONFIGS config++ sctp pthread)
+target_link_libraries(amf -Wl,--start-group LOG OPTIONS CONFIGS config++ sctp pthread ${NETTLE_LIBRARIES} ${MySQL_LIBRARY} ${CRYPTO_LIBRARIES} ${OPENSSL_LIBRARIES} boost_system ssl crypt cpprest gmp pistache)

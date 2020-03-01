@@ -138,7 +138,6 @@ namespace sctp{
     }else{
       sctp_association_t              *association;
         if ((association = sctp_is_assoc_in_list ((sctp_assoc_id_t) sinfo.sinfo_assoc_id)) == NULL) {
-          //cout<<"No available SCTP association"<<endl;
           return SCTP_RC_ERROR;
         }
         association->messages_recv++;
@@ -162,6 +161,7 @@ namespace sctp{
     switch (sctp_assoc_changed->sac_state) {
       case SCTP_COMM_UP: {
         if (add_new_association(sd, ppid, sctp_assoc_changed) == NULL) {
+          Logger::sctp().error("add new association with ppid(%d) socket(%d) error",ppid,sd);
           rc = SCTP_RC_ERROR;
         }
         break;
@@ -188,21 +188,20 @@ namespace sctp{
   }
   sctp_association_t* sctp_server::add_new_association(int sd, uint32_t ppid, struct sctp_assoc_change *sctp_assoc_changed) {
     sctp_association_t *new_association = NULL;
-    if ((new_association = sctp_add_new_peer()) == NULL) {
-      Logger::sctp().error("Failed to allocate new sctp peer");
-      return NULL;
-    }
+    new_association = (sctp_association_t*)calloc (1, sizeof (sctp_association_t));
     new_association->sd = sd;
     new_association->ppid = ppid;
     new_association->instreams = sctp_assoc_changed->sac_inbound_streams;
     new_association->outstreams = sctp_assoc_changed->sac_outbound_streams;
     new_association->assoc_id = (sctp_assoc_id_t) sctp_assoc_changed->sac_assoc_id;
+    Logger::sctp().debug("add new association with id(%d)",(sctp_assoc_id_t) sctp_assoc_changed->sac_assoc_id);
+    sctp_ctx.push_back(new_association);
     sctp_get_localaddresses(sd, NULL, NULL);
     sctp_get_peeraddresses(sd, &new_association->peer_addresses, &new_association->nb_peer_addresses);
     app_->handle_sctp_new_association(new_association->assoc_id, new_association->instreams, new_association->outstreams);
     return new_association;
   }
-
+/*
   sctp_association_t* sctp_server::sctp_add_new_peer (void){
     sctp_association_t              *new_sctp_descriptor = (sctp_association_t*)calloc (1, sizeof (sctp_association_t));
     if (new_sctp_descriptor == NULL) {
@@ -223,14 +222,15 @@ namespace sctp{
     //sctp_dump_list ();
     return new_sctp_descriptor;
   }
+*/
   sctp_association_t* sctp_server::sctp_is_assoc_in_list (sctp_assoc_id_t assoc_id){
     sctp_association_t              *assoc_desc = NULL;
     if (assoc_id < 0) {
       return NULL;
     }
-    for (assoc_desc = sctp_desc.available_connections_head; assoc_desc; assoc_desc = assoc_desc->next_assoc) {
-      if (assoc_desc->assoc_id == assoc_id) {
-        break;
+    for(int i=0; i<sctp_ctx.size();i++){
+      if(sctp_ctx[i]->assoc_id == assoc_id){
+        return sctp_ctx[i];
       }
     }
     return assoc_desc;

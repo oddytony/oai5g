@@ -8,8 +8,12 @@
 #include <thread>
 #include "amf_config.hpp"
 #include "amf_module_from_config.hpp"
+#include "itti_msg_amf_app.hpp"
+#include "ue_context.hpp"
 
 using namespace config;
+
+static uint32_t amf_app_ue_ngap_id_generator = 1;
 
 namespace amf{
 
@@ -21,7 +25,16 @@ public:
   amf_app(amf_app const&) = delete;
   void operator=(amf_app const&)     = delete;
   void allRegistredModulesInit(const amf_modules & modules);
-private:
+  long generate_amf_ue_ngap_id();
+public://itti handlers
+  void handle_itti_message(itti_nas_signalling_establishment_request & itti_msg);
+public://context management
+  std::map<long, std::shared_ptr<ue_context>> amf_ue_ngap_id2ue_ctx;
+  mutable std::shared_mutex m_amf_ue_ngap_id2ue_ctx;
+
+  bool is_amf_ue_id_2_ue_context(const long & amf_ue_ngap_id) const;
+  std::shared_ptr<ue_context> amf_ue_id_2_ue_context(const long & amf_ue_ngap_id) const;
+  void set_amf_ue_ngap_id_2_ue_context(const long & amf_ue_ngap_id, std::shared_ptr<ue_context> uc);
 };
 
 

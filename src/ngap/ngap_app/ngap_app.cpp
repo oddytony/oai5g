@@ -33,7 +33,7 @@ void ngap_app::handle_receive(bstring payload, sctp_assoc_id_t assoc_id, sctp_st
 // TNL association(clause 8.7.1.1, 3gpp ts38.413)
 
 void ngap_app::handle_sctp_new_association(sctp_assoc_id_t assoc_id, sctp_stream_id_t instreams, sctp_stream_id_t outstreams){
-  Logger::ngap().debug("ready to handle new ngap sctp association request");
+  Logger::ngap().debug("ready to handle new ngap sctp association(id:%d) request",assoc_id);
   std::shared_ptr<gnb_context> gc;
   if(!is_assoc_id_2_gnb_context(assoc_id)) {
     Logger::ngap().debug("Create a new gNB context with assoc_id(%d)",assoc_id);

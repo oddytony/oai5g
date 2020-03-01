@@ -35,6 +35,7 @@
 
 #define AMF_CONFIG_STRING_AMF_NAME                      "AMF_NAME"
 #define AMF_CONFIG_STRING_ServedGUAMIList               "ServedGUAMIList"
+#define AMF_CONFIG_STRING_TAC                           "TAC"
 #define AMF_CONFIG_STRING_MCC                           "MCC"
 #define AMF_CONFIG_STRING_MNC                           "MNC"
 #define AMF_CONFIG_STRING_RegionID                      "RegionID"
@@ -45,12 +46,33 @@
 #define AMF_CONFIG_STRING_SliceSupportList              "SliceSupportList"
 #define AMF_CONFIG_STRING_SST                           "SST"
 #define AMF_CONFIG_STRING_SD                            "SD"
+#define AMF_CONFIG_STRING_CORE_CONFIGURATION            "CORE_CONFIGURATION"
+#define AMF_CONFIG_STRING_EMERGENCY_SUPPORT             "EMERGENCY_SUPPORT"
+#define AMF_CONFIG_STRING_AUTHENTICATION                "AUTHENTICATION"
+#define AMF_CONFIG_STRING_AUTH_MYSQL_SERVER             "MYSQL_server"
+#define AMF_CONFIG_STRING_AUTH_MYSQL_USER               "MYSQL_user"
+#define AMF_CONFIG_STRING_AUTH_MYSQL_PASS               "MYSQL_pass"
+#define AMF_CONFIG_STRING_AUTH_MYSQL_DB                 "MYSQL_db"
+#define AMF_CONFIG_STRING_AUTH_OPERATOR_KEY             "OPERATOR_key"
+#define AMF_CONFIG_STRING_AUTH_RANDOM                   "RANDOM"
+#define AMF_CONFIG_STRING_NAS                           "NAS"
+#define AMF_CONFIG_STRING_NAS_SUPPORTED_INTEGRITY_ALGORITHM_LIST  "ORDERED_SUPPORTED_INTEGRITY_ALGORITHM_LIST"
+#define AMF_CONFIG_STRING_NAS_SUPPORTED_CIPHERING_ALGORITHM_LIST  "ORDERED_SUPPORTED_CIPHERING_ALGORITHM_LIST"
 
 
 using namespace libconfig;
 using namespace std;
 
 namespace config{
+
+typedef struct{
+  string mysql_server;
+  string mysql_user;
+  string mysql_pass;
+  string mysql_db;
+  string operator_key;
+  string random;
+}auth_conf;
 
 typedef struct interface_cfg_s {
   std::string     if_name;
@@ -86,8 +108,14 @@ typedef struct slice_s{
 typedef struct plmn_support_item_s{
   string mcc;
   string mnc;
+  uint32_t tac;
   vector<slice_t> slice_list;
 }plmn_item_t;
+
+typedef struct{
+  uint8_t  prefered_integrity_algorithm[8];
+  uint8_t  prefered_ciphering_algorithm[8];
+}nas_conf_t;
 
 class amf_config{
 public:
@@ -107,7 +135,9 @@ public:
   vector<guami_t>               guami_list;  
   unsigned int                  relativeAMFCapacity;
   vector<plmn_item_t>           plmn_list;
-
+  string                        is_emergency_support;
+  auth_conf                     auth_para;
+  nas_conf_t                    nas_cfg;
 };
 
 

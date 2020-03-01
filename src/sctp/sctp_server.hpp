@@ -8,7 +8,7 @@ extern "C"{
   #include <netinet/sctp.h>
   #include "bstrlib.h"
 }
-
+#include <vector>
 #include <iostream>
 using namespace std;
 
@@ -83,6 +83,7 @@ private:
   sctp_descriptor_t              sctp_desc;
   struct sockaddr_in             serverAddr_; 
   struct sctp_event_subscribe    events_;
+  vector<sctp_association_t*> sctp_ctx;
 };
 
 }
