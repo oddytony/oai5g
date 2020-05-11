@@ -73,7 +73,7 @@ void SmContextMessage::fromJson(const web::json::value& val)
         const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("binaryDataN1SmMessage"));
         if(!fieldValue.is_null())
         {
-            //HttpContent newItem();
+            //std::shared_ptr<HttpContent> newItem();
             //newItem->fromJson(fieldValue);
             //setBinaryDataN1SmMessage( newItem );
         }
@@ -83,7 +83,7 @@ void SmContextMessage::fromJson(const web::json::value& val)
         const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("binaryDataN2SmInformation"));
         if(!fieldValue.is_null())
         {
-            //HttpContent newItem(utility::conversions::to_string_t(""));
+            //std::shared_ptr<HttpContent> newItem(utility::conversions::to_string_t(""));
             //newItem->fromJson(fieldValue);
             //setBinaryDataN2SmInformation( newItem );
         }
@@ -102,11 +102,16 @@ void SmContextMessage::toMultipart(std::shared_ptr<MultipartFormData> multipart,
     {
         if (m_JsonData.get())
         {
-            m_JsonData->toMultipart(multipart, utility::conversions::to_string_t("jsonData."));
+          m_JsonData->toMultipart(multipart, utility::conversions::to_string_t("jsonData"));
+          //std::shared_ptr<HttpContent> jsonData;
+          //jsonData->setName("jsonData");
+          //jsonData->setContentDisposition("form-data");
+          //jsonData->setContentType("application/json");
         }
     }
     if(m_BinaryDataN1SmMessageIsSet)
     {
+       multipart->add(m_BinaryDataN1SmMessage);
        /* if (m_BinaryDataN1SmMessage.get())
         {
             m_BinaryDataN1SmMessage->toMultipart(multipart, utility::conversions::to_string_t("binaryDataN1SmMessage."));
@@ -144,7 +149,7 @@ void SmContextMessage::fromMultiPart(std::shared_ptr<MultipartFormData> multipar
     {
         if(multipart->hasContent(utility::conversions::to_string_t("binaryDataN1SmMessage")))
         {
-            //HttpContent newItem(utility::conversions::to_string_t(""));
+            //std::shared_ptr<HttpContent> newItem(utility::conversions::to_string_t(""));
             //newItem->fromMultiPart(multipart, utility::conversions::to_string_t("binaryDataN1SmMessage."));
             //setBinaryDataN1SmMessage( newItem );
         }
@@ -153,7 +158,7 @@ void SmContextMessage::fromMultiPart(std::shared_ptr<MultipartFormData> multipar
     {
         if(multipart->hasContent(utility::conversions::to_string_t("binaryDataN2SmInformation")))
         {
-            //HttpContent newItem(utility::conversions::to_string_t(""));
+            //std::shared_ptr<HttpContent> newItem(utility::conversions::to_string_t(""));
            // newItem->fromMultiPart(multipart, utility::conversions::to_string_t("binaryDataN2SmInformation."));
            // setBinaryDataN2SmInformation( newItem );
         }
@@ -181,12 +186,12 @@ void SmContextMessage::unsetJsonData()
     m_JsonDataIsSet = false;
 }
 
-HttpContent SmContextMessage::getBinaryDataN1SmMessage() const
+std::shared_ptr<HttpContent> SmContextMessage::getBinaryDataN1SmMessage() const
 {
     return m_BinaryDataN1SmMessage;
 }
 
-void SmContextMessage::setBinaryDataN1SmMessage(const HttpContent& value)
+void SmContextMessage::setBinaryDataN1SmMessage(const std::shared_ptr<HttpContent>& value)
 {
     m_BinaryDataN1SmMessage = value;
     m_BinaryDataN1SmMessageIsSet = true;
@@ -202,12 +207,12 @@ void SmContextMessage::unsetBinaryDataN1SmMessage()
     m_BinaryDataN1SmMessageIsSet = false;
 }
 
-HttpContent SmContextMessage::getBinaryDataN2SmInformation() const
+std::shared_ptr<HttpContent> SmContextMessage::getBinaryDataN2SmInformation() const
 {
     return m_BinaryDataN2SmInformation;
 }
 
-void SmContextMessage::setBinaryDataN2SmInformation(const HttpContent& value)
+void SmContextMessage::setBinaryDataN2SmInformation(const std::shared_ptr<HttpContent>& value)
 {
     m_BinaryDataN2SmInformation = value;
     m_BinaryDataN2SmInformationIsSet = true;

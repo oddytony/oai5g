@@ -12,8 +12,8 @@ Authentication_Parameter_RAND::Authentication_Parameter_RAND(const uint8_t iei, 
 Authentication_Parameter_RAND::Authentication_Parameter_RAND() {}
 Authentication_Parameter_RAND::~Authentication_Parameter_RAND() {}
 
-uint8_t Authentication_Parameter_RAND::getValue() {
-	return *_value;
+uint8_t *Authentication_Parameter_RAND::getValue() {
+	return _value;
 }
 int Authentication_Parameter_RAND::encode2buffer(uint8_t *buf, int len) {
 	Logger::nas_mm().debug("encoding Authentication_Parameter_RAND iei(0x%x)", _iei);
@@ -24,10 +24,11 @@ int Authentication_Parameter_RAND::encode2buffer(uint8_t *buf, int len) {
 	int encoded_size = 0;
 	if (_iei) {
 		*(buf + encoded_size) = _iei; encoded_size++;
-		int i = 0;
-		for (int i = 0; i < 16; i++) {
-			*(buf + encoded_size) = _value[i]; encoded_size++;
-		}
+                memcpy((void*)(buf+encoded_size), (void*)_value, 16); encoded_size += 16;
+		//int i = 0;
+		//for (int i = 0; i < 16; i++) {
+		//	*(buf + encoded_size) = _value[i]; encoded_size++;
+		//}
 		return encoded_size;
 	}
 	else {

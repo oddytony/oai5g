@@ -1,12 +1,40 @@
 #include "RegistrationAccept.hpp"
 #include "3gpp_ts24501.hpp"
 #include "logger.hpp"
+#include "String2Value.hpp"
 
 using namespace nas;
 
 RegistrationAccept::RegistrationAccept() {
-	Logger::nas_mm().debug("initiating class RegistrationAccept");
-	ie_sor_transparent_container = NULL;
+  Logger::nas_mm().debug("initiating class RegistrationAccept");
+  plain_header = NULL;
+  ie_5gs_registration_result = NULL;
+  ie_5g_guti = NULL;
+  ie_equivalent_plmns = NULL;
+  ie_allowed_nssai = NULL;
+  ie_rejected_nssai = NULL;
+  ie_configured_nssai = NULL;
+  ie_5gs_network_feature_support = NULL;
+  ie_PDU_session_status = NULL;
+  ie_pdu_session_reactivation_result = NULL;
+  ie_pdu_session_reactivation_result_error_cause = NULL;
+  ie_MICO_indicationl = NULL;
+  ie_network_slicing_indication = NULL;
+  ie_T3512_value = NULL;
+  ie_Non_3GPP_de_registration_timer_value = NULL;
+  ie_T3502_value = NULL;
+  ie_sor_transparent_container = NULL;
+  ie_eap_message = NULL;
+  ie_nssai_inclusion_mode = NULL;
+  ie_negotiated_drx_parameters = NULL;
+  ie_non_3gpp_nw_policies = NULL;
+  ie_eps_bearer_context_status = NULL;
+  ie_extended_drx_parameters = NULL;
+  ie_T3447_value = NULL;
+  ie_T3448_value = NULL;
+  ie_T3324_value = NULL;
+  ie_ue_radio_capability_id = NULL;
+  ie_pending_nssai = NULL;
 
 }
 
@@ -30,7 +58,16 @@ void RegistrationAccept::setSUCI_SUPI_format_IMSI(const string mcc, const string
 	}
 }
 void RegistrationAccept::setSUCI_SUPI_format_IMSI(const string mcc, const string mnc, const string routingInd, uint8_t protection_sch_id, uint8_t hnpki, const string msin) {}
-void RegistrationAccept::set5G_GUTI() {}
+void RegistrationAccept::set5G_GUTI(const string mcc, const string mnc, const string amfRegionId, const string amfSetId, const string amfPointer, const uint32_t tmsi) {
+  ie_5g_guti = new _5GSMobilityIdentity();
+  int regionId = fromString<int>(amfRegionId);
+  int setId = fromString<int>(amfSetId);
+  int pointer = fromString<int>(amfPointer);
+  cout<<"amfRegionID string: "<<amfRegionId.c_str() <<endl;
+  cout<<"amfRegionId uint8_t: "<<regionId<<endl;
+  ie_5g_guti->set5GGUTI(mcc, mnc, (uint8_t)regionId, (uint16_t)setId, (uint8_t)pointer, tmsi);
+  ie_5g_guti->setIEI(0x77);
+}
 void RegistrationAccept::setIMEI_IMEISV() {}
 void RegistrationAccept::set5G_S_TMSI() {}
 
@@ -46,8 +83,8 @@ void RegistrationAccept::setRejected_NSSAI(uint8_t cause, uint8_t value) {
 void RegistrationAccept::setCONFIGURED_NSSAI(std::vector<struct SNSSAI_s> nssai) {
 	ie_configured_nssai = new NSSAI(0x31, nssai);
 }
-void RegistrationAccept::set_5GS_Network_Feature_Support(uint8_t value) {
-	ie_5gs_network_feature_support = new _5GS_Network_Feature_Support(0x21, value);
+void RegistrationAccept::set_5GS_Network_Feature_Support(uint8_t value, uint8_t value2) {
+	ie_5gs_network_feature_support = new _5GS_Network_Feature_Support(0x21, value, value2);
 }
 void RegistrationAccept::setPDU_session_status(uint16_t value) {
 	ie_PDU_session_status = new PDU_Session_Status(0x50, value);
@@ -109,6 +146,11 @@ void RegistrationAccept::setUE_Radio_Capability_ID(uint8_t value) {
 void RegistrationAccept::setPending_NSSAI(std::vector<struct SNSSAI_s> nssai) {
         ie_pending_nssai = new NSSAI(0x39, nssai);
 }
+
+void RegistrationAccept::setTaiList(std::vector<p_tai_t> tai_list){
+  ie_tai_list = new _5GSTrackingAreaIdList(0x54, tai_list);
+}
+
 int RegistrationAccept::encode2buffer(uint8_t *buf, int len) {
 	Logger::nas_mm().debug("encoding RegistrationAccept message");
 	int encoded_size = 0;
@@ -134,7 +176,8 @@ int RegistrationAccept::encode2buffer(uint8_t *buf, int len) {
 		Logger::nas_mm().warn("IE ie_5g_guti is not avaliable");
 	}
 	else {
-		if (int size = ie_5g_guti->encode2buffer(buf + encoded_size, len - encoded_size)) {
+                int size = ie_5g_guti->encode2buffer(buf + encoded_size, len - encoded_size);
+		if (size) {
 			encoded_size += size;
 		}
 		else {
@@ -142,6 +185,17 @@ int RegistrationAccept::encode2buffer(uint8_t *buf, int len) {
 			return 0;
 		}
 	}
+        if(!ie_tai_list){
+          Logger::nas_mm().warn("IE ie_tai_list is not avaliable");
+        }else{
+          int size = ie_tai_list->encode2buffer(buf+encoded_size, len-encoded_size);
+          if(size != -1){
+            encoded_size += size;
+          }else{
+	    Logger::nas_mm().error("encoding ie_tai_list  error");
+	    return 0;
+          }
+        }
 	if (!ie_equivalent_plmns) {
 	  Logger::nas_mm().warn("IE ie_equivalent_plmns is not avaliable");
  	 }
@@ -441,8 +495,21 @@ int RegistrationAccept::encode2buffer(uint8_t *buf, int len) {
 			return 0;
 		}
 	}
+#if 0
+        if(!ie_tai_list){
+          Logger::nas_mm().warn("IE ie_tai_list is not avaliable");
+        }else{
+          int size = ie_tai_list->encode2buffer(buf+encoded_size, len-encoded_size);
+          if(size != -1){
+            encoded_size += size;
+          }else{
+	    Logger::nas_mm().error("encoding ie_tai_list  error");
+	    return 0;
+          }
+        }
+#endif
 	Logger::nas_mm().debug("encoded RegistrationAccept message len(%d)", encoded_size);
-	return 1;
+	return encoded_size;
 }
 
 int RegistrationAccept::decodefrombuffer(NasMmPlainHeader * header, uint8_t *buf, int len) {

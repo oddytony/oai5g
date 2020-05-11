@@ -33,7 +33,9 @@ namespace ngap{
 		m_sd->size = 3;
 		uint8_t *buffer = (uint8_t*)calloc(1,sizeof(uint8_t)+sizeof(uint16_t));
 		if(!buffer) return false;
-		*(uint32_t *)buffer = sd & 0x00ffffff;
+                buffer[0] = (sd & 0x00ff0000)>>16;
+                buffer[1] = (sd & 0x0000ff00)>>8;
+                buffer[2] = (sd & 0x000000ff)>>0;
 		m_sd->buf = buffer;
 		return true;
 	}

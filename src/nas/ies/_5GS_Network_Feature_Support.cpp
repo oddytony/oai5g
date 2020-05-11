@@ -8,11 +8,12 @@ _5GS_Network_Feature_Support::_5GS_Network_Feature_Support(uint8_t iei){
 _5GS_Network_Feature_Support::_5GS_Network_Feature_Support() {}
 _5GS_Network_Feature_Support::~_5GS_Network_Feature_Support(){}
 
-_5GS_Network_Feature_Support::_5GS_Network_Feature_Support(const uint8_t iei, uint8_t value)
+_5GS_Network_Feature_Support::_5GS_Network_Feature_Support(const uint8_t iei, uint8_t value, uint8_t value2)
 {
 	_iei = iei;
 	_value=value;
-	length = 3;
+        _value2 = value2;
+	length = 4;
 }
 
 void _5GS_Network_Feature_Support::setValue(uint8_t value) {
@@ -32,6 +33,7 @@ int _5GS_Network_Feature_Support::encode2buffer(uint8_t *buf, int len) {
 		*(buf + encoded_size) = _iei; encoded_size++;
 		*(buf + encoded_size) = length - 2; encoded_size++;
 		*(buf + encoded_size) = _value; encoded_size++; 
+		*(buf + encoded_size) = _value2; encoded_size++; 
 	}
 	else {
 	*(buf + encoded_size) = length - 1; encoded_size++;

@@ -32,6 +32,8 @@
 #include "ProblemDetails.h"
 #include "SubscriptionData.h"
 
+#include "amf_app.hpp"
+
 namespace oai {
 namespace amf {
 namespace api {
@@ -40,11 +42,12 @@ using namespace oai::amf::model;
 
 class SubscriptionsCollectionDocumentApiImpl : public oai::amf::api::SubscriptionsCollectionDocumentApi {
 public:
-    SubscriptionsCollectionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>);
+    SubscriptionsCollectionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>, amf_application::amf_app *amf_app_inst);
     ~SubscriptionsCollectionDocumentApiImpl() {}
 
     void a_mf_status_change_subscribe(const SubscriptionData &subscriptionData, Pistache::Http::ResponseWriter &response);
-
+private:
+    amf_application::amf_app *m_amf_app;
 };
 
 }

@@ -1,8 +1,13 @@
 #ifndef _5GSMobilityIdentity_H_
 #define _5GSMobilityIdentity_H_
-
-#include <string>
+#include <iostream>
 #include <stdint.h>
+#include "struct.hpp"
+extern "C" {
+#include "bstrlib.h"
+#include "TLVEncoder.h"
+#include "TLVDecoder.h"
+}
 using namespace std;
 
 namespace nas{
@@ -12,8 +17,8 @@ typedef struct _5G_GUTI_s{
   string mnc;
   uint8_t  amf_region_id;
   uint8_t amf_set_id;
-  uint8_t  amf_pointer;
-  string   _5g_tmsi;
+  uint16_t  amf_pointer;
+  uint32_t   _5g_tmsi;
 }_5G_GUTI_t;
 
 typedef struct IMEI_or_IMEISV_s{
@@ -42,6 +47,7 @@ typedef struct _5G_S_TMSI_s{
 
 class _5GSMobilityIdentity{
 public:
+  _5GSMobilityIdentity(uint8_t _iei, const uint16_t amfSetId, const uint8_t amfPointer, const string tmsi);
   _5GSMobilityIdentity(const string mcc, const string mnc, const string routingInd, uint8_t protection_sch_id, const string msin);
   _5GSMobilityIdentity();
   ~_5GSMobilityIdentity();
@@ -52,16 +58,24 @@ public:
   int encodeMssMnc2buffer(string mcc, string mnc, uint8_t *buf);
   int encodeRoutid2buffer(string routid, uint8_t *buf);
   int encodeMSIN2buffer(string msinstr, uint8_t *buf);
+  int _5g_s_tmsi_encode2buffer(uint8_t *buf, int len);
+  int _5g_s_tmsi_decodefrombuffer(uint8_t *buf, int len);
 
   int decodefrombuffer(uint8_t *buf, int len, bool is_option);
-  int suci_decodefrombuffer(uint8_t *buf, int len);
+  int suci_decodefrombuffer(uint8_t *buf, int len, int length);
   int _5g_guti_decodefrombuffer(uint8_t *buf, int len);
-  void set5GGUTI(const string mcc, const string mnc, uint8_t amf_region_id, uint8_t amf_set_id, uint8_t amf_pointer, const string _5g_tmsi);
+  void set5GGUTI(const string mcc, const string mnc, uint8_t amf_region_id, uint16_t amf_set_id, uint8_t amf_pointer, const uint32_t _5g_tmsi);
   void setSuciWithSupiImsi(const string &mcc, const string &mnc, const string &routingInd, uint8_t protecSchId ,uint8_t home_pki, const string &msin_digits);
   void setSuciWithSupiImsi(const string &mcc, const string &mnc, const string &routingInd, uint8_t protecSchId ,const string &msin_digits);
   void getSuciWithSupiImsi(SUCI_imsi_t &);
   void get5GGUTI(_5G_GUTI_t &);
   uint8_t gettypeOfIdentity() { return typeOfIdentity; };
+  bool get5G_S_TMSI(uint16_t &amfSetId, uint8_t &amfPointer, string &tmsi);
+
+  void setIMEISV(IMEISV_t imeisv);
+  void getIMEISV(IMEISV_t &imeisv);
+  int imeisv_encode2buffer(uint8_t *buf, int len);
+  int imeisv_decodefrombuffer(uint8_t *buf, int len);
 private:
   uint8_t         iei;
   _5G_GUTI_t     *_5g_guti;
@@ -71,6 +85,7 @@ private:
   bool            is_no_identity;
   uint16_t        length;
   uint8_t         typeOfIdentity:3;
+  IMEISV_t _IMEISV;
 };
 
 

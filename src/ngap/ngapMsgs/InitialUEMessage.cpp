@@ -21,6 +21,7 @@ namespace ngap{
 		userLocationInformation = NULL;
 		rRCEstablishmentCause = NULL;
 		uEContextRequest = NULL;
+                fivegSTmsi = NULL;
 	}
 	InitialUEMessageMsg::~InitialUEMessageMsg(){}
 
@@ -212,6 +213,7 @@ namespace ngap{
 							cout<<"decoded ngap RAN_UE_NGAP_ID IE error"<<endl;
 							return false;
 						}
+                                                cout<<"in initialUeMessage, received ranUeNgapId "<<ranUeNgapId->getRanUeNgapId()<<endl;
 					}
 					else
 					{
@@ -283,10 +285,20 @@ namespace ngap{
 						return false;
 					}
 				}break;
-				
+			
+                                case Ngap_ProtocolIE_ID_id_FiveG_S_TMSI:{
+				  if(initialUEMessageIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && initialUEMessageIEs->protocolIEs.list.array[i]->value.present == Ngap_InitialUEMessage_IEs__value_PR_FiveG_S_TMSI){
+                                    fivegSTmsi = new FiveGSTmsi();
+                                    if(!fivegSTmsi->decodefrompdu(initialUEMessageIEs->protocolIEs.list.array[i]->value.choice.FiveG_S_TMSI)){
+                                      cout <<"decode ngap FiveG_S_TMSI IE error"<<endl;
+                                      return false;
+                                    }
+                                  }
+                                }break; 
+	
 				default:{
-					cout<<"decoded ngap message pdu error"<<endl; 
-					return false;
+					cout<<"not decoded IE:"<<initialUEMessageIEs->protocolIEs.list.array[i]->id<<endl; 
+					return true;
 				}
 			}
 		}
@@ -332,9 +344,16 @@ namespace ngap{
 		return rRCEstablishmentCause->getRRCEstablishmentCause();
 	}
 	int  InitialUEMessageMsg::getUeContextRequest()
-	{
+	{       cout<<"testing 11.1"<<endl;
 		return uEContextRequest->getUEContextRequest();
 	}
+
+bool InitialUEMessageMsg::get5GS_TMSI(string &_5g_s_tmsi){
+  if(fivegSTmsi){
+    fivegSTmsi->getValue(_5g_s_tmsi);
+    return true;
+  }else return false;
+}
 
 }
 

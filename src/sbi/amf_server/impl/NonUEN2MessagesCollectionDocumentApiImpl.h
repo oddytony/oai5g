@@ -34,6 +34,8 @@
 #include "N2InformationTransferRspData.h"
 #include "ProblemDetails.h"
 
+#include "amf_app.hpp"
+
 namespace oai {
 namespace amf {
 namespace api {
@@ -42,11 +44,12 @@ using namespace oai::amf::model;
 
 class NonUEN2MessagesCollectionDocumentApiImpl : public oai::amf::api::NonUEN2MessagesCollectionDocumentApi {
 public:
-    NonUEN2MessagesCollectionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>);
+    NonUEN2MessagesCollectionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>, amf_application::amf_app *amf_app_inst);
     ~NonUEN2MessagesCollectionDocumentApiImpl() {}
 
     void non_ue_n2_message_transfer(const N2InformationTransferReqData &n2InformationTransferReqData, Pistache::Http::ResponseWriter &response);
-
+private:
+    amf_application::amf_app *m_amf_app;
 };
 
 }

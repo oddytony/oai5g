@@ -14,7 +14,7 @@ namespace nas {
 		//void setValue(uint8_t iei, uint8_t value);
 		int encode2buffer(uint8_t *buf, int len);
 		int decodefrombuffer(uint8_t *buf, int len, bool is_option);
-		uint8_t getValue();
+		uint8_t *getValue();
 	private:
 		uint8_t _iei;
 		uint8_t _value[16];

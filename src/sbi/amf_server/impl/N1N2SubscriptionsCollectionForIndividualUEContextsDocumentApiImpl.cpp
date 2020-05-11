@@ -18,8 +18,8 @@ namespace api {
 
 using namespace oai::amf::model;
 
-N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApiImpl::N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr)
-    : N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApi(rtr)
+N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApiImpl::N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr, amf_application::amf_app *amf_app_inst)
+    : N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApi(rtr), m_amf_app(amf_app_inst)
     { }
 
 void N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApiImpl::n1_n2_message_subscribe(const std::string &ueContextId, const UeN1N2InfoSubscriptionCreateData &ueN1N2InfoSubscriptionCreateData, Pistache::Http::ResponseWriter &response) {

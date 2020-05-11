@@ -20,6 +20,7 @@ namespace ngap{
 	{
 		for(int i=0;i<numofpduSessionResourceSetupItemCxtReq;i++)
 		{
+                        cout<<"encoding items"<<endl;
 			Ngap_PDUSessionResourceSetupItemCxtReq_t *request = (Ngap_PDUSessionResourceSetupItemCxtReq_t *)calloc(1,sizeof(Ngap_PDUSessionResourceSetupItemCxtReq_t));
 			if(!request) return false;
 			if(!pduSessionResourceSetupItemCxtReq[i].encode2PDUSessionResourceSetupItemCxtReq(request)) return false;

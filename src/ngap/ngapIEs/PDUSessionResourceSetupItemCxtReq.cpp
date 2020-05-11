@@ -21,15 +21,21 @@ namespace ngap{
 	}
 	bool PDUSessionResourceSetupItemCxtReq::encode2PDUSessionResourceSetupItemCxtReq(Ngap_PDUSessionResourceSetupItemCxtReq_t *pduSessionResourceSetupItemCxtReq)
 	{
+                cout<<"encode2pdu  pdusession_id"<<endl;
 		if(!pDUSessionID->encode2PDUSessionID(pduSessionResourceSetupItemCxtReq->pDUSessionID)) return false;
+                cout<<"encode2pdu  pdusession_id over"<<endl;
 		if(nAS_PDU)
 		{
+                cout<<"encode2pdu  nas-pdu"<<endl;
 			Ngap_NAS_PDU_t	*naspdu = (Ngap_NAS_PDU_t *)calloc(1,sizeof(Ngap_NAS_PDU_t));
 			if(!naspdu) return false;
 			if(!nAS_PDU->encode2octetstring(*naspdu)) return false;
 			pduSessionResourceSetupItemCxtReq->nAS_PDU = naspdu;
+                cout<<"encode2pdu  nas-pdu over"<<endl;
 		}
+                cout<<"encode2pdu  nssai"<<endl;
 		if(!s_NSSAI->encode2S_NSSAI(&pduSessionResourceSetupItemCxtReq->s_NSSAI)) return false;
+                cout<<"encode2pdu  nssai over"<<endl;
 		pduSessionResourceSetupItemCxtReq->pDUSessionResourceSetupRequestTransfer = pDUSessionResourceSetupRequestTransfer;
 		
 		return true; 

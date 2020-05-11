@@ -1,6 +1,7 @@
 #include "DLNASTransport.hpp"
 #include "3gpp_ts24501.hpp"
 #include "logger.hpp"
+#include "bstrlib.h"
 
 using namespace nas;
 
@@ -27,7 +28,13 @@ void DLNASTransport::setPayload_Container_Type(uint8_t value) {
 void DLNASTransport::setPayload_Container(std::vector<PayloadContainerEntry> content) {
 	ie_payload_container = new Payload_Container(0x00,content);
 }
-void DLNASTransport::setPDU_Session_Identity_2(uint8_t value) {
+
+void DLNASTransport::setPayload_Container(uint8_t *buf, int len){
+        bstring b = blk2bstr(buf, len);
+        ie_payload_container = new Payload_Container(0x00, b);
+}
+
+void DLNASTransport::setPDUSessionId(uint8_t value) {
 	ie_pdu_session_identity_2 = new PDU_Session_Identity_2(0x12, value);
 }
 void DLNASTransport::setAdditional_Information(uint8_t _length, uint8_t value) {
@@ -122,7 +129,7 @@ int DLNASTransport::encode2buffer(uint8_t *buf, int len) {
 		}
 	}
 	Logger::nas_mm().debug("encoded DLNASTransport message len(%d)", encoded_size);
-	return 1;
+	return encoded_size;
 }
 
 int DLNASTransport::decodefrombuffer(NasMmPlainHeader * header, uint8_t *buf, int len) {

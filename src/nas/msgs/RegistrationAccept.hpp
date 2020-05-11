@@ -17,7 +17,7 @@ namespace nas {
 		/*** belongs to _5GSMobilityIdentity**/
 		void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc, const string routingInd, uint8_t protection_sch_id, const string msin);
 		void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc, const string routingInd, uint8_t protection_sch_id, uint8_t hnpki, const string msin);
-		void set5G_GUTI();
+		void set5G_GUTI(const string mcc, const string mnc, const string amfRegionId, const string amfSetId, const string amfPointer, const uint32_t tmsi);
 		void setIMEI_IMEISV();
 		void set5G_S_TMSI();
 	  /*** belongs to _5GSMobilityIdentity**/
@@ -25,7 +25,7 @@ namespace nas {
 		void setALLOWED_NSSAI(std::vector<struct SNSSAI_s> nssai);
 		void setRejected_NSSAI(uint8_t cause, uint8_t value);
 		void setCONFIGURED_NSSAI(std::vector<struct SNSSAI_s> nssai);
-		void set_5GS_Network_Feature_Support( uint8_t value);
+		void set_5GS_Network_Feature_Support( uint8_t value, uint8_t value2);
 		void setPDU_session_status(uint16_t value);
 		void setPDU_session_reactivation_result( uint16_t value);
 		void setPDU_session_reactivation_result_error_cause( uint8_t session_id,uint8_t value);
@@ -45,6 +45,7 @@ namespace nas {
 		void setT3324_Value(uint8_t unit, uint8_t value);
 		void setUE_Radio_Capability_ID(uint8_t value);
 		void setPending_NSSAI(std::vector<struct SNSSAI_s> nssai);
+                void setTaiList(std::vector<p_tai_t> tai_list);
 	public:
 		NasMmPlainHeader      *plain_header;
 		_5GS_Registration_Result  *ie_5gs_registration_result;
@@ -74,6 +75,7 @@ namespace nas {
 		GPRS_Timer_3         *ie_T3324_value;
 		UE_Radio_Capability_ID *ie_ue_radio_capability_id;
 		NSSAI                 *ie_pending_nssai;
+                _5GSTrackingAreaIdList * ie_tai_list;
 	};
 
 

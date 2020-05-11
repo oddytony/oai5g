@@ -44,7 +44,7 @@ public:
     virtual ~N1N2MessageCollectionDocumentApi() {}
     void init();
 
-    const std::string base = "/namf-comm/v1";
+    const std::string base = "/namf-comm/v2";
 
 private:
     void setupRoutes();
@@ -63,6 +63,8 @@ private:
     /// <param name="ueContextId">UE Context Identifier</param>
     /// <param name="n1N2MessageTransferReqData"></param>
     virtual void n1_n2_message_transfer(const std::string &ueContextId, const N1N2MessageTransferReqData &n1N2MessageTransferReqData, Pistache::Http::ResponseWriter &response) = 0;
+    virtual void n1_n2_message_transfer(const std::string &ueContextId, const N1N2MessageTransferReqData &n1N2MessageTransferReqData, std::string &n1sm_str, Pistache::Http::ResponseWriter &response) = 0;
+    virtual void n1_n2_message_transfer(const std::string &ueContextId, const N1N2MessageTransferReqData &n1N2MessageTransferReqData, std::string &n1sm_str, std::string &n2sm_str, Pistache::Http::ResponseWriter &response) = 0;
 
 };
 

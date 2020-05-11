@@ -28,12 +28,20 @@
 #define AMF_CONFIG_STRING_SCTP_PORT                     "SCTP_PORT"
 #define AMF_CONFIG_STRING_PPID                          "PPID"
 
+#define AMF_CONFIG_STRING_INTERFACE_N11                 "N11"
+#define AMF_CONFIG_STRING_SMF_INSTANCES_POOL            "SMF_INSTANCES_POOL"
+#define AMF_CONFIG_STRING_SMF_INSTANCE_ID               "SMF_INSTANCE_ID"
+#define AMF_CONFIG_STRING_SMF_INSTANCE_PORT             "PORT"
+#define AMF_CONFIG_STRING_SMF_INSTANCE_VERSION          "VERSION"
+#define AMF_CONFIG_STRING_SMF_INSTANCE_SELECTED         "SELECTED"
+
 #define AMF_CONFIG_STRING_SCHED_PARAMS                  "SCHED_PARAMS"
 #define AMF_CONFIG_STRING_THREAD_RD_CPU_ID              "CPU_ID"
 #define AMF_CONFIG_STRING_THREAD_RD_SCHED_POLICY        "SCHED_POLICY"
 #define AMF_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY      "SCHED_PRIORITY"
 
 #define AMF_CONFIG_STRING_AMF_NAME                      "AMF_NAME"
+#define AMF_CONFIG_STRING_GUAMI                         "GUAMI"
 #define AMF_CONFIG_STRING_ServedGUAMIList               "ServedGUAMIList"
 #define AMF_CONFIG_STRING_TAC                           "TAC"
 #define AMF_CONFIG_STRING_MCC                           "MCC"
@@ -117,6 +125,14 @@ typedef struct{
   uint8_t  prefered_ciphering_algorithm[8];
 }nas_conf_t;
 
+typedef struct{
+  int id;
+  string ipv4;
+  string port;
+  string version;
+  bool selected;
+}smf_inst_t;
+
 class amf_config{
 public:
   amf_config();
@@ -132,12 +148,14 @@ public:
   itti_cfg_t                    itti;
   unsigned int                  statistics_interval;
   string                        AMF_Name;
+  guami_t                       guami;
   vector<guami_t>               guami_list;  
   unsigned int                  relativeAMFCapacity;
   vector<plmn_item_t>           plmn_list;
   string                        is_emergency_support;
   auth_conf                     auth_para;
   nas_conf_t                    nas_cfg;
+  vector<smf_inst_t>            smf_pool;
 };
 
 

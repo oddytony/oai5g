@@ -12,7 +12,8 @@
 
 
 #include "SmContextCreateData.h"
-
+#include <iostream>
+#include <nlohmann/json.hpp>
 namespace oai {
 namespace smf {
 namespace model {
@@ -688,6 +689,47 @@ void SmContextCreateData::fromJson(const web::json::value& val)
 
 void SmContextCreateData::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
 {
+
+   nlohmann::json pdu_session_establishment_request;
+   pdu_session_establishment_request["supi"] = "imsi-200000000000001";
+   pdu_session_establishment_request["pei"] = "imei-200000000000001";
+   pdu_session_establishment_request["gpsi"] = "msisdn-200000000001";
+   pdu_session_establishment_request["dnn"] = "carrier.com";
+   pdu_session_establishment_request["sNssai"]["sst"] = 222;
+   pdu_session_establishment_request["sNssai"]["sd"] = "0000D4";
+   pdu_session_establishment_request["pduSessionId"] = 1;
+   pdu_session_establishment_request["requestType"] = "INITIAL_REQUEST";
+   pdu_session_establishment_request["servingNfId"] = "servingNfId";
+   pdu_session_establishment_request["servingNetwork"]["mcc"] = "234";
+   pdu_session_establishment_request["servingNetwork"]["mnc"] = "067";
+   pdu_session_establishment_request["anType"] = "3GPP_ACCESS";
+   pdu_session_establishment_request["smContextStatusUri"] = "smContextStatusUri";
+   pdu_session_establishment_request["n1MessageContainer"]["n1MessageClass"] = "SM";
+   pdu_session_establishment_request["n1MessageContainer"]["n1MessageContent"]["contentId"] = "n1SmMsg"; //part 2
+   std::string json_part = pdu_session_establishment_request.dump();
+
+    std::shared_ptr<HttpContent> jsonData(new HttpContent);
+    //jsonData->setName(prefix);
+    //jsonData->setContentDisposition("form-data");
+    jsonData->setContentType("application/json");
+    std::string value = "";
+    //value += "{" + "\"supi\":\"SUPI\", " + "\"pei\":\"PEI\"" + "}";
+    value = "{\"supi\":\"SUPI\", \"pei\":\"PEI\",";
+    std::string n1sm = "\"n1MessageContainer\":{\"n1MessageClass\":\"SM\", \"n1MessageContent\":{\"contentId\":\"n1SmMsg\"}}";
+    value += n1sm;
+    std::string ngsId = ", \"servingNfId\":\"servingNfId\"";
+    value += ngsId;
+    std::string sn = ", \"servingNetwork\":{\"mcc\":\"460\", \"mnc\":\"011\"}";
+    value += sn;
+    std::string anType = ", \"anType\":\"3GPP_ACCESS\"";
+    value += anType;
+    std::string uri = ", \"smContextStatusUri\":\"smContextStatusUri\"";
+    value += "}";
+    std::cout<<"ERRO"<<std::endl;
+    std::cout<<value.c_str()<<std::endl;
+    jsonData->setData( std::shared_ptr<std::istream>( new std::stringstream( utility::conversions::to_utf8string(json_part) ) ) );
+    multipart->add(jsonData);
+
     utility::string_t namePrefix = prefix;
     if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
     {
@@ -696,116 +738,116 @@ void SmContextCreateData::toMultipart(std::shared_ptr<MultipartFormData> multipa
 
     if(m_SupiIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("supi"), m_Supi));
+        ////multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("supi"), m_Supi));
     }
     if(m_UnauthenticatedSupiIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("unauthenticatedSupi"), m_UnauthenticatedSupi));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("unauthenticatedSupi"), m_UnauthenticatedSupi));
     }
     if(m_PeiIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("pei"), m_Pei));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("pei"), m_Pei));
     }
     if(m_GpsiIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("gpsi"), m_Gpsi));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("gpsi"), m_Gpsi));
     }
     if(m_PduSessionIdIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("pduSessionId"), m_PduSessionId));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("pduSessionId"), m_PduSessionId));
     }
     if(m_DnnIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("dnn"), m_Dnn));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("dnn"), m_Dnn));
     }
     if(m_SNssaiIsSet)
     {
         if (m_SNssai.get())
         {
-            m_SNssai->toMultipart(multipart, utility::conversions::to_string_t("sNssai."));
+            //m_SNssai->toMultipart(multipart, utility::conversions::to_string_t("sNssai."));
         }
     }
     if(m_HplmnSnssaiIsSet)
     {
         if (m_HplmnSnssai.get())
         {
-            m_HplmnSnssai->toMultipart(multipart, utility::conversions::to_string_t("hplmnSnssai."));
+            //m_HplmnSnssai->toMultipart(multipart, utility::conversions::to_string_t("hplmnSnssai."));
         }
     }
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("servingNfId"), m_ServingNfId));
+    //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("servingNfId"), m_ServingNfId));
     if(m_GuamiIsSet)
     {
         if (m_Guami.get())
         {
-            m_Guami->toMultipart(multipart, utility::conversions::to_string_t("guami."));
+            //m_Guami->toMultipart(multipart, utility::conversions::to_string_t("guami."));
         }
     }
     if(m_ServiceNameIsSet)
     {
         if (m_ServiceName.get())
         {
-            m_ServiceName->toMultipart(multipart, utility::conversions::to_string_t("serviceName."));
+            //m_ServiceName->toMultipart(multipart, utility::conversions::to_string_t("serviceName."));
         }
     }
-    m_ServingNetwork->toMultipart(multipart, utility::conversions::to_string_t("servingNetwork."));
+    //m_ServingNetwork->toMultipart(multipart, utility::conversions::to_string_t("servingNetwork."));
     if(m_RequestTypeIsSet)
     {
         if (m_RequestType.get())
         {
-            m_RequestType->toMultipart(multipart, utility::conversions::to_string_t("requestType."));
+            //m_RequestType->toMultipart(multipart, utility::conversions::to_string_t("requestType."));
         }
     }
     if(m_N1SmMsgIsSet)
     {
         if (m_N1SmMsg.get())
         {
-            m_N1SmMsg->toMultipart(multipart, utility::conversions::to_string_t("n1SmMsg."));
+            //m_N1SmMsg->toMultipart(multipart, utility::conversions::to_string_t("n1SmMsg."));
         }
     }
-    m_AnType->toMultipart(multipart, utility::conversions::to_string_t("anType."));
+    //m_AnType->toMultipart(multipart, utility::conversions::to_string_t("anType."));
     if(m_SecondAnTypeIsSet)
     {
         if (m_SecondAnType.get())
         {
-            m_SecondAnType->toMultipart(multipart, utility::conversions::to_string_t("secondAnType."));
+            //m_SecondAnType->toMultipart(multipart, utility::conversions::to_string_t("secondAnType."));
         }
     }
     if(m_RatTypeIsSet)
     {
         if (m_RatType.get())
         {
-            m_RatType->toMultipart(multipart, utility::conversions::to_string_t("ratType."));
+            //m_RatType->toMultipart(multipart, utility::conversions::to_string_t("ratType."));
         }
     }
     if(m_PresenceInLadnIsSet)
     {
         if (m_PresenceInLadn.get())
         {
-            m_PresenceInLadn->toMultipart(multipart, utility::conversions::to_string_t("presenceInLadn."));
+            //m_PresenceInLadn->toMultipart(multipart, utility::conversions::to_string_t("presenceInLadn."));
         }
     }
     if(m_UeLocationIsSet)
     {
         if (m_UeLocation.get())
         {
-            m_UeLocation->toMultipart(multipart, utility::conversions::to_string_t("ueLocation."));
+            //m_UeLocation->toMultipart(multipart, utility::conversions::to_string_t("ueLocation."));
         }
     }
     if(m_UeTimeZoneIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("ueTimeZone"), m_UeTimeZone));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("ueTimeZone"), m_UeTimeZone));
     }
     if(m_AddUeLocationIsSet)
     {
         if (m_AddUeLocation.get())
         {
-            m_AddUeLocation->toMultipart(multipart, utility::conversions::to_string_t("addUeLocation."));
+            //m_AddUeLocation->toMultipart(multipart, utility::conversions::to_string_t("addUeLocation."));
         }
     }
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("smContextStatusUri"), m_SmContextStatusUri));
+    //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("smContextStatusUri"), m_SmContextStatusUri));
     if(m_HSmfUriIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("hSmfUri"), m_HSmfUri));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("hSmfUri"), m_HSmfUri));
     }
     {
         std::vector<web::json::value> jsonArray;
@@ -816,12 +858,12 @@ void SmContextCreateData::toMultipart(std::shared_ptr<MultipartFormData> multipa
         
         if(jsonArray.size() > 0)
         {
-            multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("additionalHsmfUri"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
+            //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("additionalHsmfUri"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
         }
     }
     if(m_OldPduSessionIdIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("oldPduSessionId"), m_OldPduSessionId));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("oldPduSessionId"), m_OldPduSessionId));
     }
     {
         std::vector<web::json::value> jsonArray;
@@ -832,37 +874,37 @@ void SmContextCreateData::toMultipart(std::shared_ptr<MultipartFormData> multipa
         
         if(jsonArray.size() > 0)
         {
-            multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("pduSessionsActivateList"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
+            //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("pduSessionsActivateList"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
         }
     }
     if(m_UeEpsPdnConnectionIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("ueEpsPdnConnection"), m_UeEpsPdnConnection));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("ueEpsPdnConnection"), m_UeEpsPdnConnection));
     }
     if(m_HoStateIsSet)
     {
         if (m_HoState.get())
         {
-            m_HoState->toMultipart(multipart, utility::conversions::to_string_t("hoState."));
+           // m_HoState->toMultipart(multipart, utility::conversions::to_string_t("hoState."));
         }
     }
     if(m_PcfIdIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("pcfId"), m_PcfId));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("pcfId"), m_PcfId));
     }
     if(m_NrfUriIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("nrfUri"), m_NrfUri));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("nrfUri"), m_NrfUri));
     }
     if(m_SupportedFeaturesIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("supportedFeatures"), m_SupportedFeatures));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("supportedFeatures"), m_SupportedFeatures));
     }
     if(m_SelModeIsSet)
     {
         if (m_SelMode.get())
         {
-            m_SelMode->toMultipart(multipart, utility::conversions::to_string_t("selMode."));
+            //m_SelMode->toMultipart(multipart, utility::conversions::to_string_t("selMode."));
         }
     }
     {
@@ -874,68 +916,68 @@ void SmContextCreateData::toMultipart(std::shared_ptr<MultipartFormData> multipa
         
         if(jsonArray.size() > 0)
         {
-            multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("backupAmfInfo"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
+            //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("backupAmfInfo"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
         }
     }
     if(m_TraceDataIsSet)
     {
         if (m_TraceData.get())
         {
-            m_TraceData->toMultipart(multipart, utility::conversions::to_string_t("traceData."));
+            //m_TraceData->toMultipart(multipart, utility::conversions::to_string_t("traceData."));
         }
     }
     if(m_UdmGroupIdIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("udmGroupId"), m_UdmGroupId));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("udmGroupId"), m_UdmGroupId));
     }
     if(m_RoutingIndicatorIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("routingIndicator"), m_RoutingIndicator));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("routingIndicator"), m_RoutingIndicator));
     }
     if(m_EpsInterworkingIndIsSet)
     {
         if (m_EpsInterworkingInd.get())
         {
-            m_EpsInterworkingInd->toMultipart(multipart, utility::conversions::to_string_t("epsInterworkingInd."));
+            //m_EpsInterworkingInd->toMultipart(multipart, utility::conversions::to_string_t("epsInterworkingInd."));
         }
     }
     if(m_IndirectForwardingFlagIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("indirectForwardingFlag"), m_IndirectForwardingFlag));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("indirectForwardingFlag"), m_IndirectForwardingFlag));
     }
     if(m_TargetIdIsSet)
     {
         if (m_TargetId.get())
         {
-            m_TargetId->toMultipart(multipart, utility::conversions::to_string_t("targetId."));
+            //m_TargetId->toMultipart(multipart, utility::conversions::to_string_t("targetId."));
         }
     }
     if(m_EpsBearerCtxStatusIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("epsBearerCtxStatus"), m_EpsBearerCtxStatus));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("epsBearerCtxStatus"), m_EpsBearerCtxStatus));
     }
     if(m_CpCiotEnabledIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("cpCiotEnabled"), m_CpCiotEnabled));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("cpCiotEnabled"), m_CpCiotEnabled));
     }
     if(m_InvokeNefIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("invokeNef"), m_InvokeNef));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("invokeNef"), m_InvokeNef));
     }
     if(m_MaPduIndicationIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("maPduIndication"), m_MaPduIndication));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("maPduIndication"), m_MaPduIndication));
     }
     if(m_N2SmInfoIsSet)
     {
         if (m_N2SmInfo.get())
         {
-            m_N2SmInfo->toMultipart(multipart, utility::conversions::to_string_t("n2SmInfo."));
+            //m_N2SmInfo->toMultipart(multipart, utility::conversions::to_string_t("n2SmInfo."));
         }
     }
     if(m_SmContextRefIsSet)
     {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("smContextRef"), m_SmContextRef));
+        //multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("smContextRef"), m_SmContextRef));
     }
 }
 

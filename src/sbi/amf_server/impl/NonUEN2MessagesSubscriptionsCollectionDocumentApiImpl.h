@@ -33,6 +33,8 @@
 #include "NonUeN2InfoSubscriptionCreatedData.h"
 #include "ProblemDetails.h"
 
+#include "amf_app.hpp"
+
 namespace oai {
 namespace amf {
 namespace api {
@@ -41,11 +43,12 @@ using namespace oai::amf::model;
 
 class NonUEN2MessagesSubscriptionsCollectionDocumentApiImpl : public oai::amf::api::NonUEN2MessagesSubscriptionsCollectionDocumentApi {
 public:
-    NonUEN2MessagesSubscriptionsCollectionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>);
+    NonUEN2MessagesSubscriptionsCollectionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>, amf_application::amf_app *amf_app_inst);
     ~NonUEN2MessagesSubscriptionsCollectionDocumentApiImpl() {}
 
     void non_ue_n2_info_subscribe(const NonUeN2InfoSubscriptionCreateData &nonUeN2InfoSubscriptionCreateData, Pistache::Http::ResponseWriter &response);
-
+private:
+    amf_application::amf_app *m_amf_app;
 };
 
 }

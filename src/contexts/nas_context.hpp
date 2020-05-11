@@ -6,7 +6,8 @@
 #include "authentication_algorithms_with_5gaka.hpp"
 #include <string>
 #include "nas_security_context.hpp"
-#include "ies/NSSAI.hpp"
+//#include "ies/NSSAI.hpp"
+#include "struct.hpp"
 
 class nas_context{
 public:
@@ -28,7 +29,7 @@ public:
   uint8_t          ueSecurityCapInt;
   std::vector<nas::SNSSAI_t>    requestedNssai;
   std::string           serving_network;
-  uint8_t              *auts;
+  bstring          auts;
 /************ NAS EP(s) ****************/ 
   bool             is_specific_procedure_for_registration_running;
   bool             is_specific_procedure_for_deregistration_running;

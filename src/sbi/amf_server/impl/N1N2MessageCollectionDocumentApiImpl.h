@@ -36,6 +36,8 @@
 #include "ProblemDetails_2.h"
 #include <string>
 
+#include "amf_app.hpp"
+
 namespace oai {
 namespace amf {
 namespace api {
@@ -44,11 +46,14 @@ using namespace oai::amf::model;
 
 class N1N2MessageCollectionDocumentApiImpl : public oai::amf::api::N1N2MessageCollectionDocumentApi {
 public:
-    N1N2MessageCollectionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>);
+    N1N2MessageCollectionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>, amf_application::amf_app *amf_app_inst);
     ~N1N2MessageCollectionDocumentApiImpl() {}
 
     void n1_n2_message_transfer(const std::string &ueContextId, const N1N2MessageTransferReqData &n1N2MessageTransferReqData, Pistache::Http::ResponseWriter &response);
-
+    void n1_n2_message_transfer(const std::string &ueContextId, const N1N2MessageTransferReqData &n1N2MessageTransferReqData, std::string &n1sm_str, Pistache::Http::ResponseWriter &response);
+    void n1_n2_message_transfer(const std::string &ueContextId, const N1N2MessageTransferReqData &n1N2MessageTransferReqData, std::string &n1sm_str, std::string &n2sm_str, Pistache::Http::ResponseWriter &response);
+private:
+    amf_application::amf_app *m_amf_app;
 };
 
 }

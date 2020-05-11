@@ -44,7 +44,7 @@ int UESecurityCapability::encode2buffer(uint8_t *buf, int len) {
 		*(buf + encoded_size) = _5g_IASel; encoded_size++; 
 	}
 	else {
-	*(buf + encoded_size) = length - 1; encoded_size++;
+	*(buf + encoded_size) = length - 2; encoded_size++;
 		*(buf + encoded_size) = _5g_EASel; encoded_size++;
 		*(buf + encoded_size) = _5g_IASel; encoded_size++;
 	}

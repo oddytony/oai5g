@@ -3,6 +3,7 @@
 
 #include "itti_msg.hpp"
 #include "NgapIEsStruct.hpp"
+#include <string>
 using namespace ngap;
 #include "bstrlib.h"
 
@@ -28,9 +29,24 @@ public:
   NrCgi_t cgi;
   Tai_t   tai;
   bstring nas_buf;
+  bool is_5g_s_tmsi_present;
+  std::string _5g_s_tmsi;
 };
 
+class itti_n1n2_message_transfer_request : public itti_msg_amf_app{
+public:
+  itti_n1n2_message_transfer_request(const task_id_t origin, const task_id_t destination) : itti_msg_amf_app(N1N2_MESSAGE_TRANSFER_REQ, origin, destination){}
+  itti_n1n2_message_transfer_request(const itti_n1n2_message_transfer_request & i) : itti_msg_amf_app(i){}
+  
+  std::string supi;
+  bstring n1sm;
+  bstring n2sm;
+  bool is_n2sm_set;
+  bool is_n1sm_set;
+  uint8_t pdu_session_id;
+  //other parameters
 
+};
 
 
 

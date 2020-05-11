@@ -103,8 +103,8 @@ int RegistrationReject::encode2buffer(uint8_t *buf, int len) {
 			Logger::nas_mm().error("encoding ie_rejected_nssai  error");
 		}
 	}
-	Logger::nas_mm().debug("encoded RegistrationRequest message len(%d)", encoded_size);
-	return 1;
+	Logger::nas_mm().debug("encoded RegistrationReject message len(%d)", encoded_size);
+	return encoded_size;
 }
 
 int RegistrationReject::decodefrombuffer(NasMmPlainHeader * header, uint8_t *buf, int len) {

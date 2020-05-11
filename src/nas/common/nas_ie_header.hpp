@@ -55,3 +55,6 @@
 #include "MA_PDU_Session_Information.hpp"
 #include "Release_Assistance_Indication.hpp"
 #include "Extended_DRX_Parameters.hpp"
+#include "struct.hpp"
+#include "ServiceType.hpp"
+#include "_5GSTrackingAreaIdList.hpp"

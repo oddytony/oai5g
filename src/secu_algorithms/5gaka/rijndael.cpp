@@ -46,10 +46,11 @@ u8                                      Xtime[256] = {
 void Authentication_5gaka::RijndaelKeySchedule(const uint8_t key[16]){
   u8 roundConst;
   /******* first round key equals key ********/
-  for(int i=0; i<16; i++)
+  for(int i=0; i<16; i++){
     roundKeys[0][i & 0x03][i >> 2] = key[i];
+  }
   roundConst = 1;
-  for(int i=0; i<11; i++){
+  for(int i=1; i<11; i++){
     roundKeys[i][0][0] = S[roundKeys[i - 1][1][3]]
       ^ roundKeys[i - 1][0][0] ^ roundConst;
     roundKeys[i][1][0] = S[roundKeys[i - 1][2][3]]
@@ -64,7 +65,22 @@ void Authentication_5gaka::RijndaelKeySchedule(const uint8_t key[16]){
       roundKeys[i][j][3] = roundKeys[i - 1][j][3] ^ roundKeys[i][j][2];
     }
     roundConst = Xtime[roundConst];
+    /*
+    if(roundConst < 128)
+      roundConst = 2*roundConst;
+    if(roundConst >= 128)
+      roundConst = (2*roundConst) ^ 283;
+    */
   }
+//#if AUTH_ALG_ON
+#if 1 
+  for(int m=0; m<11; m++){
+    printf("roundKeys(%d)\n0x", m);
+    for(int i=0; i<16; i++)
+      printf("%x ", roundKeys[m][i & 0x3][i >> 2]);
+    printf("\n");
+    }
+#endif
   return;
 }
 
@@ -141,16 +157,40 @@ void Authentication_5gaka::RijndaelEncrypt(const uint8_t input[16], uint8_t outp
   for(i=0; i< 16; i++)
     state[i & 0x3][i >> 2] = input[i];
   KeyAdd(state, roundKeys, 0);
+#if AUTH_ALG_ON
+  printf("end of round(%d)\n0x", 0);
+#endif
+  for(int i=0; i<16; i++)
+    printf("%x ", state[i & 0x3][i >> 2]);
+  printf("\n");
   for (r = 1; r <= 9; r++) {
     ByteSub (state);
     ShiftRow (state);
     MixColumn (state);
     KeyAdd (state, roundKeys, r);
+#if AUTH_ALG_ON
+    printf("end of round(%d)\n0x", r);
+    for (i = 0; i < 16; i++)
+      printf("%x ", state[i & 0x3][i >> 2]);
+    printf("\n"); 
+#endif 
   }
   ByteSub (state);
   ShiftRow (state);
   KeyAdd (state, roundKeys, r);
+#if AUTH_ALG_ON
+  printf("end of round(%d)\n0x", r);
+  for(int i=0; i<16; i++)
+    printf("%x ", state[i & 0x3][i >> 2]);
+  printf("\n");
+#endif
   for (i = 0; i < 16; i++)
     output[i] = state[i & 0x3][i >> 2];
+#if AUTH_ALG_ON
+  printf("output_encrypt: ");
+  for (i = 0; i < 16; i++)
+    printf("%x", output[i]);
+  printf("\n");
+#endif
   return; 
 }

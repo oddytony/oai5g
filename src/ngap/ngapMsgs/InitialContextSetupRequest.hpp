@@ -15,6 +15,8 @@
 #include "UESecurityCapabilities.hpp"
 #include "SecurityKey.hpp"
 #include "NAS-PDU.hpp"
+#include "UERadioCapability.hpp"
+
 
 extern "C"{
 	#include "Ngap_NGAP-PDU.h"
@@ -44,6 +46,7 @@ namespace ngap{
 		void setSecurityKey(uint8_t *key);//256bits
 		void setNasPdu(uint8_t *nas,size_t sizeofnas);
 		int  encode2buffer(uint8_t *buf, int buf_size);
+                void setUERadioCapability (uint8_t *buf,size_t size);
 		//Decapsulation
 		bool decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu);
 		unsigned long getAmfUeNgapId();
@@ -74,6 +77,7 @@ namespace ngap{
 		UESecurityCapabilities *uESecurityCapabilities;
 		SecurityKey *securityKey;
 		NAS_PDU *nasPdu;
+                UERadioCapability *ueRadioCapability;
 	};
 
 }

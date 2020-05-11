@@ -32,17 +32,20 @@
 #include "ProblemDetails.h"
 #include <string>
 
+#include "amf_app.hpp"
+
 namespace oai {
 namespace amf {
 namespace api {
 
 class NonUEN2MessageNotificationIndividualSubscriptionDocumentApiImpl : public oai::amf::api::NonUEN2MessageNotificationIndividualSubscriptionDocumentApi {
 public:
-    NonUEN2MessageNotificationIndividualSubscriptionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>);
+    NonUEN2MessageNotificationIndividualSubscriptionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>, amf_application::amf_app *amf_app_inst);
     ~NonUEN2MessageNotificationIndividualSubscriptionDocumentApiImpl() {}
 
     void non_ue_n2_info_un_subscribe(const std::string &n2NotifySubscriptionId, Pistache::Http::ResponseWriter &response);
-
+private:
+    amf_application::amf_app *m_amf_app;
 };
 
 }

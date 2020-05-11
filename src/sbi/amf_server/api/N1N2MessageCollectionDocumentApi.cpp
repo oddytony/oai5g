@@ -12,6 +12,8 @@
 
 #include "N1N2MessageCollectionDocumentApi.h"
 #include "Helpers.h"
+#include "multipartparser.hpp"
+#include "logger.hpp"
 
 namespace oai {
 namespace amf {
@@ -40,21 +42,78 @@ void N1N2MessageCollectionDocumentApi::setupRoutes() {
 void N1N2MessageCollectionDocumentApi::n1_n2_message_transfer_handler(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
     // Getting the path params
     auto ueContextId = request.param(":ueContextId").as<std::string>();
-    std::cout <<"Received a N1N2MessageTrasfer request with ueID " << ueContextId.c_str()<<std::endl;
-    
+    Logger::amf_server().debug("Received a N1N2MessageTrasfer request with ue_ctx_id(%s) ",ueContextId.c_str());    
     // Getting the body param
+
+    std::size_t found = request.body().find("Content-Type");
+    std::string boundary_str = request.body().substr(2, found - 4);
+    Logger::amf_server().debug("Boundary: %s", boundary_str.c_str());
+   
+    //step 1. use multipartparser to decode the request
+    multipartparser_callbacks_init(&g_callbacks);
+    g_callbacks.on_body_begin = &on_body_begin;
+    g_callbacks.on_part_begin = &on_part_begin;
+    g_callbacks.on_header_field = &on_header_field;
+    g_callbacks.on_header_value = &on_header_value;
+    g_callbacks.on_headers_complete = &on_headers_complete;
+    g_callbacks.on_data = &on_data;
+    g_callbacks.on_part_end = &on_part_end;
+    g_callbacks.on_body_end = &on_body_end;
+
+    multipartparser parser = {};
+    init_globals();
+    multipartparser_init(&parser, reinterpret_cast<const char*>(boundary_str.c_str()));
     
-    N1N2MessageTransferReqData n1N2MessageTransferReqData;
+    unsigned int str_len = request.body().length();
+    unsigned char *data = (unsigned char*) malloc(str_len + 1);
+    memset(data, 0, str_len + 1);
+    memcpy((void*) data, (void*) request.body().c_str(), str_len);
+
+    //if ((multipartparser_execute(&parser, &g_callbacks, request.body().c_str(), strlen(request.body().c_str())) != strlen(request.body().c_str())) or (!g_body_begin_called)){
+    if ((multipartparser_execute(&parser, &g_callbacks,
+                               reinterpret_cast<const char*>(data), str_len)
+      != strlen(request.body().c_str())) or (!g_body_begin_called)) {
+      Logger::amf_server().warn("The received message can not be parsed properly!");
+      //response.send(Pistache::Http::Code::Bad_Request, "");
+      //return;
+    }
+
+    Logger::amf_server().debug("Number of g_parts %d", g_parts.size());
+    //at least 2 parts for Json data and N1 (+ N2)
+    if (g_parts.size() < 2){
+      response.send(Pistache::Http::Code::Bad_Request, "");
+      return;
+    }
+
+    part p0 = g_parts.front(); g_parts.pop_front();
+    Logger::amf_server().debug("Request body, part 1: \n%s", p0.body.c_str());
+    part p1 = g_parts.front(); g_parts.pop_front();
+    Logger::amf_server().debug("Request body, part 2: \n %s",p1.body.c_str());
+    part p2; bool is_ngap = false; 
+    if (g_parts.size() > 0) {
+      p2 = g_parts.front(); g_parts.pop_front();
+      is_ngap = true;
+      Logger::amf_server().debug("Request body, part 3: \n %s",p2.body.c_str());
+    }
+ 
+    N1N2MessageTransferReqData n1N2MessageTransferReqData = {};
     
     try {
-      nlohmann::json::parse(request.body()).get_to(n1N2MessageTransferReqData);
-      this->n1_n2_message_transfer(ueContextId, n1N2MessageTransferReqData, response);
+      //from_json(nlohmann::json::parse(p0.body.c_str()), n1N2MessageTransferReqData);
+      nlohmann::json::parse(p0.body.c_str()).get_to(n1N2MessageTransferReqData);
+      if(!is_ngap)
+        this->n1_n2_message_transfer(ueContextId, n1N2MessageTransferReqData, p1.body, response);
+      else
+        this->n1_n2_message_transfer(ueContextId, n1N2MessageTransferReqData, p1.body, p2.body, response);
     } catch (nlohmann::detail::exception &e) {
         //send a 400 error
+        Logger::amf_server().error("response 400 error"); 
         response.send(Pistache::Http::Code::Bad_Request, e.what());
+        //response.send(Pistache::Http::Code::Bad_Request, "error");
         return;
     } catch (std::exception &e) {
         //send a 500 error
+        Logger::amf_server().error("response 500 error"); 
         response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
         return;
     }

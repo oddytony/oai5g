@@ -19,33 +19,39 @@ void SecurityModeComplete::setHeader(uint8_t security_header_type) {
 	plain_header = new NasMmPlainHeader();
 	plain_header->setHeader(EPD_5GS_MM_MSG, security_header_type, SECURITY_MODE_COMPLETE);
 }
-void SecurityModeComplete::set_IMEISV_SUCI_SUPI_format_IMSI(const string mcc, const string mnc, const string routingInd, uint8_t protection_sch_id, const string msin) {
-	if (protection_sch_id != NULL_SCHEME) {
-		Logger::nas_mm().error("encoding suci and supi format for imsi error, please choose right interface");
-		return;
-	}
-	else {
-		ie_imeisv = new _5GSMobilityIdentity(mcc, mnc, routingInd, protection_sch_id, msin);
-		ie_imeisv->setIEI(0x77);
-	}
+void SecurityModeComplete::setIMEISV(IMEISV_t imeisv) {
+	ie_imeisv = new _5GSMobilityIdentity();
+	ie_imeisv->setIEI(0x77);
+	ie_imeisv->setIMEISV(imeisv);
 }
-void SecurityModeComplete::set_NON_IMEISV_SUCI_SUPI_format_IMSI(const string mcc, const string mnc, const string routingInd, uint8_t protection_sch_id, const string msin) {
-	if (protection_sch_id != NULL_SCHEME) {
-		Logger::nas_mm().error("encoding suci and supi format for imsi error, please choose right interface");
-		return;
-	}
-	else {
-		ie_non_imeisvpei = new _5GSMobilityIdentity(mcc, mnc, routingInd, protection_sch_id, msin);
-		ie_non_imeisvpei->setIEI(0x78);
-	}
-}
-void SecurityModeComplete::setSUCI_SUPI_format_IMSI(const string mcc, const string mnc, const string routingInd, uint8_t protection_sch_id, uint8_t hnpki, const string msin) {}
-void SecurityModeComplete::set5G_GUTI() {}
-void SecurityModeComplete::setIMEI_IMEISV() {}
-void SecurityModeComplete::set5G_S_TMSI() {}
-
 void SecurityModeComplete::setNAS_Message_Container(bstring value) {
 	ie_nas_message_container = new NAS_Message_Container(0x71, value);
+}
+void SecurityModeComplete::setNON_IMEISV(IMEISV_t imeisv) {
+	ie_non_imeisvpei = new _5GSMobilityIdentity();
+	ie_non_imeisvpei->setIEI(0x78);
+	ie_non_imeisvpei->setIMEISV(imeisv);
+}
+bool SecurityModeComplete::getIMEISV(IMEISV_t &imeisv) {
+	if (ie_imeisv) {
+		ie_imeisv->getIMEISV(imeisv);
+		return 0;
+	}
+	else { return -1; }
+}
+bool SecurityModeComplete::getNasMessageContainer(bstring &nas) {
+	if (ie_nas_message_container) {
+		ie_nas_message_container->getValue(nas);
+		return 0;
+	}
+	else { return -1; }
+}
+bool SecurityModeComplete::getNON_IMEISV(IMEISV_t &imeisv) {
+	if (ie_non_imeisvpei) {
+		ie_non_imeisvpei->getIMEISV(imeisv);
+		return 0;
+	}
+	else { return -1; }
 }
 int SecurityModeComplete::encode2buffer(uint8_t *buf, int len) {
 	Logger::nas_mm().debug("encoding SecurityModeComplete message");

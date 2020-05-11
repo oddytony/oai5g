@@ -18,8 +18,8 @@ namespace api {
 
 using namespace oai::amf::model;
 
-NonUEN2MessagesCollectionDocumentApiImpl::NonUEN2MessagesCollectionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr)
-    : NonUEN2MessagesCollectionDocumentApi(rtr)
+NonUEN2MessagesCollectionDocumentApiImpl::NonUEN2MessagesCollectionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr, amf_application::amf_app *amf_app_inst)
+    : NonUEN2MessagesCollectionDocumentApi(rtr), m_amf_app(amf_app_inst)
     { }
 
 void NonUEN2MessagesCollectionDocumentApiImpl::non_ue_n2_message_transfer(const N2InformationTransferReqData &n2InformationTransferReqData, Pistache::Http::ResponseWriter &response) {

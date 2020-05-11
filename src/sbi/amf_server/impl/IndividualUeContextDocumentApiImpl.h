@@ -43,6 +43,8 @@
 #include "UeRegStatusUpdateRspData.h"
 #include <string>
 
+#include "amf_app.hpp"
+
 namespace oai {
 namespace amf {
 namespace api {
@@ -51,7 +53,7 @@ using namespace oai::amf::model;
 
 class IndividualUeContextDocumentApiImpl : public oai::amf::api::IndividualUeContextDocumentApi {
 public:
-    IndividualUeContextDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>);
+    IndividualUeContextDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>, amf_application::amf_app *amf_app_inst);
     ~IndividualUeContextDocumentApiImpl() {}
 
     void create_ue_context(const std::string &ueContextId, const Inline_object &inlineObject, Pistache::Http::ResponseWriter &response);
@@ -59,7 +61,8 @@ public:
     void registration_status_update(const std::string &ueContextId, const UeRegStatusUpdateReqData &ueRegStatusUpdateReqData, Pistache::Http::ResponseWriter &response);
     void release_ue_context(const std::string &ueContextId, const UEContextRelease &uEContextRelease, Pistache::Http::ResponseWriter &response);
     void u_e_context_transfer(const std::string &ueContextId, const UeContextTransferReqData &ueContextTransferReqData, Pistache::Http::ResponseWriter &response);
-
+private:
+    amf_application::amf_app *m_amf_app;
 };
 
 }

@@ -17,11 +17,20 @@ namespace nas {
 		void setPDU_Session_Identity_2(uint8_t value);
 		void setOLD_PDU_Session_Identity_2(uint8_t value);
 		void setRequest_Type(uint8_t value);
-		void setS_NSSAI(uint8_t value);
-		void setDNN(uint8_t _length, uint8_t value);
+		void setS_NSSAI(SNSSAI_s snssai);
+		void setDNN(bstring dnn);
 		void setAdditional_Information(uint8_t _length, uint8_t value);
 		void setMA_PDU_Session_Information(uint8_t value);
 		void setRelease_Assistance_Indication(uint8_t value);
+
+		uint8_t getPayloadContainerType();
+		bool getPayloadContainer(std::vector<PayloadContainerEntry> &content);
+		bool getPayloadContainer(bstring &content);
+		uint8_t getPduSessionId();
+		uint8_t getOldPduSessionId();
+		uint8_t getRequestType();
+		bool getSnssai(SNSSAI_s &snssai);
+		bool getDnn(bstring &dnn);
 	public:
 		NasMmPlainHeader      *plain_header;
 		Payload_Container_Type *ie_payload_container_type;

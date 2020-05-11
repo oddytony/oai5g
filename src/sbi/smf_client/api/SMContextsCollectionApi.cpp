@@ -20,9 +20,12 @@
 #include <cpprest/http_client.h>
 #include <cpprest/filestream.h>
 
-
+#include "logger.hpp"
+#include "amf_n11.hpp"
 
 #include <boost/algorithm/string/replace.hpp>
+
+extern amf_application::amf_n11* amf_n11_inst;
 
 namespace oai {
 namespace smf {
@@ -87,8 +90,8 @@ pplx::task<std::shared_ptr<SmContextCreatedData>> SMContextsCollectionApi::postS
     localVarHeaderParams[utility::conversions::to_string_t("Accept")] = localVarResponseHttpContentType;
 
     std::unordered_set<utility::string_t> localVarConsumeHttpContentTypes;
-    //localVarConsumeHttpContentTypes.insert( utility::conversions::to_string_t("multipart/form-data") );
-    localVarConsumeHttpContentTypes.insert( utility::conversions::to_string_t("application/json") );
+    localVarConsumeHttpContentTypes.insert( utility::conversions::to_string_t("multipart/related") );
+    //localVarConsumeHttpContentTypes.insert( utility::conversions::to_string_t("application/json") );
 
 
     std::shared_ptr<IHttpBody> localVarHttpBody;
@@ -106,9 +109,9 @@ pplx::task<std::shared_ptr<SmContextCreatedData>> SMContextsCollectionApi::postS
         localVarHttpBody = std::shared_ptr<IHttpBody>( new JsonBody( localVarJson ) );
     }
     // multipart formdata
-    else if( localVarConsumeHttpContentTypes.find(utility::conversions::to_string_t("multipart/form-data")) != localVarConsumeHttpContentTypes.end() )
+    else if( localVarConsumeHttpContentTypes.find(utility::conversions::to_string_t("multipart/related")) != localVarConsumeHttpContentTypes.end() )
     {
-        localVarRequestHttpContentType = utility::conversions::to_string_t("multipart/form-data");
+        localVarRequestHttpContentType = utility::conversions::to_string_t("multipart/related");
         std::shared_ptr<MultipartFormData> localVarMultipart(new MultipartFormData);
 
         if(smContextMessage.get())
@@ -142,6 +145,7 @@ pplx::task<std::shared_ptr<SmContextCreatedData>> SMContextsCollectionApi::postS
         // 5xx - client error  : not OK
         if (localVarResponse.status_code() >= 400)
         {
+          amf_n11_inst->handle_post_sm_context_response_error_400();
             throw ApiException(localVarResponse.status_code()
                 , utility::conversions::to_string_t("error calling postSmContexts: ") + localVarResponse.reason_phrase()
                 , std::make_shared<std::stringstream>(localVarResponse.extract_utf8string(true).get()));
@@ -153,6 +157,7 @@ pplx::task<std::shared_ptr<SmContextCreatedData>> SMContextsCollectionApi::postS
             utility::string_t localVarContentType = localVarResponse.headers()[utility::conversions::to_string_t("Content-Type")];
             if( localVarContentType.find(localVarResponseHttpContentType) == std::string::npos )
             {
+                Logger::amf_app().error("response 500");
                 throw ApiException(500
                     , utility::conversions::to_string_t("error calling postSmContexts: unexpected response type: ") + localVarContentType
                     , std::make_shared<std::stringstream>(localVarResponse.extract_utf8string(true).get()));

@@ -1,14 +1,10 @@
 #ifndef __NSSAI_H_
 #define __NSSAI_H_
 #include <vector>
-
+#include "nas_ie_header.hpp"
 #include <stdint.h>
 namespace nas {
 
-typedef struct SNSSAI_s {
-	uint8_t sst;
-	int8_t sd;//若sd不存在，则sd设置为-1
-}SNSSAI_t;
         class NSSAI{
         public:
                 NSSAI();

@@ -4,19 +4,25 @@
 #include "amf_config.hpp"
 #include "amf_n2.hpp"
 #include "amf_n1.hpp"
+#include "amf_n11.hpp"
 #include <stdexcept>
 #include <iostream>
 #include <cstdlib>
 #include "amf_statistics.hpp"
 
+#include "DLNASTransport.hpp"
+
 using namespace ngap;
-using namespace amf;
+using namespace nas;
+using namespace amf_application;
 using namespace config;
 
+extern void print_buffer(const std::string app, const std::string commit, uint8_t *buf, int len);
 extern amf_app * amf_app_inst;
 extern itti_mw * itti_inst;
 amf_n2 * amf_n2_inst = nullptr;
 amf_n1 * amf_n1_inst = nullptr;
+amf_n11 * amf_n11_inst = nullptr;
 extern amf_config amf_cfg;
 extern statistics stacs;
 
@@ -39,6 +45,11 @@ amf_app::amf_app(const amf_config &amf_cfg){
   }catch(std::exception& e){
     Logger::amf_app().error( "Cannot create amf n1 interface: %s", e.what() );
   }
+  try{
+    amf_n11_inst = new amf_n11();
+  }catch(std::exception& e){
+    Logger::amf_app().error( "Cannot create amf n11 interface: %s", e.what() );
+  }
   timer_id_t tid = itti_inst->timer_setup(amf_cfg.statistics_interval,0,TASK_AMF_APP,TASK_AMF_APP_PERIODIC_STATISTICS,0);
   Logger::amf_app().startup( "Started timer(%d)", tid);
 }
@@ -60,6 +71,13 @@ void amf_app_task(void*){
         itti_nas_signalling_establishment_request *m = dynamic_cast<itti_nas_signalling_establishment_request*>(msg);
         amf_app_inst->handle_itti_message(ref(*m));
       }break;
+
+      case N1N2_MESSAGE_TRANSFER_REQ:{
+        Logger::amf_app().debug("Received N1N2_MESSAGE_TRANSFER_REQ");
+        itti_n1n2_message_transfer_request *m = dynamic_cast<itti_n1n2_message_transfer_request*>(msg);
+        amf_app_inst->handle_itti_message(ref(*m));
+      }break;
+
       case TIME_OUT:
         if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
           switch(to->arg1_user){
@@ -102,6 +120,36 @@ void amf_app::set_amf_ue_ngap_id_2_ue_context(const long & amf_ue_ngap_id, std::
 }
 
 /****************************** itti handlers *******************************/
+void amf_app::handle_itti_message(itti_n1n2_message_transfer_request & itti_msg){
+  //1. encode DL NAS TRANSPORT message(NAS message)
+  DLNASTransport * dl = new DLNASTransport();
+  dl->setHeader(PLAIN_5GS_MSG);
+  dl->setPayload_Container_Type(N1_SM_INFORMATION);
+  dl->setPayload_Container((uint8_t*)bdata(itti_msg.n1sm), blength(itti_msg.n1sm));
+  dl->setPDUSessionId(itti_msg.pdu_session_id);
+  uint8_t nas[1024];
+  int encoded_size = dl->encode2buffer(nas, 1024);
+  print_buffer("amf_app", "n1n2 transfer", nas, encoded_size);
+  bstring dl_nas = blk2bstr(nas,encoded_size);
+
+  itti_downlink_nas_transfer * dl_msg = new itti_downlink_nas_transfer(TASK_AMF_APP, TASK_AMF_N1);
+  dl_msg->dl_nas = dl_nas;
+  if(!itti_msg.is_n2sm_set){
+    dl_msg->is_n2sm_set = false;
+  }else{
+    dl_msg->n2sm = itti_msg.n2sm;
+    dl_msg->pdu_session_id = itti_msg.pdu_session_id;
+    dl_msg->is_n2sm_set = true;
+  }
+  dl_msg->amf_ue_ngap_id = amf_n1_inst->supi2amfId.at(itti_msg.supi); 
+  dl_msg->ran_ue_ngap_id = amf_n1_inst->supi2ranId.at(itti_msg.supi); 
+  std::shared_ptr<itti_downlink_nas_transfer> i = std::shared_ptr<itti_downlink_nas_transfer>(dl_msg);
+  int ret = itti_inst->send_msg(i);
+  if (0 != ret) {
+    Logger::amf_app().error( "Could not send ITTI message %s to task TASK_AMF_N1", i->get_msg_name());
+  }
+}
+
 void amf_app::handle_itti_message(itti_nas_signalling_establishment_request & itti_msg){
 //1. generate amf_ue_ngap_id
 //2. establish ue_context associated with amf_ue_ngap_id
@@ -126,18 +174,31 @@ void amf_app::handle_itti_message(itti_nas_signalling_establishment_request & it
     uc.get()->tai = itti_msg.tai;
     if(itti_msg.rrc_cause != -1)
       uc.get()->rrc_estb_cause = (e_Ngap_RRCEstablishmentCause)itti_msg.rrc_cause;
-    if(itti_msg.ueCtxReq == 0)
+    if(itti_msg.ueCtxReq == -1)
       uc.get()->isUeContextRequest = false;
     else
       uc.get()->isUeContextRequest = true;
     uc.get()->ran_ue_ngap_id = itti_msg.ran_ue_ngap_id;
     uc.get()->amf_ue_ngap_id = amf_ue_ngap_id;
 
+    std::string guti; bool is_guti_valid = false;
+    if(itti_msg.is_5g_s_tmsi_present){
+      guti = itti_msg.tai.mcc + itti_msg.tai.mnc + amf_cfg.guami.regionID + itti_msg._5g_s_tmsi;
+      is_guti_valid = true;
+      Logger::amf_app().debug("Receiving guti: %s", guti.c_str());
+    }
+
     itti_uplink_nas_data_ind * itti_n1_msg = new itti_uplink_nas_data_ind(TASK_AMF_APP, TASK_AMF_N1);
     itti_n1_msg->amf_ue_ngap_id = amf_ue_ngap_id;
     itti_n1_msg->ran_ue_ngap_id = itti_msg.ran_ue_ngap_id;
     itti_n1_msg->is_nas_signalling_estab_req = true;
     itti_n1_msg->nas_msg = itti_msg.nas_buf;
+    itti_n1_msg->mcc = itti_msg.tai.mcc;
+    itti_n1_msg->mnc = itti_msg.tai.mnc;
+    itti_n1_msg->is_guti_valid = is_guti_valid;
+    if(is_guti_valid){
+      itti_n1_msg->guti = guti;
+    }
     std::shared_ptr<itti_uplink_nas_data_ind> i = std::shared_ptr<itti_uplink_nas_data_ind>(itti_n1_msg);
     int ret = itti_inst->send_msg(i);
       if (0 != ret) {
@@ -147,3 +208,9 @@ void amf_app::handle_itti_message(itti_nas_signalling_establishment_request & it
   }
 
 }
+
+
+/************************ SMF Client response handlers *****************************/
+void amf_app::handle_post_sm_context_response_error_400(){
+  Logger::amf_app().error("post sm context response error 400");
+} 

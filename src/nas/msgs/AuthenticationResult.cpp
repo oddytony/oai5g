@@ -84,7 +84,8 @@ int AuthenticationResult::decodefrombuffer(NasMmPlainHeader * header, uint8_t *b
 	int decoded_size = 3;
 	plain_header = header;
 	ie_ngKSI = new NasKeySetIdentifier();
-	decoded_size += ie_ngKSI->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
+	decoded_size += ie_ngKSI->decodefrombuffer(buf + decoded_size, len - decoded_size, false, false);
+        decoded_size ++;
 	ie_eap_message = new EAP_Message();
 	decoded_size += ie_eap_message->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
 	Logger::nas_mm().debug("decoded_size(%d)", decoded_size);

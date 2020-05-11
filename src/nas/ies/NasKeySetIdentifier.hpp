@@ -13,7 +13,7 @@ public:
   ~NasKeySetIdentifier();
   
   int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(uint8_t *buf, int len, bool is_option);
+  int decodefrombuffer(uint8_t *buf, int len, bool is_option, bool is_high);
 
   void setTypeOfSecurityContext(uint8_t type);
   void setNasKeyIdentifier(uint8_t id);

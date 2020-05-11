@@ -1,7 +1,7 @@
 #include "amf_n1.hpp"
 #include "logger.hpp"
 #include "amf_config.hpp"
-using namespace amf;
+using namespace amf_application;
 using namespace config;
 
 extern amf_config amf_cfg;

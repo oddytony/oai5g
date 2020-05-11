@@ -8,6 +8,7 @@
 #include "NgapIEsStruct.hpp"
 extern "C"{
   #include "Ngap_PagingDRX.h"
+  #include "bstrlib.h"
 }
 
 using namespace sctp;
@@ -28,6 +29,7 @@ public:
   long                    globalRanNodeId;
   e_Ngap_PagingDRX        default_paging_drx;  //v32, v64, v128, v256
   vector<SupportedItem_t>   s_ta_list;
+  bstring                 ue_radio_cap_ind;
   
   sctp_assoc_id_t         sctp_assoc_id;
   sctp_stream_id_t        next_sctp_stream;

@@ -20,7 +20,7 @@ extern "C"{
 
 using namespace libconfig;
 using namespace std;
-using namespace amf;
+using namespace amf_application;
 
 namespace config{
 
@@ -66,6 +66,16 @@ namespace config{
     }
     try{
       amf_cfg.lookupValue(AMF_CONFIG_STRING_AMF_NAME, AMF_Name);
+    }catch(const SettingNotFoundException &nfex){
+      Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    }
+    try{
+      const Setting &guami_cfg = amf_cfg[AMF_CONFIG_STRING_GUAMI];
+      guami_cfg.lookupValue(AMF_CONFIG_STRING_MCC, guami.mcc);
+      guami_cfg.lookupValue(AMF_CONFIG_STRING_MNC, guami.mnc);
+      guami_cfg.lookupValue(AMF_CONFIG_STRING_RegionID, guami.regionID);
+      guami_cfg.lookupValue(AMF_CONFIG_STRING_AMFSetID, guami.AmfSetID);
+      guami_cfg.lookupValue(AMF_CONFIG_STRING_AMFPointer, guami.AmfPointer);
     }catch(const SettingNotFoundException &nfex){
       Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
     }
@@ -117,6 +127,23 @@ namespace config{
       const Setting &new_if_cfg = amf_cfg[AMF_CONFIG_STRING_INTERFACES];
       const Setting &n2_amf_cfg = new_if_cfg[AMF_CONFIG_STRING_INTERFACE_NGAP_AMF];
       load_interface(n2_amf_cfg, n2);
+      const Setting &n11_cfg = new_if_cfg[AMF_CONFIG_STRING_INTERFACE_N11];
+      const Setting &smf_addr_pool = n11_cfg[AMF_CONFIG_STRING_SMF_INSTANCES_POOL];
+      int count = smf_addr_pool.getLength();
+      for(int i=0; i< count; i++){
+        const Setting & smf_addr_item = smf_addr_pool[i];
+        smf_inst_t smf_inst; string selected;
+        smf_addr_item.lookupValue(AMF_CONFIG_STRING_SMF_INSTANCE_ID, smf_inst.id);
+        smf_addr_item.lookupValue(AMF_CONFIG_STRING_IPV4_ADDRESS, smf_inst.ipv4);
+        smf_addr_item.lookupValue(AMF_CONFIG_STRING_SMF_INSTANCE_PORT, smf_inst.port);
+        smf_addr_item.lookupValue(AMF_CONFIG_STRING_SMF_INSTANCE_VERSION, smf_inst.version);
+        smf_addr_item.lookupValue(AMF_CONFIG_STRING_SMF_INSTANCE_SELECTED, selected);
+        if(!selected.compare("true"))
+          smf_inst.selected = true;
+        else
+          smf_inst.selected = false;
+        smf_pool.push_back(smf_inst); 
+      }
     }catch(const SettingNotFoundException &nfex){
       Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
       return -1;
@@ -184,6 +211,8 @@ namespace config{
     Logger::config().info( "- Instance .......................: %d", instance);
     Logger::config().info( "- PID dir ........................: %s", pid_dir.c_str());
     Logger::config().info( "- AMF NAME........................: %s", AMF_Name.c_str());
+    Logger::config().info( "- GUAMI...........................: ");
+    Logger::config().info( "   [%s] [%s] [%s] [%s] [%s]", guami.mcc.c_str(),guami.mnc.c_str(),guami.regionID.c_str(),guami.AmfSetID.c_str(),guami.AmfPointer.c_str());
     Logger::config().info( "- ServedGUAMIList ................: ");
     for(int i=0;i<guami_list.size();i++){
       Logger::config().info( "   [%s] [%s] [%s] [%s] [%s]", guami_list[i].mcc.c_str(),guami_list[i].mnc.c_str(),guami_list[i].regionID.c_str(),guami_list[i].AmfSetID.c_str(),guami_list[i].AmfPointer.c_str());
@@ -205,6 +234,13 @@ namespace config{
     Logger::config().info( "- MYSQL db ........................: %s", auth_para.mysql_db.c_str());
     Logger::config().info( "- operator key ....................: %s", auth_para.operator_key.c_str());
     Logger::config().info( "- random ..........................: %s", auth_para.random.c_str());
+    Logger::config().info( "- Remote SMF Pool..................: ");
+    for(int i=0; i<smf_pool.size(); i++){
+      string selected;
+      if(smf_pool[i].selected) selected = "true";
+      else selected = "false";
+      Logger::config().info( "    SMF_INSTANCE_ID(%d) : (%s:%s) version(%s) is selected(%s)", smf_pool[i].id, smf_pool[i].ipv4.c_str(), smf_pool[i].port.c_str(), smf_pool[i].version.c_str(), selected.c_str());
+    }
   }
 
   int amf_config::load_interface(const libconfig::Setting& if_cfg, interface_cfg_t& cfg){

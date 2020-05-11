@@ -26,10 +26,23 @@ public:
 
 public:
   bstring nas_msg;
+  std::string mcc;
+  std::string mnc;
+  bool is_guti_valid;
+  std::string guti;
 };
 
 
-
+class itti_downlink_nas_transfer : public itti_msg_n1{
+public:
+  itti_downlink_nas_transfer(const task_id_t origin, const task_id_t destination) : itti_msg_n1(DOWNLINK_NAS_TRANSFER, origin,destination){}
+  itti_downlink_nas_transfer(const itti_downlink_nas_transfer &i) : itti_msg_n1(i){}
+public:
+  bstring dl_nas;
+  bstring n2sm;
+  bool    is_n2sm_set;
+  uint8_t pdu_session_id;
+};
 
 
 

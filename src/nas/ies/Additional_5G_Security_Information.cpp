@@ -34,7 +34,10 @@ int Additional_5G_Security_Information::encode2buffer(uint8_t *buf, int len) {
 	}
 	uint8_t octet = 0;
 	int encoded_size=0;
-		octet = (_iei << 4) | (RINMR<<1)|HDP;
+        if(RINMR)
+          octet |= 0x02;
+        if(HDP)
+          octet |= 0x01;
 		*(buf + encoded_size) = _iei; encoded_size++;
 		*(buf + encoded_size) = 1; encoded_size++;
 		*(buf + encoded_size) = octet; encoded_size++;

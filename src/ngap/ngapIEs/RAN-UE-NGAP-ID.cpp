@@ -27,6 +27,7 @@ namespace ngap{
 	bool RAN_UE_NGAP_ID::decodefromRAN_UE_NGAP_ID(Ngap_RAN_UE_NGAP_ID_t &ranuengapid)
 	{
 		ranUeNgapId = ranuengapid;
+                cout<<"in libngap, received ranuengapid "<<ranUeNgapId<<endl;
 		return true;
 	}
 }

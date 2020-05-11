@@ -13,11 +13,11 @@ Authentication_Parameter_AUTN::Authentication_Parameter_AUTN(const uint8_t iei,u
 Authentication_Parameter_AUTN::Authentication_Parameter_AUTN() {}
 Authentication_Parameter_AUTN::~Authentication_Parameter_AUTN() {}
 
-uint8_t Authentication_Parameter_AUTN::getValue() {
-	for (int j = 0; j < 16; j++) {
-		Logger::nas_mm().debug("decoded Authentication_Response_Parameter value(0x%2x)", _value[j]);
-	}
-	return 1;}
+uint8_t *Authentication_Parameter_AUTN::getValue() {
+	//for (int j = 0; j < 16; j++) {
+	//	Logger::nas_mm().debug("decoded Authentication_Response_Parameter value(0x%2x)", _value[j]);
+	//}
+	return _value;}
 
 int Authentication_Parameter_AUTN::encode2buffer(uint8_t *buf, int len) {
 	Logger::nas_mm().debug("encoding Authentication_Parameter_AUTN iei(0x%x)", _iei);

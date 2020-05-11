@@ -34,6 +34,8 @@
 #include "UeN1N2InfoSubscriptionCreatedData.h"
 #include <string>
 
+#include "amf_app.hpp"
+
 namespace oai {
 namespace amf {
 namespace api {
@@ -42,11 +44,12 @@ using namespace oai::amf::model;
 
 class N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApiImpl : public oai::amf::api::N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApi {
 public:
-    N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>);
+    N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>, amf_application::amf_app *amf_app_inst);
     ~N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApiImpl() {}
 
     void n1_n2_message_subscribe(const std::string &ueContextId, const UeN1N2InfoSubscriptionCreateData &ueN1N2InfoSubscriptionCreateData, Pistache::Http::ResponseWriter &response);
-
+private:
+    amf_application::amf_app *m_amf_app;
 };
 
 }

@@ -24,7 +24,9 @@ namespace ngap{
 		amfsetid.size = 2;
 		uint8_t *buffer = (uint8_t *)calloc(1,sizeof(uint16_t));
 		if(!buffer) return false;
-		*(uint16_t *)buffer = setid & 0x3ff;
+		//*(uint16_t *)buffer = setid & 0x3ff; 
+                buffer[0] = ((setid & 0x03fc)>>2);
+                buffer[1] = ((setid & 0x0003)<<6);
 		amfsetid.buf = buffer;
 		amfsetid.bits_unused = 6;
 		

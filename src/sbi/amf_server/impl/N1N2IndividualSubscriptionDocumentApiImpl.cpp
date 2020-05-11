@@ -16,8 +16,8 @@ namespace oai {
 namespace amf {
 namespace api {
 
-N1N2IndividualSubscriptionDocumentApiImpl::N1N2IndividualSubscriptionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr)
-    : N1N2IndividualSubscriptionDocumentApi(rtr)
+N1N2IndividualSubscriptionDocumentApiImpl::N1N2IndividualSubscriptionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr, amf_application::amf_app *amf_app_inst)
+    : N1N2IndividualSubscriptionDocumentApi(rtr), m_amf_app(amf_app_inst)
     { }
 
 void N1N2IndividualSubscriptionDocumentApiImpl::n1_n2_message_un_subscribe(const std::string &ueContextId, const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {

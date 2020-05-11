@@ -18,8 +18,8 @@ namespace api {
 
 using namespace oai::amf::model;
 
-IndividualSubscriptionDocumentApiImpl::IndividualSubscriptionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr)
-    : IndividualSubscriptionDocumentApi(rtr)
+IndividualSubscriptionDocumentApiImpl::IndividualSubscriptionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr, amf_application::amf_app *amf_app_inst)
+    : IndividualSubscriptionDocumentApi(rtr), m_amf_app(amf_app_inst)
     { }
 
 void IndividualSubscriptionDocumentApiImpl::a_mf_status_change_subscribe_modfy(const std::string &subscriptionId, const SubscriptionData &subscriptionData, Pistache::Http::ResponseWriter &response) {

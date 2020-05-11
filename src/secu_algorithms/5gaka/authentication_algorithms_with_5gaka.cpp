@@ -6,9 +6,11 @@
 #include <string.h>
 #include <gmp.h>
 #include <nettle/hmac.h>
-
+#include "logger.hpp"
 #include "OCTET_STRING.h"
 
+extern void print_buffer(const std::string app, const std::string commit, uint8_t *buf, int len);
+extern void hexStr2Byte(const char* src, unsigned char *dest, int len);
 /************ algorithm f1 **************/
 /*
   Computes network authentication code MAC-A from key K, random, challenge RAND, sequence number SQN and authentication management field AMF.
@@ -275,48 +277,82 @@ void Authentication_5gaka::kdf(uint8_t * key, uint16_t key_len, uint8_t * s, uin
 }
 
 void Authentication_5gaka::derive_kseaf(std::string serving_network, uint8_t kausf[32], uint8_t kseaf[32]){
+  Logger::amf_n1().debug("derive_kseaf ...");
+  Logger::amf_n1().debug("inputstring: snn(%s)", serving_network.c_str());
   OCTET_STRING_t netName;
   OCTET_STRING_fromBuf(&netName, serving_network.c_str(), serving_network.length());
+  print_buffer("amf_n1", "inputstring: snn(hex)", netName.buf, netName.size);
   uint8_t S[100];
   S[0] = 0x6C;//FC
   memcpy(&S[1], netName.buf, netName.size);
-  memcpy (&S[1+netName.size], &netName.size, 2);
-  kdf(kausf, 32, S, 4+netName.size, kseaf, 32);
+  //memcpy (&S[1+netName.size], &netName.size, 2);
+  S[1+netName.size] = (uint8_t)((netName.size & 0xff00) >> 8);
+  S[2+netName.size] = (uint8_t)(netName.size & 0x00ff);
+  print_buffer("amf_n1", "inputstring S", S, 3+netName.size);
+  print_buffer("amf_n1", "key KEY", kausf, 32);
+  kdf(kausf, 32, S, 3+netName.size, kseaf, 32);
+  print_buffer("amf_n1", "KDF out: Kseaf", kseaf, 32);
+  Logger::amf_n1().debug("derive kseaf finished!");
 }
 
 void Authentication_5gaka::derive_kausf(uint8_t ck[16], uint8_t ik[16], std::string serving_network, uint8_t sqn[6], uint8_t ak[6], uint8_t kausf[32]){
+  Logger::amf_n1().debug("derive_kausf ...");
+  Logger::amf_n1().debug("inputstring: snn(%s)", serving_network.c_str());
   OCTET_STRING_t netName;
   OCTET_STRING_fromBuf(&netName, serving_network.c_str(), serving_network.length());
-  uint8_t S[14];
+  print_buffer("amf_n1", "inputstring: snn(hex)", netName.buf, netName.size);
+  uint8_t S[100];
   uint8_t key[32];
   memcpy (&key[0], ck, 16);
   memcpy (&key[16], ik, 16);//KEY
   S[0] = 0x6A;
   memcpy (&S[1], netName.buf, netName.size);
-  memcpy (&S[1+netName.size], &netName.size, 2);
+  //memcpy (&S[1+netName.size], &netName.size, 2);
+  S[1+netName.size] = (uint8_t)((netName.size & 0xff00) >> 8);
+  S[2+netName.size] = (uint8_t)(netName.size & 0x00ff);
   for(int i=0; i<6; i++){
     S[3+netName.size+i] = sqn[i] ^ ak[i];
   }
   S[9+netName.size] = 0x00;
   S[10+netName.size] = 0x06;
+  print_buffer("amf_n1", "inputstring S", S, 11+netName.size);
+  print_buffer("amf_n1", "key KEY", key, 32);
   kdf(key, 32, S, 11+netName.size, kausf, 32);
+  print_buffer("amf_n1", "KDF out: Kausf", kausf, 32);
+  Logger::amf_n1().debug("derive kausf finished!");
 }
 
 void Authentication_5gaka::derive_kamf(std::string imsi, uint8_t *kseaf, uint8_t *kamf, uint16_t abba){
+  Logger::amf_n1().debug("derive_kamf ...");
+  std::string ueSupi = imsi;//OK
+  Logger::amf_n1().debug("inputstring: supi(%s)", ueSupi.c_str());
+  //int supiLen = (imsi.length()*sizeof(unsigned char))/2;
+  //unsigned char * supi = (unsigned char*)calloc(1, supiLen);
+  //hexStr2Byte(imsi.c_str(), supi, imsi.length());
   OCTET_STRING_t supi;
-  OCTET_STRING_fromBuf(&supi, imsi.c_str(), imsi.length());
+  OCTET_STRING_fromBuf(&supi, ueSupi.c_str(), ueSupi.length());
+  //uint8_t supi[8] = {0x64, 0xf0, 0x11, 0x10, 0x32, 0x54, 0x76, 0x98};
+  int supiLen = supi.size;
+  print_buffer("amf_n1", "inputstring: supi(hex)", supi.buf, supiLen);
   uint8_t S[100];
   S[0] = 0x6D;//FC = 0x6D
-  memcpy (&S[1], supi.buf, supi.size);
-  memcpy (&S[1+supi.size], &supi.size, 2);
-  S[2+supi.size] = abba & 0x00ff;
-  S[3+supi.size] = (abba & 0xff00)>>8;
-  S[4+supi.size] = 0x00;
-  S[5+supi.size] = 0x02;
-  kdf(kseaf, 32, S, 6+supi.size, kamf, 32);
+  memcpy (&S[1], supi.buf, supiLen);
+  //memcpy (&S[1+supiLen], &supiLen, 2);
+  S[1+supiLen] = (uint8_t)((supiLen & 0xff00) >> 8);
+  S[2+supiLen] = (uint8_t)(supiLen & 0x00ff);
+  S[3+supiLen] = abba & 0x00ff;
+  S[4+supiLen] = (abba & 0xff00)>>8;
+  S[5+supiLen] = 0x00;
+  S[6+supiLen] = 0x02;
+  print_buffer("amf_n1", "inputstring S", S, 7+supiLen);
+  print_buffer("amf_n1", "key KEY", kseaf, 32);
+  kdf(kseaf, 32, S, 7+supiLen, kamf, 32);
+  print_buffer("amf_n1", "KDF out: Kamf", kamf, 32);
+  Logger::amf_n1().debug("derive kamf finished!");
 }
 
 void Authentication_5gaka::derive_knas(algorithm_type_dist_t nas_alg_type, uint8_t nas_alg_id, uint8_t kamf[32], uint8_t * knas){
+  Logger::amf_n1().debug("derive_knas ...");
   uint8_t S[20];
   uint8_t out[32] = {0};
   S[0] = 0x69;//FC
@@ -326,8 +362,31 @@ void Authentication_5gaka::derive_knas(algorithm_type_dist_t nas_alg_type, uint8
   S[4] = nas_alg_id;
   S[5] = 0x00;
   S[6] = 0x01;
-  kdf (kamf, 32, &S[0], 7, &out[0], 32);
-  memcpy (knas, &out[31 - 16 + 1], 16);
+  print_buffer("amf_n1", "inputstring S", S, 7);
+  print_buffer("amf_n1", "key KEY", kamf, 32);
+  kdf (kamf, 32, S, 7, out, 32);
+  //memcpy (knas, &out[31 - 16 + 1], 16);
+  for(int i=0; i<16; i++)
+    knas[i] = out[16+i];
+  print_buffer("amf_n1", "knas", knas, 16);
+  Logger::amf_n1().debug("derive knas finished!");
+}
+
+void Authentication_5gaka::derive_kgnb(uint32_t uplinkCount, uint8_t accessType, uint8_t kamf[32], uint8_t * kgnb){
+  Logger::amf_n1().debug("derive_kgnb ...");
+  uint8_t S[20];
+  S[0] = 0x6E;
+  *(uint32_t*)(S+1) = htonl(uplinkCount); 
+  S[5] = 0x00;
+  S[6] = 0x04;
+  S[7] = accessType;
+  S[8] = 0x00;
+  S[9] = 0x01;
+  print_buffer("amf_n1", "inputstring S", S, 10);
+  print_buffer("amf_n1", "key KEY", kamf, 32);
+  kdf(kamf, 32, S, 10, kgnb, 32);
+  print_buffer("amf_n1", "kgnb", kgnb, 32);
+  Logger::amf_n1().debug("derive kgnb finished!");
 }
 
 void Authentication_5gaka::derive_kasme(uint8_t ck[16], uint8_t ik[16], uint8_t plmn[3], uint8_t sqn[6], uint8_t ak[6], uint8_t * kasme){

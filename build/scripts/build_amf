@@ -19,21 +19,24 @@ function help()
 	  echo_error "  -b, --build-type                          Build type as defined in cmake, allowed values are: Debug Release RelWithDebInfo MinSizeRel"
 	  echo_error "  -c, --clean                               Clean the build generated files: config, object, executable files (build from scratch)"
 	  echo_error "  -f, --force                               No interactive script for installation of software packages."
-	  #echo_error "  -h, --help                                Print this help."
+	  echo_error "  -h, --help                                Print this help."
 	  echo_error "  -I, --install-deps                        Check installed software necessary to build and run AMF (support $SUPPORTED_DISTRO)."
 	  #echo_error "  -i, --install-min-deps                    Check installed software necessary to run a statically linked AMF (support $SUPPORTED_DISTRO)."
-	  #echo_error "  -j, --jobs                                Multiple jobs for compiling."
-	  #echo_error "  -v, --verbose                             Build process verbose."
-	  #echo_error "  -V, --Verbose                             CMake only build process verbose, display compilation warnings and errors."
-	  #echo_error " "
+	  echo_error "  -j, --jobs                                Multiple jobs for compiling."
+	  echo_error "  -v, --verbose                             Build process verbose."
+	  echo_error "  -V, --Verbose                             CMake only build process verbose, display compilation warnings and errors."
+	  echo_error " "
 }	
 
 function main()
 {
   local -i clean=0
   local -i force=0
+  local -i debug=0
+  local -i verbose=0
   local -i var_check_install_deps=0
-  local -i cmake_args=" "
+  local    cmake_args=" "
+  export   make_args=" "
 
   until [ -z "$1" ]
     do
@@ -41,7 +44,9 @@ function main()
       -b | --build-type)
         list_include_item "Debug Release RelWithDebInfo MinSizeRel" $2
         [[ $? -ne 0 ]] && echo_error "Build type $2 not recognized" && return $?
+        echo ${cmake_args}
         cmake_args="$cmake_args -DCMAKE_BUILD_TYPE=$2"
+        echo ${cmake_args}
         list_include_item "Debug" $2
         [[ $? -ne 0 ]] && debug=1
         shift 2;
@@ -55,6 +60,11 @@ function main()
         force=1
 	echo "when install deps, no interaction"
 	shift;
+        ;;
+      -h | --help)
+        help
+        shift;
+        return 0
 	;;
       -I | --install-deps)
 	echo "check istalled software necessary to build and run AMF(support $SUPPORTED_DISTRO)"
@@ -62,6 +72,22 @@ function main()
 	var_check_install_deps=1
 	shift;
 	;;
+      -j | --jobs)
+        make_args="$make_args -j`nproc`"
+        shift;
+        ;;
+      -v | --verbose)
+        echo "Make build process verbose"
+        cmake_args="$cmake_args -DCMAKE_VERBOSE_MAKEFILE=ON"
+        make_args="VERBOSE=1 $make_args"
+        verbose=1
+        shift;
+        ;;
+      -V | --Verbose)
+        echo "CMake build process verbose"
+        verbose=1
+        shift;
+        ;;
       *)
 	echo "unknown option $1"
 	help

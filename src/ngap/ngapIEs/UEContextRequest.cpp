@@ -18,6 +18,7 @@ namespace ngap{
 	}
 	int UEContextRequest::getUEContextRequest()
 	{
+                cout<<"testing 11.2"<<endl;
 		return uecontextrequest;
 	}
 	

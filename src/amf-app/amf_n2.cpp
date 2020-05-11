@@ -11,6 +11,9 @@
 #include "NGSetupFailure.hpp"
 #include "NGSetupResponse.hpp"
 #include "DownLinkNasTransport.hpp"
+#include "InitialContextSetupRequest.hpp"
+#include "PduSessionResourceSetupRequest.hpp"
+#include "UEContextReleaseCommand.hpp"
 
 #include "amf_statistics.hpp"
 
@@ -18,7 +21,7 @@
 #include "Ngap_CauseRadioNetwork.h"
 #include "Ngap_TimeToWait.h"
 
-using namespace amf;
+using namespace amf_application;
 using namespace std;
 using namespace config;
 extern itti_mw * itti_inst;
@@ -59,6 +62,26 @@ extern statistics stacs;
         case ITTI_DL_NAS_TRANSPORT:{
           Logger::task_amf_n2().info("Encoding DOWNLINK NAS TRANSPORT message, sending ");
           itti_dl_nas_transport *m = dynamic_cast<itti_dl_nas_transport*>(msg);
+          amf_n2_inst->handle_itti_message(ref(*m));
+        }break;
+        case PDU_SESSION_RESOURCE_SETUP_REQUEST:{
+          Logger::task_amf_n2().info("Encoding PDU SESSION RESOURCE SETUP REQUEST message, sending ");
+          itti_pdu_session_resource_setup_request *m = dynamic_cast<itti_pdu_session_resource_setup_request*>(msg);
+          amf_n2_inst->handle_itti_message(ref(*m));
+        }break;
+        case INITIAL_CONTEXT_SETUP_REQUEST:{
+          Logger::task_amf_n2().info("Encoding INITIAL CONTEXT SETUP REQUEST message, sending ");
+          itti_initial_context_setup_request *m = dynamic_cast<itti_initial_context_setup_request*>(msg);
+          amf_n2_inst->handle_itti_message(ref(*m));
+        }break;
+        case UE_CONTEXT_RELEASE_REQUEST:{
+          Logger::task_amf_n2().info("Received UE_CONTEXT_RELEASE_REQUEST message, handling");
+          itti_ue_context_release_request *m = dynamic_cast<itti_ue_context_release_request*>(msg);
+          amf_n2_inst->handle_itti_message(ref(*m));
+        }break; 
+        case UE_RADIO_CAP_IND:{
+          Logger::task_amf_n2().info("Received UE_RADIO_CAP_IND message, handling");
+          itti_ue_radio_capability_indication *m = dynamic_cast<itti_ue_radio_capability_indication*>(msg);
           amf_n2_inst->handle_itti_message(ref(*m));
         }break;
         default:
@@ -152,6 +175,32 @@ void amf_n2::handle_itti_message(itti_ng_setup_request & itti_msg){
   ngSetupResp.setMessageType();
   ngSetupResp.setAMFName(amf_cfg.AMF_Name);
   ngSetupResp.setRelativeAmfCapacity(amf_cfg.relativeAMFCapacity);
+  std::vector<struct GuamiItem_s> guami_list;
+  for(int i=0; i< amf_cfg.guami_list.size(); i++){
+    struct GuamiItem_s tmp;
+    tmp.mcc = amf_cfg.guami_list[i].mcc;
+    tmp.mnc = amf_cfg.guami_list[i].mnc;
+    tmp.regionID = amf_cfg.guami_list[i].regionID;
+    tmp.AmfSetID = amf_cfg.guami_list[i].AmfSetID;
+    tmp.AmfPointer = amf_cfg.guami_list[i].AmfPointer;
+    //tmp.mcc = amf_cfg.guami_list[i].mcc;
+    guami_list.push_back(tmp);
+  }
+  ngSetupResp.setGUAMIList(guami_list);
+  std::vector<PlmnSliceSupport_t> plmn_list;
+  for(int i=0; i<amf_cfg.plmn_list.size(); i++){
+    PlmnSliceSupport_t tmp;
+    tmp.mcc = amf_cfg.plmn_list[i].mcc;
+    tmp.mnc = amf_cfg.plmn_list[i].mnc;
+    for(int j=0; j<amf_cfg.plmn_list[i].slice_list.size(); j++){
+      SliceSupportItem_t s_tmp;
+      s_tmp.sst = amf_cfg.plmn_list[i].slice_list[j].sST; 
+      s_tmp.sd = amf_cfg.plmn_list[i].slice_list[j].sD; 
+      tmp.slice_list.push_back(s_tmp);
+    }
+    plmn_list.push_back(tmp);
+  }
+  ngSetupResp.setPlmnSupportList(plmn_list);
   int encoded = ngSetupResp.encode2buffer((uint8_t*)buffer,1000);
   bstring b = blk2bstr(buffer, encoded);
   sctp_s_38412.sctp_send_msg(itti_msg.assoc_id,itti_msg.stream ,&b);
@@ -186,7 +235,7 @@ void amf_n2::handle_itti_message(itti_initial_ue_message &init_ue_msg){
   } 
 
   uint32_t ran_ue_ngap_id;
-  if( ran_ue_ngap_id = init_ue_msg.initUeMsg->getRanUENgapID() == -1){
+  if( (ran_ue_ngap_id = init_ue_msg.initUeMsg->getRanUENgapID()) == -1){
     Logger::amf_n2().error("Missing Mondontary IE(RanUeNgapId)");
     return;
   }
@@ -194,42 +243,67 @@ void amf_n2::handle_itti_message(itti_initial_ue_message &init_ue_msg){
   if(!is_ran_ue_id_2_ne_ngap_context(ran_ue_ngap_id)){
     Logger::amf_n2().debug("Create a new ue ngap context with ran_ue_ngap_id(0x%x)", ran_ue_ngap_id);
     unc = std::shared_ptr<ue_ngap_context>(new ue_ngap_context());
+    Logger::amf_n2().debug("testing 1");
     set_ran_ue_ngap_id_2_ue_ngap_context(ran_ue_ngap_id, unc);
+    Logger::amf_n2().debug("testing 2");
   }else{
     unc = ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
   }
   if(unc.get() == nullptr){
     Logger::amf_n2().error("Failed to get ue ngap context for ran_ue_ngap_id(0x%x)",21);
   }else{
+    Logger::amf_n2().debug("testing 3");
     //store information into ue ngap context
     unc.get()->ran_ue_ngap_id = ran_ue_ngap_id;
+    Logger::amf_n2().debug("testing 4");
     unc.get()->sctp_stream_recv = init_ue_msg.stream;
+    Logger::amf_n2().debug("testing 5");
     unc.get()->sctp_stream_send == gc.get()->next_sctp_stream;
+    Logger::amf_n2().debug("testing 6");
     gc.get()->next_sctp_stream += 1;
     if(gc.get()->next_sctp_stream >= gc.get()->instreams)
       gc.get()->next_sctp_stream = 1;
     unc.get()->gnb_assoc_id = init_ue_msg.assoc_id;
     NrCgi_t cgi;
     Tai_t   tai;
+    Logger::amf_n2().debug("testing 7");
     if(init_ue_msg.initUeMsg->getUserLocationInfoNR(cgi, tai)){
+      Logger::amf_n2().debug("testing 8");
       itti_msg->cgi = cgi;
       itti_msg->tai = tai;
     }else{
       Logger::amf_n2().error("Missing Mondontary IE UserLocationInfoNR");
       return;
     }
+    Logger::amf_n2().debug("testing 9");
     if(init_ue_msg.initUeMsg->getRRCEstablishmentCause() == -1){
       Logger::amf_n2().warn("IE RRCEstablishmentCause not present");
       itti_msg->rrc_cause = -1;//not present
     }else{
       itti_msg->rrc_cause = init_ue_msg.initUeMsg->getRRCEstablishmentCause();
+      Logger::amf_n2().debug("testing 10");
     }
+      Logger::amf_n2().debug("testing 11");
+#if 0
     if(init_ue_msg.initUeMsg->getUeContextRequest() == -1){
       Logger::amf_n2().warn("IE UeContextRequest not present");
       itti_msg->ueCtxReq = -1;//not present
     }else{
       itti_msg->ueCtxReq = init_ue_msg.initUeMsg->getUeContextRequest();
+      Logger::amf_n2().debug("testing 12");
     }
+#endif
+    std::string _5g_s_tmsi;
+    if(!init_ue_msg.initUeMsg->get5GS_TMSI(_5g_s_tmsi)){
+      itti_msg->is_5g_s_tmsi_present = false;
+      Logger::amf_n2().debug("5g_s_tmsi false");
+    }else{
+      itti_msg->is_5g_s_tmsi_present = true;
+      itti_msg->_5g_s_tmsi = _5g_s_tmsi;
+      Logger::amf_n2().debug("5g_s_tmsi true");
+    }
+
+    Logger::amf_n2().debug("testing 13");
 
     uint8_t *nas_buf;
     size_t   nas_len = 0;
@@ -265,6 +339,10 @@ void amf_n2::handle_itti_message(itti_ul_nas_transport &ul_nas_transport){
     Logger::amf_n2().error("UE with ran_ue_ngap_id(0x%x) is not attached to gnb with assoc_id(%d)", ran_ue_ngap_id, ul_nas_transport.assoc_id);
     return;
   }
+  if(!is_ran_ue_id_2_ne_ngap_context(ran_ue_ngap_id)){
+    Logger::amf_n2().error("no ue ngap context with ran_ue_ngap_id(%d)", ran_ue_ngap_id);
+    return;
+  }
   unc = ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
   if(unc.get()->amf_ue_ngap_id != amf_ue_ngap_id){
     Logger::amf_n2().error("The requested UE(amf_ue_ngap_id:0x%x) is not valid, existed UE which's amf_ue_ngap_id(0x%x)", amf_ue_ngap_id, unc.get()->amf_ue_ngap_id);
@@ -277,6 +355,7 @@ void amf_n2::handle_itti_message(itti_ul_nas_transport &ul_nas_transport){
   itti_msg->is_nas_signalling_estab_req = false;
   itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
   itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
+  itti_msg->is_guti_valid = false;
   uint8_t *nas_buf = NULL;
   size_t nas_len = 0;
   if(ul_nas_transport.ulNas->getNasPdu(nas_buf, nas_len)){
@@ -305,6 +384,7 @@ void amf_n2::handle_itti_message(itti_dl_nas_transport &dl_nas_transport){
     Logger::amf_n2().error("Illegal gnb with assoc id(0x%x)", unc.get()->gnb_assoc_id);
     return;
   }
+  unc.get()->amf_ue_ngap_id = dl_nas_transport.amf_ue_ngap_id;
   unc.get()->ng_ue_state = NGAP_UE_CONNECTED;
   DownLinkNasTransportMsg *ngap_msg = new DownLinkNasTransportMsg();
   ngap_msg->setMessageType();
@@ -315,6 +395,157 @@ void amf_n2::handle_itti_message(itti_dl_nas_transport &dl_nas_transport){
   int encoded_size = ngap_msg->encode2buffer(buffer, 1024);
   bstring b = blk2bstr(buffer, encoded_size);
   sctp_s_38412.sctp_send_msg(gc.get()->sctp_assoc_id, unc.get()->sctp_stream_send,&b);
+}
+
+void amf_n2::handle_itti_message(itti_initial_context_setup_request &itti_msg){
+  std::shared_ptr<ue_ngap_context> unc;
+  unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
+  if(unc.get() == nullptr){
+    Logger::amf_n2().error("Illegal ue with ran_ue_ngap_id(0x%x)", itti_msg.ran_ue_ngap_id);
+    return;
+  }
+  std::shared_ptr<gnb_context> gc;
+  gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
+  if(gc.get() == nullptr){
+    Logger::amf_n2().error("Illegal gnb with assoc id(0x%x)", unc.get()->gnb_assoc_id);
+    return;
+  }
+  InitialContextSetupRequestMsg * msg = new InitialContextSetupRequestMsg();
+  msg->setMessageType();
+  msg->setAmfUeNgapId(itti_msg.amf_ue_ngap_id);
+  msg->setRanUeNgapId(itti_msg.ran_ue_ngap_id);
+  Guami_t guami;
+  guami.mcc = amf_cfg.guami.mcc; 
+  guami.mnc = amf_cfg.guami.mnc; 
+  guami.regionID = amf_cfg.guami.regionID; 
+  guami.AmfSetID = amf_cfg.guami.AmfSetID; 
+  guami.AmfPointer = amf_cfg.guami.AmfPointer; 
+  msg->setGuami(guami); 
+  msg->setUESecurityCapability(0xe000, 0xe000, 0xe000, 0xe000); 
+  msg->setSecurityKey((uint8_t*)bdata(itti_msg.kgnb));
+  msg->setNasPdu((uint8_t*)bdata(itti_msg.nas), blength(itti_msg.nas));
+
+
+  if(itti_msg.is_sr){
+    bstring ueCapability = gc.get()->ue_radio_cap_ind;
+    uint8_t *uecap = (uint8_t*)calloc(1, blength(ueCapability)+1);
+    memcpy(uecap, (uint8_t*)bdata(ueCapability), blength(ueCapability));
+    uecap[blength(ueCapability)] = '\0';
+    msg->setUERadioCapability(uecap, (size_t)blength(ueCapability));
+    //msg->setUERadioCapability((uint8_t*)bdata(ueCapability), (size_t)blength(ueCapability));
+    Logger::amf_n2().debug("Encoding parameters for service request");
+    std::vector<PDUSessionResourceSetupRequestItem_t>list;
+    PDUSessionResourceSetupRequestItem_t item;
+    item.pduSessionId = itti_msg.pdu_session_id;
+    item.s_nssai.sst = "00";
+    item.s_nssai.sd = "none";
+    item.pduSessionNAS_PDU = NULL;
+    Logger::amf_n2().debug("Encoding parameters for service request, testing point 0");
+    bstring n2sm = itti_msg.n2sm;
+    Logger::amf_n2().debug("Encoding parameters for service request, testing point 0.1 n2sm_size(%d)", blength(itti_msg.n2sm));
+    Logger::amf_n2().debug("Encoding parameters for service request, testing point 1");
+    if(blength(itti_msg.n2sm) != 0){
+      item.pduSessionResourceSetupRequestTransfer.buf = (uint8_t*)bdata(itti_msg.n2sm);
+      Logger::amf_n2().debug("Encoding parameters for service request, testing point 1.1");
+      item.pduSessionResourceSetupRequestTransfer.size = blength(itti_msg.n2sm);
+    }else{
+      Logger::amf_n2().error("n2sm empty!");
+    }
+    list.push_back(item);
+    Logger::amf_n2().debug("Encoding parameters for service request, testing point 2");
+    msg->setPduSessionResourceSetupRequestList(list);
+    Logger::amf_n2().debug("Encoding parameters for service request, testing point 3");
+    msg->setUEAggregateMaxBitRate(0x08a7d8c0, 0x20989680);
+    Logger::amf_n2().debug("Encoding parameters for service request, testing point 4");
+  }
+
+  uint8_t buffer[7000];
+  int encoded_size = msg->encode2buffer(buffer, 7000);
+  bstring b = blk2bstr(buffer, encoded_size);
+  sctp_s_38412.sctp_send_msg(gc.get()->sctp_assoc_id, unc.get()->sctp_stream_send,&b);
+}
+
+void amf_n2::handle_itti_message(itti_pdu_session_resource_setup_request &itti_msg){
+  std::shared_ptr<ue_ngap_context> unc;
+  unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
+  if(unc.get() == nullptr){
+    Logger::amf_n2().error("Illegal ue with ran_ue_ngap_id(0x%x)", itti_msg.ran_ue_ngap_id);
+    return;
+  }
+  std::shared_ptr<gnb_context> gc;
+  gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
+  if(gc.get() == nullptr){
+    Logger::amf_n2().error("Illegal gnb with assoc id(0x%x)", unc.get()->gnb_assoc_id);
+    return;
+  }
+  PduSessionResourceSetupRequestMsg * psrsr = new PduSessionResourceSetupRequestMsg();
+  psrsr->setMessageType();
+  psrsr->setAmfUeNgapId(itti_msg.amf_ue_ngap_id);
+  psrsr->setRanUeNgapId(itti_msg.ran_ue_ngap_id);
+ 
+  std::vector<PDUSessionResourceSetupRequestItem_t> list;
+  PDUSessionResourceSetupRequestItem_t item;
+  item.pduSessionId = itti_msg.pdu_session_id;
+  uint8_t *nas_pdu = (uint8_t*)calloc(1, blength(itti_msg.nas)+1);
+  memcpy(nas_pdu, (uint8_t*)bdata(itti_msg.nas), blength(itti_msg.nas));
+  nas_pdu[blength(itti_msg.nas)] = '\0';
+  item.pduSessionNAS_PDU = nas_pdu;//(uint8_t*)bdata(itti_msg.nas);
+  item.sizeofpduSessionNAS_PDU = blength(itti_msg.nas);
+  item.s_nssai.sst = "00";
+  item.s_nssai.sd = "none";
+  item.pduSessionResourceSetupRequestTransfer.buf = (uint8_t*)bdata(itti_msg.n2sm);
+  item.pduSessionResourceSetupRequestTransfer.size = blength(itti_msg.n2sm);
+  list.push_back(item);
+  psrsr->setPduSessionResourceSetupRequestList(list);
+  
+  uint8_t buffer[5000];
+  int encoded_size = psrsr->encode2buffer(buffer, 5000);
+  bstring b = blk2bstr(buffer, encoded_size);
+  sctp_s_38412.sctp_send_msg(gc.get()->sctp_assoc_id, unc.get()->sctp_stream_send,&b);
+}
+
+void amf_n2::handle_itti_message(itti_ue_context_release_request &itti_msg){
+  Logger::amf_n2().debug("handle_itti_message ...");
+  unsigned long amf_ue_ngap_id = itti_msg.ueCtxRel->getAmfUeNgapId();
+  Logger::amf_n2().debug("handle_itti_message ... test point 0");
+  uint32_t ran_ue_ngap_id = itti_msg.ueCtxRel->getRanUeNgapId();
+  Logger::amf_n2().debug("handle_itti_message ... test point 1");
+  e_Ngap_CauseRadioNetwork cause;
+  Logger::amf_n2().debug("handle_itti_message ... test point 2");
+  itti_msg.ueCtxRel->getCauseRadioNetwork(cause);
+  Logger::amf_n2().debug("handle_itti_message ... test point 3");
+  UEContextReleaseCommandMsg * ueCtxRelCmd = new UEContextReleaseCommandMsg();
+  Logger::amf_n2().debug("handle_itti_message ... test point 4");
+  ueCtxRelCmd->setMessageType();
+  Logger::amf_n2().debug("handle_itti_message ... test point 5");
+  ueCtxRelCmd->setUeNgapIdPair(amf_ue_ngap_id, ran_ue_ngap_id);
+  Logger::amf_n2().debug("handle_itti_message ... test point 6");
+  ueCtxRelCmd->setCauseRadioNetwork(cause);
+  Logger::amf_n2().debug("handle_itti_message ... test point 7");
+  uint8_t buffer[200];
+  int encoded_size = ueCtxRelCmd->encode2buffer(buffer, 200);
+  Logger::amf_n2().debug("handle_itti_message ... test point 8");
+  bstring b = blk2bstr(buffer, encoded_size);
+  Logger::amf_n2().debug("handle_itti_message ... test point 9");
+  sctp_s_38412.sctp_send_msg(itti_msg.assoc_id, itti_msg.stream, &b);
+  Logger::amf_n2().debug("handle_itti_message ... test point 10");
+}
+
+void amf_n2::handle_itti_message(itti_ue_radio_capability_indication &itti_msg){
+  std::shared_ptr<gnb_context> gc;
+  if(!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
+    Logger::amf_n2().error("no existed gnb context with assoc_id(%d)",itti_msg.assoc_id);
+    return;
+  }
+  gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
+  unsigned long amf_ue_ngap_id; itti_msg.ueRadioCap->getAmfUeNgapId(amf_ue_ngap_id);
+  uint32_t ran_ue_ngap_id; itti_msg.ueRadioCap->getRanUeNgapId(ran_ue_ngap_id);
+  uint8_t *ue_radio_cap; size_t size;
+  if(!itti_msg.ueRadioCap->getUERadioCapability(ue_radio_cap, size)){
+    Logger::amf_n2().warn("No IE UERadioCapability");
+  }
+  gc.get()->ue_radio_cap_ind = blk2bstr(ue_radio_cap, (int)size);
+   
 }
 
 /************************************************* context management functions *********************************/

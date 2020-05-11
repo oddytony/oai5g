@@ -53,8 +53,8 @@ int NAS_Message_Container::decodefrombuffer(uint8_t *buf, int len, bool is_optio
 		decoded_size++;
 	}
 	length = 0;
-    length |= *(buf + decoded_size); decoded_size++;
-	length |= (*(buf + decoded_size)) << 8; decoded_size++;
+        length |= (*(buf + decoded_size))<<8; decoded_size++;
+	length |= *(buf + decoded_size); decoded_size++;
 	decode_bstring(&_value, length, (buf + decoded_size), len - decoded_size);
 	decoded_size += length;
 	for (int i = 0; i < length; i++) {

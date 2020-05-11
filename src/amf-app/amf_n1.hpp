@@ -4,6 +4,7 @@
 #include <map>
 #include <shared_mutex>
 #include "nas_context.hpp"
+#include "pdu_session_context.hpp"
 #include "itti_msg_n1.hpp"
 #include "bstrlib.h"
 #include "3gpp_ts24501.hpp"
@@ -21,7 +22,7 @@
 
 #include "mysql_db.hpp"
 
-namespace amf{
+namespace amf_application{
 
 #define NAS_MESSAGE_DOWNLINK 1
 #define NAS_MESSAGE_UPLINK   0
@@ -39,13 +40,23 @@ public:
   amf_n1();
   ~amf_n1();
   void handle_itti_message(itti_uplink_nas_data_ind&);
+  void handle_itti_message(itti_downlink_nas_transfer & itti_msg);
 public: // nas message decode
-  void nas_signalling_establishment_request_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg);
+  void nas_signalling_establishment_request_handle(std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg, std::string snn);
   void uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg);
   bool check_security_header_type(SecurityHeaderType & type, uint8_t *buffer);
 
-private:
+public:
   std::map<long, std::shared_ptr<nas_context>> amfueid2nas_context; // amf ue ngap id
+  std::map<std::string, long> supi2amfId;
+  std::map<std::string, uint32_t> supi2ranId;
+
+  std::map<std::string, std::shared_ptr<nas_context>> guti2nas_context;
+  mutable std::shared_mutex m_guti2nas_context;
+  bool is_guti_2_nas_context(const std::string & guti) const;
+  std::shared_ptr<nas_context> guti_2_nas_context(const std::string & guti) const;
+  void set_guti_2_nas_context(const std::string & guti, std::shared_ptr<nas_context>nc);
+
   mutable std::shared_mutex m_amfueid2nas_context;
   bool is_amf_ue_id_2_nas_context(const long & amf_ue_ngap_id) const;
   std::shared_ptr<nas_context> amf_ue_id_2_nas_context(const long & amf_ue_ngap_id) const;
@@ -53,9 +64,14 @@ private:
   database_t *db_desc;
 
 private://nas message handlers
-  void registration_request_handle(bool isNasSig, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring  reg);
+  void registration_request_handle(bool isNasSig, std::shared_ptr<nas_context>nc, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring  reg);
   void authentication_response_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg);
+  void authentication_failure_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg);
   void security_mode_complete_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas_msg);
+  void security_mode_reject_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas_msg);
+  void ul_nas_transport_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas);
+  void sha256(unsigned char * message, int msg_len, unsigned char * output);
+  void service_request_handle(bool isNasSig, std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas);
 private://authentication vector
   bool generate_authentication_vector();
 
@@ -66,6 +82,7 @@ private://response message
 public://procedures
   void run_registration_procedure(std::shared_ptr<nas_context>&nc);
   void run_initial_registration_procedure();
+  void run_mobility_registration_update_procedure(std::shared_ptr<nas_context>nc);
 public://authentication
   bool auth_vectors_generator(std::shared_ptr<nas_context>&nc);
   bool authentication_vectors_generator_in_ausf(std::shared_ptr<nas_context>&nc);
@@ -77,14 +94,22 @@ public://mysql handlers in mysql_db.cpp
   bool connect_to_mysql();
   void generate_random(uint8_t *random_p, ssize_t length);
   void generate_5g_he_av_in_udm(const uint8_t opc[16], std::string imsi, uint8_t key[16], uint8_t sqn[6], std::string serving_network, _5G_HE_AV_t &vector);
+  void test_generate_5g_he_av_in_udm(const uint8_t opc[16],  uint8_t key[16], uint8_t sqnak[6], std::string serving_network, _5G_HE_AV_t &vector);
   void handle_auth_vector_successful_result(std::shared_ptr<nas_context> nc);
   bool start_authentication_procedure(std::shared_ptr<nas_context> nc, int vindex, uint8_t ngksi);
   bool check_nas_common_procedure_on_going(std::shared_ptr<nas_context> nc);
-  int security_select_algorithms(uint8_t nea, uint8_t nia, uint8_t amf_nea, uint8_t amf_nia);
+  int security_select_algorithms(uint8_t nea, uint8_t nia, uint8_t &amf_nea, uint8_t &amf_nia);
   bool start_security_mode_control_procedure(std::shared_ptr<nas_context>nc);
   void encode_nas_message_protected(nas_secu_ctx * nsc, bool is_secu_ctx_new, uint8_t security_header_type, uint8_t direction, uint8_t *input_nas_buf, int input_nas_len, bstring & encrypted_nas);
   bool nas_message_integrity_protected(nas_secu_ctx *nsc, uint8_t direction, uint8_t *input_nas, int input_nas_len, uint32_t &mac);
   bool nas_message_cipher_protected(nas_secu_ctx *nsc, uint8_t direction, bstring input_nas, bstring &output_nas);
+public:
+  void dump_nas_message(uint8_t *buf, int len);
+public:
+  void ue_authentication_simulator(uint8_t *rand, uint8_t *autn);
+  void annex_a_4_33501(uint8_t ck[16], uint8_t ik[16], uint8_t *input, uint8_t rand[16], std::string serving_network, uint8_t *output);
+public:
+  void send_itti_to_smf_services_consumer(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, uint8_t request_type, uint8_t pdu_session_id, bstring dnn, bstring sm_msg);
 };
 }
 

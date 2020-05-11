@@ -20,10 +20,22 @@ void AuthenticationFailure::setHeader(uint8_t security_header_type) {
 void AuthenticationFailure::set_5GMM_Cause(uint8_t value) {
 	ie_5gmm_cause = new _5GMM_Cause(0x00,value);
 }
-void AuthenticationFailure::setAuthentication_Failure_Parameter(uint8_t *value) {
-	ie_authentication_failure_parameter = new Authentication_Failure_Parameter(0x30, value);
+uint8_t AuthenticationFailure::get5GMmCause() {
+			if (ie_5gmm_cause) {
+				return ie_5gmm_cause->getValue();
+			}
+			else { return -1; }
+		}
+void AuthenticationFailure::setAuthentication_Failure_Parameter(bstring auts) {
+	ie_authentication_failure_parameter = new Authentication_Failure_Parameter(0x30, auts);
 }
-
+bool AuthenticationFailure::getAutsInAuthFailPara(bstring &auts) {
+			if (ie_authentication_failure_parameter) {
+				ie_authentication_failure_parameter->getValue(auts);
+				return true;
+			}
+			else { return false; }
+		}
 
 int AuthenticationFailure::encode2buffer(uint8_t *buf, int len) {
 	Logger::nas_mm().debug("encoding AuthenticationFailure message");

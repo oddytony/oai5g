@@ -208,16 +208,16 @@ int nas_algorithms::nas_stream_encrypt_nia2(nas_stream_cipher_t * const stream_c
   memcpy (&m[8], stream_cipher->message, m_length);
  
   Logger::amf_n1().trace("Byte length: %u, Zero bits: %u:", m_length+8, zero_bit);
-  Logger::amf_n1().trace("m:0x%x", m);
-  Logger::amf_n1().trace("Key:0x%x", stream_cipher->key);
-  Logger::amf_n1().trace("Message:0x%x", stream_cipher->message);
+  Logger::amf_n1().trace("m:0x%x", *m);
+  Logger::amf_n1().trace("Key:0x%x", *stream_cipher->key);
+  Logger::amf_n1().trace("Message:0x%x", *stream_cipher->message);
   
   cmac_ctx = CMAC_CTX_new ();
   CMAC_Init (cmac_ctx, stream_cipher->key, stream_cipher->key_length, cipher, NULL);
   CMAC_Update (cmac_ctx, m, m_length + 8);
   CMAC_Final (cmac_ctx, data, &size);
   CMAC_CTX_free (cmac_ctx);
-  Logger::amf_n1().trace("Out:0x%x", data);
+  Logger::amf_n1().trace("Out:0x%x", *data);
   memcpy ((void*)out, data, 4);
   free(m);
   return 0;

@@ -9,6 +9,7 @@
 #include "UserLocationInformation.hpp"
 #include "RRCEstablishmentCause.hpp"
 #include "UEContextRequest.hpp"
+#include "FiveGSTmsi.hpp"
 
 extern "C"{
 	#include "Ngap_NGAP-PDU.h"
@@ -38,6 +39,7 @@ namespace ngap{
 		bool getUserLocationInfoNR(struct NrCgi_s &cig, struct Tai_s &tai);
 		int  getRRCEstablishmentCause();
 		int  getUeContextRequest();
+                bool get5GS_TMSI(std::string &_5g_s_tmsi);
 
 	private:
 		Ngap_NGAP_PDU_t * initialUEMessagePdu;
@@ -48,6 +50,7 @@ namespace ngap{
 		UserLocationInformation *userLocationInformation;
 		RRCEstablishmentCause *rRCEstablishmentCause;
 		UEContextRequest *uEContextRequest;
+                FiveGSTmsi * fivegSTmsi;
 	};
 
 }

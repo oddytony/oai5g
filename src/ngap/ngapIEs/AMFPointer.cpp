@@ -24,7 +24,7 @@ namespace ngap{
 		amfpointer.size = 1;
 		uint8_t *buffer = (uint8_t *)calloc(1,sizeof(uint8_t));
 		if(!buffer) return false;
-		*buffer = pointer & 0x3f;
+		*buffer =((pointer & 0x3f)<<2);
 		amfpointer.buf = buffer;
 		amfpointer.bits_unused = 2;
 

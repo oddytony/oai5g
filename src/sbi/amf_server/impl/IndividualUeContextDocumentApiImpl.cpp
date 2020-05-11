@@ -18,8 +18,8 @@ namespace api {
 
 using namespace oai::amf::model;
 
-IndividualUeContextDocumentApiImpl::IndividualUeContextDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr)
-    : IndividualUeContextDocumentApi(rtr)
+IndividualUeContextDocumentApiImpl::IndividualUeContextDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr, amf_application::amf_app *amf_app_inst)
+    : IndividualUeContextDocumentApi(rtr), m_amf_app(amf_app_inst)
     { }
 
 void IndividualUeContextDocumentApiImpl::create_ue_context(const std::string &ueContextId, const Inline_object &inlineObject, Pistache::Http::ResponseWriter &response) {

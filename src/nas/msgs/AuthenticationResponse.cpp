@@ -24,9 +24,9 @@ void AuthenticationResponse::setAuthentication_Response_Parameter(bstring para) 
 bool AuthenticationResponse::getAuthenticationResponseParameter(bstring &para) {
 	  if (ie_authentication_response_parameter) {
 		   ie_authentication_response_parameter->getValue(para);
-		return 0;
+		return true;
 	  }
-	  else { return -1; }
+	  else { return false; }
   }
 void AuthenticationResponse::setEAP_Message(bstring eap) {
 	ie_eap_message = new EAP_Message(0x78, eap);

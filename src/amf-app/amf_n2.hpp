@@ -5,7 +5,7 @@
 #include "itti_msg_n2.hpp"
 #include "ue_ngap_context.hpp"
 
-namespace amf{
+namespace amf_application{
 
 class amf_n2 : public ngap::ngap_app{
 public:
@@ -17,6 +17,10 @@ public:
   void handle_itti_message(itti_initial_ue_message &init_ue_msg);
   void handle_itti_message(itti_ul_nas_transport &ul_nas_transport);
   void handle_itti_message(itti_dl_nas_transport &dl_nas_transport);
+  void handle_itti_message(itti_initial_context_setup_request &itti_msg);
+  void handle_itti_message(itti_pdu_session_resource_setup_request &itti_msg);
+  void handle_itti_message(itti_ue_context_release_request &itti_msg);
+  void handle_itti_message(itti_ue_radio_capability_indication &itti_msg);
   bool verifyPlmn(vector<SupportedItem_t> list);
 private:
   std::map<uint32_t, std::shared_ptr<ue_ngap_context>> ranid2uecontext;// ran ue ngap id

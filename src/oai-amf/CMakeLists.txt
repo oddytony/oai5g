@@ -2,6 +2,21 @@ cmake_minimum_required (VERSION 3.0.2)
 
 project(OpenAirInterface)
 
+macro(add_boolean_option name val helpstr)
+  if(DEFINED ${name})
+    set(value ${${name}})
+  else(DEFINED ${name})
+    set(value ${val})
+  endif()
+  set(${name} ${value} CACHE STRING "${helpstr}")
+  set_property(CACHE ${name} PROPERTY TYPE BOOL)
+  if (${value})
+    add_definitions("-D${name}=1")
+  else (${value})
+    add_definitions("-D${name}=0")
+  endif (${value})
+endmacro(add_boolean_option)
+
 macro(add_list_string_option name val helpstr)
   if(DEFINED ${name})
     set(value ${${name}})
@@ -61,7 +76,7 @@ else (STATIC_LINKING)
 endif(STATIC_LINKING)
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS} -O2 -fno-omit-frame-pointer -s -DINFO_IS_ON=1 ")
 set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS} -g  -O2 -DINFO_IS_ON=1 ")
-set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS} -Os -s -DTRACE_IS_ON=1 -DDEBUG_IS_ON=1 -DINFO_IS_ON=1")
+set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS} -Os -s -DTRACE_IS_ON=1 -DDEBUG_IS_ON=1 -DINFO_IS_ON=1 -DAUTH_ALG_ON=0")
 
 if(STATIC_LINKING)
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -std=c++17  -g -fstack-protector-all -DMALLOC_CHECK_=3 -DINFO_IS_ON=1 -DDEBUG_IS_ON=1 -DTRACE_IS_ON=1 -O0 -fno-omit-frame-pointer -DBUPT=1 -DEURECOM=0")
@@ -92,6 +107,7 @@ file(GLOB AMF_NAS_SRC
 ###end for
 ### for libnas
 include_directories(${SRC_TOP_DIR}/nas/common)
+include_directories(${SRC_TOP_DIR}/nas/common)
 include_directories(${SRC_TOP_DIR}/nas/ies)
 include_directories(${SRC_TOP_DIR}/nas/msgs)
 include_directories(${SRC_TOP_DIR}/nas/utils)
@@ -110,18 +126,24 @@ file(GLOB AMF_APP_SRC
   ${SRC_TOP_DIR}/amf-app/amf_app.cpp
   ${SRC_TOP_DIR}/amf-app/amf_n2.cpp
   ${SRC_TOP_DIR}/amf-app/amf_n1.cpp
+  ${SRC_TOP_DIR}/amf-app/amf_n11.cpp
   ${SRC_TOP_DIR}/amf-app/amf_statistics.cpp
 )
 ### end for amf_app
 
 ### for common
 include_directories(${SRC_TOP_DIR}/common)
+include_directories(${SRC_TOP_DIR}/common/unicode)
 file(GLOB COMMON_SRC ${SRC_TOP_DIR}/common/conversions.cpp)
 ### end for common
 
 ### for utils/bstr
 include_directories(${SRC_TOP_DIR}/utils/bstr)
 include_directories(${SRC_TOP_DIR}/utils)
+file(GLOB MULTI_PARSER_SRC
+  ${SRC_TOP_DIR}/utils/multipartparser.cpp
+  ${SRC_TOP_DIR}/utils/http_multi_parser.cpp
+)
 file(GLOB BSTR_SRC 
   ${SRC_TOP_DIR}/utils/bstr/bstrlib.c
   ${SRC_TOP_DIR}/utils/thread_sched.cpp
@@ -130,6 +152,7 @@ file(GLOB UTILS_SRC
   ${SRC_TOP_DIR}/utils/string.cpp
   ${SRC_TOP_DIR}/utils/if.cpp
   ${SRC_TOP_DIR}/utils/backtrace.c
+  ${SRC_TOP_DIR}/utils/hex_string_convert.cpp
 )
 ##end for utils/bstr
 
@@ -169,6 +192,8 @@ file(GLOB ITTI_SRC
 
 ### for authentication 
 include_directories(${SRC_TOP_DIR}/secu_algorithms/5gaka)
+include_directories(${SRC_TOP_DIR}/secu_algorithms/5gaka/test)
+include_directories(${SRC_TOP_DIR}/secu_algorithms/5gaka/algorithm_from_spec)
 file(GLOB 5GAKA_SRC ${SRC_TOP_DIR}/secu_algorithms/5gaka/*.cpp)
 ###end for
 
@@ -214,10 +239,12 @@ file(GLOB SMF_CLIENT_SRC
 ###end
 
 ###for amf server
+include_directories(${SRC_TOP_DIR}/sbi/amf_server)
 include_directories(${SRC_TOP_DIR}/sbi/amf_server/api)
 include_directories(${SRC_TOP_DIR}/sbi/amf_server/impl)
 include_directories(${SRC_TOP_DIR}/sbi/amf_server/model)
 file(GLOB AMF_SERVER_SRC 
+  ${SRC_TOP_DIR}/sbi/amf_server/*.cpp
   ${SRC_TOP_DIR}/sbi/amf_server/api/*.cpp
   ${SRC_TOP_DIR}/sbi/amf_server/impl/*.cpp
   ${SRC_TOP_DIR}/sbi/amf_server/model/*.cpp
@@ -232,6 +259,12 @@ file(GLOB MYSQL_HANDLERS_SRC
 
 ### for sha-256 algorithms
 ### end
+
+### for ue_gnb_simu
+file(GLOB UE_GNB_SRC 
+  ${SRC_TOP_DIR}/test/ue_gnb.cpp
+)
+
 
 pkg_search_module(CRYPTO libcrypto REQUIRED)
 include_directories(${CRYPTO_INCLUDE_DIRS})
@@ -276,8 +309,8 @@ add_executable(amf
 	${SRC_TOP_DIR}/oai-amf/main.cpp 
         ${COMMON_SRC} ${BSTR_SRC} ${SCTP_SRC} ${NGAP_SRC} ${ITTI_SRC} ${AMF_APP_SRC} ${UTILS_SRC} ${LIB_NGAP_SRC} ${AMF_NAS_SRC}	
         ${NGAP_MSGS_IES_SRC} ${CTXS_SRC} ${5GAKA_SRC} ${NAS_SRC} ${SMF_CLIENT_SRC} 
-        ${MYSQL_HANDLERS_SRC} ${NAS_ALG_SRC} ${AMF_SERVER_SRC} 
+        ${MYSQL_HANDLERS_SRC} ${NAS_ALG_SRC} ${AMF_SERVER_SRC} ${UE_GNB_SRC} ${MULTI_PARSER_SRC} 
 )
 
 # LOG from oai-amf/CMakeLists.txt
-target_link_libraries(amf -Wl,--start-group LOG OPTIONS CONFIGS config++ sctp pthread ${NETTLE_LIBRARIES} ${MySQL_LIBRARY} ${CRYPTO_LIBRARIES} ${OPENSSL_LIBRARIES} boost_system ssl crypt cpprest gmp pistache)
+target_link_libraries(amf -Wl,--start-group LOG OPTIONS CONFIGS config++ sctp pthread ${NETTLE_LIBRARIES} ${MySQL_LIBRARY} ${CRYPTO_LIBRARIES} ${OPENSSL_LIBRARIES} boost_system ssl crypt cpprest gmp pistache curl)

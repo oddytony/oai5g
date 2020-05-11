@@ -26,8 +26,9 @@ namespace ngap{
 			free(amfname);
 			amfname = NULL;
 		}
-		amfname = (char *)calloc(1,m_amfName.size());
+		amfname = (char *)calloc(1,m_amfName.size()+1);
 		memcpy(amfname, m_amfName.c_str(), m_amfName.size());
+                amfname[m_amfName.size()] = '\0';
 		
 	}
 	void AmfName::getValue(std::string &m_amfName)

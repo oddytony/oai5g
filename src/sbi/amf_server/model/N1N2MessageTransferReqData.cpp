@@ -88,13 +88,13 @@ void from_json(const nlohmann::json& j, N1N2MessageTransferReqData& o)
 {
     if(j.find("n1MessageContainer") != j.end())
     {
-        j.at("n1MessageContainer").get_to(o.m_N1MessageContainer);
-        o.m_N1MessageContainerIsSet = true;
+        //j.at("n1MessageContainer").get_to(o.m_N1MessageContainer);
+        //o.m_N1MessageContainerIsSet = true;
     } 
     if(j.find("n2InfoContainer") != j.end())
     {
-        j.at("n2InfoContainer").get_to(o.m_N2InfoContainer);
-        o.m_N2InfoContainerIsSet = true;
+        //j.at("n2InfoContainer").get_to(o.m_N2InfoContainer);
+        //o.m_N2InfoContainerIsSet = true;
     } 
     if(j.find("skipInd") != j.end())
     {

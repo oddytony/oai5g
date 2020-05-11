@@ -37,9 +37,10 @@ int ABBA::encode2buffer(uint8_t *buf, int len) {
 		}
 	}
 	else {
-		*(buf + encoded_size) = _length - 1; encoded_size++;
+                Logger::nas_mm().debug("length(%d)", _length);
+		*(buf + encoded_size) = _length; encoded_size++;
 		int i = 0;
-		while ((_length - 1) != 0) {
+		while (_length != 0) {
 			*(buf + encoded_size) = _value[i]; encoded_size++;
 			_length--; i++;
 		}

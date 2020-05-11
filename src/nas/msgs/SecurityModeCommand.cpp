@@ -169,7 +169,7 @@ int SecurityModeCommand::encode2buffer(uint8_t *buf, int len) {
 		}
 	}
 	Logger::nas_mm().debug("encoded SecurityModeCommand message len(%d)", encoded_size);
-	return 1;
+	return encoded_size;
 }
 
 int SecurityModeCommand::decodefrombuffer(NasMmPlainHeader * header, uint8_t *buf, int len) {
@@ -179,7 +179,7 @@ int SecurityModeCommand::decodefrombuffer(NasMmPlainHeader * header, uint8_t *bu
 	ie_selected_nas_security_algorithms = new NAS_Security_Algorithms();
 	decoded_size += ie_selected_nas_security_algorithms->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
 	ie_ngKSI = new NasKeySetIdentifier();
-	decoded_size += ie_ngKSI->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
+	decoded_size += ie_ngKSI->decodefrombuffer(buf + decoded_size, len - decoded_size, false, false);
 	ie_ue_security_capability = new UESecurityCapability();
 	decoded_size += ie_ue_security_capability->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
 	Logger::nas_mm().debug("decoded_size(%d)", decoded_size);

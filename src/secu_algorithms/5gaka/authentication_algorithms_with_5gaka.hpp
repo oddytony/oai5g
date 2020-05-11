@@ -36,6 +36,7 @@ typedef struct{
   uint8_t avType;
   uint8_t rand[16];
   uint8_t xres[8];
+  uint8_t xresStar[16];
   uint8_t autn[16];
   uint8_t kausf[32];
 }_5G_HE_AV_t;//clause 6.3.6.2.5, ts33.501
@@ -43,7 +44,8 @@ typedef struct{
 typedef struct{
   uint8_t avType;
   uint8_t rand[16];
-  uint8_t hxres[8];
+  uint8_t hxres[16];
+  uint8_t hxresStar[16];
   uint8_t autn[16];
   uint8_t kseaf[32];
 }_5G_AV_t;
@@ -99,6 +101,7 @@ public:
   static void derive_kseaf(std::string serving_network, uint8_t kausf[32], uint8_t kseaf[32]);
   static void derive_kamf(std::string imsi, uint8_t *kseaf, uint8_t *kamf, uint16_t abba);
   static void derive_knas(algorithm_type_dist_t nas_alg_type, uint8_t nas_alg_id, uint8_t kamf[32], uint8_t * knas);
+  static void derive_kgnb(uint32_t uplinkCount, uint8_t accessType, uint8_t kamf[32], uint8_t * kgnb);
   static uint8_t *sqn_ms_derive(const uint8_t opc[16], uint8_t *key, uint8_t *auts, uint8_t *rand);
 public:
 /****** general functions ********/

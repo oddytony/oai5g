@@ -47,7 +47,7 @@ int _5GSRegistrationType::encode2buffer(uint8_t *buf, int len){
 
 int _5GSRegistrationType::decodefrombuffer(uint8_t *buf, int len, bool is_option){
   if(is_option){
-    return 0;
+    return -1;
   }
   Logger::nas_mm().debug("decoding 5GSRegistrationType");
   uint8_t octet = *buf;

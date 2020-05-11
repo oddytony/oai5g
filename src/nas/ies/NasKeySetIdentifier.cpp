@@ -32,7 +32,7 @@ int NasKeySetIdentifier::encode2buffer(uint8_t *buf, int len){
       octet = (0x0f) & ((tsc<<3) | key_id);
       *buf = octet;
 	Logger::nas_mm().debug("encoded NasKeySetIdentifier IE tsc(0x%x),key_id(0x%x)", tsc, key_id);
-      return 0;
+      return 1;
     }else{
       octet = (iei<<4) | (tsc<<3) | key_id;
       *buf = octet;
@@ -43,11 +43,11 @@ int NasKeySetIdentifier::encode2buffer(uint8_t *buf, int len){
   }
 }
 
-int NasKeySetIdentifier::decodefrombuffer(uint8_t *buf, int len, bool is_option){
+int NasKeySetIdentifier::decodefrombuffer(uint8_t *buf, int len, bool is_option, bool is_high){
   Logger::nas_mm().debug("decoding NasKeySetIdentifier IE");
   if(len < 1){
     Logger::nas_mm().error("len is less than one");
-    return 0;
+    return -1;
   }else{
     uint8_t octet = (*buf);
     if(is_option){
@@ -55,10 +55,16 @@ int NasKeySetIdentifier::decodefrombuffer(uint8_t *buf, int len, bool is_option)
     }else{
       iei = 0;
     }
-    tsc = octet&0x08;
-    key_id = octet&0x07;
-Logger::nas_mm().debug("decoded NasKeySetIdentifier IE tsc(0x%x),key_id(0x%x)", tsc, key_id);
-    return 1;
+    if(!is_high){
+      tsc = octet&0x08;
+      key_id = octet&0x07;
+    }else{
+      tsc = (octet&0x80)>>4;
+      key_id = (octet&0x70)>>4;
+    }
+    Logger::nas_mm().debug("decoded NasKeySetIdentifier IE tsc(0x%x),key_id(0x%x)", tsc, key_id);
+    if(iei) return 1;
+    else return 0;
   }
 }
 

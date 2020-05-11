@@ -20,24 +20,75 @@ void ULNASTransport::setHeader(uint8_t security_header_type) {
 void ULNASTransport::setPayload_Container_Type(uint8_t value) {
 	ie_payload_container_type = new Payload_Container_Type(0x00, value);
 }
+uint8_t ULNASTransport::getPayloadContainerType(){
+		if (ie_payload_container_type) {
+		return 	ie_payload_container_type->getValue();
+		}
+		else { return -1; }
+	}
 void ULNASTransport::setPayload_Container(std::vector<PayloadContainerEntry> content) {
 	ie_payload_container = new Payload_Container(0x00,content);
 }
+
+bool ULNASTransport::getPayloadContainer(bstring & content){
+  ie_payload_container->getValue(content); 
+  return true;
+}
+
+bool ULNASTransport::getPayloadContainer(std::vector<PayloadContainerEntry> &content) {
+			if (ie_payload_container) {
+				ie_payload_container->getValue(content);
+					return 0;
+			}
+			else { return -1; }
+		}
 void ULNASTransport::setPDU_Session_Identity_2(uint8_t value) {
 	ie_pdu_session_identity_2 = new PDU_Session_Identity_2(0x12, value);
 }
+uint8_t ULNASTransport::getPduSessionId() {
+			if (ie_pdu_session_identity_2) {
+				return ie_pdu_session_identity_2->getValue();
+			}
+			else { return -1; }
+		}
 void ULNASTransport::setOLD_PDU_Session_Identity_2(uint8_t value) {
 	ie_old_pdu_session_identity_2 = new PDU_Session_Identity_2(0x59, value);
 }
+uint8_t ULNASTransport::getOldPduSessionId() {
+			if (ie_old_pdu_session_identity_2) {
+				return ie_old_pdu_session_identity_2->getValue();
+			}
+			else { return -1; }
+		}
 void ULNASTransport::setRequest_Type(uint8_t value) {
 	ie_request_type = new Request_Type(0x08, value);
 }
-void ULNASTransport::setS_NSSAI(uint8_t value) {
-	ie_s_nssai = new S_NSSAI(0x22, value);
+uint8_t ULNASTransport::getRequestType() {
+			if (ie_request_type) {
+				return ie_request_type->getValue();
+			}
+			else { return -1; }
+		}
+void ULNASTransport::setS_NSSAI(SNSSAI_s snssai) {
+	ie_s_nssai = new S_NSSAI(0x22, snssai);
 }
-void ULNASTransport::setDNN(uint8_t _length, uint8_t value) {
-	ie_dnn = new DNN(0x25,_length, value);
+bool ULNASTransport::getSnssai(SNSSAI_s &snssai) {
+			if (ie_s_nssai) {
+				ie_s_nssai->getValue(snssai);
+				return 0;
+			}
+			else { return -1; }
+		}
+void ULNASTransport::setDNN(bstring dnn) {
+	ie_dnn = new DNN(0x25,dnn);
 }
+bool ULNASTransport::getDnn(bstring &dnn) {
+			if (ie_dnn) {
+				ie_dnn->getValue(dnn);
+				return 0;
+			}
+			else { return -1; }
+		}
 void ULNASTransport::setAdditional_Information(uint8_t _length, uint8_t value) {
 	ie_additional_information = new Additional_Information(0x24,_length, value);
 }
@@ -195,7 +246,7 @@ int ULNASTransport::decodefrombuffer(NasMmPlainHeader * header, uint8_t *buf, in
 	ie_payload_container_type = new Payload_Container_Type();
 	decoded_size += ie_payload_container_type->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
 	ie_payload_container = new Payload_Container();
-	decoded_size += ie_payload_container->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
+	decoded_size += ie_payload_container->decodefrombuffer(buf + decoded_size, len - decoded_size, false, ie_payload_container_type->getValue());
 	Logger::nas_mm().debug("decoded_size(%d)", decoded_size);
 	uint8_t octet = *(buf + decoded_size);
 	Logger::nas_mm().debug("first option iei(0x%x)", octet);

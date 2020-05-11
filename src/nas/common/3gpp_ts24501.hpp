@@ -33,6 +33,9 @@
 #define IDENTITY_RESPONSE       0b01011100
 #define UL_NAS_TRANSPORT        0b01100111
 #define DL_NAS_TRANSPORT        0b01101000
+#define SERVICE_REQUEST         0b01001100
+#define SERVICE_REJECT          0b01001101
+#define SERVICE_ACCEPT          0b01001110
 
 
 /********* registration type ***************/
@@ -55,9 +58,9 @@
 
 #define NO_IDENTITY 0b000
 #define SUCI        0b001
-#define _5G_GUTI    0b110
+#define _5G_GUTI    0b010
 #define IMEI        0b011
-#define _5G-S-TMSI  0b100
+#define _5G_S_TMSI  0b100
 #define IMEISVI     0b101
 #define MAC_ADDRESS 0b110
 
@@ -85,7 +88,7 @@
 
 /************************** cause value for 5g mobility management(Annex A) ********************************/
 #define _5GMM_CAUSE_ILLEGAL_UE 3
-
+#define _5GMM_CAUSE_SYNCH_FAILURE 0b00010101
 
 
 // A.5 Causes related to invalid messages
@@ -99,8 +102,21 @@
 #define _5GMM_CAUSE_MESSAGE_NOT_COMPATIBLE               101
 #define _5GMM_CAUSE_PROTOCOL_ERROR                       111
 
+/********************* UL NAS TRANSPORT payload container type **************************/
+#define N1_SM_INFORMATION 0x01
+#define SMS_CONTAINER               0x02
+#define LTE_POSITIONING_PROTOCOL 0x03
+#define SOR_TRANSPARENT_CONTAINER 0x04
+#define UE_POLICY_CONTAINER 0x05
+#define UE_PARAMETERS_UPDATE 0x06
+#define MULTIPLE_PAYLOADS 0x0f
 
-
+#define PDU_SESSION_INITIAL_REQUEST 0b001
+#define EXISTING_PDU_SESSION        0b010
+#define PDU_SESSION_INITIAL_EMERGENCY_REQUEST 0b011
+#define EXISTING_EMERGENCY_PDU_SESSION 0b100
+#define PDU_SESSION_MODIFICATION_REQUEST 0b101
+#define MA_PDU_REQUEST 0b110
 
 
 

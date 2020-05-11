@@ -50,7 +50,8 @@ int AuthenticationRequest::encode2buffer(uint8_t *buf, int len) {
 		Logger::nas_mm().warn("IE ie_ngKSI is not avaliable");
 	}
 	else {
-		if (int size = ie_ngKSI->encode2buffer(buf + encoded_size, len - encoded_size)) {
+                int size = ie_ngKSI->encode2buffer(buf + encoded_size, len - encoded_size);
+		if (size != -1) {
 			encoded_size += size;
 		}
 		else {
@@ -62,7 +63,9 @@ int AuthenticationRequest::encode2buffer(uint8_t *buf, int len) {
 		Logger::nas_mm().warn("IE ie_abba is not avaliable");
 	}
 	else {
-		if (int size = ie_abba->encode2buffer(buf + encoded_size, len - encoded_size)) {
+                int size = ie_abba->encode2buffer(buf + encoded_size, len - encoded_size);
+		if (size != 0) {
+                  Logger::nas_mm().debug("0x%x, 0x%x, 0x%x", (buf+encoded_size)[0],(buf+encoded_size)[1],(buf+encoded_size)[2]);
 			encoded_size += size;
 		}
 		else {
@@ -74,7 +77,8 @@ int AuthenticationRequest::encode2buffer(uint8_t *buf, int len) {
 		Logger::nas_mm().warn("IE ie_authentication_parameter_rand is not avaliable");
 	}
 	else {
-		if (int size = ie_authentication_parameter_rand->encode2buffer(buf + encoded_size, len - encoded_size)) {
+                int size = ie_authentication_parameter_rand->encode2buffer(buf + encoded_size, len - encoded_size);
+		if (size != 0) {
 			encoded_size += size;
 		}
 		else {
@@ -86,7 +90,8 @@ int AuthenticationRequest::encode2buffer(uint8_t *buf, int len) {
 		Logger::nas_mm().warn("IE ie_authentication_parameter_autn is not avaliable");
 	}
 	else {
-		if (int size = ie_authentication_parameter_autn->encode2buffer(buf + encoded_size, len - encoded_size)) {
+                int size = ie_authentication_parameter_autn->encode2buffer(buf + encoded_size, len - encoded_size);
+		if (size != 0) {
 			encoded_size += size;
 		}
 		else {
@@ -98,7 +103,8 @@ int AuthenticationRequest::encode2buffer(uint8_t *buf, int len) {
 		Logger::nas_mm().warn("IE ie_eap_message is not avaliable");
 	}
 	else {
-		if (int size = ie_eap_message->encode2buffer(buf + encoded_size, len - encoded_size)) {
+                int size = ie_eap_message->encode2buffer(buf + encoded_size, len - encoded_size);
+		if (size != 0) {
 			encoded_size += size;
 		}
 		else {
@@ -108,7 +114,7 @@ int AuthenticationRequest::encode2buffer(uint8_t *buf, int len) {
 	}
 	
 	Logger::nas_mm().debug("encoded AuthenticationRequest message len(%d)", encoded_size);
-	return 1;
+	return encoded_size;
 }
 
 int AuthenticationRequest::decodefrombuffer(NasMmPlainHeader * header, uint8_t *buf, int len) {
@@ -116,7 +122,8 @@ int AuthenticationRequest::decodefrombuffer(NasMmPlainHeader * header, uint8_t *
 	int decoded_size = 3;
 	plain_header = header;
 	ie_ngKSI = new NasKeySetIdentifier();
-	decoded_size += ie_ngKSI->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
+	decoded_size += ie_ngKSI->decodefrombuffer(buf + decoded_size, len - decoded_size, false, false);
+        decoded_size ++;
 	ie_abba = new ABBA();
 	decoded_size += ie_abba->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
 	Logger::nas_mm().debug("decoded_size(%d)", decoded_size);

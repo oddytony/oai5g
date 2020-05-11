@@ -65,28 +65,28 @@ public:
     /// <summary>
     /// 
     /// </summary>
-    HttpContent getBinaryDataN1SmMessage() const;
+    std::shared_ptr<HttpContent> getBinaryDataN1SmMessage() const;
     bool binaryDataN1SmMessageIsSet() const;
     void unsetBinaryDataN1SmMessage();
 
-    void setBinaryDataN1SmMessage(const HttpContent& value);
+    void setBinaryDataN1SmMessage(const std::shared_ptr<HttpContent>& value);
 
     /// <summary>
     /// 
     /// </summary>
-    HttpContent getBinaryDataN2SmInformation() const;
+    std::shared_ptr<HttpContent> getBinaryDataN2SmInformation() const;
     bool binaryDataN2SmInformationIsSet() const;
     void unsetBinaryDataN2SmInformation();
 
-    void setBinaryDataN2SmInformation(const HttpContent& value);
+    void setBinaryDataN2SmInformation(const std::shared_ptr<HttpContent>& value);
 
 
 protected:
     std::shared_ptr<SmContextCreateData> m_JsonData;
     bool m_JsonDataIsSet;
-    HttpContent m_BinaryDataN1SmMessage;
+    std::shared_ptr<HttpContent> m_BinaryDataN1SmMessage;
     bool m_BinaryDataN1SmMessageIsSet;
-    HttpContent m_BinaryDataN2SmInformation;
+    std::shared_ptr<HttpContent> m_BinaryDataN2SmInformation;
     bool m_BinaryDataN2SmInformationIsSet;
 };
 

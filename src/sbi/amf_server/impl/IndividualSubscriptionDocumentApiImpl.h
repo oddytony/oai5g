@@ -33,6 +33,8 @@
 #include "SubscriptionData.h"
 #include <string>
 
+#include "amf_app.hpp"
+
 namespace oai {
 namespace amf {
 namespace api {
@@ -41,12 +43,13 @@ using namespace oai::amf::model;
 
 class IndividualSubscriptionDocumentApiImpl : public oai::amf::api::IndividualSubscriptionDocumentApi {
 public:
-    IndividualSubscriptionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>);
+    IndividualSubscriptionDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>, amf_application::amf_app *amf_app_inst);
     ~IndividualSubscriptionDocumentApiImpl() {}
 
     void a_mf_status_change_subscribe_modfy(const std::string &subscriptionId, const SubscriptionData &subscriptionData, Pistache::Http::ResponseWriter &response);
     void a_mf_status_change_un_subscribe(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response);
-
+private:
+    amf_application::amf_app *m_amf_app;
 };
 
 }

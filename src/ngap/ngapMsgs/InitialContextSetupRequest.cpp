@@ -27,6 +27,7 @@ namespace ngap{
 		uESecurityCapabilities = NULL;
 		securityKey = NULL;		
 		nasPdu = NULL;
+                ueRadioCapability = NULL;
 	}
 	InitialContextSetupRequestMsg::~InitialContextSetupRequestMsg(){}
 
@@ -248,28 +249,39 @@ namespace ngap{
 		for(int i=0;i<list.size();i++)
 		{
 			PDUSessionID * m_pDUSessionID = new PDUSessionID();
+                        cout<<"encoding pduSessionId"<<endl;
 			m_pDUSessionID->setPDUSessionID(list[i].pduSessionId);
+                        cout<<"encoding pduSessionId over"<<endl;
 			NAS_PDU * m_nAS_PDU = NULL;
 			if(list[i].pduSessionNAS_PDU)
 			{
+                        cout<<"encoding nas-pdu"<<endl;
 				m_nAS_PDU = new NAS_PDU();
 				m_nAS_PDU->setNasPdu(list[i].pduSessionNAS_PDU,list[i].sizeofpduSessionNAS_PDU);
+                        cout<<"encoding nas-pdu over"<<endl;
 			}
+                        cout<<"encoding s-nssai"<<endl;
 			S_NSSAI * m_s_NSSAI = new S_NSSAI();
 			m_s_NSSAI->setSst(list[i].s_nssai.sst);
+                        cout<<"encoding s-nssai over"<<endl;
 			if(list[i].s_nssai.sd.size())
 				m_s_NSSAI->setSd(list[i].s_nssai.sd);
+                        cout<<"encoding over"<<endl;
 			m_pduSessionResourceSetupItemCxtReq[i].setPDUSessionResourceSetupItemCxtReq(m_pDUSessionID,m_nAS_PDU,m_s_NSSAI,list[i].pduSessionResourceSetupRequestTransfer);
 		}
 		
+                cout<<"setPDUSessionResourceSetupListCxtReq"<<endl;
 		pduSessionResourceSetupRequestList->setPDUSessionResourceSetupListCxtReq(m_pduSessionResourceSetupItemCxtReq,list.size());
+                cout<<"setPDUSessionResourceSetupListCxtReq over"<<endl;
 		
 		Ngap_InitialContextSetupRequestIEs_t *ie = (Ngap_InitialContextSetupRequestIEs_t *)calloc(1,sizeof(Ngap_InitialContextSetupRequestIEs_t));
 		ie->id = Ngap_ProtocolIE_ID_id_PDUSessionResourceSetupListCxtReq;
 		ie->criticality = Ngap_Criticality_reject;
 		ie->value.present = Ngap_InitialContextSetupRequestIEs__value_PR_PDUSessionResourceSetupListCxtReq;
 		
+                cout<<"encode2PDUSessionResourceSetupListCxtReq"<<endl;
 		int ret = pduSessionResourceSetupRequestList->encode2PDUSessionResourceSetupListCxtReq(&ie->value.choice.PDUSessionResourceSetupListCxtReq);
+                cout<<"encode2PDUSessionResourceSetupListCxtReq over"<<endl;
 		if(!ret)
 		{
 			cout<<"encode PDUSessionResourceSetupListCxtReq IE error"<<endl;
@@ -378,7 +390,30 @@ namespace ngap{
 		ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
     	if( ret != 0) cout<<"encode NAS_PDU IE error"<<endl;
 	}
-	
+ 
+        void InitialContextSetupRequestMsg::setUERadioCapability(uint8_t* buffer,size_t size)
+        {
+               if(!ueRadioCapability)
+                        ueRadioCapability = new UERadioCapability();
+
+                ueRadioCapability->setUERadioCapability(buffer,size);
+
+                Ngap_InitialContextSetupRequestIEs_t *ie = (Ngap_InitialContextSetupRequestIEs_t *)calloc(1,sizeof(Ngap_PDUSessionResourceSetupRequestIEs_t));
+                ie->id = Ngap_ProtocolIE_ID_id_UERadioCapability;
+                ie->criticality = Ngap_Criticality_ignore;
+                ie->value.present = Ngap_InitialContextSetupRequestIEs__value_PR_UERadioCapability;
+
+                int ret = ueRadioCapability->encode2UERadioCapability(ie->value.choice.UERadioCapability);
+                if(!ret)
+                {
+                        cout<<"encode UERadioCapability IE error"<<endl;
+                        return ;
+                }
+
+                ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
+        if( ret != 0) cout<<"encode UERadioCapability IE error"<<endl;
+
+        }	
 	
 	int  InitialContextSetupRequestMsg::encode2buffer(uint8_t *buf, int buf_size)
 	{

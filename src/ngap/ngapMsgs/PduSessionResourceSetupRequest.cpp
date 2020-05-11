@@ -173,6 +173,14 @@ namespace ngap{
     	if( ret != 0) cout<<"encode PDUSessionResourceSetupListSUReq IE error"<<endl;
 		
 	}
+
+        void PduSessionResourceSetupRequestMsg::setPduSessionAggregateMaximumBitRate(long bit_rate_downlink, long bit_rate_uplink){
+          if(!pduSessionAggregateMaximumBitRate) pduSessionAggregateMaximumBitRate = new PduSessionAggregateMaximumBitRate(); 
+          pduSessionAggregateMaximumBitRate->setPduSessionAggregateMaximumBitRate(bit_rate_downlink, bit_rate_uplink);
+          Ngap_PDUSessionResourceSetupRequestIEs_t *ie = (Ngap_PDUSessionResourceSetupRequestIEs_t *)calloc(1,sizeof(Ngap_PDUSessionResourceSetupRequestIEs_t));
+          ie->id = Ngap_ProtocolIE_ID_id_PDUSessionAggregateMaximumBitRate;
+          ie->criticality = Ngap_Criticality_ignore;
+        }
 	
 	int  PduSessionResourceSetupRequestMsg::encode2buffer(uint8_t *buf, int buf_size)
 	{
