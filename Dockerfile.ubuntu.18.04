@@ -1,0 +1,95 @@
+#/*
+# * Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+# * contributor license agreements.  See the NOTICE file distributed with
+# * this work for additional information regarding copyright ownership.
+# * The OpenAirInterface Software Alliance licenses this file to You under
+# * the OAI Public License, Version 1.1  (the "License"); you may not use this file
+# * except in compliance with the License.
+# * You may obtain a copy of the License at
+# *
+# *      http://www.openairinterface.org/?page_id=698
+# *
+# * Unless required by applicable law or agreed to in writing, software
+# * distributed under the License is distributed on an "AS IS" BASIS,
+# * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# * See the License for the specific language governing permissions and
+# * limitations under the License.
+# *-------------------------------------------------------------------------------
+# * For more information about the OpenAirInterface (OAI) Software Alliance:
+# *      contact@openairinterface.org
+# */
+#---------------------------------------------------------------------
+#
+# Dockerfile for the Open-Air-Interface AMF service
+#   Valid for Ubuntu-18.04 (bionic)
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# DEVELOPER IMAGE
+#---------------------------------------------------------------------
+FROM ubuntu:bionic as oai-amf-developer
+
+ARG EURECOM_PROXY
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Europe
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
+    psmisc \
+    git \
+    vim \
+  && rm -rf /var/lib/apt/lists/*
+
+# Some GIT configuration commands quite useful
+RUN /bin/bash -c "if [[ -v EURECOM_PROXY ]]; then git config --global http.proxy $EURECOM_PROXY; fi"
+RUN git config --global https.postBuffer 123289600
+RUN git config --global http.sslverify false
+
+WORKDIR /openair-amf/
+COPY ./ /openair-amf
+
+# Installing all the needed libraries/packages to build and run AMF
+WORKDIR /openair-amf/build/scripts
+RUN ./build_amf --install-deps --force
+RUN rm -Rf /openair-amf
+WORKDIR /
+
+#---------------------------------------------------------------------
+# BUILDER IMAGE
+#---------------------------------------------------------------------
+FROM oai-amf-developer as oai-amf-builder
+
+WORKDIR /openair-amf/
+COPY ./ /openair-amf
+
+# Building AMF
+WORKDIR /openair-amf/build/scripts
+RUN ./build_amf --clean --Verbose --build-type Release --jobs
+
+#---------------------------------------------------------------------
+# TARGET IMAGE
+#---------------------------------------------------------------------
+FROM ubuntu:bionic as oai-amf
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Europe
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+# We install some debug tools for the moment in addition of mandatory libraries
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
+    psmisc \
+    net-tools \
+    bc \
+    tshark \
+  && rm -rf /var/lib/apt/lists/*
+
+# Copying executable and generated libraries
+WORKDIR /openair-amf/bin
+COPY --from=oai-amf-builder /openair-amf/build/amf/build/amf oai_amf
+#COPY --from=oai-amf-builder /usr/local/lib/libpistache.so /usr/local/lib/
+#COPY --from=oai-amf-builder /usr/local/lib/libnghttp2_asio.so.1 /usr/local/lib/
+#COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libboost_system.so.1.65.1 /usr/lib/x86_64-linux-gnu/
+#COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libboost_thread.so.1.65.1 /usr/lib/x86_64-linux-gnu/
+#COPY --from=oai-amf-builder /openair-amf/build/amf/build/libNAS.so /usr/local/lib/
+#COPY --from=oai-amf-builder /openair-amf/build/amf/build/libSMF_API.so /usr/local/lib/
+#RUN ldconfig
+

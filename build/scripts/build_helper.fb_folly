@@ -61,6 +61,7 @@ install_fb_folly_from_source(){
       liblzma-dev \
       libsnappy-dev \
       make \
+      wget \
       zlib1g-dev \
       binutils-dev \
       libjemalloc-dev \

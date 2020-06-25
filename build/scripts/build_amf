@@ -111,7 +111,7 @@ function main()
 
   if [ $var_check_install_deps -gt 0 ]; then
 	  disable_ipv6
-	  check_install_amf_deps $force
+	  check_install_amf_deps $force 0
 	  if [[ $? -ne 0 ]]; then
 		  echo_error "Error: AMF deps installation failed"
 		  return 1
