@@ -26,9 +26,9 @@
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
-# DEVELOPER IMAGE
+# BUILDER IMAGE
 #---------------------------------------------------------------------
-FROM ubuntu:bionic as oai-amf-developer
+FROM ubuntu:bionic as oai-amf-builder
 
 ARG EURECOM_PROXY
 
@@ -52,16 +52,6 @@ COPY ./ /openair-amf
 # Installing all the needed libraries/packages to build and run AMF
 WORKDIR /openair-amf/build/scripts
 RUN ./build_amf --install-deps --force
-RUN rm -Rf /openair-amf
-WORKDIR /
-
-#---------------------------------------------------------------------
-# BUILDER IMAGE
-#---------------------------------------------------------------------
-FROM oai-amf-developer as oai-amf-builder
-
-WORKDIR /openair-amf/
-COPY ./ /openair-amf
 
 # Building AMF
 WORKDIR /openair-amf/build/scripts
@@ -80,16 +70,46 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DE
     net-tools \
     bc \
     tshark \
+    libconfig++9v5 \
+    libsctp1 \
   && rm -rf /var/lib/apt/lists/*
 
 # Copying executable and generated libraries
 WORKDIR /openair-amf/bin
 COPY --from=oai-amf-builder /openair-amf/build/amf/build/amf oai_amf
-#COPY --from=oai-amf-builder /usr/local/lib/libpistache.so /usr/local/lib/
-#COPY --from=oai-amf-builder /usr/local/lib/libnghttp2_asio.so.1 /usr/local/lib/
-#COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libboost_system.so.1.65.1 /usr/lib/x86_64-linux-gnu/
-#COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libboost_thread.so.1.65.1 /usr/lib/x86_64-linux-gnu/
-#COPY --from=oai-amf-builder /openair-amf/build/amf/build/libNAS.so /usr/local/lib/
-#COPY --from=oai-amf-builder /openair-amf/build/amf/build/libSMF_API.so /usr/local/lib/
-#RUN ldconfig
+
+WORKDIR /usr/lib/x86_64-linux-gnu
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libmysqlclient.so.20 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libboost_system.so.1.65.1 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcpprest.so.2.10 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libssl.so.1.1 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/librtmp.so.1 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libpsl.so.5 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libldap_r-2.4.so.2 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/liblber-2.4.so.2 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libsasl2.so.2 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libgssapi.so.3 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libheimntlm.so.0 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libheimbase.so.1 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libkrb5.so.26 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libasn1.so.8 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libhcrypto.so.4 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libroken.so.18 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libwind.so.0 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libhx509.so.5 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libsqlite3.so.0 .
+
+WORKDIR /usr/local/lib
+COPY --from=oai-amf-builder /usr/local/lib/libpistache.so  .
+
+RUN ldconfig
+
+# Copying template configuration files
+WORKDIR /openair-amf/etc
+COPY --from=oai-amf-builder /openair-amf/etc/amf.conf .
+COPY --from=oai-amf-builder /openair-amf/etc/modules.conf .
+
+WORKDIR /openair-amf
 
