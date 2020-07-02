@@ -177,13 +177,13 @@ void amf_n11::handle_pdu_session_initial_request(string supi, std::shared_ptr<pd
   pdu_session_establishment_request["pei"] = "imei-200000000000001";
   pdu_session_establishment_request["gpsi"] = "msisdn-200000000001";
   pdu_session_establishment_request["dnn"] = "carrier.com";
-  pdu_session_establishment_request["sNssai"]["sst"] = 0;
-  pdu_session_establishment_request["sNssai"]["sd"] = "0";
+  pdu_session_establishment_request["sNssai"]["sst"] = 222;
+  pdu_session_establishment_request["sNssai"]["sd"] = "123";
   pdu_session_establishment_request["pduSessionId"] = psc.get()->pdu_session_id;
   pdu_session_establishment_request["requestType"] = "INITIAL_REQUEST";
   pdu_session_establishment_request["servingNfId"] = "servingNfId";
-  pdu_session_establishment_request["servingNetwork"]["mcc"] = "460";
-  pdu_session_establishment_request["servingNetwork"]["mnc"] = "011";
+  pdu_session_establishment_request["servingNetwork"]["mcc"] = "208";
+  pdu_session_establishment_request["servingNetwork"]["mnc"] = "95";
   pdu_session_establishment_request["anType"] = "3GPP_ACCESS";
   pdu_session_establishment_request["smContextStatusUri"] = "smContextStatusUri";
 
@@ -271,7 +271,7 @@ void amf_n11::curl_http_client(string remoteUri, string jsonData, string n1SmMsg
     if(n1SmMsg != ""){
       Logger::amf_n11().debug("is there ok? n1");
       unsigned char *n1_msg_hex  = format_string_as_hex(n1SmMsg);
-      Logger::amf_n11().debug("n1 msg hex: %s", n1_msg_hex);
+      //Logger::amf_n11().debug("n1 msg hex: %s", n1_msg_hex);
       part = curl_mime_addpart(mime);
       curl_mime_data(part, reinterpret_cast<const char*>(n1_msg_hex), n1SmMsg.length()/2);
       curl_mime_type(part, "application/vnd.3gpp.5gnas");

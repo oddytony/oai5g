@@ -128,7 +128,7 @@ int ngap_amf_handle_ue_context_release_complete(const sctp_assoc_id_t assoc_id, 
 
 int ngap_amf_handle_pdu_session_resource_setup_response(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p){
   Logger::ngap().debug("sending itti pdu_session_resource_setup_response to TASK_AMF_N2");
-#if 0
+#if 1
   PduSessionResourceSetupResponseMsg * pduresp = new PduSessionResourceSetupResponseMsg();
   if(!pduresp->decodefrompdu(message_p)){
     Logger::ngap().error("decoding PduSessionResourceSetupResponseMsg message error");
