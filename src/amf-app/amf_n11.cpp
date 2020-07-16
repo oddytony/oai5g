@@ -192,13 +192,13 @@ void amf_n11::handle_pdu_session_initial_request(string supi, std::shared_ptr<pd
   pdu_session_establishment_request["pei"] = "imei-200000000000001";
   pdu_session_establishment_request["gpsi"] = "msisdn-200000000001";
   pdu_session_establishment_request["dnn"] = dnn.c_str();
-  pdu_session_establishment_request["sNssai"]["sst"] = 1;
-  pdu_session_establishment_request["sNssai"]["sd"] = "0";
+  pdu_session_establishment_request["sNssai"]["sst"] = 222;
+  pdu_session_establishment_request["sNssai"]["sd"] = "123";
   pdu_session_establishment_request["pduSessionId"] = psc.get()->pdu_session_id;
   pdu_session_establishment_request["requestType"] = "INITIAL_REQUEST";
   pdu_session_establishment_request["servingNfId"] = "servingNfId";
-  pdu_session_establishment_request["servingNetwork"]["mcc"] = "460";
-  pdu_session_establishment_request["servingNetwork"]["mnc"] = "011";
+  pdu_session_establishment_request["servingNetwork"]["mcc"] = "208";
+  pdu_session_establishment_request["servingNetwork"]["mnc"] = "95";
   pdu_session_establishment_request["anType"] = "3GPP_ACCESS";
   pdu_session_establishment_request["smContextStatusUri"] = "smContextStatusUri";
 
