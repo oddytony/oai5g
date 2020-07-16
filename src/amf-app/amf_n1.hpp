@@ -8,6 +8,7 @@
 #include "itti_msg_n1.hpp"
 #include "bstrlib.h"
 #include "3gpp_ts24501.hpp"
+#include "amf_statistics.hpp"
 
 #include <pthread.h>
 #include <stdlib.h>
@@ -42,12 +43,13 @@ public:
   void handle_itti_message(itti_uplink_nas_data_ind&);
   void handle_itti_message(itti_downlink_nas_transfer & itti_msg);
 public: // nas message decode
-  void nas_signalling_establishment_request_handle(std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg, std::string snn);
+  void nas_signalling_establishment_request_handle(SecurityHeaderType type, std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg, std::string snn, uint8_t ulCount);
   void uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg);
   bool check_security_header_type(SecurityHeaderType & type, uint8_t *buffer);
 
 public:
   std::map<long, std::shared_ptr<nas_context>> amfueid2nas_context; // amf ue ngap id
+  std::map<string, std::shared_ptr<nas_context>> imsi2nas_context;
   std::map<std::string, long> supi2amfId;
   std::map<std::string, uint32_t> supi2ranId;
 
@@ -64,7 +66,8 @@ public:
   database_t *db_desc;
 
 private://nas message handlers
-  void registration_request_handle(bool isNasSig, std::shared_ptr<nas_context>nc, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring  reg);
+  void ue_initiate_de_registration_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas);
+  void registration_request_handle(bool isNasSig, std::shared_ptr<nas_context>nc, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, std::string snn, bstring  reg);
   void authentication_response_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg);
   void authentication_failure_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg);
   void security_mode_complete_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas_msg);
@@ -110,6 +113,8 @@ public:
   void annex_a_4_33501(uint8_t ck[16], uint8_t ik[16], uint8_t *input, uint8_t rand[16], std::string serving_network, uint8_t *output);
 public:
   void send_itti_to_smf_services_consumer(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, uint8_t request_type, uint8_t pdu_session_id, bstring dnn, bstring sm_msg);
+public:
+  void update_ue_information_statics(ue_infos &ueItem, const string connStatus, const string registerStatus, uint32_t ranid, uint32_t amfid, string imsi, string guti, string mcc, string mnc, uint32_t cellId);
 };
 }
 

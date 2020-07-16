@@ -75,6 +75,8 @@ int main(int argc, char **argv){
 
   //hexTest();
   //send_pdu_session_establishment_request();
+  //sleep(5);
+  //send_pdu_session_update_sm_context_establishment();
   //send_pdu_session_update_sm_context_establishment();
   //smf_client_test();
   //f1_test();

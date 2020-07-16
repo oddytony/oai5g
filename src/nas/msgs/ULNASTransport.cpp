@@ -9,6 +9,14 @@ ULNASTransport::ULNASTransport() {
 	plain_header = NULL;
 	ie_payload_container_type = NULL;
 	ie_payload_container = NULL;
+        ie_pdu_session_identity_2 = NULL;
+        ie_old_pdu_session_identity_2 = NULL;
+        ie_request_type = NULL;
+        ie_s_nssai = NULL;
+        ie_dnn = NULL;
+        ie_additional_information = NULL;
+        ie_ma_pdu_session_information = NULL;
+        ie_release_assistance_indication = NULL;
 }
 
 ULNASTransport::~ULNASTransport() {}
@@ -85,9 +93,9 @@ void ULNASTransport::setDNN(bstring dnn) {
 bool ULNASTransport::getDnn(bstring &dnn) {
 			if (ie_dnn) {
 				ie_dnn->getValue(dnn);
-				return 0;
+				return true;
 			}
-			else { return -1; }
+			else { return false; }
 		}
 void ULNASTransport::setAdditional_Information(uint8_t _length, uint8_t value) {
 	ie_additional_information = new Additional_Information(0x24,_length, value);

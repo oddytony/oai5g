@@ -77,6 +77,11 @@ void amf_n11_task(void*){
         itti_smf_services_consumer *m = dynamic_cast<itti_smf_services_consumer*>(msg);
         amf_n11_inst->handle_itti_message(ref(*m)); 
       }break;
+      case NSMF_PDU_SESS_UPDATE_SMCTX:{
+        Logger::task_amf_n11().info("receive NSMF_PDU_SESS_UPDATE_SMCTX, handling ...");
+        itti_nsmf_pdusession_update_sm_context *m = dynamic_cast<itti_nsmf_pdusession_update_sm_context*>(msg);
+        amf_n11_inst->handle_itti_message(ref(*m)); 
+      }break;
       case PDU_SESS_RES_SET_RESP:{
         Logger::task_amf_n11().info("receive PDU_SESS_RES_SET_RESP, handling ...");
         itti_pdu_session_resource_setup_response *m = dynamic_cast<itti_pdu_session_resource_setup_response*>(msg);
@@ -98,7 +103,8 @@ amf_n11::amf_n11(){
 amf_n11::~amf_n11(){}
 
 /***************************** itti message handlers *********************************/
-void amf_n11::handle_itti_message(itti_pdu_session_resource_setup_response &itti_msg){
+void amf_n11::handle_itti_message(itti_pdu_session_resource_setup_response &itti_msg){}
+void amf_n11::handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_msg){
   string supi = pduid2supi.at(itti_msg.pdu_session_id);
   Logger::amf_n11().debug("Try to find supi(%s) from pdusession_id(%d)", supi.c_str(), itti_msg.pdu_session_id);
   std::shared_ptr<pdu_session_context> psc;
@@ -117,7 +123,7 @@ void amf_n11::handle_itti_message(itti_pdu_session_resource_setup_response &itti
   }else{
     smf_selection_from_context(smf_addr);
   }
-  string remote_uri = smf_addr + "/nsmf-pdusession/v2/sm-contexts/" + supi + "/modify";
+  string remote_uri = smf_addr + "/nsmf-pdusession/v2/sm-contexts/" + "1" + "/modify";//scid
   nlohmann::json pdu_session_update_request;
   pdu_session_update_request["n2SmInfoType"] = "PDU_RES_SETUP_RSP";
   pdu_session_update_request["n2SmInfo"]["contentId"] = "n2SmMsg";
@@ -139,13 +145,22 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer& smf){
     psc = std::shared_ptr<pdu_session_context>(new pdu_session_context());
     set_supi_to_pdu_ctx(supi, psc);
   }
+  
+  pduid2supi[smf.pdu_sess_id] = supi;
+
   psc.get()->amf_ue_ngap_id = nc.get()->amf_ue_ngap_id;
   psc.get()->ran_ue_ngap_id = nc.get()->ran_ue_ngap_id;
   psc.get()->req_type = smf.req_type;
   psc.get()->pdu_session_id = smf.pdu_sess_id;
   //parse binary dnn and store
-  bstring bdnn = smf.dnn;
-  string dnn = bstring2charString(bdnn);
+  std::string dnn = "default";
+  if ((smf.dnn != nullptr) && (blength(smf.dnn) > 0)){
+    char * tmp = bstring2charString(smf.dnn);
+    dnn = tmp;
+    free (tmp);
+    tmp = nullptr;
+  }
+
   Logger::amf_n11().debug("requested DNN: %s", dnn.c_str());
   psc.get()->dnn = dnn;
 
@@ -176,14 +191,14 @@ void amf_n11::handle_pdu_session_initial_request(string supi, std::shared_ptr<pd
   pdu_session_establishment_request["supi"] = supi.c_str();
   pdu_session_establishment_request["pei"] = "imei-200000000000001";
   pdu_session_establishment_request["gpsi"] = "msisdn-200000000001";
-  pdu_session_establishment_request["dnn"] = "carrier.com";
-  pdu_session_establishment_request["sNssai"]["sst"] = 222;
-  pdu_session_establishment_request["sNssai"]["sd"] = "123";
+  pdu_session_establishment_request["dnn"] = dnn.c_str();
+  pdu_session_establishment_request["sNssai"]["sst"] = 1;
+  pdu_session_establishment_request["sNssai"]["sd"] = "0";
   pdu_session_establishment_request["pduSessionId"] = psc.get()->pdu_session_id;
   pdu_session_establishment_request["requestType"] = "INITIAL_REQUEST";
   pdu_session_establishment_request["servingNfId"] = "servingNfId";
-  pdu_session_establishment_request["servingNetwork"]["mcc"] = "208";
-  pdu_session_establishment_request["servingNetwork"]["mnc"] = "95";
+  pdu_session_establishment_request["servingNetwork"]["mcc"] = "460";
+  pdu_session_establishment_request["servingNetwork"]["mnc"] = "011";
   pdu_session_establishment_request["anType"] = "3GPP_ACCESS";
   pdu_session_establishment_request["smContextStatusUri"] = "smContextStatusUri";
 
@@ -278,36 +293,29 @@ void amf_n11::curl_http_client(string remoteUri, string jsonData, string n1SmMsg
       //curl_mime_name (part, "n1SmMsg");
     }
 
-    Logger::amf_n11().debug("is there ok?");
 
     if(n2SmMsg != ""){
-      Logger::amf_n11().debug("is there ok? n2");
       unsigned char *n2_msg_hex  = format_string_as_hex(n2SmMsg);
       part = curl_mime_addpart(mime);
       curl_mime_data(part, reinterpret_cast<const char*>(n2_msg_hex), n2SmMsg.length()/2);
-      curl_mime_type(part, "application/vnd.3gpp.5gngap");
+      curl_mime_type(part, "application/vnd.3gpp.ngap");
       //curl_mime_name (part, "n2SmMsg");
     }
     
-    Logger::amf_n11().debug("is there ok?1");
     curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
     //res = curl_easy_perform(curl);
 
-    Logger::amf_n11().debug("is there ok?2");
     // Response information.
     long httpCode(0);
     std::unique_ptr<std::string> httpData(new std::string());
 
-    Logger::amf_n11().debug("is there ok?3");
     // Hook up data handling function.
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
 
-    Logger::amf_n11().debug("is there ok?4");
     res = curl_easy_perform(curl);
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 
-    Logger::amf_n11().debug("is there ok?5");
     //get cause from the response
     string response = *httpData.get();
     string jsonData = "";

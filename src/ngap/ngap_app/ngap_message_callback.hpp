@@ -5,6 +5,7 @@
 #include "itti.hpp"
 #include "NGSetupRequest.hpp"
 #include "PduSessionResourceSetupResponse.hpp"
+#include "InitialContextSetupResponse.hpp"
 //extern "C"{
 //  #include "Ngap_NGAP-PDU.h"
 //}
@@ -81,7 +82,34 @@ int ngap_amf_handle_uplink_nas_transport(const sctp_assoc_id_t             assoc
 }
 
 int ngap_amf_handle_initial_context_setup_response(const sctp_assoc_id_t             assoc_id,  const sctp_stream_id_t            stream,  struct Ngap_NGAP_PDU *message_p){
-  Logger::ngap().debug("sending itti initial context setup response to TASK_AMF_N2");
+  Logger::ngap().debug("sending itti initial context setup response to TASK_AMF_N11");
+  InitialContextSetupResponseMsg * initCtxResp = new InitialContextSetupResponseMsg();
+  if(!initCtxResp->decodefrompdu(message_p)){
+    Logger::ngap().error("decoding InitialContextSetupResponse message error");
+    return -1;
+  }
+  std::vector<PDUSessionResourceSetupResponseItem_t> list;
+  if(!initCtxResp->getPduSessionResourceSetupResponseList(list)){
+    Logger::ngap().error("decoding PduSessionResourceSetupResponseMsg getPduSessionResourceSetupResponseList IE  error or this IE is not avaliable");
+    return 0;
+  }
+  uint8_t transferIe[500];
+  memcpy(transferIe, list[0].pduSessionResourceSetupResponseTransfer.buf, list[0].pduSessionResourceSetupResponseTransfer.size);
+  bstring n2sm = blk2bstr(transferIe, list[0].pduSessionResourceSetupResponseTransfer.size);
+
+  itti_nsmf_pdusession_update_sm_context * itti_msg = new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
+  itti_msg->pdu_session_id = list[0].pduSessionId;
+  itti_msg->n2sm = n2sm;
+  std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i = std::shared_ptr<itti_nsmf_pdusession_update_sm_context>(itti_msg);
+  int ret = itti_inst->send_msg(i);
+  if (0 != ret) {
+    Logger::ngap().error( "Could not send ITTI message %s to task TASK_AMF_N11", i->get_msg_name());
+  } 
+  return 0;
+}
+
+int ngap_amf_handle_initial_context_setup_failure(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p){
+  Logger::ngap().debug("sending itti initial context setup failure to TASK_AMF_N2");
   return 0;
 }
 
@@ -127,7 +155,7 @@ int ngap_amf_handle_ue_context_release_complete(const sctp_assoc_id_t assoc_id, 
 }
 
 int ngap_amf_handle_pdu_session_resource_setup_response(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p){
-  Logger::ngap().debug("sending itti pdu_session_resource_setup_response to TASK_AMF_N2");
+  Logger::ngap().debug("sending itti pdu_session_resource_setup_response to TASK_AMF_N11");
 #if 1
   PduSessionResourceSetupResponseMsg * pduresp = new PduSessionResourceSetupResponseMsg();
   if(!pduresp->decodefrompdu(message_p)){
@@ -143,13 +171,13 @@ int ngap_amf_handle_pdu_session_resource_setup_response(const sctp_assoc_id_t as
   memcpy(transferIe, list[0].pduSessionResourceSetupResponseTransfer.buf, list[0].pduSessionResourceSetupResponseTransfer.size);
   bstring n2sm = blk2bstr(transferIe, list[0].pduSessionResourceSetupResponseTransfer.size);
 
-  itti_pdu_session_resource_setup_response * itti_msg = new itti_pdu_session_resource_setup_response(TASK_NGAP, TASK_AMF_N11);
+  itti_nsmf_pdusession_update_sm_context * itti_msg = new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
   itti_msg->pdu_session_id = list[0].pduSessionId;
   itti_msg->n2sm = n2sm;
-  std::shared_ptr<itti_pdu_session_resource_setup_response> i = std::shared_ptr<itti_pdu_session_resource_setup_response>(itti_msg);
+  std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i = std::shared_ptr<itti_nsmf_pdusession_update_sm_context>(itti_msg);
   int ret = itti_inst->send_msg(i);
   if (0 != ret) {
-    Logger::ngap().error( "Could not send ITTI message %s to task TASK_AMF_N2", i->get_msg_name());
+    Logger::ngap().error( "Could not send ITTI message %s to task TASK_AMF_N11", i->get_msg_name());
   } 
 #endif
   return 0;
@@ -197,7 +225,7 @@ ngap_message_decoded_callback   messages_callback[][3] = {
     {0,0,0}, /*11 HandoverNotification*/
     {0,0,0}, /*12 HandoverPreparation*/
     {0,0,0}, /*13 HandoverResourceAllocation*/
-    {0,ngap_amf_handle_initial_context_setup_response,0/*ngap_amf_handle_initial_context_setup_failure*/}, /*InitialContextSetup*/
+    {0,ngap_amf_handle_initial_context_setup_response,ngap_amf_handle_initial_context_setup_failure}, /*InitialContextSetup*/
     {ngap_amf_handle_initial_ue_message,0,0},//15 {ngap_amf_handle_initial_ue_message,0,0}, /*InitialUEMessage*/
     {0,0,0}, /*16 LocationReportingControl*/
     {0,0,0}, /*17 LocationReportingFailureIndication*/

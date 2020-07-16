@@ -5,7 +5,6 @@
 using namespace nas;
 
 RegistrationRequest::RegistrationRequest(){
-  Logger::nas_mm().debug("initiating class RegistrationRequest");
   plain_header = NULL;
   ie_5gsregistrationtype = NULL;
   ie_ngKSI = NULL;
@@ -82,6 +81,17 @@ bool RegistrationRequest::getSuciSupiFormatImsi(nas::SUCI_imsi_t &imsi) {
 	}
 	else { return false; }
 }
+
+std::string RegistrationRequest::get_5g_guti(){
+  if(ie_5gs_mobility_id){
+    nas::_5G_GUTI_t guti;
+    ie_5gs_mobility_id->get5GGUTI(guti);
+    return "1234567890";
+  }else{
+    return "error";
+  }
+}
+
 //Additional_GUTI
 void RegistrationRequest::setAdditional_GUTI_SUCI_SUPI_format_IMSI(const string mcc, const string mnc, uint8_t amf_region_id, uint8_t amf_set_id, uint8_t amf_pointer, const string _5g_tmsi) {
 	/*if (amf_pointer&0x80) {
@@ -123,9 +133,10 @@ void RegistrationRequest::set5G_MM_capability(uint8_t value){
   ie_5g_mm_capability = new _5GMMCapability(0x10,value);
 }
 uint8_t RegistrationRequest::get5GMMCapability(){
-  if (ie_5g_mm_capability != nullptr)
-	return ie_5g_mm_capability->getValue();
-  else return -1;
+  if(ie_5g_mm_capability)
+    return ie_5g_mm_capability->getValue();
+  else
+    return -1;
 }
 void RegistrationRequest::setUE_Security_Capability(uint8_t g_EASel, uint8_t g_IASel) {
 	ie_ue_security_capability = new UESecurityCapability(0x2E, g_EASel, g_IASel);

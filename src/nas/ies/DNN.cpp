@@ -18,7 +18,9 @@ DNN::~DNN() {}
 	_value = value;
 }*/
 void DNN::getValue(bstring &dnn) {
-	dnn = bstrcpy(_DNN);
+        //dnn = _DNN;
+	//dnn = bstrcpy(_DNN);
+        dnn = blk2bstr((uint8_t*)bdata(_DNN)+1, blength(_DNN)-1);
 }
 int DNN::encode2buffer(uint8_t *buf, int len) {
 	Logger::nas_mm().debug("encoding DNN iei(0x%x)", _iei);
@@ -52,8 +54,9 @@ int DNN::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
 	length = *(buf + decoded_size); decoded_size++;
 	decode_bstring(&_DNN, length, (buf + decoded_size), len - decoded_size);
 	decoded_size += length;
-	for (int i = 0; i < length; i++) {
-		Logger::nas_mm().debug("decoded DNN value(0x%x)", (uint8_t*)_DNN->data[i]);
+	for (int i = 0; i < blength(_DNN); i++) {
+	  Logger::nas_mm().debug("decoded DNN value(0x%x)", (uint8_t*)bdata(_DNN)[i]);
+          //print_buffer("amf_n1", "decoded dnn bitstring", (uint8_t*)bdata(_DNN), blength(_DNN));
 	}
 	Logger::nas_mm().debug("decoded DNN len(%d)", decoded_size);
 	return decoded_size;

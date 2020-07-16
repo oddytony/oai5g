@@ -159,7 +159,7 @@ void send_pdu_session_update_sm_context_establishment()
   std::cout << "[AMF N11] send_pdu_session_update_sm_context_establishment"<<std::endl;
 
   nlohmann::json pdu_session_modification_request;
-  std::string n2_msg = "0003e0ac0a0501000000010000";
+  std::string n2_msg = "0003e0c0a8029d56ba263c003c";
 
   //format string as hex
   unsigned char *n2_msg_hex  = format_string_as_hex(n2_msg);
@@ -206,7 +206,7 @@ void send_pdu_session_update_sm_context_establishment()
   std::string supi_str;
   //std::string url = std::string("http://172.16.1.101/nsmf-pdusession/v2/sm-contexts");
   //std::string url = std::string("http://172.16.1.101/nsmf-pdusession/v2/sm-contexts/imsi-200000000000001/modify");
-  std::string url = std::string("http://10.103.238.82:8889/nsmf-pdusession/v2/sm-contexts/1/modify");
+  std::string url = std::string("http://192.168.2.189:8889/nsmf-pdusession/v2/sm-contexts/1/modify");
 
   //Fill the json part
   pdu_session_modification_request["n2SmInfoType"] = "PDU_RES_SETUP_RSP";

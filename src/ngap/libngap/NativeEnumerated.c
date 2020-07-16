@@ -253,6 +253,8 @@ NativeEnumerated_decode_aper(const asn_codec_ctx_t *opt_codec_ctx,
 	}
 
 	ASN_DEBUG("Decoding %s as NativeEnumerated", td->name);
+	//printf("test0515 Decoding %s as NativeEnumerated\n", td->name);
+        
 
 	if(ct->flags & APC_EXTENSIBLE) {
 		int inext = per_get_few_bits(pd, 1);
@@ -291,6 +293,7 @@ NativeEnumerated_decode_aper(const asn_codec_ctx_t *opt_codec_ctx,
 
 	*native = specs->value2enum[value].nat_value;
 	ASN_DEBUG("Decoded %s = %ld", td->name, *native);
+	//printf("test0515 Decoded %s = %ld\n", td->name, *native);
 
 	return rval;
 }

@@ -55,6 +55,7 @@ void setLast_Visited_Registered_TAI(uint8_t MNC_MCC1, uint8_t MNC_MCC2, uint8_t 
   bool get5GSRegistrationType(bool &is_for, uint8_t &reg_type/*3bits*/);//返回获取IE的状态，成功或者失败
   uint8_t getngKSI();//return -1;表示获取IE失败
   uint8_t getMobilityIdentityType();//return -1;表示获取IE失败
+  std::string get_5g_guti();//"error" for missing IE GUTI
   bool getSuciSupiFormatImsi(nas::SUCI_imsi_t &imsi);
   uint8_t getNonCurrentNativeNasKSI();//return -1;表示获取IE失败
   uint8_t get5GMMCapability();//return -1;表示获取IE失败;   set接口可能有bug

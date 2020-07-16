@@ -17,6 +17,7 @@ public:
   void handle_itti_message(itti_smf_services_consumer &);
   void handle_pdu_session_initial_request(string supi, std::shared_ptr<pdu_session_context> psc, string smf_addr, bstring sm_msg, string dnn);
   void handle_itti_message(itti_pdu_session_resource_setup_response &itti_msg);
+  void handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_msg);
 public:
   std::map<string, std::shared_ptr<pdu_session_context>> supi2pdu; // amf ue ngap id
   mutable std::shared_mutex m_supi2pdu;

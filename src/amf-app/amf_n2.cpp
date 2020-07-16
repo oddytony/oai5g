@@ -121,6 +121,8 @@ void amf_n2::handle_itti_message(itti_ng_setup_request & itti_msg){
     Logger::amf_n2().debug("Update gNB context with assoc id (%d)", itti_msg.assoc_id);
   } 
 
+  gnb_infos gnbItem;
+
   //Get IE Global RAN Node ID
   uint32_t gnb_id; string gnb_mcc; string gnb_mnc;
   if(!itti_msg.ngSetupReq->getGlobalGnbID(gnb_id, gnb_mcc, gnb_mnc)){
@@ -129,12 +131,14 @@ void amf_n2::handle_itti_message(itti_ng_setup_request & itti_msg){
   }
   Logger::amf_n2().debug("IE GlobalGNBID(0x%x)",gnb_id);
   gc->globalRanNodeId = gnb_id; 
+  gnbItem.gnb_id = gnb_id;
 
   string gnb_name;
   if(!itti_msg.ngSetupReq->getRanNodeName(gnb_name)){
     Logger::amf_n2().warn("IE RanNodeName not existed");
   }else{
     gc->gnb_name = gnb_name;
+    gnbItem.gnb_name = gnb_name;
     Logger::amf_n2().debug("IE RanNodeName(%s)",gnb_name.c_str());
   }
 
@@ -149,7 +153,9 @@ void amf_n2::handle_itti_message(itti_ng_setup_request & itti_msg){
   if(!itti_msg.ngSetupReq->getSupportedTAList(s_ta_list)){//getSupportedTAList
     return;
   }
-  
+  gnbItem.mcc = s_ta_list[0].b_plmn_list[0].mcc; 
+  gnbItem.mnc = s_ta_list[0].b_plmn_list[0].mnc;
+  gnbItem.tac = s_ta_list[0].tac; 
   //association GlobalRANNodeID with assoc_id
   //store RAN Node Name in gNB context, if present
   //verify PLMN Identity and TAC with configuration and store supportedTAList in gNB context, if verified; else response NG SETUP FAILURE with cause "Unknown PLMN"(9.3.1.2, ts38413)
@@ -208,6 +214,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request & itti_msg){
   gc.get()->ng_state = NGAP_READY;
   Logger::amf_n2().debug("gnb with [gnb_id(0x%x), assoc_id(%d)] has been attached to AMF", gc.get()->globalRanNodeId, itti_msg.assoc_id);
   stacs.gNB_connected += 1;
+  stacs.gnbs.push_back(gnbItem);
   return;
 }
 
@@ -243,47 +250,36 @@ void amf_n2::handle_itti_message(itti_initial_ue_message &init_ue_msg){
   if(!is_ran_ue_id_2_ne_ngap_context(ran_ue_ngap_id)){
     Logger::amf_n2().debug("Create a new ue ngap context with ran_ue_ngap_id(0x%x)", ran_ue_ngap_id);
     unc = std::shared_ptr<ue_ngap_context>(new ue_ngap_context());
-    Logger::amf_n2().debug("testing 1");
     set_ran_ue_ngap_id_2_ue_ngap_context(ran_ue_ngap_id, unc);
-    Logger::amf_n2().debug("testing 2");
   }else{
     unc = ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
   }
   if(unc.get() == nullptr){
     Logger::amf_n2().error("Failed to get ue ngap context for ran_ue_ngap_id(0x%x)",21);
   }else{
-    Logger::amf_n2().debug("testing 3");
     //store information into ue ngap context
     unc.get()->ran_ue_ngap_id = ran_ue_ngap_id;
-    Logger::amf_n2().debug("testing 4");
     unc.get()->sctp_stream_recv = init_ue_msg.stream;
-    Logger::amf_n2().debug("testing 5");
     unc.get()->sctp_stream_send == gc.get()->next_sctp_stream;
-    Logger::amf_n2().debug("testing 6");
     gc.get()->next_sctp_stream += 1;
     if(gc.get()->next_sctp_stream >= gc.get()->instreams)
       gc.get()->next_sctp_stream = 1;
     unc.get()->gnb_assoc_id = init_ue_msg.assoc_id;
     NrCgi_t cgi;
     Tai_t   tai;
-    Logger::amf_n2().debug("testing 7");
     if(init_ue_msg.initUeMsg->getUserLocationInfoNR(cgi, tai)){
-      Logger::amf_n2().debug("testing 8");
       itti_msg->cgi = cgi;
       itti_msg->tai = tai;
     }else{
       Logger::amf_n2().error("Missing Mondontary IE UserLocationInfoNR");
       return;
     }
-    Logger::amf_n2().debug("testing 9");
     if(init_ue_msg.initUeMsg->getRRCEstablishmentCause() == -1){
       Logger::amf_n2().warn("IE RRCEstablishmentCause not present");
       itti_msg->rrc_cause = -1;//not present
     }else{
       itti_msg->rrc_cause = init_ue_msg.initUeMsg->getRRCEstablishmentCause();
-      Logger::amf_n2().debug("testing 10");
     }
-      Logger::amf_n2().debug("testing 11");
 #if 0
     if(init_ue_msg.initUeMsg->getUeContextRequest() == -1){
       Logger::amf_n2().warn("IE UeContextRequest not present");
@@ -302,8 +298,6 @@ void amf_n2::handle_itti_message(itti_initial_ue_message &init_ue_msg){
       itti_msg->_5g_s_tmsi = _5g_s_tmsi;
       Logger::amf_n2().debug("5g_s_tmsi true");
     }
-
-    Logger::amf_n2().debug("testing 13");
 
     uint8_t *nas_buf;
     size_t   nas_len = 0;
@@ -349,7 +343,7 @@ void amf_n2::handle_itti_message(itti_ul_nas_transport &ul_nas_transport){
   }
   if(unc.get()->ng_ue_state != NGAP_UE_CONNECTED){
     Logger::amf_n2().error("Received NGAP UPLINK_NAS_TRANSPORT while UE in state != NGAP_UE_CONNECTED");
-    return;
+    //return;
   }
   itti_uplink_nas_data_ind * itti_msg = new itti_uplink_nas_data_ind(TASK_AMF_N2, TASK_AMF_N1);
   itti_msg->is_nas_signalling_estab_req = false;
@@ -437,30 +431,23 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request &itti_msg){
     std::vector<PDUSessionResourceSetupRequestItem_t>list;
     PDUSessionResourceSetupRequestItem_t item;
     item.pduSessionId = itti_msg.pdu_session_id;
-    item.s_nssai.sst = "00";
-    item.s_nssai.sd = "none";
+    item.s_nssai.sst = "01";
+    item.s_nssai.sd = "";
     item.pduSessionNAS_PDU = NULL;
-    Logger::amf_n2().debug("Encoding parameters for service request, testing point 0");
     bstring n2sm = itti_msg.n2sm;
-    Logger::amf_n2().debug("Encoding parameters for service request, testing point 0.1 n2sm_size(%d)", blength(itti_msg.n2sm));
-    Logger::amf_n2().debug("Encoding parameters for service request, testing point 1");
     if(blength(itti_msg.n2sm) != 0){
       item.pduSessionResourceSetupRequestTransfer.buf = (uint8_t*)bdata(itti_msg.n2sm);
-      Logger::amf_n2().debug("Encoding parameters for service request, testing point 1.1");
       item.pduSessionResourceSetupRequestTransfer.size = blength(itti_msg.n2sm);
     }else{
       Logger::amf_n2().error("n2sm empty!");
     }
     list.push_back(item);
-    Logger::amf_n2().debug("Encoding parameters for service request, testing point 2");
     msg->setPduSessionResourceSetupRequestList(list);
-    Logger::amf_n2().debug("Encoding parameters for service request, testing point 3");
     msg->setUEAggregateMaxBitRate(0x08a7d8c0, 0x20989680);
-    Logger::amf_n2().debug("Encoding parameters for service request, testing point 4");
   }
 
-  uint8_t buffer[7000];
-  int encoded_size = msg->encode2buffer(buffer, 7000);
+  uint8_t buffer[10000];
+  int encoded_size = msg->encode2buffer(buffer, 10000);
   bstring b = blk2bstr(buffer, encoded_size);
   sctp_s_38412.sctp_send_msg(gc.get()->sctp_assoc_id, unc.get()->sctp_stream_send,&b);
 }
@@ -491,8 +478,8 @@ void amf_n2::handle_itti_message(itti_pdu_session_resource_setup_request &itti_m
   nas_pdu[blength(itti_msg.nas)] = '\0';
   item.pduSessionNAS_PDU = nas_pdu;//(uint8_t*)bdata(itti_msg.nas);
   item.sizeofpduSessionNAS_PDU = blength(itti_msg.nas);
-  item.s_nssai.sst = "00";
-  item.s_nssai.sd = "none";
+  item.s_nssai.sst = "01";
+  item.s_nssai.sd = "";
   item.pduSessionResourceSetupRequestTransfer.buf = (uint8_t*)bdata(itti_msg.n2sm);
   item.pduSessionResourceSetupRequestTransfer.size = blength(itti_msg.n2sm);
   list.push_back(item);
@@ -505,30 +492,19 @@ void amf_n2::handle_itti_message(itti_pdu_session_resource_setup_request &itti_m
 }
 
 void amf_n2::handle_itti_message(itti_ue_context_release_request &itti_msg){
-  Logger::amf_n2().debug("handle_itti_message ...");
+  Logger::amf_n2().debug("handling ue context release request ...");
   unsigned long amf_ue_ngap_id = itti_msg.ueCtxRel->getAmfUeNgapId();
-  Logger::amf_n2().debug("handle_itti_message ... test point 0");
   uint32_t ran_ue_ngap_id = itti_msg.ueCtxRel->getRanUeNgapId();
-  Logger::amf_n2().debug("handle_itti_message ... test point 1");
   e_Ngap_CauseRadioNetwork cause;
-  Logger::amf_n2().debug("handle_itti_message ... test point 2");
   itti_msg.ueCtxRel->getCauseRadioNetwork(cause);
-  Logger::amf_n2().debug("handle_itti_message ... test point 3");
   UEContextReleaseCommandMsg * ueCtxRelCmd = new UEContextReleaseCommandMsg();
-  Logger::amf_n2().debug("handle_itti_message ... test point 4");
   ueCtxRelCmd->setMessageType();
-  Logger::amf_n2().debug("handle_itti_message ... test point 5");
   ueCtxRelCmd->setUeNgapIdPair(amf_ue_ngap_id, ran_ue_ngap_id);
-  Logger::amf_n2().debug("handle_itti_message ... test point 6");
   ueCtxRelCmd->setCauseRadioNetwork(cause);
-  Logger::amf_n2().debug("handle_itti_message ... test point 7");
   uint8_t buffer[200];
   int encoded_size = ueCtxRelCmd->encode2buffer(buffer, 200);
-  Logger::amf_n2().debug("handle_itti_message ... test point 8");
   bstring b = blk2bstr(buffer, encoded_size);
-  Logger::amf_n2().debug("handle_itti_message ... test point 9");
   sctp_s_38412.sctp_send_msg(itti_msg.assoc_id, itti_msg.stream, &b);
-  Logger::amf_n2().debug("handle_itti_message ... test point 10");
 }
 
 void amf_n2::handle_itti_message(itti_ue_radio_capability_indication &itti_msg){

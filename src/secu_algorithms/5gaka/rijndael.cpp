@@ -73,7 +73,7 @@ void Authentication_5gaka::RijndaelKeySchedule(const uint8_t key[16]){
     */
   }
 //#if AUTH_ALG_ON
-#if 1 
+#if 0 
   for(int m=0; m<11; m++){
     printf("roundKeys(%d)\n0x", m);
     for(int i=0; i<16; i++)

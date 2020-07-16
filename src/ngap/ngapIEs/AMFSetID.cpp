@@ -35,7 +35,15 @@ namespace ngap{
 	bool AMFSetID::decodefrombitstring(Ngap_AMFSetID_t &amfsetid)
 	{
 		if(!amfsetid.buf) return false;
-		setid = *(uint16_t *)amfsetid.buf & 0x3ff;
+                printf("test for amfsetid\n");
+                for(int i=0; i<amfsetid.size; i++){
+                  printf("%x ", amfsetid.buf[i]);
+                }
+                printf("\n");
+                uint16_t temp = 0;
+                temp |= amfsetid.buf[0]<<8;
+                temp |= amfsetid.buf[1];
+		setid = (temp&0xffc0)>>6;//1111 1111 11 00 0000
 
 		return true;
 	}

@@ -392,36 +392,36 @@ int _5GSMobilityIdentity::suci_decodefrombuffer(uint8_t *buf, int len, int ie_le
       octet = *(buf+decoded_size);
       decoded_size++;
       mcc += (octet & 0x0f); 
-      Logger::nas_mm().debug("mcc(%s)",std::to_string(mcc).c_str());
-      Logger::nas_mm().debug("buffer(0x%x)",octet);
+      //Logger::nas_mm().debug("mcc(%s)",std::to_string(mcc).c_str());
+      //Logger::nas_mm().debug("buffer(0x%x)",octet);
       if((octet&0xf0) == 0xf0){
         octet = *(buf+decoded_size);
         decoded_size++;
         mnc += ((octet & 0x0f)*10 + ((octet&0xf0)>>4));
-        Logger::nas_mm().debug("mnc(2 digits)(%s)",std::to_string(mnc).c_str());
+        //Logger::nas_mm().debug("mnc(2 digits)(%s)",std::to_string(mnc).c_str());
       }else{
         mnc += ((octet&0xf0)>>4);
         octet = *(buf+decoded_size);
-        Logger::nas_mm().debug("buffer(0x%x)",octet);
+        //Logger::nas_mm().debug("buffer(0x%x)",octet);
         decoded_size++;
         mnc += ((octet & 0x0f)*100 + ((octet&0xf0)>>4)*10);
-        Logger::nas_mm().debug("mnc(3 digits)(%s)",std::to_string(mnc).c_str());
+        //Logger::nas_mm().debug("mnc(3 digits)(%s)",std::to_string(mnc).c_str());
       }
       Logger::nas_mm().debug("mcc(%s) mnc(%s)",std::to_string(mcc).c_str(),std::to_string(mnc).c_str());
       supi_format_imsi->mcc = (const string)(std::to_string(mcc));
       supi_format_imsi->mnc = (const string)(std::to_string(mnc));
       int routid = 0; uint8_t digit[4];
       octet = *(buf+decoded_size); decoded_size++;
-      Logger::nas_mm().debug("octet(0x%x)",octet);
+      //Logger::nas_mm().debug("octet(0x%x)",octet);
       digit[0] = octet & 0x0f;
       digit[1] = (octet & 0xf0)>>4;
       octet = *(buf+decoded_size); decoded_size++;
-      Logger::nas_mm().debug("octet(0x%x)",octet);
+      //Logger::nas_mm().debug("octet(0x%x)",octet);
       digit[2] = octet & 0x0f;
       digit[3] = (octet & 0xf0)>>4;
       if(!digit[0] && digit[1]==0x0f && digit[2]==0x0f && digit[3]==0x0f) {
         supi_format_imsi->routingIndicator = (const string)("none");
-        Logger::nas_mm().debug("routing indicator(%s)",supi_format_imsi->routingIndicator.c_str());
+        //Logger::nas_mm().debug("routing indicator(%s)",supi_format_imsi->routingIndicator.c_str());
       }
       else{
         string result = "";
@@ -437,15 +437,15 @@ int _5GSMobilityIdentity::suci_decodefrombuffer(uint8_t *buf, int len, int ie_le
       supi_format_imsi->protectionSchemeId = 0x0f & octet;
       octet = *(buf+decoded_size); decoded_size++;
       supi_format_imsi->homeNetworkPKI = octet;
-      Logger::nas_mm().debug("decoded homeNetworkPKI(%x)",supi_format_imsi->homeNetworkPKI);
+      //Logger::nas_mm().debug("decoded homeNetworkPKI(%x)",supi_format_imsi->homeNetworkPKI);
       string msin = "";
       int digit_low = 0, digit_high = 0, numMsin = ie_len-decoded_size;
-      Logger::nas_mm().debug("number of msin(%d)",numMsin);
+      //Logger::nas_mm().debug("number of msin(%d)",numMsin);
       for(int i=0; i< numMsin; i++){
         octet = *(buf+decoded_size); decoded_size++;
         digit_high = (octet & 0xf0) >> 4;
         digit_low  = octet & 0x0f;
-        Logger::amf_n1().debug("msin(%d), %d %d", i, digit_high, digit_low);
+        //Logger::amf_n1().debug("msin(%d), %d %d", i, digit_high, digit_low);
         msin += ((const string)(std::to_string(digit_low)) + (const string)(std::to_string(digit_high)));
       }
       supi_format_imsi->msin = msin; 

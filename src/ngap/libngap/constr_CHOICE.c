@@ -1050,6 +1050,7 @@ CHOICE_decode_aper(const asn_codec_ctx_t *opt_codec_ctx,
 		if(value < 0) ASN__DECODE_STARVED;
 		ASN_DEBUG("CHOICE %s got index %d in range %d",
 		          td->name, value, ct->range_bits);
+                //printf("test0515 CHOICE %s got index %d in range %d\n", td->name, value, ct->range_bits);
 		if(value > ct->upper_bound)
 			ASN__DECODE_FAILED;
 	} else {
@@ -1078,6 +1079,7 @@ CHOICE_decode_aper(const asn_codec_ctx_t *opt_codec_ctx,
 		memb_ptr2 = &memb_ptr;
 	}
 	ASN_DEBUG("Discovered CHOICE %s encodes %s", td->name, elm->name);
+        //printf("test0515 Discovered CHOICE %s encodes %s\n", td->name, elm->name);
 
 	if(ct && ct->range_bits >= 0) {
 		rv = elm->type->op->aper_decoder(opt_codec_ctx, elm->type,
@@ -1087,9 +1089,11 @@ CHOICE_decode_aper(const asn_codec_ctx_t *opt_codec_ctx,
 		                        elm->encoding_constraints.per_constraints, memb_ptr2, pd);
 	}
 
-	if(rv.code != RC_OK)
+	if(rv.code != RC_OK){
 		ASN_DEBUG("Failed to decode %s in %s (CHOICE) %d",
 		          elm->name, td->name, rv.code);
+                //printf("test0515 Failed to decode %s in %s (CHOICE) %d\n", elm->name, td->name, rv.code);
+        }
 	return rv;
 }
 
@@ -1106,6 +1110,7 @@ CHOICE_encode_aper(const asn_TYPE_descriptor_t *td,
 	if(!sptr) ASN__ENCODE_FAILED;
 
 	ASN_DEBUG("Encoding %s as CHOICE using ALIGNED PER", td->name);
+        //printf("test0515 Encoding %s as CHOICE using ALIGNED PER\n", td->name);
 
 	if(constraints) ct = &constraints->value;
 	else if(td->encoding_constraints.per_constraints)

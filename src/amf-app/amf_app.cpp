@@ -28,6 +28,8 @@ extern statistics stacs;
 
 void amf_app_task(void*);
 
+uint32_t golbal_tmsi = 1;
+
 amf_app::amf_app(const amf_config &amf_cfg){
   Logger::amf_app().startup("Creating amf application functionality layer");
   if(itti_inst->create_task(TASK_AMF_APP, amf_app_task, nullptr)){
@@ -119,6 +121,20 @@ void amf_app::set_amf_ue_ngap_id_2_ue_context(const long & amf_ue_ngap_id, std::
   amf_ue_ngap_id2ue_ctx[amf_ue_ngap_id] = uc;
 }
 
+bool amf_app::is_ran_amf_id_2_ue_context(const string & ue_context_key) const {
+  std::shared_lock lock(m_ue_ctx_key);
+  return bool{ue_ctx_key.count(ue_context_key) > 0};
+}
+
+std::shared_ptr<ue_context> amf_app::ran_amf_id_2_ue_context(const string & ue_context_key) const{
+  std::shared_lock lock(m_ue_ctx_key);
+  return ue_ctx_key.at(ue_context_key);
+}
+
+void amf_app::set_ran_amf_id_2_ue_context(const string & ue_context_key, std::shared_ptr<ue_context> uc){
+  std::shared_lock lock(m_ue_ctx_key);
+  ue_ctx_key[ue_context_key] = uc;
+}
 /****************************** itti handlers *******************************/
 void amf_app::handle_itti_message(itti_n1n2_message_transfer_request & itti_msg){
   //1. encode DL NAS TRANSPORT message(NAS message)
@@ -162,13 +178,16 @@ void amf_app::handle_itti_message(itti_nas_signalling_establishment_request & it
   if(amf_ue_ngap_id = itti_msg.amf_ue_ngap_id == -1){
     amf_ue_ngap_id = generate_amf_ue_ngap_id();
   }
-  if(!is_amf_ue_id_2_ue_context(amf_ue_ngap_id)){
-    Logger::amf_app().debug("no existed ue_context, Create one");
+  string ue_context_key = "app_ue_ranid_"+to_string(itti_msg.ran_ue_ngap_id)+":amfid_"+to_string(amf_ue_ngap_id);
+  //if(!is_amf_ue_id_2_ue_context(amf_ue_ngap_id)){
+  if(!is_ran_amf_id_2_ue_context(ue_context_key)){
+    Logger::amf_app().debug("no existed ue_context, Create one with ran_amf_id(%s)", ue_context_key.c_str());
     uc = std::shared_ptr<ue_context>(new ue_context());
-    set_amf_ue_ngap_id_2_ue_context(amf_ue_ngap_id, uc);
+    //set_amf_ue_ngap_id_2_ue_context(amf_ue_ngap_id, uc);
+    set_ran_amf_id_2_ue_context(ue_context_key, uc);
   }
   if(uc.get() == nullptr){
-    Logger::amf_app().error("Failed to create ue_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+    Logger::amf_app().error("Failed to create ue_context with ran_amf_id(%s)", ue_context_key.c_str());
   }else{
     uc.get()->cgi = itti_msg.cgi;
     uc.get()->tai = itti_msg.tai;
@@ -213,4 +232,19 @@ void amf_app::handle_itti_message(itti_nas_signalling_establishment_request & it
 /************************ SMF Client response handlers *****************************/
 void amf_app::handle_post_sm_context_response_error_400(){
   Logger::amf_app().error("post sm context response error 400");
+}
+
+bool amf_app::generate_5g_guti(uint32_t ranid, long amfid, string &mcc, string &mnc, uint32_t& tmsi){
+  string ue_context_key = "app_ue_ranid_"+to_string(ranid)+":amfid_"+to_string(amfid); 
+  if(!is_ran_amf_id_2_ue_context(ue_context_key)){
+    Logger::amf_app().error("no ue context for ran_amf_id(%s), exit", ue_context_key.c_str());
+    return false;
+  }
+  std::shared_ptr<ue_context> uc;
+  uc = ran_amf_id_2_ue_context(ue_context_key);
+  mcc = uc.get()->tai.mcc;
+  mnc = uc.get()->tai.mnc;
+  tmsi = golbal_tmsi;
+  golbal_tmsi ++;
+  return true;
 } 

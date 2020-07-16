@@ -33,7 +33,7 @@ namespace ngap{
 	bool AMFPointer::decodefrombitstring(Ngap_AMFPointer_t &amfpointer)
 	{
 		if(!amfpointer.buf) return false;
-		pointer = *amfpointer.buf & 0x3f;
+		pointer = (amfpointer.buf[0] & 0xfc)>>2;//1111 1100
 
 		return true;
 	}

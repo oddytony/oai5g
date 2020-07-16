@@ -36,7 +36,7 @@
 #define SERVICE_REQUEST         0b01001100
 #define SERVICE_REJECT          0b01001101
 #define SERVICE_ACCEPT          0b01001110
-
+#define UE_INIT_DEREGISTER      0b01000101
 
 /********* registration type ***************/
 

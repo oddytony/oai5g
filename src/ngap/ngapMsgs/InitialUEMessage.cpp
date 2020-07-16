@@ -185,6 +185,9 @@ namespace ngap{
 		
 	    if(initialUEMessagePdu->present == Ngap_NGAP_PDU_PR_initiatingMessage)
 		{
+                  //cout<<"test0515: procedureCode    "<<initialUEMessagePdu->choice.initiatingMessage->procedureCode<<endl;
+                  //cout<<"test0515: criticality    "<<initialUEMessagePdu->choice.initiatingMessage->criticality<<endl;
+                  //cout<<"test0515: present    "<<initialUEMessagePdu->choice.initiatingMessage->value.present<<endl;
 			if(initialUEMessagePdu->choice.initiatingMessage && initialUEMessagePdu->choice.initiatingMessage->procedureCode == Ngap_ProcedureCode_id_InitialUEMessage && initialUEMessagePdu->choice.initiatingMessage->criticality == Ngap_Criticality_ignore && initialUEMessagePdu->choice.initiatingMessage->value.present == Ngap_InitiatingMessage__value_PR_InitialUEMessage)
 			{
 				initialUEMessageIEs = &initialUEMessagePdu->choice.initiatingMessage->value.choice.InitialUEMessage;

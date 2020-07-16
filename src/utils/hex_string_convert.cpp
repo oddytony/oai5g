@@ -74,6 +74,8 @@ char* bstring2charString(bstring b){
   for(int i=0; i<blength(b); i++)
     buf[i] = (char)value[i];
   buf[blength(b)] = '\0';
+  free(value);
+  value = nullptr;
   return buf;
 }
 

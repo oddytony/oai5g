@@ -15,8 +15,10 @@ public:
   ~nas_context();
 public:
   bool             ctx_avaliability_ind;
+  bool             is_stacs_available;
   long             amf_ue_ngap_id;
   uint32_t         ran_ue_ngap_id;
+  string           nas_status;
 
 /************ parameters from Registration request *************/ 
   uint8_t          registration_type:3;
