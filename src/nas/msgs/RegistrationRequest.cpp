@@ -123,7 +123,9 @@ void RegistrationRequest::set5G_MM_capability(uint8_t value){
   ie_5g_mm_capability = new _5GMMCapability(0x10,value);
 }
 uint8_t RegistrationRequest::get5GMMCapability(){
+  if (ie_5g_mm_capability != nullptr)
 	return ie_5g_mm_capability->getValue();
+  else return -1;
 }
 void RegistrationRequest::setUE_Security_Capability(uint8_t g_EASel, uint8_t g_IASel) {
 	ie_ue_security_capability = new UESecurityCapability(0x2E, g_EASel, g_IASel);
