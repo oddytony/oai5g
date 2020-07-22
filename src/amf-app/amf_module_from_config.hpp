@@ -68,14 +68,6 @@ private:
   //  NGSetupRequestMsg *ngSetupRequest;
 
 };
-
-
-
-
-
-
-
-
 }
 
 #endif

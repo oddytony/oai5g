@@ -23,7 +23,7 @@ SubscriptionsCollectionDocumentApiImpl::SubscriptionsCollectionDocumentApiImpl(s
     { }
 
 void SubscriptionsCollectionDocumentApiImpl::a_mf_status_change_subscribe(const SubscriptionData &subscriptionData, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    response.send(Pistache::Http::Code::Ok, "SubscriptionsCollectionDocumentApiImpl::a_mf_status_change_subscribe API has not been implemented yet!\n");
 }
 
 }

@@ -79,16 +79,9 @@ int amf_modules::load(const std::string &config_file){
 }
 
 void amf_modules::display(){
-  Logger::config().info( "=======    AMF Registred Modules   =======");
-  Logger::config().info( "NGAP Message Modules Repository(SourceCode) Path( ~/oai-5g-amf/src/ngap/ngapMsgs )");
+  Logger::config().info( "=======    AMF Registered Modules   =======");
   Logger::config().info( "NGAP Message Modules:");
   Logger::config().info( "- %s([%d,%d])\n", msgName.c_str(), procedureCode, typeOfMsg);
 }
-
-
-
-
-
-
 
 }

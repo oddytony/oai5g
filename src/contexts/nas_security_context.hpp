@@ -109,16 +109,4 @@ public:
   selected_algs nas_algs; 
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
 #endif

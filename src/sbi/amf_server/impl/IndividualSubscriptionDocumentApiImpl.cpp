@@ -23,10 +23,10 @@ IndividualSubscriptionDocumentApiImpl::IndividualSubscriptionDocumentApiImpl(std
     { }
 
 void IndividualSubscriptionDocumentApiImpl::a_mf_status_change_subscribe_modfy(const std::string &subscriptionId, const SubscriptionData &subscriptionData, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    response.send(Pistache::Http::Code::Ok, "IndividualSubscriptionDocumentApiImpl::a_mf_status_change_subscribe_modfy API has not been implemented yet!\n");
 }
 void IndividualSubscriptionDocumentApiImpl::a_mf_status_change_un_subscribe(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    response.send(Pistache::Http::Code::Ok, "IndividualSubscriptionDocumentApiImpl::a_mf_status_change_un_subscribe API has not been implemented yet!\n");
 }
 
 }

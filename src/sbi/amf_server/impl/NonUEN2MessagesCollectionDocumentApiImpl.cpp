@@ -23,7 +23,7 @@ NonUEN2MessagesCollectionDocumentApiImpl::NonUEN2MessagesCollectionDocumentApiIm
     { }
 
 void NonUEN2MessagesCollectionDocumentApiImpl::non_ue_n2_message_transfer(const N2InformationTransferReqData &n2InformationTransferReqData, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    response.send(Pistache::Http::Code::Ok, "NonUEN2MessagesCollectionDocumentApiImpl::non_ue_n2_message_transfer API has not been implemented yet!\n");
 }
 
 }

@@ -186,17 +186,6 @@ public:
   vector<smf_inst_t>            smf_pool;
 };
 
-
-
-
-
-
 }
-
-
-
-
-
-
 
 #endif

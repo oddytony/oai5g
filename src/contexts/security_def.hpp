@@ -107,16 +107,4 @@ typedef struct security_context_s {
   uint8_t   activated;
 } security_context_t;
 
-
-
-
-
-
-
-
-
-
-
-
-
 #endif

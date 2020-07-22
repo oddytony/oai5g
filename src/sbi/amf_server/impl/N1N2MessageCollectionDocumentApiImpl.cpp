@@ -36,7 +36,7 @@ N1N2MessageCollectionDocumentApiImpl::N1N2MessageCollectionDocumentApiImpl(std::
 
 void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(const std::string &ueContextId, const N1N2MessageTransferReqData &n1N2MessageTransferReqData, Pistache::Http::ResponseWriter &response) {
   Logger::amf_server().debug("response OK");  
-  response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+  response.send(Pistache::Http::Code::Ok, "N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer API has not been implemented yet!\n");
 }
 
 void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(const std::string &ueContextId, const N1N2MessageTransferReqData &n1N2MessageTransferReqData, std::string &n1sm_str, Pistache::Http::ResponseWriter &response) {
@@ -45,7 +45,7 @@ void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(const std::str
   bstring n1sm;
   msg_str_2_msg_hex(n1sm_str, n1sm);
   print_buffer("amf_server", "received N1 SM", (uint8_t*)bdata(n1sm), blength(n1sm));
-  response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+  response.send(Pistache::Http::Code::Ok, "N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer API has not been implemented yet!\n");
 }
 
 void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(const std::string &ueContextId, const N1N2MessageTransferReqData &n1N2MessageTransferReqData, std::string &n1sm_str, std::string &n2sm_str, Pistache::Http::ResponseWriter &response) {

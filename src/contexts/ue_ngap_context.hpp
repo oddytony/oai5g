@@ -60,14 +60,4 @@ public:
   ng_ue_state_t    ng_ue_state; 
 };
 
-
-
-
-
-
-
-
-
-
-
 #endif

@@ -160,7 +160,6 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind & nas_data_ind){
 
   std::shared_ptr<nas_context> nc;
   if(nas_data_ind.is_guti_valid){
-    //std::string guti = "1234567890";//need modify
     std::string guti = nas_data_ind.guti;
     if(is_guti_2_nas_context(guti))
       nc = guti_2_nas_context(guti); 
@@ -424,10 +423,10 @@ void amf_n1::update_ue_information_statics(ue_infos &ueItem, const string connSt
 }
 
 void amf_n1::registration_request_handle(bool isNasSig, std::shared_ptr<nas_context>nc, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, std::string snn, bstring reg){
-  //1. decode registration request message from liuyu
+  //1. decode registration request message
   RegistrationRequest *regReq = new RegistrationRequest();
   regReq->decodefrombuffer(nullptr, (uint8_t*)bdata(reg), blength(reg));
-  //2.4 check ie 5gs mobility identity(Mondantary IE)
+  //2.4 check ie 5gs mobility identity(Mandatory IE)
   std::string guti;
   uint8_t mobility_id_type = regReq->getMobilityIdentityType();
   switch(mobility_id_type){
@@ -503,7 +502,7 @@ void amf_n1::registration_request_handle(bool isNasSig, std::shared_ptr<nas_cont
   nc.get()->registration_type = reg_type;
   nc.get()->follow_on_req_pending_ind = is_follow_on_req_pending;
 
-  //2.3 check ie ngKSI(Mondantary IE) 
+  //2.3 check ie ngKSI(Mandatory IE)
   uint8_t ngKSI = regReq->getngKSI();
   if(ngKSI == -1){
     Logger::amf_n1().error("MIssing Mandontary IE ngKSI ...");
@@ -533,11 +532,11 @@ void amf_n1::registration_request_handle(bool isNasSig, std::shared_ptr<nas_cont
   }
   nc.get()->requestedNssai = requestedNssai;
   nc.get()->ctx_avaliability_ind = true;
-  //2.9 try to get ie Last visited registred TAI(OPtional IE), if provided
+  //2.9 try to get ie Last visited registered TAI(OPtional IE), if provided
   //2.10 try to get ie S1 Ue network capability(OPtional IE), if ue supports S1 mode
   //2.11 try to get ie uplink data status(Optional IE), if UE has uplink user data to be sent
-  //2.11 try to get ie pdu session status(OPtional IE), associated and active pdu sessions avaliable in UE
-  //4. store nas informstion into nas_context
+  //2.11 try to get ie pdu session status(OPtional IE), associated and active pdu sessions available in UE
+  //4. store nas information into nas_context
   //5. run different registration procedure
   switch(reg_type){
     case INITIAL_REGISTRATION:{
@@ -638,14 +637,14 @@ void amf_n1::response_registration_reject_msg(uint8_t cause_value, uint32_t ran_
 void amf_n1::run_registration_procedure(std::shared_ptr<nas_context> &nc){
   Logger::amf_n1().debug("start to run registration procedure");
   if(!nc.get()->ctx_avaliability_ind){
-    Logger::amf_n1().error("nas context is not avaliable");
+    Logger::amf_n1().error("nas context is not available");
     return;
   }
   nc.get()->is_specific_procedure_for_registration_running = true;
   if(nc.get()->is_imsi_present){
-    Logger::amf_n1().debug("suci supi format imsi is avaliable");
+    Logger::amf_n1().debug("suci supi format imsi is available");
     if(!nc.get()->is_auth_vectors_present){
-      Logger::amf_n1().debug("authentication vector in nas_context is not avaliable");
+      Logger::amf_n1().debug("authentication vector in nas_context is not available");
       if(auth_vectors_generator(nc)){// all authentication in one(AMF)
         ngksi_t ngksi = 0;
         if(nc.get()->security_ctx && nc.get()->ngKsi != NAS_KEY_SET_IDENTIFIER_NOT_AVAILABLE){
@@ -658,7 +657,7 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context> &nc){
         response_registration_reject_msg(_5GMM_CAUSE_ILLEGAL_UE, nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id);//cause?      
       }
     }else{
-      Logger::amf_n1().debug("authentication vector in nas_context is avaliable");
+      Logger::amf_n1().debug("authentication vector in nas_context is available");
       ngksi_t ngksi = 0;
       if(nc.get()->security_ctx && nc.get()->ngKsi != NAS_KEY_SET_IDENTIFIER_NOT_AVAILABLE){
         ngksi = (nc.get()->ngKsi + 1) % (NGKSI_MAX_VALUE + 1);
@@ -725,7 +724,6 @@ bool amf_n1::authentication_vectors_generator_in_udm(std::shared_ptr<nas_context
   mysql_auth_info_t mysql_resp;
   if(get_mysql_auth_info(nc.get()->imsi, mysql_resp)){
     if(auts){
-      Logger::amf_n1().debug("auts ...");
       sqn = Authentication_5gaka::sqn_ms_derive(mysql_resp.opc, mysql_resp.key, auts, mysql_resp.rand);
       if(sqn){
         generate_random (vector[0].rand, RAND_LENGTH);
@@ -741,16 +739,6 @@ bool amf_n1::authentication_vectors_generator_in_udm(std::shared_ptr<nas_context
       for(int i=0; i< MAX_5GS_AUTH_VECTORS; i++){
         generate_random(vector[i].rand, RAND_LENGTH);
         print_buffer("amf_n1", "generated random: rand(5G HE AV)", vector[i].rand, 16);
-/** for test data *******/
-        //uint8_t newRAND[16] = {0xc3, 0x15, 0xfb, 0x75, 0x60, 0x7c, 0xe7, 0xa1, 0x64, 0xf5, 0x68, 0xe2, 0xc6, 0xe2, 0xc7, 0x9b};
-        //memcpy(vector[i].rand, newRAND, 16);
-        //print_buffer("amf_n1", "static rand: rand(5G HE AV)", vector[i].rand, 16);
-        //uint8_t sqnak[6] = {0xb6, 0x22, 0xb7, 0x87, 0x4e, 0x86};
-        //test_generate_5g_he_av_in_udm(mysql_resp.opc, mysql_resp.key, sqnak, nc.get()->serving_network, vector[i]);
-/******* end ***********/
-        //uint8_t rand_[16] = {0x02, 0x27, 0x40, 0x55, 0xea, 0x5a, 0x2f, 0x7e, 0x3e, 0x87, 0x16, 0x4b, 0xdf, 0x80, 0xff, 0x32};
-        //uint8_t sqn_[6] = {0x00, 0x00, 0x00, 0x00, 0x20, 0x9e};
-        //memcpy(vector[i].rand, rand_, 16);
         generate_5g_he_av_in_udm(mysql_resp.opc, nc.get()->imsi, mysql_resp.key, sqn, nc.get()->serving_network, vector[i]);//serving network name
       }
       mysql_push_rand_sqn (nc.get()->imsi, vector[MAX_5GS_AUTH_VECTORS - 1].rand, sqn);
@@ -765,17 +753,6 @@ bool amf_n1::authentication_vectors_generator_in_udm(std::shared_ptr<nas_context
         generate_random (vector[i].rand, RAND_LENGTH);
         //print_buffer("amf_n1", "generated random: rand(5G HE AV)", vector[i].rand, 16);
         sqn = mysql_resp.sqn;
-/** for test data *******/
-        //uint8_t newRAND[16] = {0x2c, 0x6e, 0xad, 0x35, 0x82, 0x7d, 0x01, 0xca, 0x4a, 0xc0, 0xfb, 0xf0, 0xaa, 0x31, 0x98, 0x4a};
-        //memcpy(vector[i].rand, newRAND, 16);
-        //print_buffer("amf_n1", "static rand: rand(5G HE AV)", vector[i].rand, 16);
-        //uint8_t sqnak[6] = {0xae, 0x0e, 0x88, 0x41, 0x6f, 0xfb};
-        //test_generate_5g_he_av_in_udm(mysql_resp.opc, mysql_resp.key, sqnak, nc.get()->serving_network, vector[i]);
-/******* end ***********/
-        //uint8_t rand_[16] = {0x02, 0x27, 0x40, 0x55, 0xea, 0x5a, 0x2f, 0x7e, 0x3e, 0x87, 0x16, 0x4b, 0xdf, 0x80, 0xff, 0x32};
-        //uint8_t sqn_[6] = {0x00, 0x00, 0x00, 0x00, 0x20, 0x9e};
-        //memcpy(vector[i].rand, rand_, 16);
-        //generate_5g_he_av_in_udm(mysql_resp.opc, nc.get()->imsi, mysql_resp.key, sqn_, nc.get()->serving_network, vector[i]);//serving network name
         generate_5g_he_av_in_udm(mysql_resp.opc, nc.get()->imsi, mysql_resp.key, sqn, nc.get()->serving_network, vector[i]);//serving network name
       }
       mysql_push_rand_sqn (nc.get()->imsi, vector[MAX_5GS_AUTH_VECTORS - 1].rand, sqn);
@@ -853,10 +830,6 @@ void amf_n1::generate_random(uint8_t *random_p, ssize_t length){
   //Logger::amf_n1().debug("call f2345");
   //f2345(key, vector.rand, vector.xres, ck, ik, ak);// to compute XRES, CK, IK, AK
   Authentication_5gaka::f2345(opc, key, vector.rand, vector.xres, ck, ik, ak);// to compute XRES, CK, IK, AK
-  //print_buffer("amf_n1", "Result For F2345-Alg: xres", vector.xres, 8);
-  //print_buffer("amf_n1", "Result For F2345-Alg: ck", ck, 16);
-  //print_buffer("amf_n1", "Result For F2345-Alg: ik", ik, 16);
-  //print_buffer("amf_n1", "Result For F2345-Alg: ak", ak, 6);
   annex_a_4_33501(ck, ik, vector.xres, vector.rand, serving_network, vector.xresStar);
   //print_buffer("amf_n1", "Result For KDF: xres*(5G HE AV)", vector.xresStar, 16);
   //Logger::amf_n1().debug("generate autn");

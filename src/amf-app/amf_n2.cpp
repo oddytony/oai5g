@@ -138,7 +138,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request & itti_msg){
 
   std::shared_ptr<gnb_context> gc;
   if(!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
-    Logger::amf_n2().error("no existed gnb context with assoc_id(%d)",itti_msg.assoc_id);
+    Logger::amf_n2().error("no existed gNB context with assoc_id(%d)",itti_msg.assoc_id);
     return;
   }
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
@@ -153,7 +153,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request & itti_msg){
   //Get IE Global RAN Node ID
   uint32_t gnb_id; string gnb_mcc; string gnb_mnc;
   if(!itti_msg.ngSetupReq->getGlobalGnbID(gnb_id, gnb_mcc, gnb_mnc)){
-    Logger::amf_n2().error("Missing Mandontary IE GlobalGnbID");
+    Logger::amf_n2().error("Missing Mandatory IE GlobalGnbID");
     return;
   }
   Logger::amf_n2().debug("IE GlobalGNBID(0x%x)",gnb_id);
@@ -270,7 +270,7 @@ void amf_n2::handle_itti_message(itti_initial_ue_message &init_ue_msg){
 
   uint32_t ran_ue_ngap_id;
   if( (ran_ue_ngap_id = init_ue_msg.initUeMsg->getRanUENgapID()) == -1){
-    Logger::amf_n2().error("Missing Mondontary IE(RanUeNgapId)");
+    Logger::amf_n2().error("Missing Mandatory IE (RanUeNgapId)");
     return;
   }
   std::shared_ptr<ue_ngap_context> unc;
@@ -298,7 +298,7 @@ void amf_n2::handle_itti_message(itti_initial_ue_message &init_ue_msg){
       itti_msg->cgi = cgi;
       itti_msg->tai = tai;
     }else{
-      Logger::amf_n2().error("Missing Mondontary IE UserLocationInfoNR");
+      Logger::amf_n2().error("Missing Mandatory IE UserLocationInfoNR");
       return;
     }
     if(init_ue_msg.initUeMsg->getRRCEstablishmentCause() == -1){

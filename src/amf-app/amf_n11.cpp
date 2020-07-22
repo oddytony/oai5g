@@ -62,7 +62,6 @@ extern void convert_string_2_hex(std::string&input, std::string&output);
 extern void print_buffer(const std::string app, const std::string commit, uint8_t *buf, int len);
 extern bool multipart_parser(string input, string &jsonData, string &n1sm, string &n2sm);
 extern unsigned char * format_string_as_hex(std::string str);
-//extern std::size_t callback(const char* in, std::size_t size, std::size_t num, std::string* out);
 extern char* bstring2charString(bstring b);
 
 std::size_t callback(
@@ -314,7 +313,6 @@ void amf_n11::curl_http_client(string remoteUri, string jsonData, string n1SmMsg
     if(n1SmMsg != ""){
       Logger::amf_n11().debug("is there ok? n1");
       unsigned char *n1_msg_hex  = format_string_as_hex(n1SmMsg);
-      //Logger::amf_n11().debug("n1 msg hex: %s", n1_msg_hex);
       part = curl_mime_addpart(mime);
       curl_mime_data(part, reinterpret_cast<const char*>(n1_msg_hex), n1SmMsg.length()/2);
       curl_mime_type(part, "application/vnd.3gpp.5gnas");
@@ -350,7 +348,7 @@ void amf_n11::curl_http_client(string remoteUri, string jsonData, string n1SmMsg
     string n1sm = "";
     string n2sm = "";
     bool is_response_ok = true;
-    Logger::amf_n11().debug("Get response with httpcode(%d)", httpCode);
+    Logger::amf_n11().debug("Get response with httpcode (%d)", httpCode);
     if(httpCode == 0){
       Logger::amf_n11().error("Cannot get response When calling %s", remoteUri.c_str());
       return;

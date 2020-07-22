@@ -23,7 +23,7 @@ NonUEN2MessagesSubscriptionsCollectionDocumentApiImpl::NonUEN2MessagesSubscripti
     { }
 
 void NonUEN2MessagesSubscriptionsCollectionDocumentApiImpl::non_ue_n2_info_subscribe(const NonUeN2InfoSubscriptionCreateData &nonUeN2InfoSubscriptionCreateData, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    response.send(Pistache::Http::Code::Ok, "NonUEN2MessagesSubscriptionsCollectionDocumentApiImpl::non_ue_n2_info_subscribe API has not been implemented yet!\n");
 }
 
 }

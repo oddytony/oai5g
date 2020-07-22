@@ -23,7 +23,7 @@ N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApiImpl::N1N2Subscript
     { }
 
 void N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApiImpl::n1_n2_message_subscribe(const std::string &ueContextId, const UeN1N2InfoSubscriptionCreateData &ueN1N2InfoSubscriptionCreateData, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    response.send(Pistache::Http::Code::Ok, "N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApiImpl::n1_n2_message_subscribe API has not been implemented yet!\n");
 }
 
 }

@@ -65,11 +65,4 @@ void hexStr2Byte(const char* src, unsigned char *dest, int len){
   }
 }
 
-
-
-
-
-
-
-
 #endif

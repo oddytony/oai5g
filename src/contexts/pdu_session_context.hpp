@@ -47,17 +47,4 @@ public:
   string remote_smf_addr[0];//"192.168.12.10:8080"
   bool smf_avaliable;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
 #endif

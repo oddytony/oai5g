@@ -34,7 +34,6 @@
 #include "authentication_algorithms_with_5gaka.hpp"
 #include <string>
 #include "nas_security_context.hpp"
-//#include "ies/NSSAI.hpp"
 #include "struct.hpp"
 
 class nas_context{

@@ -17,7 +17,7 @@ void AMFApiServer::init(size_t thr) {
   m_nonUEN2MessagesCollectionDocumentApiImpl->init();
   m_nonUEN2MessagesSubscriptionsCollectionDocumentApiImpl->init();
   m_subscriptionsCollectionDocumentApiImpl->init();
-  Logger::amf_server().debug("initiate amf server endpoints done!");
+  Logger::amf_server().debug("Initiate AMF server endpoints done!");
 }
 
 void AMFApiServer::start(){

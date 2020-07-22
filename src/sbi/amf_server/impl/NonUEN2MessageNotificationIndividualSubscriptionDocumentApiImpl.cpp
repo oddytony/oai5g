@@ -21,7 +21,7 @@ NonUEN2MessageNotificationIndividualSubscriptionDocumentApiImpl::NonUEN2MessageN
     { }
 
 void NonUEN2MessageNotificationIndividualSubscriptionDocumentApiImpl::non_ue_n2_info_un_subscribe(const std::string &n2NotifySubscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    response.send(Pistache::Http::Code::Ok, "NonUEN2MessageNotificationIndividualSubscriptionDocumentApiImpl::non_ue_n2_info_un_subscribe API has not been implemented yet!\n");
 }
 
 }

@@ -51,12 +51,4 @@ public:
   Tai_t   tai;
 };
 
-
-
-
-
-
-
-
-
 #endif
