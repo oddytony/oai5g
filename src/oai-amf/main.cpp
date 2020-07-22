@@ -73,38 +73,6 @@ int main(int argc, char **argv){
   amfApiServer.init(2);
   std::thread amf_api_manager(&AMFApiServer::start, amfApiServer);
 
-  //hexTest();
-  //send_pdu_session_establishment_request();
-  //sleep(5);
-  //send_pdu_session_update_sm_context_establishment();
-  //send_pdu_session_update_sm_context_establishment();
-  //smf_client_test();
-  //f1_test();
-  //kdf_test();
-/*
-  string snn = "5G:mnc011.mcc460.3gppnetwork.org";
-  UNF::Normalizer norm;
-  UNF::Normalizer::Form form = UNF::Normalizer::FORM_NFKC;
-  cout <<"unicode normallize: "<<norm.normalize(snn.c_str(), form)<<endl;
-*/
-  
-  //rijndael_test();
-  //f1_test();
-  //f2345_test();
-  //kdf_test();
-  //res_test();
-  //xresStar_test();
-  //nia1_test();
-  //nia2_test();
-  //unsigned char dest[8];
-  //hexStr2Byte("460110123456789", dest, 16);
-  //print_buffer("amf_n1", "result", dest, 8);
-  //buffer_test();
-  //mac_test();
-  //new_mac_test();
-  //ue_gnb_simulator();
-  //istream_test();
-
   Logger::amf_app().debug("Initiating Done!");
   pause();
   return 0;
