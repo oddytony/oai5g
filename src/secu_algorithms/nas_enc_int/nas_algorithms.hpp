@@ -44,7 +44,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <math.h>
-extern "C"{
+extern "C" {
 #include "snow3g.h"
 #include "conversions.h"
 }
@@ -70,41 +70,23 @@ extern "C"{
 #define derive_key_up_int(aLGiD, kseaf, kNAS)  \
     Authentication_5gaka::derive_knas(UP_INT_ALG, aLGiD, kseaf, kNAS)
 
-
 typedef struct {
   uint8_t *key;
   uint32_t key_length;
   uint32_t count;
-  uint8_t  bearer;
-  uint8_t  direction;
-  uint8_t  *message;
+  uint8_t bearer;
+  uint8_t direction;
+  uint8_t *message;
   /* length in bits */
-  uint32_t  blength;
+  uint32_t blength;
 } nas_stream_cipher_t;
 
-class nas_algorithms{
-public:
-  static int nas_stream_encrypt_nea1(nas_stream_cipher_t * const stream_cipher, uint8_t * const out);  
-  static int nas_stream_encrypt_nia1(nas_stream_cipher_t * const stream_cipher, uint8_t const out[4]);
-  static int nas_stream_encrypt_nea2(nas_stream_cipher_t * const stream_cipher, uint8_t * const out);
-  static int nas_stream_encrypt_nia2(nas_stream_cipher_t * const stream_cipher, uint8_t const out[4]);
+class nas_algorithms {
+ public:
+  static int nas_stream_encrypt_nea1(nas_stream_cipher_t *const stream_cipher, uint8_t *const out);
+  static int nas_stream_encrypt_nia1(nas_stream_cipher_t *const stream_cipher, uint8_t const out[4]);
+  static int nas_stream_encrypt_nea2(nas_stream_cipher_t *const stream_cipher, uint8_t *const out);
+  static int nas_stream_encrypt_nia2(nas_stream_cipher_t *const stream_cipher, uint8_t const out[4]);
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif

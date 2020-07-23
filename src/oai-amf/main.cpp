@@ -27,7 +27,7 @@
 #include <cstring>
 #include "normalizer.hh"
 
-extern void hexStr2Byte(const char* src, unsigned char *dest, int len);
+extern void hexStr2Byte(const char *src, unsigned char *dest, int len);
 extern void print_buffer(const std::string app, const std::string commit, uint8_t *buf, int len);
 extern void ue_gnb_simulator();
 
@@ -43,11 +43,11 @@ itti_mw *itti_inst = nullptr;
 amf_app *amf_app_inst = nullptr;
 statistics stacs;
 
-
-int main(int argc, char **argv){
+//------------------------------------------------------------------------------
+int main(int argc, char **argv) {
   srand (time(NULL));
 
-  if(!Options::parse(argc, argv)){
+if  (!Options::parse(argc, argv)) {
     cout<<"Options::parse() failed"<<endl;
     return 1;
   }
@@ -59,7 +59,7 @@ int main(int argc, char **argv){
   amf_cfg.display();
   modules.load(Options::getlibconfigConfig());
   modules.display();
-  
+
   itti_inst = new itti_mw();
   itti_inst->start(amf_cfg.itti.itti_timer_sched_params);
   //itti_inst->start();
@@ -68,7 +68,7 @@ int main(int argc, char **argv){
   amf_app_inst->allRegistredModulesInit(modules);
 
   Logger::amf_app().debug("initiating amf server endpoints");
-  Pistache::Address addr(std::string(inet_ntoa (*((struct in_addr *)&amf_cfg.n2.addr4))) , Pistache::Port(8282));  
+  Pistache::Address addr(std::string(inet_ntoa (*((struct in_addr *)&amf_cfg.n2.addr4))) , Pistache::Port(8282));
   AMFApiServer amfApiServer(addr, amf_app_inst);
   amfApiServer.init(2);
   std::thread amf_api_manager(&AMFApiServer::start, amfApiServer);

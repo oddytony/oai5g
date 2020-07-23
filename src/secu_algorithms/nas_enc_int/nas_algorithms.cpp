@@ -29,6 +29,7 @@
 #include "nas_algorithms.hpp"
 #include "logger.hpp"
 
+//------------------------------------------------------------------------------
 uint64_t MUL64x (uint64_t V, uint64_t c) {
   if (V & 0x8000000000000000)
     return (V << 1) ^ c;
@@ -36,6 +37,7 @@ uint64_t MUL64x (uint64_t V, uint64_t c) {
     return V << 1;
 }
 
+//------------------------------------------------------------------------------
 uint64_t MUL64xPOW (uint64_t V, uint32_t i, uint64_t c){
   if (i == 0)
     return V;
@@ -43,6 +45,7 @@ uint64_t MUL64xPOW (uint64_t V, uint32_t i, uint64_t c){
     return MUL64x (MUL64xPOW (V, i - 1, c), c);
 }
 
+//------------------------------------------------------------------------------
 uint64_t MUL64 (uint64_t V, uint64_t P, uint64_t c){
   uint64_t                                result = 0;
   int                                     i = 0;
@@ -53,6 +56,7 @@ uint64_t MUL64 (uint64_t V, uint64_t P, uint64_t c){
   return result;
 }
 
+//------------------------------------------------------------------------------
 uint32_t mask32bit (int n){
   uint32_t                                mask = 0x0;
   if (n % 32 == 0)
@@ -62,7 +66,7 @@ uint32_t mask32bit (int n){
   return mask;
 }
 
-
+//------------------------------------------------------------------------------
 int nas_algorithms::nas_stream_encrypt_nea1(nas_stream_cipher_t * const stream_cipher, uint8_t * const out){
   snow_3g_context_t snow_3g_context;
   uint32_t *KS;
@@ -108,6 +112,7 @@ int nas_algorithms::nas_stream_encrypt_nea1(nas_stream_cipher_t * const stream_c
   return 0;
 }
 
+//------------------------------------------------------------------------------
 int nas_algorithms::nas_stream_encrypt_nia1(nas_stream_cipher_t * const stream_cipher, uint8_t const out[4]){
   snow_3g_context_t snow_3g_context;
   uint32_t          K[4], IV[4], z[5];
@@ -166,6 +171,7 @@ int nas_algorithms::nas_stream_encrypt_nia1(nas_stream_cipher_t * const stream_c
   return 0;
 }
 
+//------------------------------------------------------------------------------
 int nas_algorithms::nas_stream_encrypt_nea2(nas_stream_cipher_t * const stream_cipher, uint8_t * const out){
   uint8_t                                 m[16];
   uint32_t                                local_count;
@@ -209,6 +215,7 @@ int nas_algorithms::nas_stream_encrypt_nea2(nas_stream_cipher_t * const stream_c
   return 0;
 }
 
+//------------------------------------------------------------------------------
 int nas_algorithms::nas_stream_encrypt_nia2(nas_stream_cipher_t * const stream_cipher, uint8_t const out[4]){
   uint8_t                                *m = NULL;
   uint32_t                                local_count = 0;

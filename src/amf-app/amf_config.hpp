@@ -95,28 +95,27 @@
 #define AMF_CONFIG_STRING_NAS_SUPPORTED_INTEGRITY_ALGORITHM_LIST  "ORDERED_SUPPORTED_INTEGRITY_ALGORITHM_LIST"
 #define AMF_CONFIG_STRING_NAS_SUPPORTED_CIPHERING_ALGORITHM_LIST  "ORDERED_SUPPORTED_CIPHERING_ALGORITHM_LIST"
 
-
 using namespace libconfig;
 using namespace std;
 
-namespace config{
+namespace config {
 
-typedef struct{
+typedef struct {
   string mysql_server;
   string mysql_user;
   string mysql_pass;
   string mysql_db;
   string operator_key;
   string random;
-}auth_conf;
+} auth_conf;
 
 typedef struct interface_cfg_s {
-  std::string     if_name;
-  struct in_addr  addr4;
-  struct in_addr  network4;
+  std::string if_name;
+  struct in_addr addr4;
+  struct in_addr network4;
   struct in6_addr addr6;
-  unsigned int    mtu;
-  unsigned int    port;
+  unsigned int mtu;
+  unsigned int port;
   util::thread_sched_params thread_rd_sched_params;
 } interface_cfg_t;
 
@@ -128,62 +127,62 @@ typedef struct itti_cfg_s {
   util::thread_sched_params async_cmd_sched_params;
 } itti_cfg_t;
 
-typedef struct guami_s{
+typedef struct guami_s {
   string mcc;
   string mnc;
   string regionID;
   string AmfSetID;
   string AmfPointer;
-}guami_t;
+} guami_t;
 
-typedef struct slice_s{
+typedef struct slice_s {
   string sST;
   string sD;
-}slice_t;
+} slice_t;
 
-typedef struct plmn_support_item_s{
+typedef struct plmn_support_item_s {
   string mcc;
   string mnc;
   uint32_t tac;
   vector<slice_t> slice_list;
-}plmn_item_t;
+} plmn_item_t;
 
-typedef struct{
-  uint8_t  prefered_integrity_algorithm[8];
-  uint8_t  prefered_ciphering_algorithm[8];
-}nas_conf_t;
+typedef struct {
+  uint8_t prefered_integrity_algorithm[8];
+  uint8_t prefered_ciphering_algorithm[8];
+} nas_conf_t;
 
-typedef struct{
+typedef struct {
   int id;
   string ipv4;
   string port;
   string version;
   bool selected;
-}smf_inst_t;
+} smf_inst_t;
 
-class amf_config{
-public:
+class amf_config {
+ public:
   amf_config();
   ~amf_config();
   int load(const std::string &config_file);
-  int load_interface(const Setting& if_cfg, interface_cfg_t & cfg);
-  int load_thread_sched_params(const libconfig::Setting& thread_sched_params_cfg, util::thread_sched_params& cfg);
+  int load_interface(const Setting &if_cfg, interface_cfg_t &cfg);
+  int load_thread_sched_params(const libconfig::Setting &thread_sched_params_cfg, util::thread_sched_params &cfg);
   void display();
-public:
-  unsigned int                  instance;
-  string                        pid_dir;
-  interface_cfg_t               n2;
-  itti_cfg_t                    itti;
-  unsigned int                  statistics_interval;
-  string                        AMF_Name;
-  guami_t                       guami;
-  vector<guami_t>               guami_list;  
-  unsigned int                  relativeAMFCapacity;
-  vector<plmn_item_t>           plmn_list;
-  string                        is_emergency_support;
-  auth_conf                     auth_para;
-  nas_conf_t                    nas_cfg;
-  vector<smf_inst_t>            smf_pool;
+ public:
+  unsigned int instance;
+  string pid_dir;
+  interface_cfg_t n2;
+  itti_cfg_t itti;
+  unsigned int statistics_interval;
+  string AMF_Name;
+  guami_t guami;
+  vector<guami_t> guami_list;
+  unsigned int relativeAMFCapacity;
+  vector<plmn_item_t> plmn_list;
+  string is_emergency_support;
+  auth_conf auth_para;
+  nas_conf_t nas_cfg;
+  vector<smf_inst_t> smf_pool;
 };
 
 }

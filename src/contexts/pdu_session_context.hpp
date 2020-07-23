@@ -33,18 +33,18 @@
 #include "bstrlib.h"
 using namespace std;
 
-class pdu_session_context{
-public:
+class pdu_session_context {
+ public:
   pdu_session_context();
   ~pdu_session_context();
-public:
+ public:
   uint32_t ran_ue_ngap_id;
-  long     amf_ue_ngap_id;
+  long amf_ue_ngap_id;
   uint8_t req_type;
   uint8_t pdu_session_id;
   bstring n2sm;
   string dnn;
-  string remote_smf_addr[0];//"192.168.12.10:8080"
+  string remote_smf_addr[0];  //"192.168.12.10:8080"
   bool smf_avaliable;
 };
 #endif

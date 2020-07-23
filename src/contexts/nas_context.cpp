@@ -28,7 +28,8 @@
 
 #include "nas_context.hpp"
 
-nas_context::nas_context(){
+//------------------------------------------------------------------------------
+nas_context::nas_context() {
   security_ctx = NULL;
   is_imsi_present = false;
   is_stacs_available = false;
@@ -43,4 +44,6 @@ nas_context::nas_context(){
   auts = NULL;
 }
 
-nas_context::~nas_context(){}
+//------------------------------------------------------------------------------
+nas_context::~nas_context() {
+}

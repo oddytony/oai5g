@@ -37,47 +37,40 @@
 
 using namespace std;
 
-typedef struct{
+typedef struct {
   uint32_t gnb_id;
   string mcc;
   string mnc;
   string gnb_name;
   uint32_t tac;
   //long nrCellId;
-}gnb_infos;
+} gnb_infos;
 
-typedef struct{
-  string   connStatus;
-  string   registerStatus;
+typedef struct {
+  string connStatus;
+  string registerStatus;
   uint32_t ranid;
-  long     amfid;
-  string   imsi;
-  string   guti;
-  string   mcc;
-  string   mnc;
+  long amfid;
+  string imsi;
+  string guti;
+  string mcc;
+  string mnc;
   uint32_t cellId;
-}ue_infos;
+} ue_infos;
 
-class statistics{
-public:
+class statistics {
+ public:
   void display();
   statistics();
   ~statistics();
-public:
-  uint32_t        gNB_connected;
-  uint32_t        UE_connected;
-  uint32_t        UE_registred;
+ public:
+  uint32_t gNB_connected;
+  uint32_t UE_connected;
+  uint32_t UE_registred;
   //uint32_t        system_pdu_sessions;
-  vector<gnb_infos>  gnbs; 
-  vector<ue_infos>   ues;
+  vector<gnb_infos> gnbs;
+  vector<ue_infos> ues;
 
 };
-
-
-
-
-
-
-
 
 #endif

@@ -71,34 +71,31 @@ u8                                      Xtime[256] = {
   251, 249, 255, 253, 243, 241, 247, 245, 235, 233, 239, 237, 227, 225, 231, 229
 };
 
-void Authentication_5gaka::RijndaelKeySchedule(const uint8_t key[16]){
+//------------------------------------------------------------------------------
+void Authentication_5gaka::RijndaelKeySchedule(const uint8_t key[16]) {
   u8 roundConst;
   /******* first round key equals key ********/
-  for(int i=0; i<16; i++){
+  for (int i = 0; i < 16; i++) {
     roundKeys[0][i & 0x03][i >> 2] = key[i];
   }
   roundConst = 1;
-  for(int i=1; i<11; i++){
-    roundKeys[i][0][0] = S[roundKeys[i - 1][1][3]]
-      ^ roundKeys[i - 1][0][0] ^ roundConst;
-    roundKeys[i][1][0] = S[roundKeys[i - 1][2][3]]
-      ^ roundKeys[i - 1][1][0];
-    roundKeys[i][2][0] = S[roundKeys[i - 1][3][3]]
-      ^ roundKeys[i - 1][2][0];
-    roundKeys[i][3][0] = S[roundKeys[i - 1][0][3]]
-      ^ roundKeys[i - 1][3][0];
-    for(int j=0; j<4; j++){
+  for (int i = 1; i < 11; i++) {
+    roundKeys[i][0][0] = S[roundKeys[i - 1][1][3]] ^ roundKeys[i - 1][0][0] ^ roundConst;
+    roundKeys[i][1][0] = S[roundKeys[i - 1][2][3]] ^ roundKeys[i - 1][1][0];
+    roundKeys[i][2][0] = S[roundKeys[i - 1][3][3]] ^ roundKeys[i - 1][2][0];
+    roundKeys[i][3][0] = S[roundKeys[i - 1][0][3]] ^ roundKeys[i - 1][3][0];
+    for (int j = 0; j < 4; j++) {
       roundKeys[i][j][1] = roundKeys[i - 1][j][1] ^ roundKeys[i][j][0];
       roundKeys[i][j][2] = roundKeys[i - 1][j][2] ^ roundKeys[i][j][1];
       roundKeys[i][j][3] = roundKeys[i - 1][j][3] ^ roundKeys[i][j][2];
     }
     roundConst = Xtime[roundConst];
     /*
-    if(roundConst < 128)
-      roundConst = 2*roundConst;
-    if(roundConst >= 128)
-      roundConst = (2*roundConst) ^ 283;
-    */
+     if(roundConst < 128)
+     roundConst = 2*roundConst;
+     if(roundConst >= 128)
+     roundConst = (2*roundConst) ^ 283;
+     */
   }
 //#if AUTH_ALG_ON
 #if 0 
@@ -113,20 +110,24 @@ void Authentication_5gaka::RijndaelKeySchedule(const uint8_t key[16]){
 }
 
 /************ internal functions ******************/
-void KeyAdd(u8 state[4][4], u8 roundKeys[11][4][4], int round){
-  for(int i=0; i<4; i++)
-    for(int j=0; j<4; j++)
+//------------------------------------------------------------------------------
+void KeyAdd(u8 state[4][4], u8 roundKeys[11][4][4], int round) {
+  for (int i = 0; i < 4; i++)
+    for (int j = 0; j < 4; j++)
       state[i][j] ^= roundKeys[round][i][j];
   return;
 }
-int ByteSub(u8 state[4][4]){
-  for(int i=0; i<4; i++)
-    for(int j=0; j<4; j++)
+
+//------------------------------------------------------------------------------
+int ByteSub(u8 state[4][4]) {
+  for (int i = 0; i < 4; i++)
+    for (int j = 0; j < 4; j++)
       state[i][j] = S[state[i][j]];
   return 0;
 }
 
-void ShiftRow(u8 state[4][4]){
+//------------------------------------------------------------------------------
+void ShiftRow(u8 state[4][4]) {
   u8 temp;
   /*
    * left rotate row 1 by 1
@@ -155,9 +156,11 @@ void ShiftRow(u8 state[4][4]){
   state[3][1] = temp;
   return;
 }
-void MixColumn (u8 state[4][4]){
+
+//------------------------------------------------------------------------------
+void MixColumn(u8 state[4][4]) {
   u8 temp, tmp, tmp0;
-  for(int i=0; i<4; i++){
+  for (int i = 0; i < 4; i++) {
     temp = state[0][i] ^ state[1][i] ^ state[2][i] ^ state[3][i];
     tmp0 = state[0][i];
     /*
@@ -174,28 +177,29 @@ void MixColumn (u8 state[4][4]){
   }
   return;
 }
+
 /*-------------------------------------------------------------------
-   Rijndael encryption function. Takes 16-byte input and creates
-   16-byte output (using round keys already derived from 16-byte
-   key).
-  -----------------------------------------------------------------*/
-void Authentication_5gaka::RijndaelEncrypt(const uint8_t input[16], uint8_t output[16]){
-  int i=0, r=0;
+ Rijndael encryption function. Takes 16-byte input and creates
+ 16-byte output (using round keys already derived from 16-byte
+ key).
+ -----------------------------------------------------------------*/
+void Authentication_5gaka::RijndaelEncrypt(const uint8_t input[16], uint8_t output[16]) {
+  int i = 0, r = 0;
   u8 state[4][4];
-  for(i=0; i< 16; i++)
+  for (i = 0; i < 16; i++)
     state[i & 0x3][i >> 2] = input[i];
   KeyAdd(state, roundKeys, 0);
 #if AUTH_ALG_ON
   printf("end of round(%d)\n0x", 0);
 #endif
-  for(int i=0; i<16; i++)
+  for (int i = 0; i < 16; i++)
     printf("%x ", state[i & 0x3][i >> 2]);
   printf("\n");
   for (r = 1; r <= 9; r++) {
-    ByteSub (state);
-    ShiftRow (state);
-    MixColumn (state);
-    KeyAdd (state, roundKeys, r);
+    ByteSub(state);
+    ShiftRow(state);
+    MixColumn(state);
+    KeyAdd(state, roundKeys, r);
 #if AUTH_ALG_ON
     printf("end of round(%d)\n0x", r);
     for (i = 0; i < 16; i++)
@@ -203,9 +207,9 @@ void Authentication_5gaka::RijndaelEncrypt(const uint8_t input[16], uint8_t outp
     printf("\n"); 
 #endif 
   }
-  ByteSub (state);
-  ShiftRow (state);
-  KeyAdd (state, roundKeys, r);
+  ByteSub(state);
+  ShiftRow(state);
+  KeyAdd(state, roundKeys, r);
 #if AUTH_ALG_ON
   printf("end of round(%d)\n0x", r);
   for(int i=0; i<16; i++)
@@ -220,5 +224,5 @@ void Authentication_5gaka::RijndaelEncrypt(const uint8_t input[16], uint8_t outp
     printf("%x", output[i]);
   printf("\n");
 #endif
-  return; 
+  return;
 }

@@ -20,28 +20,28 @@ void AMFApiServer::init(size_t thr) {
   Logger::amf_server().debug("Initiate AMF server endpoints done!");
 }
 
-void AMFApiServer::start(){
-  if(m_individualSubscriptionDocumentApiImpl != nullptr)
+void AMFApiServer::start() {
+  if (m_individualSubscriptionDocumentApiImpl != nullptr)
     Logger::amf_server().debug("AMF handler for IndividualSubscriptionDocumentApiImpl");
-  if(m_individualUeContextDocumentApiImpl != nullptr)
+  if (m_individualUeContextDocumentApiImpl != nullptr)
     Logger::amf_server().debug("AMF handler for IndividualUeContextDocumentApiImpl");
-  if(m_n1N2IndividualSubscriptionDocumentApiImpl != nullptr)
+  if (m_n1N2IndividualSubscriptionDocumentApiImpl != nullptr)
     Logger::amf_server().debug("AMF handler for N1N2IndividualSubscriptionDocumentApiImpl");
-  if(m_n1N2MessageCollectionDocumentApiImpl != nullptr)
+  if (m_n1N2MessageCollectionDocumentApiImpl != nullptr)
     Logger::amf_server().debug("AMF handler for N1N2MessageCollectionDocumentApiImpl");
-  if(m_n1N2SubscriptionsCollectionForIndividualUEContextsDocumentApiImpl != nullptr)
+  if (m_n1N2SubscriptionsCollectionForIndividualUEContextsDocumentApiImpl != nullptr)
     Logger::amf_server().debug("AMF handler for N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApiImpl");
-  if(m_nonUEN2MessageNotificationIndividualSubscriptionDocumentApiImpl != nullptr)
+  if (m_nonUEN2MessageNotificationIndividualSubscriptionDocumentApiImpl != nullptr)
     Logger::amf_server().debug("AMF handler for NonUEN2MessageNotificationIndividualSubscriptionDocumentApiImpl");
-  if(m_nonUEN2MessagesCollectionDocumentApiImpl != nullptr)
+  if (m_nonUEN2MessagesCollectionDocumentApiImpl != nullptr)
     Logger::amf_server().debug("AMF handler for NonUEN2MessagesCollectionDocumentApiImpl");
-  if(m_nonUEN2MessagesSubscriptionsCollectionDocumentApiImpl != nullptr)
+  if (m_nonUEN2MessagesSubscriptionsCollectionDocumentApiImpl != nullptr)
     Logger::amf_server().debug("AMF handler for NonUEN2MessagesSubscriptionsCollectionDocumentApiImpl");
-  if(m_subscriptionsCollectionDocumentApiImpl != nullptr)
+  if (m_subscriptionsCollectionDocumentApiImpl != nullptr)
     Logger::amf_server().debug("AMF handler for SubscriptionsCollectionDocumentApiImpl");
   m_httpEndpoint->setHandler(m_router->handler());
   m_httpEndpoint->serve();
 }
-void AMFApiServer::shutdown(){
+void AMFApiServer::shutdown() {
   m_httpEndpoint->shutdown();
 }

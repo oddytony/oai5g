@@ -11,25 +11,26 @@
 #include "ngap_app.hpp"
 #include "itti.hpp"
 
-
 using namespace std;
 using namespace config;
 using namespace ngap;
 
 amf_config amf_cfg;
-ngap_app * ngap_inst = NULL;
+ngap_app *ngap_inst = NULL;
 itti_mw *itti_inst = nullptr;
 
-void amf_ngap_app_task(void*){
+//------------------------------------------------------------------------------
+void amf_ngap_app_task(void*) {
   const task_id_t task_id = TASK_NGAP_APP;
   itti_inst->notify_task_ready(task_id);
-  Logger::itti().debug("task(%d) ready",TASK_NGAP_APP);
+  Logger::itti().debug("task(%d) ready", TASK_NGAP_APP);
 }
 
-int main(int argc, char **argv){
+//------------------------------------------------------------------------------
+int main(int argc, char **argv) {
   srand (time(NULL));
 
-  if(!Options::parse(argc, argv)){
+if  (!Options::parse(argc, argv)) {
     cout<<"Options::parse() failed"<<endl;
     return 1;
   }
@@ -45,7 +46,7 @@ int main(int argc, char **argv){
   itti_inst = new itti_mw();
   //itti_inst->start(amf_cfg.itti.itti_timer_sched_params);
 
-  itti_inst->create_task(TASK_NGAP_APP, amf_ngap_app_task,nullptr); 
+  itti_inst->create_task(TASK_NGAP_APP, amf_ngap_app_task,nullptr);
 
   Logger::amf_app().debug("Initiating Done!");
   pause();
