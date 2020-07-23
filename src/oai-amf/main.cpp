@@ -52,7 +52,7 @@ if  (!Options::parse(argc, argv)) {
     return 1;
   }
 
-  Logger::init( "amf" , Options::getlogStdout() , Options::getlogRotFilelog());
+  Logger::init( "AMF" , Options::getlogStdout() , Options::getlogRotFilelog());
   Logger::amf_app().startup("Options parsed!");
 
   amf_cfg.load(Options::getlibconfigConfig());
@@ -67,7 +67,7 @@ if  (!Options::parse(argc, argv)) {
   amf_app_inst = new amf_app(amf_cfg);
   amf_app_inst->allRegistredModulesInit(modules);
 
-  Logger::amf_app().debug("initiating amf server endpoints");
+  Logger::amf_app().debug("Initiating AMF server endpoints");
   Pistache::Address addr(std::string(inet_ntoa (*((struct in_addr *)&amf_cfg.n2.addr4))) , Pistache::Port(8282));
   AMFApiServer amfApiServer(addr, amf_app_inst);
   amfApiServer.init(2);

@@ -43,17 +43,17 @@ using namespace config;
 using namespace ngap;
 
 amf_config amf_cfg;
-ngap_app * ngap_inst = NULL;
+ngap_app *ngap_inst = NULL;
 
-int main(int argc, char **argv){
+int main(int argc, char **argv) {
   srand (time(NULL));
 
-  if(!Options::parse(argc, argv)){
+if  (!Options::parse(argc, argv)) {
     cout<<"Options::parse() failed"<<endl;
     return 1;
   }
 
-  Logger::init( "amf" , Options::getlogStdout() , Options::getlogRotFilelog());
+  Logger::init( "AMF" , Options::getlogStdout() , Options::getlogRotFilelog());
   Logger::amf_app().startup("Options parsed!");
 
   amf_cfg.load(Options::getlibconfigConfig());

@@ -29,7 +29,7 @@ bool Options::m_log_stdout;
 
 //------------------------------------------------------------------------------
 void Options::help() {
-  std::cout << std::endl << "Usage:  smf  [OPTIONS]..." << std::endl << "  -h, --help                   Print help and exit" << std::endl << "  -c, --libconfigcfg filename  Read the application configuration from this file." << std::endl
+  std::cout << std::endl << "Usage:  AMF  [OPTIONS]..." << std::endl << "  -h, --help                   Print help and exit" << std::endl << "  -c, --libconfigcfg filename  Read the application configuration from this file." << std::endl
       << "  -o, --stdoutlog              Send the application logs to STDOUT fd." << std::endl << "  -r, --rotatelog              Send the application logs to local file (in  current working directory)." << std::endl;
 }
 

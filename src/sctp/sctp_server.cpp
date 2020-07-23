@@ -189,7 +189,7 @@ int sctp_server::sctp_read_from_socket(int sd, uint32_t ppid) {
     }
     association->messages_recv++;
     if (ntohl(sinfo.sinfo_ppid) != association->ppid) {
-      Logger::sctp().error("Received data from peer with unsollicited PPID(%d), expecting(%d)", ntohl(sinfo.sinfo_ppid), association->ppid);
+      Logger::sctp().error("Received data from peer with unsolicited PPID(%d), expecting(%d)", ntohl(sinfo.sinfo_ppid), association->ppid);
       return SCTP_RC_ERROR;
     }
     Logger::sctp().info("[assoc_id(%d)][socket(%d)] Msg of length(%d) received from port(%d), on stream(%d), PPID(%d)", sinfo.sinfo_assoc_id, sd, n, ntohs(addr.sin6_port), sinfo.sinfo_stream, ntohl(sinfo.sinfo_ppid));
@@ -213,7 +213,7 @@ int sctp_server::handle_assoc_change(int sd, uint32_t ppid, struct sctp_assoc_ch
   switch (sctp_assoc_changed->sac_state) {
     case SCTP_COMM_UP: {
       if (add_new_association(sd, ppid, sctp_assoc_changed) == NULL) {
-        Logger::sctp().error("add new association with ppid(%d) socket(%d) error", ppid, sd);
+        Logger::sctp().error("Add new association with ppid(%d) socket(%d) error", ppid, sd);
         rc = SCTP_RC_ERROR;
       }
       break;
@@ -248,7 +248,7 @@ sctp_association_t* sctp_server::add_new_association(int sd, uint32_t ppid, stru
   new_association->instreams = sctp_assoc_changed->sac_inbound_streams;
   new_association->outstreams = sctp_assoc_changed->sac_outbound_streams;
   new_association->assoc_id = (sctp_assoc_id_t) sctp_assoc_changed->sac_assoc_id;
-  Logger::sctp().debug("add new association with id(%d)", (sctp_assoc_id_t) sctp_assoc_changed->sac_assoc_id);
+  Logger::sctp().debug("Add new association with id(%d)", (sctp_assoc_id_t) sctp_assoc_changed->sac_assoc_id);
   sctp_ctx.push_back(new_association);
   sctp_get_localaddresses(sd, NULL, NULL);
   sctp_get_peeraddresses(sd, &new_association->peer_addresses, &new_association->nb_peer_addresses);
@@ -383,7 +383,7 @@ int sctp_server::sctp_send_msg(sctp_assoc_id_t sctp_assoc_id, sctp_stream_id_t s
   }
   Logger::sctp().debug("[%d][%d] Sending buffer %p of %d bytes on stream %d with ppid %d", assoc_desc->sd, sctp_assoc_id, bdata(*payload), blength(*payload), stream, assoc_desc->ppid);
   if (sctp_sendmsg(assoc_desc->sd, (const void*) bdata(*payload), (size_t) blength(*payload), NULL, 0, htonl(assoc_desc->ppid), 0, stream, 0, 0) < 0) {
-    Logger::sctp().error("send, sd:%u,stream:%u,ppid:%u, len:%u, failed: %s,%d", assoc_desc->sd, stream, htonl(assoc_desc->ppid), blength(*payload), strerror(errno), errno);
+    Logger::sctp().error("Send, sd:%u,stream:%u,ppid:%u, len:%u, failed: %s,%d", assoc_desc->sd, stream, htonl(assoc_desc->ppid), blength(*payload), strerror(errno), errno);
     *payload = NULL;
     return -1;
   }

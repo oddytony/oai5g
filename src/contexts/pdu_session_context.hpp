@@ -37,7 +37,7 @@ class pdu_session_context {
  public:
   pdu_session_context();
   ~pdu_session_context();
- public:
+
   uint32_t ran_ue_ngap_id;
   long amf_ue_ngap_id;
   uint8_t req_type;

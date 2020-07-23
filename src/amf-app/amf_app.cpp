@@ -120,7 +120,7 @@ void amf_app_task(void*) {
               stacs.display();
               break;
             default:
-              Logger::amf_app().info("no handler for timer(%d) with arg1_user(%d) ", to->timer_id, to->arg1_user);
+              Logger::amf_app().info("No handler for timer(%d) with arg1_user(%d) ", to->timer_id, to->arg1_user);
           }
         }
         break;
@@ -221,7 +221,7 @@ void amf_app::handle_itti_message(itti_nas_signalling_establishment_request &itt
   string ue_context_key = "app_ue_ranid_" + to_string(itti_msg.ran_ue_ngap_id) + ":amfid_" + to_string(amf_ue_ngap_id);
   //if(!is_amf_ue_id_2_ue_context(amf_ue_ngap_id)){
   if (!is_ran_amf_id_2_ue_context(ue_context_key)) {
-    Logger::amf_app().debug("no existed ue_context, Create one with ran_amf_id(%s)", ue_context_key.c_str());
+    Logger::amf_app().debug("No existed ue_context, create one with ran_amf_id(%s)", ue_context_key.c_str());
     uc = std::shared_ptr < ue_context > (new ue_context());
     //set_amf_ue_ngap_id_2_ue_context(amf_ue_ngap_id, uc);
     set_ran_amf_id_2_ue_context(ue_context_key, uc);
@@ -270,13 +270,13 @@ void amf_app::handle_itti_message(itti_nas_signalling_establishment_request &itt
 //SMF Client response handlers
 //------------------------------------------------------------------------------
 void amf_app::handle_post_sm_context_response_error_400() {
-  Logger::amf_app().error("post sm context response error 400");
+  Logger::amf_app().error("Post SM context response error 400");
 }
 
 bool amf_app::generate_5g_guti(uint32_t ranid, long amfid, string &mcc, string &mnc, uint32_t &tmsi) {
   string ue_context_key = "app_ue_ranid_" + to_string(ranid) + ":amfid_" + to_string(amfid);
   if (!is_ran_amf_id_2_ue_context(ue_context_key)) {
-    Logger::amf_app().error("no ue context for ran_amf_id(%s), exit", ue_context_key.c_str());
+    Logger::amf_app().error("No UE context for ran_amf_id(%s), exit", ue_context_key.c_str());
     return false;
   }
   std::shared_ptr<ue_context> uc;

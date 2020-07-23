@@ -154,7 +154,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind &nas_data_ind) {
     snn = "5G:mnc0" + nas_data_ind.mnc + ".mcc" + nas_data_ind.mcc + ".3gppnetwork.org";
   else
     snn = "5G:mnc" + nas_data_ind.mnc + ".mcc" + nas_data_ind.mcc + ".3gppnetwork.org";
-  Logger::amf_n1().debug("serving network name: %s", snn.c_str());
+  Logger::amf_n1().debug("Serving network name: %s", snn.c_str());
 
   bstring recved_nas_msg = nas_data_ind.nas_msg;
   bstring decoded_plain_msg;
@@ -214,18 +214,18 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind &nas_data_ind) {
         uint8_t *buf = (uint8_t*) bdata(recved_nas_msg);
         int buf_len = blength(recved_nas_msg);
         uint32_t mac32_recv = ntohl((((uint32_t*) (buf + 2))[0]));
-        Logger::amf_n1().debug("received mac32(0x%x) from the message", mac32_recv);
+        Logger::amf_n1().debug("Received mac32(0x%x) from the message", mac32_recv);
         if (mac32 == mac32_recv) {
           isMatched = true;
           //nc.get()->security_ctx->ul_count.seq_num ++;
         }
         if (!isMatched) {
-          Logger::amf_n1().error("received message not integrity matched");
+          Logger::amf_n1().error("Received message not integrity matched");
           return;
         } else {
           bstring ciphered = blk2bstr(buf + 7, buf_len - 7);
           if (!nas_message_cipher_protected(nc.get()->security_ctx, NAS_MESSAGE_UPLINK, ciphered, decoded_plain_msg)) {
-            Logger::amf_n1().error("decrypt NAS message failure");
+            Logger::amf_n1().error("Decrypt NAS message failure");
             return;
           }
         }
@@ -285,7 +285,7 @@ void amf_n1::nas_signalling_establishment_request_handle(SecurityHeaderType type
     }
       break;
     default:
-      Logger::amf_n1().error("no handler for NAS message(0x%x)", message_type);
+      Logger::amf_n1().error("No handler for NAS message(0x%x)", message_type);
   }
 }
 
@@ -381,7 +381,7 @@ void amf_n1::service_request_handle(bool isNasSig, std::shared_ptr<nas_context> 
   uint8_t *kamf = nc.get()->kamf[secu->vector_pointer];
   uint8_t kgnb[32];
   uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
-  Logger::amf_n1().debug("uplink count(%d)", secu->ul_count.seq_num);
+  Logger::amf_n1().debug("Uplink count(%d)", secu->ul_count.seq_num);
   print_buffer("amf_n1", "kamf", kamf, 32);
   Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
   bstring kgnb_bs = blk2bstr(kgnb, 32);
@@ -468,7 +468,7 @@ void amf_n1::registration_request_handle(bool isNasSig, std::shared_ptr<nas_cont
           string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) + ":amfid_" + to_string(amf_ue_ngap_id);
           std::shared_ptr<ue_context> uc;
           //uc = amf_app_inst->amf_ue_id_2_ue_context(amf_ue_ngap_id);
-          Logger::amf_n1().info("try to find ue_context in amf_app using ran_amf_id(%s)", ue_context_key.c_str());
+          Logger::amf_n1().info("Try to find ue_context in amf_app using ran_amf_id(%s)", ue_context_key.c_str());
           uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
           ue_infos ueItem;
           update_ue_information_statics(ueItem, "CM-CONNECTED", "REGISTRATION-INITIATING", ran_ue_ngap_id, amf_ue_ngap_id, nc.get()->imsi, "", uc.get()->cgi.mcc, uc.get()->cgi.mnc, uc.get()->cgi.nrCellID);
@@ -566,17 +566,17 @@ void amf_n1::registration_request_handle(bool isNasSig, std::shared_ptr<nas_cont
     }
       break;
     case MOBILITY_REGISTRATION_UPDATING: {
-      Logger::amf_n1().error("The network handling mobility registration ...");
+      Logger::amf_n1().error("Network handling mobility registration ...");
       run_mobility_registration_update_procedure(nc);
     }
       break;
     case PERIODIC_REGISTRATION_UPDATING: {
-      Logger::amf_n1().error("The network doesn't support periodic registration, reject ...");
+      Logger::amf_n1().error("Network doesn't support periodic registration, reject ...");
     }
       break;
     case EMERGENCY_REGISTRATION: {
       if (!amf_cfg.is_emergency_support.compare("false")) {
-        Logger::amf_n1().error("The network doesn't support emergency registration, reject ...");
+        Logger::amf_n1().error("Network doesn't support emergency registration, reject ...");
         response_registration_reject_msg(_5GMM_CAUSE_ILLEGAL_UE, ran_ue_ngap_id, amf_ue_ngap_id);  //cause?
         return;
       }
@@ -782,8 +782,8 @@ bool amf_n1::authentication_vectors_generator_in_udm(std::shared_ptr<nas_context
       }
       mysql_push_rand_sqn(nc.get()->imsi, vector[MAX_5GS_AUTH_VECTORS - 1].rand, sqn);
     } else {
-      Logger::amf_n1().debug("no auts ...");
-      Logger::amf_n1().debug("receive information from mysql with imsi(%s)", nc.get()->imsi.c_str());
+      Logger::amf_n1().debug("No auts ...");
+      Logger::amf_n1().debug("Receive information from mysql with imsi(%s)", nc.get()->imsi.c_str());
       //print_buffer("amf_n1", "Received from MYSQL: rand", mysql_resp.rand, 16);
       //print_buffer("amf_n1", "Received from MYSQL: opc", mysql_resp.opc, 16);
       //print_buffer("amf_n1", "Received from MYSQL: key", mysql_resp.key, 16);
@@ -911,7 +911,7 @@ void amf_n1::annex_a_4_33501(uint8_t ck[16], uint8_t ik[16], uint8_t *input, uin
     oldS[24 + i] = input[i];
   oldS[32] = 0x00;
   oldS[33] = 0x08;
-  print_buffer("amf_n1", "inputstring: ", S, 31 + netName.size);
+  print_buffer("amf_n1", "input string: ", S, 31 + netName.size);
   uint8_t key[32];
   memcpy(&key[0], ck, 16);
   memcpy(&key[16], ik, 16);  //KEY
@@ -1128,7 +1128,7 @@ bool amf_n1::start_security_mode_control_procedure(std::shared_ptr<nas_context> 
   security_data_t *data = (security_data_t*) calloc(1, sizeof(security_data_t));
   nas_secu_ctx *secu_ctx = nc.get()->security_ctx;
   if (!data)
-    Logger::amf_n1().error("cannot calloc memory for security_data_t");
+    Logger::amf_n1().error("Cannot allocate memory for security_data_t");
   if (secu_ctx->sc_type == SECURITY_CTX_TYPE_NOT_AVAILABLE && nc.get()->is_common_procedure_for_security_mode_control_running) {
     Logger::amf_n1().debug("Using INTEGRITY_PROTECTED_WITH_NEW_SECU_CTX for SecurityModeControl message");
     data->saved_selected_nea = secu_ctx->nas_algs.encryption;  //emm_ctx->_security.selected_algorithms.encryption;
@@ -1231,7 +1231,7 @@ void amf_n1::security_mode_complete_handle(uint32_t ran_ue_ngap_id, long amf_ue_
   regAccept->setALLOWED_NSSAI(nssai);
 
   std::string guti = mcc + mnc + amf_cfg.guami.regionID + amf_cfg.guami.AmfSetID + amf_cfg.guami.AmfPointer + std::to_string(tmsi);
-  Logger::amf_n1().debug("allocated guti %s", guti.c_str());
+  Logger::amf_n1().debug("Allocated guti %s", guti.c_str());
 
   regAccept->set_5GS_Network_Feature_Support(0x00, 0x00);
   regAccept->setT3512_Value(0x5, 0x1e);
@@ -1317,7 +1317,7 @@ void amf_n1::encode_nas_message_protected(nas_secu_ctx *nsc, bool is_secu_ctx_ne
         memcpy(protected_nas_buf, input_nas_buf, input_nas_len);
         encoded_size = input_nas_len;
       } else {
-        Logger::amf_n1().debug("Outter mac32: 0x%x", mac32);
+        Logger::amf_n1().debug("mac32: 0x%x", mac32);
         *(uint32_t*) (protected_nas_buf + 2) = htonl(mac32);
         encoded_size = 7 + input_nas_len;
       }
@@ -1336,7 +1336,7 @@ void amf_n1::encode_nas_message_protected(nas_secu_ctx *nsc, bool is_secu_ctx_ne
         memcpy(protected_nas_buf, input_nas_buf, input_nas_len);
         encoded_size = input_nas_len;
       } else {
-        Logger::amf_n1().debug("Outter mac32: 0x%x", mac32);
+        Logger::amf_n1().debug("mac32: 0x%x", mac32);
         *(uint32_t*) (protected_nas_buf + 2) = htonl(mac32);
         encoded_size = 7 + input_nas_len;
       }
@@ -1368,11 +1368,11 @@ bool amf_n1::nas_message_integrity_protected(nas_secu_ctx *nsc, uint8_t directio
     nsc->ul_count.seq_num = stream_cipher.count;
     Logger::amf_n1().debug("Uplink count in uplink: %d", nsc->ul_count.seq_num);
   }
-  Logger::amf_n1().debug("parameters for NIA: count(0x%x)", count);
+  Logger::amf_n1().debug("Parameters for NIA: count(0x%x)", count);
   stream_cipher.bearer = 0x01;      //33.501 section 8.1.1
-  Logger::amf_n1().debug("parameters for NIA: bearer(0x%x)", 0x01);
+  Logger::amf_n1().debug("Parameters for NIA: bearer(0x%x)", 0x01);
   stream_cipher.direction = direction;      // "1" for downlink
-  Logger::amf_n1().debug("parameters for NIA: direction(0x%x)", direction);
+  Logger::amf_n1().debug("Parameters for NIA: direction(0x%x)", direction);
   stream_cipher.message = (uint8_t*) input_nas;
   print_buffer("amf_n1", "parameters for NIA: message", input_nas, input_nas_len);
   stream_cipher.blength = input_nas_len * 8;
@@ -1387,16 +1387,16 @@ bool amf_n1::nas_message_integrity_protected(nas_secu_ctx *nsc, uint8_t directio
       nas_algorithms::nas_stream_encrypt_nia1(&stream_cipher, mac);
       print_buffer("amf_n1", "result for NIA1: mac", mac, 4);
       mac32 = ntohl(*((uint32_t*) mac));
-      Logger::amf_n1().debug("result for NIA1: mac32(0x%x)", mac32);
+      Logger::amf_n1().debug("Result for NIA1: mac32(0x%x)", mac32);
       return true;
     }
       break;
     case IA2_128_5G: {
-      Logger::amf_n1().debug("integrity with algorithms: 128-5G-IA2");
+      Logger::amf_n1().debug("Integrity with algorithms: 128-5G-IA2");
       nas_algorithms::nas_stream_encrypt_nia2(&stream_cipher, mac);
       print_buffer("amf_n1", "result for NIA2: mac", mac, 4);
       mac32 = ntohl(*((uint32_t*) mac));
-      Logger::amf_n1().debug("result for NIA2: mac32(0x%x)", mac32);
+      Logger::amf_n1().debug("Result for NIA2: mac32(0x%x)", mac32);
       return true;
     }
       break;
@@ -1575,15 +1575,15 @@ void amf_n1::run_mobility_registration_update_procedure(std::shared_ptr<nas_cont
   regAccept->setALLOWED_NSSAI(nssai);
 
   //std::string guti = amf_cfg.guami.mcc + amf_cfg.guami.mnc + amf_cfg.guami.regionID + amf_cfg.guami.AmfSetID + amf_cfg.guami.AmfPointer + "0001";
-  std::string guti = "1234567890";      //need modify
-  Logger::amf_n1().debug("allocated guti %s", guti.c_str());
+  std::string guti = "1234567890";      //TODO: need modify
+  Logger::amf_n1().debug("Allocated guti %s", guti.c_str());
 
   regAccept->set_5GS_Network_Feature_Support(0x00, 0x00);
   uint8_t buffer[1024] = { 0 };
   int encoded_size = regAccept->encode2buffer(buffer, 1024);
   print_buffer("amf_n1", "Registration-Accept Message Buffer", buffer, encoded_size);
   if (!encoded_size) {
-    Logger::nas_mm().error("encode Registration-Accept message error");
+    Logger::nas_mm().error("Encode Registration-Accept message error");
     return;
   } else {
     delete regAccept;

@@ -41,7 +41,7 @@ bool amf_n1::get_mysql_auth_info(std::string imsi, mysql_auth_info_t &resp) {  /
   std::string query;
 
   if (!db_desc->db_conn) {
-    Logger::amf_n1().error("Cannot connect to mysql db");
+    Logger::amf_n1().error("Cannot connect to MySQL DB");
     return false;
   }
   query = "SELECT `key`,`sqn`,`rand`,`OPc` FROM `users` WHERE `users`.`imsi`='" + imsi + "' ";
@@ -54,7 +54,7 @@ bool amf_n1::get_mysql_auth_info(std::string imsi, mysql_auth_info_t &resp) {  /
   res = mysql_store_result(db_desc->db_conn);
   pthread_mutex_unlock(&db_desc->db_cs_mutex);
   if (!res) {
-    Logger::amf_n1().error("data fetched from mysql is not present");
+    Logger::amf_n1().error("data fetched from MySQL is not present");
     return false;
   }
   if (row = mysql_fetch_row(res)) {
@@ -83,7 +83,7 @@ bool amf_n1::connect_to_mysql() {
   const int mysql_reconnect_val = 1;
   db_desc = (database_t*) calloc(1, sizeof(database_t));
   if (!db_desc) {
-    Logger::amf_n1().error("An error occurs when calloc");
+    Logger::amf_n1().error("An error occurs when allocate memory for DB_DESC");
     return false;
   }
   pthread_mutex_init(&db_desc->db_cs_mutex, NULL);
@@ -110,11 +110,11 @@ void amf_n1::mysql_push_rand_sqn(std::string imsi, uint8_t *rand_p, uint8_t *sqn
   int query_length = 0;
   uint64_t sqn_decimal = 0;
   if (!db_desc->db_conn) {
-    Logger::amf_n1().error("Cannot connect to mysql");
+    Logger::amf_n1().error("Cannot connect to MySQL DB");
     return;
   }
   if (!sqn || !rand_p) {
-    Logger::amf_n1().error("need sqn and rand");
+    Logger::amf_n1().error("Need sqn and rand");
     return;
   }
   sqn_decimal = ((uint64_t) sqn[0] << 40) | ((uint64_t) sqn[1] << 32) | ((uint64_t) sqn[2] << 24) | (sqn[3] << 16) | (sqn[4] << 8) | sqn[5];
@@ -156,7 +156,7 @@ void amf_n1::mysql_increment_sqn(std::string imsi) {
   MYSQL_RES *res;
   char query[1000];
   if (db_desc->db_conn == NULL) {
-    Logger::amf_n1().error("Cannot connect to mysql");
+    Logger::amf_n1().error("Cannot connect to MySQL DB");
     return;
   }
   sprintf(query, "UPDATE `users` SET `sqn` = `sqn` + 32 WHERE `users`.`imsi`='%s'", imsi.c_str());

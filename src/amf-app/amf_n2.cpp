@@ -57,6 +57,7 @@ extern amf_app *amf_app_inst;
 extern statistics stacs;
 
 void amf_n2_task(void*);
+
 //------------------------------------------------------------------------------
 void amf_n2_task(void *args_p) {
   const task_id_t task_id = TASK_AMF_N2;
@@ -134,7 +135,7 @@ amf_n2::amf_n2(const string &address, const uint16_t port_num)
     throw std::runtime_error("Cannot create task TASK_AMF_N2");
   }
   Logger::task_amf_n2().startup("Started");
-  Logger::task_amf_n2().debug("construct amf_n2 successfully");
+  Logger::task_amf_n2().debug("Construct amf_n2 successfully");
 }
 
 //------------------------------------------------------------------------------
@@ -150,7 +151,7 @@ void amf_n2::handle_itti_message(itti_new_sctp_association &new_assoc) {
 // NG_SETUP_REQUEST Handler
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_ng_setup_request &itti_msg) {
-  Logger::amf_n2().debug("parameters(assoc_id(%d))(stream(%d))", itti_msg.assoc_id, itti_msg.stream);
+  Logger::amf_n2().debug("Parameters(assoc_id(%d))(stream(%d))", itti_msg.assoc_id, itti_msg.stream);
 
   std::shared_ptr<gnb_context> gc;
   if (!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
@@ -472,7 +473,6 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request &itti_msg) {
     memcpy(uecap, (uint8_t*) bdata(ueCapability), blength(ueCapability));
     uecap[blength(ueCapability)] = '\0';
     msg->setUERadioCapability(uecap, (size_t)blength(ueCapability));
-    //msg->setUERadioCapability((uint8_t*)bdata(ueCapability), (size_t)blength(ueCapability));
     Logger::amf_n2().debug("Encoding parameters for service request");
     std::vector<PDUSessionResourceSetupRequestItem_t> list;
     PDUSessionResourceSetupRequestItem_t item;
@@ -601,7 +601,7 @@ void amf_n2::set_ran_ue_ngap_id_2_ue_ngap_context(const uint32_t &ran_ue_ngap_id
 bool amf_n2::verifyPlmn(vector<SupportedItem_t> list) {
   for (int i = 0; i < amf_cfg.plmn_list.size(); i++) {
     for (int j = 0; j < list.size(); j++) {
-      Logger::amf_n2().debug("tac configured(%d) -- tac received(%d)", amf_cfg.plmn_list[i].tac, list[j].tac);
+      Logger::amf_n2().debug("TAC configured(%d) -- TAC received(%d)", amf_cfg.plmn_list[i].tac, list[j].tac);
       if (amf_cfg.plmn_list[i].tac != list[j].tac) {
         continue;
       }

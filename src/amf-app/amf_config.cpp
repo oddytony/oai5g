@@ -63,7 +63,7 @@ amf_config::~amf_config() {
 //------------------------------------------------------------------------------
 int amf_config::load(const std::string &config_file) {
   cout << endl;
-  Logger::amf_app().debug("Load amf system configuration file(%s)", config_file.c_str());
+  Logger::amf_app().debug("Load AMF system configuration file(%s)", config_file.c_str());
   Config cfg;
   unsigned char buf_in6_addr[sizeof(struct in6_addr)];
   try {
