@@ -37,7 +37,7 @@ namespace config {
 //------------------------------------------------------------------------------
 int amf_modules::load(const std::string &config_file) {
   cout << endl;
-  Logger::amf_app().debug("Load amf  module configuration file(%s)", config_file.c_str());
+  Logger::amf_app().debug("Load AMF module configuration file(%s)", config_file.c_str());
   Config cfg;
   try {
     cfg.readFile(config_file.c_str());

@@ -79,10 +79,6 @@ class sctp_application {
   virtual void handle_receive(bstring payload, sctp_assoc_id_t assoc_id, sctp_stream_id_t stream, sctp_stream_id_t instreams, sctp_stream_id_t outstreams) = 0;
   virtual void handle_sctp_new_association(sctp_assoc_id_t assoc_id, sctp_stream_id_t instreams, sctp_stream_id_t outstreams) = 0;
   virtual uint32_t getPpid() = 0;
-//protected:
-  //uint32_t ppid_;
-  //uint32_t getPpid();
-
 };
 
 class sctp_server {
@@ -100,7 +96,6 @@ class sctp_server {
   int sctp_handle_com_down(sctp_assoc_id_t assoc_id);
   int sctp_handle_reset(const sctp_assoc_id_t assoc_id);
   sctp_association_t* add_new_association(int sd, uint32_t ppid, struct sctp_assoc_change *sctp_assoc_changed);
-  sctp_association_t* sctp_add_new_peer(void);
   int sctp_get_localaddresses(int sock, struct sockaddr **local_addr, int *nb_local_addresses);
   int sctp_get_peeraddresses(int sock, struct sockaddr **remote_addr, int *nb_remote_addresses);
   sctp_association_t* sctp_is_assoc_in_list(sctp_assoc_id_t assoc_id);

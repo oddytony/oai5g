@@ -50,11 +50,6 @@ extern "C" {
 using namespace std;
 
 namespace sctp {
-/*
- uint32_t sctp_application::getPpid(){
- return ppid_;
- }
- */
 
 //------------------------------------------------------------------------------
 sctp_server::sctp_server(const char *address, const uint16_t port_num) {
@@ -135,7 +130,6 @@ void* sctp_server::sctp_receiver_thread(void *arg) {
                 fdmax -= 1;
             }
           }
-
         }
       }
     }
@@ -255,28 +249,6 @@ sctp_association_t* sctp_server::add_new_association(int sd, uint32_t ppid, stru
   app_->handle_sctp_new_association(new_association->assoc_id, new_association->instreams, new_association->outstreams);
   return new_association;
 }
-/*
- sctp_association_t* sctp_server::sctp_add_new_peer (void){
- sctp_association_t              *new_sctp_descriptor = (sctp_association_t*)calloc (1, sizeof (sctp_association_t));
- if (new_sctp_descriptor == NULL) {
- Logger::sctp().error("Failed to allocate memory for new peer (%s:%d)",__FILE__,__LINE__);
- return NULL;
- }
- new_sctp_descriptor->next_assoc = NULL;
- new_sctp_descriptor->previous_assoc = NULL;
- if (sctp_desc.available_connections_tail == NULL) {
- sctp_desc.available_connections_head = new_sctp_descriptor;
- sctp_desc.available_connections_tail = sctp_desc.available_connections_head;
- } else {
- new_sctp_descriptor->previous_assoc = sctp_desc.available_connections_tail;
- sctp_desc.available_connections_tail->next_assoc = new_sctp_descriptor;
- sctp_desc.available_connections_tail = new_sctp_descriptor;
- }
- sctp_desc.number_of_connections++;
- //sctp_dump_list ();
- return new_sctp_descriptor;
- }
- */
 
 //------------------------------------------------------------------------------
 sctp_association_t* sctp_server::sctp_is_assoc_in_list(sctp_assoc_id_t assoc_id) {

@@ -1063,7 +1063,7 @@ void amf_n1::authentication_response_handle(uint32_t ran_ue_ngap_id, long amf_ue
     return;
   } else {
     Logger::amf_n1().debug("Authenticated successfully by network!!!");
-    if (!nc.get()->is_current_security_avaliable) {
+    if (!nc.get()->is_current_security_available) {
       if (!start_security_mode_control_procedure(nc)) {
         Logger::amf_n1().error("Start SMC procedure failure");
       } else {

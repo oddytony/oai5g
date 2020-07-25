@@ -83,7 +83,7 @@ bool amf_n1::connect_to_mysql() {
   const int mysql_reconnect_val = 1;
   db_desc = (database_t*) calloc(1, sizeof(database_t));
   if (!db_desc) {
-    Logger::amf_n1().error("An error occurs when allocate memory for DB_DESC");
+    Logger::amf_n1().error("An error occurs when allocating memory for DB_DESC");
     return false;
   }
   pthread_mutex_init(&db_desc->db_cs_mutex, NULL);

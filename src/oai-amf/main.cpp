@@ -33,12 +33,10 @@ extern void ue_gnb_simulator();
 
 using namespace std;
 using namespace config;
-//using namespace ngap;
 using namespace amf_application;
 
 amf_config amf_cfg;
 amf_modules modules;
-//ngap_app * ngap_inst = NULL;
 itti_mw *itti_inst = nullptr;
 amf_app *amf_app_inst = nullptr;
 statistics stacs;

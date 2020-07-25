@@ -94,10 +94,16 @@ message("${OPENAIRCN_DIR}/build/cmake_modules")
 
 include_directories(${SRC_TOP_DIR}/oai-amf)
 include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)
+#include_directories(${SRC_TOP_DIR}/itti)
 
-### for itti msg
+### for itti
+include_directories(${SRC_TOP_DIR}/itti)
 include_directories(${SRC_TOP_DIR}/itti/msgs)
-###end for itti msg
+file(GLOB ITTI_SRC 
+  ${SRC_TOP_DIR}/itti/itti.cpp
+  ${SRC_TOP_DIR}/itti/itti_msg.cpp
+)
+###end for itti
 
 ### for amf nas
 include_directories(${SRC_TOP_DIR}/nas)
@@ -181,14 +187,6 @@ file(GLOB NGAP_MSGS_IES_SRC
   ${SRC_TOP_DIR}/ngap/ngapMsgs/*.cpp
 )
 ### end for
-
-### for itti
-include_directories(${SRC_TOP_DIR}/itti)
-file(GLOB ITTI_SRC 
-  ${SRC_TOP_DIR}/itti/itti.cpp
-  ${SRC_TOP_DIR}/itti/itti_msg.cpp
-)
-###end for itti
 
 ### for authentication 
 include_directories(${SRC_TOP_DIR}/secu_algorithms/5gaka)
