@@ -1,4 +1,5 @@
 cmake_minimum_required (VERSION 3.0.2)
+project(OpenAirInterface)
 # Override options for AMF
 set (  PACKAGE_NAME                    "AMF" )
 set (  STATIC_LINKING                   False )

@@ -1,7 +1,4 @@
 cmake_minimum_required (VERSION 3.0.2)
-
-project(OpenAirInterface)
-
 macro(add_boolean_option name val helpstr)
   if(DEFINED ${name})
     set(value ${${name}})
