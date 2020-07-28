@@ -55,7 +55,7 @@ ngap_app::~ngap_app() {
 }
 
 //------------------------------------------------------------------------------
-// received sctp paylaod and decode it to NGAP message and send itti message to TASK_AMF_N2
+// received sctp payload and decode it to NGAP message and send itti message to TASK_AMF_N2
 void ngap_app::handle_receive(bstring payload, sctp_assoc_id_t assoc_id, sctp_stream_id_t stream, sctp_stream_id_t instreams, sctp_stream_id_t outstreams) {
   Logger::ngap().debug("NGAP handle SCTP payload from sctp_server on assoc_id(%d), stream_id(%d), instreams(%d), outstreams(%d)", assoc_id, stream, instreams, outstreams);
   Ngap_NGAP_PDU_t *ngap_msg_pdu = (Ngap_NGAP_PDU_t*) calloc(1, sizeof(Ngap_NGAP_PDU_t));
