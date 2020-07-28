@@ -20,7 +20,6 @@
 #include "amf_statistics.hpp"
 
 #include "SMFClientApi.hpp"
-#include "test.hpp"
 #include "smf-client.hpp"
 
 #include <string>
