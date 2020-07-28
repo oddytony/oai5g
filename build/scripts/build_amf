@@ -1,10 +1,31 @@
 #!/bin/bash
-
+################################################################################
+# Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The OpenAirInterface Software Alliance licenses this file to You under
+# the OAI Public License, Version 1.1  (the "License"); you may not use this file
+# except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.openairinterface.org/?page_id=698
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#-------------------------------------------------------------------------------
+# For more information about the OpenAirInterface (OAI) Software Alliance:
+#      contact@openairinterface.org
+################################################################################
 
 set -o pipefail
 
 INSTALL_DIR=/usr/local/bin
-
+################################
+# include helper functions
+################################
 THIS_SCRIPT_PATH=$(dirname $(readlink -f $0))
 source ${THIS_SCRIPT_PATH}/build_helper.amf
 
@@ -21,7 +42,7 @@ function help()
 	  echo_error "  -f, --force                               No interactive script for installation of software packages."
 	  echo_error "  -h, --help                                Print this help."
 	  echo_error "  -I, --install-deps                        Check installed software necessary to build and run AMF (support $SUPPORTED_DISTRO)."
-	  #echo_error "  -i, --install-min-deps                    Check installed software necessary to run a statically linked AMF (support $SUPPORTED_DISTRO)."
+	  echo_error "  -i, --install-min-deps                    Check installed software necessary to run a statically linked AMF (support $SUPPORTED_DISTRO)."
 	  echo_error "  -j, --jobs                                Multiple jobs for compiling."
 	  echo_error "  -v, --verbose                             Build process verbose."
 	  echo_error "  -V, --Verbose                             CMake only build process verbose, display compilation warnings and errors."
@@ -34,6 +55,7 @@ function main()
   local -i force=0
   local -i debug=0
   local -i verbose=0
+  local -i var_check_install_min_deps=0
   local -i var_check_install_deps=0
   local    cmake_args=" "
   export   make_args=" "
@@ -58,8 +80,8 @@ function main()
 	;;
       -f | --force)
         force=1
-	echo "when install deps, no interaction"
-	shift;
+        echo "Force set (no interactive)"
+        shift;
         ;;
       -h | --help)
         help
@@ -67,11 +89,17 @@ function main()
         return 0
 	;;
       -I | --install-deps)
-	echo "check istalled software necessary to build and run AMF(support $SUPPORTED_DISTRO)"
-	set_openair_env  # to ~/oai-5g-amf/
-	var_check_install_deps=1
-	shift;
-	;;
+        echo "Check installed software necessary to build and run AMF (support $SUPPORTED_DISTRO):"
+        set_openair_env
+        var_check_install_deps=1
+        shift;
+        ;;
+      -i | --install-min-deps)
+        echo "Check installed software necessary to run AMF (support $SUPPORTED_DISTRO):"
+        set_openair_env
+        var_check_install_min_deps=1
+        shift;
+        ;;
       -j | --jobs)
         make_args="$make_args -j`nproc`"
         shift;
@@ -89,10 +117,10 @@ function main()
         shift;
         ;;
       *)
-	echo "unknown option $1"
-	help
-	return 1
-	;;
+        echo "Unknown option $1"
+        help
+        return 1
+        ;;
     esac
   done
 
@@ -106,10 +134,10 @@ function main()
   local dlog=$OPENAIRCN_DIR/build/log
   local dext=$OPENAIRCN_DIR/build/ext
 
-  mkdir -m 777 -p ${dlog}
-  mkdir -m 777 -p ${dext}
+  mkdir -m 777 -p $dlog
+  mkdir -m 777 -p $dext
 
-  if [ $var_check_install_deps -gt 0 ]; then
+  if [ $var_check_install_min_deps -gt 0 ]; then
 	  disable_ipv6
 	  check_install_amf_deps $force 0
 	  if [[ $? -ne 0 ]]; then
@@ -122,7 +150,24 @@ function main()
 	  fi
   fi
 
+  if [ $var_check_install_deps -gt 0 ];then
+    disable_ipv6
+    check_install_amf_deps  $force $debug
+    if [[ $? -ne 0 ]]; then
+        echo_error "Error: AMF deps installation failed"
+        return 1
+    else
+        echo_success "AMF deps installation successful"
+        echo_warning "AMF not compiled, to compile it, re-run build_smf without -I option"
+        return 0
+    fi
+  fi
 
+  cmake_args="$cmake_args  -DBUILD_SHARED_LIBS=OFF"
+
+  ##############################################################################
+  # Clean
+  ##############################################################################
   cd $OPENAIRCN_DIR/build/amf
   if [ $clean -ne 0 ]; then
     if [[ $verbose -eq 1 ]]; then
@@ -132,13 +177,14 @@ function main()
     mkdir -m 777 -p -v build
   fi
 
-
-
-
+  ##############################################################################
+  # Compile AMF
+  ##############################################################################
   cd $OPENAIRCN_DIR/build/amf
   if [ ! -d ./build ]; then
     mkdir -m 777 -p -v build
   fi
+
   cd ./build
   $CMAKE $cmake_args .. > /dev/null
   ret=$?;[[ $ret -ne 0 ]] && return $ret
