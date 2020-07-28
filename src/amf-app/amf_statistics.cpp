@@ -29,11 +29,10 @@
 #include "amf_statistics.hpp"
 #include "logger.hpp"
 #include <iostream>
-using namespace std;
 
 //------------------------------------------------------------------------------
 void statistics::display() {
-  cout << endl;
+  Logger::amf_app().info("");
   //Logger::amf_app().info("--------------------------------------------------");
   //Logger::amf_app().info("| connected gNBs | connected UEs | registered UEs |");
   //Logger::amf_app().info("--------------------------------------------------");

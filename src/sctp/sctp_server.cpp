@@ -47,7 +47,6 @@ extern "C" {
 }
 
 #include <iostream>
-using namespace std;
 
 namespace sctp {
 

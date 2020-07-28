@@ -30,7 +30,7 @@ extern std::size_t callback(
     std::size_t size,
     std::size_t num,
     std::string* out);
-extern bool multipart_parser(string input, string &jsonData, string &n1sm, string &n2sm);
+extern bool multipart_parser(std::string input, std::string &jsonData, std::string &n1sm, std::string &n2sm);
 //---------------------------------------------------------------------------------------------
 
 void send_pdu_session_establishment_request()
@@ -124,10 +124,10 @@ void send_pdu_session_establishment_request()
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 
     //get cause from the response
-    string response = *httpData.get();
-    string jsonData = "";
-    string n1sm = "";
-    string n2sm = "";
+    std::string response = *httpData.get();
+    std::string jsonData = "";
+    std::string n1sm = "";
+    std::string n2sm = "";
     if(httpCode != 200 && httpCode != 201){
       if(!(multipart_parser(response, jsonData, n1sm, n2sm))){
         std::cout << "Could not get the cause from the response" <<std::endl;
@@ -419,9 +419,9 @@ int main_test()
 }
 
 
-extern void octet_stream_2_hex_stream(uint8_t *buf, int len, string &out);
+extern void octet_stream_2_hex_stream(uint8_t *buf, int len, std::string &out);
 void hexTest(){
-  string hexString;
+  std::string hexString;
   uint8_t test[4] = {0x12, 0x43, 0x00, 0x45};
   octet_stream_2_hex_stream(test, 4, hexString);
   printf("hexStream: %s\n", hexString.c_str());

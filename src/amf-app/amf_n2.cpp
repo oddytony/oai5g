@@ -47,7 +47,6 @@
 #include "Ngap_TimeToWait.h"
 
 using namespace amf_application;
-using namespace std;
 using namespace config;
 extern itti_mw *itti_inst;
 extern amf_n2 *amf_n2_inst;
@@ -127,7 +126,7 @@ void amf_n2_task(void *args_p) {
 }
 
 //------------------------------------------------------------------------------
-amf_n2::amf_n2(const string &address, const uint16_t port_num)
+amf_n2::amf_n2(const std::string &address, const uint16_t port_num)
     :
     ngap_app(address, port_num) {
   if (itti_inst->create_task(TASK_AMF_N2, amf_n2_task, nullptr)) {
@@ -169,8 +168,8 @@ void amf_n2::handle_itti_message(itti_ng_setup_request &itti_msg) {
 
   //Get IE Global RAN Node ID
   uint32_t gnb_id;
-  string gnb_mcc;
-  string gnb_mnc;
+  std::string gnb_mcc;
+  std::string gnb_mnc;
   if (!itti_msg.ngSetupReq->getGlobalGnbID(gnb_id, gnb_mcc, gnb_mnc)) {
     Logger::amf_n2().error("Missing Mandatory IE GlobalGnbID");
     return;
@@ -179,7 +178,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request &itti_msg) {
   gc->globalRanNodeId = gnb_id;
   gnbItem.gnb_id = gnb_id;
 
-  string gnb_name;
+  std::string gnb_name;
   if (!itti_msg.ngSetupReq->getRanNodeName(gnb_name)) {
     Logger::amf_n2().warn("IE RanNodeName not existed");
   } else {

@@ -35,26 +35,25 @@
 #include <vector>
 #include <string>
 
-using namespace std;
 
 typedef struct {
   uint32_t gnb_id;
-  string mcc;
-  string mnc;
-  string gnb_name;
+  std::string mcc;
+  std::string mnc;
+  std::string gnb_name;
   uint32_t tac;
   //long nrCellId;
 } gnb_infos;
 
 typedef struct {
-  string connStatus;
-  string registerStatus;
+  std::string connStatus;
+  std::string registerStatus;
   uint32_t ranid;
   long amfid;
-  string imsi;
-  string guti;
-  string mcc;
-  string mnc;
+  std::string imsi;
+  std::string guti;
+  std::string mcc;
+  std::string mnc;
   uint32_t cellId;
 } ue_infos;
 
@@ -68,8 +67,8 @@ class statistics {
   uint32_t UE_connected;
   uint32_t UE_registred;
   //uint32_t        system_pdu_sessions;
-  vector<gnb_infos> gnbs;
-  vector<ue_infos> ues;
+  std::vector<gnb_infos> gnbs;
+  std::vector<ue_infos> ues;
 
 };
 

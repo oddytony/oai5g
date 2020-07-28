@@ -31,10 +31,9 @@
 
 #include "logger.hpp"
 #include <string>
-using namespace std;
 
 //------------------------------------------------------------------------------
-void print_buffer(const string app, const string commit, uint8_t *buf, int len) {
+void print_buffer(const std::string app, const std::string commit, uint8_t *buf, int len) {
   if (!app.compare("amf_app"))
     Logger::amf_app().debug(commit.c_str());
   if (!app.compare("amf_n1"))

@@ -390,9 +390,8 @@ void amf_n1::service_request_handle(bool isNasSig, std::shared_ptr<nas_context> 
 
   /* by liuyu */
   supi2amfId[supi] = amf_ue_ngap_id;
-  Logger::amf_n1().debug("amf_ue_ngap_id-----------------------------------(%d)", amf_ue_ngap_id);
   supi2ranId[supi] = ran_ue_ngap_id;
-  Logger::amf_n1().debug("ran_ue_ngap_id-----------------------------------(%d)", ran_ue_ngap_id);
+  Logger::amf_n1().debug("amf_ue_ngap_id %d, ran_ue_ngap_id %d", amf_ue_ngap_id, ran_ue_ngap_id);
   Logger::amf_n1().debug("Key for pdu session context: supi(%s)", supi.c_str());
   std::shared_ptr<pdu_session_context> psc;
   if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
@@ -413,7 +412,6 @@ void amf_n1::service_request_handle(bool isNasSig, std::shared_ptr<nas_context> 
   itti_msg->is_sr = true;  //service request indicator
   itti_msg->pdu_session_id = psc.get()->pdu_session_id;
   itti_msg->n2sm = psc.get()->n2sm;
-  //Logger::amf_n1().debug("n2sm size in amf_n1(%d)", blength(psc.get()->n2sm));
   std::shared_ptr<itti_initial_context_setup_request> i = std::shared_ptr < itti_initial_context_setup_request > (itti_msg);
   int ret = itti_inst->send_msg(i);
   if (0 != ret) {

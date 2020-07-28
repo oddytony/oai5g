@@ -96,17 +96,16 @@
 #define AMF_CONFIG_STRING_NAS_SUPPORTED_CIPHERING_ALGORITHM_LIST  "ORDERED_SUPPORTED_CIPHERING_ALGORITHM_LIST"
 
 using namespace libconfig;
-using namespace std;
 
 namespace config {
 
 typedef struct {
-  string mysql_server;
-  string mysql_user;
-  string mysql_pass;
-  string mysql_db;
-  string operator_key;
-  string random;
+  std::string mysql_server;
+  std::string mysql_user;
+  std::string mysql_pass;
+  std::string mysql_db;
+  std::string operator_key;
+  std::string random;
 } auth_conf;
 
 typedef struct interface_cfg_s {
@@ -128,23 +127,23 @@ typedef struct itti_cfg_s {
 } itti_cfg_t;
 
 typedef struct guami_s {
-  string mcc;
-  string mnc;
-  string regionID;
-  string AmfSetID;
-  string AmfPointer;
+  std::string mcc;
+  std::string mnc;
+  std::string regionID;
+  std::string AmfSetID;
+  std::string AmfPointer;
 } guami_t;
 
 typedef struct slice_s {
-  string sST;
-  string sD;
+  std::string sST;
+  std::string sD;
 } slice_t;
 
 typedef struct plmn_support_item_s {
-  string mcc;
-  string mnc;
+  std::string mcc;
+  std::string mnc;
   uint32_t tac;
-  vector<slice_t> slice_list;
+  std::vector<slice_t> slice_list;
 } plmn_item_t;
 
 typedef struct {
@@ -154,9 +153,9 @@ typedef struct {
 
 typedef struct {
   int id;
-  string ipv4;
-  string port;
-  string version;
+  std::string ipv4;
+  std::string port;
+  std::string version;
   bool selected;
 } smf_inst_t;
 
@@ -170,19 +169,19 @@ class amf_config {
   void display();
  public:
   unsigned int instance;
-  string pid_dir;
+  std::string pid_dir;
   interface_cfg_t n2;
   itti_cfg_t itti;
   unsigned int statistics_interval;
-  string AMF_Name;
+  std::string AMF_Name;
   guami_t guami;
-  vector<guami_t> guami_list;
+  std::vector<guami_t> guami_list;
   unsigned int relativeAMFCapacity;
-  vector<plmn_item_t> plmn_list;
-  string is_emergency_support;
+  std::vector<plmn_item_t> plmn_list;
+  std::string is_emergency_support;
   auth_conf auth_para;
   nas_conf_t nas_cfg;
-  vector<smf_inst_t> smf_pool;
+  std::vector<smf_inst_t> smf_pool;
 };
 
 }

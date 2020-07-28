@@ -1,7 +1,6 @@
 #include "mime_parser.hpp"
 #include <string>
 #include <iostream>
-using namespace std;
 
 bool multipart_parser(std::string input, std::string &jsonData, std::string &n1sm, std::string &n2sm) {
 

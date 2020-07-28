@@ -47,7 +47,6 @@ extern "C" {
 #include <iostream>
 
 using namespace libconfig;
-using namespace std;
 using namespace amf_application;
 
 namespace config {
@@ -62,8 +61,7 @@ amf_config::~amf_config() {
 
 //------------------------------------------------------------------------------
 int amf_config::load(const std::string &config_file) {
-  cout << endl;
-  Logger::amf_app().debug("Load AMF system configuration file(%s)", config_file.c_str());
+  Logger::amf_app().debug("\nLoad AMF system configuration file(%s)", config_file.c_str());
   Config cfg;
   unsigned char buf_in6_addr[sizeof(struct in6_addr)];
   try {
@@ -167,7 +165,7 @@ int amf_config::load(const std::string &config_file) {
     for (int i = 0; i < count; i++) {
       const Setting &smf_addr_item = smf_addr_pool[i];
       smf_inst_t smf_inst;
-      string selected;
+      std::string selected;
       smf_addr_item.lookupValue(AMF_CONFIG_STRING_SMF_INSTANCE_ID, smf_inst.id);
       smf_addr_item.lookupValue(AMF_CONFIG_STRING_IPV4_ADDRESS, smf_inst.ipv4);
       smf_addr_item.lookupValue(AMF_CONFIG_STRING_SMF_INSTANCE_PORT, smf_inst.port);
@@ -208,7 +206,7 @@ int amf_config::load(const std::string &config_file) {
 
     int intCount = intAlg.getLength();
     for (int i = 0; i < intCount; i++) {
-      string intAlgStr = intAlg[i];
+      std::string intAlgStr = intAlg[i];
       if (!intAlgStr.compare("NIA0"))
         nas_cfg.prefered_integrity_algorithm[i] = IA0_5G;
       if (!intAlgStr.compare("NIA1"))
@@ -222,7 +220,7 @@ int amf_config::load(const std::string &config_file) {
     const Setting &encAlg = nas[AMF_CONFIG_STRING_NAS_SUPPORTED_CIPHERING_ALGORITHM_LIST];
     int encCount = encAlg.getLength();
     for (int i = 0; i < encCount; i++) {
-      string encAlgStr = encAlg[i];
+      std::string encAlgStr = encAlg[i];
       if (!encAlgStr.compare("NEA0"))
         nas_cfg.prefered_ciphering_algorithm[i] = EA0_5G;
       if (!encAlgStr.compare("NEA1"))
@@ -272,7 +270,7 @@ void amf_config::display() {
   Logger::config().info("- random ..........................: %s", auth_para.random.c_str());
   Logger::config().info("- Remote SMF Pool..................: ");
   for (int i = 0; i < smf_pool.size(); i++) {
-    string selected;
+    std::string selected;
     if (smf_pool[i].selected)
       selected = "true";
     else

@@ -31,7 +31,6 @@
 
 #include <string>
 #include "bstrlib.h"
-using namespace std;
 
 class pdu_session_context {
  public:
@@ -43,8 +42,8 @@ class pdu_session_context {
   uint8_t req_type;
   uint8_t pdu_session_id;
   bstring n2sm;
-  string dnn;
-  string remote_smf_addr[0];  //"192.168.12.10:8080"
+  std::string dnn;
+  std::string remote_smf_addr[0];  //"192.168.12.10:8080"
   bool smf_avaliable;
 };
 #endif

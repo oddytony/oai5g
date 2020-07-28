@@ -62,17 +62,19 @@ extern amf_n1 *amf_n1_inst;
 extern void msg_str_2_msg_hex(std::string msg, bstring &b);
 extern void convert_string_2_hex(std::string &input, std::string &output);
 extern void print_buffer(const std::string app, const std::string commit, uint8_t *buf, int len);
-extern bool multipart_parser(string input, string &jsonData, string &n1sm, string &n2sm);
+extern bool multipart_parser(std::string input, std::string &jsonData, std::string &n1sm, std::string &n2sm);
 extern unsigned char* format_string_as_hex(std::string str);
 extern char* bstring2charString(bstring b);
 
+//------------------------------------------------------------------------------
 std::size_t callback(const char *in, std::size_t size, std::size_t num, std::string *out) {
   const std::size_t totalBytes(size * num);
   out->append(in, totalBytes);
   return totalBytes;
 }
 
-void octet_stream_2_hex_stream(uint8_t *buf, int len, string &out) {
+//------------------------------------------------------------------------------
+void octet_stream_2_hex_stream(uint8_t *buf, int len, std::string &out) {
   out = "";
   char *tmp = (char*) calloc(1, 2 * len * sizeof(uint8_t) + 1);
   for (int i = 0; i < len; i++) {
@@ -88,6 +90,7 @@ void octet_stream_2_hex_stream(uint8_t *buf, int len, string &out) {
 /***************************************************/
 
 void amf_n11_task(void*);
+//------------------------------------------------------------------------------
 void amf_n11_task(void*) {
   const task_id_t task_id = TASK_AMF_N11;
   itti_inst->notify_task_ready(task_id);
@@ -138,16 +141,16 @@ void amf_n11::handle_itti_message(itti_pdu_session_resource_setup_response &itti
 
 //------------------------------------------------------------------------------
 void amf_n11::handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_msg) {
-  string supi = pduid2supi.at(itti_msg.pdu_session_id);
+  std::string supi = pduid2supi.at(itti_msg.pdu_session_id);
   Logger::amf_n11().debug("Try to find supi(%s) from pdusession_id(%d)", supi.c_str(), itti_msg.pdu_session_id);
   std::shared_ptr<pdu_session_context> psc;
   if (is_supi_to_pdu_ctx(supi)) {
     psc = supi_to_pdu_ctx(supi);
   } else {
-    Logger::amf_n11().error("Trying to find psu_session_context with supi(%s), Falied", supi.c_str());
+    Logger::amf_n11().error("Trying to find psu_session_context with supi(%s), Failed", supi.c_str());
     return;
   }
-  string smf_addr;
+  std::string smf_addr;
   if (!psc.get()->smf_avaliable) {
     if (!smf_selection_from_configuration(smf_addr)) {
       Logger::amf_n11().error("No candidate SMF is available");
@@ -156,7 +159,8 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_m
   } else {
     smf_selection_from_context(smf_addr);
   }
-  string remote_uri = smf_addr + "/nsmf-pdusession/v2/sm-contexts/" + "1" + "/modify";                  //scid
+  //TODO:Remove hardcoded value (1 - SCID)
+  std::string remote_uri = smf_addr + "/nsmf-pdusession/v2/sm-contexts/" + "1" + "/modify";                  //scid
   nlohmann::json pdu_session_update_request;
   pdu_session_update_request["n2SmInfoType"] = "PDU_RES_SETUP_RSP";
   pdu_session_update_request["n2SmInfo"]["contentId"] = "n2SmMsg";
@@ -170,7 +174,7 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_m
 void amf_n11::handle_itti_message(itti_smf_services_consumer &smf) {
   std::shared_ptr<nas_context> nc;
   nc = amf_n1_inst->amf_ue_id_2_nas_context(smf.amf_ue_ngap_id);
-  string supi = "imsi-" + nc.get()->imsi;
+  std::string supi = "imsi-" + nc.get()->imsi;
 
   std::shared_ptr<pdu_session_context> psc;
   if (is_supi_to_pdu_ctx(supi)) {
@@ -198,7 +202,7 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer &smf) {
   Logger::amf_n11().debug("Requested DNN: %s", dnn.c_str());
   psc.get()->dnn = dnn;
 
-  string smf_addr;
+  std::string smf_addr;
   if (!psc.get()->smf_avaliable) {
     if (!smf_selection_from_configuration(smf_addr)) {
       Logger::amf_n11().error("No candidate for SMF is available");
@@ -223,8 +227,9 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer &smf) {
 }
 
 //------------------------------------------------------------------------------
-void amf_n11::handle_pdu_session_initial_request(string supi, std::shared_ptr<pdu_session_context> psc, string smf_addr, bstring sm_msg, string dnn) {
-  string remote_uri = smf_addr + "/nsmf-pdusession/v2/sm-contexts";
+void amf_n11::handle_pdu_session_initial_request(std::string supi, std::shared_ptr<pdu_session_context> psc, std::string smf_addr, bstring sm_msg, std::string dnn) {
+  //TODO: Remove hardcoded values
+  std::string remote_uri = smf_addr + "/nsmf-pdusession/v2/sm-contexts";
   nlohmann::json pdu_session_establishment_request;
   pdu_session_establishment_request["supi"] = supi.c_str();
   pdu_session_establishment_request["pei"] = "imei-200000000000001";
@@ -251,12 +256,12 @@ void amf_n11::handle_pdu_session_initial_request(string supi, std::shared_ptr<pd
 
 //Context management functions
 //------------------------------------------------------------------------------
-bool amf_n11::is_supi_to_pdu_ctx(const string &supi) const {
+bool amf_n11::is_supi_to_pdu_ctx(const std::string &supi) const {
   std::shared_lock lock(m_supi2pdu);
   return bool { supi2pdu.count(supi) > 0 };
 }
 
-std::shared_ptr<pdu_session_context> amf_n11::supi_to_pdu_ctx(const string &supi) const {
+std::shared_ptr<pdu_session_context> amf_n11::supi_to_pdu_ctx(const std::string &supi) const {
   std::shared_lock lock(m_supi2pdu);
   return supi2pdu.at(supi);
 }
@@ -269,7 +274,7 @@ void amf_n11::set_supi_to_pdu_ctx(const string &supi, std::shared_ptr<pdu_sessio
 
 //SMF selection
 //------------------------------------------------------------------------------
-bool amf_n11::smf_selection_from_configuration(string &smf_addr) {
+bool amf_n11::smf_selection_from_configuration(std::string &smf_addr) {
   for (int i = 0; i < amf_cfg.smf_pool.size(); i++) {
     if (amf_cfg.smf_pool[i].selected) {
       smf_addr = "http://" + amf_cfg.smf_pool[i].ipv4 + ":" + amf_cfg.smf_pool[i].port;
@@ -280,7 +285,7 @@ bool amf_n11::smf_selection_from_configuration(string &smf_addr) {
 }
 
 //------------------------------------------------------------------------------
-bool amf_n11::smf_selection_from_context(string &smf_addr) {
+bool amf_n11::smf_selection_from_context(std::string &smf_addr) {
 }
 
 // handlers for smf client response
@@ -289,7 +294,7 @@ void amf_n11::handle_post_sm_context_response_error_400() {
 }
 
 //------------------------------------------------------------------------------
-void amf_n11::handle_post_sm_context_response_error(long code, string cause, bstring n1sm, string supi, uint8_t pdu_session_id) {
+void amf_n11::handle_post_sm_context_response_error(long code, std::string cause, bstring n1sm, std::string supi, uint8_t pdu_session_id) {
   print_buffer("amf_n11", "n1 sm", (uint8_t*) bdata(n1sm), blength(n1sm));
   itti_n1n2_message_transfer_request *itti_msg = new itti_n1n2_message_transfer_request(TASK_AMF_N11, TASK_AMF_APP);
   itti_msg->n1sm = n1sm;
@@ -304,7 +309,7 @@ void amf_n11::handle_post_sm_context_response_error(long code, string cause, bst
 }
 
 //------------------------------------------------------------------------------
-void amf_n11::curl_http_client(string remoteUri, string jsonData, string n1SmMsg, string n2SmMsg, string supi, uint8_t pdu_session_id) {
+void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std::string n1SmMsg, std::string n2SmMsg, std::string supi, uint8_t pdu_session_id) {
   Logger::amf_n11().debug("Call SMF service operation: %s", remoteUri.c_str());
   CURL *curl = curl_easy_init();
   if (curl) {
@@ -361,10 +366,10 @@ void amf_n11::curl_http_client(string remoteUri, string jsonData, string n1SmMsg
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 
     //get cause from the response
-    string response = *httpData.get();
-    string jsonData = "";
-    string n1sm = "";
-    string n2sm = "";
+    std::string response = *httpData.get();
+    std::string jsonData = "";
+    std::string n1sm = "";
+    std::string n2sm = "";
     bool is_response_ok = true;
     Logger::amf_n11().debug("Get response with httpcode (%d)", httpCode);
     if (httpCode == 0) {
@@ -386,7 +391,7 @@ void amf_n11::curl_http_client(string remoteUri, string jsonData, string n1SmMsg
       msg_str_2_msg_hex(n1sm.substr(0, n1sm.length() - 2), n1sm_hex);                  //pdu session establishment reject bugs from SMF
       print_buffer("amf_n11", "Get response with n1sm:", (uint8_t*) bdata(n1sm_hex), blength(n1sm_hex));
 
-      string cause = response_data["error"]["cause"];
+      std::string cause = response_data["error"]["cause"];
       Logger::amf_n11().error("Call Network Function services failure ");
       Logger::amf_n11().info("Cause value: %s", cause.c_str());
       if (!cause.compare("DNN_DENIED"))

@@ -40,7 +40,6 @@ extern "C" {
 }
 
 using namespace sctp;
-using namespace std;
 using namespace ngap;
 
 enum amf_ng_gnb_state_s {
@@ -53,10 +52,10 @@ class gnb_context {
  public:
   enum amf_ng_gnb_state_s ng_state;
 
-  string gnb_name;
+  std::string gnb_name;
   long globalRanNodeId;
   e_Ngap_PagingDRX default_paging_drx;  //v32, v64, v128, v256
-  vector<SupportedItem_t> s_ta_list;
+  std::vector<SupportedItem_t> s_ta_list;
   bstring ue_radio_cap_ind;
 
   sctp_assoc_id_t sctp_assoc_id;

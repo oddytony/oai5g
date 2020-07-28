@@ -52,7 +52,7 @@ void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(const std::str
   Logger::amf_server().debug("receive N1N2MessageTransfer Request, handling...");
   response.send(Pistache::Http::Code::Ok, "Do some magic\n");
 
-  string supi = ueContextId;
+  std::string supi = ueContextId;
   Logger::amf_server().debug("Key for pdu session context: supi(%s)", supi.c_str());
   std::shared_ptr<pdu_session_context> psc;
   if(amf_n11_inst->is_supi_to_pdu_ctx(supi)){

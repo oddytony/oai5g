@@ -45,7 +45,7 @@ static const char *const ng_gnb_state_str[] = { "NGAP_INIT", "NGAP_RESETTING", "
 
 class ngap_app : public sctp_application {
  public:
-  ngap_app(const string &address, const uint16_t port_num);
+  ngap_app(const std::string &address, const uint16_t port_num);
   ~ngap_app();
   uint32_t getPpid();
  protected:

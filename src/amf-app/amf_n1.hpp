@@ -77,7 +77,7 @@ class amf_n1 {
 
  public:
   std::map<long, std::shared_ptr<nas_context>> amfueid2nas_context;  // amf ue ngap id
-  std::map<string, std::shared_ptr<nas_context>> imsi2nas_context;
+  std::map<std::string, std::shared_ptr<nas_context>> imsi2nas_context;
   std::map<std::string, long> supi2amfId;
   std::map<std::string, uint32_t> supi2ranId;
 
@@ -142,7 +142,7 @@ class amf_n1 {
  public:
   void send_itti_to_smf_services_consumer(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, uint8_t request_type, uint8_t pdu_session_id, bstring dnn, bstring sm_msg);
  public:
-  void update_ue_information_statics(ue_infos &ueItem, const string connStatus, const string registerStatus, uint32_t ranid, uint32_t amfid, string imsi, string guti, string mcc, string mnc, uint32_t cellId);
+  void update_ue_information_statics(ue_infos &ueItem, const std::string connStatus, const std::string registerStatus, uint32_t ranid, uint32_t amfid, std::string imsi, std::string guti, std::string mcc, std::string mnc, uint32_t cellId);
 };
 }
 

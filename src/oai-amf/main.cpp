@@ -30,7 +30,6 @@ extern void hexStr2Byte(const char *src, unsigned char *dest, int len);
 extern void print_buffer(const std::string app, const std::string commit, uint8_t *buf, int len);
 extern void ue_gnb_simulator();
 
-using namespace std;
 using namespace config;
 using namespace amf_application;
 
@@ -45,7 +44,7 @@ int main(int argc, char **argv) {
   srand (time(NULL));
 
 if  (!Options::parse(argc, argv)) {
-    cout<<"Options::parse() failed"<<endl;
+    std::cout<<"Options::parse() failed"<<std::endl;
     return 1;
   }
 

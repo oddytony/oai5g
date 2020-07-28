@@ -38,7 +38,6 @@ extern "C" {
 }
 #include <vector>
 #include <iostream>
-using namespace std;
 
 #define SCTP_RECV_BUFFER_SIZE 1024
 #define SCTP_RC_ERROR       -1
@@ -106,7 +105,7 @@ class sctp_server {
   sctp_descriptor_t sctp_desc;
   struct sockaddr_in serverAddr_;
   struct sctp_event_subscribe events_;
-  vector<sctp_association_t*> sctp_ctx;
+  std::vector<sctp_association_t*> sctp_ctx;
 };
 
 }
