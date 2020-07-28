@@ -11,8 +11,8 @@ add_library (AMF_UTILS STATIC
  ${CMAKE_CURRENT_SOURCE_DIR}/hex_string_convert.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/http_multi_parser.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/if.cpp
- ${CMAKE_CURRENT_SOURCE_DIR}/multipartparser.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/string.cpp
  ${CMAKE_CURRENT_SOURCE_DIR}/thread_sched.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/mime_parser.cpp
  )
 
