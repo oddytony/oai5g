@@ -1,6 +1,33 @@
+/*
+ * Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The OpenAirInterface Software Alliance licenses this file to You under
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this file
+ * except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.openairinterface.org/?page_id=698
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *-------------------------------------------------------------------------------
+ * For more information about the OpenAirInterface (OAI) Software Alliance:
+ *      contact@openairinterface.org
+ */
+
+/*! \file 3gpp_ts24501.hpp
+ \brief
+ \author  Keliang DU, BUPT
+ \date 2020
+ \email: contact@openairinterface.org
+ */
+
 #ifndef _3GPP_TS_24501_H_
 #define _3GPP_TS_24501_H_
-
 
 /********** epd type **************/
 
@@ -90,7 +117,6 @@
 #define _5GMM_CAUSE_ILLEGAL_UE 3
 #define _5GMM_CAUSE_SYNCH_FAILURE 0b00010101
 
-
 // A.5 Causes related to invalid messages
 //------------------------------------------------------------------------------
 #define _5GMM_CAUSE_SEMANTICALLY_INCORRECT                95
@@ -117,16 +143,5 @@
 #define EXISTING_EMERGENCY_PDU_SESSION 0b100
 #define PDU_SESSION_MODIFICATION_REQUEST 0b101
 #define MA_PDU_REQUEST 0b110
-
-
-
-
-
-
-
-
-
-
-
 
 #endif
