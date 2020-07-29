@@ -26,6 +26,10 @@
  \email: contact@openairinterface.org
  */
 
+
+#ifndef _NGAP_MESSAGE_CALLBACK_H_
+#define _NGAP_MESSAGE_CALLBACK_H_
+
 #include "logger.hpp"
 #include "sctp_server.hpp"
 #include "itti_msg_n2.hpp"
@@ -39,7 +43,6 @@ using namespace sctp;
 using namespace ngap;
 
 extern itti_mw *itti_inst;
-
 typedef int (*ngap_message_decoded_callback)(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p);
 
 //------------------------------------------------------------------------------
@@ -186,7 +189,6 @@ int ngap_amf_handle_ue_context_release_complete(const sctp_assoc_id_t assoc_id, 
 //------------------------------------------------------------------------------
 int ngap_amf_handle_pdu_session_resource_setup_response(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
   Logger::ngap().debug("Sending itti pdu_session_resource_setup_response to TASK_AMF_N11");
-#if 1
   PduSessionResourceSetupResponseMsg *pduresp = new PduSessionResourceSetupResponseMsg();
   if (!pduresp->decodefrompdu(message_p)) {
     Logger::ngap().error("Decoding PduSessionResourceSetupResponseMsg message error");
@@ -209,21 +211,19 @@ int ngap_amf_handle_pdu_session_resource_setup_response(const sctp_assoc_id_t as
   if (0 != ret) {
     Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N11", i->get_msg_name());
   }
-#endif
   return 0;
 }
 
-//------------------------------------------------------------------------------
 ngap_message_decoded_callback messages_callback[][3] = { { 0, 0, 0 }, /*0 AMFConfigurationUpdate*/
-{ 0, 0, 0 }, /*1 AMFStatusIndication*/
-{ 0, 0, 0 }, /*2 CellTrafficTrace*/
-{ 0, 0, 0 }, /*3 DeactivateTrace*/
-{ 0, 0, 0 }, /*4 DownlinkNASTransport*/
-{ 0, 0, 0 }, /*5 DownlinkNonUEAssociatedNRPPaTransport*/
-{ 0, 0, 0 }, /*6 DownlinkRANConfigurationTransfer*/
-{ 0, 0, 0 }, /*7 DownlinkRANStatusTransfer*/
-{ 0, 0, 0 }, /*8 DownlinkUEAssociatedNRPPaTransport*/
-{ 0, 0, 0 },  //9 {ngap_amf_handle_error_indication,0,0}, /*ErrorIndication*/
+    { 0, 0, 0 }, /*1 AMFStatusIndication*/
+    { 0, 0, 0 }, /*2 CellTrafficTrace*/
+    { 0, 0, 0 }, /*3 DeactivateTrace*/
+    { 0, 0, 0 }, /*4 DownlinkNASTransport*/
+    { 0, 0, 0 }, /*5 DownlinkNonUEAssociatedNRPPaTransport*/
+    { 0, 0, 0 }, /*6 DownlinkRANConfigurationTransfer*/
+    { 0, 0, 0 }, /*7 DownlinkRANStatusTransfer*/
+    { 0, 0, 0 }, /*8 DownlinkUEAssociatedNRPPaTransport*/
+    { 0, 0, 0 },  //9 {ngap_amf_handle_error_indication,0,0}, /*ErrorIndication*/
     { 0, 0, 0 }, /*10 HandoverCancel*/
     { 0, 0, 0 }, /*11 HandoverNotification*/
     { 0, 0, 0 }, /*12 HandoverPreparation*/
@@ -275,3 +275,5 @@ ngap_message_decoded_callback messages_callback[][3] = { { 0, 0, 0 }, /*0 AMFCon
     { 0, 0, 0 }, /*WriteReplaceWarning*/
     { 0, 0, 0 } /*WriteReplaceWarning*/
 };
+
+#endif
