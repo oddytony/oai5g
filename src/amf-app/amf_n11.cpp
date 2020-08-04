@@ -374,10 +374,12 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
     Logger::amf_n11().debug("Get response with httpcode (%d)", httpCode);
     if (httpCode == 0) {
       Logger::amf_n11().error("Cannot get response When calling %s", remoteUri.c_str());
+      //TODO: free curl before returning
       return;
     }
     if (httpCode != 200 && httpCode != 201) {
       is_response_ok = false;
+      //TODO: error if there's no content in the response
       if (!(multipart_parser(response, jsonData, n1sm, n2sm))) {
         Logger::amf_n11().error("Could not get the cause from the response");
       }
