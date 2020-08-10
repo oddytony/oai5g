@@ -160,7 +160,7 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_m
     smf_selection_from_context(smf_addr);
   }
   //TODO:Remove hardcoded value (1 - SCID)
-  std::string remote_uri = smf_addr + "/nsmf-pdusession/v2/sm-contexts/" + "1" + "/modify";                  //scid
+  std::string remote_uri = smf_addr + "/nsmf-pdusession/v1/sm-contexts/" + "imsi-208950000000031-1" + "/modify";                  //scid
   nlohmann::json pdu_session_update_request;
   pdu_session_update_request["n2SmInfoType"] = "PDU_RES_SETUP_RSP";
   pdu_session_update_request["n2SmInfo"]["contentId"] = "n2SmMsg";
@@ -229,7 +229,7 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer &smf) {
 //------------------------------------------------------------------------------
 void amf_n11::handle_pdu_session_initial_request(std::string supi, std::shared_ptr<pdu_session_context> psc, std::string smf_addr, bstring sm_msg, std::string dnn) {
   //TODO: Remove hardcoded values
-  std::string remote_uri = smf_addr + "/nsmf-pdusession/v2/sm-contexts";
+  std::string remote_uri = smf_addr + "/nsmf-pdusession/v1/sm-contexts";
   nlohmann::json pdu_session_establishment_request;
   pdu_session_establishment_request["supi"] = supi.c_str();
   pdu_session_establishment_request["pei"] = "imei-200000000000001";
@@ -377,7 +377,7 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
       //TODO: free curl before returning
       return;
     }
-    if (httpCode != 200 && httpCode != 201) {
+    if (httpCode != 200 && httpCode != 201 && httpCode != 204) {
       is_response_ok = false;
       //TODO: error if there's no content in the response
       if (!(multipart_parser(response, jsonData, n1sm, n2sm))) {
