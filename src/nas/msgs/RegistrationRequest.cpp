@@ -756,7 +756,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
 
 //------------------------------------------------------------------------------
 int RegistrationRequest::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len) {
-  Logger::nas_mm().debug("decoding RegistrationRequest message");
+  Logger::nas_mm().debug("Decoding RegistrationRequest message");
   int decoded_size = 3;
   plain_header = header;
   ie_5gsregistrationtype = new _5GSRegistrationType();
@@ -766,195 +766,195 @@ int RegistrationRequest::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf
   decoded_size++;
   ie_5gs_mobility_id = new _5GSMobilityIdentity();
   decoded_size += ie_5gs_mobility_id->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
-  Logger::nas_mm().debug("decoded_size(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded_size %d", decoded_size);
   uint8_t octet = *(buf + decoded_size);
-  Logger::nas_mm().debug("first option iei(0x%x)", octet);
+  Logger::nas_mm().debug("First option IEI 0x%x", octet);
   while ((octet != 0x0)) {
     switch ((octet & 0xf0) >> 4) {
       case 0xC: {
-        Logger::nas_mm().debug("decoding iei(0xC)");
+        Logger::nas_mm().debug("Decoding IEI(0xC)");
         ie_non_current_native_nas_ksi = new NasKeySetIdentifier();
         decoded_size += ie_non_current_native_nas_ksi->decodefrombuffer(buf + decoded_size, len - decoded_size, true, false);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0xB: {
-        Logger::nas_mm().debug("decoding iei(0xB)");
+        Logger::nas_mm().debug("Decoding IEI (0xB)");
         ie_MICO_indicationl = new MICO_Indication();
         decoded_size += ie_MICO_indicationl->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x08: {
-        Logger::nas_mm().debug("decoding iei(0x8)");
+        Logger::nas_mm().debug("Decoding IEI (0x8)");
         ie_payload_container_type = new Payload_Container_Type();
         decoded_size += ie_payload_container_type->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x9: {
-        Logger::nas_mm().debug("decoding iei(0x9)");
+        Logger::nas_mm().debug("Decoding IEI(0x9)");
         ie_network_slicing_indication = new Network_Slicing_Indication();
         decoded_size += ie_network_slicing_indication->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
 
       }
         break;
     }
     switch (octet) {
       case 0x10: {
-        Logger::nas_mm().debug("decoding iei(0x10)");
+        Logger::nas_mm().debug("Decoding IEI(0x10)");
         ie_5g_mm_capability = new _5GMMCapability();
         decoded_size += ie_5g_mm_capability->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x2E: {
-        Logger::nas_mm().debug("decoding iei(0x2E)");
+        Logger::nas_mm().debug("Decoding IEI(0x2E)");
         ie_ue_security_capability = new UESecurityCapability();
         decoded_size += ie_ue_security_capability->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x2F: {
-        Logger::nas_mm().debug("decoding iei(0x2F)");
+        Logger::nas_mm().debug("Decoding IEI(0x2F)");
         ie_requested_NSSAI = new NSSAI();
         decoded_size += ie_requested_NSSAI->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x52: {
-        Logger::nas_mm().debug("decoding iei(0x52)");
+        Logger::nas_mm().debug("Decoding IEI(0x52)");
         ie_last_visited_registered_TAI = new _5GS_Tracking_Area_Identity();
         decoded_size += ie_last_visited_registered_TAI->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x17: {
-        Logger::nas_mm().debug("decoding iei(0x17)");
+        Logger::nas_mm().debug("Decoding IEI(0x17)");
         ie_s1_ue_network_capability = new UENetworkCapability();
         decoded_size += ie_s1_ue_network_capability->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x40: {
-        Logger::nas_mm().debug("decoding iei(0x40)");
+        Logger::nas_mm().debug("Decoding IEI(0x40)");
         ie_uplink_data_status = new UplinkDataStatus();
         decoded_size += ie_uplink_data_status->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
 
       }
         break;
       case 0x50: {
-        Logger::nas_mm().debug("decoding iei(0x50)");
+        Logger::nas_mm().debug("Decoding IEI(0x50)");
         ie_PDU_session_status = new PDU_Session_Status();
         decoded_size += ie_PDU_session_status->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x2B: {
-        Logger::nas_mm().debug("decoding iei(0x2B)");
+        Logger::nas_mm().debug("Decoding IEI(0x2B)");
         ie_ue_status = new UE_Status();
         decoded_size += ie_ue_status->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x77: {
-        Logger::nas_mm().debug("decoding iei(0x77)");
+        Logger::nas_mm().debug("Decoding IEI(0x77)");
         ie_additional_guti = new _5GSMobilityIdentity();
         decoded_size += ie_additional_guti->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
 
       }
         break;
       case 0x25: {
-        Logger::nas_mm().debug("decoding iei(0x25)");
+        Logger::nas_mm().debug("Decoding IEI(0x25)");
         ie_allowed_PDU_session_status = new Allowed_PDU_Session_Status();
         decoded_size += ie_allowed_PDU_session_status->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
 
       }
         break;
       case 0x18: {
-        Logger::nas_mm().debug("decoding iei(0x18)");
+        Logger::nas_mm().debug("Decoding IEI(0x18)");
         ie_ues_usage_setting = new UES_Usage_Setting();
         decoded_size += ie_ues_usage_setting->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x51: {
-        Logger::nas_mm().debug("decoding iei(0x51)");
+        Logger::nas_mm().debug("Decoding IEI(0x51)");
         ie_5gs_drx_parameters = new _5GS_DRX_arameters();
         decoded_size += ie_5gs_drx_parameters->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x70: {
-        Logger::nas_mm().debug("decoding iei(0x70)");
+        Logger::nas_mm().debug("Decoding IEI(0x70)");
         ie_eps_nas_message_container = new EPS_NAS_Message_Container();
         decoded_size += ie_eps_nas_message_container->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x74: {
-        Logger::nas_mm().debug("decoding iei(0x74)");
+        Logger::nas_mm().debug("Decoding IEI(0x74)");
         ie_ladn_indication = new LADN_Indication();
         decoded_size += ie_ladn_indication->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x7B: {
-        Logger::nas_mm().debug("decoding iei(0x7B)");
+        Logger::nas_mm().debug("Decoding IEI(0x7B)");
         ie_payload_container = new Payload_Container();
         decoded_size += ie_payload_container->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x53: {
-        Logger::nas_mm().debug("decoding iei(0x53)");
+        Logger::nas_mm().debug("Decoding IEI(0x53)");
         ie_5gs_update_type = new _5GS_Update_Type();
         decoded_size += ie_5gs_update_type->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x71: {
-        Logger::nas_mm().debug("decoding iei(0x71)");
+        Logger::nas_mm().debug("Decoding IEI(0x71)");
         ie_nas_message_container = new NAS_Message_Container();
         decoded_size += ie_nas_message_container->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
       case 0x60: {
-        Logger::nas_mm().debug("decoding iei(0x71)");
+        Logger::nas_mm().debug("Decoding IEI(0x71)");
         ie_eps_bearer_context_status = new EPS_Bearer_Context_Status();
         decoded_size += ie_eps_bearer_context_status->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI 0x%x", octet);
       }
         break;
     }
   }
-  Logger::nas_mm().debug("decoded RegistrationRequest message len(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded RegistrationRequest message (len %d)", decoded_size);
 
 }

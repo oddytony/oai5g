@@ -47,12 +47,12 @@ typedef int (*ngap_message_decoded_callback)(const sctp_assoc_id_t assoc_id, con
 
 //------------------------------------------------------------------------------
 int ngap_amf_handle_ng_setup_request(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
-  Logger::ngap().debug("Sending itti ng setup request message to TASK_AMF_N2");
+  Logger::ngap().debug("Sending ITTI NG Setup Request message to TASK_AMF_N2");
   //need code from yangjian and send itti message to TASK_AMF_N2
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   NGSetupRequestMsg *ngSetupReq = new NGSetupRequestMsg();
   if (!ngSetupReq->decodefrompdu(message_p)) {
-    Logger::ngap().error("Decoding ngsetuprequest message error");
+    Logger::ngap().error("Decoding NGSetupRequest message error");
     return -1;
   }
   //after decoding, need free(message_p)

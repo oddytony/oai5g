@@ -47,7 +47,7 @@ ngap_app::ngap_app(const std::string &address, const uint16_t port_num)
     ppid_(60),
     sctp_s_38412(address.c_str(), port_num) {
   sctp_s_38412.start_receive(this);
-  Logger::ngap().info("set n2 amf ipv4_address:port (%s:%d)", address.c_str(), port_num);
+  Logger::ngap().info("Set N2 AMF IPv4 Addr, port: %s, %d", address.c_str(), port_num);
 }
 
 //------------------------------------------------------------------------------
@@ -57,10 +57,10 @@ ngap_app::~ngap_app() {
 //------------------------------------------------------------------------------
 // received sctp payload and decode it to NGAP message and send itti message to TASK_AMF_N2
 void ngap_app::handle_receive(bstring payload, sctp_assoc_id_t assoc_id, sctp_stream_id_t stream, sctp_stream_id_t instreams, sctp_stream_id_t outstreams) {
-  Logger::ngap().debug("NGAP handle SCTP payload from sctp_server on assoc_id(%d), stream_id(%d), instreams(%d), outstreams(%d)", assoc_id, stream, instreams, outstreams);
+  Logger::ngap().debug("Handling SCTP payload from sctp_server on assoc_id (%d), stream_id (%d), instreams (%d), outstreams (%d)", assoc_id, stream, instreams, outstreams);
   Ngap_NGAP_PDU_t *ngap_msg_pdu = (Ngap_NGAP_PDU_t*) calloc(1, sizeof(Ngap_NGAP_PDU_t));
   asn_dec_rval_t rc = asn_decode(NULL, ATS_ALIGNED_CANONICAL_PER, &asn_DEF_Ngap_NGAP_PDU, (void**) &ngap_msg_pdu, bdata(payload), blength(payload));
-  Logger::ngap().debug("Decoded NGAP message[%d,%d]", ngap_msg_pdu->choice.initiatingMessage->procedureCode, ngap_msg_pdu->present);
+  Logger::ngap().debug("Decoded NGAP message, procedure code %d, present %d", ngap_msg_pdu->choice.initiatingMessage->procedureCode, ngap_msg_pdu->present);
   (*messages_callback[ngap_msg_pdu->choice.initiatingMessage->procedureCode][ngap_msg_pdu->present - 1])(assoc_id, stream, ngap_msg_pdu);
 }
 
@@ -68,10 +68,10 @@ void ngap_app::handle_receive(bstring payload, sctp_assoc_id_t assoc_id, sctp_st
 //handle new sctp association
 // TNL association(clause 8.7.1.1, 3gpp ts38.413)
 void ngap_app::handle_sctp_new_association(sctp_assoc_id_t assoc_id, sctp_stream_id_t instreams, sctp_stream_id_t outstreams) {
-  Logger::ngap().debug("Ready to handle new NGAP SCTP association(id:%d) request", assoc_id);
+  Logger::ngap().debug("Ready to handle new NGAP SCTP association (id: %d) request", assoc_id);
   std::shared_ptr<gnb_context> gc;
   if (!is_assoc_id_2_gnb_context(assoc_id)) {
-    Logger::ngap().debug("Create a new gNB context with assoc_id(%d)", assoc_id);
+    Logger::ngap().debug("Create a new gNB context with assoc_id (%d)", assoc_id);
     gc = std::shared_ptr < gnb_context > (new gnb_context());
     set_assoc_id_2_gnb_context(assoc_id, gc);
   } else {

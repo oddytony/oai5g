@@ -46,11 +46,6 @@ void TAC::setTac(uint32_t m_tac) {
 //------------------------------------------------------------------------------
 bool TAC::encode2octetstring(Ngap_TAC_t &m_tac) {
   m_tac.size = 3;  //OCTET_STRING(SIZE(3))
-  //uint8_t *buffer = (uint8_t*)calloc(1,sizeof(uint8_t)+sizeof(uint16_t));
-  //if(!buffer) return false;
-
-  //*(uint32_t *)buffer = tac & 0x00ffffff;
-  //printf("tac(0x%x)\n", tac);
   m_tac.buf = (uint8_t*) calloc(1, sizeof(uint8_t) + sizeof(uint16_t));
   m_tac.buf[2] = tac & 0x0000ff;
   m_tac.buf[1] = (tac & 0x00ff00) >> 8;
@@ -67,7 +62,7 @@ bool TAC::decodefromoctetstring(Ngap_TAC_t &m_tac) {
   for (int i = 0; i < m_tac.size; i++) {
     tac |= m_tac.buf[i] << ((m_tac.size - 1 - i) * 8);
   }
-  std::cout << "received tac: " << tac << std::endl;
+  std::cout << "Received TAC: " << tac << std::endl;
   return true;
 }
 

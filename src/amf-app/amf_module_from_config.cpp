@@ -35,7 +35,7 @@ namespace config {
 
 //------------------------------------------------------------------------------
 int amf_modules::load(const std::string &config_file) {
-  Logger::amf_app().debug("\nLoad AMF module configuration file(%s)", config_file.c_str());
+  Logger::amf_app().debug("\nLoad AMF module configuration file (%s)", config_file.c_str());
   Config cfg;
   try {
     cfg.readFile(config_file.c_str());
@@ -80,7 +80,7 @@ int amf_modules::load(const std::string &config_file) {
 void amf_modules::display() {
   Logger::config().info("=======    AMF Registered Modules   =======");
   Logger::config().info("NGAP Message Modules:");
-  Logger::config().info("- %s([%d,%d])\n", msgName.c_str(), procedureCode, typeOfMsg);
+  Logger::config().info("- %s(Procedure code %d, Type of Msg %d)\n", msgName.c_str(), procedureCode, typeOfMsg);
 }
 
 }

@@ -242,32 +242,32 @@ int amf_config::load(const std::string &config_file) {
 void amf_config::display() {
   Logger::config().info("=======    AMF   =======");
   Logger::config().info("Configuration AMF:");
-  Logger::config().info("- Instance .......................: %d", instance);
-  Logger::config().info("- PID dir ........................: %s", pid_dir.c_str());
-  Logger::config().info("- AMF NAME........................: %s", AMF_Name.c_str());
-  Logger::config().info("- GUAMI...........................: ");
-  Logger::config().info("   [%s] [%s] [%s] [%s] [%s]", guami.mcc.c_str(), guami.mnc.c_str(), guami.regionID.c_str(), guami.AmfSetID.c_str(), guami.AmfPointer.c_str());
-  Logger::config().info("- ServedGUAMIList ................: ");
+  Logger::config().info("- Instance ...........................................: %d", instance);
+  Logger::config().info("- PID dir ............................................: %s", pid_dir.c_str());
+  Logger::config().info("- AMF NAME............................................: %s", AMF_Name.c_str());
+  Logger::config().info("- GUAMI (MCC, MNC, Region ID, AMF Set ID, AMF pointer): ");
+  Logger::config().info("   (%s, %s, %s, %s, %s )", guami.mcc.c_str(), guami.mnc.c_str(), guami.regionID.c_str(), guami.AmfSetID.c_str(), guami.AmfPointer.c_str());
+  Logger::config().info("- ServedGUAMIList ....................................: ");
   for (int i = 0; i < guami_list.size(); i++) {
-    Logger::config().info("   [%s] [%s] [%s] [%s] [%s]", guami_list[i].mcc.c_str(), guami_list[i].mnc.c_str(), guami_list[i].regionID.c_str(), guami_list[i].AmfSetID.c_str(), guami_list[i].AmfPointer.c_str());
+    Logger::config().info("   (%s, %s, %s , %s, %s)", guami_list[i].mcc.c_str(), guami_list[i].mnc.c_str(), guami_list[i].regionID.c_str(), guami_list[i].AmfSetID.c_str(), guami_list[i].AmfPointer.c_str());
   }
-  Logger::config().info("- RelativeAMFCapacity ............: %d", relativeAMFCapacity);
-  Logger::config().info("- PLMNSupportList ................: ");
+  Logger::config().info("- RelativeAMFCapacity ................................: %d", relativeAMFCapacity);
+  Logger::config().info("- PLMNSupportList (MCC, MNC)..........................: ");
   for (int i = 0; i < plmn_list.size(); i++) {
     Logger::config().info("   [%s] [%s] ", plmn_list[i].mcc.c_str(), plmn_list[i].mnc.c_str());
-    Logger::config().info("   TAC[%d]", plmn_list[i].tac);
-    Logger::config().info("   - SliceSupportList ............: ");
+    Logger::config().info("   TAC [%d]", plmn_list[i].tac);
+    Logger::config().info("   - SliceSupportList (SST, SD) ....................: ");
     for (int j = 0; j < plmn_list[i].slice_list.size(); j++) {
-      Logger::config().info("     [%s] [%s] ", plmn_list[i].slice_list[j].sST.c_str(), plmn_list[i].slice_list[j].sD.c_str());
+      Logger::config().info("     (%s, %s) ", plmn_list[i].slice_list[j].sST.c_str(), plmn_list[i].slice_list[j].sD.c_str());
     }
   }
-  Logger::config().info("- Emergency Support ...............: %s", is_emergency_support.c_str());
-  Logger::config().info("- MYSQL server ....................: %s", auth_para.mysql_server.c_str());
-  Logger::config().info("- MYSQL user ......................: %s", auth_para.mysql_user.c_str());
-  Logger::config().info("- MYSQL pass ......................: %s", auth_para.mysql_pass.c_str());
-  Logger::config().info("- MYSQL db ........................: %s", auth_para.mysql_db.c_str());
-  Logger::config().info("- operator key ....................: %s", auth_para.operator_key.c_str());
-  Logger::config().info("- random ..........................: %s", auth_para.random.c_str());
+  Logger::config().info("- Emergency Support................... ...............: %s", is_emergency_support.c_str());
+  Logger::config().info("- MYSQL Server Addr...................................: %s", auth_para.mysql_server.c_str());
+  Logger::config().info("- MYSQL user .........................................: %s", auth_para.mysql_user.c_str());
+  Logger::config().info("- MYSQL pass .........................................: %s", auth_para.mysql_pass.c_str());
+  Logger::config().info("- MYSQL db ...........................................: %s", auth_para.mysql_db.c_str());
+  Logger::config().info("- operator key .......................................: %s", auth_para.operator_key.c_str());
+  Logger::config().info("- random .............................................: %s", auth_para.random.c_str());
   Logger::config().info("- Remote SMF Pool..................: ");
   for (int i = 0; i < smf_pool.size(); i++) {
     std::string selected;
@@ -275,7 +275,7 @@ void amf_config::display() {
       selected = "true";
     else
       selected = "false";
-    Logger::config().info("    SMF_INSTANCE_ID(%d) : (%s:%s) version(%s) is selected(%s)", smf_pool[i].id, smf_pool[i].ipv4.c_str(), smf_pool[i].port.c_str(), smf_pool[i].version.c_str(), selected.c_str());
+    Logger::config().info("    SMF_INSTANCE_ID %d (%s:%s, version %s) is selected: %s", smf_pool[i].id, smf_pool[i].ipv4.c_str(), smf_pool[i].port.c_str(), smf_pool[i].version.c_str(), selected.c_str());
   }
 }
 

@@ -221,13 +221,13 @@ void amf_app::handle_itti_message(itti_nas_signalling_establishment_request &itt
   string ue_context_key = "app_ue_ranid_" + to_string(itti_msg.ran_ue_ngap_id) + ":amfid_" + to_string(amf_ue_ngap_id);
   //if(!is_amf_ue_id_2_ue_context(amf_ue_ngap_id)){
   if (!is_ran_amf_id_2_ue_context(ue_context_key)) {
-    Logger::amf_app().debug("No existed ue_context, create one with ran_amf_id(%s)", ue_context_key.c_str());
+    Logger::amf_app().debug("No existing UE Context, Create a new one with ran_amf_id %s", ue_context_key.c_str());
     uc = std::shared_ptr < ue_context > (new ue_context());
     //set_amf_ue_ngap_id_2_ue_context(amf_ue_ngap_id, uc);
     set_ran_amf_id_2_ue_context(ue_context_key, uc);
   }
   if (uc.get() == nullptr) {
-    Logger::amf_app().error("Failed to create ue_context with ran_amf_id(%s)", ue_context_key.c_str());
+    Logger::amf_app().error("Failed to create ue_context with ran_amf_id %s", ue_context_key.c_str());
   } else {
     uc.get()->cgi = itti_msg.cgi;
     uc.get()->tai = itti_msg.tai;
@@ -245,7 +245,7 @@ void amf_app::handle_itti_message(itti_nas_signalling_establishment_request &itt
     if (itti_msg.is_5g_s_tmsi_present) {
       guti = itti_msg.tai.mcc + itti_msg.tai.mnc + amf_cfg.guami.regionID + itti_msg._5g_s_tmsi;
       is_guti_valid = true;
-      Logger::amf_app().debug("Receiving guti: %s", guti.c_str());
+      Logger::amf_app().debug("Receiving GUTI %s", guti.c_str());
     }
 
     itti_uplink_nas_data_ind *itti_n1_msg = new itti_uplink_nas_data_ind(TASK_AMF_APP, TASK_AMF_N1);
@@ -276,7 +276,7 @@ void amf_app::handle_post_sm_context_response_error_400() {
 bool amf_app::generate_5g_guti(uint32_t ranid, long amfid, string &mcc, string &mnc, uint32_t &tmsi) {
   string ue_context_key = "app_ue_ranid_" + to_string(ranid) + ":amfid_" + to_string(amfid);
   if (!is_ran_amf_id_2_ue_context(ue_context_key)) {
-    Logger::amf_app().error("No UE context for ran_amf_id(%s), exit", ue_context_key.c_str());
+    Logger::amf_app().error("No UE context for ran_amf_id %s, exit", ue_context_key.c_str());
     return false;
   }
   std::shared_ptr<ue_context> uc;

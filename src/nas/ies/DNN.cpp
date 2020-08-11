@@ -65,7 +65,7 @@ void DNN::getValue(bstring &dnn) {
 
 //------------------------------------------------------------------------------
 int DNN::encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding DNN iei(0x%x)", _iei);
+  Logger::nas_mm().debug("Encoding DNN IEI (0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
     return 0;
@@ -85,13 +85,13 @@ int DNN::encode2buffer(uint8_t *buf, int len) {
     int size = encode_bstring(_DNN, (buf + encoded_size), len - encoded_size);
     encoded_size += size;
   }
-  Logger::nas_mm().debug("encoded DNN len(%d)", encoded_size);
+  Logger::nas_mm().debug("encoded DNN len: %d", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
 int DNN::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
-  Logger::nas_mm().debug("decoding DNN iei(0x%x)", *buf);
+  Logger::nas_mm().debug("Decoding DNN IEI (0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
     decoded_size++;
@@ -101,10 +101,9 @@ int DNN::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
   decode_bstring(&_DNN, length, (buf + decoded_size), len - decoded_size);
   decoded_size += length;
   for (int i = 0; i < blength(_DNN); i++) {
-    Logger::nas_mm().debug("decoded DNN value(0x%x)", (uint8_t*) bdata(_DNN)[i]);
-    //print_buffer("amf_n1", "decoded dnn bitstring", (uint8_t*)bdata(_DNN), blength(_DNN));
+    Logger::nas_mm().debug("Decoded DNN value: 0x%x", (uint8_t*) bdata(_DNN)[i]);
   }
-  Logger::nas_mm().debug("decoded DNN len(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded DNN len: %d", decoded_size);
   return decoded_size;
 }
 

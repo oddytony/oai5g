@@ -150,7 +150,7 @@ void amf_n2::handle_itti_message(itti_new_sctp_association &new_assoc) {
 // NG_SETUP_REQUEST Handler
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_ng_setup_request &itti_msg) {
-  Logger::amf_n2().debug("Parameters(assoc_id(%d))(stream(%d))", itti_msg.assoc_id, itti_msg.stream);
+  Logger::amf_n2().debug("Parameters: assoc_id %d, stream %d", itti_msg.assoc_id, itti_msg.stream);
 
   std::shared_ptr<gnb_context> gc;
   if (!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
@@ -174,7 +174,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request &itti_msg) {
     Logger::amf_n2().error("Missing Mandatory IE GlobalGnbID");
     return;
   }
-  Logger::amf_n2().debug("IE GlobalGNBID(0x%x)", gnb_id);
+  Logger::amf_n2().debug("IE GlobalGNBID: 0x%x", gnb_id);
   gc->globalRanNodeId = gnb_id;
   gnbItem.gnb_id = gnb_id;
 
@@ -184,7 +184,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request &itti_msg) {
   } else {
     gc->gnb_name = gnb_name;
     gnbItem.gnb_name = gnb_name;
-    Logger::amf_n2().debug("IE RanNodeName(%s)", gnb_name.c_str());
+    Logger::amf_n2().debug("IE RanNodeName: %s", gnb_name.c_str());
   }
 
   int defPagingDrx = itti_msg.ngSetupReq->getDefaultPagingDRX();
@@ -192,7 +192,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request &itti_msg) {
     Logger::amf_n2().error("Missing Mandatory IE DefaultPagingDRX");
     return;
   }
-  Logger::amf_n2().debug("IE DefaultPagingDRX(%d)", defPagingDrx);
+  Logger::amf_n2().debug("IE DefaultPagingDRX: %d", defPagingDrx);
 
   vector<SupportedItem_t> s_ta_list;
   if (!itti_msg.ngSetupReq->getSupportedTAList(s_ta_list)) {  //getSupportedTAList
@@ -213,7 +213,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request &itti_msg) {
     int encoded = ngSetupFailure.encode2buffer((uint8_t*) buffer, 1000);
     bstring b = blk2bstr(buffer, encoded);
     sctp_s_38412.sctp_send_msg(itti_msg.assoc_id, itti_msg.stream, &b);
-    Logger::amf_n2().error("No common plmn, encoding NG_SETUP_FAILURE with cause( Unknown PLMN )");
+    Logger::amf_n2().error("No common PLMN, encoding NG_SETUP_FAILURE with cause (Unknown PLMN)");
     return;
   } else {
     gc->s_ta_list = s_ta_list;
@@ -255,9 +255,9 @@ void amf_n2::handle_itti_message(itti_ng_setup_request &itti_msg) {
   int encoded = ngSetupResp.encode2buffer((uint8_t*) buffer, 1000);
   bstring b = blk2bstr(buffer, encoded);
   sctp_s_38412.sctp_send_msg(itti_msg.assoc_id, itti_msg.stream, &b);
-  Logger::amf_n2().debug("Sending NG_SETUP_RESPONSE ok");
+  Logger::amf_n2().debug("Sending NG_SETUP_RESPONSE Ok");
   gc.get()->ng_state = NGAP_READY;
-  Logger::amf_n2().debug("gNB with [gnb_id(0x%x), assoc_id(%d)] has been attached to AMF", gc.get()->globalRanNodeId, itti_msg.assoc_id);
+  Logger::amf_n2().debug("gNB with gNB_id 0x%x, assoc_id %d has been attached to AMF", gc.get()->globalRanNodeId, itti_msg.assoc_id);
   stacs.gNB_connected += 1;
   stacs.gnbs.push_back(gnbItem);
   return;
@@ -292,14 +292,14 @@ void amf_n2::handle_itti_message(itti_initial_ue_message &init_ue_msg) {
   }
   std::shared_ptr<ue_ngap_context> unc;
   if (!is_ran_ue_id_2_ne_ngap_context(ran_ue_ngap_id)) {
-    Logger::amf_n2().debug("Create a new UE NGAP context with ran_ue_ngap_id(0x%x)", ran_ue_ngap_id);
+    Logger::amf_n2().debug("Create a new UE NGAP context with ran_ue_ngap_id 0x%x", ran_ue_ngap_id);
     unc = std::shared_ptr < ue_ngap_context > (new ue_ngap_context());
     set_ran_ue_ngap_id_2_ue_ngap_context(ran_ue_ngap_id, unc);
   } else {
     unc = ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
   }
   if (unc.get() == nullptr) {
-    Logger::amf_n2().error("Failed to get UE NGAP context for ran_ue_ngap_id(0x%x)", 21);
+    Logger::amf_n2().error("Failed to get UE NGAP context for ran_ue_ngap_id 0x%x", 21);
   } else {
     //store information into UE NGAP context
     unc.get()->ran_ue_ngap_id = ran_ue_ngap_id;
@@ -330,7 +330,6 @@ void amf_n2::handle_itti_message(itti_initial_ue_message &init_ue_msg) {
       itti_msg->ueCtxReq = -1;//not present
     }else{
       itti_msg->ueCtxReq = init_ue_msg.initUeMsg->getUeContextRequest();
-      Logger::amf_n2().debug("testing 12");
     }
 #endif
     std::string _5g_s_tmsi;
@@ -600,7 +599,7 @@ void amf_n2::set_ran_ue_ngap_id_2_ue_ngap_context(const uint32_t &ran_ue_ngap_id
 bool amf_n2::verifyPlmn(vector<SupportedItem_t> list) {
   for (int i = 0; i < amf_cfg.plmn_list.size(); i++) {
     for (int j = 0; j < list.size(); j++) {
-      Logger::amf_n2().debug("TAC configured(%d) -- TAC received(%d)", amf_cfg.plmn_list[i].tac, list[j].tac);
+      Logger::amf_n2().debug("TAC configured %d, TAC received %d", amf_cfg.plmn_list[i].tac, list[j].tac);
       if (amf_cfg.plmn_list[i].tac != list[j].tac) {
         continue;
       }

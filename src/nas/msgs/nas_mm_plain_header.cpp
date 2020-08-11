@@ -71,15 +71,15 @@ void NasMmPlainHeader::setHeader(uint8_t epd_, uint8_t security_header_type, uin
 
 //------------------------------------------------------------------------------
 int NasMmPlainHeader::encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding NasMmPlainHeader");
+  Logger::nas_mm().debug("Encoding NasMmPlainHeader");
   if (len < 3) {
-    Logger::nas_mm().error("[encoding nas mm header error][buffer length is less than 3 octets]");
+    Logger::nas_mm().error("buffer length is less than 3 octets");
     return 0;
   } else {
     *(buf++) = epd;
     *(buf++) = secu_header_type;
     *(buf++) = msg_type;
-    Logger::nas_mm().debug("encoded NasMmPlainHeader len((3 octets))");
+    Logger::nas_mm().debug("Encoded NasMmPlainHeader (len 3 octets)");
     return 3;
   }
 }

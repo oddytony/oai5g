@@ -310,7 +310,7 @@ void amf_n11::handle_post_sm_context_response_error(long code, std::string cause
 
 //------------------------------------------------------------------------------
 void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std::string n1SmMsg, std::string n2SmMsg, std::string supi, uint8_t pdu_session_id) {
-  Logger::amf_n11().debug("Call SMF service operation: %s", remoteUri.c_str());
+  Logger::amf_n11().debug("Call SMF service: %s", remoteUri.c_str());
   CURL *curl = curl_easy_init();
   if (curl) {
     CURLcode res;
@@ -373,7 +373,7 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
     bool is_response_ok = true;
     Logger::amf_n11().debug("Get response with httpcode (%d)", httpCode);
     if (httpCode == 0) {
-      Logger::amf_n11().error("Cannot get response When calling %s", remoteUri.c_str());
+      Logger::amf_n11().error("Cannot get response when calling %s", remoteUri.c_str());
       //TODO: free curl before returning
       return;
     }

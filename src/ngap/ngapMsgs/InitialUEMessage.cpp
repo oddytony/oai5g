@@ -241,12 +241,12 @@ bool InitialUEMessageMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
         if (initialUEMessageIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && initialUEMessageIEs->protocolIEs.list.array[i]->value.present == Ngap_InitialUEMessage_IEs__value_PR_RAN_UE_NGAP_ID) {
           ranUeNgapId = new RAN_UE_NGAP_ID();
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(initialUEMessageIEs->protocolIEs.list.array[i]->value.choice.RAN_UE_NGAP_ID)) {
-            cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+            cout << "Decoded NGAP RAN_UE_NGAP_ID IE error" << endl;
             return false;
           }
-          cout << "in initialUeMessage, received ranUeNgapId " << ranUeNgapId->getRanUeNgapId() << endl;
+          cout << "[InitialUeMessage] Received RanUeNgapId " << ranUeNgapId->getRanUeNgapId() << endl;
         } else {
-          cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+          cout << "Decoded NGAP RAN_UE_NGAP_ID IE error" << endl;
           return false;
         }
       }
@@ -255,11 +255,11 @@ bool InitialUEMessageMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
         if (initialUEMessageIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && initialUEMessageIEs->protocolIEs.list.array[i]->value.present == Ngap_InitialUEMessage_IEs__value_PR_NAS_PDU) {
           nasPdu = new NAS_PDU();
           if (!nasPdu->decodefromoctetstring(initialUEMessageIEs->protocolIEs.list.array[i]->value.choice.NAS_PDU)) {
-            cout << "decoded ngap NAS_PDU IE error" << endl;
+            cout << "Decoded NGAP NAS_PDU IE error" << endl;
             return false;
           }
         } else {
-          cout << "decoded ngap NAS_PDU IE error" << endl;
+          cout << "Decoded NGAP NAS_PDU IE error" << endl;
           return false;
         }
       }
@@ -268,11 +268,11 @@ bool InitialUEMessageMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
         if (initialUEMessageIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && initialUEMessageIEs->protocolIEs.list.array[i]->value.present == Ngap_InitialUEMessage_IEs__value_PR_UserLocationInformation) {
           userLocationInformation = new UserLocationInformation();
           if (!userLocationInformation->decodefromUserLocationInformation(&initialUEMessageIEs->protocolIEs.list.array[i]->value.choice.UserLocationInformation)) {
-            cout << "decoded ngap UserLocationInformation IE error" << endl;
+            cout << "Decoded NGAP UserLocationInformation IE error" << endl;
             return false;
           }
         } else {
-          cout << "decoded ngap UserLocationInformation IE error" << endl;
+          cout << "Decoded NGAP UserLocationInformation IE error" << endl;
           return false;
         }
       }
@@ -281,11 +281,11 @@ bool InitialUEMessageMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
         if (initialUEMessageIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_ignore && initialUEMessageIEs->protocolIEs.list.array[i]->value.present == Ngap_InitialUEMessage_IEs__value_PR_RRCEstablishmentCause) {
           rRCEstablishmentCause = new RRCEstablishmentCause();
           if (!rRCEstablishmentCause->decodefromRRCEstablishmentCause(initialUEMessageIEs->protocolIEs.list.array[i]->value.choice.RRCEstablishmentCause)) {
-            cout << "decoded ngap RRCEstablishmentCause IE error" << endl;
+            cout << "Decoded NGAP RRCEstablishmentCause IE error" << endl;
             return false;
           }
         } else {
-          cout << "decoded ngap RRCEstablishmentCause IE error" << endl;
+          cout << "Decoded NGAP RRCEstablishmentCause IE error" << endl;
           return false;
         }
       }
@@ -294,11 +294,11 @@ bool InitialUEMessageMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
         if (initialUEMessageIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_ignore && initialUEMessageIEs->protocolIEs.list.array[i]->value.present == Ngap_InitialUEMessage_IEs__value_PR_UEContextRequest) {
           uEContextRequest = new UEContextRequest();
           if (!uEContextRequest->decodefromUEContextRequest(initialUEMessageIEs->protocolIEs.list.array[i]->value.choice.UEContextRequest)) {
-            cout << "decoded ngap UEContextRequest IE error" << endl;
+            cout << "Decoded NGAP UEContextRequest IE error" << endl;
             return false;
           }
         } else {
-          cout << "decoded ngap UEContextRequest IE error" << endl;
+          cout << "Decoded NGAP UEContextRequest IE error" << endl;
           return false;
         }
       }

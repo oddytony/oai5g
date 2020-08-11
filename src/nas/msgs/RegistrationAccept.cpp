@@ -35,7 +35,6 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 RegistrationAccept::RegistrationAccept() {
-  Logger::nas_mm().debug("initiating class RegistrationAccept");
   plain_header = NULL;
   ie_5gs_registration_result = NULL;
   ie_5g_guti = NULL;
@@ -102,8 +101,7 @@ void RegistrationAccept::set5G_GUTI(const string mcc, const string mnc, const st
   int regionId = fromString<int>(amfRegionId);
   int setId = fromString<int>(amfSetId);
   int pointer = fromString<int>(amfPointer);
-  cout << "amfRegionID string: " << amfRegionId.c_str() << endl;
-  cout << "amfRegionId uint8_t: " << regionId << endl;
+  cout << "amfRegionID: " << amfRegionId.c_str() << endl;
   ie_5g_guti->set5GGUTI(mcc, mnc, (uint8_t) regionId, (uint16_t) setId, (uint8_t) pointer, tmsi);
   ie_5g_guti->setIEI(0x77);
 }

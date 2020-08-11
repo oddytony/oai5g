@@ -34,7 +34,6 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 SecurityModeCommand::SecurityModeCommand() {
-  Logger::nas_mm().debug("initiating class SecurityModeCommand");
   plain_header = NULL;
   ie_eap_message = NULL;
   ie_selected_nas_security_algorithms = NULL;

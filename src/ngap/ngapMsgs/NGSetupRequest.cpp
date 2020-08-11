@@ -215,11 +215,11 @@ bool NGSetupRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
             if (ngSetupRequestIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && ngSetupRequestIEs->protocolIEs.list.array[i]->value.present == Ngap_NGSetupRequestIEs__value_PR_GlobalRANNodeID) {
               globalRanNodeId = new GlobalRanNodeId();
               if (!globalRanNodeId->decodefromGlobalRANNodeID(&ngSetupRequestIEs->protocolIEs.list.array[i]->value.choice.GlobalRANNodeID)) {
-                cout << "decoded ngap GlobalRanNodeId IE error!" << endl;
+                cout << "Decoded NGAP GlobalRanNodeId IE error!" << endl;
                 return false;
               }
             } else {
-              cout << "decoded ngap GlobalRanNodeId IE error" << endl;
+              cout << "Decoded NGAP GlobalRanNodeId IE error" << endl;
               return false;
             }
           }
@@ -228,11 +228,11 @@ bool NGSetupRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
             if (ngSetupRequestIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_ignore && ngSetupRequestIEs->protocolIEs.list.array[i]->value.present == Ngap_NGSetupRequestIEs__value_PR_RANNodeName) {
               ranNodeName = new RanNodeName();
               if (!ranNodeName->decodefromRanNodeName(&ngSetupRequestIEs->protocolIEs.list.array[i]->value.choice.RANNodeName)) {
-                cout << "decoded ngap RanNodeName IE error" << endl;
+                cout << "Decoded NGAP RanNodeName IE error" << endl;
                 return false;
               }
             } else {
-              cout << "decoded ngap RanNodeName IE error" << endl;
+              cout << "Decoded NGAP RanNodeName IE error" << endl;
               return false;
             }
           }
@@ -241,11 +241,11 @@ bool NGSetupRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
             if (ngSetupRequestIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && ngSetupRequestIEs->protocolIEs.list.array[i]->value.present == Ngap_NGSetupRequestIEs__value_PR_SupportedTAList) {
               supportedTAList = new SupportedTAList();
               if (!supportedTAList->decodefromSupportedTAList(&ngSetupRequestIEs->protocolIEs.list.array[i]->value.choice.SupportedTAList)) {
-                cout << "decoded ngap SupportedTAList IE error" << endl;
+                cout << "Decoded NGAP SupportedTAList IE error" << endl;
                 return false;
               }
             } else {
-              cout << "decoded ngap SupportedTAList IE error" << endl;
+              cout << "Decoded NGAP SupportedTAList IE error" << endl;
               return false;
             }
           }
@@ -254,17 +254,17 @@ bool NGSetupRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
             if (ngSetupRequestIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_ignore && ngSetupRequestIEs->protocolIEs.list.array[i]->value.present == Ngap_NGSetupRequestIEs__value_PR_PagingDRX) {
               defaultPagingDrx = new DefaultPagingDRX();
               if (!defaultPagingDrx->decodefromDefaultPagingDRX(ngSetupRequestIEs->protocolIEs.list.array[i]->value.choice.PagingDRX)) {
-                cout << "decoded ngap DefaultPagingDRX IE error" << endl;
+                cout << "Decoded NGAP DefaultPagingDRX IE error" << endl;
                 return false;
               }
             } else {
-              cout << "decoded ngap DefaultPagingDRX IE error" << endl;
+              cout << "Decoded NGAP DefaultPagingDRX IE error" << endl;
               return false;
             }
           }
             break;
           default: {
-            cout << "decoded ngap message pdu error" << endl;
+            cout << "Decoded NGAP message PDU error" << endl;
             return false;
           }
         }

@@ -93,22 +93,22 @@ int _5GSMobilityIdentity::_5g_s_tmsi_decodefrombuffer(uint8_t *buf, int len) {
   uint8_t digit[4];
   octet = *(buf + decoded_size);
   decoded_size++;
-  Logger::nas_mm().debug("octet(0x%x)", octet);
+  Logger::nas_mm().debug("Octet 0x%x", octet);
   digit[0] = octet;
   tmsi |= octet;
   octet = *(buf + decoded_size);
   decoded_size++;
-  Logger::nas_mm().debug("octet(0x%x)", octet);
+  Logger::nas_mm().debug("Octet 0x%x", octet);
   digit[1] = octet;
   tmsi |= octet << 8;
   octet = *(buf + decoded_size);
   decoded_size++;
-  Logger::nas_mm().debug("octet(0x%x)", octet);
+  Logger::nas_mm().debug("Octet 0x%x", octet);
   digit[2] = octet;
   tmsi |= octet << 16;
   octet = *(buf + decoded_size);
   decoded_size++;
-  Logger::nas_mm().debug("octet(0x%x)", octet);
+  Logger::nas_mm().debug("Octet 0x%x", octet);
   digit[3] = octet;
   tmsi |= octet << 24;
   _5g_s_tmsi->_5g_tmsi = (const string) (std::to_string(tmsi));
@@ -237,12 +237,12 @@ int _5GSMobilityIdentity::encode2buffer(uint8_t *buf, int len) {
 
 //------------------------------------------------------------------------------
 int _5GSMobilityIdentity::suci_encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding SUCI IE iei(0x%x)", iei);
+  Logger::nas_mm().debug("Encoding SUCI IEI 0x%x", iei);
   if (len < length)
     Logger::nas_mm().debug("error: len is less than %d", length);
   int encoded_size = 0;
   if (iei) {
-    Logger::nas_mm().debug("decoding 5GSMobilityIdentity iei0x%x", typeOfIdentity);
+    Logger::nas_mm().debug("Decoding 5GSMobilityIdentity IEI 0x%x", typeOfIdentity);
     *(buf) = iei;
     encoded_size++;
     encoded_size += 2;
@@ -271,18 +271,18 @@ int _5GSMobilityIdentity::suci_encode2buffer(uint8_t *buf, int len) {
   } else {
     *(uint16_t*) (buf + 1) = encoded_size - 3;
   }
-  Logger::nas_mm().debug("encoded SUCI IE len(%d octets)", encoded_size);
+  Logger::nas_mm().debug("Encoded SUCI IE (len %d octets)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
 int _5GSMobilityIdentity::_5g_guti_encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding 5G-GUTI IE iei(0x%x)", iei);
+  Logger::nas_mm().debug("Encoding 5G-GUTI IEI 0x%x", iei);
   if (len < length)
-    Logger::nas_mm().debug("error: len is less than %d", length);
+    Logger::nas_mm().debug("Error: len is less than %d", length);
   int encoded_size = 0;
   if (iei) {
-    Logger::nas_mm().debug("encoding 5GSMobilityIdentity type: 0x%x", typeOfIdentity);
+    Logger::nas_mm().debug("Wncoding 5GSMobilityIdentity type 0x%x", typeOfIdentity);
     *(buf) = iei;
     encoded_size++;
     encoded_size += 2;
@@ -323,7 +323,7 @@ int _5GSMobilityIdentity::_5g_guti_encode2buffer(uint8_t *buf, int len) {
     buf[1] = ((encoded_size - 3) & 0xff00) >> 8;
     buf[2] = (encoded_size - 3) & 0x00ff;
   }
-  Logger::nas_mm().debug("encoded 5G-GUTI IE len(%d octets)", encoded_size);
+  Logger::nas_mm().debug("Encoded 5G-GUTI IE (len %d octets)", encoded_size);
   return encoded_size;
 }
 
@@ -334,24 +334,24 @@ int _5GSMobilityIdentity::encodeMssMnc2buffer(string mccstr, string mncstr, uint
   int mnc = fromString<int>(mncstr);
   *(buf + encoded_size) = (0x0f & (mcc / 100)) | ((0x0f & ((mcc % 100) / 10)) << 4);
   encoded_size += 1;
-  Logger::nas_mm().debug("mnc digit 1 (%d)", mnc / 100);
+  Logger::nas_mm().debug("MNC digit 1: %d", mnc / 100);
   if (!(mnc / 100)) {
-    Logger::nas_mm().debug("encoding mnc 2 digits");
+    Logger::nas_mm().debug("Encoding MNC 2 digits");
     *(buf + encoded_size) = (0x0f & (mcc % 10)) | 0xf0;
-    Logger::nas_mm().debug("buffer(0x%x)", *(buf + encoded_size));
+    Logger::nas_mm().debug("Buffer 0x%x", *(buf + encoded_size));
     encoded_size += 1;
     *(buf + encoded_size) = (0x0f & ((mnc % 100) / 10)) | ((0x0f & (mnc % 10)) << 4);
     encoded_size += 1;
   } else {
-    Logger::nas_mm().debug("encoding mnc 3 digits");
+    Logger::nas_mm().debug("Encoding MNC 3 digits");
     *(buf + encoded_size) = (0x0f & (mcc % 10)) | ((0x0f & (mnc % 10)) << 4);
-    Logger::nas_mm().debug("buffer(0x%x)", *(buf + encoded_size));
+    Logger::nas_mm().debug("Buffer 0x%x", *(buf + encoded_size));
     encoded_size += 1;
     *(buf + encoded_size) = ((0x0f & ((mnc % 100) / 10)) << 4) | (0x0f & (mnc / 100));
-    Logger::nas_mm().debug("buffer(0x%x)", *(buf + encoded_size));
+    Logger::nas_mm().debug("Buffer 0x%x", *(buf + encoded_size));
     encoded_size += 1;
   }
-  Logger::nas_mm().debug("mcc(%s) mnc(%s)", mccstr.c_str(), mncstr.c_str());
+  Logger::nas_mm().debug("MCC %s, MNC %s", mccstr.c_str(), mncstr.c_str());
   return encoded_size;
 }
 
@@ -407,12 +407,12 @@ int _5GSMobilityIdentity::encodeMSIN2buffer(string msinstr, uint8_t *buf) {
 
 //------------------------------------------------------------------------------
 int _5GSMobilityIdentity::imeisv_encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding IMEISV IE iei(0x%x)", iei);
+  Logger::nas_mm().debug("Encoding IMEISV IE IEI 0x%x", iei);
   if (len < length)
-    Logger::nas_mm().debug("error: len is less than %d", length);
+    Logger::nas_mm().debug("Error: len is less than %d", length);
   int encoded_size = 0;
   if (iei) {
-    Logger::nas_mm().debug("decoding 5GSMobilityIdentity iei0x%x", typeOfIdentity);
+    Logger::nas_mm().debug("Decoding 5GSMobilityIdentity IEI 0x%x", typeOfIdentity);
     *(buf) = iei;
     encoded_size++;
     encoded_size += 2;
@@ -426,13 +426,13 @@ int _5GSMobilityIdentity::imeisv_encode2buffer(uint8_t *buf, int len) {
   } else {
     *(uint16_t*) (buf + 1) = encoded_size - 3;
   }
-  Logger::nas_mm().debug("encoded IMEISV IE len(%d octets)", encoded_size);
+  Logger::nas_mm().debug("Encoded IMEISV IE (len %d octets)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
 int _5GSMobilityIdentity::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
-  Logger::nas_mm().debug("decoding 5GSMobilityIdentity");
+  Logger::nas_mm().debug("Decoding 5GSMobilityIdentity");
   int decoded_size = 0;
   if (is_option) {
     iei = *buf;
@@ -444,12 +444,12 @@ int _5GSMobilityIdentity::decodefrombuffer(uint8_t *buf, int len, bool is_option
   len2 = *(buf + decoded_size);
   decoded_size++;
   uint16_t length = (0x0000) | (len1 << 8) | len2;
-  Logger::amf_n1().debug("decoded 5GSMobilityIdentity IE length(%d)", length);
+  Logger::amf_n1().debug("Decoded 5GSMobilityIdentity IE length %d", length);
   switch (*(buf + decoded_size) & 0x07) {
     case SUCI: {
       typeOfIdentity = SUCI;
       decoded_size += suci_decodefrombuffer(buf + decoded_size, len - decoded_size, length);
-      Logger::nas_mm().debug("decoded suci(%d) octets", decoded_size);
+      Logger::nas_mm().debug("Decoded SUCI (%d octets)", decoded_size);
       return decoded_size;
     }
       break;
@@ -476,7 +476,7 @@ int _5GSMobilityIdentity::decodefrombuffer(uint8_t *buf, int len, bool is_option
 
 //------------------------------------------------------------------------------
 int _5GSMobilityIdentity::suci_decodefrombuffer(uint8_t *buf, int len, int ie_len) {
-  Logger::nas_mm().debug("decoding 5GSMobilityIdentity SUCI");
+  Logger::nas_mm().debug("Decoding 5GSMobilityIdentity SUCI");
   int decoded_size = 0;
   uint8_t octet = 0;
   octet = *buf;
@@ -492,39 +492,31 @@ int _5GSMobilityIdentity::suci_decodefrombuffer(uint8_t *buf, int len, int ie_le
       octet = *(buf + decoded_size);
       decoded_size++;
       mcc += (octet & 0x0f);
-      //Logger::nas_mm().debug("mcc(%s)",std::to_string(mcc).c_str());
-      //Logger::nas_mm().debug("buffer(0x%x)",octet);
       if ((octet & 0xf0) == 0xf0) {
         octet = *(buf + decoded_size);
         decoded_size++;
         mnc += ((octet & 0x0f) * 10 + ((octet & 0xf0) >> 4));
-        //Logger::nas_mm().debug("mnc(2 digits)(%s)",std::to_string(mnc).c_str());
       } else {
         mnc += ((octet & 0xf0) >> 4);
         octet = *(buf + decoded_size);
-        //Logger::nas_mm().debug("buffer(0x%x)",octet);
         decoded_size++;
         mnc += ((octet & 0x0f) * 100 + ((octet & 0xf0) >> 4) * 10);
-        //Logger::nas_mm().debug("mnc(3 digits)(%s)",std::to_string(mnc).c_str());
       }
-      Logger::nas_mm().debug("mcc(%s) mnc(%s)", std::to_string(mcc).c_str(), std::to_string(mnc).c_str());
+      Logger::nas_mm().debug("MCC %s, MNC %s", std::to_string(mcc).c_str(), std::to_string(mnc).c_str());
       supi_format_imsi->mcc = (const string) (std::to_string(mcc));
       supi_format_imsi->mnc = (const string) (std::to_string(mnc));
       int routid = 0;
       uint8_t digit[4];
       octet = *(buf + decoded_size);
       decoded_size++;
-      //Logger::nas_mm().debug("octet(0x%x)",octet);
       digit[0] = octet & 0x0f;
       digit[1] = (octet & 0xf0) >> 4;
       octet = *(buf + decoded_size);
       decoded_size++;
-      //Logger::nas_mm().debug("octet(0x%x)",octet);
       digit[2] = octet & 0x0f;
       digit[3] = (octet & 0xf0) >> 4;
       if (!digit[0] && digit[1] == 0x0f && digit[2] == 0x0f && digit[3] == 0x0f) {
         supi_format_imsi->routingIndicator = (const string) ("none");
-        //Logger::nas_mm().debug("routing indicator(%s)",supi_format_imsi->routingIndicator.c_str());
       } else {
         string result = "";
         for (int i = 0; i < 4; i++) {
@@ -533,10 +525,10 @@ int _5GSMobilityIdentity::suci_decodefrombuffer(uint8_t *buf, int len, int ie_le
           else if (digit[i] == 0x0f)
             break;
           else
-            Logger::nas_mm().error("decoded routing indicator is not BCD coding");
+            Logger::nas_mm().error("Decoded routing indicator is not BCD coding");
         }
         supi_format_imsi->routingIndicator = result;
-        Logger::nas_mm().debug("decoded routing indicator(%s)", supi_format_imsi->routingIndicator.c_str());
+        Logger::nas_mm().debug("Decoded routing indicator %s", supi_format_imsi->routingIndicator.c_str());
       }
       octet = *(buf + decoded_size);
       decoded_size++;
@@ -544,22 +536,18 @@ int _5GSMobilityIdentity::suci_decodefrombuffer(uint8_t *buf, int len, int ie_le
       octet = *(buf + decoded_size);
       decoded_size++;
       supi_format_imsi->homeNetworkPKI = octet;
-      //Logger::nas_mm().debug("decoded homeNetworkPKI(%x)",supi_format_imsi->homeNetworkPKI);
       string msin = "";
       int digit_low = 0, digit_high = 0, numMsin = ie_len - decoded_size;
-      //Logger::nas_mm().debug("number of msin(%d)",numMsin);
       for (int i = 0; i < numMsin; i++) {
         octet = *(buf + decoded_size);
         decoded_size++;
         digit_high = (octet & 0xf0) >> 4;
         digit_low = octet & 0x0f;
-        //Logger::amf_n1().debug("msin(%d), %d %d", i, digit_high, digit_low);
         msin += ((const string) (std::to_string(digit_low)) + (const string) (std::to_string(digit_high)));
       }
       supi_format_imsi->msin = msin;
-      Logger::nas_mm().debug("decoded MSIN(%s)", supi_format_imsi->msin.c_str());
-      Logger::nas_mm().debug("decoded 5GSMobilityIdentity SUCI SUPI format IMSI(len(%d))", decoded_size);
-      Logger::nas_mm().debug("decoding 5GSMobilityIdentity SUCI SUPI format IMSI");
+      Logger::nas_mm().debug("Decoded MSIN %s", supi_format_imsi->msin.c_str());
+      Logger::nas_mm().debug("Decoded 5GSMobilityIdentity SUCI SUPI format IMSI (len %d)", decoded_size);
       return decoded_size;
     }
       break;
@@ -574,7 +562,7 @@ int _5GSMobilityIdentity::suci_decodefrombuffer(uint8_t *buf, int len, int ie_le
 
 //------------------------------------------------------------------------------
 int _5GSMobilityIdentity::_5g_guti_decodefrombuffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("decoding 5GSMobilityIdentity 5G-GUTI");
+  Logger::nas_mm().debug("Decoding 5GSMobilityIdentity 5G-GUTI");
   int decoded_size = 0;
   uint8_t octet = 0;
   octet = *buf;
@@ -588,22 +576,22 @@ int _5GSMobilityIdentity::_5g_guti_decodefrombuffer(uint8_t *buf, int len) {
   octet = *(buf + decoded_size);
   decoded_size++;
   mcc += (octet & 0x0f);
-  Logger::nas_mm().debug("mcc(%s)", std::to_string(mcc).c_str());
-  Logger::nas_mm().debug("buffer(0x%x)", octet);
+  Logger::nas_mm().debug("MCC %s", std::to_string(mcc).c_str());
+  Logger::nas_mm().debug("Buffer 0x%x", octet);
   if ((octet & 0xf0) == 0xf0) {
     octet = *(buf + decoded_size);
     decoded_size++;
     mnc += ((octet & 0x0f) * 10 + ((octet & 0xf0) >> 4));
-    Logger::nas_mm().debug("mnc(2 digits)(%s)", std::to_string(mnc).c_str());
+    Logger::nas_mm().debug("MNC (2 digits): %s", std::to_string(mnc).c_str());
   } else {
     mnc += ((octet & 0xf0) >> 4);
     octet = *(buf + decoded_size);
-    Logger::nas_mm().debug("buffer(0x%x)", octet);
+    Logger::nas_mm().debug("Buffer 0x%x", octet);
     decoded_size++;
     mnc += ((octet & 0x0f) * 100 + ((octet & 0xf0) >> 4) * 10);
-    Logger::nas_mm().debug("mnc(3 digits)(%s)", std::to_string(mnc).c_str());
+    Logger::nas_mm().debug("MNC (3 digits): %s", std::to_string(mnc).c_str());
   }
-  Logger::nas_mm().debug("mcc(%s) mnc(%s)", std::to_string(mcc).c_str(), std::to_string(mnc).c_str());
+  Logger::nas_mm().debug("MCC %s, MNC %s", std::to_string(mcc).c_str(), std::to_string(mnc).c_str());
   _5g_guti->mcc = (const string) (std::to_string(mcc));
   _5g_guti->mnc = (const string) (std::to_string(mnc));
 
@@ -617,22 +605,22 @@ int _5GSMobilityIdentity::_5g_guti_decodefrombuffer(uint8_t *buf, int len) {
   uint8_t digit[4];
   octet = *(buf + decoded_size);
   decoded_size++;
-  Logger::nas_mm().debug("octet(0x%x)", octet);
+  Logger::nas_mm().debug("Octet 0x%x", octet);
   digit[0] = octet;
   tmsi |= octet;
   octet = *(buf + decoded_size);
   decoded_size++;
-  Logger::nas_mm().debug("octet(0x%x)", octet);
+  Logger::nas_mm().debug("Octet 0x%x", octet);
   digit[1] = octet;
   tmsi |= octet << 8;
   octet = *(buf + decoded_size);
   decoded_size++;
-  Logger::nas_mm().debug("octet(0x%x)", octet);
+  Logger::nas_mm().debug("Octet 0x%x", octet);
   digit[2] = octet;
   tmsi |= octet << 16;
   octet = *(buf + decoded_size);
   decoded_size++;
-  Logger::nas_mm().debug("octet(0x%x)", octet);
+  Logger::nas_mm().debug("Octet 0x%x", octet);
   digit[3] = octet;
   tmsi |= octet << 24;
   _5g_guti->_5g_tmsi = tmsi;

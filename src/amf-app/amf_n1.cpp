@@ -154,7 +154,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind &nas_data_ind) {
     snn = "5G:mnc0" + nas_data_ind.mnc + ".mcc" + nas_data_ind.mcc + ".3gppnetwork.org";
   else
     snn = "5G:mnc" + nas_data_ind.mnc + ".mcc" + nas_data_ind.mcc + ".3gppnetwork.org";
-  Logger::amf_n1().debug("Serving network name: %s", snn.c_str());
+  Logger::amf_n1().debug("Serving network name %s", snn.c_str());
 
   bstring recved_nas_msg = nas_data_ind.nas_msg;
   bstring decoded_plain_msg;
@@ -165,14 +165,14 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind &nas_data_ind) {
     if (is_guti_2_nas_context(guti))
       nc = guti_2_nas_context(guti);
     else {
-      Logger::amf_n1().error("No existed nas_context with guti(%s)", nas_data_ind.guti.c_str());
+      Logger::amf_n1().error("No existing nas_context with GUTI %s", nas_data_ind.guti.c_str());
       return;
     }
   } else {
     if (is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
       nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
     else
-      Logger::amf_n1().warn("No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+      Logger::amf_n1().warn("No existing nas_context with amf_ue_ngap_id 0x%x", amf_ue_ngap_id);
   }
 
   SecurityHeaderType type;
@@ -250,7 +250,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind &nas_data_ind) {
 void amf_n1::nas_signalling_establishment_request_handle(SecurityHeaderType type, std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg, std::string snn, uint8_t ulCount) {
   //1. Create nas context, or update nas context
   if (nc.get() == nullptr && type == PlainNasMsg) {
-    Logger::amf_n1().debug("No existing nas_context with amf_ue_ngap_id(0x%x) --> Create new one", amf_ue_ngap_id);
+    Logger::amf_n1().debug("No existing nas_context with amf_ue_ngap_id 0x%x --> Create a new one", amf_ue_ngap_id);
     nc = std::shared_ptr < nas_context > (new nas_context);
     if (!nc.get()) {
       Logger::amf_n1().error("Cannot allocate memory for new nas_context, exit...");
@@ -271,21 +271,21 @@ void amf_n1::nas_signalling_establishment_request_handle(SecurityHeaderType type
 
   uint8_t *buf = (uint8_t*) bdata(plain_msg);
   uint8_t message_type = *(buf + 2);
-  Logger::amf_n1().debug("NAS message type(0x%x)", message_type);
+  Logger::amf_n1().debug("NAS message type 0x%x", message_type);
   switch (message_type) {
     case REGISTRATION_REQUEST: {  //registration request
-      Logger::amf_n1().debug("Received registration request message , handle ...");
+      Logger::amf_n1().debug("Received registration request message, handling ...");
       registration_request_handle(true, nc, ran_ue_ngap_id, amf_ue_ngap_id, snn, plain_msg);
     }
       break;
     case SERVICE_REQUEST: {
-      Logger::amf_n1().debug("Received service request message , handle ...");
+      Logger::amf_n1().debug("Received service request message, handling ...");
       nc.get()->security_ctx->ul_count.seq_num = ulCount;
       service_request_handle(true, nc, ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     }
       break;
     default:
-      Logger::amf_n1().error("No handler for NAS message(0x%x)", message_type);
+      Logger::amf_n1().error("No handler for NAS message 0x%x", message_type);
   }
 }
 
@@ -366,7 +366,6 @@ bool amf_n1::check_security_header_type(SecurityHeaderType &type, uint8_t *buffe
 //------------------------------------------------------------------------------
 void amf_n1::service_request_handle(bool isNasSig, std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas) {
   set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
-  Logger::amf_n1().info("nas_context pointer(%p)", nc.get());
   nas_secu_ctx *secu = nc.get()->security_ctx;
   ServiceRequest *serReq = new ServiceRequest();
   serReq->decodefrombuffer(nullptr, (uint8_t*) bdata(nas), blength(nas));
@@ -392,7 +391,7 @@ void amf_n1::service_request_handle(bool isNasSig, std::shared_ptr<nas_context> 
   supi2amfId[supi] = amf_ue_ngap_id;
   supi2ranId[supi] = ran_ue_ngap_id;
   Logger::amf_n1().debug("amf_ue_ngap_id %d, ran_ue_ngap_id %d", amf_ue_ngap_id, ran_ue_ngap_id);
-  Logger::amf_n1().debug("Key for pdu session context: supi(%s)", supi.c_str());
+  Logger::amf_n1().debug("Key for pdu session context: SUPI %s", supi.c_str());
   std::shared_ptr<pdu_session_context> psc;
   if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
     psc = amf_n11_inst->supi_to_pdu_ctx(supi);
@@ -401,7 +400,7 @@ void amf_n1::service_request_handle(bool isNasSig, std::shared_ptr<nas_context> 
       return;
     }
   } else {
-    Logger::amf_n1().error("Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
+    Logger::amf_n1().error("Cannot get pdu_session_context with SUPI %s", supi.c_str());
   }
 
   itti_initial_context_setup_request *itti_msg = new itti_initial_context_setup_request(TASK_AMF_N1, TASK_AMF_N2);
@@ -457,16 +456,16 @@ void amf_n1::registration_request_handle(bool isNasSig, std::shared_ptr<nas_cont
       } else {
         nc.get()->is_imsi_present = true;
         nc.get()->imsi = imsi.mcc + imsi.mnc + imsi.msin;
-        Logger::amf_n1().debug("received imsi(%s)", nc.get()->imsi.c_str());
+        Logger::amf_n1().debug("Received IMSI %s", nc.get()->imsi.c_str());
         supi2amfId[("imsi-" + nc.get()->imsi)] = amf_ue_ngap_id;
         supi2ranId[("imsi-" + nc.get()->imsi)] = ran_ue_ngap_id;
         imsi2nas_context[("imsi-" + nc.get()->imsi)] = nc;
-        Logger::amf_n1().info("Associating imsi(%s) with nas_context(%p)", ("imsi-" + nc.get()->imsi).c_str(), nc.get());
+        Logger::amf_n1().info("Associating IMSI (%s) with nas_context(%p)", ("imsi-" + nc.get()->imsi).c_str(), nc.get());
         if (!nc.get()->is_stacs_available) {
           string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) + ":amfid_" + to_string(amf_ue_ngap_id);
           std::shared_ptr<ue_context> uc;
           //uc = amf_app_inst->amf_ue_id_2_ue_context(amf_ue_ngap_id);
-          Logger::amf_n1().info("Try to find ue_context in amf_app using ran_amf_id(%s)", ue_context_key.c_str());
+          Logger::amf_n1().info("Try to find ue_context in amf_app using ran_amf_id %s", ue_context_key.c_str());
           uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
           ue_infos ueItem;
           update_ue_information_statics(ueItem, "CM-CONNECTED", "REGISTRATION-INITIATING", ran_ue_ngap_id, amf_ue_ngap_id, nc.get()->imsi, "", uc.get()->cgi.mcc, uc.get()->cgi.mnc, uc.get()->cgi.nrCellID);
@@ -485,9 +484,7 @@ void amf_n1::registration_request_handle(bool isNasSig, std::shared_ptr<nas_cont
     }
       break;
   }
-  //2.4.1 try to get supi and format imsi
-  //2.4.2 try to get 5g-guti
-  //2.4.3 try to get ...
+
   //3. create nas context
   if (nc.get() == nullptr) {
     //try to get the GUTI -> nas_context
@@ -497,12 +494,12 @@ void amf_n1::registration_request_handle(bool isNasSig, std::shared_ptr<nas_cont
       supi2amfId[("imsi-" + nc.get()->imsi)] = amf_ue_ngap_id;
       supi2ranId[("imsi-" + nc.get()->imsi)] = ran_ue_ngap_id;
     } else {
-      Logger::amf_n1().error("No nas_context with guti(%s)", guti.c_str());
+      Logger::amf_n1().error("No nas_context with GUTI %s", guti.c_str());
       response_registration_reject_msg(_5GMM_CAUSE_ILLEGAL_UE, ran_ue_ngap_id, amf_ue_ngap_id);
       return;
     }
   } else {
-    Logger::amf_n1().debug("Existing nas_context  --> Update");
+    Logger::amf_n1().debug("Existing nas_context --> Update");
     //nc = amf_ue_id_2_nas_context(amf_ue_ngap_id); 
   }
 
@@ -754,10 +751,10 @@ bool amf_n1::authentication_vectors_generator_in_udm(std::shared_ptr<nas_context
   _5G_HE_AV_t *vector = nc.get()->_5g_he_av;
   //1. access to local mysql to fetch ue-related information
   if (!connect_to_mysql()) {
-    Logger::amf_n1().error("Cannot connect to mysql");
+    Logger::amf_n1().error("Cannot connect to MySQL");
     return false;
   }
-  Logger::amf_n1().debug("Connect to mysql successfully");
+  Logger::amf_n1().debug("Connect to MySQL successfully");
   mysql_auth_info_t mysql_resp;
   if (get_mysql_auth_info(nc.get()->imsi, mysql_resp)) {
     if (auts) {
@@ -769,19 +766,19 @@ bool amf_n1::authentication_vectors_generator_in_udm(std::shared_ptr<nas_context
         free(sqn);
       }
       if (!get_mysql_auth_info(nc.get()->imsi, mysql_resp)) {
-        Logger::amf_n1().error("Cannot get data from mysql");
+        Logger::amf_n1().error("Cannot get data from MySQL");
         return false;
       }
       sqn = mysql_resp.sqn;
       for (int i = 0; i < MAX_5GS_AUTH_VECTORS; i++) {
         generate_random(vector[i].rand, RAND_LENGTH);
-        print_buffer("amf_n1", "generated random: rand(5G HE AV)", vector[i].rand, 16);
+        print_buffer("amf_n1", "Generated random rand (5G HE AV)", vector[i].rand, 16);
         generate_5g_he_av_in_udm(mysql_resp.opc, nc.get()->imsi, mysql_resp.key, sqn, nc.get()->serving_network, vector[i]);    //serving network name
       }
       mysql_push_rand_sqn(nc.get()->imsi, vector[MAX_5GS_AUTH_VECTORS - 1].rand, sqn);
     } else {
       Logger::amf_n1().debug("No auts ...");
-      Logger::amf_n1().debug("Receive information from mysql with imsi(%s)", nc.get()->imsi.c_str());
+      Logger::amf_n1().debug("Receive information from MySQL with IMSI %s", nc.get()->imsi.c_str());
       //print_buffer("amf_n1", "Received from MYSQL: rand", mysql_resp.rand, 16);
       //print_buffer("amf_n1", "Received from MYSQL: opc", mysql_resp.opc, 16);
       //print_buffer("amf_n1", "Received from MYSQL: key", mysql_resp.key, 16);
@@ -796,7 +793,7 @@ bool amf_n1::authentication_vectors_generator_in_udm(std::shared_ptr<nas_context
     }
     mysql_increment_sqn(nc.get()->imsi);
   } else {
-    Logger::amf_n1().error("Failed to fetch user data from mysql");
+    Logger::amf_n1().error("Failed to fetch user data from MySQL");
     return false;
   }
 }
@@ -936,7 +933,7 @@ void amf_n1::handle_auth_vector_successful_result(std::shared_ptr<nas_context> n
   int vindex = nc.get()->security_ctx->vector_pointer;
   if (!start_authentication_procedure(nc, vindex, nc.get()->ngKsi)) {
     Logger::amf_n1().error("Start authentication procedure failure, reject...");
-    Logger::amf_n1().error("Ran_ue_ngap_id(0x%x)", nc.get()->ran_ue_ngap_id);
+    Logger::amf_n1().error("Ran_ue_ngap_id 0x%x", nc.get()->ran_ue_ngap_id);
     response_registration_reject_msg(_5GMM_CAUSE_INVALID_MANDATORY_INFO, nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id);  //cause?
   } else {
     //update mm state -> COMMON-PROCEDURE-INITIATED
@@ -1056,11 +1053,11 @@ void amf_n1::authentication_response_handle(uint32_t ran_ue_ngap_id, long amf_ue
   }
   //5. if successful, start SMC procedure; else if failure, response registration reject message with corresponding cause
   if (!isAuthOk) {
-    Logger::amf_n1().error("Authentication Failure for UE with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+    Logger::amf_n1().error("Authentication Failure for UE with amf_ue_ngap_id 0x%x", amf_ue_ngap_id);
     response_registration_reject_msg(_5GMM_CAUSE_ILLEGAL_UE, ran_ue_ngap_id, amf_ue_ngap_id);  //cause?
     return;
   } else {
-    Logger::amf_n1().debug("Authenticated successfully by network!!!");
+    Logger::amf_n1().debug("Authenticated successfully by network!");
     if (!nc.get()->is_current_security_available) {
       if (!start_security_mode_control_procedure(nc)) {
         Logger::amf_n1().error("Start SMC procedure failure");
@@ -1152,7 +1149,7 @@ bool amf_n1::start_security_mode_control_procedure(std::shared_ptr<nas_context> 
   SecurityModeCommand *smc = new SecurityModeCommand();
   smc->setHeader(PLAIN_5GS_MSG);
   smc->setNAS_Security_Algorithms(amf_nea, amf_nia);
-  Logger::amf_n1().debug("encoded ngKSI(0x%x)", nc.get()->ngKsi);
+  Logger::amf_n1().debug("Encoded ngKSI 0x%x", nc.get()->ngKsi);
   smc->setngKSI(NAS_KEY_SET_IDENTIFIER_NATIVE, nc.get()->ngKsi & 0x07);
   smc->setUE_Security_Capability(nc.get()->ueSecurityCapEnc, nc.get()->ueSecurityCapInt);
   smc->setIMEISV_Request(0xe1);
@@ -1229,7 +1226,7 @@ void amf_n1::security_mode_complete_handle(uint32_t ran_ue_ngap_id, long amf_ue_
   regAccept->setALLOWED_NSSAI(nssai);
 
   std::string guti = mcc + mnc + amf_cfg.guami.regionID + amf_cfg.guami.AmfSetID + amf_cfg.guami.AmfPointer + std::to_string(tmsi);
-  Logger::amf_n1().debug("Allocated guti %s", guti.c_str());
+  Logger::amf_n1().debug("Allocated GUTI %s", guti.c_str());
 
   regAccept->set_5GS_Network_Feature_Support(0x00, 0x00);
   regAccept->setT3512_Value(0x5, 0x1e);
@@ -1366,13 +1363,13 @@ bool amf_n1::nas_message_integrity_protected(nas_secu_ctx *nsc, uint8_t directio
     nsc->ul_count.seq_num = stream_cipher.count;
     Logger::amf_n1().debug("Uplink count in uplink: %d", nsc->ul_count.seq_num);
   }
-  Logger::amf_n1().debug("Parameters for NIA: count(0x%x)", count);
+  Logger::amf_n1().debug("Parameters for NIA, count: 0x%x", count);
   stream_cipher.bearer = 0x01;      //33.501 section 8.1.1
-  Logger::amf_n1().debug("Parameters for NIA: bearer(0x%x)", 0x01);
+  Logger::amf_n1().debug("Parameters for NIA, bearer: 0x%x", 0x01);
   stream_cipher.direction = direction;      // "1" for downlink
-  Logger::amf_n1().debug("Parameters for NIA: direction(0x%x)", direction);
+  Logger::amf_n1().debug("Parameters for NIA, direction: 0x%x", direction);
   stream_cipher.message = (uint8_t*) input_nas;
-  print_buffer("amf_n1", "parameters for NIA: message", input_nas, input_nas_len);
+  print_buffer("amf_n1", "parameters for NIA, message: ", input_nas, input_nas_len);
   stream_cipher.blength = input_nas_len * 8;
   switch (nsc->nas_algs.integrity & 0x0f) {
     case IA0_5G: {
@@ -1383,18 +1380,18 @@ bool amf_n1::nas_message_integrity_protected(nas_secu_ctx *nsc, uint8_t directio
     case IA1_128_5G: {
       Logger::amf_n1().debug("Integrity with algorithms: 128-5G-IA1");
       nas_algorithms::nas_stream_encrypt_nia1(&stream_cipher, mac);
-      print_buffer("amf_n1", "result for NIA1: mac", mac, 4);
+      print_buffer("amf_n1", "Result for NIA1, mac: ", mac, 4);
       mac32 = ntohl(*((uint32_t*) mac));
-      Logger::amf_n1().debug("Result for NIA1: mac32(0x%x)", mac32);
+      Logger::amf_n1().debug("Result for NIA1, mac32: 0x%x", mac32);
       return true;
     }
       break;
     case IA2_128_5G: {
       Logger::amf_n1().debug("Integrity with algorithms: 128-5G-IA2");
       nas_algorithms::nas_stream_encrypt_nia2(&stream_cipher, mac);
-      print_buffer("amf_n1", "result for NIA2: mac", mac, 4);
+      print_buffer("amf_n1", "result for NIA2, mac: ", mac, 4);
       mac32 = ntohl(*((uint32_t*) mac));
-      Logger::amf_n1().debug("Result for NIA2: mac32(0x%x)", mac32);
+      Logger::amf_n1().debug("Result for NIA2, mac32: 0x%x", mac32);
       return true;
     }
       break;
@@ -1574,7 +1571,7 @@ void amf_n1::run_mobility_registration_update_procedure(std::shared_ptr<nas_cont
 
   //std::string guti = amf_cfg.guami.mcc + amf_cfg.guami.mnc + amf_cfg.guami.regionID + amf_cfg.guami.AmfSetID + amf_cfg.guami.AmfPointer + "0001";
   std::string guti = "1234567890";      //TODO: need modify
-  Logger::amf_n1().debug("Allocated guti %s", guti.c_str());
+  Logger::amf_n1().debug("Allocated GUTI %s", guti.c_str());
 
   regAccept->set_5GS_Network_Feature_Support(0x00, 0x00);
   uint8_t buffer[1024] = { 0 };

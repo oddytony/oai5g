@@ -66,14 +66,14 @@ int sctp_server::create_socket(const char *address, const uint16_t port_num) {
     Logger::sctp().error("socket: %s:%d", strerror(errno), errno);
     return -1;
   }
-  Logger::sctp().info("Created socket(%d)", socket_);
+  Logger::sctp().info("Created socket (%d)", socket_);
   bzero(&serverAddr_, sizeof(serverAddr_));
   serverAddr_.sin_family = AF_INET;
   serverAddr_.sin_addr.s_addr = htonl(INADDR_ANY);
   serverAddr_.sin_port = htons(port_num);
   inet_pton(AF_INET, address, &serverAddr_.sin_addr);
   if (bind(socket_, (struct sockaddr*) &serverAddr_, sizeof(serverAddr_)) != 0) {
-    Logger::sctp().error("socket bind: %s:%d", strerror(errno), errno);
+    Logger::sctp().error("Socket bind: %s:%d", strerror(errno), errno);
   }
   bzero(&events_, sizeof(events_));
   events_.sctp_data_io_event = 1;
@@ -162,16 +162,16 @@ int sctp_server::sctp_read_from_socket(int sd, uint32_t ppid) {
     union sctp_notification *snp = (union sctp_notification*) buffer;
     switch (snp->sn_header.sn_type) {
       case SCTP_SHUTDOWN_EVENT: {
-        Logger::sctp().debug("SCTP_SHUTDOWN_EVENT received");
+        Logger::sctp().debug("SCTP Shutdown Event received");
         break;
         //return sctp_handle_com_down((sctp_assoc_id_t) snp->sn_shutdown_event.sse_assoc_id);
       }
       case SCTP_ASSOC_CHANGE: {
-        Logger::sctp().debug("SCTP association change event received");
+        Logger::sctp().debug("SCTP Association Change event received");
         return handle_assoc_change(sd, ppid, &snp->sn_assoc_change);
       }
       default: {
-        Logger::sctp().error("Unhandled notification type(%d)", snp->sn_header.sn_type);
+        Logger::sctp().error("Unhandled notification type (%d)", snp->sn_header.sn_type);
         break;
       }
     }
@@ -182,10 +182,10 @@ int sctp_server::sctp_read_from_socket(int sd, uint32_t ppid) {
     }
     association->messages_recv++;
     if (ntohl(sinfo.sinfo_ppid) != association->ppid) {
-      Logger::sctp().error("Received data from peer with unsolicited PPID(%d), expecting(%d)", ntohl(sinfo.sinfo_ppid), association->ppid);
+      Logger::sctp().error("Received data from peer with unsolicited PPID (%d), expecting (%d)", ntohl(sinfo.sinfo_ppid), association->ppid);
       return SCTP_RC_ERROR;
     }
-    Logger::sctp().info("[assoc_id(%d)][socket(%d)] Msg of length(%d) received from port(%d), on stream(%d), PPID(%d)", sinfo.sinfo_assoc_id, sd, n, ntohs(addr.sin6_port), sinfo.sinfo_stream, ntohl(sinfo.sinfo_ppid));
+    Logger::sctp().info("[Assoc_id (%d)][Socket (%d)] Received a msg (length %d) from port %d, on stream %d, PPID %d", sinfo.sinfo_assoc_id, sd, n, ntohs(addr.sin6_port), sinfo.sinfo_stream, ntohl(sinfo.sinfo_ppid));
     bstring payload = blk2bstr(buffer, n);
     //handle payload
     app_->handle_receive(payload, (sctp_assoc_id_t) sinfo.sinfo_assoc_id, sinfo.sinfo_stream, association->instreams, association->outstreams);
@@ -206,7 +206,7 @@ int sctp_server::handle_assoc_change(int sd, uint32_t ppid, struct sctp_assoc_ch
   switch (sctp_assoc_changed->sac_state) {
     case SCTP_COMM_UP: {
       if (add_new_association(sd, ppid, sctp_assoc_changed) == NULL) {
-        Logger::sctp().error("Add new association with ppid(%d) socket(%d) error", ppid, sd);
+        Logger::sctp().error("Add new association with ppid (%d) socket (%d) error", ppid, sd);
         rc = SCTP_RC_ERROR;
       }
       break;
@@ -226,7 +226,7 @@ int sctp_server::handle_assoc_change(int sd, uint32_t ppid, struct sctp_assoc_ch
       break;
     }
     default:
-      Logger::sctp().error("Logging unhandled sctp message(%d)", sctp_assoc_changed->sac_state);
+      Logger::sctp().error("Unhandled sctp message (%d)", sctp_assoc_changed->sac_state);
       break;
   }
   return rc;
@@ -241,7 +241,7 @@ sctp_association_t* sctp_server::add_new_association(int sd, uint32_t ppid, stru
   new_association->instreams = sctp_assoc_changed->sac_inbound_streams;
   new_association->outstreams = sctp_assoc_changed->sac_outbound_streams;
   new_association->assoc_id = (sctp_assoc_id_t) sctp_assoc_changed->sac_assoc_id;
-  Logger::sctp().debug("Add new association with id(%d)", (sctp_assoc_id_t) sctp_assoc_changed->sac_assoc_id);
+  Logger::sctp().debug("Add new association with id (%d)", (sctp_assoc_id_t) sctp_assoc_changed->sac_assoc_id);
   sctp_ctx.push_back(new_association);
   sctp_get_localaddresses(sd, NULL, NULL);
   sctp_get_peeraddresses(sd, &new_association->peer_addresses, &new_association->nb_peer_addresses);
@@ -279,14 +279,14 @@ int sctp_server::sctp_get_peeraddresses(int sock, struct sockaddr **remote_addr,
       struct sockaddr_in *addr = NULL;
       addr = (struct sockaddr_in*) &temp_addr_p[j];
       if (inet_ntop(AF_INET, &addr->sin_addr, address, sizeof(address)) != NULL) {
-        Logger::sctp().info("    - [%s]", address);
+        Logger::sctp().info("    - IPv4 Addr: %s\n", address);
       }
     } else {
       struct sockaddr_in6 *addr = NULL;
       char address[40] = { 0 };
       addr = (struct sockaddr_in6*) &temp_addr_p[j];
       if (inet_ntop(AF_INET6, &addr->sin6_addr.s6_addr, address, sizeof(address)) != NULL) {
-        Logger::sctp().info("    - [%s]", address);
+        Logger::sctp().info("    - IPv6 Addr: %s\n", address);
       }
     }
   }
@@ -317,20 +317,19 @@ int sctp_server::sctp_get_localaddresses(int sock, struct sockaddr **local_addr,
         struct sockaddr_in *addr = NULL;
         addr = (struct sockaddr_in*) &temp_addr_p[j];
         if (inet_ntop(AF_INET, &addr->sin_addr, address, sizeof(address)) != NULL) {
-          Logger::sctp().info("    - [%s]", address);
+          Logger::sctp().info("    - IPv4 Addr: %s\n", address);
         }
       } else if (temp_addr_p[j].sa_family == AF_INET6) {
         struct sockaddr_in6 *addr = NULL;
         char address[40] = { 0 };
         addr = (struct sockaddr_in6*) &temp_addr_p[j];
         if (inet_ntop(AF_INET6, &addr->sin6_addr.s6_addr, address, sizeof(address)) != NULL) {
-          Logger::sctp().info("    - [%s]", address);
+          Logger::sctp().info("    - IPv6 Addr: %s\n", address);
         }
       } else {
         Logger::sctp().error("    - unhandled address family %d", temp_addr_p[j].sa_family);
       }
     }
-    Logger::sctp().info("----------------------");
     if (local_addr != NULL && nb_local_addresses != NULL) {
       *nb_local_addresses = nb;
       *local_addr = temp_addr_p;
@@ -345,16 +344,16 @@ int sctp_server::sctp_get_localaddresses(int sock, struct sockaddr **local_addr,
 int sctp_server::sctp_send_msg(sctp_assoc_id_t sctp_assoc_id, sctp_stream_id_t stream, bstring *payload) {
   sctp_association_t *assoc_desc = NULL;
   if ((assoc_desc = sctp_is_assoc_in_list(sctp_assoc_id)) == NULL) {
-    Logger::sctp().error("This assoc id(%d) has not been fount in list", sctp_assoc_id);
+    Logger::sctp().error("This assoc id (%d) has not been fount in list", sctp_assoc_id);
     return -1;
   }
   if (assoc_desc->sd == -1) {
     Logger::sctp().error("The socket is invalid may be closed (assoc id %d)", sctp_assoc_id);
     return -1;
   }
-  Logger::sctp().debug("[%d][%d] Sending buffer %p of %d bytes on stream %d with ppid %d", assoc_desc->sd, sctp_assoc_id, bdata(*payload), blength(*payload), stream, assoc_desc->ppid);
+  Logger::sctp().debug("[Socket %d, Assoc ID %d] Sending buffer %p of %d bytes on stream %d with ppid %d", assoc_desc->sd, sctp_assoc_id, bdata(*payload), blength(*payload), stream, assoc_desc->ppid);
   if (sctp_sendmsg(assoc_desc->sd, (const void*) bdata(*payload), (size_t) blength(*payload), NULL, 0, htonl(assoc_desc->ppid), 0, stream, 0, 0) < 0) {
-    Logger::sctp().error("Send, sd:%u,stream:%u,ppid:%u, len:%u, failed: %s,%d", assoc_desc->sd, stream, htonl(assoc_desc->ppid), blength(*payload), strerror(errno), errno);
+    Logger::sctp().error("[Socket %d] Send stream %u, ppid %u, len %u failed (%s, %d)", assoc_desc->sd, stream, htonl(assoc_desc->ppid), blength(*payload), strerror(errno), errno);
     *payload = NULL;
     return -1;
   }

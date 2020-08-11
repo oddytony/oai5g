@@ -84,14 +84,14 @@ int _5GSRegistrationType::decodefrombuffer(uint8_t *buf, int len, bool is_option
   if (is_option) {
     return -1;
   }
-  Logger::nas_mm().debug("decoding 5GSRegistrationType");
+  Logger::nas_mm().debug("Decoding 5GSRegistrationType");
   uint8_t octet = *buf;
   if (octet & 0x08)
     is_for = FOLLOW_ON_REQ_PENDING;
   else
     is_for = NO_FOLLOW_ON_REQ_PENDING;
   reg_type = 0x07 & octet;
-  Logger::nas_mm().debug("decoded 5GSRegistrationType len(1/2 octet)");
+  Logger::nas_mm().debug("Decoded 5GSRegistrationType len (1/2 octet)");
   return 0;
 }
 
