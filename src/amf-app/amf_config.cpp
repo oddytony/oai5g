@@ -252,11 +252,11 @@ void amf_config::display() {
     Logger::config().info("   (%s, %s, %s , %s, %s)", guami_list[i].mcc.c_str(), guami_list[i].mnc.c_str(), guami_list[i].regionID.c_str(), guami_list[i].AmfSetID.c_str(), guami_list[i].AmfPointer.c_str());
   }
   Logger::config().info("- RelativeAMFCapacity ................................: %d", relativeAMFCapacity);
-  Logger::config().info("- PLMNSupportList (MCC, MNC)..........................: ");
+  Logger::config().info("- PLMNSupportList ....................................: ");
   for (int i = 0; i < plmn_list.size(); i++) {
-    Logger::config().info("   [%s] [%s] ", plmn_list[i].mcc.c_str(), plmn_list[i].mnc.c_str());
-    Logger::config().info("   TAC [%d]", plmn_list[i].tac);
-    Logger::config().info("   - SliceSupportList (SST, SD) ....................: ");
+    Logger::config().info("   (MCC %s, MNC %s) ", plmn_list[i].mcc.c_str(), plmn_list[i].mnc.c_str());
+    Logger::config().info("   TAC: %d", plmn_list[i].tac);
+    Logger::config().info("   SliceSupportList (SST, SD) ....................: ");
     for (int j = 0; j < plmn_list[i].slice_list.size(); j++) {
       Logger::config().info("     (%s, %s) ", plmn_list[i].slice_list[j].sST.c_str(), plmn_list[i].slice_list[j].sD.c_str());
     }

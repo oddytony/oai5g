@@ -185,7 +185,7 @@ int sctp_server::sctp_read_from_socket(int sd, uint32_t ppid) {
       Logger::sctp().error("Received data from peer with unsolicited PPID (%d), expecting (%d)", ntohl(sinfo.sinfo_ppid), association->ppid);
       return SCTP_RC_ERROR;
     }
-    Logger::sctp().info("[Assoc_id (%d)][Socket (%d)] Received a msg (length %d) from port %d, on stream %d, PPID %d", sinfo.sinfo_assoc_id, sd, n, ntohs(addr.sin6_port), sinfo.sinfo_stream, ntohl(sinfo.sinfo_ppid));
+    Logger::sctp().info("[Assoc_id %d, Socket %d] Received a msg (length %d) from port %d, on stream %d, PPID %d", sinfo.sinfo_assoc_id, sd, n, ntohs(addr.sin6_port), sinfo.sinfo_stream, ntohl(sinfo.sinfo_ppid));
     bstring payload = blk2bstr(buffer, n);
     //handle payload
     app_->handle_receive(payload, (sctp_assoc_id_t) sinfo.sinfo_assoc_id, sinfo.sinfo_stream, association->instreams, association->outstreams);
@@ -279,14 +279,14 @@ int sctp_server::sctp_get_peeraddresses(int sock, struct sockaddr **remote_addr,
       struct sockaddr_in *addr = NULL;
       addr = (struct sockaddr_in*) &temp_addr_p[j];
       if (inet_ntop(AF_INET, &addr->sin_addr, address, sizeof(address)) != NULL) {
-        Logger::sctp().info("    - IPv4 Addr: %s\n", address);
+        Logger::sctp().info("    - IPv4 Addr: %s", address);
       }
     } else {
       struct sockaddr_in6 *addr = NULL;
       char address[40] = { 0 };
       addr = (struct sockaddr_in6*) &temp_addr_p[j];
       if (inet_ntop(AF_INET6, &addr->sin6_addr.s6_addr, address, sizeof(address)) != NULL) {
-        Logger::sctp().info("    - IPv6 Addr: %s\n", address);
+        Logger::sctp().info("    - Addr: %s", address);
       }
     }
   }
@@ -317,17 +317,17 @@ int sctp_server::sctp_get_localaddresses(int sock, struct sockaddr **local_addr,
         struct sockaddr_in *addr = NULL;
         addr = (struct sockaddr_in*) &temp_addr_p[j];
         if (inet_ntop(AF_INET, &addr->sin_addr, address, sizeof(address)) != NULL) {
-          Logger::sctp().info("    - IPv4 Addr: %s\n", address);
+          Logger::sctp().info("    - IPv4 Addr: %s", address);
         }
       } else if (temp_addr_p[j].sa_family == AF_INET6) {
         struct sockaddr_in6 *addr = NULL;
         char address[40] = { 0 };
         addr = (struct sockaddr_in6*) &temp_addr_p[j];
         if (inet_ntop(AF_INET6, &addr->sin6_addr.s6_addr, address, sizeof(address)) != NULL) {
-          Logger::sctp().info("    - IPv6 Addr: %s\n", address);
+          Logger::sctp().info("    - Addr: %s", address);
         }
       } else {
-        Logger::sctp().error("    - unhandled address family %d", temp_addr_p[j].sa_family);
+        Logger::sctp().error("    - Unknown address family %d", temp_addr_p[j].sa_family);
       }
     }
     if (local_addr != NULL && nb_local_addresses != NULL) {
