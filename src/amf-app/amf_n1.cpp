@@ -586,20 +586,18 @@ void amf_n1::registration_request_handle(bool isNasSig, std::shared_ptr<nas_cont
   uint8_t _5g_mm_cap = regReq->get5GMMCapability();
   if (_5g_mm_cap == -1) {
     Logger::amf_n1().warn("No Optional IE 5GMMCapability available");
-  } else {
-    nc.get()->mmCapability = _5g_mm_cap;
   }
-
+  nc.get()->mmCapability = _5g_mm_cap;
+  
   //Get UE Security Capability IE (optional), not included for periodic registration updating procedure
   uint8_t encrypt_alg = {0};
   uint8_t integrity_alg = {0};
   if (!regReq->getUeSecurityCapability(encrypt_alg, integrity_alg)) {
     Logger::amf_n1().warn("No Optional IE UESecurityCapability available");
-  } else {
-    nc.get()->ueSecurityCapEnc = encrypt_alg;
-    nc.get()->ueSecurityCapInt = integrity_alg;
   }
-
+  nc.get()->ueSecurityCapEnc = encrypt_alg;
+  nc.get()->ueSecurityCapInt = integrity_alg;
+  
   //Get Requested NSSAI (Optional IE), if provided
   std::vector<SNSSAI_t> requestedNssai = {};
   if (!regReq->getRequestedNssai(requestedNssai)) {
