@@ -64,7 +64,7 @@ if  (!Options::parse(argc, argv)) {
   amf_app_inst->allRegistredModulesInit(modules);
 
   Logger::amf_app().debug("Initiating AMF server endpoints");
-  Pistache::Address addr(std::string(inet_ntoa (*((struct in_addr *)&amf_cfg.n2.addr4))) , Pistache::Port(80));
+  Pistache::Address addr(std::string(inet_ntoa (*((struct in_addr *)&amf_cfg.n11.addr4))) , Pistache::Port(amf_cfg.n11.port));
   AMFApiServer amfApiServer(addr, amf_app_inst);
   amfApiServer.init(2);
   std::thread amf_api_manager(&AMFApiServer::start, amfApiServer);

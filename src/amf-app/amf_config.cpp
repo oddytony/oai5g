@@ -53,6 +53,7 @@ namespace config {
 
 //------------------------------------------------------------------------------
 amf_config::amf_config() {
+  //TODO:
 }
 
 //------------------------------------------------------------------------------
@@ -160,6 +161,7 @@ int amf_config::load(const std::string &config_file) {
     const Setting &n2_amf_cfg = new_if_cfg[AMF_CONFIG_STRING_INTERFACE_NGAP_AMF];
     load_interface(n2_amf_cfg, n2);
     const Setting &n11_cfg = new_if_cfg[AMF_CONFIG_STRING_INTERFACE_N11];
+    load_interface(n11_cfg, n11);
     const Setting &smf_addr_pool = n11_cfg[AMF_CONFIG_STRING_SMF_INSTANCES_POOL];
     int count = smf_addr_pool.getLength();
     for (int i = 0; i < count; i++) {
@@ -268,6 +270,19 @@ void amf_config::display() {
   Logger::config().info("- MYSQL db ...........................................: %s", auth_para.mysql_db.c_str());
   Logger::config().info("- operator key .......................................: %s", auth_para.operator_key.c_str());
   Logger::config().info("- random .............................................: %s", auth_para.random.c_str());
+
+  Logger::config().info("- N2 Networking:");
+  Logger::config().info("    iface ................: %s", n2.if_name.c_str());
+  Logger::config().info("    ip ...................: %s", inet_ntoa(n2.addr4));
+  Logger::config().info("    port .................: %d", n2.port);
+
+  Logger::config().info("- N11 Networking:");
+  Logger::config().info("    iface ................: %s", n11.if_name.c_str());
+  Logger::config().info("    ip ...................: %s",
+                         inet_ntoa(n11.addr4));
+  Logger::config().info("    port .................: %d", n11.port);
+//  Logger::config().info("    HTTP2 port ............: %d", n11_http2_port);
+
   Logger::config().info("- Remote SMF Pool.....................................: ");
   for (int i = 0; i < smf_pool.size(); i++) {
     std::string selected;
@@ -308,7 +323,7 @@ int amf_config::load_interface(const libconfig::Setting &if_cfg, interface_cfg_t
       }
       cfg.network4.s_addr = htons(ntohs(cfg.addr4.s_addr) & 0xFFFFFFFF << (32 - std::stoi(util::trim(words.at(1)))));
     }
-    if_cfg.lookupValue(AMF_CONFIG_STRING_SCTP_PORT, cfg.port);
+    if_cfg.lookupValue(AMF_CONFIG_STRING_PORT, cfg.port);
 
     try {
       const Setting &sched_params_cfg = if_cfg[AMF_CONFIG_STRING_SCHED_PARAMS];

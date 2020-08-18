@@ -53,7 +53,7 @@
 #define AMF_CONFIG_STRING_INTERFACE_NGAP_AMF            "NGAP_AMF"
 #define AMF_CONFIG_STRING_INTERFACE_NAME                "INTERFACE_NAME"
 #define AMF_CONFIG_STRING_IPV4_ADDRESS                  "IPV4_ADDRESS"
-#define AMF_CONFIG_STRING_SCTP_PORT                     "SCTP_PORT"
+#define AMF_CONFIG_STRING_PORT                          "PORT"
 #define AMF_CONFIG_STRING_PPID                          "PPID"
 
 #define AMF_CONFIG_STRING_INTERFACE_N11                 "N11"
@@ -171,6 +171,7 @@ class amf_config {
   unsigned int instance;
   std::string pid_dir;
   interface_cfg_t n2;
+  interface_cfg_t n11;
   itti_cfg_t itti;
   unsigned int statistics_interval;
   std::string AMF_Name;
