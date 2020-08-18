@@ -73,7 +73,7 @@ bool NSSAI::getValue(std::vector<struct SNSSAI_s> &nssai) {
 
 //------------------------------------------------------------------------------
 int NSSAI::encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding NSSAI iei(0x%x)", _iei);
+  Logger::nas_mm().debug("Encoding NSSAI IEI (0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
     return 0;
@@ -94,13 +94,13 @@ int NSSAI::encode2buffer(uint8_t *buf, int len) {
         len_s_nssai += 3;
         *(buf + encoded_size) = (S_NSSAI.at(i).sd & 0x00ff0000) >> 16;
         encoded_size++;
-        Logger::nas_mm().debug("decoded NSSAI len(%x)", *(buf + encoded_size - 1));
+        Logger::nas_mm().debug("Encoded NSSAI len (%x)", *(buf + encoded_size - 1));
         *(buf + encoded_size) = (S_NSSAI.at(i).sd & 0x0000ff00) >> 8;
         encoded_size++;
-        Logger::nas_mm().debug("decoded NSSAI len(%x)", *(buf + encoded_size - 1));
+        Logger::nas_mm().debug("Encoded NSSAI len (%x)", *(buf + encoded_size - 1));
         *(buf + encoded_size) = S_NSSAI.at(i).sd & 0x000000ff;
         encoded_size++;
-        Logger::nas_mm().debug("decoded NSSAI len(%x)", *(buf + encoded_size - 1));
+        Logger::nas_mm().debug("Encoded NSSAI len (%x)", *(buf + encoded_size - 1));
       }
       if (S_NSSAI.at(i).mHplmnSst != -1) {
         len_s_nssai += 1;
@@ -122,13 +122,13 @@ int NSSAI::encode2buffer(uint8_t *buf, int len) {
     //     *(buf + encoded_size) = length - 1; encoded_size++;
     //   *(buf + encoded_size) = _value; encoded_size++; encoded_size++;
   }
-  Logger::nas_mm().debug("encoded NSSAI len(%d)", encoded_size);
+  Logger::nas_mm().debug("Encoded NSSAI len (%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
 int NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
-  Logger::nas_mm().debug("decoding NSSAI iei(0x%x)", *buf);
+  Logger::nas_mm().debug("Decoding NSSAI IEI (0x%x)", *buf);
   int decoded_size = 0;
   SNSSAI_s a = { 0, 0, 0, 0 };
   if (is_option) {
@@ -136,15 +136,15 @@ int NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
   }
   length = *(buf + decoded_size);
   decoded_size++;
-  int LEAGTH = length;
-  while (LEAGTH) {
+  int length_tmp = length;
+  while (length_tmp) {
     switch (*(buf + decoded_size)) {
       case 1: {
         decoded_size++;             //snssai—leagth
-        LEAGTH--;
+        length_tmp--;
         a.sst = *(buf + decoded_size);
-        decoded_size++;             //无 sd
-        LEAGTH--;
+        decoded_size++;
+        length_tmp--;
         a.sd = -1;
         a.mHplmnSst = -1;
         a.mHplmnSd = -1;
@@ -152,79 +152,79 @@ int NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
         break;
       case 4: {
         decoded_size++;
-        LEAGTH--;
+        length_tmp--;
         a.sst = *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;
+        length_tmp--;
         a.sd |= *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;             //有 sd
+        length_tmp--;
         a.sd << 8;
         a.sd |= *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;             //有 sd
+        length_tmp--;
         a.sd << 8;
         a.sd |= *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;             //有 sd
+        length_tmp--;
         a.mHplmnSst = -1;
         a.mHplmnSd = -1;
       }
         break;
       case 5: {
         decoded_size++;
-        LEAGTH--;
+        length_tmp--;
         a.sst = *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;
+        length_tmp--;
         a.sd |= *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;             //有 sd
+        length_tmp--;
         a.sd << 8;
         a.sd |= *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;             //有 sd
+        length_tmp--;
         a.sd << 8;
         a.sd |= *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;             //有 sd
+        length_tmp--;
         a.mHplmnSst = *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;
+        length_tmp--;
         a.mHplmnSd = -1;
       }
         break;
       case 8: {
         decoded_size++;
-        LEAGTH--;
+        length_tmp--;
         a.sst = *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;
+        length_tmp--;
         a.sd |= *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;             //有 sd
+        length_tmp--;
         a.sd << 8;
         a.sd |= *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;             //有 sd
+        length_tmp--;
         a.sd << 8;
         a.sd |= *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;             //有 sd
+        length_tmp--;
         a.mHplmnSst = *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;
+        length_tmp--;
         a.mHplmnSd |= *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;             //有 sd
+        length_tmp--;
         a.mHplmnSd << 16;
         a.mHplmnSd |= *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;             //有 sd
+        length_tmp--;
         a.mHplmnSd << 8;
         a.mHplmnSd |= *(buf + decoded_size);
         decoded_size++;
-        LEAGTH--;             //有 sd
+        length_tmp--;
       }
         break;
     }
@@ -234,9 +234,9 @@ int NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
   }
 
   for (int i = 0; i < S_NSSAI.size(); i++) {
-    Logger::nas_mm().debug("decoded NSSAI SST(0x%x) SD(0x%x) hplmnSST(0x%x) hplmnSD(%d)", S_NSSAI.at(i).sst, S_NSSAI.at(i).sd, S_NSSAI.at(i).mHplmnSst, S_NSSAI.at(i).mHplmnSd);
+    Logger::nas_mm().debug("Decoded NSSAI SST (0x%x) SD (0x%x) hplmnSST (0x%x) hplmnSD (%d)", S_NSSAI.at(i).sst, S_NSSAI.at(i).sd, S_NSSAI.at(i).mHplmnSst, S_NSSAI.at(i).mHplmnSd);
   }
-  Logger::nas_mm().debug("decoded NSSAI len(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded NSSAI len (%d)", decoded_size);
   return decoded_size;
 }
 

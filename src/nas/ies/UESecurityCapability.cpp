@@ -114,8 +114,7 @@ int UESecurityCapability::decodefrombuffer(uint8_t *buf, int len, bool is_option
   decoded_size++;
   _5g_IASel = *(buf + decoded_size);
   decoded_size++;
-  Logger::nas_mm().debug("Decoded UESecurityCapability EA 0x%d,IA 0x%d", _5g_EASel, _5g_IASel);
-  Logger::nas_mm().debug("Decoded UESecurityCapability (len %d)", decoded_size);
+  Logger::nas_mm().debug("UESecurityCapability EA 0x%d,IA 0x%d", _5g_EASel, _5g_IASel);
   return decoded_size;
 }
 

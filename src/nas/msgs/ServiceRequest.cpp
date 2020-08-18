@@ -86,19 +86,19 @@ int ServiceRequest::encode2buffer(uint8_t *buf, int len) {
   Logger::nas_mm().debug("encoding ServiceRequest message...");
   int encoded_size = 0;
   if (!plain_header) {
-    Logger::nas_mm().error("Mandontary IE missing Header");
+    Logger::nas_mm().error("Mandatory IE missing Header");
     return 0;
   }
   if (!ie_ngKSI) {
-    Logger::nas_mm().error("Mandontary IE missing ie_ngKSI");
+    Logger::nas_mm().error("Mandatory IE missing ie_ngKSI");
     return 0;
   }
   if (!ie_service_type) {
-    Logger::nas_mm().error("Mandontary IE missing ie_service_type");
+    Logger::nas_mm().error("Mandatory IE missing ie_service_type");
     return 0;
   }
   if (!ie_5g_s_tmsi) {
-    Logger::nas_mm().error("Mandontary IE missing ie_5g_s_tmsi");
+    Logger::nas_mm().error("Mandatory IE missing ie_5g_s_tmsi");
     return 0;
   }
   if (!(plain_header->encode2buffer(buf, len)))
@@ -123,7 +123,7 @@ int ServiceRequest::encode2buffer(uint8_t *buf, int len) {
     return 0;
   }
   if (!ie_uplink_data_status) {
-    Logger::nas_mm().warn("IE ie_uplink_data_status is not avaliable");
+    Logger::nas_mm().warn("IE ie_uplink_data_status is not available");
   } else {
     size = ie_uplink_data_status->encode2buffer(buf + encoded_size, len - encoded_size);
     if (size != 0) {
@@ -134,7 +134,7 @@ int ServiceRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_PDU_session_status) {
-    Logger::nas_mm().warn("IE ie_PDU_session_status is not avaliable");
+    Logger::nas_mm().warn("IE ie_PDU_session_status is not available");
   } else {
     size = ie_PDU_session_status->encode2buffer(buf + encoded_size, len - encoded_size);
     if (size != 0) {
@@ -145,7 +145,7 @@ int ServiceRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_allowed_PDU_session_status) {
-    Logger::nas_mm().warn("IE ie_allowed_PDU_session_status is not avaliable");
+    Logger::nas_mm().warn("IE ie_allowed_PDU_session_status is not available");
   } else {
     size = ie_allowed_PDU_session_status->encode2buffer(buf + encoded_size, len - encoded_size);
     if (size != 0) {
@@ -156,7 +156,7 @@ int ServiceRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_nas_message_container) {
-    Logger::nas_mm().warn("IE ie_nas_message_container is not avaliable");
+    Logger::nas_mm().warn("IE ie_nas_message_container is not available");
   } else {
     size = ie_nas_message_container->encode2buffer(buf + encoded_size, len - encoded_size);
     if (size != 0) {

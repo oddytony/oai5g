@@ -34,7 +34,6 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 ULNASTransport::ULNASTransport() {
-  Logger::nas_mm().debug("initiating class ULNASTransport");
   plain_header = NULL;
   ie_payload_container_type = NULL;
   ie_payload_container = NULL;
@@ -183,14 +182,14 @@ int ULNASTransport::encode2buffer(uint8_t *buf, int len) {
   Logger::nas_mm().debug("encoding ULNASTransport message");
   int encoded_size = 0;
   if (!plain_header) {
-    Logger::nas_mm().error("Mandontary IE missing Header");
+    Logger::nas_mm().error("Mandatory IE missing Header");
     return 0;
   }
   if (!(plain_header->encode2buffer(buf, len)))
     return 0;
   encoded_size += 3;
   if (!ie_payload_container_type) {
-    Logger::nas_mm().warn("IE ie_payload_container_type is not avaliable");
+    Logger::nas_mm().warn("IE ie_payload_container_type is not available");
   } else {
     if (int size = ie_payload_container_type->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -200,7 +199,7 @@ int ULNASTransport::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_payload_container) {
-    Logger::nas_mm().warn("IE ie_payload_container is not avaliable");
+    Logger::nas_mm().warn("IE ie_payload_container is not available");
   } else {
     if (int size = ie_payload_container->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -210,7 +209,7 @@ int ULNASTransport::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_pdu_session_identity_2) {
-    Logger::nas_mm().warn("IE ie_pdu_session_identity_2 is not avaliable");
+    Logger::nas_mm().warn("IE ie_pdu_session_identity_2 is not available");
   } else {
     if (int size = ie_pdu_session_identity_2->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -221,7 +220,7 @@ int ULNASTransport::encode2buffer(uint8_t *buf, int len) {
 
   }
   if (!ie_old_pdu_session_identity_2) {
-    Logger::nas_mm().warn("IE ie_old_pdu_session_identity_2 is not avaliable");
+    Logger::nas_mm().warn("IE ie_old_pdu_session_identity_2 is not available");
   } else {
     if (int size = ie_old_pdu_session_identity_2->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -232,7 +231,7 @@ int ULNASTransport::encode2buffer(uint8_t *buf, int len) {
 
   }
   if (!ie_request_type) {
-    Logger::nas_mm().warn("IE ie_request_type is not avaliable");
+    Logger::nas_mm().warn("IE ie_request_type is not available");
   } else {
     if (int size = ie_request_type->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -243,7 +242,7 @@ int ULNASTransport::encode2buffer(uint8_t *buf, int len) {
 
   }
   if (!ie_s_nssai) {
-    Logger::nas_mm().warn("IE ie_s_nssai is not avaliable");
+    Logger::nas_mm().warn("IE ie_s_nssai is not available");
   } else {
     if (int size = ie_s_nssai->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -254,7 +253,7 @@ int ULNASTransport::encode2buffer(uint8_t *buf, int len) {
 
   }
   if (!ie_dnn) {
-    Logger::nas_mm().warn("IE ie_dnn is not avaliable");
+    Logger::nas_mm().warn("IE ie_dnn is not available");
   } else {
     if (int size = ie_dnn->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -265,7 +264,7 @@ int ULNASTransport::encode2buffer(uint8_t *buf, int len) {
 
   }
   if (!ie_additional_information) {
-    Logger::nas_mm().warn("IE ie_additional_information is not avaliable");
+    Logger::nas_mm().warn("IE ie_additional_information is not available");
   } else {
     if (int size = ie_additional_information->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -276,7 +275,7 @@ int ULNASTransport::encode2buffer(uint8_t *buf, int len) {
 
   }
   if (!ie_ma_pdu_session_information) {
-    Logger::nas_mm().warn("IE ie_ma_pdu_session_information is not avaliable");
+    Logger::nas_mm().warn("IE ie_ma_pdu_session_information is not available");
   } else {
     if (int size = ie_ma_pdu_session_information->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -287,7 +286,7 @@ int ULNASTransport::encode2buffer(uint8_t *buf, int len) {
 
   }
   if (!ie_release_assistance_indication) {
-    Logger::nas_mm().warn("IE ie_release_assistance_indication is not avaliable");
+    Logger::nas_mm().warn("IE ie_release_assistance_indication is not available");
   } else {
     if (int size = ie_release_assistance_indication->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -303,82 +302,82 @@ int ULNASTransport::encode2buffer(uint8_t *buf, int len) {
 
 //------------------------------------------------------------------------------
 int ULNASTransport::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len) {
-  Logger::nas_mm().debug("decoding ULNASTransport message");
+  Logger::nas_mm().debug("Decoding ULNASTransport message");
   int decoded_size = 3;
   plain_header = header;
   ie_payload_container_type = new Payload_Container_Type();
   decoded_size += ie_payload_container_type->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
   ie_payload_container = new Payload_Container();
   decoded_size += ie_payload_container->decodefrombuffer(buf + decoded_size, len - decoded_size, false, ie_payload_container_type->getValue());
-  Logger::nas_mm().debug("decoded_size(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded_size (%d)", decoded_size);
   uint8_t octet = *(buf + decoded_size);
-  Logger::nas_mm().debug("first option iei(0x%x)", octet);
+  Logger::nas_mm().debug("First option IEI (0x%x)", octet);
   while ((octet != 0x0)) {
     switch ((octet & 0xf0) >> 4) {
       case 0x8: {
-        Logger::nas_mm().debug("decoding iei(0x8)");
+        Logger::nas_mm().debug("Decoding IEI (0x8)");
         ie_request_type = new Request_Type();
         decoded_size += ie_request_type->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
       case 0xA: {
-        Logger::nas_mm().debug("decoding iei(0xA)");
+        Logger::nas_mm().debug("Decoding IEI (0xA)");
         ie_ma_pdu_session_information = new MA_PDU_Session_Information();
         decoded_size += ie_ma_pdu_session_information->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
       case 0xF: {
-        Logger::nas_mm().debug("decoding iei(0xF)");
+        Logger::nas_mm().debug("Decoding IEI (0xF)");
         ie_release_assistance_indication = new Release_Assistance_Indication();
         decoded_size += ie_release_assistance_indication->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
     }
     switch (octet) {
       case 0x12: {
-        Logger::nas_mm().debug("decoding iei(0x12)");
+        Logger::nas_mm().debug("Decoding IEI (0x12)");
         ie_pdu_session_identity_2 = new PDU_Session_Identity_2();
         decoded_size += ie_pdu_session_identity_2->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
       case 0x59: {
-        Logger::nas_mm().debug("decoding iei(0x59)");
+        Logger::nas_mm().debug("Decoding IEI (0x59)");
         ie_old_pdu_session_identity_2 = new PDU_Session_Identity_2();
         decoded_size += ie_old_pdu_session_identity_2->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
       case 0x22: {
-        Logger::nas_mm().debug("decoding iei(0x22)");
+        Logger::nas_mm().debug("Decoding IEI (0x22)");
         ie_s_nssai = new S_NSSAI();
         decoded_size += ie_s_nssai->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
       case 0x25: {
-        Logger::nas_mm().debug("decoding iei(0x25)");
+        Logger::nas_mm().debug("Decoding IEI (0x25)");
         ie_dnn = new DNN();
         decoded_size += ie_dnn->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
       case 0x24: {
-        Logger::nas_mm().debug("decoding iei(0x24)");
+        Logger::nas_mm().debug("Decoding IEI (0x24)");
         ie_additional_information = new Additional_Information();
         decoded_size += ie_additional_information->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
     }

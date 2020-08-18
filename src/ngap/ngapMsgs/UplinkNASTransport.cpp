@@ -37,7 +37,6 @@ extern "C" {
 }
 
 #include <iostream>
-using namespace std;
 
 namespace ngap {
 
@@ -70,7 +69,7 @@ void UplinkNASTransportMsg::setMessageType() {
     uplinkNASTransportPduTypeIE.encode2pdu(uplinkNASTransportPdu);
     uplinkNASTransportIEs = &(uplinkNASTransportPdu->choice.initiatingMessage->value.choice.UplinkNASTransport);
   } else {
-    cout << "[warning] This information doesn't refer to UplinkNASTransport Message!!!" << endl;
+    std::cout << "[Warning] This information doesn't refer to UplinkNASTransport Message!" << std::endl;
   }
 }
 
@@ -87,13 +86,13 @@ void UplinkNASTransportMsg::setAmfUeNgapId(unsigned long id) {
 
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    std::cout << "Encode AMF_UE_NGAP_ID IE error" << std::endl;
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&uplinkNASTransportIEs->protocolIEs.list, ie);
   if (ret != 0)
-    cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    std::cout << "Encode AMF_UE_NGAP_ID IE error" << std::endl;
 }
 
 //------------------------------------------------------------------------------
@@ -109,13 +108,13 @@ void UplinkNASTransportMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
 
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    std::cout << "Encode RAN_UE_NGAP_ID IE error" << std::endl;
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&uplinkNASTransportIEs->protocolIEs.list, ie);
   if (ret != 0)
-    cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    std::cout << "Encode RAN_UE_NGAP_ID IE error" << std::endl;
 }
 
 //------------------------------------------------------------------------------
@@ -132,13 +131,13 @@ void UplinkNASTransportMsg::setNasPdu(uint8_t *nas, size_t sizeofnas) {
 
   int ret = nasPdu->encode2octetstring(ie->value.choice.NAS_PDU);
   if (!ret) {
-    cout << "encode NAS_PDU IE error" << endl;
+    std::cout << "Encode NAS_PDU IE error" << std::endl;
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&uplinkNASTransportIEs->protocolIEs.list, ie);
   if (ret != 0)
-    cout << "encode NAS_PDU IE error" << endl;
+    std::cout << "Encode NAS_PDU IE error" << std::endl;
 }
 
 //------------------------------------------------------------------------------
@@ -171,20 +170,20 @@ void UplinkNASTransportMsg::setUserLocationInfoNR(struct NrCgi_s cig, struct Tai
 
   int ret = userLocationInformation->encodefromUserLocationInformation(&ie->value.choice.UserLocationInformation);
   if (!ret) {
-    cout << "encode UserLocationInformation IE error" << endl;
+    std::cout << "Encode UserLocationInformation IE error" << std::endl;
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&uplinkNASTransportIEs->protocolIEs.list, ie);
   if (ret != 0)
-    cout << "encode UserLocationInformation IE error" << endl;
+    std::cout << "Encode UserLocationInformation IE error" << std::endl;
 }
 
 //------------------------------------------------------------------------------
 int UplinkNASTransportMsg::encode2buffer(uint8_t *buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, uplinkNASTransportPdu);
   asn_enc_rval_t er = aper_encode_to_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL, uplinkNASTransportPdu, buf, buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  std::cout << "er.encoded(" << er.encoded << ")" << std::endl;
   return er.encoded;
 }
 
@@ -198,11 +197,11 @@ bool UplinkNASTransportMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
         && uplinkNASTransportPdu->choice.initiatingMessage->value.present == Ngap_InitiatingMessage__value_PR_UplinkNASTransport) {
       uplinkNASTransportIEs = &uplinkNASTransportPdu->choice.initiatingMessage->value.choice.UplinkNASTransport;
     } else {
-      cout << "Check UplinkNASTransport message error!!!" << endl;
+      std::cout << "Check UplinkNASTransport message error!!!" << std::endl;
       return false;
     }
   } else {
-    cout << "MessageType error!!!" << endl;
+    std::cout << "MessageType error!!!" << std::endl;
     return false;
   }
   for (int i = 0; i < uplinkNASTransportIEs->protocolIEs.list.count; i++) {
@@ -211,11 +210,11 @@ bool UplinkNASTransportMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
         if (uplinkNASTransportIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && uplinkNASTransportIEs->protocolIEs.list.array[i]->value.present == Ngap_UplinkNASTransport_IEs__value_PR_AMF_UE_NGAP_ID) {
           amfUeNgapId = new AMF_UE_NGAP_ID();
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(uplinkNASTransportIEs->protocolIEs.list.array[i]->value.choice.AMF_UE_NGAP_ID)) {
-            cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+            std::cout << "decoded ngap AMF_UE_NGAP_ID IE error" << std::endl;
             return false;
           }
         } else {
-          cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+          std::cout << "decoded ngap AMF_UE_NGAP_ID IE error" << std::endl;
           return false;
         }
       }
@@ -224,11 +223,11 @@ bool UplinkNASTransportMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
         if (uplinkNASTransportIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && uplinkNASTransportIEs->protocolIEs.list.array[i]->value.present == Ngap_UplinkNASTransport_IEs__value_PR_RAN_UE_NGAP_ID) {
           ranUeNgapId = new RAN_UE_NGAP_ID();
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(uplinkNASTransportIEs->protocolIEs.list.array[i]->value.choice.RAN_UE_NGAP_ID)) {
-            cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+            std::cout << "decoded ngap RAN_UE_NGAP_ID IE error" << std::endl;
             return false;
           }
         } else {
-          cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+          std::cout << "decoded ngap RAN_UE_NGAP_ID IE error" << std::endl;
           return false;
         }
       }
@@ -237,11 +236,11 @@ bool UplinkNASTransportMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
         if (uplinkNASTransportIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && uplinkNASTransportIEs->protocolIEs.list.array[i]->value.present == Ngap_UplinkNASTransport_IEs__value_PR_NAS_PDU) {
           nasPdu = new NAS_PDU();
           if (!nasPdu->decodefromoctetstring(uplinkNASTransportIEs->protocolIEs.list.array[i]->value.choice.NAS_PDU)) {
-            cout << "decoded ngap NAS_PDU IE error" << endl;
+            std::cout << "decoded ngap NAS_PDU IE error" << std::endl;
             return false;
           }
         } else {
-          cout << "decoded ngap NAS_PDU IE error" << endl;
+          std::cout << "decoded ngap NAS_PDU IE error" << std::endl;
           return false;
         }
       }
@@ -250,18 +249,18 @@ bool UplinkNASTransportMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
         if (uplinkNASTransportIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_ignore && uplinkNASTransportIEs->protocolIEs.list.array[i]->value.present == Ngap_UplinkNASTransport_IEs__value_PR_UserLocationInformation) {
           userLocationInformation = new UserLocationInformation();
           if (!userLocationInformation->decodefromUserLocationInformation(&uplinkNASTransportIEs->protocolIEs.list.array[i]->value.choice.UserLocationInformation)) {
-            cout << "decoded ngap UserLocationInformation IE error" << endl;
+            std::cout << "decoded ngap UserLocationInformation IE error" << std::endl;
             return false;
           }
         } else {
-          cout << "decoded ngap UserLocationInformation IE error" << endl;
+          std::cout << "decoded ngap UserLocationInformation IE error" << std::endl;
           return false;
         }
       }
         break;
 
       default: {
-        cout << "decoded ngap message pdu error" << endl;
+        std::cout << "decoded ngap message pdu error" << std::endl;
         return false;
       }
     }

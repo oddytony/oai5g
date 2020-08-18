@@ -61,7 +61,7 @@ uint8_t _5GS_Network_Feature_Support::getValue() {
 
 //------------------------------------------------------------------------------
 int _5GS_Network_Feature_Support::encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding _5GS_Network_Feature_Support iei(0x%x)", _iei);
+  Logger::nas_mm().debug("Encoding _5GS_Network_Feature_Support IEI (0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
     return 0;
@@ -82,13 +82,13 @@ int _5GS_Network_Feature_Support::encode2buffer(uint8_t *buf, int len) {
 //		*(buf + encoded_size) = _5g_EASel; encoded_size++;
 //		*(buf + encoded_size) = _5g_IASel; encoded_size++;
   }
-  Logger::nas_mm().debug("encoded _5GS_Network_Feature_Support len(%d)", encoded_size);
+  Logger::nas_mm().debug("Encoded _5GS_Network_Feature_Support len (%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
 int _5GS_Network_Feature_Support::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
-  Logger::nas_mm().debug("decoding _5GS_Network_Feature_Support iei(0x%x)", *buf);
+  Logger::nas_mm().debug("Decoding _5GS_Network_Feature_Support IEI (0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
     decoded_size++;
@@ -97,8 +97,8 @@ int _5GS_Network_Feature_Support::decodefrombuffer(uint8_t *buf, int len, bool i
   decoded_size++;
   _value = *(buf + decoded_size);
   decoded_size++;
-  Logger::nas_mm().debug("decoded _5GS_Network_Feature_Support value(0x%x)", _value);
-  Logger::nas_mm().debug("decoded _5GS_Network_Feature_Support len(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded _5GS_Network_Feature_Support value (0x%x)", _value);
+  Logger::nas_mm().debug("Decoded _5GS_Network_Feature_Support len (%d)", decoded_size);
   return decoded_size;
 }
 

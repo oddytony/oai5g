@@ -185,7 +185,7 @@ int sctp_server::sctp_read_from_socket(int sd, uint32_t ppid) {
       Logger::sctp().error("Received data from peer with unsolicited PPID (%d), expecting (%d)", ntohl(sinfo.sinfo_ppid), association->ppid);
       return SCTP_RC_ERROR;
     }
-    Logger::sctp().info("[Assoc_id %d, Socket %d] Received a msg (length %d) from port %d, on stream %d, PPID %d", sinfo.sinfo_assoc_id, sd, n, ntohs(addr.sin6_port), sinfo.sinfo_stream, ntohl(sinfo.sinfo_ppid));
+    Logger::sctp().info("****[Assoc_id %d, Socket %d] Received a msg (length %d) from port %d, on stream %d, PPID %d ****", sinfo.sinfo_assoc_id, sd, n, ntohs(addr.sin6_port), sinfo.sinfo_stream, ntohl(sinfo.sinfo_ppid));
     bstring payload = blk2bstr(buffer, n);
     //handle payload
     app_->handle_receive(payload, (sctp_assoc_id_t) sinfo.sinfo_assoc_id, sinfo.sinfo_stream, association->instreams, association->outstreams);

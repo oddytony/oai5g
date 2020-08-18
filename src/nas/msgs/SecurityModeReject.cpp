@@ -59,14 +59,14 @@ int SecurityModeReject::encode2buffer(uint8_t *buf, int len) {
   Logger::nas_mm().debug("encoding SecurityModeReject message");
   int encoded_size = 0;
   if (!plain_header) {
-    Logger::nas_mm().error("Mandontary IE missing Header");
+    Logger::nas_mm().error("Mandatory IE missing Header");
     return 0;
   }
   if (!(plain_header->encode2buffer(buf, len)))
     return 0;
   encoded_size += 3;
   if (!ie_5gmm_cause) {
-    Logger::nas_mm().warn("IE ie_5gmm_cause is not avaliable");
+    Logger::nas_mm().warn("IE ie_5gmm_cause is not available");
   } else {
     if (int size = ie_5gmm_cause->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;

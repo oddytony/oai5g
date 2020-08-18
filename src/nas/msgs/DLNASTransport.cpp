@@ -96,14 +96,14 @@ int DLNASTransport::encode2buffer(uint8_t *buf, int len) {
   Logger::nas_mm().debug("encoding DLNASTransport message");
   int encoded_size = 0;
   if (!plain_header) {
-    Logger::nas_mm().error("Mandontary IE missing Header");
+    Logger::nas_mm().error("Mandatory IE missing Header");
     return 0;
   }
   if (!(plain_header->encode2buffer(buf, len)))
     return 0;
   encoded_size += 3;
   if (!ie_payload_container_type) {
-    Logger::nas_mm().warn("IE ie_payload_container_type is not avaliable");
+    Logger::nas_mm().warn("IE ie_payload_container_type is not available");
   } else {
     if (int size = ie_payload_container_type->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -113,7 +113,7 @@ int DLNASTransport::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_payload_container) {
-    Logger::nas_mm().warn("IE ie_payload_container is not avaliable");
+    Logger::nas_mm().warn("IE ie_payload_container is not available");
   } else {
     if (int size = ie_payload_container->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -123,7 +123,7 @@ int DLNASTransport::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_pdu_session_identity_2) {
-    Logger::nas_mm().warn("IE ie_pdu_session_identity_2 is not avaliable");
+    Logger::nas_mm().warn("IE ie_pdu_session_identity_2 is not available");
   } else {
     if (int size = ie_pdu_session_identity_2->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -134,7 +134,7 @@ int DLNASTransport::encode2buffer(uint8_t *buf, int len) {
 
   }
   if (!ie_additional_information) {
-    Logger::nas_mm().warn("IE ie_additional_information is not avaliable");
+    Logger::nas_mm().warn("IE ie_additional_information is not available");
   } else {
     if (int size = ie_additional_information->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -145,7 +145,7 @@ int DLNASTransport::encode2buffer(uint8_t *buf, int len) {
 
   }
   if (!ie_5gmm_cause) {
-    Logger::nas_mm().warn("IE ie_5gmm_cause is not avaliable");
+    Logger::nas_mm().warn("IE ie_5gmm_cause is not available");
   } else {
     if (int size = ie_5gmm_cause->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -154,7 +154,7 @@ int DLNASTransport::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_back_off_timer_value) {
-    Logger::nas_mm().warn("IE ie_back_off_timer_value is not avaliable");
+    Logger::nas_mm().warn("IE ie_back_off_timer_value is not available");
   } else {
     if (int size = ie_back_off_timer_value->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;

@@ -377,7 +377,6 @@ void Authentication_5gaka::derive_knas(algorithm_type_dist_t nas_alg_type, uint8
   //memcpy (knas, &out[31 - 16 + 1], 16);
   for (int i = 0; i < 16; i++)
     knas[i] = out[16 + i];
-  Logger::amf_n1().debug("derive_knas finished!");
 }
 
 //------------------------------------------------------------------------------

@@ -493,19 +493,19 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
   Logger::nas_mm().debug("encoding RegistrationRequest message");
   int encoded_size = 0;
   if (!plain_header) {
-    Logger::nas_mm().error("Mandontary IE missing Header");
+    Logger::nas_mm().error("Mandatory IE missing Header");
     return 0;
   }
   if (!ie_5gsregistrationtype) {
-    Logger::nas_mm().error("Mandontary IE missing ie_5gsregistrationtype");
+    Logger::nas_mm().error("Mandatory IE missing ie_5gsregistrationtype");
     return 0;
   }
   if (!ie_ngKSI) {
-    Logger::nas_mm().error("Mandontary IE missing ie_ngKSI");
+    Logger::nas_mm().error("Mandatory IE missing ie_ngKSI");
     return 0;
   }
   if (!ie_5gs_mobility_id) {
-    Logger::nas_mm().error("Mandontary IE missing ie_5gs_mobility_id");
+    Logger::nas_mm().error("Mandatory IE missing ie_5gs_mobility_id");
     return 0;
   }
   if (!(plain_header->encode2buffer(buf, len)))
@@ -529,7 +529,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     return 0;
   }
   if (!ie_non_current_native_nas_ksi) {
-    Logger::nas_mm().warn("IE non_current_native_nas_ksi is not avaliable");
+    Logger::nas_mm().warn("IE non_current_native_nas_ksi is not available");
   } else {
     if (ie_non_current_native_nas_ksi->encode2buffer(buf + encoded_size, len - encoded_size) == 1) {
       encoded_size++;
@@ -538,7 +538,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_5g_mm_capability) {
-    Logger::nas_mm().warn("IE ie_5g_mm_capability is not avaliable");
+    Logger::nas_mm().warn("IE ie_5g_mm_capability is not available");
   } else {
     if (int size = ie_5g_mm_capability->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -548,7 +548,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_ue_security_capability) {
-    Logger::nas_mm().warn("IE ie_ue_security_capability is not avaliable");
+    Logger::nas_mm().warn("IE ie_ue_security_capability is not available");
   } else {
     if (int size = ie_ue_security_capability->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -558,7 +558,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_requested_NSSAI) {
-    Logger::nas_mm().warn("IE ie_requested_NSSAI is not avaliable");
+    Logger::nas_mm().warn("IE ie_requested_NSSAI is not available");
   } else {
     if (int size = ie_requested_NSSAI->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -568,7 +568,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_last_visited_registered_TAI) {
-    Logger::nas_mm().warn("IE ie_Last_visited_registered_TAI is not avaliable");
+    Logger::nas_mm().warn("IE ie_Last_visited_registered_TAI is not available");
   } else {
     if (int size = ie_last_visited_registered_TAI->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -578,7 +578,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_s1_ue_network_capability) {
-    Logger::nas_mm().warn("IE ie_s1_ue_network_capability is not avaliable");
+    Logger::nas_mm().warn("IE ie_s1_ue_network_capability is not available");
   } else {
     if (int size = ie_s1_ue_network_capability->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -588,7 +588,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_uplink_data_status) {
-    Logger::nas_mm().warn("IE ie_uplink_data_status is not avaliable");
+    Logger::nas_mm().warn("IE ie_uplink_data_status is not available");
   } else {
     if (int size = ie_uplink_data_status->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -598,7 +598,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_PDU_session_status) {
-    Logger::nas_mm().warn("IE ie_PDU_session_status is not avaliable");
+    Logger::nas_mm().warn("IE ie_PDU_session_status is not available");
   } else {
     if (int size = ie_PDU_session_status->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -608,7 +608,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_MICO_indicationl) {
-    Logger::nas_mm().warn("IE ie_MICO_indicationl is not avaliable");
+    Logger::nas_mm().warn("IE ie_MICO_indicationl is not available");
   } else {
     if (int size = ie_MICO_indicationl->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -618,7 +618,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_ue_status) {
-    Logger::nas_mm().warn("IE ie_ue_status is not avaliable");
+    Logger::nas_mm().warn("IE ie_ue_status is not available");
   } else {
     if (int size = ie_ue_status->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -628,7 +628,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_additional_guti) {
-    Logger::nas_mm().warn("IE ie_additional_guti- is not avaliable");
+    Logger::nas_mm().warn("IE ie_additional_guti- is not available");
   } else {
     if (int size = ie_additional_guti->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -639,7 +639,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
 
   }
   if (!ie_allowed_PDU_session_status) {
-    Logger::nas_mm().warn("IE ie_allowed_PDU_session_status is not avaliable");
+    Logger::nas_mm().warn("IE ie_allowed_PDU_session_status is not available");
   } else {
     if (int size = ie_allowed_PDU_session_status->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -649,7 +649,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_ues_usage_setting) {
-    Logger::nas_mm().warn("IE ie_ues_usage_setting is not avaliable");
+    Logger::nas_mm().warn("IE ie_ues_usage_setting is not available");
   } else {
     if (int size = ie_ues_usage_setting->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -659,7 +659,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_5gs_drx_parameters) {
-    Logger::nas_mm().warn("IE ie_5gs_drx_parameters is not avaliable");
+    Logger::nas_mm().warn("IE ie_5gs_drx_parameters is not available");
   } else {
     if (int size = ie_5gs_drx_parameters->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -669,7 +669,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_eps_nas_message_container) {
-    Logger::nas_mm().warn("IE ie_eps_nas_message_container is not avaliable");
+    Logger::nas_mm().warn("IE ie_eps_nas_message_container is not available");
   } else {
     if (int size = ie_eps_nas_message_container->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -679,7 +679,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_ladn_indication) {
-    Logger::nas_mm().warn("IE ie_ladn_indication is not avaliable");
+    Logger::nas_mm().warn("IE ie_ladn_indication is not available");
   } else {
     if (int size = ie_ladn_indication->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -689,7 +689,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_payload_container_type) {
-    Logger::nas_mm().warn("IE ie_payload_container_type is not avaliable");
+    Logger::nas_mm().warn("IE ie_payload_container_type is not available");
   } else {
     if (int size = ie_payload_container_type->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -699,7 +699,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_payload_container) {
-    Logger::nas_mm().warn("IE ie_payload_container is not avaliable");
+    Logger::nas_mm().warn("IE ie_payload_container is not available");
   } else {
     if (int size = ie_payload_container->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -709,7 +709,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_network_slicing_indication) {
-    Logger::nas_mm().warn("IE ie_network_slicing_indication is not avaliable");
+    Logger::nas_mm().warn("IE ie_network_slicing_indication is not available");
   } else {
     if (int size = ie_network_slicing_indication->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -719,7 +719,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_5gs_update_type) {
-    Logger::nas_mm().warn("IE ie_5gs_update_type is not avaliable");
+    Logger::nas_mm().warn("IE ie_5gs_update_type is not available");
   } else {
     if (int size = ie_5gs_update_type->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -730,7 +730,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
   }
 
   if (!ie_nas_message_container) {
-    Logger::nas_mm().warn("IE ie_nas_message_container is not avaliable");
+    Logger::nas_mm().warn("IE ie_nas_message_container is not available");
   } else {
     if (int size = ie_nas_message_container->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -740,7 +740,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_eps_bearer_context_status) {
-    Logger::nas_mm().warn("IE ie_eps_bearer_context_status is not avaliable");
+    Logger::nas_mm().warn("IE ie_eps_bearer_context_status is not available");
   } else {
     if (int size = ie_eps_bearer_context_status->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -756,7 +756,7 @@ int RegistrationRequest::encode2buffer(uint8_t *buf, int len) {
 
 //------------------------------------------------------------------------------
 int RegistrationRequest::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len) {
-  Logger::nas_mm().debug("Decoding RegistrationRequest message");
+  Logger::nas_mm().debug("****Decoding RegistrationRequest message****");
   int decoded_size = 3;
   plain_header = header;
   ie_5gsregistrationtype = new _5GSRegistrationType();
@@ -766,7 +766,6 @@ int RegistrationRequest::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf
   decoded_size++;
   ie_5gs_mobility_id = new _5GSMobilityIdentity();
   decoded_size += ie_5gs_mobility_id->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
-  Logger::nas_mm().debug("Decoded_size %d", decoded_size);
   uint8_t octet = *(buf + decoded_size);
   Logger::nas_mm().debug("First option IEI 0x%x", octet);
   while ((octet != 0x0)) {
@@ -796,7 +795,7 @@ int RegistrationRequest::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf
       }
         break;
       case 0x9: {
-        Logger::nas_mm().debug("Decoding IEI(0x9)");
+        Logger::nas_mm().debug("Decoding IEI (0x9)");
         ie_network_slicing_indication = new Network_Slicing_Indication();
         decoded_size += ie_network_slicing_indication->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
@@ -807,7 +806,7 @@ int RegistrationRequest::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf
     }
     switch (octet) {
       case 0x10: {
-        Logger::nas_mm().debug("Decoding IEI(0x10)");
+        Logger::nas_mm().debug("Decoding IEI (0x10)");
         ie_5g_mm_capability = new _5GMMCapability();
         decoded_size += ie_5g_mm_capability->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
@@ -815,7 +814,7 @@ int RegistrationRequest::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf
       }
         break;
       case 0x2E: {
-        Logger::nas_mm().debug("Decoding IEI(0x2E)");
+        Logger::nas_mm().debug("Decoding IEI (0x2E)");
         ie_ue_security_capability = new UESecurityCapability();
         decoded_size += ie_ue_security_capability->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
@@ -823,7 +822,7 @@ int RegistrationRequest::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf
       }
         break;
       case 0x2F: {
-        Logger::nas_mm().debug("Decoding IEI(0x2F)");
+        Logger::nas_mm().debug("Decoding IEI (0x2F)");
         ie_requested_NSSAI = new NSSAI();
         decoded_size += ie_requested_NSSAI->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
@@ -839,7 +838,7 @@ int RegistrationRequest::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf
       }
         break;
       case 0x17: {
-        Logger::nas_mm().debug("Decoding IEI(0x17)");
+        Logger::nas_mm().debug("Decoding IEI (0x17)");
         ie_s1_ue_network_capability = new UENetworkCapability();
         decoded_size += ie_s1_ue_network_capability->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
@@ -856,7 +855,7 @@ int RegistrationRequest::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf
       }
         break;
       case 0x50: {
-        Logger::nas_mm().debug("Decoding IEI(0x50)");
+        Logger::nas_mm().debug("Decoding IEI (0x50)");
         ie_PDU_session_status = new PDU_Session_Status();
         decoded_size += ie_PDU_session_status->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
@@ -864,7 +863,7 @@ int RegistrationRequest::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf
       }
         break;
       case 0x2B: {
-        Logger::nas_mm().debug("Decoding IEI(0x2B)");
+        Logger::nas_mm().debug("Decoding IEI (0x2B)");
         ie_ue_status = new UE_Status();
         decoded_size += ie_ue_status->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
@@ -872,7 +871,7 @@ int RegistrationRequest::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf
       }
         break;
       case 0x77: {
-        Logger::nas_mm().debug("Decoding IEI(0x77)");
+        Logger::nas_mm().debug("Decoding IEI (0x77)");
         ie_additional_guti = new _5GSMobilityIdentity();
         decoded_size += ie_additional_guti->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
@@ -955,6 +954,6 @@ int RegistrationRequest::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf
         break;
     }
   }
-  Logger::nas_mm().debug("Decoded RegistrationRequest message (len %d)", decoded_size);
+  Logger::nas_mm().debug("****Decoded RegistrationRequest message (len %d)****", decoded_size);
 
 }

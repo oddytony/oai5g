@@ -90,11 +90,11 @@ int ngap_amf_handle_initial_ue_message(const sctp_assoc_id_t assoc_id, const sct
 
 //------------------------------------------------------------------------------
 int ngap_amf_handle_uplink_nas_transport(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
-  Logger::ngap().debug("Sending itti up link nas transport message to TASK_AMF_N2");
+  Logger::ngap().debug("Sending ITTI Uplink NAS Transport message to TASK_AMF_N2");
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   UplinkNASTransportMsg *uplinkNasT = new UplinkNASTransportMsg();
   if (!uplinkNasT->decodefrompdu(message_p)) {
-    Logger::ngap().error("decoding UplinkNasTransport message error");
+    Logger::ngap().error("Decoding UplinkNasTransport message error");
     return -1;
   }
   itti_ul_nas_transport *itti_ul_nas = new itti_ul_nas_transport(TASK_NGAP, TASK_AMF_N2);
@@ -110,7 +110,8 @@ int ngap_amf_handle_uplink_nas_transport(const sctp_assoc_id_t assoc_id, const s
 
 //------------------------------------------------------------------------------
 int ngap_amf_handle_initial_context_setup_response(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
-  Logger::ngap().debug("Sending itti initial context setup response to TASK_AMF_N11");
+  Logger::ngap().debug("Handling Initial Context Setup Response...");
+  Logger::ngap().debug("Sending ITTI Initial Context Setup Response to TASK_AMF_N11");
   InitialContextSetupResponseMsg *initCtxResp = new InitialContextSetupResponseMsg();
   if (!initCtxResp->decodefrompdu(message_p)) {
     Logger::ngap().error("Decoding InitialContextSetupResponse message error");

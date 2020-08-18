@@ -106,14 +106,14 @@ int SecurityModeCommand::encode2buffer(uint8_t *buf, int len) {
   Logger::nas_mm().debug("encoding SecurityModeCommand message");
   int encoded_size = 0;
   if (!plain_header) {
-    Logger::nas_mm().error("Mandontary IE missing Header");
+    Logger::nas_mm().error("Mandatory IE missing Header");
     return 0;
   }
   if (!(plain_header->encode2buffer(buf, len)))
     return 0;
   encoded_size += 3;
   if (!ie_selected_nas_security_algorithms) {
-    Logger::nas_mm().warn("IE ie_selected_nas_security_algorithms is not avaliable");
+    Logger::nas_mm().warn("IE ie_selected_nas_security_algorithms is not available");
   } else {
     if (int size = ie_selected_nas_security_algorithms->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -123,7 +123,7 @@ int SecurityModeCommand::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_ngKSI) {
-    Logger::nas_mm().warn("IE ie_ngKSI is not avaliable");
+    Logger::nas_mm().warn("IE ie_ngKSI is not available");
   } else {
     if (int size = ie_ngKSI->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -133,7 +133,7 @@ int SecurityModeCommand::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_ue_security_capability) {
-    Logger::nas_mm().warn("IE ie_ue_security_capability is not avaliable");
+    Logger::nas_mm().warn("IE ie_ue_security_capability is not available");
   } else {
     if (int size = ie_ue_security_capability->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -143,7 +143,7 @@ int SecurityModeCommand::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_imeisv_request) {
-    Logger::nas_mm().warn("IE ie_imeisv_request is not avaliable");
+    Logger::nas_mm().warn("IE ie_imeisv_request is not available");
   } else {
     if (int size = ie_imeisv_request->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -153,7 +153,7 @@ int SecurityModeCommand::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_eps_nas_security_algorithms) {
-    Logger::nas_mm().warn("IE ie_eps_nas_security_algorithms is not avaliable");
+    Logger::nas_mm().warn("IE ie_eps_nas_security_algorithms is not available");
   } else {
     if (int size = ie_eps_nas_security_algorithms->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -163,7 +163,7 @@ int SecurityModeCommand::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_additional_5G_security_information) {
-    Logger::nas_mm().warn("IE ie_additional_5G_security_information is not avaliable");
+    Logger::nas_mm().warn("IE ie_additional_5G_security_information is not available");
   } else {
     if (int size = ie_additional_5G_security_information->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -173,7 +173,7 @@ int SecurityModeCommand::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_eap_message) {
-    Logger::nas_mm().warn("IE ie_eap_message is not avaliable");
+    Logger::nas_mm().warn("IE ie_eap_message is not available");
   } else {
     if (int size = ie_eap_message->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -183,7 +183,7 @@ int SecurityModeCommand::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_abba) {
-    Logger::nas_mm().warn("IE ie_abba is not avaliable");
+    Logger::nas_mm().warn("IE ie_abba is not available");
   } else {
     if (int size = ie_abba->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
@@ -193,7 +193,7 @@ int SecurityModeCommand::encode2buffer(uint8_t *buf, int len) {
     }
   }
   if (!ie_s1_ue_security_capability) {
-    Logger::nas_mm().warn("IE ie_s1_ue_security_capability is not avaliable");
+    Logger::nas_mm().warn("IE ie_s1_ue_security_capability is not available");
   } else {
     if (int size = ie_s1_ue_security_capability->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
