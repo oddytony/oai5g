@@ -99,19 +99,19 @@ void amf_n11_task(void*) {
     auto *msg = shared_msg.get();
     switch (msg->msg_type) {
       case SMF_SERVICES_CONSUMER: {
-        Logger::task_amf_n11().info("Running SMF_SERVICES_CONSUMER");
+        Logger::amf_n1().info("Running SMF_SERVICES_CONSUMER");
         itti_smf_services_consumer *m = dynamic_cast<itti_smf_services_consumer*>(msg);
         amf_n11_inst->handle_itti_message(ref(*m));
       }
         break;
       case NSMF_PDU_SESS_UPDATE_SMCTX: {
-        Logger::task_amf_n11().info("Receive NSMF_PDU_SESS_UPDATE_SMCTX, handling ...");
+        Logger::amf_n1().info("Receive NSMF_PDU_SESS_UPDATE_SMCTX, handling ...");
         itti_nsmf_pdusession_update_sm_context *m = dynamic_cast<itti_nsmf_pdusession_update_sm_context*>(msg);
         amf_n11_inst->handle_itti_message(ref(*m));
       }
         break;
       case PDU_SESS_RES_SET_RESP: {
-        Logger::task_amf_n11().info("Receive PDU_SESS_RES_SET_RESP, handling ...");
+        Logger::amf_n1().info("Receive PDU_SESS_RES_SET_RESP, handling ...");
         itti_pdu_session_resource_setup_response *m = dynamic_cast<itti_pdu_session_resource_setup_response*>(msg);
         amf_n11_inst->handle_itti_message(ref(*m));
       }
@@ -126,8 +126,8 @@ amf_n11::amf_n11() {
     Logger::amf_n11().error("Cannot create task TASK_AMF_N1");
     throw std::runtime_error("Cannot create task TASK_AMF_N1");
   }
-  Logger::task_amf_n11().startup("Started");
-  Logger::task_amf_n11().debug("Construct amf_n1 successfully");
+  Logger::amf_n1().startup("Started");
+  Logger::amf_n1().debug("Construct amf_n1 successfully");
 }
 
 //------------------------------------------------------------------------------

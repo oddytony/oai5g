@@ -282,7 +282,7 @@ int _5GSMobilityIdentity::_5g_guti_encode2buffer(uint8_t *buf, int len) {
     Logger::nas_mm().debug("Error: len is less than %d", length);
   int encoded_size = 0;
   if (iei) {
-    Logger::nas_mm().debug("Wncoding 5GSMobilityIdentity type 0x%x", typeOfIdentity);
+    Logger::nas_mm().debug("Encoding 5GSMobilityIdentity type 0x%x", typeOfIdentity);
     *(buf) = iei;
     encoded_size++;
     encoded_size += 2;

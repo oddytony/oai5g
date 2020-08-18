@@ -66,61 +66,61 @@ void amf_n2_task(void *args_p) {
     auto *msg = shared_msg.get();
     switch (msg->msg_type) {
       case NEW_SCTP_ASSOCIATION: {
-        Logger::task_amf_n2().info("Received NEW_SCTP_ASSOCIATION");
+        Logger::amf_n2().info("Received NEW_SCTP_ASSOCIATION");
         itti_new_sctp_association *m = dynamic_cast<itti_new_sctp_association*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       }
         break;
       case NG_SETUP_REQ: {
-        Logger::task_amf_n2().info("Received NGSetupRequest message, handling");
+        Logger::amf_n2().info("Received NGSetupRequest message, handling");
         itti_ng_setup_request *m = dynamic_cast<itti_ng_setup_request*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       }
         break;
       case INITIAL_UE_MSG: {
-        Logger::task_amf_n2().info("Received INITIAL_UE_MESSAGE message, handling");
+        Logger::amf_n2().info("Received INITIAL_UE_MESSAGE message, handling");
         itti_initial_ue_message *m = dynamic_cast<itti_initial_ue_message*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       }
         break;
       case ITTI_UL_NAS_TRANSPORT: {
-        Logger::task_amf_n2().info("Received UPLINK_NAS_TRANSPORT message, handling");
+        Logger::amf_n2().info("Received UPLINK_NAS_TRANSPORT message, handling");
         itti_ul_nas_transport *m = dynamic_cast<itti_ul_nas_transport*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       }
         break;
       case ITTI_DL_NAS_TRANSPORT: {
-        Logger::task_amf_n2().info("Encoding DOWNLINK NAS TRANSPORT message, sending ");
+        Logger::amf_n2().info("Encoding DOWNLINK NAS TRANSPORT message, sending ");
         itti_dl_nas_transport *m = dynamic_cast<itti_dl_nas_transport*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       }
         break;
       case PDU_SESSION_RESOURCE_SETUP_REQUEST: {
-        Logger::task_amf_n2().info("Encoding PDU SESSION RESOURCE SETUP REQUEST message, sending ");
+        Logger::amf_n2().info("Encoding PDU SESSION RESOURCE SETUP REQUEST message, sending ");
         itti_pdu_session_resource_setup_request *m = dynamic_cast<itti_pdu_session_resource_setup_request*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       }
         break;
       case INITIAL_CONTEXT_SETUP_REQUEST: {
-        Logger::task_amf_n2().info("Encoding INITIAL CONTEXT SETUP REQUEST message, sending ");
+        Logger::amf_n2().info("Encoding INITIAL CONTEXT SETUP REQUEST message, sending ");
         itti_initial_context_setup_request *m = dynamic_cast<itti_initial_context_setup_request*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       }
         break;
       case UE_CONTEXT_RELEASE_REQUEST: {
-        Logger::task_amf_n2().info("Received UE_CONTEXT_RELEASE_REQUEST message, handling");
+        Logger::amf_n2().info("Received UE_CONTEXT_RELEASE_REQUEST message, handling");
         itti_ue_context_release_request *m = dynamic_cast<itti_ue_context_release_request*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       }
         break;
       case UE_RADIO_CAP_IND: {
-        Logger::task_amf_n2().info("Received UE_RADIO_CAP_IND message, handling");
+        Logger::amf_n2().info("Received UE_RADIO_CAP_IND message, handling");
         itti_ue_radio_capability_indication *m = dynamic_cast<itti_ue_radio_capability_indication*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       }
         break;
       default:
-        Logger::task_amf_n2().info("No handler for msg type %d", msg->msg_type);
+        Logger::amf_n2().info("No handler for msg type %d", msg->msg_type);
     }
   } while (true);
 }
@@ -133,8 +133,8 @@ amf_n2::amf_n2(const std::string &address, const uint16_t port_num)
     Logger::amf_n2().error("Cannot create task TASK_AMF_N2");
     throw std::runtime_error("Cannot create task TASK_AMF_N2");
   }
-  Logger::task_amf_n2().startup("Started");
-  Logger::task_amf_n2().debug("Construct amf_n2 successfully");
+  Logger::amf_n2().startup("Started");
+  Logger::amf_n2().debug("Construct amf_n2 successfully");
 }
 
 //------------------------------------------------------------------------------

@@ -34,7 +34,6 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 AuthenticationFailure::AuthenticationFailure() {
-  Logger::nas_mm().debug("initiating class AuthenticationFailure");
   plain_header = NULL;
   ie_5gmm_cause = NULL;
   ie_authentication_failure_parameter = NULL;
@@ -79,7 +78,7 @@ bool AuthenticationFailure::getAutsInAuthFailPara(bstring &auts) {
 
 //------------------------------------------------------------------------------
 int AuthenticationFailure::encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding AuthenticationFailure message");
+  Logger::nas_mm().debug("Encoding AuthenticationFailure message");
   int encoded_size = 0;
   if (!plain_header) {
     Logger::nas_mm().error("Mandatory IE missing Header");
@@ -94,7 +93,7 @@ int AuthenticationFailure::encode2buffer(uint8_t *buf, int len) {
     if (int size = ie_5gmm_cause->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
     } else {
-      Logger::nas_mm().error("encoding ie_5gmm_cause  error");
+      Logger::nas_mm().error("Encoding ie_5gmm_cause error");
     }
   }
   if (!ie_authentication_failure_parameter) {
@@ -103,38 +102,38 @@ int AuthenticationFailure::encode2buffer(uint8_t *buf, int len) {
     if (int size = ie_authentication_failure_parameter->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
     } else {
-      Logger::nas_mm().error("encoding ie_authentication_failure_parameter  error");
+      Logger::nas_mm().error("Encoding ie_authentication_failure_parameter error");
       return 0;
     }
   }
 
-  Logger::nas_mm().debug("encoded AuthenticationFailure message len(%d)", encoded_size);
+  Logger::nas_mm().debug("Encoded AuthenticationFailure message len (%d)", encoded_size);
   return 1;
 }
 
 //------------------------------------------------------------------------------
 int AuthenticationFailure::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len) {
-  Logger::nas_mm().debug("decoding AuthenticationFailure message");
+  Logger::nas_mm().debug("Decoding AuthenticationFailure message");
   int decoded_size = 3;
   plain_header = header;
   ie_5gmm_cause = new _5GMM_Cause();
   decoded_size += ie_5gmm_cause->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
-  Logger::nas_mm().debug("decoded_size(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded_size (%d)", decoded_size);
   uint8_t octet = *(buf + decoded_size);
-  Logger::nas_mm().debug("first option iei(0x%x)", octet);
+  Logger::nas_mm().debug("First option IEI (0x%x)", octet);
   while ((octet != 0x0)) {
     switch (octet) {
       case 0x30: {
-        Logger::nas_mm().debug("decoding iei(0x30)");
+        Logger::nas_mm().debug("Decoding IEI (0x30)");
         ie_authentication_failure_parameter = new Authentication_Failure_Parameter();
         decoded_size += ie_authentication_failure_parameter->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
     }
   }
-  Logger::nas_mm().debug("decoded AuthenticationFailure message len(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded AuthenticationFailure message len (%d)", decoded_size);
 
 }
 

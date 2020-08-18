@@ -56,7 +56,7 @@ void RegistrationComplete::setSOR_Transparent_Container(uint8_t header, uint8_t 
 
 //------------------------------------------------------------------------------
 int RegistrationComplete::encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding RegistrationComplete message");
+  Logger::nas_mm().debug("Encoding RegistrationComplete message");
   int encoded_size = 0;
   if (!plain_header) {
     Logger::nas_mm().error("Mandatory IE missing Header");
@@ -71,35 +71,35 @@ int RegistrationComplete::encode2buffer(uint8_t *buf, int len) {
     if (int size = ie_sor_transparent_container->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
     } else {
-      Logger::nas_mm().error("encoding ie_sor_transparent_container  error");
+      Logger::nas_mm().error("Encoding ie_sor_transparent_container error");
       return 0;
     }
   }
-  Logger::nas_mm().debug("encoded RegistrationComplete message len(%d)", encoded_size);
+  Logger::nas_mm().debug("Encoded RegistrationComplete message len (%d)", encoded_size);
   return 1;
 }
 
 //------------------------------------------------------------------------------
 int RegistrationComplete::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len) {
-  Logger::nas_mm().debug("decoding RegistrationComplete message");
+  Logger::nas_mm().debug("Decoding RegistrationComplete message");
   int decoded_size = 3;
   plain_header = header;
-  Logger::nas_mm().debug("decoded_size(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded_size (%d)", decoded_size);
   uint8_t octet = *(buf + decoded_size);
-  Logger::nas_mm().debug("first option iei(0x%x)", octet);
+  Logger::nas_mm().debug("First option IEI (0x%x)", octet);
   while ((octet != 0x0)) {
     switch (octet) {
       case 0x73: {
-        Logger::nas_mm().debug("decoding iei(0x73)");
+        Logger::nas_mm().debug("Decoding IEI (0x73)");
         ie_sor_transparent_container = new SOR_Transparent_Container();
         decoded_size += ie_sor_transparent_container->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
     }
   }
-  Logger::nas_mm().debug("decoded RegistrationComplete message len(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded RegistrationComplete message len (%d)", decoded_size);
 
 }
 

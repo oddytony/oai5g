@@ -72,7 +72,7 @@ void S_NSSAI::getValue(SNSSAI_s &snssai) {
 
 //------------------------------------------------------------------------------
 int S_NSSAI::encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding S_NSSAI iei(0x%x)", _iei);
+  Logger::nas_mm().debug("Encoding S_NSSAI IEI (0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
     return 0;
@@ -109,13 +109,13 @@ int S_NSSAI::encode2buffer(uint8_t *buf, int len) {
     //     *(buf + encoded_size) = length - 1; encoded_size++;
     //   *(buf + encoded_size) = _value; encoded_size++; encoded_size++;
   }
-  Logger::nas_mm().debug("encoded S_NSSAI len(%d)", encoded_size);
+  Logger::nas_mm().debug("encoded S_NSSAI len (%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
 int S_NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
-  Logger::nas_mm().debug("decoding S_NSSAI iei(0x%x)", *buf);
+  Logger::nas_mm().debug("decoding S_NSSAI IEI (0x%x)", *buf);
   int decoded_size = 0;
   SNSSAI_s a = { 0, 0, 0, 0 };
   if (is_option) {
@@ -126,7 +126,7 @@ int S_NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
   switch (*(buf + decoded_size - 1)) {
     case 1: {
       a.sst = *(buf + decoded_size);
-      decoded_size++;             //无 sd
+      decoded_size++;
       a.sd = -1;
       a.mHplmnSst = -1;
       a.mHplmnSd = -1;
@@ -136,13 +136,13 @@ int S_NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
       a.sst = *(buf + decoded_size);
       decoded_size++;
       a.sd |= *(buf + decoded_size);
-      decoded_size++;  //有 sd
+      decoded_size++;
       a.sd << 8;
       a.sd |= *(buf + decoded_size);
-      decoded_size++;  //有 sd
+      decoded_size++;
       a.sd << 8;
       a.sd |= *(buf + decoded_size);
-      decoded_size++;  //有 sd
+      decoded_size++;
       a.mHplmnSst = -1;
       a.mHplmnSd = -1;
     }
@@ -151,13 +151,13 @@ int S_NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
       a.sst = *(buf + decoded_size);
       decoded_size++;
       a.sd |= *(buf + decoded_size);
-      decoded_size++;  //有 sd
+      decoded_size++;
       a.sd << 8;
       a.sd |= *(buf + decoded_size);
-      decoded_size++;  //有 sd
+      decoded_size++;
       a.sd << 8;
       a.sd |= *(buf + decoded_size);
-      decoded_size++;  //有 sd
+      decoded_size++;
       a.mHplmnSst = *(buf + decoded_size);
       decoded_size++;
       a.mHplmnSd = -1;
@@ -167,29 +167,29 @@ int S_NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
       a.sst = *(buf + decoded_size);
       decoded_size++;
       a.sd |= *(buf + decoded_size);
-      decoded_size++;  //有 sd
+      decoded_size++;
       a.sd << 8;
       a.sd |= *(buf + decoded_size);
-      decoded_size++;  //有 sd
+      decoded_size++;
       a.sd << 8;
       a.sd |= *(buf + decoded_size);
-      decoded_size++;  //有 sd
+      decoded_size++;
       a.mHplmnSst = *(buf + decoded_size);
       decoded_size++;
       a.mHplmnSd |= *(buf + decoded_size);
-      decoded_size++;  //有 sd
+      decoded_size++;
       a.mHplmnSd << 16;
       a.mHplmnSd |= *(buf + decoded_size);
-      decoded_size++;  //有 sd
+      decoded_size++;
       a.mHplmnSd << 8;
       a.mHplmnSd |= *(buf + decoded_size);
-      decoded_size++;  //有 sd
+      decoded_size++;
     }
       break;
   }
   SNSSAI = a;
-  Logger::nas_mm().debug("decoded S_NSSAI SST(0x%x) SD(0x%x) hplmnSST(0x%x) hplmnSD(0x%x)", a.sst, a.sd, a.mHplmnSst, a.mHplmnSd);
-  Logger::nas_mm().debug("decoded S_NSSAI len(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded S_NSSAI SST (0x%x) SD (0x%x) hplmnSST (0x%x) hplmnSD (0x%x)", a.sst, a.sd, a.mHplmnSst, a.mHplmnSd);
+  Logger::nas_mm().debug("Decoded S_NSSAI len (%d)", decoded_size);
   return decoded_size;
 }
 

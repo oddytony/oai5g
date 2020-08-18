@@ -103,7 +103,7 @@ bool SecurityModeComplete::getNON_IMEISV(IMEISV_t &imeisv) {
 
 //------------------------------------------------------------------------------
 int SecurityModeComplete::encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding SecurityModeComplete message");
+  Logger::nas_mm().debug("Encoding SecurityModeComplete message");
   int encoded_size = 0;
   if (!plain_header) {
     Logger::nas_mm().error("Mandatory IE missing Header");
@@ -118,7 +118,7 @@ int SecurityModeComplete::encode2buffer(uint8_t *buf, int len) {
     if (int size = ie_imeisv->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
     } else {
-      Logger::nas_mm().error("encoding ie ie_imeisv  error");
+      Logger::nas_mm().error("Encoding IE ie_imeisv error");
       return 0;
     }
 
@@ -129,7 +129,7 @@ int SecurityModeComplete::encode2buffer(uint8_t *buf, int len) {
     if (int size = ie_nas_message_container->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
     } else {
-      Logger::nas_mm().error("encoding ie_nas_message_container  error");
+      Logger::nas_mm().error("Encoding ie_nas_message_container error");
       return 0;
     }
   }
@@ -139,52 +139,52 @@ int SecurityModeComplete::encode2buffer(uint8_t *buf, int len) {
     if (int size = ie_non_imeisvpei->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
     } else {
-      Logger::nas_mm().error("encoding ie ie_non_imeisvpei  error");
+      Logger::nas_mm().error("Encoding IE ie_non_imeisvpei error");
       return 0;
     }
 
   }
-  Logger::nas_mm().debug("encoded SecurityModeComplete message len(%d)", encoded_size);
+  Logger::nas_mm().debug("Encoded SecurityModeComplete message len (%d)", encoded_size);
   return 1;
 }
 
 //------------------------------------------------------------------------------
 int SecurityModeComplete::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len) {
-  Logger::nas_mm().debug("decoding SecurityModeComplete message");
+  Logger::nas_mm().debug("Decoding SecurityModeComplete message");
   int decoded_size = 3;
   plain_header = header;
   Logger::nas_mm().debug("decoded_size(%d)", decoded_size);
   uint8_t octet = *(buf + decoded_size);
-  Logger::nas_mm().debug("first option iei(0x%x)", octet);
+  Logger::nas_mm().debug("First option IEI (0x%x)", octet);
   while ((octet != 0x0)) {
     switch (octet) {
       case 0x77: {
-        Logger::nas_mm().debug("decoding iei(0x77)");
+        Logger::nas_mm().debug("Decoding IEI (0x77)");
         ie_imeisv = new _5GSMobilityIdentity();
         decoded_size += ie_imeisv->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
       case 0x71: {
-        Logger::nas_mm().debug("decoding iei(0x71)");
+        Logger::nas_mm().debug("Decoding IEI (0x71)");
         ie_nas_message_container = new NAS_Message_Container();
         decoded_size += ie_nas_message_container->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
       case 0x78: {
-        Logger::nas_mm().debug("decoding iei(0x78)");
+        Logger::nas_mm().debug("Decoding IEI (0x78)");
         ie_non_imeisvpei = new _5GSMobilityIdentity();
         decoded_size += ie_non_imeisvpei->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
     }
   }
-  Logger::nas_mm().debug("decoded SecurityModeComplete message len(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded SecurityModeComplete message len (%d)", decoded_size);
 
 }
 

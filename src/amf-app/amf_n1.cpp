@@ -74,19 +74,19 @@ void amf_n1_task(void*) {
     auto *msg = shared_msg.get();
     switch (msg->msg_type) {
       case UL_NAS_DATA_IND: {  //receive nas message buffer from amf_n2
-        Logger::task_amf_n1().info("Received UL_NAS_DATA_IND");
+        Logger::amf_n1().info("Received UL_NAS_DATA_IND");
         itti_uplink_nas_data_ind *m = dynamic_cast<itti_uplink_nas_data_ind*>(msg);
         amf_n1_inst->handle_itti_message(ref(*m));
       }
         break;
       case DOWNLINK_NAS_TRANSFER: {
-        Logger::task_amf_n1().info("Received DOWNLINK_NAS_TRANSFER");
+        Logger::amf_n1().info("Received DOWNLINK_NAS_TRANSFER");
         itti_downlink_nas_transfer *m = dynamic_cast<itti_downlink_nas_transfer*>(msg);
         amf_n1_inst->handle_itti_message(ref(*m));
       }
         break;
       default:
-        Logger::task_amf_n1().error("no handler for msg type %d", msg->msg_type);
+        Logger::amf_n1().error("no handler for msg type %d", msg->msg_type);
     }
   } while (true);
 }
@@ -97,8 +97,8 @@ amf_n1::amf_n1() {
     Logger::amf_n1().error("Cannot create task TASK_AMF_N1");
     throw std::runtime_error("Cannot create task TASK_AMF_N1");
   }
-  Logger::task_amf_n1().startup("Started");
-  Logger::task_amf_n1().debug("construct amf_n1 successfully");
+  Logger::amf_n1().startup("Started");
+  Logger::amf_n1().debug("construct amf_n1 successfully");
 }
 amf_n1::~amf_n1() {
 }
@@ -963,7 +963,7 @@ void amf_n1::annex_a_4_33501(uint8_t ck[16], uint8_t ik[16], uint8_t *input, uin
     oldS[24 + i] = input[i];
   oldS[32] = 0x00;
   oldS[33] = 0x08;
-  print_buffer("amf_n1", "input string: ", S, 31 + netName.size);
+  print_buffer("amf_n1", "Input string: ", S, 31 + netName.size);
   uint8_t key[32];
   memcpy(&key[0], ck, 16);
   memcpy(&key[16], ik, 16);  //KEY

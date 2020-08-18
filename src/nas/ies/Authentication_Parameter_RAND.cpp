@@ -58,7 +58,7 @@ uint8_t* Authentication_Parameter_RAND::getValue() {
 
 //------------------------------------------------------------------------------
 int Authentication_Parameter_RAND::encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding Authentication_Parameter_RAND iei(0x%x)", _iei);
+  Logger::nas_mm().debug("Encoding Authentication_Parameter_RAND IEI (0x%x)", _iei);
   if (len < 17) {
     Logger::nas_mm().error("len is less than 17");
     return 0;
@@ -78,13 +78,13 @@ int Authentication_Parameter_RAND::encode2buffer(uint8_t *buf, int len) {
 //		*(buf + encoded_size) = length - 1; encoded_size++;
 //		*(buf + encoded_size) = _value; encoded_size++; encoded_size++;
   }
-  Logger::nas_mm().debug("encoded Authentication_Parameter_RAND len(%d)", encoded_size);
+  Logger::nas_mm().debug("Encoded Authentication_Parameter_RAND len (%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
 int Authentication_Parameter_RAND::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
-  Logger::nas_mm().debug("decoding Authentication_Parameter_RAND iei(0x%x)", *buf);
+  Logger::nas_mm().debug("Decoding Authentication_Parameter_RAND IEI (0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
     decoded_size++;
@@ -94,9 +94,9 @@ int Authentication_Parameter_RAND::decodefrombuffer(uint8_t *buf, int len, bool 
     decoded_size++;
   }
   for (int j = 0; j < 16; j++) {
-    Logger::nas_mm().debug("decoded Authentication_Parameter_RAND value(0x%2x)", _value[j]);
+    Logger::nas_mm().debug("Decoded Authentication_Parameter_RAND value (0x%2x)", _value[j]);
   }
-  Logger::nas_mm().debug("decoded Authentication_Parameter_RAND len(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded Authentication_Parameter_RAND len (%d)", decoded_size);
   return decoded_size;
 }
 

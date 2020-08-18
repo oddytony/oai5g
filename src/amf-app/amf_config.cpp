@@ -240,7 +240,7 @@ int amf_config::load(const std::string &config_file) {
 
 //------------------------------------------------------------------------------
 void amf_config::display() {
-  Logger::config().info("=======    AMF   =======");
+  Logger::config().info("======================    AMF   =====================");
   Logger::config().info("Configuration AMF:");
   Logger::config().info("- Instance ...........................................: %d", instance);
   Logger::config().info("- PID dir ............................................: %s", pid_dir.c_str());
@@ -268,7 +268,7 @@ void amf_config::display() {
   Logger::config().info("- MYSQL db ...........................................: %s", auth_para.mysql_db.c_str());
   Logger::config().info("- operator key .......................................: %s", auth_para.operator_key.c_str());
   Logger::config().info("- random .............................................: %s", auth_para.random.c_str());
-  Logger::config().info("- Remote SMF Pool..................: ");
+  Logger::config().info("- Remote SMF Pool.....................................: ");
   for (int i = 0; i < smf_pool.size(); i++) {
     std::string selected;
     if (smf_pool[i].selected)

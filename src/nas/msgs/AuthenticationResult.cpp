@@ -34,7 +34,6 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 AuthenticationResult::AuthenticationResult() {
-  Logger::nas_mm().debug("initiating class AuthenticationResult");
   plain_header = NULL;
   ie_ngKSI = NULL;
   ie_abba = NULL;
@@ -68,7 +67,7 @@ void AuthenticationResult::setEAP_Message(bstring eap) {
 
 //------------------------------------------------------------------------------
 int AuthenticationResult::encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding AuthenticationResult message");
+  Logger::nas_mm().debug("Encoding AuthenticationResult message");
   int encoded_size = 0;
   if (!plain_header) {
     Logger::nas_mm().error("Mandatory IE missing Header");
@@ -83,7 +82,7 @@ int AuthenticationResult::encode2buffer(uint8_t *buf, int len) {
     if (int size = ie_ngKSI->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
     } else {
-      Logger::nas_mm().error("encoding ie_ngKSI  error");
+      Logger::nas_mm().error("Encoding ie_ngKSI error");
       return 0;
     }
   }
@@ -93,7 +92,7 @@ int AuthenticationResult::encode2buffer(uint8_t *buf, int len) {
     if (int size = ie_eap_message->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
     } else {
-      Logger::nas_mm().error("encoding ie_eap_message  error");
+      Logger::nas_mm().error("Encoding ie_eap_message error");
       return 0;
     }
   }
@@ -103,17 +102,17 @@ int AuthenticationResult::encode2buffer(uint8_t *buf, int len) {
     if (int size = ie_abba->encode2buffer(buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
     } else {
-      Logger::nas_mm().error("encoding ie_abba  error");
+      Logger::nas_mm().error("encoding ie_abba error");
       return 0;
     }
   }
-  Logger::nas_mm().debug("encoded AuthenticationResult message len(%d)", encoded_size);
+  Logger::nas_mm().debug("Encoded AuthenticationResult message len (%d)", encoded_size);
   return 1;
 }
 
 //------------------------------------------------------------------------------
 int AuthenticationResult::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len) {
-  Logger::nas_mm().debug("decoding AuthenticationResult message");
+  Logger::nas_mm().debug("Decoding AuthenticationResult message");
   int decoded_size = 3;
   plain_header = header;
   ie_ngKSI = new NasKeySetIdentifier();
@@ -121,22 +120,22 @@ int AuthenticationResult::decodefrombuffer(NasMmPlainHeader *header, uint8_t *bu
   decoded_size++;
   ie_eap_message = new EAP_Message();
   decoded_size += ie_eap_message->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
-  Logger::nas_mm().debug("decoded_size(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded_size (%d)", decoded_size);
   uint8_t octet = *(buf + decoded_size);
-  Logger::nas_mm().debug("first option iei(0x%x)", octet);
+  Logger::nas_mm().debug("First option IEI (0x%x)", octet);
   while ((octet != 0x0)) {
     switch (octet) {
       case 0x38: {
-        Logger::nas_mm().debug("decoding iei(0x38)");
+        Logger::nas_mm().debug("Decoding IEI (0x38)");
         ie_abba = new ABBA();
         decoded_size += ie_abba->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
-        Logger::nas_mm().debug("next iei(0x%x)", octet);
+        Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
     }
   }
-  Logger::nas_mm().debug("decoded AuthenticationResult message len(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded AuthenticationResult message len (%d)", decoded_size);
 
 }
 
