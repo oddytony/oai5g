@@ -407,7 +407,7 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
       std::string CRLF = "\r\n";
       std::size_t location_pos = header_response.find("Location");
       std::size_t crlf_pos = header_response.find(CRLF, location_pos);
-      std::string location = header_response.substr(location_pos + 8, crlf_pos - (location_pos + 8));
+      std::string location = header_response.substr(location_pos + 10, crlf_pos - (location_pos + 10));
       Logger::amf_n11().info("Location: %s", location.c_str());
       psc.get()->smf_context_location = location;
 
