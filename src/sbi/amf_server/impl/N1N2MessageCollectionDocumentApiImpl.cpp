@@ -36,7 +36,7 @@ N1N2MessageCollectionDocumentApiImpl::N1N2MessageCollectionDocumentApiImpl(std::
 
 void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(const std::string &ueContextId, const N1N2MessageTransferReqData &n1N2MessageTransferReqData, Pistache::Http::ResponseWriter &response) {
   Logger::amf_server().debug("Response OK");
-  response.send(Pistache::Http::Code::Ok, "N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer API has not been implemented yet!\n");
+  response.send(Pistache::Http::Code::Ok, "N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer API has not been implemented yet!");
 }
 
 void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(const std::string &ueContextId, const N1N2MessageTransferReqData &n1N2MessageTransferReqData, std::string &n1sm_str, Pistache::Http::ResponseWriter &response) {
@@ -45,7 +45,7 @@ void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(const std::str
   bstring n1sm;
   msg_str_2_msg_hex(n1sm_str, n1sm);
   print_buffer("amf_server", "Received N1 SM", (uint8_t*)bdata(n1sm), blength(n1sm));
-  response.send(Pistache::Http::Code::Ok, "N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer API has not been implemented yet!\n");
+  response.send(Pistache::Http::Code::Ok, "N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer API has not been implemented yet!");
 }
 
 void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(const std::string &ueContextId, const N1N2MessageTransferReqData &n1N2MessageTransferReqData, std::string &n1sm_str, std::string &n2sm_str, Pistache::Http::ResponseWriter &response) {
@@ -53,12 +53,12 @@ void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(const std::str
   response.send(Pistache::Http::Code::Ok, "OK");
 
   std::string supi = ueContextId;
-  Logger::amf_server().debug("Key for PDU Session context: supi (%s)", supi.c_str());
+  Logger::amf_server().debug("Key for PDU Session context: SUPI (%s)", supi.c_str());
   std::shared_ptr<pdu_session_context> psc;
   if(amf_n11_inst->is_supi_to_pdu_ctx(supi)){
     psc = amf_n11_inst->supi_to_pdu_ctx(supi);
   }else{
-    Logger::amf_server().error("Cannot get pdu_session_context with supi (%s)", supi.c_str());
+    Logger::amf_server().error("Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
   }
 
   bstring n1sm;

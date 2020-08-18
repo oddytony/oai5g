@@ -48,5 +48,6 @@ class pdu_session_context {
   bool smf_available;
   snssai_t snssai;
   plmn_t plmn;
+  std::string smf_context_location;
 };
 #endif

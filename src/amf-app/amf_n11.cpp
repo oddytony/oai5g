@@ -160,7 +160,9 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_m
     smf_selection_from_context(smf_addr);
   }
   //TODO:Remove hardcoded value (1 - SCID)
-  std::string remote_uri = smf_addr + "/nsmf-pdusession/v1/sm-contexts/" + "imsi-208950000000031-1" + "/modify";                  //scid
+  //std::string remote_uri = smf_addr + "/nsmf-pdusession/v1/sm-contexts/" + "imsi-208950000000031-1" + "/modify";                  //scid
+  std::string remote_uri = smf_addr + psc.get()->smf_context_location + "/modify";                  //scid
+
   nlohmann::json pdu_session_update_request;
   pdu_session_update_request["n2SmInfoType"] = "PDU_RES_SETUP_RSP";
   pdu_session_update_request["n2SmInfo"]["contentId"] = "n2SmMsg";
@@ -316,6 +318,15 @@ void amf_n11::handle_post_sm_context_response_error(long code, std::string cause
 //------------------------------------------------------------------------------
 void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std::string n1SmMsg, std::string n2SmMsg, std::string supi, uint8_t pdu_session_id) {
   Logger::amf_n11().debug("Call SMF service: %s", remoteUri.c_str());
+
+  std::shared_ptr<pdu_session_context> psc;
+  if (is_supi_to_pdu_ctx(supi)) {
+    psc = supi_to_pdu_ctx(supi);
+  } else {
+    Logger::amf_n11().warn("PDU Session context for SUPI %s doesn't exit!", supi.c_str());
+    //TODO:
+  }
+
   CURL *curl = curl_easy_init();
   if (curl) {
     CURLcode res;
@@ -362,10 +373,12 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
     // Response information.
     long httpCode(0);
     std::unique_ptr < std::string > httpData(new std::string());
+    std::unique_ptr < std::string > httpHeaderData(new std::string());
 
     // Hook up data handling function.
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
+    curl_easy_setopt(curl, CURLOPT_HEADERDATA, httpHeaderData.get());
 
     res = curl_easy_perform(curl);
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
@@ -388,6 +401,16 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
       if (!(multipart_parser(response, jsonData, n1sm, n2sm))) {
         Logger::amf_n11().error("Could not get the cause from the response");
       }
+    } else {
+      //TODO: store location of created context
+      std::string header_response = *httpHeaderData.get();
+      std::string CRLF = "\r\n";
+      std::size_t location_pos = header_response.find("Location");
+      std::size_t crlf_pos = header_response.find(CRLF, location_pos);
+      std::string location = header_response.substr(location_pos + 8, crlf_pos - (location_pos + 8));
+      Logger::amf_n11().info("Location: %s", location.c_str());
+      psc.get()->smf_context_location = location;
+
     }
     nlohmann::json response_data;
     bstring n1sm_hex;
