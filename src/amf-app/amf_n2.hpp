@@ -32,6 +32,7 @@
 #include "ngap_app.hpp"
 #include "itti_msg_n2.hpp"
 #include "ue_ngap_context.hpp"
+#include "amf.hpp"
 
 namespace amf_application{
 
@@ -50,11 +51,12 @@ class amf_n2 : public ngap::ngap_app{
   void handle_itti_message(itti_ue_context_release_request &itti_msg);
   void handle_itti_message(itti_ue_radio_capability_indication &itti_msg);
   bool verifyPlmn(std::vector<SupportedItem_t> list);
+  std::vector<SupportedItem_t> get_common_plmn(std::vector<SupportedItem_t> list);
  private:
   std::map<uint32_t, std::shared_ptr<ue_ngap_context>> ranid2uecontext;// ran ue ngap id
   mutable std::shared_mutex m_ranid2uecontext;
 
-  bool is_ran_ue_id_2_ne_ngap_context(const uint32_t & ran_ue_ngap_id) const;
+  bool is_ran_ue_id_2_ue_ngap_context(const uint32_t & ran_ue_ngap_id) const;
   std::shared_ptr<ue_ngap_context> ran_ue_id_2_ue_ngap_context(const uint32_t & ran_ue_ngap_id) const;
   void set_ran_ue_ngap_id_2_ue_ngap_context(const uint32_t & ran_ue_ngap_id, std::shared_ptr<ue_ngap_context> unc);
 }; 

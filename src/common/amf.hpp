@@ -19,34 +19,54 @@
  *      contact@openairinterface.org
  */
 
-/*! \file pdu_session_context.hpp
+/*! \file amf.hpp
  \brief
- \author  Keliang DU, BUPT
  \date 2020
  \email: contact@openairinterface.org
  */
 
-#ifndef _PDU_SESSION_CONTEXT_H_
-#define _PDU_SESSION_CONTEXT_H_
+#ifndef __AMF_HPP
+#define __AMF_HPP
 
-#include <string>
-#include "bstrlib.h"
-#include "amf.hpp"
+typedef struct {
+  std::string mcc;
+  std::string mnc;
+  uint32_t tac;
+} plmn_t;
 
-class pdu_session_context {
- public:
-  pdu_session_context();
-  ~pdu_session_context();
 
-  uint32_t ran_ue_ngap_id;
-  long amf_ue_ngap_id;
-  uint8_t req_type;
-  uint8_t pdu_session_id;
-  bstring n2sm;
-  std::string dnn;
-  std::string remote_smf_addr[0];  //"192.168.12.10:8080"
-  bool smf_available;
-  snssai_t snssai;
-  plmn_t plmn;
-};
+typedef struct s_nssai  // section 28.4, TS23.003
+{
+  uint8_t sST;
+  //uint32_t sD:24;
+  std::string sD;
+  s_nssai(const uint8_t &sst, const std::string sd)
+      :
+      sST(sst),
+      sD(sd) {
+  }
+  s_nssai()
+      :
+      sST(),
+      sD() {
+  }
+  s_nssai(const s_nssai &p)
+      :
+      sST(p.sST),
+      sD(p.sD) {
+  }
+  bool operator==(const struct s_nssai &s) const {
+    if ((s.sST == this->sST) && (s.sD.compare(this->sD) == 0)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+} snssai_t;
+
+
+
+
 #endif
+

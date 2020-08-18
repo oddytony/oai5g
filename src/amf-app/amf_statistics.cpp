@@ -42,6 +42,7 @@ void statistics::display() {
   Logger::amf_app().info("|----------------------------------------------------gNBs' information--------------------------------------------|");
   Logger::amf_app().info("|   Index   |   Status   |   Global ID   |   gNB Name   |    Tracking Area (PLMN, TAC)|  ");
 
+  //TODO: Show the list of common PLMNs
   for (int i = 0; i < gnbs.size(); i++) {
   Logger::amf_app().info("|   %d      | Connected  |      0x%x     |       %s     |  %s,         %d             | ", i + 1, gnbs[i].gnb_id, gnbs[i].gnb_name.c_str(), (gnbs[i].mcc + gnbs[i].mnc).c_str(), gnbs[i].tac);
     //Logger::amf_app().info("[index %d][connected][GlobalID: 0x%x][gnb name: %s][Tracking Area: plmn(%s), tac(%d)]", i + 1, gnbs[i].gnb_id, gnbs[i].gnb_name.c_str(), (gnbs[i].mcc + gnbs[i].mnc).c_str(), gnbs[i].tac);

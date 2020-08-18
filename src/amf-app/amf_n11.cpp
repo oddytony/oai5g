@@ -151,7 +151,7 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_m
     return;
   }
   std::string smf_addr;
-  if (!psc.get()->smf_avaliable) {
+  if (!psc.get()->smf_available) {
     if (!smf_selection_from_configuration(smf_addr)) {
       Logger::amf_n11().error("No candidate SMF is available");
       return;
@@ -190,6 +190,11 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer &smf) {
   psc.get()->ran_ue_ngap_id = nc.get()->ran_ue_ngap_id;
   psc.get()->req_type = smf.req_type;
   psc.get()->pdu_session_id = smf.pdu_sess_id;
+  psc.get()->snssai.sST = smf.snssai.sST;
+  psc.get()->snssai.sD = smf.snssai.sD;
+  psc.get()->plmn.mcc = smf.plmn.mcc;
+  psc.get()->plmn.mnc = smf.plmn.mnc;
+
   //parse binary dnn and store
   std::string dnn = "default";
   if ((smf.dnn != nullptr) && (blength(smf.dnn) > 0)) {
@@ -203,7 +208,7 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer &smf) {
   psc.get()->dnn = dnn;
 
   std::string smf_addr;
-  if (!psc.get()->smf_avaliable) {
+  if (!psc.get()->smf_available) {
     if (!smf_selection_from_configuration(smf_addr)) {
       Logger::amf_n11().error("No candidate for SMF is available");
       return;
@@ -229,20 +234,20 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer &smf) {
 //------------------------------------------------------------------------------
 void amf_n11::handle_pdu_session_initial_request(std::string supi, std::shared_ptr<pdu_session_context> psc, std::string smf_addr, bstring sm_msg, std::string dnn) {
   //TODO: Remove hardcoded values
-  std::string remote_uri = smf_addr + "/nsmf-pdusession/v1/sm-contexts";
+  std::string remote_uri = smf_addr + "/nsmf-pdusession/v1/sm-contexts"; //TODO
   nlohmann::json pdu_session_establishment_request;
   pdu_session_establishment_request["supi"] = supi.c_str();
   pdu_session_establishment_request["pei"] = "imei-200000000000001";
   pdu_session_establishment_request["gpsi"] = "msisdn-200000000001";
   pdu_session_establishment_request["dnn"] = dnn.c_str();
-  pdu_session_establishment_request["sNssai"]["sst"] = 222;
-  pdu_session_establishment_request["sNssai"]["sd"] = "123";
+  pdu_session_establishment_request["sNssai"]["sst"] = psc.get()->snssai.sST;
+  pdu_session_establishment_request["sNssai"]["sd"] = psc.get()->snssai.sD;
   pdu_session_establishment_request["pduSessionId"] = psc.get()->pdu_session_id;
-  pdu_session_establishment_request["requestType"] = "INITIAL_REQUEST";
+  pdu_session_establishment_request["requestType"] = "INITIAL_REQUEST"; //TODO: from SM_MSG
   pdu_session_establishment_request["servingNfId"] = "servingNfId";
-  pdu_session_establishment_request["servingNetwork"]["mcc"] = "208";
-  pdu_session_establishment_request["servingNetwork"]["mnc"] = "95";
-  pdu_session_establishment_request["anType"] = "3GPP_ACCESS";
+  pdu_session_establishment_request["servingNetwork"]["mcc"] = psc.get()->plmn.mcc;
+  pdu_session_establishment_request["servingNetwork"]["mnc"] = psc.get()->plmn.mnc;
+  pdu_session_establishment_request["anType"] = "3GPP_ACCESS"; //TODO
   pdu_session_establishment_request["smContextStatusUri"] = "smContextStatusUri";
 
   pdu_session_establishment_request["n1MessageContainer"]["n1MessageClass"] = "SM";

@@ -215,7 +215,7 @@ void amf_app::handle_itti_message(itti_nas_signalling_establishment_request &itt
   std::shared_ptr<ue_context> uc;
   //check ue context with 5g-s-tmsi
 
-  if (amf_ue_ngap_id = itti_msg.amf_ue_ngap_id == -1) {
+  if ((amf_ue_ngap_id = itti_msg.amf_ue_ngap_id) == -1) {
     amf_ue_ngap_id = generate_amf_ue_ngap_id();
   }
   string ue_context_key = "app_ue_ranid_" + to_string(itti_msg.ran_ue_ngap_id) + ":amfid_" + to_string(amf_ue_ngap_id);

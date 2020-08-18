@@ -37,6 +37,7 @@
 #include "bstrlib.h"
 #include "3gpp_ts24501.hpp"
 #include "amf_statistics.hpp"
+#include "amf.hpp"
 
 #include <pthread.h>
 #include <stdlib.h>
@@ -73,6 +74,7 @@ class amf_n1 {
  public:  // nas message decode
   void nas_signalling_establishment_request_handle(SecurityHeaderType type, std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg, std::string snn, uint8_t ulCount);
   void uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg);
+  void uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg, plmn_t plmn);
   bool check_security_header_type(SecurityHeaderType &type, uint8_t *buffer);
 
  public:
@@ -101,6 +103,7 @@ class amf_n1 {
   void security_mode_complete_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas_msg);
   void security_mode_reject_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas_msg);
   void ul_nas_transport_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas);
+  void ul_nas_transport_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas, plmn_t plmn);
   void sha256(unsigned char *message, int msg_len, unsigned char *output);
   void service_request_handle(bool isNasSig, std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas);
  private:  //authentication vector

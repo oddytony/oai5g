@@ -4,6 +4,7 @@
 #include "bstrlib.h"
 #include "itti_msg.hpp"
 #include <string>
+#include "amf.hpp"
 
 class itti_msg_n11 : public itti_msg{
 public:
@@ -30,9 +31,9 @@ public:
   uint8_t pdu_sess_id; 
   bstring dnn;
   bstring sm_msg;
-
+  snssai_t snssai;
+  plmn_t plmn;
 };
-
 
 class itti_pdu_session_resource_setup_response : public itti_msg_n11{
 public:
@@ -51,15 +52,5 @@ public:
   uint8_t pdu_session_id;
   bstring n2sm;
 };
-
-
-
-
-
-
-
-
-
-
 
 #endif

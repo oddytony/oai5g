@@ -198,13 +198,16 @@ void amf_n2::handle_itti_message(itti_ng_setup_request &itti_msg) {
   if (!itti_msg.ngSetupReq->getSupportedTAList(s_ta_list)) {  //getSupportedTAList
     return;
   }
+  //TODO: should be removed, since we stored list of common PLMNs
   gnbItem.mcc = s_ta_list[0].b_plmn_list[0].mcc;
   gnbItem.mnc = s_ta_list[0].b_plmn_list[0].mnc;
   gnbItem.tac = s_ta_list[0].tac;
   //association GlobalRANNodeID with assoc_id
   //store RAN Node Name in gNB context, if present
   //verify PLMN Identity and TAC with configuration and store supportedTAList in gNB context, if verified; else response NG SETUP FAILURE with cause "Unknown PLMN"(9.3.1.2, ts38413)
-  if (!verifyPlmn(s_ta_list)) {
+  std::vector <SupportedItem_t> common_plmn_list = get_common_plmn(s_ta_list);
+  if (common_plmn_list.size() == 0) {
+  // if (!verifyPlmn(s_ta_list)) {
     //encode NG SETUP FAILURE MESSAGE and send back
     void *buffer = calloc(1, 1000);
     NGSetupFailureMsg ngSetupFailure;
@@ -216,8 +219,13 @@ void amf_n2::handle_itti_message(itti_ng_setup_request &itti_msg) {
     Logger::amf_n2().error("No common PLMN, encoding NG_SETUP_FAILURE with cause (Unknown PLMN)");
     return;
   } else {
-    gc->s_ta_list = s_ta_list;
+    //store only the common PLMN
+    gc->s_ta_list = common_plmn_list;
+    for (auto i: common_plmn_list) {
+      gnbItem.plmn_list.push_back(i);
+    }
   }
+
   //store Paging DRX in gNB context
   Logger::amf_n2().debug("Encoding NG_SETUP_RESPONSE ...");
   //encode NG SETUP RESPONSE message with information stored in configuration file and send_msg
@@ -269,11 +277,12 @@ void amf_n2::handle_itti_message(itti_initial_ue_message &init_ue_msg) {
   //create ngap-ue context and store in gNB context to store UE information in gNB, for example, here RAN UE NGAP ID and location information and RRC Establishment Cause
   //send NAS-PDU to NAS layer
   /*get INITIAL_UE_MESSAGE IEs*/
+
   //check the gNB context on which  this UE is attached with assoc_id
   itti_nas_signalling_establishment_request *itti_msg = new itti_nas_signalling_establishment_request(TASK_AMF_N2, TASK_AMF_APP);
 
   if (!is_assoc_id_2_gnb_context(init_ue_msg.assoc_id)) {
-    Logger::amf_n2().error("No existed gNG context with assoc_id(%d)", init_ue_msg.assoc_id);
+    Logger::amf_n2().error("No existing gNG context with assoc_id (%d)", init_ue_msg.assoc_id);
     return;
   }
   std::shared_ptr<gnb_context> gc;
@@ -281,17 +290,18 @@ void amf_n2::handle_itti_message(itti_initial_ue_message &init_ue_msg) {
   if (gc.get()->ng_state == NGAP_RESETING || gc.get()->ng_state == NGAP_SHUTDOWN) {
     Logger::amf_n2().warn("Received new association request on an association that is being %s, ignoring", ng_gnb_state_str[gc.get()->ng_state]);
   } else if (gc.get()->ng_state != NGAP_READY) {
-    Logger::amf_n2().debug("gNB with assoc_id(%d) is illegal", init_ue_msg.assoc_id);
+    Logger::amf_n2().debug("gNB with assoc_id (%d) is illegal", init_ue_msg.assoc_id);
     return;
   }
 
+  //UE NGAP Context
   uint32_t ran_ue_ngap_id;
   if ((ran_ue_ngap_id = init_ue_msg.initUeMsg->getRanUENgapID()) == -1) {
     Logger::amf_n2().error("Missing Mandatory IE (RanUeNgapId)");
     return;
   }
   std::shared_ptr<ue_ngap_context> unc;
-  if (!is_ran_ue_id_2_ne_ngap_context(ran_ue_ngap_id)) {
+  if (!is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
     Logger::amf_n2().debug("Create a new UE NGAP context with ran_ue_ngap_id 0x%x", ran_ue_ngap_id);
     unc = std::shared_ptr < ue_ngap_context > (new ue_ngap_context());
     set_ran_ue_ngap_id_2_ue_ngap_context(ran_ue_ngap_id, unc);
@@ -335,11 +345,11 @@ void amf_n2::handle_itti_message(itti_initial_ue_message &init_ue_msg) {
     std::string _5g_s_tmsi;
     if (!init_ue_msg.initUeMsg->get5GS_TMSI(_5g_s_tmsi)) {
       itti_msg->is_5g_s_tmsi_present = false;
-      Logger::amf_n2().debug("5g_s_tmsi false");
+      Logger::amf_n2().debug("5g_s_tmsi not present");
     } else {
       itti_msg->is_5g_s_tmsi_present = true;
       itti_msg->_5g_s_tmsi = _5g_s_tmsi;
-      Logger::amf_n2().debug("5g_s_tmsi true");
+      Logger::amf_n2().debug("5g_s_tmsi present");
     }
 
     uint8_t *nas_buf;
@@ -373,11 +383,11 @@ void amf_n2::handle_itti_message(itti_ul_nas_transport &ul_nas_transport) {
   }
   gc = assoc_id_2_gnb_context(ul_nas_transport.assoc_id);
   std::shared_ptr<ue_ngap_context> unc;
-  if (!is_ran_ue_id_2_ne_ngap_context(ran_ue_ngap_id)) {
+  if (!is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
     Logger::amf_n2().error("UE with ran_ue_ngap_id(0x%x) is not attached to gnb with assoc_id(%d)", ran_ue_ngap_id, ul_nas_transport.assoc_id);
     return;
   }
-  if (!is_ran_ue_id_2_ne_ngap_context(ran_ue_ngap_id)) {
+  if (!is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
     Logger::amf_n2().error("No UE NGAP context with ran_ue_ngap_id(%d)", ran_ue_ngap_id);
     return;
   }
@@ -402,6 +412,16 @@ void amf_n2::handle_itti_message(itti_ul_nas_transport &ul_nas_transport) {
     Logger::amf_n2().error("Missing IE NAS-PDU");
     return;
   }
+  //UserLocation
+  NrCgi_t cgi = {};
+  Tai_t tai = {};
+  if (ul_nas_transport.ulNas->getUserLocationInfoNR(cgi, tai)) {
+    itti_msg->mcc = cgi.mcc;
+    itti_msg->mnc = cgi.mnc;
+  } else {
+    Logger::amf_n2().debug("Missing IE UserLocationInformationNR");
+  }
+
   std::shared_ptr<itti_uplink_nas_data_ind> i = std::shared_ptr < itti_uplink_nas_data_ind > (itti_msg);
   int ret = itti_inst->send_msg(i);
   if (0 != ret) {
@@ -414,13 +434,13 @@ void amf_n2::handle_itti_message(itti_dl_nas_transport &dl_nas_transport) {
   std::shared_ptr<ue_ngap_context> unc;
   unc = ran_ue_id_2_ue_ngap_context(dl_nas_transport.ran_ue_ngap_id);
   if (unc.get() == nullptr) {
-    Logger::amf_n2().error("Illegal UE with ran_ue_ngap_id(0x%x)", dl_nas_transport.ran_ue_ngap_id);
+    Logger::amf_n2().error("Illegal UE with ran_ue_ngap_id (0x%x)", dl_nas_transport.ran_ue_ngap_id);
     return;
   }
   std::shared_ptr<gnb_context> gc;
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
-    Logger::amf_n2().error("Illegal gNB with assoc id(0x%x)", unc.get()->gnb_assoc_id);
+    Logger::amf_n2().error("Illegal gNB with assoc id (0x%x)", unc.get()->gnb_assoc_id);
     return;
   }
   unc.get()->amf_ue_ngap_id = dl_nas_transport.amf_ue_ngap_id;
@@ -577,7 +597,7 @@ void amf_n2::handle_itti_message(itti_ue_radio_capability_indication &itti_msg) 
 //Context management functions
 //------------------------------------------------------------------------------
 
-bool amf_n2::is_ran_ue_id_2_ne_ngap_context(const uint32_t &ran_ue_ngap_id) const {
+bool amf_n2::is_ran_ue_id_2_ue_ngap_context(const uint32_t &ran_ue_ngap_id) const {
   std::shared_lock lock(m_ranid2uecontext);
   return bool { ranid2uecontext.count(ran_ue_ngap_id) > 0 };
 }
@@ -611,4 +631,25 @@ bool amf_n2::verifyPlmn(vector<SupportedItem_t> list) {
     }
   }
   return false;
+}
+
+
+//------------------------------------------------------------------------------
+std::vector<SupportedItem_t> amf_n2::get_common_plmn(std::vector<SupportedItem_t> list) {
+  std::vector <SupportedItem_t> plmn_list = {};
+
+  for (int i = 0; i < amf_cfg.plmn_list.size(); i++) {
+    for (int j = 0; j < list.size(); j++) {
+      Logger::amf_n2().debug("TAC configured %d, TAC received %d", amf_cfg.plmn_list[i].tac, list[j].tac);
+      if (amf_cfg.plmn_list[i].tac != list[j].tac) {
+        continue;
+      }
+      for (int k = 0; k < list[j].b_plmn_list.size(); k++) {
+        if (!(list[j].b_plmn_list[k].mcc.compare(amf_cfg.plmn_list[i].mcc)) && !(list[j].b_plmn_list[k].mnc.compare(amf_cfg.plmn_list[i].mnc))) {
+          plmn_list.push_back(list[j]);
+        }
+      }
+    }
+  }
+  return plmn_list;
 }

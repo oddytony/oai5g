@@ -34,10 +34,13 @@
 #include <stdint.h>
 #include <vector>
 #include <string>
-
+#include "amf.hpp"
+#include "ngap_app.hpp"
 
 typedef struct {
   uint32_t gnb_id;
+  //TODO: list of PLMNs
+  std::vector<SupportedItem_t> plmn_list;
   std::string mcc;
   std::string mnc;
   std::string gnb_name;
