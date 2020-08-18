@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <unistd.h>
+#include "amf.hpp"
 /*
  * To read content of the response from UDM
  */

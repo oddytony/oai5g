@@ -21,7 +21,7 @@
 
 /*! \file amf_n1.cpp
  \brief
- \author  Keliang DU, BUPT
+ \author  Keliang DU, BUPT, Tien-Thinh NGUYEN, EURECOM
  \date 2020
  \email: contact@openairinterface.org
  */
@@ -86,7 +86,7 @@ void amf_n1_task(void*) {
       }
         break;
       default:
-        Logger::amf_n1().error("no handler for msg type %d", msg->msg_type);
+        Logger::amf_n1().error("No handler for msg type %d", msg->msg_type);
     }
   } while (true);
 }
@@ -98,7 +98,7 @@ amf_n1::amf_n1() {
     throw std::runtime_error("Cannot create task TASK_AMF_N1");
   }
   Logger::amf_n1().startup("Started");
-  Logger::amf_n1().debug("construct amf_n1 successfully");
+  Logger::amf_n1().debug("Construct amf_n1 successfully");
 }
 amf_n1::~amf_n1() {
 }
@@ -236,12 +236,12 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind &nas_data_ind) {
       break;
   }
   if (nas_data_ind.is_nas_signalling_estab_req) {
-    Logger::amf_n1().debug("Received NAS signalling establishment request ...");
+    Logger::amf_n1().debug("Received NAS signalling establishment request...");
     //dump_nas_message((uint8_t*)bdata(decoded_plain_msg), blength(decoded_plain_msg));
     print_buffer("amf_n1", "Decoded plain NAS Message buffer", (uint8_t*) bdata(decoded_plain_msg), blength(decoded_plain_msg));
     nas_signalling_establishment_request_handle(type, nc, nas_data_ind.ran_ue_ngap_id, nas_data_ind.amf_ue_ngap_id, decoded_plain_msg, snn, ulCount);
   } else {
-    Logger::amf_n1().debug("Received uplink NAS message ...");
+    Logger::amf_n1().debug("Received uplink NAS message...");
     print_buffer("amf_n1", "Decoded NAS message buffer", (uint8_t*) bdata(decoded_plain_msg), blength(decoded_plain_msg));
     uplink_nas_msg_handle(nas_data_ind.ran_ue_ngap_id, nas_data_ind.amf_ue_ngap_id, decoded_plain_msg, plmn);
   }
@@ -317,7 +317,7 @@ void amf_n1::uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
     }
       break;
     case UL_NAS_TRANSPORT: {
-      Logger::amf_n1().debug("Received ul NAS transport message, handling...");
+      Logger::amf_n1().debug("Received UL NAS transport message, handling...");
       ul_nas_transport_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     }
       break;
@@ -381,9 +381,7 @@ void amf_n1::uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
     default: {
       //TODO:
     }
-
   }
-
 }
 
 // nas message decode
@@ -434,7 +432,7 @@ void amf_n1::service_request_handle(bool isNasSig, std::shared_ptr<nas_context> 
   uint8_t *kamf = nc.get()->kamf[secu->vector_pointer];
   uint8_t kgnb[32];
   uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
-  Logger::amf_n1().debug("Uplink count(%d)", secu->ul_count.seq_num);
+  Logger::amf_n1().debug("Uplink count (%d)", secu->ul_count.seq_num);
   print_buffer("amf_n1", "kamf", kamf, 32);
   Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
   bstring kgnb_bs = blk2bstr(kgnb, 32);
@@ -565,7 +563,7 @@ void amf_n1::registration_request_handle(bool isNasSig, std::shared_ptr<nas_cont
   uint8_t reg_type;
   bool is_follow_on_req_pending;
   if (!regReq->get5GSRegistrationType(is_follow_on_req_pending, reg_type)) {
-    Logger::amf_n1().error("Missing Mandatory IE 5GS Registration type ...");
+    Logger::amf_n1().error("Missing Mandatory IE 5GS Registration type...");
     response_registration_reject_msg(_5GMM_CAUSE_INVALID_MANDATORY_INFO, ran_ue_ngap_id, amf_ue_ngap_id);
     return;
   }
@@ -575,7 +573,7 @@ void amf_n1::registration_request_handle(bool isNasSig, std::shared_ptr<nas_cont
   //Check ngKSI (Mandatory IE)
   uint8_t ngKSI = regReq->getngKSI();
   if (ngKSI == -1) {
-    Logger::amf_n1().error("Missing Mandatory IE ngKSI ...");
+    Logger::amf_n1().error("Missing Mandatory IE ngKSI...");
     response_registration_reject_msg(_5GMM_CAUSE_INVALID_MANDATORY_INFO, ran_ue_ngap_id, amf_ue_ngap_id);
     return;
   }
@@ -704,9 +702,9 @@ void amf_n1::response_registration_reject_msg(uint8_t cause_value, uint32_t ran_
   uint8_t buffer[1024] = { 0 };
   int encoded_size = registrationRej->encode2buffer(buffer, 1024);
   //dump_nas_message(buffer, encoded_size);
-  print_buffer("amf_n1", "Registration-Reject Message Buffer", buffer, encoded_size);
+  print_buffer("amf_n1", "Registration-Reject message buffer", buffer, encoded_size);
   if (!encoded_size) {
-    Logger::nas_mm().error("Encode RegistrationRej message error");
+    Logger::nas_mm().error("Encode Registration-Reject message error");
     return;
   } else {
     delete registrationRej;
@@ -744,7 +742,7 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context> &nc) {
       ngksi_t ngksi = 0;
       if (nc.get()->security_ctx && nc.get()->ngKsi != NAS_KEY_SET_IDENTIFIER_NOT_AVAILABLE) {
         ngksi = (nc.get()->ngKsi + 1) % (NGKSI_MAX_VALUE + 1);
-        Logger::amf_n1().debug("New ngKsi(%d)", ngksi);
+        Logger::amf_n1().debug("New ngKsi (%d)", ngksi);
         // ... how to handle?
       }
       nc.get()->ngKsi = ngksi;
@@ -1083,7 +1081,7 @@ void amf_n1::authentication_response_handle(uint32_t ran_ue_ngap_id, long amf_ue
   bool isAuthOk = true;
   //Get response RES*
   if (!auth->getAuthenticationResponseParameter(resStar)) {
-    Logger::amf_n1().warn("Cannot receive AuthenticationResponseParameter(RES*)");
+    Logger::amf_n1().warn("Cannot receive AuthenticationResponseParameter (RES*)");
   } else {
     //Get stored XRES*
     int secu_index = nc.get()->security_ctx->vector_pointer;
@@ -1150,10 +1148,10 @@ void amf_n1::authentication_failure_handle(uint32_t ran_ue_ngap_id, long amf_ue_
       Logger::amf_n1().debug("Initial new authentication procedure");
       bstring auts;
       if (!authFail->getAutsInAuthFailPara(auts)) {
-        Logger::amf_n1().warn("IE Authentication Failure Parameter(auts) not received");
+        Logger::amf_n1().warn("IE Authentication Failure Parameter (auts) not received");
       }
       nc.get()->auts = auts;
-      printf("received auts: 0x ");
+      printf("Received auts: 0x ");
       for (int i = 0; i < blength(auts); i++)
         printf("%x ", ((uint8_t*) bdata(auts))[i]);
       printf("\n");
@@ -1720,12 +1718,12 @@ void amf_n1::run_mobility_registration_update_procedure(std::shared_ptr<nas_cont
   encode_nas_message_protected(secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK, buffer, encoded_size, protectedNas);
 
   string supi = "imsi-" + nc.get()->imsi;
-  Logger::amf_n1().debug("Key for pdu session context: supi(%s)", supi.c_str());
+  Logger::amf_n1().debug("Key for pdu session context SUPI (%s)", supi.c_str());
   std::shared_ptr<pdu_session_context> psc;
   if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
     psc = amf_n11_inst->supi_to_pdu_ctx(supi);
   } else {
-    Logger::amf_n1().error("Cannot get pdu_session_context with supi(%s)", supi.c_str());
+    Logger::amf_n1().error("Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
   }
 
   uint8_t *kamf = nc.get()->kamf[secu->vector_pointer];
