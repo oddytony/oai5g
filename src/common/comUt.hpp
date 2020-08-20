@@ -33,7 +33,7 @@
 #include <string>
 
 //------------------------------------------------------------------------------
-void print_buffer(const std::string app, const std::string mode, const std::string commit, uint8_t *buf, int len) {
+void print_buffer(const std::string app, const std::string commit, uint8_t *buf, int len) {
   if (!app.compare("amf_app"))
     Logger::amf_app().debug(commit.c_str());
   if (!app.compare("amf_n1"))
@@ -42,9 +42,11 @@ void print_buffer(const std::string app, const std::string mode, const std::stri
     Logger::amf_server().debug(commit.c_str());
   if (!app.compare("amf_n11"))
     Logger::amf_n11().debug(commit.c_str());
+#if DEBUG_IS_ON
   for (int i = 0; i < len; i++)
     printf("%x ", buf[i]);
   printf("\n");
+#endif
 }
 
 //------------------------------------------------------------------------------
