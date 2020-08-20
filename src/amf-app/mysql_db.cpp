@@ -54,7 +54,7 @@ bool amf_n1::get_mysql_auth_info(std::string imsi, mysql_auth_info_t &resp) {  /
   res = mysql_store_result(db_desc->db_conn);
   pthread_mutex_unlock(&db_desc->db_cs_mutex);
   if (!res) {
-    Logger::amf_n1().error("data fetched from MySQL is not present");
+    Logger::amf_n1().error("Data fetched from MySQL is not present");
     return false;
   }
   if (row = mysql_fetch_row(res)) {

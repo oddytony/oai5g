@@ -103,24 +103,11 @@ typedef enum {
 
 class Authentication_5gaka {
  public:
-  /****** sequence number functions ********/
-  //struct sqn_ue_s *sqn_exists(uint64_t imsi);
-  //void sqn_insert(struct sqn_ue_s *item);
-  //void sqn_init(struct sqn_ue_s *item);
-  //struct sqn_ue_s *sqn_new(uint64_t imsi);
-  //void sqn_list_init(void);
-  //void sqn_get(uint64_t imsi, uint8_t sqn[6]);
- public:
-  /****** random number functions *********/
-  //void random_init(void);
-  //void generate_random(uint8_t *random, ssize_t length);
- public:
   /****** internal algorithms f1 f2 f3 f4 f5 ********/
   static void f1(const uint8_t opc[16], const uint8_t k[16], const uint8_t _rand[16], const uint8_t sqn[6], const uint8_t amf[2], uint8_t mac_a[8]);
   static void f1star(const uint8_t kP[16], const uint8_t k[16], const uint8_t rand[16], const uint8_t sqn[6], const uint8_t amf[2], uint8_t mac_s[8]);
   static void f2345(const uint8_t opc[16], const uint8_t k[16], const uint8_t _rand[16], uint8_t res[8], uint8_t ck[16], uint8_t ik[16], uint8_t ak[6]);
   static void f5star(const uint8_t kP[16], const uint8_t k[16], const uint8_t rand[16], uint8_t ak[6]);
- public:
   /****** key derive  ***********/
   static void kdf(uint8_t *key, uint16_t key_len, uint8_t *s, uint16_t s_len, uint8_t *out, uint16_t out_len);
   static void derive_kasme(uint8_t ck[16], uint8_t ik[16], uint8_t plmn[3], uint8_t sqn[6], uint8_t ak[6], uint8_t kasme[32]);
@@ -130,12 +117,10 @@ class Authentication_5gaka {
   static void derive_knas(algorithm_type_dist_t nas_alg_type, uint8_t nas_alg_id, uint8_t kamf[32], uint8_t *knas);
   static void derive_kgnb(uint32_t uplinkCount, uint8_t accessType, uint8_t kamf[32], uint8_t *kgnb);
   static uint8_t* sqn_ms_derive(const uint8_t opc[16], uint8_t *key, uint8_t *auts, uint8_t *rand);
- public:
   /****** general functions ********/
   static void ComputeOPc(const uint8_t kP[16], const uint8_t opP[16], uint8_t opcP[16]);
   static void generate_autn(const uint8_t sqn[6], const uint8_t ak[6], const uint8_t amf[2], const uint8_t mac_a[8], uint8_t autn[16]);
   static int generate_vector(const uint8_t opc[16], uint64_t imsi, uint8_t key[16], uint8_t plmn[3], uint8_t sqn[6], auc_vector_t *vector);
- public:
   /****** Rijndael ********/
   static void RijndaelKeySchedule(const uint8_t key[16]);
   static void RijndaelEncrypt(const uint8_t in[16], uint8_t out[16]);

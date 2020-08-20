@@ -167,7 +167,6 @@ class amf_config {
   int load_interface(const Setting &if_cfg, interface_cfg_t &cfg);
   int load_thread_sched_params(const libconfig::Setting &thread_sched_params_cfg, util::thread_sched_params &cfg);
   void display();
- public:
   unsigned int instance;
   std::string pid_dir;
   interface_cfg_t n2;

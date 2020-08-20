@@ -40,7 +40,6 @@ class nas_context {
  public:
   nas_context();
   ~nas_context();
- public:
   bool ctx_avaliability_ind;
   bool is_stacs_available;
   long amf_ue_ngap_id;

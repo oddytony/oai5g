@@ -98,7 +98,7 @@ class sctp_server {
   int sctp_get_localaddresses(int sock, struct sockaddr **local_addr, int *nb_local_addresses);
   int sctp_get_peeraddresses(int sock, struct sockaddr **remote_addr, int *nb_remote_addresses);
   sctp_association_t* sctp_is_assoc_in_list(sctp_assoc_id_t assoc_id);
- private:
+
   int socket_;
   sctp_application *app_;
   pthread_t thread_;

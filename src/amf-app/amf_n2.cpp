@@ -507,7 +507,7 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request &itti_msg) {
     }
     list.push_back(item);
     msg->setPduSessionResourceSetupRequestList(list);
-    msg->setUEAggregateMaxBitRate(0x08a7d8c0, 0x20989680);
+    msg->setUEAggregateMaxBitRate(0x08a7d8c0, 0x20989680); //TODO: remove hardcoded value
   }
 
   uint8_t buffer[10000];
