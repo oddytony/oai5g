@@ -42,7 +42,7 @@ void N1N2MessageCollectionDocumentApi::setupRoutes() {
 void N1N2MessageCollectionDocumentApi::n1_n2_message_transfer_handler(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
     // Getting the path params
     auto ueContextId = request.param(":ueContextId").as<std::string>();
-    Logger::amf_server().debug("Received a N1N2MessageTrasfer request with ue_ctx_id %s ",ueContextId.c_str());
+    Logger::amf_server().debug("Received a N1N2MessageTrasfer request with ue_ctx_id %s", ueContextId.c_str());
     // Getting the body param
 
     //simple parser
@@ -57,16 +57,17 @@ void N1N2MessageCollectionDocumentApi::n1_n2_message_transfer_handler(const Pist
     //at least 2 parts for Json data and N1 (+ N2)
     if (size < 2) {
       response.send(Pistache::Http::Code::Bad_Request);
+      Logger::amf_server().debug("Bad request: should have at least 2 MIME parts");
       return;
     }
 
     Logger::amf_server().debug("Request body, part 1: \n%s", parts[0].body.c_str());
-    Logger::amf_server().debug("Request body, part 2: \n %s",parts[1].body.c_str());
+    Logger::amf_server().debug("Request body, part 2: \n %s", parts[1].body.c_str());
 
     bool is_ngap = false;
     if (size > 2) {
       is_ngap = true;
-      Logger::amf_server().debug("Request body, part 3: \n %s",parts[2].body.c_str());
+      Logger::amf_server().debug("Request body, part 3: \n %s", parts[2].body.c_str());
     }
 
     N1N2MessageTransferReqData n1N2MessageTransferReqData = {};
@@ -79,12 +80,12 @@ void N1N2MessageCollectionDocumentApi::n1_n2_message_transfer_handler(const Pist
         this->n1_n2_message_transfer(ueContextId, n1N2MessageTransferReqData, parts[1].body, parts[2].body, response);
     } catch (nlohmann::detail::exception &e) {
         //send a 400 error
-        Logger::amf_server().error("response 400 error"); 
+        Logger::amf_server().error("Error %s, send a msg with error code 400 to SMF", e.what());
         response.send(Pistache::Http::Code::Bad_Request, e.what());
         return;
     } catch (std::exception &e) {
         //send a 500 error
-        Logger::amf_server().error("response 500 error"); 
+        Logger::amf_server().error("Error %s, send a msg with error code 500 to SMF", e.what());
         response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
         return;
     }

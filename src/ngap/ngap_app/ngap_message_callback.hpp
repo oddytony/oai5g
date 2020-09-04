@@ -111,7 +111,6 @@ int ngap_amf_handle_uplink_nas_transport(const sctp_assoc_id_t assoc_id, const s
 //------------------------------------------------------------------------------
 int ngap_amf_handle_initial_context_setup_response(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
   Logger::ngap().debug("Handling Initial Context Setup Response...");
-  Logger::ngap().debug("Sending ITTI Initial Context Setup Response to TASK_AMF_N11");
   InitialContextSetupResponseMsg *initCtxResp = new InitialContextSetupResponseMsg();
   if (!initCtxResp->decodefrompdu(message_p)) {
     Logger::ngap().error("Decoding InitialContextSetupResponse message error");
@@ -119,13 +118,14 @@ int ngap_amf_handle_initial_context_setup_response(const sctp_assoc_id_t assoc_i
   }
   std::vector<PDUSessionResourceSetupResponseItem_t> list;
   if (!initCtxResp->getPduSessionResourceSetupResponseList(list)) {
-    Logger::ngap().error("Decoding PduSessionResourceSetupResponseMsg getPduSessionResourceSetupResponseList IE error or this IE is not available");
+    Logger::ngap().error("Decode PduSessionResourceSetupResponseList IE error or this IE is not available");
     return 0;
   }
   uint8_t transferIe[500];
   memcpy(transferIe, list[0].pduSessionResourceSetupResponseTransfer.buf, list[0].pduSessionResourceSetupResponseTransfer.size);
   bstring n2sm = blk2bstr(transferIe, list[0].pduSessionResourceSetupResponseTransfer.size);
 
+  Logger::ngap().debug("Sending ITTI Initial Context Setup Response to TASK_AMF_N11");
   itti_nsmf_pdusession_update_sm_context *itti_msg = new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
   itti_msg->pdu_session_id = list[0].pduSessionId;
   itti_msg->n2sm = n2sm;
@@ -189,7 +189,7 @@ int ngap_amf_handle_ue_context_release_complete(const sctp_assoc_id_t assoc_id, 
 
 //------------------------------------------------------------------------------
 int ngap_amf_handle_pdu_session_resource_setup_response(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
-  Logger::ngap().debug("Sending itti pdu_session_resource_setup_response to TASK_AMF_N11");
+  Logger::ngap().debug("Handle PDU Session Resource Setup Response");
   PduSessionResourceSetupResponseMsg *pduresp = new PduSessionResourceSetupResponseMsg();
   if (!pduresp->decodefrompdu(message_p)) {
     Logger::ngap().error("Decoding PduSessionResourceSetupResponseMsg message error");
@@ -204,6 +204,7 @@ int ngap_amf_handle_pdu_session_resource_setup_response(const sctp_assoc_id_t as
   memcpy(transferIe, list[0].pduSessionResourceSetupResponseTransfer.buf, list[0].pduSessionResourceSetupResponseTransfer.size);
   bstring n2sm = blk2bstr(transferIe, list[0].pduSessionResourceSetupResponseTransfer.size);
 
+  Logger::ngap().debug("Sending itti pdu_session_resource_setup_response to TASK_AMF_N11");
   itti_nsmf_pdusession_update_sm_context *itti_msg = new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
   itti_msg->pdu_session_id = list[0].pduSessionId;
   itti_msg->n2sm = n2sm;

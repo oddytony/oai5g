@@ -211,6 +211,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind &nas_data_ind) {
       uint32_t mac32 = 0;
       if (!nas_message_integrity_protected(nc.get()->security_ctx, NAS_MESSAGE_UPLINK, (uint8_t*) bdata(recved_nas_msg) + 6, blength(recved_nas_msg) - 6, mac32)) {
         //IA0_5G
+        //TODO:
       } else {
         bool isMatched = false;
         uint8_t *buf = (uint8_t*) bdata(recved_nas_msg);
@@ -219,6 +220,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind &nas_data_ind) {
         Logger::amf_n1().debug("Received mac32 (0x%x) from the message", mac32_recv);
         if (mac32 == mac32_recv) {
           isMatched = true;
+          Logger::amf_n1().error("Integrity matched");
           //nc.get()->security_ctx->ul_count.seq_num ++;
         }
         if (!isMatched) {
@@ -1113,7 +1115,7 @@ void amf_n1::authentication_response_handle(uint32_t ran_ue_ngap_id, long amf_ue
     response_registration_reject_msg(_5GMM_CAUSE_ILLEGAL_UE, ran_ue_ngap_id, amf_ue_ngap_id);  //cause?
     return;
   } else {
-    Logger::amf_n1().debug("Authenticated successfully by network!");
+    Logger::amf_n1().debug("Authentication successful by network!");
     if (!nc.get()->is_current_security_available) {
       if (!start_security_mode_control_procedure(nc)) {
         Logger::amf_n1().error("Start SMC procedure failure");
@@ -1262,7 +1264,7 @@ void amf_n1::security_mode_complete_handle(uint32_t ran_ue_ngap_id, long amf_ue_
   std::string mnc;
   uint32_t tmsi = 0;
   if (!amf_app_inst->generate_5g_guti(ran_ue_ngap_id, amf_ue_ngap_id, mcc, mnc, tmsi)) {
-    Logger::amf_n1().error("Generate 5G GTUI error! exit");
+    Logger::amf_n1().error("Generate 5G GUTI error! exit");
     //TODO:
     return;
   }
@@ -1291,6 +1293,7 @@ void amf_n1::security_mode_complete_handle(uint32_t ran_ue_ngap_id, long amf_ue_
   std::string guti = mcc + mnc + amf_cfg.guami.regionID + amf_cfg.guami.AmfSetID + amf_cfg.guami.AmfPointer + std::to_string(tmsi);
   Logger::amf_n1().debug("Allocated GUTI %s", guti.c_str());
 
+  //TODO: remove hardcoded values
   regAccept->set_5GS_Network_Feature_Support(0x00, 0x00);
   regAccept->setT3512_Value(0x5, 0x1e);
   uint8_t buffer[1024] = { 0 };
@@ -1340,7 +1343,7 @@ void amf_n1::security_mode_complete_handle(uint32_t ran_ue_ngap_id, long amf_ue_
     itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
     itti_msg->kgnb = kgnb_bs;
     itti_msg->nas = protectedNas;
-    itti_msg->is_sr = false;
+    itti_msg->is_sr = false; //TODO: for Setup Request procedure
     std::shared_ptr<itti_initial_context_setup_request> i = std::shared_ptr < itti_initial_context_setup_request > (itti_msg);
     int ret = itti_inst->send_msg(i);
     if (0 != ret) {
@@ -1428,7 +1431,7 @@ bool amf_n1::nas_message_integrity_protected(nas_secu_ctx *nsc, uint8_t directio
   }
   Logger::amf_n1().debug("Parameters for NIA, count: 0x%x", count);
   stream_cipher.bearer = 0x01;      //33.501 section 8.1.1
-  Logger::amf_n1().debug("Parameters for NIA, bearer: 0x%x", 0x01);
+  Logger::amf_n1().debug("Parameters for NIA, bearer: 0x%x", stream_cipher.bearer);
   stream_cipher.direction = direction;      // "1" for downlink
   Logger::amf_n1().debug("Parameters for NIA, direction: 0x%x", direction);
   stream_cipher.message = (uint8_t*) input_nas;

@@ -491,7 +491,7 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request &itti_msg) {
     memcpy(uecap, (uint8_t*) bdata(ueCapability), blength(ueCapability));
     uecap[blength(ueCapability)] = '\0';
     msg->setUERadioCapability(uecap, (size_t)blength(ueCapability));
-    Logger::amf_n2().debug("Encoding parameters for service request");
+    Logger::amf_n2().debug("Encoding parameters for Service Request");
     std::vector<PDUSessionResourceSetupRequestItem_t> list;
     PDUSessionResourceSetupRequestItem_t item;
     item.pduSessionId = itti_msg.pdu_session_id;
@@ -543,8 +543,8 @@ void amf_n2::handle_itti_message(itti_pdu_session_resource_setup_request &itti_m
   nas_pdu[blength(itti_msg.nas)] = '\0';
   item.pduSessionNAS_PDU = nas_pdu;
   item.sizeofpduSessionNAS_PDU = blength(itti_msg.nas);
-  item.s_nssai.sst = "01";
-  item.s_nssai.sd = "";
+  item.s_nssai.sst = "01"; //TODO: get from N1N2msgTranferMsg
+  item.s_nssai.sd = ""; //TODO: get from N1N2msgTranferMsg
   item.pduSessionResourceSetupRequestTransfer.buf = (uint8_t*) bdata(itti_msg.n2sm);
   item.pduSessionResourceSetupRequestTransfer.size = blength(itti_msg.n2sm);
   list.push_back(item);

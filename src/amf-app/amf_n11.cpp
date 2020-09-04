@@ -105,7 +105,7 @@ void amf_n11_task(void*) {
         amf_n11_inst->handle_itti_message(ref(*m));
       }
         break;
-      case NSMF_PDU_SESS_UPDATE_SMCTX: {
+      case NSMF_PDU_SESSION_UPDATE_SM_CTX: {
         Logger::amf_n1().info("Receive Nsmf_PDUSessionUpdateSMContext, handling ...");
         itti_nsmf_pdusession_update_sm_context *m = dynamic_cast<itti_nsmf_pdusession_update_sm_context*>(msg);
         amf_n11_inst->handle_itti_message(ref(*m));
