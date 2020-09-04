@@ -113,7 +113,7 @@ int amf_config::load(const std::string &config_file) {
     Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
   try {
-    const Setting &guami_list_cfg = amf_cfg[AMF_CONFIG_STRING_ServedGUAMIList];
+    const Setting &guami_list_cfg = amf_cfg[AMF_CONFIG_STRING_SERVED_GUAMI_LIST];
     int count = guami_list_cfg.getLength();
     for (int i = 0; i < count; i++) {
       guami_t guami;
@@ -129,12 +129,12 @@ int amf_config::load(const std::string &config_file) {
     Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
   try {
-    amf_cfg.lookupValue(AMF_CONFIG_STRING_RelativeAMFCapacity, relativeAMFCapacity);
+    amf_cfg.lookupValue(AMF_CONFIG_STRING_RELATIVE_AMF_CAPACITY, relativeAMFCapacity);
   } catch (const SettingNotFoundException &nfex) {
     Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
   try {
-    const Setting &plmn_list_cfg = amf_cfg[AMF_CONFIG_STRING_PLMNSupportList];
+    const Setting &plmn_list_cfg = amf_cfg[AMF_CONFIG_STRING_PLMN_SUPPORT_LIST];
     int count = plmn_list_cfg.getLength();
     for (int i = 0; i < count; i++) {
       plmn_item_t plmn_item;
@@ -142,7 +142,7 @@ int amf_config::load(const std::string &config_file) {
       item.lookupValue(AMF_CONFIG_STRING_MCC, plmn_item.mcc);
       item.lookupValue(AMF_CONFIG_STRING_MNC, plmn_item.mnc);
       item.lookupValue(AMF_CONFIG_STRING_TAC, plmn_item.tac);
-      const Setting &slice_list_cfg = plmn_list_cfg[i][AMF_CONFIG_STRING_SliceSupportList];
+      const Setting &slice_list_cfg = plmn_list_cfg[i][AMF_CONFIG_STRING_SLICE_SUPPORT_LIST];
       int numOfSlice = slice_list_cfg.getLength();
       for (int j = 0; j < numOfSlice; j++) {
         slice_t slice;
@@ -249,16 +249,16 @@ void amf_config::display() {
   Logger::config().info("- AMF NAME............................................: %s", AMF_Name.c_str());
   Logger::config().info("- GUAMI (MCC, MNC, Region ID, AMF Set ID, AMF pointer): ");
   Logger::config().info("   (%s, %s, %s, %s, %s )", guami.mcc.c_str(), guami.mnc.c_str(), guami.regionID.c_str(), guami.AmfSetID.c_str(), guami.AmfPointer.c_str());
-  Logger::config().info("- ServedGUAMIList ....................................: ");
+  Logger::config().info("- SERVED_GUAMI_LIST...................................: ");
   for (int i = 0; i < guami_list.size(); i++) {
     Logger::config().info("   (%s, %s, %s , %s, %s)", guami_list[i].mcc.c_str(), guami_list[i].mnc.c_str(), guami_list[i].regionID.c_str(), guami_list[i].AmfSetID.c_str(), guami_list[i].AmfPointer.c_str());
   }
-  Logger::config().info("- RelativeAMFCapacity ................................: %d", relativeAMFCapacity);
-  Logger::config().info("- PLMNSupportList ....................................: ");
+  Logger::config().info("- RELATIVE_CAPACITY...................................: %d", relativeAMFCapacity);
+  Logger::config().info("- PLMN_SUPPORT_LIST...................................: ");
   for (int i = 0; i < plmn_list.size(); i++) {
     Logger::config().info("   (MCC %s, MNC %s) ", plmn_list[i].mcc.c_str(), plmn_list[i].mnc.c_str());
     Logger::config().info("   TAC: %d", plmn_list[i].tac);
-    Logger::config().info("   SliceSupportList (SST, SD) ....................: ");
+    Logger::config().info("   SLICE_SUPPORT_LIST (SST, SD) ....................: ");
     for (int j = 0; j < plmn_list[i].slice_list.size(); j++) {
       Logger::config().info("     (%s, %s) ", plmn_list[i].slice_list[j].sST.c_str(), plmn_list[i].slice_list[j].sD.c_str());
     }
