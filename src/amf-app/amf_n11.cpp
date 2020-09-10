@@ -162,7 +162,7 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_m
   }
 
   //std::string remote_uri = smf_addr + "/nsmf-pdusession/v1/sm-contexts/" + "imsi-208950000000031-1" + "/modify";                  //scid
-  std::string remote_uri = smf_addr + psc.get()->smf_context_location + "/modify";                  //scid
+  std::string remote_uri = psc.get()->smf_context_location + "/modify";                  //scid
   nlohmann::json pdu_session_update_request;
   pdu_session_update_request["n2SmInfoType"] = "PDU_RES_SETUP_RSP";
   pdu_session_update_request["n2SmInfo"]["contentId"] = "n2SmMsg";
