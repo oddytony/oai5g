@@ -401,7 +401,12 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
     }
     if (httpCode != 200 && httpCode != 201 && httpCode != 204) {
       is_response_ok = false;
-      //TODO: error if there's no content in the response
+      if (response.size() < 1) {
+        Logger::amf_n11().error("There's no content in the response");
+        //TODO: send context response error
+        return;
+      }
+
       if (!(multipart_parser(response, jsonData, n1sm, n2sm))) {
         Logger::amf_n11().error("Could not get the cause from the response");
       }
