@@ -301,7 +301,8 @@ void amf_n11::set_supi_to_pdu_ctx(const string &supi, std::shared_ptr<pdu_sessio
 bool amf_n11::smf_selection_from_configuration(std::string &smf_addr) {
   for (int i = 0; i < amf_cfg.smf_pool.size(); i++) {
     if (amf_cfg.smf_pool[i].selected) {
-      smf_addr = "http://" + amf_cfg.smf_pool[i].ipv4 + ":" + amf_cfg.smf_pool[i].port;
+      //smf_addr = "http://" + amf_cfg.smf_pool[i].ipv4 + ":" + amf_cfg.smf_pool[i].port;
+      smf_addr = amf_cfg.smf_pool[i].ipv4 + ":" + amf_cfg.smf_pool[i].port;
       return true;
     }
   }
