@@ -28,7 +28,6 @@ include_directories(${SRC_TOP_DIR}/utils)
 include_directories(${SRC_TOP_DIR}/utils/bstr)
 include_directories(${SRC_TOP_DIR}/sbi/smf_client)
 include_directories(${SRC_TOP_DIR}/sbi/smf_client/api)
-include_directories(${SRC_TOP_DIR}/sbi/smf_client/inputs)
 include_directories(${SRC_TOP_DIR}/sbi/smf_client/model)
 
 add_library (AMF_SBI_CLIENT STATIC
@@ -40,6 +39,5 @@ add_library (AMF_SBI_CLIENT STATIC
   ${CMAKE_CURRENT_SOURCE_DIR}/ModelBase.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/MultipartFormData.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Object.cpp
-   ${CMAKE_CURRENT_SOURCE_DIR}/SMFClientApi.cpp
  )
 

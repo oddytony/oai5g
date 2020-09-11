@@ -27,17 +27,18 @@
  */
 
 #include "amf_app.hpp"
+
+#include <stdexcept>
+#include <iostream>
+#include <cstdlib>
 #include "itti.hpp"
+
 #include "ngap_app.hpp"
 #include "amf_config.hpp"
 #include "amf_n2.hpp"
 #include "amf_n1.hpp"
 #include "amf_n11.hpp"
-#include <stdexcept>
-#include <iostream>
-#include <cstdlib>
 #include "amf_statistics.hpp"
-
 #include "DLNASTransport.hpp"
 
 using namespace ngap;

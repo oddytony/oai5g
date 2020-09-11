@@ -30,11 +30,12 @@
 #define _AMF_NAS_CONTEXT_H_
 
 #include <stdint.h>
+#include <string>
+#include "struct.hpp"
+
+#include "nas_security_context.hpp"
 #include "security_def.hpp"
 #include "authentication_algorithms_with_5gaka.hpp"
-#include <string>
-#include "nas_security_context.hpp"
-#include "struct.hpp"
 
 class nas_context {
  public:

@@ -27,9 +27,11 @@
  */
 
 #include "amf_module_from_config.hpp"
-#include "logger.hpp"
+
 #include <iostream>
 #include <string>
+
+#include "logger.hpp"
 
 namespace config {
 

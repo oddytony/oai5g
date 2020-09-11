@@ -27,8 +27,10 @@
  */
 
 #include "amf_statistics.hpp"
-#include "logger.hpp"
+
 #include <iostream>
+
+#include "logger.hpp"
 
 //------------------------------------------------------------------------------
 void statistics::display() {

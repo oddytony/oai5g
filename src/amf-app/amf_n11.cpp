@@ -27,22 +27,22 @@
  */
 
 #include "amf_n11.hpp"
+
+#include <curl/curl.h>
+#include <nlohmann/json.hpp>
+
 #include "amf_n1.hpp"
 #include "itti.hpp"
 #include "itti_msg_amf_app.hpp"
 #include "amf_config.hpp"
 #include "nas_context.hpp"
 #include "amf.hpp"
-
-#include <curl/curl.h>
-#include <nlohmann/json.hpp>
+#include "3gpp_ts24501.hpp"
 // For smf_client
 #include "SmContextCreateData.h"
 #include "SMContextsCollectionApi.h"
 #include "ApiConfiguration.h"
 #include "ApiClient.h"
-
-#include "3gpp_ts24501.hpp"
 
 using namespace oai::smf::model;
 using namespace oai::smf::api;

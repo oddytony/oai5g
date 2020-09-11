@@ -31,8 +31,9 @@
 
 #include <stdint.h>
 #include <map>
-#include "NgapIEsStruct.hpp"
 #include <shared_mutex>
+
+#include "NgapIEsStruct.hpp"
 
 extern "C" {
 #include "Ngap_RRCEstablishmentCause.h"

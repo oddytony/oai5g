@@ -27,13 +27,17 @@
  */
 
 #include "amf_config.hpp"
-#include "logger.hpp"
+
+#include <iostream>
 #include <libconfig.h++>
 #include "string.hpp"
 #include "thread_sched.hpp"
+
+#include "logger.hpp"
 #include "amf_app.hpp"
 #include "if.hpp"
 #include "3gpp_ts24501.hpp"
+
 extern "C" {
 #include <arpa/inet.h>
 #include <stdbool.h>
@@ -43,8 +47,6 @@ extern "C" {
 #include <unistd.h>
 #include "common_defs.h"
 }
-
-#include <iostream>
 
 using namespace libconfig;
 using namespace amf_application;

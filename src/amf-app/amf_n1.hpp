@@ -31,14 +31,6 @@
 
 #include <map>
 #include <shared_mutex>
-#include "nas_context.hpp"
-#include "pdu_session_context.hpp"
-#include "itti_msg_n1.hpp"
-#include "bstrlib.h"
-#include "3gpp_ts24501.hpp"
-#include "amf_statistics.hpp"
-#include "amf.hpp"
-
 #include <pthread.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -50,6 +42,13 @@
 #include <inttypes.h>
 #include <mysql/mysql.h>
 
+#include "nas_context.hpp"
+#include "pdu_session_context.hpp"
+#include "itti_msg_n1.hpp"
+#include "bstrlib.h"
+#include "3gpp_ts24501.hpp"
+#include "amf_statistics.hpp"
+#include "amf.hpp"
 #include "mysql_db.hpp"
 
 namespace amf_application {
