@@ -314,6 +314,8 @@ include_directories(${SRC_TOP_DIR}/itti)
 include_directories(${SRC_TOP_DIR}/itti/msgs)
 include_directories(${SRC_TOP_DIR}/common)
 include_directories(${SRC_TOP_DIR}/common/unicode)
+include_directories(${SRC_TOP_DIR}/utils)
+include_directories(${SRC_TOP_DIR}/utils/bstr)
 include_directories(${SRC_TOP_DIR}/contexts)
 include_directories(${SRC_TOP_DIR}/nas/ies)
 include_directories(${SRC_TOP_DIR}/nas/common)
@@ -333,8 +335,6 @@ include_directories(${SRC_TOP_DIR}/sbi/smf_client/model)
 include_directories(${SRC_TOP_DIR}/sctp)
 include_directories(${SRC_TOP_DIR}/secu_algorithms/5gaka)
 include_directories(${SRC_TOP_DIR}/secu_algorithms/nas_enc_int)
-include_directories(${SRC_TOP_DIR}/utils)
-include_directories(${SRC_TOP_DIR}/utils/bstr)
 
 add_executable(amf
 	${SRC_TOP_DIR}/oai-amf/main.cpp 
