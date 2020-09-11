@@ -161,9 +161,24 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_m
     smf_selection_from_context(smf_addr);
   }
 
-  //std::string remote_uri = smf_addr + "/nsmf-pdusession/v1/sm-contexts/" + "imsi-208950000000031-1" + "/modify";                  //scid
-  std::string remote_uri = psc.get()->smf_context_location + "/modify";                  //scid
-  nlohmann::json pdu_session_update_request;
+  std::string smf_ip_addr, remote_uri;
+
+  //remove http port from the URI if existed
+  std::size_t found_port = smf_addr.find(":");
+  if (found_port != std::string::npos)
+    smf_ip_addr = smf_addr.substr(0, found_port - 1);
+  else
+    smf_ip_addr = smf_addr;
+
+  std::size_t found = psc.get()->smf_context_location.find(smf_ip_addr);
+  if (found != std::string::npos)
+    remote_uri = psc.get()->smf_context_location + "/modify";
+  else
+    remote_uri = smf_addr + psc.get()->smf_context_location + "/modify";
+
+  Logger::amf_n11().debug("SMF URI: %s", remote_uri.c_str());
+
+  nlohmann::json pdu_session_update_request = {};
   pdu_session_update_request["n2SmInfoType"] = "PDU_RES_SETUP_RSP";
   pdu_session_update_request["n2SmInfo"]["contentId"] = "n2SmMsg";
   std::string json_part = pdu_session_update_request.dump();
@@ -295,6 +310,7 @@ bool amf_n11::smf_selection_from_configuration(std::string &smf_addr) {
 
 //------------------------------------------------------------------------------
 bool amf_n11::smf_selection_from_context(std::string &smf_addr) {
+  //TODO:
 }
 
 // handlers for smf client response
