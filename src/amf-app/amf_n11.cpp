@@ -182,7 +182,7 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_m
 
   nlohmann::json pdu_session_update_request = {};
   pdu_session_update_request["n2SmInfoType"] = "PDU_RES_SETUP_RSP";
-  pdu_session_update_request["n2SmInfo"]["contentId"] = "n2SmMsg";
+  pdu_session_update_request["n2SmInfo"]["contentId"] = "n2msg";
   std::string json_part = pdu_session_update_request.dump();
   std::string n2SmMsg;
   octet_stream_2_hex_stream((uint8_t*) bdata(itti_msg.n2sm), blength(itti_msg.n2sm), n2SmMsg);
