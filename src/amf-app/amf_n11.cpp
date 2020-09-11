@@ -31,6 +31,7 @@
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 
+#include "dynamic_memory_check.h"
 #include "amf_n1.hpp"
 #include "itti.hpp"
 #include "itti_msg_amf_app.hpp"
@@ -43,6 +44,7 @@
 #include "SMContextsCollectionApi.h"
 #include "ApiConfiguration.h"
 #include "ApiClient.h"
+#include "mime_parser.hpp"
 
 using namespace oai::smf::model;
 using namespace oai::smf::api;
@@ -253,7 +255,7 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer &smf) {
 //------------------------------------------------------------------------------
 void amf_n11::handle_pdu_session_initial_request(std::string supi, std::shared_ptr<pdu_session_context> psc, std::string smf_addr, bstring sm_msg, std::string dnn) {
   //TODO: Remove hardcoded values
-  std::string remote_uri = smf_addr + "/nsmf-pdusession/v1/sm-contexts"; //TODO
+  std::string remote_uri = smf_addr + "/nsmf-pdusession/v1/sm-contexts";  //TODO
   nlohmann::json pdu_session_establishment_request;
   pdu_session_establishment_request["supi"] = supi.c_str();
   pdu_session_establishment_request["pei"] = "imei-200000000000001";
@@ -262,11 +264,11 @@ void amf_n11::handle_pdu_session_initial_request(std::string supi, std::shared_p
   pdu_session_establishment_request["sNssai"]["sst"] = psc.get()->snssai.sST;
   pdu_session_establishment_request["sNssai"]["sd"] = psc.get()->snssai.sD;
   pdu_session_establishment_request["pduSessionId"] = psc.get()->pdu_session_id;
-  pdu_session_establishment_request["requestType"] = "INITIAL_REQUEST"; //TODO: from SM_MSG
+  pdu_session_establishment_request["requestType"] = "INITIAL_REQUEST";  //TODO: from SM_MSG
   pdu_session_establishment_request["servingNfId"] = "servingNfId";
   pdu_session_establishment_request["servingNetwork"]["mcc"] = psc.get()->plmn.mcc;
   pdu_session_establishment_request["servingNetwork"]["mnc"] = psc.get()->plmn.mnc;
-  pdu_session_establishment_request["anType"] = "3GPP_ACCESS"; //TODO
+  pdu_session_establishment_request["anType"] = "3GPP_ACCESS";  //TODO
   pdu_session_establishment_request["smContextStatusUri"] = "smContextStatusUri";
 
   pdu_session_establishment_request["n1MessageContainer"]["n1MessageClass"] = "SM";
@@ -346,50 +348,44 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
     //TODO:
   }
 
-  CURL *curl = curl_easy_init();
-  if (curl) {
-    CURLcode res;
-    struct curl_slist *headers = nullptr;
-    struct curl_slist *slist = nullptr;
-    curl_mime *mime;
-    curl_mime *alt;
-    curl_mimepart *part;
+  mime_parser parser = { };
+  std::string body;
 
-    //headers = curl_slist_append(headers, "charsets: utf-8");
-    headers = curl_slist_append(headers, "content-type: multipart/related");
+  if ((n1SmMsg.size() > 0) and (n2SmMsg.size() > 0)) {
+    //prepare the body content for Curl
+    parser.create_multipart_related_content(body, jsonData, CURL_MIME_BOUNDARY, n1SmMsg, n2SmMsg);
+  } else if (n1SmMsg.size() > 0) {  //only N1 content
+    //prepare the body content for Curl
+    parser.create_multipart_related_content(body, jsonData, CURL_MIME_BOUNDARY, n1SmMsg, multipart_related_content_part_e::NAS);
+  } else if (n2SmMsg.size() > 0) {  //only N2 content
+    //prepare the body content for Curl
+    parser.create_multipart_related_content(body, jsonData, CURL_MIME_BOUNDARY, n2SmMsg, multipart_related_content_part_e::NGAP);
+  }
+
+  Logger::amf_n11().debug("Send HTTP message to SMF with body %s", body.c_str());
+
+  uint32_t str_len = body.length();
+  char *body_data = (char*) malloc(str_len + 1);
+  memset(body_data, 0, str_len + 1);
+  memcpy((void*) body_data, (void*) body.c_str(), str_len);
+
+  curl_global_init (CURL_GLOBAL_ALL);
+  CURL *curl = curl_easy_init();
+
+  if (curl) {
+    CURLcode res = { };
+    struct curl_slist *headers = nullptr;
+
+    std::string content_type = "content-type: multipart/related; boundary=" + std::string(CURL_MIME_BOUNDARY);
+    headers = curl_slist_append(headers, content_type.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curl, CURLOPT_URL, remoteUri.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 100L);
-
-    mime = curl_mime_init(curl);
-    alt = curl_mime_init(curl);
-
-    //part with N1N2MessageTransferReqData (JsonData)
-    part = curl_mime_addpart(mime);
-    curl_mime_data(part, jsonData.c_str(), CURL_ZERO_TERMINATED);
-    curl_mime_type(part, "application/json");
-
-    if (n1SmMsg != "") {
-      unsigned char *n1_msg_hex = format_string_as_hex(n1SmMsg);
-      part = curl_mime_addpart(mime);
-      curl_mime_data(part, reinterpret_cast<const char*>(n1_msg_hex), n1SmMsg.length() / 2);
-      curl_mime_type(part, "application/vnd.3gpp.5gnas");
-      //curl_mime_name (part, "n1SmMsg");
-    }
-
-    if (n2SmMsg != "") {
-      unsigned char *n2_msg_hex = format_string_as_hex(n2SmMsg);
-      part = curl_mime_addpart(mime);
-      curl_mime_data(part, reinterpret_cast<const char*>(n2_msg_hex), n2SmMsg.length() / 2);
-      curl_mime_type(part, "application/vnd.3gpp.ngap");
-      //curl_mime_name (part, "n2SmMsg");
-    }
-
-    curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, SMF_CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
 
     // Response information.
-    long httpCode(0);
+    long httpCode = { 0 };
     std::unique_ptr < std::string > httpData(new std::string());
     std::unique_ptr < std::string > httpHeaderData(new std::string());
 
@@ -398,12 +394,15 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
     curl_easy_setopt(curl, CURLOPT_HEADERDATA, httpHeaderData.get());
 
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body_data);
+
     res = curl_easy_perform(curl);
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 
     //get cause from the response
     std::string response = *httpData.get();
-    std::string jsonData = "";
+    std::string json_data_response = "";
     std::string n1sm = "";
     std::string n2sm = "";
     bool is_response_ok = true;
@@ -413,9 +412,9 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
       //free curl before returning
       curl_slist_free_all(headers);
       curl_easy_cleanup(curl);
-      curl_mime_free(mime);
       return;
     }
+
     if (httpCode != 200 && httpCode != 201 && httpCode != 204) {
       is_response_ok = false;
       if (response.size() < 1) {
@@ -423,12 +422,12 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
         //TODO: send context response error
         return;
       }
-
-      if (!(multipart_parser(response, jsonData, n1sm, n2sm))) {
-        Logger::amf_n11().error("Could not get the cause from the response");
+      if (!(multipart_parser(response, json_data_response, n1sm, n2sm))) {
+        Logger::amf_n11().error("Could not get N1/N2 content from the response");
+        //TODO:
       }
     } else {
-      //store location of created context
+      //store location of the created context
       std::string header_response = *httpHeaderData.get();
       std::string CRLF = "\r\n";
       std::size_t location_pos = header_response.find("Location");
@@ -437,24 +436,37 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
       Logger::amf_n11().info("Location of the SMF context created: %s", location.c_str());
       psc.get()->smf_context_location = location;
     }
-    nlohmann::json response_data;
+
+    nlohmann::json response_data = { };
     bstring n1sm_hex;
 
     if (!is_response_ok) {
-      response_data = nlohmann::json::parse(jsonData);
-      Logger::amf_n11().debug("Get response with jsonData: %s", jsonData.c_str());
-      msg_str_2_msg_hex(n1sm.substr(0, n1sm.length() - 2), n1sm_hex);                  //pdu session establishment reject bugs from SMF
+      try {
+        response_data = nlohmann::json::parse(json_data_response);
+      } catch (nlohmann::json::exception &e) {
+        Logger::amf_n11().warn("Could not get Json content from the response");
+        //Set the default Cause
+        response_data["error"]["cause"] = "504 Gateway Timeout";
+      }
+
+      Logger::amf_n11().debug("Get response with jsonData: %s", json_data_response.c_str());
+      msg_str_2_msg_hex(n1sm.substr(0, n1sm.length() - 2), n1sm_hex);  //pdu session establishment reject bugs from SMF
       print_buffer("amf_n11", "Get response with n1sm:", (uint8_t*) bdata(n1sm_hex), blength(n1sm_hex));
 
       std::string cause = response_data["error"]["cause"];
       Logger::amf_n11().error("Call Network Function services failure");
-      Logger::amf_n11().info("Cause value: %s", cause.c_str());
+      Logger::amf_n11().debug("Cause value: %s", cause.c_str());
       if (!cause.compare("DNN_DENIED"))
         handle_post_sm_context_response_error(httpCode, cause, n1sm_hex, supi, pdu_session_id);
     }
-
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
-    curl_mime_free(mime);
   }
+
+  curl_global_cleanup();
+  if (body_data != nullptr) {
+    free(body_data);
+    body_data = NULL;
+  }
+
 }
