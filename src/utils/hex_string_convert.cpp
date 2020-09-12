@@ -4,6 +4,10 @@
 
 #include "conversions.hpp"
 
+extern "C" {
+#include "dynamic_memory_check.h"
+}
+
 void convert_string_2_hex(std::string& input_str, std::string& output_str)
 { 
   unsigned char *data = (unsigned char *) malloc (input_str.length() + 1);
@@ -62,9 +66,7 @@ unsigned char * format_string_as_hex(std::string str){
   } 
   printf("\n");
   
-  free(data);
-  data = nullptr;
-  
+  free_wrapper((void**) &data);
   return datavalue;
 }
 
@@ -74,8 +76,7 @@ char* bstring2charString(bstring b){
   for(int i=0; i<blength(b); i++)
     buf[i] = (char)value[i];
   buf[blength(b)] = '\0';
-  free(value);
-  value = nullptr;
+  free_wrapper((void**) &value);
   return buf;
 }
 

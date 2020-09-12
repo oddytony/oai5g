@@ -50,6 +50,10 @@
 #include "comUt.hpp"
 #include "sha256.hpp"
 
+extern "C" {
+#include "dynamic_memory_check.h"
+}
+
 using namespace nas;
 using namespace amf_application;
 using namespace config;
@@ -820,7 +824,7 @@ bool amf_n1::authentication_vectors_generator_in_udm(std::shared_ptr<nas_context
         generate_random(vector[0].rand, RAND_LENGTH);
         mysql_push_rand_sqn(nc.get()->imsi, vector[0].rand, sqn);
         mysql_increment_sqn(nc.get()->imsi);
-        free(sqn);
+        free_wrapper((void**) &sqn);
       }
       if (!get_mysql_auth_info(nc.get()->imsi, mysql_resp)) {
         Logger::amf_n1().error("Cannot get data from MySQL");

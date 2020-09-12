@@ -31,7 +31,6 @@
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 
-#include "dynamic_memory_check.h"
 #include "amf_n1.hpp"
 #include "itti.hpp"
 #include "itti_msg_amf_app.hpp"
@@ -46,20 +45,21 @@
 #include "ApiClient.h"
 #include "mime_parser.hpp"
 
+extern "C" {
+#include "dynamic_memory_check.h"
+}
+
 using namespace oai::smf::model;
 using namespace oai::smf::api;
 using namespace web;
-// Common features like URIs.
-using namespace web::http;
-// Common HTTP functionality
-using namespace web::http::client;
+using namespace web::http; // Common features like URIs.
+using namespace web::http::client; // Common HTTP functionality
 
 using namespace config;
 using namespace amf_application;
 extern itti_mw *itti_inst;
 extern amf_config amf_cfg;
 extern amf_n11 *amf_n11_inst;
-
 extern amf_n1 *amf_n1_inst;
 
 extern void msg_str_2_msg_hex(std::string msg, bstring &b);
@@ -219,8 +219,7 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer &smf) {
   if ((smf.dnn != nullptr) && (blength(smf.dnn) > 0)) {
     char *tmp = bstring2charString(smf.dnn);
     dnn = tmp;
-    free(tmp);
-    tmp = nullptr;
+    free_wrapper((void**) &tmp);
   }
 
   Logger::amf_n11().debug("Requested DNN: %s", dnn.c_str());
@@ -431,10 +430,15 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
       std::string header_response = *httpHeaderData.get();
       std::string CRLF = "\r\n";
       std::size_t location_pos = header_response.find("Location");
-      std::size_t crlf_pos = header_response.find(CRLF, location_pos);
-      std::string location = header_response.substr(location_pos + 10, crlf_pos - (location_pos + 10));
-      Logger::amf_n11().info("Location of the SMF context created: %s", location.c_str());
-      psc.get()->smf_context_location = location;
+
+      if (location_pos != std::string::npos) {
+        std::size_t crlf_pos = header_response.find(CRLF, location_pos);
+        if (crlf_pos != std::string::npos) {
+          std::string location = header_response.substr(location_pos + 10, crlf_pos - (location_pos + 10));
+          Logger::amf_n11().info("Location of the created SMF context: %s", location.c_str());
+          psc.get()->smf_context_location = location;
+        }
+      }
     }
 
     nlohmann::json response_data = { };
@@ -464,9 +468,5 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
   }
 
   curl_global_cleanup();
-  if (body_data != nullptr) {
-    free(body_data);
-    body_data = NULL;
-  }
-
+  free_wrapper((void**) &body_data);
 }

@@ -62,17 +62,4 @@ class amf_n2 : public ngap::ngap_app{
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 #endif

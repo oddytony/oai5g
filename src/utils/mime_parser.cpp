@@ -23,6 +23,10 @@
 #include "logger.hpp"
 #include "conversions.hpp"
 
+extern "C" {
+#include "dynamic_memory_check.h"
+}
+
 bool mime_parser::parse(const std::string &str) {
   std::string CRLF = "\r\n";
   Logger::amf_app().debug("Parsing the message with Simple Parser");
@@ -91,10 +95,7 @@ unsigned char* mime_parser::format_string_as_hex(const std::string &str) {
   printf("\n");
 #endif
   //free memory
-  //free_wrapper((void**) &data);
-  free(data);
-  data = NULL;
-
+  free_wrapper((void**) &data);
   return data_hex;
 }
 
