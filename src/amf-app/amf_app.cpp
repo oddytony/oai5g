@@ -65,22 +65,16 @@ amf_app::amf_app(const amf_config &amf_cfg) {
     Logger::amf_app().error("Cannot create task TASK_AMF_APP");
     throw std::runtime_error("Cannot create task TASK_AMF_APP");
   }
-  try {
-    amf_n2_inst = new amf_n2(std::string(inet_ntoa(amf_cfg.n2.addr4)), amf_cfg.n2.port);
-  } catch (std::exception &e) {
-    Logger::amf_app().error("Cannot create N2 interface: %s", e.what());
-    throw;
-  }
+
   try {
     amf_n1_inst = new amf_n1();
-  } catch (std::exception &e) {
-    Logger::amf_app().error("Cannot create N1 interface: %s", e.what());
-  }
-  try {
+    amf_n2_inst = new amf_n2(std::string(inet_ntoa(amf_cfg.n2.addr4)), amf_cfg.n2.port);
     amf_n11_inst = new amf_n11();
   } catch (std::exception &e) {
-    Logger::amf_app().error("Cannot create N11 interface: %s", e.what());
+    Logger::amf_app().error("Cannot create AMF APP: %s", e.what());
+    throw;
   }
+
   timer_id_t tid = itti_inst->timer_setup(amf_cfg.statistics_interval, 0, TASK_AMF_APP, TASK_AMF_APP_PERIODIC_STATISTICS, 0);
   Logger::amf_app().startup("Started timer(%d)", tid);
 }

@@ -29,6 +29,7 @@
 #include "amf_n2.hpp"
 
 #include "amf_n1.hpp"
+#include "amf_n11.hpp"
 #include "amf_app.hpp"
 #include "logger.hpp"
 #include "sctp_server.hpp"
@@ -52,6 +53,7 @@ using namespace config;
 extern itti_mw *itti_inst;
 extern amf_n2 *amf_n2_inst;
 extern amf_n1 *amf_n1_inst;
+extern amf_n11 *amf_n11_inst;
 extern amf_config amf_cfg;
 extern amf_app *amf_app_inst;
 extern statistics stacs;
@@ -546,6 +548,26 @@ void amf_n2::handle_itti_message(itti_pdu_session_resource_setup_request &itti_m
   item.sizeofpduSessionNAS_PDU = blength(itti_msg.nas);
   item.s_nssai.sst = "01"; //TODO: get from N1N2msgTranferMsg
   item.s_nssai.sd = ""; //TODO: get from N1N2msgTranferMsg
+
+  //Get NSSAI from PDU Session Context
+  std::shared_ptr<nas_context> nc;
+  if (amf_n1_inst->is_amf_ue_id_2_nas_context(itti_msg.amf_ue_ngap_id))
+    nc = amf_n1_inst->amf_ue_id_2_nas_context(itti_msg.amf_ue_ngap_id);
+  else {
+    Logger::amf_n2().warn("No existed nas_context with amf_ue_ngap_id(0x%x)", itti_msg.amf_ue_ngap_id);
+    //TODO:
+  }
+  string supi = "imsi-" + nc.get()->imsi;
+  Logger::amf_n2().debug("SUPI (%s)", supi.c_str());
+  std::shared_ptr<pdu_session_context> psc;
+  if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
+    psc = amf_n11_inst->supi_to_pdu_ctx(supi);
+  } else {
+    Logger::amf_n2().warn("Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
+  }
+  item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
+  item.s_nssai.sd = psc.get()->snssai.sD;
+
   item.pduSessionResourceSetupRequestTransfer.buf = (uint8_t*) bdata(itti_msg.n2sm);
   item.pduSessionResourceSetupRequestTransfer.size = blength(itti_msg.n2sm);
   list.push_back(item);
