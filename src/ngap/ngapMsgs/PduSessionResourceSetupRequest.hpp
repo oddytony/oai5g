@@ -60,6 +60,7 @@ class PduSessionResourceSetupRequestMsg {
   void setPduSessionResourceSetupRequestList(std::vector<PDUSessionResourceSetupRequestItem_t> list);
   void setPduSessionAggregateMaximumBitRate(long bit_rate_downlink, long bit_rate_uplink);
   int encode2buffer(uint8_t *buf, int buf_size);
+  void encode2buffer_new(char *buf, int &encoded_size);
   //Decapsulation
   bool decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu);
   unsigned long getAmfUeNgapId();

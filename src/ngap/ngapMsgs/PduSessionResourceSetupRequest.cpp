@@ -224,6 +224,17 @@ int PduSessionResourceSetupRequestMsg::encode2buffer(uint8_t *buf, int buf_size)
 }
 
 //------------------------------------------------------------------------------
+void PduSessionResourceSetupRequestMsg::encode2buffer_new(char *buf, int &encoded_size) {
+  char *buffer = (char*) calloc(1, 512); //TODO: remove hardcoded value
+  asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, pduSessionResourceSetupRequestPdu);
+  encoded_size = aper_encode_to_new_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL, pduSessionResourceSetupRequestPdu, (void**)&buffer);
+
+  cout << "er.encoded(" << encoded_size << ")" << endl;
+  memcpy((void*) buf, (void*) buffer, encoded_size);
+  free(buffer);
+}
+
+//------------------------------------------------------------------------------
 //Decapsulation
 bool PduSessionResourceSetupRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
   pduSessionResourceSetupRequestPdu = ngap_msg_pdu;

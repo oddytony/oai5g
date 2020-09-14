@@ -48,6 +48,10 @@
 #include "Ngap_CauseRadioNetwork.h"
 #include "Ngap_TimeToWait.h"
 
+extern "C" {
+#include "dynamic_memory_check.h"
+}
+
 using namespace amf_application;
 using namespace config;
 extern itti_mw *itti_inst;
@@ -573,10 +577,22 @@ void amf_n2::handle_itti_message(itti_pdu_session_resource_setup_request &itti_m
   list.push_back(item);
   psrsr->setPduSessionResourceSetupRequestList(list);
 
-  uint8_t buffer[5000];
-  int encoded_size = psrsr->encode2buffer(buffer, 5000);
+  size_t buffer_size = 512; //TODO: remove hardcoded value
+  char *buffer = (char*) calloc(1, buffer_size);
+  int encoded_size = 0;
+  
+  psrsr->encode2buffer_new(buffer, encoded_size);
+ #if DEBUG_IS_ON
+  Logger::amf_n2().debug("N2 SM buffer data: ");
+  for (int i = 0; i < encoded_size; i++)
+    printf("%02x ", (char) buffer[i]);
+#endif
+  Logger::amf_n2().debug(" (%d bytes) \n", encoded_size);
+
   bstring b = blk2bstr(buffer, encoded_size);
   sctp_s_38412.sctp_send_msg(gc.get()->sctp_assoc_id, unc.get()->sctp_stream_send, &b);
+  //free memory
+  free_wrapper((void**) &buffer);
 }
 
 //------------------------------------------------------------------------------

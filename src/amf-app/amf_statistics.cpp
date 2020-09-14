@@ -49,7 +49,7 @@ void statistics::display() {
 
   //TODO: Show the list of common PLMNs
   for (int i = 0; i < gnbs.size(); i++) {
-    Logger::amf_app().info("|      %d      |    Connected     |         0x%x       |         %s        |          %s, %d           | ", i + 1, gnbs[i].gnb_id, gnbs[i].gnb_name.c_str(), (gnbs[i].mcc + gnbs[i].mnc).c_str(), gnbs[i].tac);
+    Logger::amf_app().info("|      %d      |    Connected     |         0x%x       |         %s        |          %s, %d          | ", i + 1, gnbs[i].gnb_id, gnbs[i].gnb_name.c_str(), (gnbs[i].mcc + gnbs[i].mnc).c_str(), gnbs[i].tac);
    }
   Logger::amf_app().info("|----------------------------------------------------------------------------------------------------------------|");
   Logger::amf_app().info("");
