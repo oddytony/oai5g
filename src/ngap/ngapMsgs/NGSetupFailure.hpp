@@ -47,7 +47,7 @@ class NGSetupFailureMsg {
   NGSetupFailureMsg();
   virtual ~NGSetupFailureMsg();
 
-  //Erternal interfaces
+  //External interfaces
   //Encapsulation
   void setMessageType();
   void setCauseRadioNetwork(e_Ngap_CauseRadioNetwork cause_value, e_Ngap_TimeToWait time_to_wait);

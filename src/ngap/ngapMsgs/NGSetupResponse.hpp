@@ -51,7 +51,7 @@ class NGSetupResponseMsg {
   NGSetupResponseMsg();
   virtual ~NGSetupResponseMsg();
 
-  //Erternal interfaces
+  //External interfaces
   //Encapsulation
   void setMessageType();  //Initialize the PDU and populate the MessageType;
   void setAMFName(const std::string name);  //���IE

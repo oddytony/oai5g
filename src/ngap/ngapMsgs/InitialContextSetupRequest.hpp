@@ -64,8 +64,8 @@ class InitialContextSetupRequestMsg {
   void setOldAmfName(const std::string name);
 
   void setUEAggregateMaxBitRate(long bit_rate_downlink, long bit_rate_uplink);
-  void setCoreNetworkAssistanceInfo(uint16_t ueIdentityIndexValue/*10bits限制*/, e_Ngap_PagingDRX ueSpecificDrx/*可选，如何指示?*/, uint8_t periodicRegUpdateTimer, bool micoModeInd/*可选*/, std::vector<Tai_t> taiListForRRcInactive);
-  void setCoreNetworkAssistanceInfo(uint16_t ueIdentityIndexValue/*10bits限制*/, uint8_t periodicRegUpdateTimer, bool micoModeInd/*可选*/, std::vector<Tai_t> taiListForRRcInactive);
+  void setCoreNetworkAssistanceInfo(uint16_t ueIdentityIndexValue/*10bits*/, e_Ngap_PagingDRX ueSpecificDrx, uint8_t periodicRegUpdateTimer, bool micoModeInd, std::vector<Tai_t> taiListForRRcInactive);
+  void setCoreNetworkAssistanceInfo(uint16_t ueIdentityIndexValue/*10bits*/, uint8_t periodicRegUpdateTimer, bool micoModeInd, std::vector<Tai_t> taiListForRRcInactive);
   void setGuami(Guami_t value);
   void setPduSessionResourceSetupRequestList(std::vector<PDUSessionResourceSetupRequestItem_t> list);
   void setAllowedNssai(std::vector<S_Nssai> list);
@@ -80,7 +80,7 @@ class InitialContextSetupRequestMsg {
   uint32_t getRanUeNgapId();
   bool getOldAmfName(std::string &name);
   bool getUEAggregateMaxBitRate(long &bit_rate_downlink, long &bit_rate_uplink);
-  bool getCoreNetworkAssistanceInfo(uint16_t &ueIdentityIndexValue/*10bits限制*/, int &ueSpecificDrx/*-1,不存在?*/, uint8_t &periodicRegUpdateTimer, bool &micoModeInd/*可选*/, std::vector<Tai_t> &taiListForRRcInactive);
+  bool getCoreNetworkAssistanceInfo(uint16_t &ueIdentityIndexValue/*10bits*/, int &ueSpecificDrx, uint8_t &periodicRegUpdateTimer, bool &micoModeInd, std::vector<Tai_t> &taiListForRRcInactive);
   bool getGuami(Guami_t &value);
   bool getPduSessionResourceSetupRequestList(std::vector<PDUSessionResourceSetupRequestItem_t> &list);
   bool getAllowedNssai(std::vector<S_Nssai> &list);

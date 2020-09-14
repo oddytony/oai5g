@@ -172,7 +172,7 @@ void InitialContextSetupRequestMsg::setUEAggregateMaxBitRate(long bit_rate_downl
 }
 
 //------------------------------------------------------------------------------
-void InitialContextSetupRequestMsg::setCoreNetworkAssistanceInfo(uint16_t ueIdentityIndexValue/*10bits限制*/, e_Ngap_PagingDRX ueSpecificDrx/*可选，如何指示?*/, uint8_t periodicRegUpdateTimer, bool micoModeInd/*可选*/, std::vector<Tai_t> taiListForRRcInactive) {
+void InitialContextSetupRequestMsg::setCoreNetworkAssistanceInfo(uint16_t ueIdentityIndexValue/*10bits*/, e_Ngap_PagingDRX ueSpecificDrx, uint8_t periodicRegUpdateTimer, bool micoModeInd, std::vector<Tai_t> taiListForRRcInactive) {
   if (!coreNetworkAssistanceInfo)
     coreNetworkAssistanceInfo = new CoreNetworkAssistanceInfo();
 
@@ -209,7 +209,7 @@ void InitialContextSetupRequestMsg::setCoreNetworkAssistanceInfo(uint16_t ueIden
 }
 
 //------------------------------------------------------------------------------
-void InitialContextSetupRequestMsg::setCoreNetworkAssistanceInfo(uint16_t ueIdentityIndexValue/*10bits限制*/, uint8_t periodicRegUpdateTimer, bool micoModeInd/*可选*/, std::vector<Tai_t> taiListForRRcInactive) {
+void InitialContextSetupRequestMsg::setCoreNetworkAssistanceInfo(uint16_t ueIdentityIndexValue/*10bits*/, uint8_t periodicRegUpdateTimer, bool micoModeInd, std::vector<Tai_t> taiListForRRcInactive) {
   if (!coreNetworkAssistanceInfo)
     coreNetworkAssistanceInfo = new CoreNetworkAssistanceInfo();
 
