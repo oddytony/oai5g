@@ -42,12 +42,17 @@ class AssociatedQosFlowItem {
   AssociatedQosFlowItem();
   virtual ~AssociatedQosFlowItem();
 
-  void setAssociatedQosFlowItem(e_Ngap_AssociatedQosFlowItem__qosFlowMappingIndication m_qosFlowMappingIndication, QosFlowIdentifier *m_qosFlowIdentifier);
+  void setAssociatedQosFlowItem(
+      e_Ngap_AssociatedQosFlowItem__qosFlowMappingIndication m_qosFlowMappingIndication,
+      QosFlowIdentifier *m_qosFlowIdentifier);
   void setAssociatedQosFlowItem(QosFlowIdentifier *m_qosFlowIdentifier);
-  bool getAssociatedQosFlowItem(long &m_qosFlowMappingIndication, QosFlowIdentifier *&m_qosFlowIdentifier);
+  bool getAssociatedQosFlowItem(long &m_qosFlowMappingIndication,
+                                QosFlowIdentifier *&m_qosFlowIdentifier);
 
-  bool encode2AssociatedQosFlowItem(Ngap_AssociatedQosFlowItem_t *associatedQosFlowItem);
-  bool decodefromAssociatedQosFlowItem(Ngap_AssociatedQosFlowItem_t *associatedQosFlowItem);
+  bool encode2AssociatedQosFlowItem(
+      Ngap_AssociatedQosFlowItem_t *associatedQosFlowItem);
+  bool decodefromAssociatedQosFlowItem(
+      Ngap_AssociatedQosFlowItem_t *associatedQosFlowItem);
  private:
   QosFlowIdentifier *qosFlowIdentifier;
   long qosFlowMappingIndication;

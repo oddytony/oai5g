@@ -34,7 +34,6 @@ typedef struct {
   uint32_t tac;
 } plmn_t;
 
-
 typedef struct s_nssai  // section 28.4, TS23.003
 {
   uint8_t sST;
@@ -65,7 +64,6 @@ typedef struct s_nssai  // section 28.4, TS23.003
 
 } snssai_t;
 
-
 //SMF + AMF + 3GPP TS 29.571 (Common data)
 enum class http_response_codes_e {
   HTTP_RESPONSE_CODE_200_OK = 200,
@@ -94,13 +92,10 @@ enum class http_response_codes_e {
 
 };
 
-
 //for CURL
 #define SMF_CURL_TIMEOUT_MS 100L
 #define SMF_NUMBER_RETRIES 3
 constexpr auto CURL_MIME_BOUNDARY = "----Boundary";
-
-
 
 #endif
 

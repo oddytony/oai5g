@@ -41,15 +41,23 @@ UERadioCapabilityForPaging::~UERadioCapabilityForPaging() {
 }
 
 //------------------------------------------------------------------------------
-bool UERadioCapabilityForPaging::encode2UERadioCapabilityForPaging(Ngap_UERadioCapabilityForPaging_t *ueRadioCapabilityForPaging) {
+bool UERadioCapabilityForPaging::encode2UERadioCapabilityForPaging(
+    Ngap_UERadioCapabilityForPaging_t *ueRadioCapabilityForPaging) {
   if (ueRadioCapabilityForPagingOfNR) {
-    ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfNR = (Ngap_UERadioCapabilityForPagingOfNR_t*) calloc(1, sizeof(Ngap_UERadioCapabilityForPagingOfNR_t));
-    if (!ueRadioCapabilityForPagingOfNR->encode2UERadioCapabilityForPagingOfNR(ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfNR))
+    ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfNR =
+        (Ngap_UERadioCapabilityForPagingOfNR_t*) calloc(
+            1, sizeof(Ngap_UERadioCapabilityForPagingOfNR_t));
+    if (!ueRadioCapabilityForPagingOfNR->encode2UERadioCapabilityForPagingOfNR(
+        ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfNR))
       return false;
   }
   if (ueRadioCapabilityForPagingOfEUTRA) {
-    ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfEUTRA = (Ngap_UERadioCapabilityForPagingOfEUTRA_t*) calloc(1, sizeof(Ngap_UERadioCapabilityForPagingOfEUTRA_t));
-    if (!ueRadioCapabilityForPagingOfEUTRA->encode2UERadioCapabilityForPagingOfEUTRA(ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfEUTRA))
+    ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfEUTRA =
+        (Ngap_UERadioCapabilityForPagingOfEUTRA_t*) calloc(
+            1, sizeof(Ngap_UERadioCapabilityForPagingOfEUTRA_t));
+    if (!ueRadioCapabilityForPagingOfEUTRA
+        ->encode2UERadioCapabilityForPagingOfEUTRA(
+        ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfEUTRA))
       return false;
   }
 
@@ -57,15 +65,20 @@ bool UERadioCapabilityForPaging::encode2UERadioCapabilityForPaging(Ngap_UERadioC
 }
 
 //------------------------------------------------------------------------------
-bool UERadioCapabilityForPaging::decodefromUERadioCapabilityForPaging(Ngap_UERadioCapabilityForPaging_t *ueRadioCapabilityForPaging) {
+bool UERadioCapabilityForPaging::decodefromUERadioCapabilityForPaging(
+    Ngap_UERadioCapabilityForPaging_t *ueRadioCapabilityForPaging) {
   if (ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfNR) {
     ueRadioCapabilityForPagingOfNR = new UERadioCapabilityForPagingOfNR();
-    if (!ueRadioCapabilityForPagingOfNR->decodefromUERadioCapabilityForPagingOfNR(ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfNR))
+    if (!ueRadioCapabilityForPagingOfNR
+        ->decodefromUERadioCapabilityForPagingOfNR(
+        ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfNR))
       return false;
   }
   if (ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfEUTRA) {
     ueRadioCapabilityForPagingOfEUTRA = new UERadioCapabilityForPagingOfEUTRA();
-    if (!ueRadioCapabilityForPagingOfEUTRA->decodefromUERadioCapabilityForPagingOfEUTRA(ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfEUTRA))
+    if (!ueRadioCapabilityForPagingOfEUTRA
+        ->decodefromUERadioCapabilityForPagingOfEUTRA(
+        ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfEUTRA))
       return false;
   }
 
@@ -73,7 +86,9 @@ bool UERadioCapabilityForPaging::decodefromUERadioCapabilityForPaging(Ngap_UERad
 }
 
 //------------------------------------------------------------------------------
-bool UERadioCapabilityForPaging::getUERadioCapabilityForPaging(UERadioCapabilityForPagingOfNR *&m_ueRadioCapabilityForPagingOfNR, UERadioCapabilityForPagingOfEUTRA *&m_ueRadioCapabilityForPagingOfEUTRA) {
+bool UERadioCapabilityForPaging::getUERadioCapabilityForPaging(
+    UERadioCapabilityForPagingOfNR *&m_ueRadioCapabilityForPagingOfNR,
+    UERadioCapabilityForPagingOfEUTRA *&m_ueRadioCapabilityForPagingOfEUTRA) {
   m_ueRadioCapabilityForPagingOfNR = ueRadioCapabilityForPagingOfNR;
   m_ueRadioCapabilityForPagingOfEUTRA = ueRadioCapabilityForPagingOfEUTRA;
 
@@ -81,7 +96,9 @@ bool UERadioCapabilityForPaging::getUERadioCapabilityForPaging(UERadioCapability
 }
 
 //------------------------------------------------------------------------------
-void UERadioCapabilityForPaging::setUERadioCapabilityForPaging(UERadioCapabilityForPagingOfNR *m_ueRadioCapabilityForPagingOfNR, UERadioCapabilityForPagingOfEUTRA *m_ueRadioCapabilityForPagingOfEUTRA) {
+void UERadioCapabilityForPaging::setUERadioCapabilityForPaging(
+    UERadioCapabilityForPagingOfNR *m_ueRadioCapabilityForPagingOfNR,
+    UERadioCapabilityForPagingOfEUTRA *m_ueRadioCapabilityForPagingOfEUTRA) {
   ueRadioCapabilityForPagingOfNR = m_ueRadioCapabilityForPagingOfNR;
   ueRadioCapabilityForPagingOfEUTRA = m_ueRadioCapabilityForPagingOfEUTRA;
 }

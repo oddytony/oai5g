@@ -45,8 +45,14 @@ class NonDynamic5QIDescriptor {
   NonDynamic5QIDescriptor();
   virtual ~NonDynamic5QIDescriptor();
 
-  void setNonDynamic5QIDescriptor(FiveQI *m_fiveQI, PriorityLevelQos *m_priorityLevelQos, AveragingWindow *m_averagingWindow, MaximumDataBurstVolume *m_maximumDataBurstVolume);
-  bool getNonDynamic5QIDescriptor(FiveQI *&m_fiveQI, PriorityLevelQos *&m_priorityLevelQos, AveragingWindow *&m_averagingWindow, MaximumDataBurstVolume *&m_maximumDataBurstVolume);
+  void setNonDynamic5QIDescriptor(
+      FiveQI *m_fiveQI, PriorityLevelQos *m_priorityLevelQos,
+      AveragingWindow *m_averagingWindow,
+      MaximumDataBurstVolume *m_maximumDataBurstVolume);
+  bool getNonDynamic5QIDescriptor(
+      FiveQI *&m_fiveQI, PriorityLevelQos *&m_priorityLevelQos,
+      AveragingWindow *&m_averagingWindow,
+      MaximumDataBurstVolume *&m_maximumDataBurstVolume);
 
   bool encode2NonDynamic5QIDescriptor(Ngap_NonDynamic5QIDescriptor_t*);
   bool decodefromNonDynamic5QIDescriptor(Ngap_NonDynamic5QIDescriptor_t*);

@@ -44,13 +44,15 @@ QosFlowSetupRequestList::~QosFlowSetupRequestList() {
 }
 
 //------------------------------------------------------------------------------
-void QosFlowSetupRequestList::setQosFlowSetupRequestList(QosFlowSetupRequestItem *m_items, int m_numofitems) {
+void QosFlowSetupRequestList::setQosFlowSetupRequestList(
+    QosFlowSetupRequestItem *m_items, int m_numofitems) {
   items = m_items;
   numofitems = m_numofitems;
 }
 
 //------------------------------------------------------------------------------
-bool QosFlowSetupRequestList::getQosFlowSetupRequestList(QosFlowSetupRequestItem *&m_items, int &m_numofitems) {
+bool QosFlowSetupRequestList::getQosFlowSetupRequestList(
+    QosFlowSetupRequestItem *&m_items, int &m_numofitems) {
   m_items = items;
   m_numofitems = numofitems;
 
@@ -63,10 +65,14 @@ bool QosFlowSetupRequestList::getQosFlowSetupRequestList(QosFlowSetupRequestItem
 }
 
 //------------------------------------------------------------------------------
-bool QosFlowSetupRequestList::encode2QosFlowSetupRequestList(Ngap_QosFlowSetupRequestList_t *qosFlowSetupRequestList) {
-  cout << "QosFlowSetupRequestList::numOfQosFlowSetupRequestItem	" << numofitems << endl;
+bool QosFlowSetupRequestList::encode2QosFlowSetupRequestList(
+    Ngap_QosFlowSetupRequestList_t *qosFlowSetupRequestList) {
+  cout << "QosFlowSetupRequestList::numOfQosFlowSetupRequestItem	" << numofitems
+      << endl;
   for (int i = 0; i < numofitems; i++) {
-    Ngap_QosFlowSetupRequestItem_t *item = (Ngap_QosFlowSetupRequestItem_t*) calloc(1, sizeof(Ngap_QosFlowSetupRequestItem_t));
+    Ngap_QosFlowSetupRequestItem_t *item =
+        (Ngap_QosFlowSetupRequestItem_t*) calloc(
+            1, sizeof(Ngap_QosFlowSetupRequestItem_t));
     if (!item)
       return false;
     if (!items[i].encode2QosFlowSetupRequestItem(item))
@@ -78,11 +84,13 @@ bool QosFlowSetupRequestList::encode2QosFlowSetupRequestList(Ngap_QosFlowSetupRe
 }
 
 //------------------------------------------------------------------------------
-bool QosFlowSetupRequestList::decodefromQosFlowSetupRequestList(Ngap_QosFlowSetupRequestList_t *qosFlowSetupRequestList) {
+bool QosFlowSetupRequestList::decodefromQosFlowSetupRequestList(
+    Ngap_QosFlowSetupRequestList_t *qosFlowSetupRequestList) {
   numofitems = qosFlowSetupRequestList->list.count;
   items = new QosFlowSetupRequestItem[numofitems]();
   for (int i = 0; i < numofitems; i++) {
-    if (!items[i].decodefromQosFlowSetupRequestItem(qosFlowSetupRequestList->list.array[i]))
+    if (!items[i].decodefromQosFlowSetupRequestItem(
+        qosFlowSetupRequestList->list.array[i]))
       return false;
   }
   return true;

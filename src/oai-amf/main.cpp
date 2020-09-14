@@ -45,7 +45,8 @@
 #include "normalizer.hh"
 
 extern void hexStr2Byte(const char *src, unsigned char *dest, int len);
-extern void print_buffer(const std::string app, const std::string commit, uint8_t *buf, int len);
+extern void print_buffer(const std::string app, const std::string commit,
+                         uint8_t *buf, int len);
 extern void ue_gnb_simulator();
 
 using namespace config;

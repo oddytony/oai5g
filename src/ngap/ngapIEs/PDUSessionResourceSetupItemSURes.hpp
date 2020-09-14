@@ -42,11 +42,17 @@ class PDUSessionResourceSetupItemSURes {
   PDUSessionResourceSetupItemSURes();
   virtual ~PDUSessionResourceSetupItemSURes();
 
-  void setPDUSessionResourceSetupItemSURes(PDUSessionID *m_pDUSessionID, OCTET_STRING_t m_pDUSessionResourceSetupResponseTransfer);
-  void getPDUSessionResourceSetupItemSURes(PDUSessionID *&m_pDUSessionID, OCTET_STRING_t &m_pDUSessionResourceSetupResponseTransfer);
+  void setPDUSessionResourceSetupItemSURes(
+      PDUSessionID *m_pDUSessionID,
+      OCTET_STRING_t m_pDUSessionResourceSetupResponseTransfer);
+  void getPDUSessionResourceSetupItemSURes(
+      PDUSessionID *&m_pDUSessionID,
+      OCTET_STRING_t &m_pDUSessionResourceSetupResponseTransfer);
 
-  bool encode2PDUSessionResourceSetupItemSURes(Ngap_PDUSessionResourceSetupItemSURes_t *pduSessionResourceSetupItemSURes);
-  bool decodefromPDUSessionResourceSetupItemSURes(Ngap_PDUSessionResourceSetupItemSURes_t *pduSessionResourceSetupItemSURes);
+  bool encode2PDUSessionResourceSetupItemSURes(
+      Ngap_PDUSessionResourceSetupItemSURes_t *pduSessionResourceSetupItemSURes);
+  bool decodefromPDUSessionResourceSetupItemSURes(
+      Ngap_PDUSessionResourceSetupItemSURes_t *pduSessionResourceSetupItemSURes);
  private:
   PDUSessionID *pDUSessionID;
   OCTET_STRING_t pDUSessionResourceSetupResponseTransfer;

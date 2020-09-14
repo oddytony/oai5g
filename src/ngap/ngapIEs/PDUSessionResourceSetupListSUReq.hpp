@@ -42,11 +42,17 @@ class PDUSessionResourceSetupListSUReq {
   PDUSessionResourceSetupListSUReq();
   virtual ~PDUSessionResourceSetupListSUReq();
 
-  void setPDUSessionResourceSetupListSUReq(PDUSessionResourceSetupItemSUReq *m_pduSessionResourceSetupItemSUReq, int num);
-  void getPDUSessionResourceSetupListSUReq(PDUSessionResourceSetupItemSUReq *&m_pduSessionResourceSetupItemSUReq, int &num);
+  void setPDUSessionResourceSetupListSUReq(
+      PDUSessionResourceSetupItemSUReq *m_pduSessionResourceSetupItemSUReq,
+      int num);
+  void getPDUSessionResourceSetupListSUReq(
+      PDUSessionResourceSetupItemSUReq *&m_pduSessionResourceSetupItemSUReq,
+      int &num);
 
-  bool encode2PDUSessionResourceSetupListSUReq(Ngap_PDUSessionResourceSetupListSUReq_t *pduSessionResourceSetupListSUReq);
-  bool decodefromPDUSessionResourceSetupListSUReq(Ngap_PDUSessionResourceSetupListSUReq_t *pduSessionResourceSetupListSUReq);
+  bool encode2PDUSessionResourceSetupListSUReq(
+      Ngap_PDUSessionResourceSetupListSUReq_t *pduSessionResourceSetupListSUReq);
+  bool decodefromPDUSessionResourceSetupListSUReq(
+      Ngap_PDUSessionResourceSetupListSUReq_t *pduSessionResourceSetupListSUReq);
  private:
   PDUSessionResourceSetupItemSUReq *pduSessionResourceSetupItemSUReq;
   int numofpduSessionResourceSetupItemSUReq;

@@ -42,7 +42,8 @@ MICOModeIndication::~MICOModeIndication() {
 }
 
 //------------------------------------------------------------------------------
-bool MICOModeIndication::encode2MICOModeIndication(Ngap_MICOModeIndication_t *micoModeIndication) {
+bool MICOModeIndication::encode2MICOModeIndication(
+    Ngap_MICOModeIndication_t *micoModeIndication) {
   if (!micoModeIndication)
     return false;
   *micoModeIndication = Ngap_MICOModeIndication_true;
@@ -51,7 +52,8 @@ bool MICOModeIndication::encode2MICOModeIndication(Ngap_MICOModeIndication_t *mi
 }
 
 //------------------------------------------------------------------------------
-bool MICOModeIndication::decodefromMICOModeIndication(Ngap_MICOModeIndication_t *micoModeIndication) {
+bool MICOModeIndication::decodefromMICOModeIndication(
+    Ngap_MICOModeIndication_t *micoModeIndication) {
   if (!micoModeIndication)
     return false;
   if (*micoModeIndication != Ngap_MICOModeIndication_true)

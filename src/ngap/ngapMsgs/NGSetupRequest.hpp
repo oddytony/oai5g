@@ -53,7 +53,9 @@ class NGSetupRequestMsg {
   //External interfaces
   //Encapsulation
   void setMessageType();  //Initialize the PDU and populate the MessageType;
-  void setGlobalRanNodeID(const std::string mcc, const std::string mnc, Ngap_GlobalRANNodeID_PR ranNodeType, uint32_t ranNodeId);
+  void setGlobalRanNodeID(const std::string mcc, const std::string mnc,
+                          Ngap_GlobalRANNodeID_PR ranNodeType,
+                          uint32_t ranNodeId);
   void setRanNodeName(const std::string ranNodeName);
   void setSupportedTAList(const std::vector<struct SupportedItem_s> list);
   void setDefaultPagingDRX(e_Ngap_PagingDRX value);

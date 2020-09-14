@@ -45,8 +45,10 @@ class SupportedTaItem {
 
   void setTac(TAC *m_tac);
   void getTac(TAC *&m_tac);
-  void setBroadcastPlmnList(BroadcastPLMNItem *m_broadcastPLMNItem, int numOfItem);
-  void getBroadcastPlmnList(BroadcastPLMNItem *&m_broadcastPLMNItem, int &numOfItem);
+  void setBroadcastPlmnList(BroadcastPLMNItem *m_broadcastPLMNItem,
+                            int numOfItem);
+  void getBroadcastPlmnList(BroadcastPLMNItem *&m_broadcastPLMNItem,
+                            int &numOfItem);
   bool encode2SupportedTaItem(Ngap_SupportedTAItem_t *ta);
   bool decodefromSupportedTaItem(Ngap_SupportedTAItem_t *ta);
  private:

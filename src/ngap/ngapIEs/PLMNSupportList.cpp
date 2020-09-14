@@ -43,16 +43,20 @@ PLMNSupportList::~PLMNSupportList() {
 }
 
 //------------------------------------------------------------------------------
-void PLMNSupportList::addPLMNSupportItems(PLMNSupportItem *m_plmnsupportItemItem, int numOfItem) {
+void PLMNSupportList::addPLMNSupportItems(
+    PLMNSupportItem *m_plmnsupportItemItem, int numOfItem) {
   plmnsupportItemItem = m_plmnsupportItemItem;
   numberOfplmnsupportItemItem = numOfItem;
 }
 
 //------------------------------------------------------------------------------
-bool PLMNSupportList::encode2PLMNSupportList(Ngap_PLMNSupportList_t *plmnsupportList) {
-  cout << "PLMNSupportList::numberOfplmnsupportItemItem	(" << numberOfplmnsupportItemItem << ")" << endl;
+bool PLMNSupportList::encode2PLMNSupportList(
+    Ngap_PLMNSupportList_t *plmnsupportList) {
+  cout << "PLMNSupportList::numberOfplmnsupportItemItem	("
+      << numberOfplmnsupportItemItem << ")" << endl;
   for (int i = 0; i < numberOfplmnsupportItemItem; i++) {
-    Ngap_PLMNSupportItem_t *supportItem = (Ngap_PLMNSupportItem_t*) calloc(1, sizeof(Ngap_PLMNSupportItem_t));
+    Ngap_PLMNSupportItem_t *supportItem = (Ngap_PLMNSupportItem_t*) calloc(
+        1, sizeof(Ngap_PLMNSupportItem_t));
     if (!supportItem)
       return false;
     if (!plmnsupportItemItem[i].encode2PLMNSupportItem(supportItem))
@@ -64,11 +68,13 @@ bool PLMNSupportList::encode2PLMNSupportList(Ngap_PLMNSupportList_t *plmnsupport
 }
 
 //------------------------------------------------------------------------------
-bool PLMNSupportList::decodefromPLMNSupportList(Ngap_PLMNSupportList_t *plmnsupportList) {
+bool PLMNSupportList::decodefromPLMNSupportList(
+    Ngap_PLMNSupportList_t *plmnsupportList) {
   numberOfplmnsupportItemItem = plmnsupportList->list.count;
   plmnsupportItemItem = new PLMNSupportItem[numberOfplmnsupportItemItem]();
   for (int i = 0; i < numberOfplmnsupportItemItem; i++) {
-    if (!plmnsupportItemItem[i].decodefromPLMNSupportItem(plmnsupportList->list.array[i]))
+    if (!plmnsupportItemItem[i].decodefromPLMNSupportItem(
+        plmnsupportList->list.array[i]))
       return false;
   }
 
@@ -76,7 +82,8 @@ bool PLMNSupportList::decodefromPLMNSupportList(Ngap_PLMNSupportList_t *plmnsupp
 }
 
 //------------------------------------------------------------------------------
-void PLMNSupportList::getPLMNSupportItems(PLMNSupportItem *&m_plmnsupportItemItem, int &numOfItem) {
+void PLMNSupportList::getPLMNSupportItems(
+    PLMNSupportItem *&m_plmnsupportItemItem, int &numOfItem) {
   m_plmnsupportItemItem = plmnsupportItemItem;
   numOfItem = numberOfplmnsupportItemItem;
 }

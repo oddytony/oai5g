@@ -64,16 +64,19 @@ amf_config::~amf_config() {
 
 //------------------------------------------------------------------------------
 int amf_config::load(const std::string &config_file) {
-  Logger::amf_app().debug("\nLoad AMF system configuration file(%s)", config_file.c_str());
+  Logger::amf_app().debug("\nLoad AMF system configuration file(%s)",
+                          config_file.c_str());
   Config cfg;
   unsigned char buf_in6_addr[sizeof(struct in6_addr)];
   try {
     cfg.readFile(config_file.c_str());
   } catch (const FileIOException &fioex) {
-    Logger::amf_app().error("I/O error while reading file %s - %s", config_file.c_str(), fioex.what());
+    Logger::amf_app().error("I/O error while reading file %s - %s",
+                            config_file.c_str(), fioex.what());
     throw;
   } catch (const ParseException &pex) {
-    Logger::amf_app().error("Parse error at %s:%d - %s", pex.getFile(), pex.getLine(), pex.getError());
+    Logger::amf_app().error("Parse error at %s:%d - %s", pex.getFile(),
+                            pex.getLine(), pex.getError());
     throw;
   }
   const Setting &root = cfg.getRoot();
@@ -87,22 +90,27 @@ int amf_config::load(const std::string &config_file) {
   try {
     amf_cfg.lookupValue(AMF_CONFIG_STRING_INSTANCE_ID, instance);
   } catch (const SettingNotFoundException &nfex) {
-    Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    Logger::amf_app().error("%s : %s, using defaults", nfex.what(),
+                            nfex.getPath());
   }
   try {
-    amf_cfg.lookupValue(AMF_CONFIG_STRING_STATISTICS_TIMER_INTERVAL, statistics_interval);
+    amf_cfg.lookupValue(AMF_CONFIG_STRING_STATISTICS_TIMER_INTERVAL,
+                        statistics_interval);
   } catch (const SettingNotFoundException &nfex) {
-    Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    Logger::amf_app().error("%s : %s, using defaults", nfex.what(),
+                            nfex.getPath());
   }
   try {
     amf_cfg.lookupValue(AMF_CONFIG_STRING_PID_DIRECTORY, pid_dir);
   } catch (const SettingNotFoundException &nfex) {
-    Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    Logger::amf_app().error("%s : %s, using defaults", nfex.what(),
+                            nfex.getPath());
   }
   try {
     amf_cfg.lookupValue(AMF_CONFIG_STRING_AMF_NAME, AMF_Name);
   } catch (const SettingNotFoundException &nfex) {
-    Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    Logger::amf_app().error("%s : %s, using defaults", nfex.what(),
+                            nfex.getPath());
   }
   try {
     const Setting &guami_cfg = amf_cfg[AMF_CONFIG_STRING_GUAMI];
@@ -112,7 +120,8 @@ int amf_config::load(const std::string &config_file) {
     guami_cfg.lookupValue(AMF_CONFIG_STRING_AMFSetID, guami.AmfSetID);
     guami_cfg.lookupValue(AMF_CONFIG_STRING_AMFPointer, guami.AmfPointer);
   } catch (const SettingNotFoundException &nfex) {
-    Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    Logger::amf_app().error("%s : %s, using defaults", nfex.what(),
+                            nfex.getPath());
   }
   try {
     const Setting &guami_list_cfg = amf_cfg[AMF_CONFIG_STRING_SERVED_GUAMI_LIST];
@@ -128,12 +137,15 @@ int amf_config::load(const std::string &config_file) {
       guami_list.push_back(guami);
     }
   } catch (const SettingNotFoundException &nfex) {
-    Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    Logger::amf_app().error("%s : %s, using defaults", nfex.what(),
+                            nfex.getPath());
   }
   try {
-    amf_cfg.lookupValue(AMF_CONFIG_STRING_RELATIVE_AMF_CAPACITY, relativeAMFCapacity);
+    amf_cfg.lookupValue(AMF_CONFIG_STRING_RELATIVE_AMF_CAPACITY,
+                        relativeAMFCapacity);
   } catch (const SettingNotFoundException &nfex) {
-    Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    Logger::amf_app().error("%s : %s, using defaults", nfex.what(),
+                            nfex.getPath());
   }
   try {
     const Setting &plmn_list_cfg = amf_cfg[AMF_CONFIG_STRING_PLMN_SUPPORT_LIST];
@@ -144,7 +156,8 @@ int amf_config::load(const std::string &config_file) {
       item.lookupValue(AMF_CONFIG_STRING_MCC, plmn_item.mcc);
       item.lookupValue(AMF_CONFIG_STRING_MNC, plmn_item.mnc);
       item.lookupValue(AMF_CONFIG_STRING_TAC, plmn_item.tac);
-      const Setting &slice_list_cfg = plmn_list_cfg[i][AMF_CONFIG_STRING_SLICE_SUPPORT_LIST];
+      const Setting &slice_list_cfg =
+          plmn_list_cfg[i][AMF_CONFIG_STRING_SLICE_SUPPORT_LIST];
       int numOfSlice = slice_list_cfg.getLength();
       for (int j = 0; j < numOfSlice; j++) {
         slice_t slice;
@@ -156,7 +169,8 @@ int amf_config::load(const std::string &config_file) {
       plmn_list.push_back(plmn_item);
     }
   } catch (const SettingNotFoundException &nfex) {
-    Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    Logger::amf_app().error("%s : %s, using defaults", nfex.what(),
+                            nfex.getPath());
   }
   try {
     const Setting &new_if_cfg = amf_cfg[AMF_CONFIG_STRING_INTERFACES];
@@ -172,9 +186,12 @@ int amf_config::load(const std::string &config_file) {
       std::string selected;
       smf_addr_item.lookupValue(AMF_CONFIG_STRING_SMF_INSTANCE_ID, smf_inst.id);
       smf_addr_item.lookupValue(AMF_CONFIG_STRING_IPV4_ADDRESS, smf_inst.ipv4);
-      smf_addr_item.lookupValue(AMF_CONFIG_STRING_SMF_INSTANCE_PORT, smf_inst.port);
-      smf_addr_item.lookupValue(AMF_CONFIG_STRING_SMF_INSTANCE_VERSION, smf_inst.version);
-      smf_addr_item.lookupValue(AMF_CONFIG_STRING_SMF_INSTANCE_SELECTED, selected);
+      smf_addr_item.lookupValue(AMF_CONFIG_STRING_SMF_INSTANCE_PORT,
+                                smf_inst.port);
+      smf_addr_item.lookupValue(AMF_CONFIG_STRING_SMF_INSTANCE_VERSION,
+                                smf_inst.version);
+      smf_addr_item.lookupValue(AMF_CONFIG_STRING_SMF_INSTANCE_SELECTED,
+                                selected);
       if (!selected.compare("true"))
         smf_inst.selected = true;
       else
@@ -182,31 +199,38 @@ int amf_config::load(const std::string &config_file) {
       smf_pool.push_back(smf_inst);
     }
   } catch (const SettingNotFoundException &nfex) {
-    Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    Logger::amf_app().error("%s : %s, using defaults", nfex.what(),
+                            nfex.getPath());
     return -1;
   }
   try {
     const Setting &core_config = amf_cfg[AMF_CONFIG_STRING_CORE_CONFIGURATION];
-    core_config.lookupValue(AMF_CONFIG_STRING_EMERGENCY_SUPPORT, is_emergency_support);
+    core_config.lookupValue(AMF_CONFIG_STRING_EMERGENCY_SUPPORT,
+                            is_emergency_support);
   } catch (const SettingNotFoundException &nfex) {
-    Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    Logger::amf_app().error("%s : %s, using defaults", nfex.what(),
+                            nfex.getPath());
     return -1;
   }
   try {
     const Setting &auth = amf_cfg[AMF_CONFIG_STRING_AUTHENTICATION];
-    auth.lookupValue(AMF_CONFIG_STRING_AUTH_MYSQL_SERVER, auth_para.mysql_server);
+    auth.lookupValue(AMF_CONFIG_STRING_AUTH_MYSQL_SERVER,
+                     auth_para.mysql_server);
     auth.lookupValue(AMF_CONFIG_STRING_AUTH_MYSQL_USER, auth_para.mysql_user);
     auth.lookupValue(AMF_CONFIG_STRING_AUTH_MYSQL_PASS, auth_para.mysql_pass);
     auth.lookupValue(AMF_CONFIG_STRING_AUTH_MYSQL_DB, auth_para.mysql_db);
-    auth.lookupValue(AMF_CONFIG_STRING_AUTH_OPERATOR_KEY, auth_para.operator_key);
+    auth.lookupValue(AMF_CONFIG_STRING_AUTH_OPERATOR_KEY,
+                     auth_para.operator_key);
     auth.lookupValue(AMF_CONFIG_STRING_AUTH_RANDOM, auth_para.random);
   } catch (const SettingNotFoundException &nfex) {
-    Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    Logger::amf_app().error("%s : %s, using defaults", nfex.what(),
+                            nfex.getPath());
     return -1;
   }
   try {
     const Setting &nas = amf_cfg[AMF_CONFIG_STRING_NAS];
-    const Setting &intAlg = nas[AMF_CONFIG_STRING_NAS_SUPPORTED_INTEGRITY_ALGORITHM_LIST];
+    const Setting &intAlg =
+        nas[AMF_CONFIG_STRING_NAS_SUPPORTED_INTEGRITY_ALGORITHM_LIST];
 
     int intCount = intAlg.getLength();
     for (int i = 0; i < intCount; i++) {
@@ -221,7 +245,8 @@ int amf_config::load(const std::string &config_file) {
     for (int i = intCount; i < 8; i++) {
       nas_cfg.prefered_integrity_algorithm[i] = IA0_5G;
     }
-    const Setting &encAlg = nas[AMF_CONFIG_STRING_NAS_SUPPORTED_CIPHERING_ALGORITHM_LIST];
+    const Setting &encAlg =
+        nas[AMF_CONFIG_STRING_NAS_SUPPORTED_CIPHERING_ALGORITHM_LIST];
     int encCount = encAlg.getLength();
     for (int i = 0; i < encCount; i++) {
       std::string encAlgStr = encAlg[i];
@@ -237,41 +262,77 @@ int amf_config::load(const std::string &config_file) {
     }
 
   } catch (const SettingNotFoundException &nfex) {
-    Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    Logger::amf_app().error("%s : %s, using defaults", nfex.what(),
+                            nfex.getPath());
     return -1;
   }
 }
 
 //------------------------------------------------------------------------------
 void amf_config::display() {
-  Logger::config().info("======================    AMF   =====================");
+  Logger::config().info(
+      "======================    AMF   =====================");
   Logger::config().info("Configuration AMF:");
-  Logger::config().info("- Instance ...........................................: %d", instance);
-  Logger::config().info("- PID dir ............................................: %s", pid_dir.c_str());
-  Logger::config().info("- AMF NAME............................................: %s", AMF_Name.c_str());
-  Logger::config().info("- GUAMI (MCC, MNC, Region ID, AMF Set ID, AMF pointer): ");
-  Logger::config().info("   (%s, %s, %s, %s, %s )", guami.mcc.c_str(), guami.mnc.c_str(), guami.regionID.c_str(), guami.AmfSetID.c_str(), guami.AmfPointer.c_str());
-  Logger::config().info("- SERVED_GUAMI_LIST...................................: ");
+  Logger::config().info(
+      "- Instance ...........................................: %d", instance);
+  Logger::config().info(
+      "- PID dir ............................................: %s",
+      pid_dir.c_str());
+  Logger::config().info(
+      "- AMF NAME............................................: %s",
+      AMF_Name.c_str());
+  Logger::config().info(
+      "- GUAMI (MCC, MNC, Region ID, AMF Set ID, AMF pointer): ");
+  Logger::config().info("   (%s, %s, %s, %s, %s )", guami.mcc.c_str(),
+                        guami.mnc.c_str(), guami.regionID.c_str(),
+                        guami.AmfSetID.c_str(), guami.AmfPointer.c_str());
+  Logger::config().info(
+      "- SERVED_GUAMI_LIST...................................: ");
   for (int i = 0; i < guami_list.size(); i++) {
-    Logger::config().info("   (%s, %s, %s , %s, %s)", guami_list[i].mcc.c_str(), guami_list[i].mnc.c_str(), guami_list[i].regionID.c_str(), guami_list[i].AmfSetID.c_str(), guami_list[i].AmfPointer.c_str());
+    Logger::config().info("   (%s, %s, %s , %s, %s)", guami_list[i].mcc.c_str(),
+                          guami_list[i].mnc.c_str(),
+                          guami_list[i].regionID.c_str(),
+                          guami_list[i].AmfSetID.c_str(),
+                          guami_list[i].AmfPointer.c_str());
   }
-  Logger::config().info("- RELATIVE_CAPACITY...................................: %d", relativeAMFCapacity);
-  Logger::config().info("- PLMN_SUPPORT_LIST...................................: ");
+  Logger::config().info(
+      "- RELATIVE_CAPACITY...................................: %d",
+      relativeAMFCapacity);
+  Logger::config().info(
+      "- PLMN_SUPPORT_LIST...................................: ");
   for (int i = 0; i < plmn_list.size(); i++) {
-    Logger::config().info("   (MCC %s, MNC %s) ", plmn_list[i].mcc.c_str(), plmn_list[i].mnc.c_str());
+    Logger::config().info("   (MCC %s, MNC %s) ", plmn_list[i].mcc.c_str(),
+                          plmn_list[i].mnc.c_str());
     Logger::config().info("   TAC: %d", plmn_list[i].tac);
-    Logger::config().info("   SLICE_SUPPORT_LIST (SST, SD) ....................: ");
+    Logger::config().info(
+        "   SLICE_SUPPORT_LIST (SST, SD) ....................: ");
     for (int j = 0; j < plmn_list[i].slice_list.size(); j++) {
-      Logger::config().info("     (%s, %s) ", plmn_list[i].slice_list[j].sST.c_str(), plmn_list[i].slice_list[j].sD.c_str());
+      Logger::config().info("     (%s, %s) ",
+                            plmn_list[i].slice_list[j].sST.c_str(),
+                            plmn_list[i].slice_list[j].sD.c_str());
     }
   }
-  Logger::config().info("- Emergency Support................... ...............: %s", is_emergency_support.c_str());
-  Logger::config().info("- MYSQL Server Addr...................................: %s", auth_para.mysql_server.c_str());
-  Logger::config().info("- MYSQL user .........................................: %s", auth_para.mysql_user.c_str());
-  Logger::config().info("- MYSQL pass .........................................: %s", auth_para.mysql_pass.c_str());
-  Logger::config().info("- MYSQL db ...........................................: %s", auth_para.mysql_db.c_str());
-  Logger::config().info("- operator key .......................................: %s", auth_para.operator_key.c_str());
-  Logger::config().info("- random .............................................: %s", auth_para.random.c_str());
+  Logger::config().info(
+      "- Emergency Support................... ...............: %s",
+      is_emergency_support.c_str());
+  Logger::config().info(
+      "- MYSQL Server Addr...................................: %s",
+      auth_para.mysql_server.c_str());
+  Logger::config().info(
+      "- MYSQL user .........................................: %s",
+      auth_para.mysql_user.c_str());
+  Logger::config().info(
+      "- MYSQL pass .........................................: %s",
+      auth_para.mysql_pass.c_str());
+  Logger::config().info(
+      "- MYSQL db ...........................................: %s",
+      auth_para.mysql_db.c_str());
+  Logger::config().info(
+      "- operator key .......................................: %s",
+      auth_para.operator_key.c_str());
+  Logger::config().info(
+      "- random .............................................: %s",
+      auth_para.random.c_str());
 
   Logger::config().info("- N2 Networking:");
   Logger::config().info("    iface ................: %s", n2.if_name.c_str());
@@ -280,24 +341,28 @@ void amf_config::display() {
 
   Logger::config().info("- N11 Networking:");
   Logger::config().info("    iface ................: %s", n11.if_name.c_str());
-  Logger::config().info("    ip ...................: %s",
-                         inet_ntoa(n11.addr4));
+  Logger::config().info("    ip ...................: %s", inet_ntoa(n11.addr4));
   Logger::config().info("    port .................: %d", n11.port);
 //  Logger::config().info("    HTTP2 port ............: %d", n11_http2_port);
 
-  Logger::config().info("- Remote SMF Pool.....................................: ");
+  Logger::config().info(
+      "- Remote SMF Pool.....................................: ");
   for (int i = 0; i < smf_pool.size(); i++) {
     std::string selected;
     if (smf_pool[i].selected)
       selected = "true";
     else
       selected = "false";
-    Logger::config().info("    SMF_INSTANCE_ID %d (%s:%s, version %s) is selected: %s", smf_pool[i].id, smf_pool[i].ipv4.c_str(), smf_pool[i].port.c_str(), smf_pool[i].version.c_str(), selected.c_str());
+    Logger::config().info(
+        "    SMF_INSTANCE_ID %d (%s:%s, version %s) is selected: %s",
+        smf_pool[i].id, smf_pool[i].ipv4.c_str(), smf_pool[i].port.c_str(),
+        smf_pool[i].version.c_str(), selected.c_str());
   }
 }
 
 //------------------------------------------------------------------------------
-int amf_config::load_interface(const libconfig::Setting &if_cfg, interface_cfg_t &cfg) {
+int amf_config::load_interface(const libconfig::Setting &if_cfg,
+                               interface_cfg_t &cfg) {
   if_cfg.lookupValue(AMF_CONFIG_STRING_INTERFACE_NAME, cfg.if_name);
   util::trim(cfg.if_name);
   if (not boost::iequals(cfg.if_name, "none")) {
@@ -305,25 +370,35 @@ int amf_config::load_interface(const libconfig::Setting &if_cfg, interface_cfg_t
     if_cfg.lookupValue(AMF_CONFIG_STRING_IPV4_ADDRESS, address);
     util::trim(address);
     if (boost::iequals(address, "read")) {
-      if (get_inet_addr_infos_from_iface(cfg.if_name, cfg.addr4, cfg.network4, cfg.mtu)) {
-        Logger::amf_app().error("Could not read %s network interface configuration", cfg.if_name);
+      if (get_inet_addr_infos_from_iface(cfg.if_name, cfg.addr4, cfg.network4,
+                                         cfg.mtu)) {
+        Logger::amf_app().error(
+            "Could not read %s network interface configuration", cfg.if_name);
         return RETURNerror ;
       }
     } else {
       std::vector < std::string > words;
-      boost::split(words, address, boost::is_any_of("/"), boost::token_compress_on);
+      boost::split(words, address, boost::is_any_of("/"),
+                   boost::token_compress_on);
       if (words.size() != 2) {
-        Logger::amf_app().error("Bad value " AMF_CONFIG_STRING_IPV4_ADDRESS " = %s in config file", address.c_str());
+        Logger::amf_app().error(
+            "Bad value " AMF_CONFIG_STRING_IPV4_ADDRESS " = %s in config file",
+            address.c_str());
         return RETURNerror ;
       }
       unsigned char buf_in_addr[sizeof(struct in6_addr)];  // you never know...
-      if (inet_pton(AF_INET, util::trim(words.at(0)).c_str(), buf_in_addr) == 1) {
+      if (inet_pton(AF_INET, util::trim(words.at(0)).c_str(), buf_in_addr)
+          == 1) {
         memcpy(&cfg.addr4, buf_in_addr, sizeof(struct in_addr));
       } else {
-        Logger::amf_app().error("In conversion: Bad value " AMF_CONFIG_STRING_IPV4_ADDRESS " = %s in config file", util::trim(words.at(0)).c_str());
+        Logger::amf_app().error(
+            "In conversion: Bad value " AMF_CONFIG_STRING_IPV4_ADDRESS " = %s in config file",
+            util::trim(words.at(0)).c_str());
         return RETURNerror ;
       }
-      cfg.network4.s_addr = htons(ntohs(cfg.addr4.s_addr) & 0xFFFFFFFF << (32 - std::stoi(util::trim(words.at(1)))));
+      cfg.network4.s_addr = htons(
+          ntohs(cfg.addr4.s_addr)
+              & 0xFFFFFFFF << (32 - std::stoi(util::trim(words.at(1)))));
     }
     if_cfg.lookupValue(AMF_CONFIG_STRING_PORT, cfg.port);
 
@@ -331,23 +406,28 @@ int amf_config::load_interface(const libconfig::Setting &if_cfg, interface_cfg_t
       const Setting &sched_params_cfg = if_cfg[AMF_CONFIG_STRING_SCHED_PARAMS];
       load_thread_sched_params(sched_params_cfg, cfg.thread_rd_sched_params);
     } catch (const SettingNotFoundException &nfex) {
-      Logger::amf_app().error("%s : %s, using defaults", nfex.what(), nfex.getPath());
+      Logger::amf_app().error("%s : %s, using defaults", nfex.what(),
+                              nfex.getPath());
     }
   }
   return RETURNok ;
 }
 
 //------------------------------------------------------------------------------
-int amf_config::load_thread_sched_params(const Setting &thread_sched_params_cfg, util::thread_sched_params &cfg) {
+int amf_config::load_thread_sched_params(const Setting &thread_sched_params_cfg,
+                                         util::thread_sched_params &cfg) {
 
   try {
-    thread_sched_params_cfg.lookupValue(AMF_CONFIG_STRING_THREAD_RD_CPU_ID, cfg.cpu_id);
+    thread_sched_params_cfg.lookupValue(AMF_CONFIG_STRING_THREAD_RD_CPU_ID,
+                                        cfg.cpu_id);
   } catch (const SettingNotFoundException &nfex) {
-    Logger::amf_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    Logger::amf_app().info("%s : %s, using defaults", nfex.what(),
+                           nfex.getPath());
   }
   try {
     std::string thread_rd_sched_policy;
-    thread_sched_params_cfg.lookupValue(AMF_CONFIG_STRING_THREAD_RD_SCHED_POLICY, thread_rd_sched_policy);
+    thread_sched_params_cfg.lookupValue(
+        AMF_CONFIG_STRING_THREAD_RD_SCHED_POLICY, thread_rd_sched_policy);
     util::trim(thread_rd_sched_policy);
     if (boost::iequals(thread_rd_sched_policy, "SCHED_OTHER")) {
       cfg.sched_policy = SCHED_OTHER;
@@ -360,21 +440,28 @@ int amf_config::load_thread_sched_params(const Setting &thread_sched_params_cfg,
     } else if (boost::iequals(thread_rd_sched_policy, "SCHED_RR")) {
       cfg.sched_policy = SCHED_RR;
     } else {
-      Logger::amf_app().error("thread_rd_sched_policy: %s, unknown in config file", thread_rd_sched_policy.c_str());
+      Logger::amf_app().error(
+          "thread_rd_sched_policy: %s, unknown in config file",
+          thread_rd_sched_policy.c_str());
       return RETURNerror ;
     }
   } catch (const SettingNotFoundException &nfex) {
-    Logger::amf_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    Logger::amf_app().info("%s : %s, using defaults", nfex.what(),
+                           nfex.getPath());
   }
 
   try {
-    thread_sched_params_cfg.lookupValue(AMF_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY, cfg.sched_priority);
+    thread_sched_params_cfg.lookupValue(
+        AMF_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY, cfg.sched_priority);
     if ((cfg.sched_priority > 99) || (cfg.sched_priority < 1)) {
-      Logger::amf_app().error("thread_rd_sched_priority: %d, must be in interval [1..99] in config file", cfg.sched_priority);
+      Logger::amf_app().error(
+          "thread_rd_sched_priority: %d, must be in interval [1..99] in config file",
+          cfg.sched_priority);
       return RETURNerror ;
     }
   } catch (const SettingNotFoundException &nfex) {
-    Logger::amf_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    Logger::amf_app().info("%s : %s, using defaults", nfex.what(),
+                           nfex.getPath());
   }
   return RETURNok ;
 }

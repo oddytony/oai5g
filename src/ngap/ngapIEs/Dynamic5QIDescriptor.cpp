@@ -50,8 +50,12 @@ Dynamic5QIDescriptor::~Dynamic5QIDescriptor() {
 }
 
 //------------------------------------------------------------------------------
-void Dynamic5QIDescriptor::setDynamic5QIDescriptor(PriorityLevelQos *m_priorityLevelQos, PacketDelayBudget *m_packetDelayBudget, PacketErrorRate *m_packetErrorRate, FiveQI *m_fiveQI, DelayCritical *m_delayCritical, AveragingWindow *m_averagingWindow,
-                                                   MaximumDataBurstVolume *m_maximumDataBurstVolume) {
+void Dynamic5QIDescriptor::setDynamic5QIDescriptor(
+    PriorityLevelQos *m_priorityLevelQos,
+    PacketDelayBudget *m_packetDelayBudget, PacketErrorRate *m_packetErrorRate,
+    FiveQI *m_fiveQI, DelayCritical *m_delayCritical,
+    AveragingWindow *m_averagingWindow,
+    MaximumDataBurstVolume *m_maximumDataBurstVolume) {
   priorityLevelQos = m_priorityLevelQos;
   packetDelayBudget = m_packetDelayBudget;
   packetErrorRate = m_packetErrorRate;
@@ -71,8 +75,12 @@ void Dynamic5QIDescriptor::setDynamic5QIDescriptor(PriorityLevelQos *m_priorityL
 }
 
 //------------------------------------------------------------------------------
-bool Dynamic5QIDescriptor::getDynamic5QIDescriptor(PriorityLevelQos *&m_priorityLevelQos, PacketDelayBudget *&m_packetDelayBudget, PacketErrorRate *&m_packetErrorRate, FiveQI *&m_fiveQI, DelayCritical *&m_delayCritical, AveragingWindow *&m_averagingWindow,
-                                                   MaximumDataBurstVolume *&m_maximumDataBurstVolume) {
+bool Dynamic5QIDescriptor::getDynamic5QIDescriptor(
+    PriorityLevelQos *&m_priorityLevelQos,
+    PacketDelayBudget *&m_packetDelayBudget,
+    PacketErrorRate *&m_packetErrorRate, FiveQI *&m_fiveQI,
+    DelayCritical *&m_delayCritical, AveragingWindow *&m_averagingWindow,
+    MaximumDataBurstVolume *&m_maximumDataBurstVolume) {
   if (!priorityLevelQos)
     return false;
   m_priorityLevelQos = priorityLevelQos;
@@ -96,12 +104,16 @@ bool Dynamic5QIDescriptor::getDynamic5QIDescriptor(PriorityLevelQos *&m_priority
 }
 
 //------------------------------------------------------------------------------
-bool Dynamic5QIDescriptor::encode2Dynamic5QIDescriptor(Ngap_Dynamic5QIDescriptor_t *dynamic5QIDescriptor) {
-  if (!priorityLevelQos->encode2PriorityLevelQos(&dynamic5QIDescriptor->priorityLevelQos))
+bool Dynamic5QIDescriptor::encode2Dynamic5QIDescriptor(
+    Ngap_Dynamic5QIDescriptor_t *dynamic5QIDescriptor) {
+  if (!priorityLevelQos->encode2PriorityLevelQos(
+      &dynamic5QIDescriptor->priorityLevelQos))
     return false;
-  if (!packetDelayBudget->encode2PacketDelayBudget(&dynamic5QIDescriptor->packetDelayBudget))
+  if (!packetDelayBudget->encode2PacketDelayBudget(
+      &dynamic5QIDescriptor->packetDelayBudget))
     return false;
-  if (!packetErrorRate->encode2PacketErrorRate(&dynamic5QIDescriptor->packetErrorRate))
+  if (!packetErrorRate->encode2PacketErrorRate(
+      &dynamic5QIDescriptor->packetErrorRate))
     return false;
 
   if (fiveQI) {
@@ -113,7 +125,8 @@ bool Dynamic5QIDescriptor::encode2Dynamic5QIDescriptor(Ngap_Dynamic5QIDescriptor
     dynamic5QIDescriptor->fiveQI = fq;
   }
   if (delayCritical) {
-    Ngap_DelayCritical_t *dc = (Ngap_DelayCritical_t*) calloc(1, sizeof(Ngap_DelayCritical_t));
+    Ngap_DelayCritical_t *dc = (Ngap_DelayCritical_t*) calloc(
+        1, sizeof(Ngap_DelayCritical_t));
     if (!dc)
       return false;
     if (!delayCritical->encode2DelayCritical(dc))
@@ -121,7 +134,8 @@ bool Dynamic5QIDescriptor::encode2Dynamic5QIDescriptor(Ngap_Dynamic5QIDescriptor
     dynamic5QIDescriptor->delayCritical = dc;
   }
   if (averagingWindow) {
-    Ngap_AveragingWindow_t *aw = (Ngap_AveragingWindow_t*) calloc(1, sizeof(Ngap_AveragingWindow_t));
+    Ngap_AveragingWindow_t *aw = (Ngap_AveragingWindow_t*) calloc(
+        1, sizeof(Ngap_AveragingWindow_t));
     if (!aw)
       return false;
     if (!averagingWindow->encode2AveragingWindow(aw))
@@ -129,7 +143,9 @@ bool Dynamic5QIDescriptor::encode2Dynamic5QIDescriptor(Ngap_Dynamic5QIDescriptor
     dynamic5QIDescriptor->averagingWindow = aw;
   }
   if (maximumDataBurstVolume) {
-    Ngap_MaximumDataBurstVolume_t *mdbv = (Ngap_MaximumDataBurstVolume_t*) calloc(1, sizeof(Ngap_MaximumDataBurstVolume_t));
+    Ngap_MaximumDataBurstVolume_t *mdbv =
+        (Ngap_MaximumDataBurstVolume_t*) calloc(
+            1, sizeof(Ngap_MaximumDataBurstVolume_t));
     if (!mdbv)
       return false;
     if (!maximumDataBurstVolume->encode2MaximumDataBurstVolume(mdbv))
@@ -141,15 +157,19 @@ bool Dynamic5QIDescriptor::encode2Dynamic5QIDescriptor(Ngap_Dynamic5QIDescriptor
 }
 
 //------------------------------------------------------------------------------
-bool Dynamic5QIDescriptor::decodefromDynamic5QIDescriptor(Ngap_Dynamic5QIDescriptor_t *dynamic5QIDescriptor) {
+bool Dynamic5QIDescriptor::decodefromDynamic5QIDescriptor(
+    Ngap_Dynamic5QIDescriptor_t *dynamic5QIDescriptor) {
   priorityLevelQos = new PriorityLevelQos();
   packetDelayBudget = new PacketDelayBudget();
   packetErrorRate = new PacketErrorRate();
-  if (!priorityLevelQos->decodefromPriorityLevelQos(&dynamic5QIDescriptor->priorityLevelQos))
+  if (!priorityLevelQos->decodefromPriorityLevelQos(
+      &dynamic5QIDescriptor->priorityLevelQos))
     return false;
-  if (!packetDelayBudget->decodefromPacketDelayBudget(&dynamic5QIDescriptor->packetDelayBudget))
+  if (!packetDelayBudget->decodefromPacketDelayBudget(
+      &dynamic5QIDescriptor->packetDelayBudget))
     return false;
-  if (!packetErrorRate->decodefromPacketErrorRate(&dynamic5QIDescriptor->packetErrorRate))
+  if (!packetErrorRate->decodefromPacketErrorRate(
+      &dynamic5QIDescriptor->packetErrorRate))
     return false;
 
   if (dynamic5QIDescriptor->fiveQI) {
@@ -159,17 +179,20 @@ bool Dynamic5QIDescriptor::decodefromDynamic5QIDescriptor(Ngap_Dynamic5QIDescrip
   }
   if (dynamic5QIDescriptor->delayCritical) {
     delayCritical = new DelayCritical();
-    if (!delayCritical->decodefromDelayCritical(dynamic5QIDescriptor->delayCritical))
+    if (!delayCritical->decodefromDelayCritical(
+        dynamic5QIDescriptor->delayCritical))
       return false;
   }
   if (dynamic5QIDescriptor->averagingWindow) {
     averagingWindow = new AveragingWindow();
-    if (!averagingWindow->decodefromAveragingWindow(dynamic5QIDescriptor->averagingWindow))
+    if (!averagingWindow->decodefromAveragingWindow(
+        dynamic5QIDescriptor->averagingWindow))
       return false;
   }
   if (dynamic5QIDescriptor->maximumDataBurstVolume) {
     maximumDataBurstVolume = new MaximumDataBurstVolume();
-    if (!maximumDataBurstVolume->decodefromMaximumDataBurstVolume(dynamic5QIDescriptor->maximumDataBurstVolume))
+    if (!maximumDataBurstVolume->decodefromMaximumDataBurstVolume(
+        dynamic5QIDescriptor->maximumDataBurstVolume))
       return false;
   }
 

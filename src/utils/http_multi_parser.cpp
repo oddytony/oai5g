@@ -2,7 +2,8 @@
 #include <string>
 #include <iostream>
 
-bool multipart_parser(std::string input, std::string &jsonData, std::string &n1sm, std::string &n2sm) {
+bool multipart_parser(std::string input, std::string &jsonData,
+                      std::string &n1sm, std::string &n2sm) {
 
   //simple parser
   mime_parser sp = { };

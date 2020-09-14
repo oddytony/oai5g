@@ -43,11 +43,15 @@ class UpTransportLayerInformation {
   UpTransportLayerInformation();
   virtual ~UpTransportLayerInformation();
 
-  void setUpTransportLayerInformation(TransportLayerAddress *m_transportLayerAddress, GtpTeid *m_gtpTeid);
-  bool getUpTransportLayerInformation(TransportLayerAddress *&m_transportLayerAddress, GtpTeid *&m_gtpTeid);
+  void setUpTransportLayerInformation(
+      TransportLayerAddress *m_transportLayerAddress, GtpTeid *m_gtpTeid);
+  bool getUpTransportLayerInformation(
+      TransportLayerAddress *&m_transportLayerAddress, GtpTeid *&m_gtpTeid);
 
-  bool encode2UpTransportLayerInformation(Ngap_UPTransportLayerInformation_t &upTransportLayerInfo);
-  bool decodefromUpTransportLayerInformation(Ngap_UPTransportLayerInformation_t &upTransportLayerInfo);
+  bool encode2UpTransportLayerInformation(
+      Ngap_UPTransportLayerInformation_t &upTransportLayerInfo);
+  bool decodefromUpTransportLayerInformation(
+      Ngap_UPTransportLayerInformation_t &upTransportLayerInfo);
  private:
   TransportLayerAddress *transportLayerAddress;
   GtpTeid *gtpTeid;

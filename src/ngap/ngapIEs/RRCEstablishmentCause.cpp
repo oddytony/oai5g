@@ -43,7 +43,8 @@ RRCEstablishmentCause::~RRCEstablishmentCause() {
 }
 
 //------------------------------------------------------------------------------
-void RRCEstablishmentCause::setRRCEstablishmentCause(e_Ngap_RRCEstablishmentCause m_rrcestablishmentcause) {
+void RRCEstablishmentCause::setRRCEstablishmentCause(
+    e_Ngap_RRCEstablishmentCause m_rrcestablishmentcause) {
   rrcestablishmentcause = m_rrcestablishmentcause;
 }
 
@@ -53,13 +54,15 @@ int RRCEstablishmentCause::getRRCEstablishmentCause() {
 }
 
 //------------------------------------------------------------------------------
-bool RRCEstablishmentCause::encode2RRCEstablishmentCause(Ngap_RRCEstablishmentCause_t &rRCEstablishmentCause) {
+bool RRCEstablishmentCause::encode2RRCEstablishmentCause(
+    Ngap_RRCEstablishmentCause_t &rRCEstablishmentCause) {
   rRCEstablishmentCause = rrcestablishmentcause;
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool RRCEstablishmentCause::decodefromRRCEstablishmentCause(Ngap_RRCEstablishmentCause_t &rRCEstablishmentCause) {
+bool RRCEstablishmentCause::decodefromRRCEstablishmentCause(
+    Ngap_RRCEstablishmentCause_t &rRCEstablishmentCause) {
   rrcestablishmentcause = rRCEstablishmentCause;
   return true;
 }

@@ -45,8 +45,10 @@ class GUAMI {
   GUAMI();
   virtual ~GUAMI();
 
-  void setGUAMI(PlmnId *m_plmnId, AMFRegionID *m_aMFRegionID, AMFSetID *m_aMFSetID, AMFPointer *m_aMFPointer);
-  void getGUAMI(PlmnId *&m_plmnId, AMFRegionID *&m_aMFRegionID, AMFSetID *&m_aMFSetID, AMFPointer *&m_aMFPointer);
+  void setGUAMI(PlmnId *m_plmnId, AMFRegionID *m_aMFRegionID,
+                AMFSetID *m_aMFSetID, AMFPointer *m_aMFPointer);
+  void getGUAMI(PlmnId *&m_plmnId, AMFRegionID *&m_aMFRegionID,
+                AMFSetID *&m_aMFSetID, AMFPointer *&m_aMFPointer);
 
   bool encode2GUAMI(Ngap_GUAMI_t *guami);
   bool decodefromGUAMI(Ngap_GUAMI_t *pdu);

@@ -64,7 +64,8 @@ bool NRCellIdentity::encode2bitstring(Ngap_NRCellIdentity_t &nRCellIdentity) {
 }
 
 //------------------------------------------------------------------------------
-bool NRCellIdentity::decodefrombitstring(Ngap_NRCellIdentity_t &nRCellIdentity) {
+bool NRCellIdentity::decodefrombitstring(
+    Ngap_NRCellIdentity_t &nRCellIdentity) {
   if (!nRCellIdentity.buf)
     return false;
 

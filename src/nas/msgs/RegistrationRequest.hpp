@@ -48,12 +48,22 @@ class RegistrationRequest {
   void set5gsRegistrationType(bool is_for, uint8_t type);
   void setngKSI(uint8_t tsc, uint8_t key_set_id);
   /*** belongs to _5GSMobilityIdentity**/
-  void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc, const string routingInd, uint8_t protection_sch_id, const string msin);
-  void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc, const string routingInd, uint8_t protection_sch_id, uint8_t hnpki, const string msin);
+  void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc,
+                                const string routingInd,
+                                uint8_t protection_sch_id, const string msin);
+  void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc,
+                                const string routingInd,
+                                uint8_t protection_sch_id, uint8_t hnpki,
+                                const string msin);
   void set5G_GUTI();
   void setIMEI_IMEISV();
   void set5G_S_TMSI();
-  void setAdditional_GUTI_SUCI_SUPI_format_IMSI(const string mcc, const string mnc, uint8_t amf_region_id, uint8_t amf_set_id, uint8_t amf_pointer, const string _5g_tmsi);
+  void setAdditional_GUTI_SUCI_SUPI_format_IMSI(const string mcc,
+                                                const string mnc,
+                                                uint8_t amf_region_id,
+                                                uint8_t amf_set_id,
+                                                uint8_t amf_pointer,
+                                                const string _5g_tmsi);
   //for Additional_GUTI
   /*** belongs to _5GSMobilityIdentity**/
   void setNon_current_native_nas_ksi(uint8_t tsc, uint8_t key_set_id);
@@ -63,7 +73,8 @@ class RegistrationRequest {
   void setUENetworkCapability(uint8_t g_EEASel, uint8_t g_EIASel);
 
   void setUplink_data_status(uint16_t value);
-  void setLast_Visited_Registered_TAI(uint8_t MNC_MCC1, uint8_t MNC_MCC2, uint8_t MNC_MCC3, uint32_t TAC);
+  void setLast_Visited_Registered_TAI(uint8_t MNC_MCC1, uint8_t MNC_MCC2,
+                                      uint8_t MNC_MCC3, uint32_t TAC);
   void setPDU_session_status(uint16_t value);
   void setMICO_Indication(bool sprti, bool raai);
   void setUE_Status(bool n1, bool s1);
@@ -76,7 +87,8 @@ class RegistrationRequest {
   void setPayload_Container_Type(uint8_t value);
   void setPayload_Container(std::vector<PayloadContainerEntry> content);
   void setNetwork_Slicing_Indication(bool dcni, bool nssci);
-  void set_5GS_Update_Type(uint8_t eps_pnb_ciot, uint8_t _5gs_pnb_ciot, bool ng_ran, bool sms);
+  void set_5GS_Update_Type(uint8_t eps_pnb_ciot, uint8_t _5gs_pnb_ciot,
+                           bool ng_ran, bool sms);
   void setNAS_Message_Container(bstring value);
   void setEPS_Bearer_Context_Status(uint16_t value);
 
@@ -101,7 +113,8 @@ class RegistrationRequest {
   bool getEpsNasMessageContainer(bstring &epsNas);
   uint8_t getPayloadContainerType();
   bool getNetworkSlicingIndication(uint8_t &dcni, uint8_t &nssci);
-  bool get5GSUpdateType(uint8_t &eps_pnb_ciot, uint8_t &_5gs_pnb_ciot, bool &ng_ran_rcu, bool &sms_requested);
+  bool get5GSUpdateType(uint8_t &eps_pnb_ciot, uint8_t &_5gs_pnb_ciot,
+                        bool &ng_ran_rcu, bool &sms_requested);
   bool getNasMessageContainer(bstring &nas);
   uint16_t getEpsBearerContextStatus();
   bool getLadnIndication(std::vector<bstring> &ladnValue);

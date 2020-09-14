@@ -46,9 +46,18 @@ class QosFlowLevelQosParameters {
   QosFlowLevelQosParameters();
   virtual ~QosFlowLevelQosParameters();
 
-  void setQosFlowLevelQosParameters(QosCharacteristics *m_qosCharacteristics, AllocationAndRetentionPriority *m_allocationAndRetentionPriority, GBR_QosInformation *m_gBR_QosInformation, ReflectiveQosAttribute *m_reflectiveQosAttribute, AdditionalQosFlowInformation *m_additionalQosFlowInformation);
-  bool getQosFlowLevelQosParameters(QosCharacteristics *&m_qosCharacteristics, AllocationAndRetentionPriority *&m_allocationAndRetentionPriority, GBR_QosInformation *&m_gBR_QosInformation, ReflectiveQosAttribute *&m_reflectiveQosAttribute,
-                                    AdditionalQosFlowInformation *&m_additionalQosFlowInformation);
+  void setQosFlowLevelQosParameters(
+      QosCharacteristics *m_qosCharacteristics,
+      AllocationAndRetentionPriority *m_allocationAndRetentionPriority,
+      GBR_QosInformation *m_gBR_QosInformation,
+      ReflectiveQosAttribute *m_reflectiveQosAttribute,
+      AdditionalQosFlowInformation *m_additionalQosFlowInformation);
+  bool getQosFlowLevelQosParameters(
+      QosCharacteristics *&m_qosCharacteristics,
+      AllocationAndRetentionPriority *&m_allocationAndRetentionPriority,
+      GBR_QosInformation *&m_gBR_QosInformation,
+      ReflectiveQosAttribute *&m_reflectiveQosAttribute,
+      AdditionalQosFlowInformation *&m_additionalQosFlowInformation);
 
   bool encode2QosFlowLevelQosParameters(Ngap_QosFlowLevelQosParameters_t*);
   bool decodefromQosFlowLevelQosParameters(Ngap_QosFlowLevelQosParameters_t*);

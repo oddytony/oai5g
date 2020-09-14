@@ -43,8 +43,12 @@ class SecurityResult {
   SecurityResult();
   virtual ~SecurityResult();
 
-  void setSecurityResult(IntegrityProtectionResult *m_integrityProtectionResult, ConfidentialityProtectionResult *m_confidentialityProtectionResult);
-  bool getSecurityResult(IntegrityProtectionResult *&m_integrityProtectionResult, ConfidentialityProtectionResult *&m_confidentialityProtectionResult);
+  void setSecurityResult(
+      IntegrityProtectionResult *m_integrityProtectionResult,
+      ConfidentialityProtectionResult *m_confidentialityProtectionResult);
+  bool getSecurityResult(
+      IntegrityProtectionResult *&m_integrityProtectionResult,
+      ConfidentialityProtectionResult *&m_confidentialityProtectionResult);
 
   bool encode2SecurityResult(Ngap_SecurityResult_t*);
   bool decodefromSecurityResult(Ngap_SecurityResult_t*);

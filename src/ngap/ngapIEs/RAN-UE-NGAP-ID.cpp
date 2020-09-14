@@ -59,7 +59,8 @@ bool RAN_UE_NGAP_ID::encode2RAN_UE_NGAP_ID(Ngap_RAN_UE_NGAP_ID_t &ranuengapid) {
 }
 
 //------------------------------------------------------------------------------
-bool RAN_UE_NGAP_ID::decodefromRAN_UE_NGAP_ID(Ngap_RAN_UE_NGAP_ID_t &ranuengapid) {
+bool RAN_UE_NGAP_ID::decodefromRAN_UE_NGAP_ID(
+    Ngap_RAN_UE_NGAP_ID_t &ranuengapid) {
   ranUeNgapId = ranuengapid;
   cout << "[LibNGAP]Received RanUeNgapId " << ranUeNgapId << endl;
   return true;

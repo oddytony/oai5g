@@ -41,16 +41,19 @@ UERadioCapability::~UERadioCapability() {
 }
 
 //------------------------------------------------------------------------------
-bool UERadioCapability::encode2UERadioCapability(Ngap_UERadioCapability_t &ueRadioCapability) {
+bool UERadioCapability::encode2UERadioCapability(
+    Ngap_UERadioCapability_t &ueRadioCapability) {
   int ret;
-  ret = OCTET_STRING_fromBuf(&ueRadioCapability, ueRadioCapabilitybuffer, sizeofueRadioCapabilitybuffer);
+  ret = OCTET_STRING_fromBuf(&ueRadioCapability, ueRadioCapabilitybuffer,
+                             sizeofueRadioCapabilitybuffer);
   if (ret != 0)
     return false;
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool UERadioCapability::decodefromUERadioCapability(Ngap_UERadioCapability_t &ueRadioCapability) {
+bool UERadioCapability::decodefromUERadioCapability(
+    Ngap_UERadioCapability_t &ueRadioCapability) {
   ueRadioCapabilitybuffer = (char*) ueRadioCapability.buf;
   sizeofueRadioCapabilitybuffer = ueRadioCapability.size;
   return true;

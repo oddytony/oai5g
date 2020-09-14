@@ -45,14 +45,18 @@ UserLocationInformation::~UserLocationInformation() {
 }
 
 //------------------------------------------------------------------------------
-void UserLocationInformation::setInformation(UserLocationInformationEUTRA *informationEUTRA) {
-  informationPresent = Ngap_UserLocationInformation_PR_userLocationInformationEUTRA;
+void UserLocationInformation::setInformation(
+    UserLocationInformationEUTRA *informationEUTRA) {
+  informationPresent =
+      Ngap_UserLocationInformation_PR_userLocationInformationEUTRA;
   userLocationInformationEUTRA = informationEUTRA;
 }
 
 //------------------------------------------------------------------------------
-void UserLocationInformation::setInformation(UserLocationInformationNR *informationNR) {
-  informationPresent = Ngap_UserLocationInformation_PR_userLocationInformationNR;
+void UserLocationInformation::setInformation(
+    UserLocationInformationNR *informationNR) {
+  informationPresent =
+      Ngap_UserLocationInformation_PR_userLocationInformationNR;
   userLocationInformationNR = informationNR;
 }
 
@@ -65,18 +69,24 @@ void UserLocationInformation::setInformation(UserLocationInformationNR *informat
 	}
 	#endif
 
-	//------------------------------------------------------------------------------
-bool UserLocationInformation::encodefromUserLocationInformation(Ngap_UserLocationInformation_t *userLocationInformation) {
+//------------------------------------------------------------------------------
+bool UserLocationInformation::encodefromUserLocationInformation(
+    Ngap_UserLocationInformation_t *userLocationInformation) {
   userLocationInformation->present = informationPresent;
   switch (informationPresent) {
     case Ngap_UserLocationInformation_PR_userLocationInformationEUTRA: {
-      Ngap_UserLocationInformationEUTRA *ieEUTRA = (Ngap_UserLocationInformationEUTRA*) calloc(1, sizeof(Ngap_UserLocationInformationEUTRA));
-      userLocationInformationEUTRA->encode2UserLocationInformationEUTRA(ieEUTRA);
+      Ngap_UserLocationInformationEUTRA *ieEUTRA =
+          (Ngap_UserLocationInformationEUTRA*) calloc(
+              1, sizeof(Ngap_UserLocationInformationEUTRA));
+      userLocationInformationEUTRA->encode2UserLocationInformationEUTRA(
+          ieEUTRA);
       userLocationInformation->choice.userLocationInformationEUTRA = ieEUTRA;
       break;
     }
     case Ngap_UserLocationInformation_PR_userLocationInformationNR: {
-      Ngap_UserLocationInformationNR *ieNR = (Ngap_UserLocationInformationNR*) calloc(1, sizeof(Ngap_UserLocationInformationNR));
+      Ngap_UserLocationInformationNR *ieNR =
+          (Ngap_UserLocationInformationNR*) calloc(
+              1, sizeof(Ngap_UserLocationInformationNR));
       userLocationInformationNR->encode2UserLocationInformationNR(ieNR);
       userLocationInformation->choice.userLocationInformationNR = ieNR;
       break;
@@ -96,17 +106,20 @@ bool UserLocationInformation::encodefromUserLocationInformation(Ngap_UserLocatio
 }
 
 //------------------------------------------------------------------------------
-bool UserLocationInformation::decodefromUserLocationInformation(Ngap_UserLocationInformation_t *userLocationInformation) {
+bool UserLocationInformation::decodefromUserLocationInformation(
+    Ngap_UserLocationInformation_t *userLocationInformation) {
   informationPresent = userLocationInformation->present;
   switch (informationPresent) {
     case Ngap_UserLocationInformation_PR_userLocationInformationEUTRA: {
       userLocationInformationEUTRA = new UserLocationInformationEUTRA();
-      userLocationInformationEUTRA->decodefromUserLocationInformationEUTRA(userLocationInformation->choice.userLocationInformationEUTRA);
+      userLocationInformationEUTRA->decodefromUserLocationInformationEUTRA(
+          userLocationInformation->choice.userLocationInformationEUTRA);
       break;
     }
     case Ngap_UserLocationInformation_PR_userLocationInformationNR: {
       userLocationInformationNR = new UserLocationInformationNR();
-      userLocationInformationNR->decodefromUserLocationInformationNR(userLocationInformation->choice.userLocationInformationNR);
+      userLocationInformationNR->decodefromUserLocationInformationNR(
+          userLocationInformation->choice.userLocationInformationNR);
       break;
     }
 #if 0
@@ -128,12 +141,14 @@ Ngap_UserLocationInformation_PR UserLocationInformation::getChoiceOfUserLocation
 }
 
 //------------------------------------------------------------------------------
-void UserLocationInformation::getInformation(UserLocationInformationEUTRA *&informationEUTRA) {
+void UserLocationInformation::getInformation(
+    UserLocationInformationEUTRA *&informationEUTRA) {
   informationEUTRA = userLocationInformationEUTRA;
 }
 
 //------------------------------------------------------------------------------
-void UserLocationInformation::getInformation(UserLocationInformationNR *&informationNR) {
+void UserLocationInformation::getInformation(
+    UserLocationInformationNR *&informationNR) {
   informationNR = userLocationInformationNR;
 }
 #if 0

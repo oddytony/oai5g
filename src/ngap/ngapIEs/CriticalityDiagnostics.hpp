@@ -50,11 +50,13 @@ class CriticalityDiagnostics {
   void setProcedureCodeValue(Ngap_ProcedureCode_t);
   void setTriggeringMessageValue(Ngap_TriggeringMessage_t);
   void setCriticalityValue(Ngap_Criticality_t);
-  void setIEsCriticalityDiagnosticsList(IEsCriticalityDiagnostics *m_iEsCriticalityDiagnostics, int num);
+  void setIEsCriticalityDiagnosticsList(
+      IEsCriticalityDiagnostics *m_iEsCriticalityDiagnostics, int num);
   bool getProcedureCodeValue(Ngap_ProcedureCode_t&);
   bool getTriggeringMessageValue(Ngap_TriggeringMessage_t&);
   bool getCriticalityValue(Ngap_Criticality_t&);
-  bool getIEsCriticalityDiagnosticsList(IEsCriticalityDiagnostics *&m_iEsCriticalityDiagnostics, int &num);
+  bool getIEsCriticalityDiagnosticsList(
+      IEsCriticalityDiagnostics *&m_iEsCriticalityDiagnostics, int &num);
  private:
   Ngap_ProcedureCode_t procedureCode; /* OPTIONAL */
   Ngap_TriggeringMessage_t triggeringMessage; /* OPTIONAL */

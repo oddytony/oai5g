@@ -44,7 +44,8 @@ TransportLayerAddress::~TransportLayerAddress() {
 }
 
 //------------------------------------------------------------------------------
-void TransportLayerAddress::setTransportLayerAddress(const std::string m_ipaddress) {
+void TransportLayerAddress::setTransportLayerAddress(
+    const std::string m_ipaddress) {
   //ipaddress = fromString<long>(m_ipaddress);
   ipaddress = m_ipaddress;
 }
@@ -77,7 +78,8 @@ vector<string> splite(const string &s, const string &c)  //分割字符用的
 }
 
 //------------------------------------------------------------------------------
-bool TransportLayerAddress::encode2TransportLayerAddress(Ngap_TransportLayerAddress_t &transportLayerAddress) {
+bool TransportLayerAddress::encode2TransportLayerAddress(
+    Ngap_TransportLayerAddress_t &transportLayerAddress) {
   transportLayerAddress.size = sizeof(uint32_t);
   transportLayerAddress.bits_unused = 0;
   transportLayerAddress.buf = (uint8_t*) calloc(1, transportLayerAddress.size);
@@ -94,7 +96,8 @@ bool TransportLayerAddress::encode2TransportLayerAddress(Ngap_TransportLayerAddr
 }
 
 //------------------------------------------------------------------------------
-bool TransportLayerAddress::decodefromTransportLayerAddress(Ngap_TransportLayerAddress_t &transportLayerAddress) {
+bool TransportLayerAddress::decodefromTransportLayerAddress(
+    Ngap_TransportLayerAddress_t &transportLayerAddress) {
   if (!transportLayerAddress.buf)
     return false;
 

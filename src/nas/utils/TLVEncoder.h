@@ -20,10 +20,10 @@
  */
 
 /*! \file TLVEncoder.h
-  \brief
-  \author Philippe MOREL, Sebastien ROUX, Lionel GAUTHIER
-  \company Eurecom
-*/
+ \brief
+ \author Philippe MOREL, Sebastien ROUX, Lionel GAUTHIER
+ \company Eurecom
+ */
 
 #ifndef FILE_TLV_ENCODER_SEEN
 #define FILE_TLV_ENCODER_SEEN
@@ -43,17 +43,14 @@
 #define IES_ENCODE_U32(buffer, encoded, value)    \
     ENCODE_U32(buffer + encoded, value, encoded)
 
-
 /* Defines error code limit below which message should be sent because
  * it cannot be further processed */
 #define TLV_FATAL_ERROR  (TLV_VALUE_DOESNT_MATCH)
 
 extern int errorCodeEncoder;
 
-int encode_bstring (
-  const_bstring const str,
-  uint8_t * const buffer,
-  const uint32_t buflen);
+int encode_bstring(const_bstring const str, uint8_t *const buffer,
+                   const uint32_t buflen);
 
 void tlv_encode_perror(void);
 

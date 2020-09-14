@@ -36,7 +36,8 @@
 Logger *Logger::m_singleton = NULL;
 
 //------------------------------------------------------------------------------
-void Logger::_init(const char *app, const bool log_stdout, const bool log_rot_file) {
+void Logger::_init(const char *app, const bool log_stdout,
+                   const bool log_rot_file) {
   int num_sinks = 0;
   spdlog::set_async_mode(2048);
 #if TRACE_IS_ON
@@ -51,12 +52,15 @@ void Logger::_init(const char *app, const bool log_stdout, const bool log_rot_fi
 
   if (log_stdout) {
     std::string filename = fmt::format("./{}.log", app);
-    m_sinks.push_back(std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>());
+    m_sinks.push_back(
+        std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>());
     m_sinks[num_sinks++].get()->set_level(llevel);
   }
   if (log_rot_file) {
     std::string filename = fmt::format("./{}.log", app);
-    m_sinks.push_back(std::make_shared < spdlog::sinks::rotating_file_sink_mt > (filename, 5 * 1024 * 1024, 3));
+    m_sinks.push_back(
+        std::make_shared < spdlog::sinks::rotating_file_sink_mt
+            > (filename, 5 * 1024 * 1024, 3));
   }
 
   std::stringstream ss;
@@ -78,7 +82,8 @@ void Logger::_init(const char *app, const bool log_stdout, const bool log_rot_fi
 }
 
 //------------------------------------------------------------------------------
-_Logger::_Logger(const char *category, std::vector<spdlog::sink_ptr> &sinks, const char *pattern)
+_Logger::_Logger(const char *category, std::vector<spdlog::sink_ptr> &sinks,
+                 const char *pattern)
     :
     m_log(category, sinks.begin(), sinks.end()) {
   m_log.set_pattern(pattern);

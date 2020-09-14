@@ -43,8 +43,12 @@ class QosFlowSetupRequestItem {
   QosFlowSetupRequestItem();
   virtual ~QosFlowSetupRequestItem();
 
-  void setQosFlowSetupRequestItem(QosFlowIdentifier *m_qosFlowIdentifier, QosFlowLevelQosParameters *m_qosFlowLevelQosParameters);
-  bool getQosFlowSetupRequestItem(QosFlowIdentifier *&m_qosFlowIdentifier, QosFlowLevelQosParameters *&m_qosFlowLevelQosParameters);
+  void setQosFlowSetupRequestItem(
+      QosFlowIdentifier *m_qosFlowIdentifier,
+      QosFlowLevelQosParameters *m_qosFlowLevelQosParameters);
+  bool getQosFlowSetupRequestItem(
+      QosFlowIdentifier *&m_qosFlowIdentifier,
+      QosFlowLevelQosParameters *&m_qosFlowLevelQosParameters);
 
   bool encode2QosFlowSetupRequestItem(Ngap_QosFlowSetupRequestItem_t*);
   bool decodefromQosFlowSetupRequestItem(Ngap_QosFlowSetupRequestItem_t*);

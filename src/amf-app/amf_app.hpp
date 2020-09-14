@@ -65,16 +65,21 @@ class amf_app {
   mutable std::shared_mutex m_ue_ctx_key;
 
   bool is_amf_ue_id_2_ue_context(const long &amf_ue_ngap_id) const;
-  std::shared_ptr<ue_context> amf_ue_id_2_ue_context(const long &amf_ue_ngap_id) const;
-  void set_amf_ue_ngap_id_2_ue_context(const long &amf_ue_ngap_id, std::shared_ptr<ue_context> uc);
+  std::shared_ptr<ue_context> amf_ue_id_2_ue_context(
+      const long &amf_ue_ngap_id) const;
+  void set_amf_ue_ngap_id_2_ue_context(const long &amf_ue_ngap_id,
+                                       std::shared_ptr<ue_context> uc);
 
   bool is_ran_amf_id_2_ue_context(const std::string &ue_context_key) const;
-  std::shared_ptr<ue_context> ran_amf_id_2_ue_context(const std::string &ue_context_key) const;
-  void set_ran_amf_id_2_ue_context(const std::string &ue_context_key, std::shared_ptr<ue_context> uc);
+  std::shared_ptr<ue_context> ran_amf_id_2_ue_context(
+      const std::string &ue_context_key) const;
+  void set_ran_amf_id_2_ue_context(const std::string &ue_context_key,
+                                   std::shared_ptr<ue_context> uc);
   // SMF Client response handlers
   void handle_post_sm_context_response_error_400();
   //others
-  bool generate_5g_guti(uint32_t ranid, long amfid, std::string &mcc, std::string &mnc, uint32_t &tmsi);
+  bool generate_5g_guti(uint32_t ranid, long amfid, std::string &mcc,
+                        std::string &mnc, uint32_t &tmsi);
 };
 
 }
