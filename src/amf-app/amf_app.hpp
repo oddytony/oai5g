@@ -30,11 +30,8 @@
 #define _AMF_APP_H_
 
 #include <map>
-#include <set>
 #include <shared_mutex>
 #include <string>
-#include <thread>
-#include <sstream>
 #include "amf_config.hpp"
 #include "amf_module_from_config.hpp"
 #include "itti_msg_amf_app.hpp"

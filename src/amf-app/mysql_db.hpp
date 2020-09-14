@@ -29,10 +29,8 @@
 #ifndef _MYSQL_DB_HANDLERS_H_
 #define _MYSQL_DB_HANDLERS_H_
 
-#include <stdint.h>
 #include <pthread.h>
 #include <mysql/mysql.h>
-#include <netinet/in.h>
 #include <string>
 
 #define KEY_LENGTH  (16)

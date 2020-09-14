@@ -53,10 +53,10 @@ class ServiceRequest {
   int encode2buffer(uint8_t *buf, int len);
  public:
   int decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len);
-  uint8_t getngKSI();  //return -1;表示获取IE失败
+  uint8_t getngKSI();
   uint8_t getServiceType();
   bool get5G_S_TMSI(uint16_t &amfSetId, uint8_t &amfPointer, string &tmsi);
-  uint16_t getUplinkDataStatus();  //return -1;表示获取IE失败;
+  uint16_t getUplinkDataStatus();
   uint16_t getPduSessionStatus();
   uint16_t getAllowedPduSessionStatus();
   bool getNasMessageContainer(bstring &nas);

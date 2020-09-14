@@ -28,8 +28,6 @@
 
 #include "amf_statistics.hpp"
 
-#include <iostream>
-
 #include "logger.hpp"
 
 //------------------------------------------------------------------------------

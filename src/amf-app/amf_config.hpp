@@ -35,14 +35,9 @@
 #include <libconfig.h++>
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <mutex>
 #include <vector>
 #include <string>
 #include "thread_sched.hpp"
-
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
 
 #define AMF_CONFIG_STRING_AMF_CONFIG                    "AMF"
 #define AMF_CONFIG_STRING_PID_DIRECTORY                 "PID_DIRECTORY"

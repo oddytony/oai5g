@@ -92,17 +92,17 @@ class RegistrationRequest {
   void setNAS_Message_Container(bstring value);
   void setEPS_Bearer_Context_Status(uint16_t value);
 
-  bool get5GSRegistrationType(bool &is_for, uint8_t &reg_type/*3bits*/);  //返回获取IE的状态，成功或者失败
-  uint8_t getngKSI();  //return -1;表示获取IE失败
-  uint8_t getMobilityIdentityType();  //return -1;表示获取IE失败
+  bool get5GSRegistrationType(bool &is_for, uint8_t &reg_type/*3bits*/);
+  uint8_t getngKSI();
+  uint8_t getMobilityIdentityType();
   std::string get_5g_guti();  //"error" for missing IE GUTI
   bool getSuciSupiFormatImsi(nas::SUCI_imsi_t &imsi);
-  uint8_t getNonCurrentNativeNasKSI();  //return -1;表示获取IE失败
-  uint8_t get5GMMCapability();  //return -1;表示获取IE失败;   set接口可能有bug
+  uint8_t getNonCurrentNativeNasKSI();
+  uint8_t get5GMMCapability();
   bool getUeSecurityCapability(uint8_t &ea, uint8_t &ia);
   bool getRequestedNssai(std::vector<struct SNSSAI_s> &nssai);
   bool getS1UeNetworkCapability(uint8_t &eea, uint8_t &eia);
-  uint16_t getUplinkDataStatus();  //return -1;表示获取IE失败;
+  uint16_t getUplinkDataStatus();
   uint16_t getPduSessionStatus();
   bool getMicoIndication(uint8_t &sprti, uint8_t &raai);
   bool getUeStatus(uint8_t &n1ModeReg, uint8_t &s1ModeReg);

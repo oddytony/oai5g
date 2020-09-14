@@ -33,6 +33,10 @@
 #include "string.hpp"
 #include "thread_sched.hpp"
 
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+
 #include "logger.hpp"
 #include "amf_app.hpp"
 #include "if.hpp"
@@ -41,10 +45,8 @@
 extern "C" {
 #include <arpa/inet.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include "common_defs.h"
 }
 

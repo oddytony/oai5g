@@ -51,7 +51,6 @@ int ngap_amf_handle_ng_setup_request(const sctp_assoc_id_t assoc_id,
                                      const sctp_stream_id_t stream,
                                      struct Ngap_NGAP_PDU *message_p) {
   Logger::ngap().debug("Sending ITTI NG Setup Request message to TASK_AMF_N2");
-  //need code from yangjian and send itti message to TASK_AMF_N2
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   NGSetupRequestMsg *ngSetupReq = new NGSetupRequestMsg();
   if (!ngSetupReq->decodefrompdu(message_p)) {

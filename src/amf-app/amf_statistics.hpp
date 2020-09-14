@@ -29,9 +29,6 @@
 #ifndef _STATISTICS_H_
 #define _STATISTICS_H_
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdint.h>
 #include <vector>
 #include <string>
 

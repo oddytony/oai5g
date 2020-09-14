@@ -31,7 +31,6 @@
 #include <stdbool.h>
 
 #include "TLVEncoder.h"
-//#include "log.h"
 
 int errorCodeEncoder = 0;
 

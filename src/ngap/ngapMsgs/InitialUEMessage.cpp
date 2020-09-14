@@ -245,9 +245,6 @@ bool InitialUEMessageMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
   initialUEMessagePdu = ngap_msg_pdu;
 
   if (initialUEMessagePdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
-    //cout<<"test0515: procedureCode    "<<initialUEMessagePdu->choice.initiatingMessage->procedureCode<<endl;
-    //cout<<"test0515: criticality    "<<initialUEMessagePdu->choice.initiatingMessage->criticality<<endl;
-    //cout<<"test0515: present    "<<initialUEMessagePdu->choice.initiatingMessage->value.present<<endl;
     if (initialUEMessagePdu->choice.initiatingMessage
         && initialUEMessagePdu->choice.initiatingMessage->procedureCode
             == Ngap_ProcedureCode_id_InitialUEMessage
