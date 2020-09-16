@@ -6,10 +6,13 @@
 ------------------------------------------------------------------------------
 
 OPENAIR-CN-5G is an implementation of the 3GPP specifications for the 5G Core Network.
-At the moment, it contains the following network elements.
+At the moment, it contains the following network elements:
 
-Each has its own repository: this repository (`oai-cn5g-amf`) is meant for the
-**Access and Mobility Management Function** (also knwon as **AMF**).
+* Access and Mobility Management Function (**AMF**)
+* Session Management Function (**SMF**)
+* User Plane Function (**UPF**)
+
+Each has its own repository: this repository (`oai-cn5g-amf`) is meant for AMF.
 
 # Licence info
 
