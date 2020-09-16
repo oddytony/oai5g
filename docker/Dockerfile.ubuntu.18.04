@@ -30,7 +30,7 @@
 #---------------------------------------------------------------------
 FROM ubuntu:bionic as oai-amf-builder
 
-ARG EURECOM_PROXY
+ARG NEEDED_GIT_PROXY
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe
@@ -42,7 +42,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DE
   && rm -rf /var/lib/apt/lists/*
 
 # Some GIT configuration commands quite useful
-RUN /bin/bash -c "if [[ -v EURECOM_PROXY ]]; then git config --global http.proxy $EURECOM_PROXY; fi"
+RUN /bin/bash -c "if [[ -v NEEDED_GIT_PROXY ]]; then git config --global http.proxy $NEEDED_GIT_PROXY; fi"
 RUN git config --global https.postBuffer 123289600
 RUN git config --global http.sslverify false
 
