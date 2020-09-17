@@ -28,10 +28,10 @@
 | ------ | ------------- | ------------------ | --------------------------------------------------------------------------|
 | 1      | N1            | :heavy_check_mark: | Communicate with UE via NAS message                                       |
 | 2      | N2            | :heavy_check_mark: | Communicate with gNB via NGAP message                                     |
-| 3      | N8            | :x:                | Interface to UDM (e.g., retrieve UE subscription data)                    |
+| 3      | N8            | :x:                | Interface to/from UDM (e.g., retrieve UE subscription data)               |
 | 4      | N11           | :heavy_check_mark: | Interface to/from SMF (e.g., N1N2MessageTransfer, PDU Session Services)   |
-| 5      | N14           | :x:                | between AMFs                                                              |
-| 6      | N15           | :x:                | between AMF and PCF                                                       |
+| 5      | N14           | :x:                | Interface between AMFs                                                    |
+| 6      | N15           | :x:                | Interface between AMF and PCF                                             |
 
 # 3. OAI AMF Feature List #
 
