@@ -233,6 +233,34 @@ pipeline {
         }
       }
     }
+    stage ('Testing in CN-5G-FED environment') {
+      steps {
+        script {
+          localStatus = build job: 'CI-OpenAir-CN5G-FED',
+            parameters: [
+              string(name: 'AMF_TAG', value: String.valueOf(amf_tag)),
+              string(name: 'AMF_BRANCH', value: String.valueOf(amf_branch))
+            ], propagate: false
+          localResult = localStatus.getResult()
+
+          if (localStatus.resultIsBetterOrEqualTo('SUCCESS')) {
+            echo "Federation Test Job is OK"
+          } else {
+            echo "Federation Test Job is KO"
+            sh "ci-scripts/fail.sh"
+          }
+        }
+      }
+      post {
+        always {
+          script {
+            copyArtifacts(projectName: 'CI-OpenAir-CN5G-FED',
+                          filter: '*_results_oai_cn5g.html',
+                          selector: lastCompleted())
+          }
+        }
+      }
+    }
   }
   post {
     success {
