@@ -313,6 +313,10 @@ pipeline {
         if (fileExists('test_results_oai_amf.html')) {
           archiveArtifacts artifacts: 'test_results_oai_amf.html'
         }
+        if (fileExists('deploy_results_oai_cn5g.htm')) {
+          sh "sed -i -e 's#TEMPLATE_TIME#${JOB_TIMESTAMP}#' *_results_oai_cn5g.html"
+          archiveArtifacts artifacts: '*_results_oai_cn5g.html'
+        }
 
         // Sending email to commiter
         emailext attachmentsPattern: '*results*.html',
