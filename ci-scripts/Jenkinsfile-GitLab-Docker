@@ -52,7 +52,8 @@ pipeline {
     gitlabBuilds(builds: [
       "Build AMF Image",
       "Static Code Analysis",
-      "Code Formatting Checker"
+      "Code Formatting Checker",
+      "Test with DsTester"
     ])
 
   }
@@ -79,6 +80,7 @@ pipeline {
           } else {
             echo "Node       is ${NODE_NAME}"
           }
+          echo "Git URL    is ${GIT_URL}"
         }
       }
     }
@@ -90,7 +92,7 @@ pipeline {
             gitCommitAuthorEmailAddr = env.gitlabUserEmail
             echo "GitLab Usermail is ${gitCommitAuthorEmailAddr}"
             sh "./ci-scripts/doGitLabMerge.sh --src-branch ${env.gitlabSourceBranch} --src-commit ${env.gitlabMergeRequestLastCommit} --target-branch ${env.gitlabTargetBranch} --target-commit ${GIT_COMMIT}"
-            amf_tag = "ci-temp"
+            amf_tag = "ci-tmp"
             amf_branch = env.gitlabSourceBranch
           } else {
             echo "Git Branch      is ${GIT_BRANCH}"
@@ -236,18 +238,20 @@ pipeline {
     stage ('Testing in CN-5G-FED environment') {
       steps {
         script {
-          localStatus = build job: 'CI-OpenAir-CN5G-FED',
-            parameters: [
-              string(name: 'AMF_TAG', value: String.valueOf(amf_tag)),
-              string(name: 'AMF_BRANCH', value: String.valueOf(amf_branch))
-            ], propagate: false
-          localResult = localStatus.getResult()
+          gitlabCommitStatus(name: "Test with DsTester") {
+            localStatus = build job: 'CI-OpenAir-CN5G-FED',
+              parameters: [
+                string(name: 'AMF_TAG', value: String.valueOf(amf_tag)),
+                string(name: 'AMF_BRANCH', value: String.valueOf(amf_branch))
+              ], propagate: false
+            localResult = localStatus.getResult()
 
-          if (localStatus.resultIsBetterOrEqualTo('SUCCESS')) {
-            echo "Federation Test Job is OK"
-          } else {
-            echo "Federation Test Job is KO"
-            sh "ci-scripts/fail.sh"
+            if (localStatus.resultIsBetterOrEqualTo('SUCCESS')) {
+              echo "Federation Test Job is OK"
+            } else {
+              echo "Federation Test Job is KO"
+              sh "ci-scripts/fail.sh"
+            }
           }
         }
       }
@@ -286,7 +290,7 @@ pipeline {
         // Removing temporary / intermediate images
         try {
           if ("MERGE".equals(env.gitlabActionType)) {
-            myShCmd('docker image rm --force oai-amf:ci-temp', new_host_flag, new_host_user, new_host)
+            myShCmd('docker image rm --force oai-amf:ci-tmp', new_host_flag, new_host_user, new_host)
           }
         } catch (Exception e) {
           echo "We failed to delete the OAI-AMF temp image"
