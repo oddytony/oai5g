@@ -46,12 +46,25 @@ class CoreNetworkAssistanceInfo {
   CoreNetworkAssistanceInfo();
   virtual ~CoreNetworkAssistanceInfo();
 
-  void setCoreNetworkAssistanceInfo(UEIdentityIndexValue *m_ueIdentityIndexValue, DefaultPagingDRX *m_pagingDRX, PeriodicRegistrationUpdateTimer *m_periodicRegUpdateTimer, bool m_micoModeInd, TAI *m_tai, int m_numoftai);
-  void setCoreNetworkAssistanceInfo(UEIdentityIndexValue *m_ueIdentityIndexValue, PeriodicRegistrationUpdateTimer *m_periodicRegUpdateTimer, bool m_micoModeInd, TAI *m_tai, int m_numoftai);
-  void getCoreNetworkAssistanceInfo(UEIdentityIndexValue *&m_ueIdentityIndexValue, DefaultPagingDRX *&m_pagingDRX, PeriodicRegistrationUpdateTimer *&m_periodicRegUpdateTimer, bool &m_micoModeInd, TAI *&m_tai, int &m_numoftai);
+  void setCoreNetworkAssistanceInfo(
+      UEIdentityIndexValue *m_ueIdentityIndexValue,
+      DefaultPagingDRX *m_pagingDRX,
+      PeriodicRegistrationUpdateTimer *m_periodicRegUpdateTimer,
+      bool m_micoModeInd, TAI *m_tai, int m_numoftai);
+  void setCoreNetworkAssistanceInfo(
+      UEIdentityIndexValue *m_ueIdentityIndexValue,
+      PeriodicRegistrationUpdateTimer *m_periodicRegUpdateTimer,
+      bool m_micoModeInd, TAI *m_tai, int m_numoftai);
+  void getCoreNetworkAssistanceInfo(
+      UEIdentityIndexValue *&m_ueIdentityIndexValue,
+      DefaultPagingDRX *&m_pagingDRX,
+      PeriodicRegistrationUpdateTimer *&m_periodicRegUpdateTimer,
+      bool &m_micoModeInd, TAI *&m_tai, int &m_numoftai);
 
-  bool encode2CoreNetworkAssistanceInfo(Ngap_CoreNetworkAssistanceInformation_t *coreNetworkAssistanceInformation);
-  bool decodefromCoreNetworkAssistanceInfo(Ngap_CoreNetworkAssistanceInformation_t *coreNetworkAssistanceInformation);
+  bool encode2CoreNetworkAssistanceInfo(
+      Ngap_CoreNetworkAssistanceInformation_t *coreNetworkAssistanceInformation);
+  bool decodefromCoreNetworkAssistanceInfo(
+      Ngap_CoreNetworkAssistanceInformation_t *coreNetworkAssistanceInformation);
  private:
   UEIdentityIndexValue *ueIdentityIndexValue;
   DefaultPagingDRX *pagingDRX;

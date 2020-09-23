@@ -40,8 +40,14 @@ class UESecurityCapabilities {
   UESecurityCapabilities();
   virtual ~UESecurityCapabilities();
 
-  void setUESecurityCapabilities(uint16_t m_NR_EncryptionAlgs, uint16_t m_NR_IntegrityProtectionAlgs, uint16_t m_E_UTRA_EncryptionAlgs, uint16_t m_E_UTRA_IntegrityProtectionAlgs);
-  bool getUESecurityCapabilities(uint16_t &m_NR_EncryptionAlgs, uint16_t &m_NR_IntegrityProtectionAlgs, uint16_t &m_E_UTRA_EncryptionAlgs, uint16_t &m_E_UTRA_IntegrityProtectionAlgs);
+  void setUESecurityCapabilities(uint16_t m_NR_EncryptionAlgs,
+                                 uint16_t m_NR_IntegrityProtectionAlgs,
+                                 uint16_t m_E_UTRA_EncryptionAlgs,
+                                 uint16_t m_E_UTRA_IntegrityProtectionAlgs);
+  bool getUESecurityCapabilities(uint16_t &m_NR_EncryptionAlgs,
+                                 uint16_t &m_NR_IntegrityProtectionAlgs,
+                                 uint16_t &m_E_UTRA_EncryptionAlgs,
+                                 uint16_t &m_E_UTRA_IntegrityProtectionAlgs);
 
   bool encode2UESecurityCapabilities(Ngap_UESecurityCapabilities_t&);
   bool decodefromUESecurityCapabilities(Ngap_UESecurityCapabilities_t&);

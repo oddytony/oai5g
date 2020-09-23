@@ -46,7 +46,8 @@ AuthenticationFailure::~AuthenticationFailure() {
 //------------------------------------------------------------------------------
 void AuthenticationFailure::setHeader(uint8_t security_header_type) {
   plain_header = new NasMmPlainHeader();
-  plain_header->setHeader(EPD_5GS_MM_MSG, security_header_type, AUTHENTICATION_FAILURE);
+  plain_header->setHeader(EPD_5GS_MM_MSG, security_header_type,
+                          AUTHENTICATION_FAILURE);
 }
 
 //------------------------------------------------------------------------------
@@ -65,7 +66,8 @@ uint8_t AuthenticationFailure::get5GMmCause() {
 
 //------------------------------------------------------------------------------
 void AuthenticationFailure::setAuthentication_Failure_Parameter(bstring auts) {
-  ie_authentication_failure_parameter = new Authentication_Failure_Parameter(0x30, auts);
+  ie_authentication_failure_parameter = new Authentication_Failure_Parameter(
+      0x30, auts);
 }
 bool AuthenticationFailure::getAutsInAuthFailPara(bstring &auts) {
   if (ie_authentication_failure_parameter) {
@@ -90,34 +92,41 @@ int AuthenticationFailure::encode2buffer(uint8_t *buf, int len) {
   if (!ie_5gmm_cause) {
     Logger::nas_mm().warn("IE ie_5gmm_cause is not available");
   } else {
-    if (int size = ie_5gmm_cause->encode2buffer(buf + encoded_size, len - encoded_size)) {
+    if (int size = ie_5gmm_cause->encode2buffer(buf + encoded_size,
+                                                len - encoded_size)) {
       encoded_size += size;
     } else {
       Logger::nas_mm().error("Encoding ie_5gmm_cause error");
     }
   }
   if (!ie_authentication_failure_parameter) {
-    Logger::nas_mm().warn("IE ie_authentication_failure_parameter is not available");
+    Logger::nas_mm().warn(
+        "IE ie_authentication_failure_parameter is not available");
   } else {
-    if (int size = ie_authentication_failure_parameter->encode2buffer(buf + encoded_size, len - encoded_size)) {
+    if (int size = ie_authentication_failure_parameter->encode2buffer(
+        buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
     } else {
-      Logger::nas_mm().error("Encoding ie_authentication_failure_parameter error");
+      Logger::nas_mm().error(
+          "Encoding ie_authentication_failure_parameter error");
       return 0;
     }
   }
 
-  Logger::nas_mm().debug("Encoded AuthenticationFailure message len (%d)", encoded_size);
+  Logger::nas_mm().debug("Encoded AuthenticationFailure message len (%d)",
+                         encoded_size);
   return 1;
 }
 
 //------------------------------------------------------------------------------
-int AuthenticationFailure::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len) {
+int AuthenticationFailure::decodefrombuffer(NasMmPlainHeader *header,
+                                            uint8_t *buf, int len) {
   Logger::nas_mm().debug("Decoding AuthenticationFailure message");
   int decoded_size = 3;
   plain_header = header;
   ie_5gmm_cause = new _5GMM_Cause();
-  decoded_size += ie_5gmm_cause->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
+  decoded_size += ie_5gmm_cause->decodefrombuffer(buf + decoded_size,
+                                                  len - decoded_size, false);
   Logger::nas_mm().debug("Decoded_size (%d)", decoded_size);
   uint8_t octet = *(buf + decoded_size);
   Logger::nas_mm().debug("First option IEI (0x%x)", octet);
@@ -125,15 +134,18 @@ int AuthenticationFailure::decodefrombuffer(NasMmPlainHeader *header, uint8_t *b
     switch (octet) {
       case 0x30: {
         Logger::nas_mm().debug("Decoding IEI (0x30)");
-        ie_authentication_failure_parameter = new Authentication_Failure_Parameter();
-        decoded_size += ie_authentication_failure_parameter->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
+        ie_authentication_failure_parameter =
+            new Authentication_Failure_Parameter();
+        decoded_size += ie_authentication_failure_parameter->decodefrombuffer(
+            buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
         Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
     }
   }
-  Logger::nas_mm().debug("Decoded AuthenticationFailure message len (%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded AuthenticationFailure message len (%d)",
+                         decoded_size);
 
 }
 

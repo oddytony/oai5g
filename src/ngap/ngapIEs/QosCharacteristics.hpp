@@ -43,10 +43,12 @@ class QosCharacteristics {
   QosCharacteristics();
   virtual ~QosCharacteristics();
 
-  void setQosCharacteristics(NonDynamic5QIDescriptor *m_nonDynamic5QIDescriptor);
+  void setQosCharacteristics(
+      NonDynamic5QIDescriptor *m_nonDynamic5QIDescriptor);
   void setQosCharacteristics(Dynamic5QIDescriptor *m_dynamic5QIDescriptor);
   int QosCharacteristicsPresent();
-  bool getQosCharacteristics(NonDynamic5QIDescriptor *&m_nonDynamic5QIDescriptor);
+  bool getQosCharacteristics(
+      NonDynamic5QIDescriptor *&m_nonDynamic5QIDescriptor);
   bool getQosCharacteristics(Dynamic5QIDescriptor *&m_dynamic5QIDescriptor);
   bool encode2QosCharacteristics(Ngap_QosCharacteristics_t*);
   bool decodefromQosCharacteristics(Ngap_QosCharacteristics_t*);

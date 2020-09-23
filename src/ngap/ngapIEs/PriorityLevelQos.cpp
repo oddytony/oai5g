@@ -54,14 +54,16 @@ bool PriorityLevelQos::getPriorityLevelQos(long &value) {
 }
 
 //------------------------------------------------------------------------------
-bool PriorityLevelQos::encode2PriorityLevelQos(Ngap_PriorityLevelQos_t *priorityLevelQos) {
+bool PriorityLevelQos::encode2PriorityLevelQos(
+    Ngap_PriorityLevelQos_t *priorityLevelQos) {
   *priorityLevelQos = prioritylevelqos;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool PriorityLevelQos::decodefromPriorityLevelQos(Ngap_PriorityLevelQos_t *priorityLevelQos) {
+bool PriorityLevelQos::decodefromPriorityLevelQos(
+    Ngap_PriorityLevelQos_t *priorityLevelQos) {
   prioritylevelqos = *priorityLevelQos;
 
   return true;

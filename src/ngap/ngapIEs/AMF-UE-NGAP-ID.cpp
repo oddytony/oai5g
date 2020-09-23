@@ -59,14 +59,16 @@ bool AMF_UE_NGAP_ID::encode2AMF_UE_NGAP_ID(Ngap_AMF_UE_NGAP_ID_t &amfuengapid) {
     return false;
 
   for (int i = 0; i < amfuengapid.size; i++) {
-    amfuengapid.buf[i] = (amfUeNgapId & (0xff00000000 >> i * 8)) >> ((amfuengapid.size - i - 1) * 8);
+    amfuengapid.buf[i] = (amfUeNgapId & (0xff00000000 >> i * 8))
+        >> ((amfuengapid.size - i - 1) * 8);
   }
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool AMF_UE_NGAP_ID::decodefromAMF_UE_NGAP_ID(Ngap_AMF_UE_NGAP_ID_t &amfuengapid) {
+bool AMF_UE_NGAP_ID::decodefromAMF_UE_NGAP_ID(
+    Ngap_AMF_UE_NGAP_ID_t &amfuengapid) {
   if (!amfuengapid.buf)
     return false;
 

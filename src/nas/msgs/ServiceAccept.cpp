@@ -52,7 +52,8 @@ void ServiceAccept::setPDU_session_status(uint16_t value) {
 
 //------------------------------------------------------------------------------
 void ServiceAccept::setPDU_session_reactivation_result(uint16_t value) {
-  ie_session_reactivation_result = new PDU_Session_Reactivation_Result(0x26, value);
+  ie_session_reactivation_result = new PDU_Session_Reactivation_Result(0x26,
+                                                                       value);
 }
 
 //------------------------------------------------------------------------------
@@ -66,8 +67,10 @@ int ServiceAccept::encode2buffer(uint8_t *buf, int len) {
     return -1;
   encoded_size += 3;
   if (ie_PDU_session_status)
-    encoded_size += ie_PDU_session_status->encode2buffer(buf + encoded_size, len - encoded_size);
+    encoded_size += ie_PDU_session_status->encode2buffer(buf + encoded_size,
+                                                         len - encoded_size);
   if (ie_session_reactivation_result)
-    encoded_size += ie_session_reactivation_result->encode2buffer(buf + encoded_size, len - encoded_size);
+    encoded_size += ie_session_reactivation_result->encode2buffer(
+        buf + encoded_size, len - encoded_size);
   return encoded_size;
 }

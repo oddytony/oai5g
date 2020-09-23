@@ -40,11 +40,14 @@ class IntegrityProtectionIndication {
   IntegrityProtectionIndication();
   virtual ~IntegrityProtectionIndication();
 
-  void setIntegrityProtectionIndication(e_Ngap_IntegrityProtectionIndication m_indication);
+  void setIntegrityProtectionIndication(
+      e_Ngap_IntegrityProtectionIndication m_indication);
   bool getIntegrityProtectionIndication(long &m_indication);
 
-  bool encode2IntegrityProtectionIndication(Ngap_IntegrityProtectionIndication_t&);
-  bool decodefromIntegrityProtectionIndication(Ngap_IntegrityProtectionIndication_t);
+  bool encode2IntegrityProtectionIndication(
+      Ngap_IntegrityProtectionIndication_t&);
+  bool decodefromIntegrityProtectionIndication(
+      Ngap_IntegrityProtectionIndication_t);
  private:
   long indication;
 };

@@ -43,8 +43,10 @@ class PeriodicRegistrationUpdateTimer {
   void setPeriodicRegistrationUpdateTimer(uint8_t m_updatetimer);
   void getPeriodicRegistrationUpdateTimer(uint8_t &m_updatetimer);
 
-  bool encode2PeriodicRegistrationUpdateTimer(Ngap_PeriodicRegistrationUpdateTimer_t *periodicRegistrationUpdateTimer);
-  bool decodefromPeriodicRegistrationUpdateTimer(Ngap_PeriodicRegistrationUpdateTimer_t *periodicRegistrationUpdateTimer);
+  bool encode2PeriodicRegistrationUpdateTimer(
+      Ngap_PeriodicRegistrationUpdateTimer_t *periodicRegistrationUpdateTimer);
+  bool decodefromPeriodicRegistrationUpdateTimer(
+      Ngap_PeriodicRegistrationUpdateTimer_t *periodicRegistrationUpdateTimer);
  private:
   uint8_t updatetimer;
 };

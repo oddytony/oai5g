@@ -48,7 +48,8 @@ void EUTRACellIdentity::setEUTRACellIdentity(uint32_t m_eutracellidentity) {
 }
 
 //------------------------------------------------------------------------------
-bool EUTRACellIdentity::encode2bitstring(Ngap_EUTRACellIdentity_t &eUTRACellIdentity) {
+bool EUTRACellIdentity::encode2bitstring(
+    Ngap_EUTRACellIdentity_t &eUTRACellIdentity) {
   eUTRACellIdentity.bits_unused = 4;
   eUTRACellIdentity.size = 4;
   eUTRACellIdentity.buf = (uint8_t*) calloc(1, sizeof(uint32_t));
@@ -63,7 +64,8 @@ bool EUTRACellIdentity::encode2bitstring(Ngap_EUTRACellIdentity_t &eUTRACellIden
 }
 
 //------------------------------------------------------------------------------
-bool EUTRACellIdentity::decodefrombitstring(Ngap_EUTRACellIdentity_t &eUTRACellIdentity) {
+bool EUTRACellIdentity::decodefrombitstring(
+    Ngap_EUTRACellIdentity_t &eUTRACellIdentity) {
   if (!eUTRACellIdentity.buf)
     return false;
 

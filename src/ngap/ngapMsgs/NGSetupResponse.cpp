@@ -63,14 +63,22 @@ void NGSetupResponseMsg::setMessageType() {
 
   MessageType NgSetupResponseMessageTypeIE;
   NgSetupResponseMessageTypeIE.setProcedureCode(Ngap_ProcedureCode_id_NGSetup);
-  NgSetupResponseMessageTypeIE.setTypeOfMessage(Ngap_NGAP_PDU_PR_successfulOutcome);
-  NgSetupResponseMessageTypeIE.setValuePresent(Ngap_SuccessfulOutcome__value_PR_NGSetupResponse);
+  NgSetupResponseMessageTypeIE.setTypeOfMessage(
+      Ngap_NGAP_PDU_PR_successfulOutcome);
+  NgSetupResponseMessageTypeIE.setValuePresent(
+      Ngap_SuccessfulOutcome__value_PR_NGSetupResponse);
 
-  if (NgSetupResponseMessageTypeIE.getProcedureCode() == Ngap_ProcedureCode_id_NGSetup && NgSetupResponseMessageTypeIE.getTypeOfMessage() == Ngap_NGAP_PDU_PR_successfulOutcome) {
+  if (NgSetupResponseMessageTypeIE.getProcedureCode()
+      == Ngap_ProcedureCode_id_NGSetup
+      && NgSetupResponseMessageTypeIE.getTypeOfMessage()
+          == Ngap_NGAP_PDU_PR_successfulOutcome) {
     NgSetupResponseMessageTypeIE.encode2pdu(ngSetupResponsePdu);
-    ngSetupResponsIEs = &(ngSetupResponsePdu->choice.successfulOutcome->value.choice.NGSetupResponse);
+    ngSetupResponsIEs = &(ngSetupResponsePdu->choice.successfulOutcome->value
+        .choice.NGSetupResponse);
   } else {
-    cout << "[warning] This information doesn't refer to NGSetupRespons Message!!!" << endl;
+    cout
+        << "[warning] This information doesn't refer to NGSetupRespons Message!!!"
+        << endl;
   }
 }
 
@@ -79,7 +87,8 @@ void NGSetupResponseMsg::setAMFName(const std::string name) {
   amfName = new AmfName();
   amfName->setValue(name);
 
-  Ngap_NGSetupResponseIEs_t *ie = (Ngap_NGSetupResponseIEs_t*) calloc(1, sizeof(Ngap_NGSetupResponseIEs_t));
+  Ngap_NGSetupResponseIEs_t *ie = (Ngap_NGSetupResponseIEs_t*) calloc(
+      1, sizeof(Ngap_NGSetupResponseIEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_AMFName;
   ie->criticality = Ngap_Criticality_reject;
   ie->value.present = Ngap_NGSetupResponseIEs__value_PR_AMFName;
@@ -124,7 +133,8 @@ void NGSetupResponseMsg::setGUAMIList(std::vector<struct GuamiItem_s> list) {
   }
   servedGUAMIList->addServedGUAMIItems(servedGUAMIItem, list.size());
 
-  Ngap_NGSetupResponseIEs_t *ie = (Ngap_NGSetupResponseIEs_t*) calloc(1, sizeof(Ngap_NGSetupResponseIEs_t));
+  Ngap_NGSetupResponseIEs_t *ie = (Ngap_NGSetupResponseIEs_t*) calloc(
+      1, sizeof(Ngap_NGSetupResponseIEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_ServedGUAMIList;
   ie->criticality = Ngap_Criticality_reject;
   ie->value.present = Ngap_NGSetupResponseIEs__value_PR_ServedGUAMIList;
@@ -141,12 +151,14 @@ void NGSetupResponseMsg::setRelativeAmfCapacity(long capacity) {
   relativeAmfCapacity = new RelativeAMFCapacity();
   relativeAmfCapacity->setValue(capacity);
 
-  Ngap_NGSetupResponseIEs_t *ie = (Ngap_NGSetupResponseIEs_t*) calloc(1, sizeof(Ngap_NGSetupResponseIEs_t));
+  Ngap_NGSetupResponseIEs_t *ie = (Ngap_NGSetupResponseIEs_t*) calloc(
+      1, sizeof(Ngap_NGSetupResponseIEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_RelativeAMFCapacity;
   ie->criticality = Ngap_Criticality_ignore;
   ie->value.present = Ngap_NGSetupResponseIEs__value_PR_RelativeAMFCapacity;
 
-  relativeAmfCapacity->encode2RelativeAMFCapacity(&ie->value.choice.RelativeAMFCapacity);
+  relativeAmfCapacity->encode2RelativeAMFCapacity(
+      &ie->value.choice.RelativeAMFCapacity);
 
   int ret = ASN_SEQUENCE_ADD(&ngSetupResponsIEs->protocolIEs.list, ie);
   if (ret != 0)
@@ -154,7 +166,8 @@ void NGSetupResponseMsg::setRelativeAmfCapacity(long capacity) {
 }
 
 //------------------------------------------------------------------------------
-void NGSetupResponseMsg::setPlmnSupportList(std::vector<PlmnSliceSupport_t> list) {
+void NGSetupResponseMsg::setPlmnSupportList(
+    std::vector<PlmnSliceSupport_t> list) {
   plmnSupportList = new PLMNSupportList();
   PLMNSupportItem *plmnSupportItem = new PLMNSupportItem[list.size()]();
   for (int i = 0; i < list.size(); i++) {
@@ -168,11 +181,13 @@ void NGSetupResponseMsg::setPlmnSupportList(std::vector<PlmnSliceSupport_t> list
         snssai[j].setSd(list[i].slice_list[j].sd);
       }
     }
-    plmnSupportItem[i].setPlmnSliceSupportList(plmn, snssai, list[i].slice_list.size());
+    plmnSupportItem[i].setPlmnSliceSupportList(plmn, snssai,
+                                               list[i].slice_list.size());
   }
   plmnSupportList->addPLMNSupportItems(plmnSupportItem, list.size());
 
-  Ngap_NGSetupResponseIEs_t *ie = (Ngap_NGSetupResponseIEs_t*) calloc(1, sizeof(Ngap_NGSetupResponseIEs_t));
+  Ngap_NGSetupResponseIEs_t *ie = (Ngap_NGSetupResponseIEs_t*) calloc(
+      1, sizeof(Ngap_NGSetupResponseIEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_PLMNSupportList;
   ie->criticality = Ngap_Criticality_reject;
   ie->value.present = Ngap_NGSetupResponseIEs__value_PR_PLMNSupportList;
@@ -188,7 +203,8 @@ void NGSetupResponseMsg::setPlmnSupportList(std::vector<PlmnSliceSupport_t> list
 //------------------------------------------------------------------------------
 int NGSetupResponseMsg::encode2buffer(uint8_t *buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, ngSetupResponsePdu);
-  asn_enc_rval_t er = aper_encode_to_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL, ngSetupResponsePdu, buf, buf_size);
+  asn_enc_rval_t er = aper_encode_to_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL,
+                                            ngSetupResponsePdu, buf, buf_size);
   cout << "er.encoded(" << er.encoded << ")" << endl;
   return er.encoded;
 }
@@ -199,24 +215,36 @@ bool NGSetupResponseMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
   ngSetupResponsePdu = ngap_msg_pdu;
 
   if (ngSetupResponsePdu->present == Ngap_NGAP_PDU_PR_successfulOutcome) {
-    if (ngSetupResponsePdu->choice.successfulOutcome && ngSetupResponsePdu->choice.successfulOutcome->procedureCode == Ngap_ProcedureCode_id_NGSetup && ngSetupResponsePdu->choice.successfulOutcome->criticality == Ngap_Criticality_reject
-        && ngSetupResponsePdu->choice.successfulOutcome->value.present == Ngap_SuccessfulOutcome__value_PR_NGSetupResponse) {
-      ngSetupResponsIEs = &ngSetupResponsePdu->choice.successfulOutcome->value.choice.NGSetupResponse;
+    if (ngSetupResponsePdu->choice.successfulOutcome
+        && ngSetupResponsePdu->choice.successfulOutcome->procedureCode
+            == Ngap_ProcedureCode_id_NGSetup
+        && ngSetupResponsePdu->choice.successfulOutcome->criticality
+            == Ngap_Criticality_reject
+        && ngSetupResponsePdu->choice.successfulOutcome->value.present
+            == Ngap_SuccessfulOutcome__value_PR_NGSetupResponse) {
+      ngSetupResponsIEs = &ngSetupResponsePdu->choice.successfulOutcome->value
+          .choice.NGSetupResponse;
     } else {
       cout << "Check NGSetupResponse message error!!!" << endl;
       return false;
     }
   } else {
     cout << "MessageType error!!!" << endl;
-    cout << "ngSetupResponsePdu->present == " << ngSetupResponsePdu->present << endl;
+    cout << "ngSetupResponsePdu->present == " << ngSetupResponsePdu->present
+        << endl;
     return false;
   }
   for (int i = 0; i < ngSetupResponsIEs->protocolIEs.list.count; i++) {
     switch (ngSetupResponsIEs->protocolIEs.list.array[i]->id) {
       case Ngap_ProtocolIE_ID_id_AMFName: {
-        if (ngSetupResponsIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && ngSetupResponsIEs->protocolIEs.list.array[i]->value.present == Ngap_NGSetupResponseIEs__value_PR_AMFName) {
+        if (ngSetupResponsIEs->protocolIEs.list.array[i]->criticality
+            == Ngap_Criticality_reject
+            && ngSetupResponsIEs->protocolIEs.list.array[i]->value.present
+                == Ngap_NGSetupResponseIEs__value_PR_AMFName) {
           amfName = new AmfName();
-          if (!amfName->decodefromAmfName(&ngSetupResponsIEs->protocolIEs.list.array[i]->value.choice.AMFName)) {
+          if (!amfName->decodefromAmfName(
+              &ngSetupResponsIEs->protocolIEs.list.array[i]->value.choice
+                  .AMFName)) {
             cout << "decoded ngap AmfName IE error" << endl;
             return false;
           }
@@ -227,9 +255,14 @@ bool NGSetupResponseMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
       }
         break;
       case Ngap_ProtocolIE_ID_id_ServedGUAMIList: {
-        if (ngSetupResponsIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && ngSetupResponsIEs->protocolIEs.list.array[i]->value.present == Ngap_NGSetupResponseIEs__value_PR_ServedGUAMIList) {
+        if (ngSetupResponsIEs->protocolIEs.list.array[i]->criticality
+            == Ngap_Criticality_reject
+            && ngSetupResponsIEs->protocolIEs.list.array[i]->value.present
+                == Ngap_NGSetupResponseIEs__value_PR_ServedGUAMIList) {
           servedGUAMIList = new ServedGUAMIList();
-          if (!servedGUAMIList->decodefromServedGUAMIList(&ngSetupResponsIEs->protocolIEs.list.array[i]->value.choice.ServedGUAMIList)) {
+          if (!servedGUAMIList->decodefromServedGUAMIList(
+              &ngSetupResponsIEs->protocolIEs.list.array[i]->value.choice
+                  .ServedGUAMIList)) {
             cout << "decoded ngap ServedGUAMIList IE error!" << endl;
             return false;
           }
@@ -240,9 +273,14 @@ bool NGSetupResponseMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
       }
         break;
       case Ngap_ProtocolIE_ID_id_RelativeAMFCapacity: {
-        if (ngSetupResponsIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_ignore && ngSetupResponsIEs->protocolIEs.list.array[i]->value.present == Ngap_NGSetupResponseIEs__value_PR_RelativeAMFCapacity) {
+        if (ngSetupResponsIEs->protocolIEs.list.array[i]->criticality
+            == Ngap_Criticality_ignore
+            && ngSetupResponsIEs->protocolIEs.list.array[i]->value.present
+                == Ngap_NGSetupResponseIEs__value_PR_RelativeAMFCapacity) {
           relativeAmfCapacity = new RelativeAMFCapacity();
-          if (!relativeAmfCapacity->decodefromRelativeAMFCapacity(&ngSetupResponsIEs->protocolIEs.list.array[i]->value.choice.RelativeAMFCapacity)) {
+          if (!relativeAmfCapacity->decodefromRelativeAMFCapacity(
+              &ngSetupResponsIEs->protocolIEs.list.array[i]->value.choice
+                  .RelativeAMFCapacity)) {
             cout << "decoded ngap RelativeAMFCapacity IE error" << endl;
             return false;
           }
@@ -253,9 +291,14 @@ bool NGSetupResponseMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
       }
         break;
       case Ngap_ProtocolIE_ID_id_PLMNSupportList: {
-        if (ngSetupResponsIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && ngSetupResponsIEs->protocolIEs.list.array[i]->value.present == Ngap_NGSetupResponseIEs__value_PR_PLMNSupportList) {
+        if (ngSetupResponsIEs->protocolIEs.list.array[i]->criticality
+            == Ngap_Criticality_reject
+            && ngSetupResponsIEs->protocolIEs.list.array[i]->value.present
+                == Ngap_NGSetupResponseIEs__value_PR_PLMNSupportList) {
           plmnSupportList = new PLMNSupportList();
-          if (!plmnSupportList->decodefromPLMNSupportList(&ngSetupResponsIEs->protocolIEs.list.array[i]->value.choice.PLMNSupportList)) {
+          if (!plmnSupportList->decodefromPLMNSupportList(
+              &ngSetupResponsIEs->protocolIEs.list.array[i]->value.choice
+                  .PLMNSupportList)) {
             cout << "decoded ngap PLMNSupportList IE error" << endl;
             return false;
           }
@@ -331,7 +374,8 @@ long NGSetupResponseMsg::getRelativeAmfCapacity() {
 }
 
 //------------------------------------------------------------------------------
-bool NGSetupResponseMsg::getPlmnSupportList(std::vector<PlmnSliceSupport_t> &list) {
+bool NGSetupResponseMsg::getPlmnSupportList(
+    std::vector<PlmnSliceSupport_t> &list) {
   if (!plmnSupportList)
     return false;
 

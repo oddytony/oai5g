@@ -54,14 +54,16 @@ bool QosFlowIdentifier::getQosFlowIdentifier(long &value) {
 }
 
 //------------------------------------------------------------------------------
-bool QosFlowIdentifier::encode2QosFlowIdentifier(Ngap_QosFlowIdentifier_t *qosFlowIdentifier) {
+bool QosFlowIdentifier::encode2QosFlowIdentifier(
+    Ngap_QosFlowIdentifier_t *qosFlowIdentifier) {
   *qosFlowIdentifier = identifier;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool QosFlowIdentifier::decodefromQosFlowIdentifier(Ngap_QosFlowIdentifier_t *qosFlowIdentifier) {
+bool QosFlowIdentifier::decodefromQosFlowIdentifier(
+    Ngap_QosFlowIdentifier_t *qosFlowIdentifier) {
   identifier = *qosFlowIdentifier;
 
   return true;

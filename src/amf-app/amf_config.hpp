@@ -35,14 +35,9 @@
 #include <libconfig.h++>
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <mutex>
 #include <vector>
 #include <string>
 #include "thread_sched.hpp"
-
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
 
 #define AMF_CONFIG_STRING_AMF_CONFIG                    "AMF"
 #define AMF_CONFIG_STRING_PID_DIRECTORY                 "PID_DIRECTORY"
@@ -164,7 +159,9 @@ class amf_config {
   ~amf_config();
   int load(const std::string &config_file);
   int load_interface(const Setting &if_cfg, interface_cfg_t &cfg);
-  int load_thread_sched_params(const libconfig::Setting &thread_sched_params_cfg, util::thread_sched_params &cfg);
+  int load_thread_sched_params(
+      const libconfig::Setting &thread_sched_params_cfg,
+      util::thread_sched_params &cfg);
   void display();
   unsigned int instance;
   std::string pid_dir;

@@ -43,7 +43,9 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 PduSessionResourceSetupUnSuccessfulTransferIE::PduSessionResourceSetupUnSuccessfulTransferIE() {
-  pduSessionResourceSetupUnsuccessfulTransferIEs = (Ngap_PDUSessionResourceSetupUnsuccessfulTransfer_t*) calloc(1, sizeof(Ngap_PDUSessionResourceSetupUnsuccessfulTransfer_t));
+  pduSessionResourceSetupUnsuccessfulTransferIEs =
+      (Ngap_PDUSessionResourceSetupUnsuccessfulTransfer_t*) calloc(
+          1, sizeof(Ngap_PDUSessionResourceSetupUnsuccessfulTransfer_t));
   causeValue = NULL;
 }
 
@@ -52,14 +54,16 @@ PduSessionResourceSetupUnSuccessfulTransferIE::~PduSessionResourceSetupUnSuccess
 }
 
 //------------------------------------------------------------------------------
-void PduSessionResourceSetupUnSuccessfulTransferIE::setCauseRadioNetwork(e_Ngap_CauseRadioNetwork cause_value) {
+void PduSessionResourceSetupUnSuccessfulTransferIE::setCauseRadioNetwork(
+    e_Ngap_CauseRadioNetwork cause_value) {
   if (!causeValue)
     causeValue = new Cause();
 
   causeValue->setChoiceOfCause(Ngap_Cause_PR_radioNetwork);
   causeValue->setValue(cause_value);
 
-  int ret = causeValue->encode2Cause(&pduSessionResourceSetupUnsuccessfulTransferIEs->cause);
+  int ret = causeValue->encode2Cause(
+      &pduSessionResourceSetupUnsuccessfulTransferIEs->cause);
   if (!ret) {
     cout << "encode CauseRadioNetwork IE error" << endl;
     return;
@@ -67,14 +71,16 @@ void PduSessionResourceSetupUnSuccessfulTransferIE::setCauseRadioNetwork(e_Ngap_
 }
 
 //------------------------------------------------------------------------------
-void PduSessionResourceSetupUnSuccessfulTransferIE::setCauseTransport(e_Ngap_CauseTransport cause_value) {
+void PduSessionResourceSetupUnSuccessfulTransferIE::setCauseTransport(
+    e_Ngap_CauseTransport cause_value) {
   if (!causeValue)
     causeValue = new Cause();
 
   causeValue->setChoiceOfCause(Ngap_Cause_PR_transport);
   causeValue->setValue(cause_value);
 
-  int ret = causeValue->encode2Cause(&pduSessionResourceSetupUnsuccessfulTransferIEs->cause);
+  int ret = causeValue->encode2Cause(
+      &pduSessionResourceSetupUnsuccessfulTransferIEs->cause);
   if (!ret) {
     cout << "encode CauseTransport IE error" << endl;
     return;
@@ -82,14 +88,16 @@ void PduSessionResourceSetupUnSuccessfulTransferIE::setCauseTransport(e_Ngap_Cau
 }
 
 //------------------------------------------------------------------------------
-void PduSessionResourceSetupUnSuccessfulTransferIE::setCauseNas(e_Ngap_CauseNas cause_value) {
+void PduSessionResourceSetupUnSuccessfulTransferIE::setCauseNas(
+    e_Ngap_CauseNas cause_value) {
   if (!causeValue)
     causeValue = new Cause();
 
   causeValue->setChoiceOfCause(Ngap_Cause_PR_nas);
   causeValue->setValue(cause_value);
 
-  int ret = causeValue->encode2Cause(&pduSessionResourceSetupUnsuccessfulTransferIEs->cause);
+  int ret = causeValue->encode2Cause(
+      &pduSessionResourceSetupUnsuccessfulTransferIEs->cause);
   if (!ret) {
     cout << "encode CauseNas IE error" << endl;
     return;
@@ -97,14 +105,16 @@ void PduSessionResourceSetupUnSuccessfulTransferIE::setCauseNas(e_Ngap_CauseNas 
 }
 
 //------------------------------------------------------------------------------
-void PduSessionResourceSetupUnSuccessfulTransferIE::setCauseProtocol(e_Ngap_CauseProtocol cause_value) {
+void PduSessionResourceSetupUnSuccessfulTransferIE::setCauseProtocol(
+    e_Ngap_CauseProtocol cause_value) {
   if (!causeValue)
     causeValue = new Cause();
 
   causeValue->setChoiceOfCause(Ngap_Cause_PR_protocol);
   causeValue->setValue(cause_value);
 
-  int ret = causeValue->encode2Cause(&pduSessionResourceSetupUnsuccessfulTransferIEs->cause);
+  int ret = causeValue->encode2Cause(
+      &pduSessionResourceSetupUnsuccessfulTransferIEs->cause);
   if (!ret) {
     cout << "encode CauseProtocol IE error" << endl;
     return;
@@ -112,14 +122,16 @@ void PduSessionResourceSetupUnSuccessfulTransferIE::setCauseProtocol(e_Ngap_Caus
 }
 
 //------------------------------------------------------------------------------
-void PduSessionResourceSetupUnSuccessfulTransferIE::setCauseMisc(e_Ngap_CauseMisc cause_value) {
+void PduSessionResourceSetupUnSuccessfulTransferIE::setCauseMisc(
+    e_Ngap_CauseMisc cause_value) {
   if (!causeValue)
     causeValue = new Cause();
 
   causeValue->setChoiceOfCause(Ngap_Cause_PR_misc);
   causeValue->setValue(cause_value);
 
-  int ret = causeValue->encode2Cause(&pduSessionResourceSetupUnsuccessfulTransferIEs->cause);
+  int ret = causeValue->encode2Cause(
+      &pduSessionResourceSetupUnsuccessfulTransferIEs->cause);
   if (!ret) {
     cout << "encode CauseMisc IE error" << endl;
     return;
@@ -127,17 +139,25 @@ void PduSessionResourceSetupUnSuccessfulTransferIE::setCauseMisc(e_Ngap_CauseMis
 }
 
 //------------------------------------------------------------------------------
-int PduSessionResourceSetupUnSuccessfulTransferIE::encode2buffer(uint8_t *buf, int buf_size) {
-  asn_fprint(stderr, &asn_DEF_Ngap_PDUSessionResourceSetupUnsuccessfulTransfer, pduSessionResourceSetupUnsuccessfulTransferIEs);
-  asn_enc_rval_t er = aper_encode_to_buffer(&asn_DEF_Ngap_PDUSessionResourceSetupUnsuccessfulTransfer, NULL, pduSessionResourceSetupUnsuccessfulTransferIEs, buf, buf_size);
+int PduSessionResourceSetupUnSuccessfulTransferIE::encode2buffer(uint8_t *buf,
+                                                                 int buf_size) {
+  asn_fprint(stderr, &asn_DEF_Ngap_PDUSessionResourceSetupUnsuccessfulTransfer,
+             pduSessionResourceSetupUnsuccessfulTransferIEs);
+  asn_enc_rval_t er = aper_encode_to_buffer(
+      &asn_DEF_Ngap_PDUSessionResourceSetupUnsuccessfulTransfer, NULL,
+      pduSessionResourceSetupUnsuccessfulTransferIEs, buf, buf_size);
   cout << "er.encoded(" << er.encoded << ")" << endl;
   return er.encoded;
 }
 
 //------------------------------------------------------------------------------
 //Decapsulation
-bool PduSessionResourceSetupUnSuccessfulTransferIE::decodefromIE(uint8_t *buf, int buf_size) {
-  asn_dec_rval_t rc = asn_decode(NULL, ATS_ALIGNED_CANONICAL_PER, &asn_DEF_Ngap_PDUSessionResourceSetupUnsuccessfulTransfer, (void**) &pduSessionResourceSetupUnsuccessfulTransferIEs, buf, buf_size);
+bool PduSessionResourceSetupUnSuccessfulTransferIE::decodefromIE(uint8_t *buf,
+                                                                 int buf_size) {
+  asn_dec_rval_t rc = asn_decode(
+      NULL, ATS_ALIGNED_CANONICAL_PER,
+      &asn_DEF_Ngap_PDUSessionResourceSetupUnsuccessfulTransfer,
+      (void**) &pduSessionResourceSetupUnsuccessfulTransferIEs, buf, buf_size);
 
   if (rc.code == RC_OK) {
     cout << "Decoded successfully" << endl;
@@ -153,7 +173,8 @@ bool PduSessionResourceSetupUnSuccessfulTransferIE::decodefromIE(uint8_t *buf, i
   //asn_fprint(stderr, &asn_DEF_Ngap_PDUSessionResourceSetupUnsuccessfulTransfer, pduSessionResourceSetupUnsuccessfulTransferIEs);
 
   causeValue = new Cause();
-  if (!causeValue->decodefromCause(&pduSessionResourceSetupUnsuccessfulTransferIEs->cause)) {
+  if (!causeValue->decodefromCause(
+      &pduSessionResourceSetupUnsuccessfulTransferIEs->cause)) {
     cout << "decoded ngap Cause IE error" << endl;
     return false;
   }

@@ -42,11 +42,17 @@ class PDUSessionResourceSetupListSURes {
   PDUSessionResourceSetupListSURes();
   virtual ~PDUSessionResourceSetupListSURes();
 
-  void setPDUSessionResourceSetupListSURes(PDUSessionResourceSetupItemSURes *m_pduSessionResourceSetupItemSURes, int num);
-  void getPDUSessionResourceSetupListSURes(PDUSessionResourceSetupItemSURes *&m_pduSessionResourceSetupItemSURes, int &num);
+  void setPDUSessionResourceSetupListSURes(
+      PDUSessionResourceSetupItemSURes *m_pduSessionResourceSetupItemSURes,
+      int num);
+  void getPDUSessionResourceSetupListSURes(
+      PDUSessionResourceSetupItemSURes *&m_pduSessionResourceSetupItemSURes,
+      int &num);
 
-  bool encode2PDUSessionResourceSetupListSURes(Ngap_PDUSessionResourceSetupListSURes_t *pduSessionResourceSetupListSURes);
-  bool decodefromPDUSessionResourceSetupListSURes(Ngap_PDUSessionResourceSetupListSURes_t *pduSessionResourceSetupListSURes);
+  bool encode2PDUSessionResourceSetupListSURes(
+      Ngap_PDUSessionResourceSetupListSURes_t *pduSessionResourceSetupListSURes);
+  bool decodefromPDUSessionResourceSetupListSURes(
+      Ngap_PDUSessionResourceSetupListSURes_t *pduSessionResourceSetupListSURes);
  private:
   PDUSessionResourceSetupItemSURes *pduSessionResourceSetupItemSURes;
   int numofpduSessionResourceSetupItemSURes;

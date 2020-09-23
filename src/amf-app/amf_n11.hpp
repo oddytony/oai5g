@@ -44,22 +44,30 @@ class amf_n11 {
   ~amf_n11();
 
   void handle_itti_message(itti_smf_services_consumer&);
-  void handle_pdu_session_initial_request(std::string supi, std::shared_ptr<pdu_session_context> psc, std::string smf_addr, bstring sm_msg, std::string dnn);
+  void handle_pdu_session_initial_request(
+      std::string supi, std::shared_ptr<pdu_session_context> psc,
+      std::string smf_addr, bstring sm_msg, std::string dnn);
   void handle_itti_message(itti_pdu_session_resource_setup_response &itti_msg);
   void handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_msg);
   std::map<std::string, std::shared_ptr<pdu_session_context>> supi2pdu;  // amf ue ngap id
   mutable std::shared_mutex m_supi2pdu;
   bool is_supi_to_pdu_ctx(const std::string &supi) const;
-  std::shared_ptr<pdu_session_context> supi_to_pdu_ctx(const std::string &supi) const;
-  void set_supi_to_pdu_ctx(const std::string &supi, std::shared_ptr<pdu_session_context> psc);
+  std::shared_ptr<pdu_session_context> supi_to_pdu_ctx(
+      const std::string &supi) const;
+  void set_supi_to_pdu_ctx(const std::string &supi,
+                           std::shared_ptr<pdu_session_context> psc);
   std::map<uint8_t, std::string> pduid2supi;
 
   bool smf_selection_from_configuration(std::string &smf_addr);
   bool smf_selection_from_context(std::string &smf_addr);
   void handle_post_sm_context_response_error_400();
-  void handle_post_sm_context_response_error(long code, std::string cause, bstring n1sm, std::string supi, uint8_t pdu_session_id);
+  void handle_post_sm_context_response_error(long code, std::string cause,
+                                             bstring n1sm, std::string supi,
+                                             uint8_t pdu_session_id);
 
-  void curl_http_client(std::string remoteUri, std::string jsonData, std::string n1SmMsg, std::string n2SmMsg, std::string supi, uint8_t pdu_session_id);
+  void curl_http_client(std::string remoteUri, std::string jsonData,
+                        std::string n1SmMsg, std::string n2SmMsg,
+                        std::string supi, uint8_t pdu_session_id);
 };
 
 }

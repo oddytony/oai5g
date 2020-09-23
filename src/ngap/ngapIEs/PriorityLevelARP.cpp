@@ -54,14 +54,16 @@ bool PriorityLevelARP::getPriorityLevelARP(long &value) {
 }
 
 //------------------------------------------------------------------------------
-bool PriorityLevelARP::encode2PriorityLevelARP(Ngap_PriorityLevelARP_t *priorityLevelARP) {
+bool PriorityLevelARP::encode2PriorityLevelARP(
+    Ngap_PriorityLevelARP_t *priorityLevelARP) {
   *priorityLevelARP = prioritylevelarp;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool PriorityLevelARP::decodefromPriorityLevelARP(Ngap_PriorityLevelARP_t *priorityLevelARP) {
+bool PriorityLevelARP::decodefromPriorityLevelARP(
+    Ngap_PriorityLevelARP_t *priorityLevelARP) {
   prioritylevelarp = *priorityLevelARP;
 
   return true;

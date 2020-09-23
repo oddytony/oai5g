@@ -40,11 +40,14 @@ class MaximumIntegrityProtectedDataRate {
   MaximumIntegrityProtectedDataRate();
   virtual ~MaximumIntegrityProtectedDataRate();
 
-  void setMaximumIntegrityProtectedDataRate(e_Ngap_MaximumIntegrityProtectedDataRate m_maxintprotdatarate);
+  void setMaximumIntegrityProtectedDataRate(
+      e_Ngap_MaximumIntegrityProtectedDataRate m_maxintprotdatarate);
   bool getMaximumIntegrityProtectedDataRate(long &m_maxintprotdatarate);
 
-  bool encode2MaximumIntegrityProtectedDataRate(Ngap_MaximumIntegrityProtectedDataRate_t&);
-  bool decodefromMaximumIntegrityProtectedDataRate(Ngap_MaximumIntegrityProtectedDataRate_t);
+  bool encode2MaximumIntegrityProtectedDataRate(
+      Ngap_MaximumIntegrityProtectedDataRate_t&);
+  bool decodefromMaximumIntegrityProtectedDataRate(
+      Ngap_MaximumIntegrityProtectedDataRate_t);
  private:
   long maxintprotdatarate;
 };

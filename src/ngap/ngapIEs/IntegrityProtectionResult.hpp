@@ -40,7 +40,8 @@ class IntegrityProtectionResult {
   IntegrityProtectionResult();
   virtual ~IntegrityProtectionResult();
 
-  void setIntegrityProtectionResult(e_Ngap_IntegrityProtectionResult m_integrityProtectionResult);
+  void setIntegrityProtectionResult(
+      e_Ngap_IntegrityProtectionResult m_integrityProtectionResult);
   bool getIntegrityProtectionResult(long &m_integrityProtectionResult);
 
   bool encode2IntegrityProtectionResult(Ngap_IntegrityProtectionResult_t&);

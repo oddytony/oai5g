@@ -52,14 +52,16 @@ class InitialContextSetupFailureMsg {
   void setMessageType();
   void setAmfUeNgapId(unsigned long id);  //40 bits
   void setRanUeNgapId(uint32_t id);  // 32 bits
-  void setPduSessionResourceFailedToSetupList(std::vector<PDUSessionResourceFailedToSetupItem_t> list);
+  void setPduSessionResourceFailedToSetupList(
+      std::vector<PDUSessionResourceFailedToSetupItem_t> list);
 
   int encode2buffer(uint8_t *buf, int buf_size);
   //Decapsulation
   bool decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu);
   unsigned long getAmfUeNgapId();
   uint32_t getRanUeNgapId();
-  bool getPduSessionResourceFailedToSetupList(std::vector<PDUSessionResourceFailedToSetupItem_t> &list);
+  bool getPduSessionResourceFailedToSetupList(
+      std::vector<PDUSessionResourceFailedToSetupItem_t> &list);
 
  private:
   Ngap_NGAP_PDU_t *initialContextSetupFailurePdu;

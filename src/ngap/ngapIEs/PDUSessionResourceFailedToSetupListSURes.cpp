@@ -44,20 +44,29 @@ PDUSessionResourceFailedToSetupListSURes::~PDUSessionResourceFailedToSetupListSU
 }
 
 //------------------------------------------------------------------------------
-void PDUSessionResourceFailedToSetupListSURes::setPDUSessionResourceFailedToSetupListSURes(PDUSessionResourceFailedToSetupItemSURes *m_pduSessionResourceFailedToSetupItemSURes, int num) {
-  pduSessionResourceFailedToSetupItemSURes = m_pduSessionResourceFailedToSetupItemSURes;
+void PDUSessionResourceFailedToSetupListSURes::setPDUSessionResourceFailedToSetupListSURes(
+    PDUSessionResourceFailedToSetupItemSURes *m_pduSessionResourceFailedToSetupItemSURes,
+    int num) {
+  pduSessionResourceFailedToSetupItemSURes =
+      m_pduSessionResourceFailedToSetupItemSURes;
   numofpduSessionResourceFailedToSetupItemSURes = num;
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceFailedToSetupListSURes::encode2PDUSessionResourceFailedToSetupListSURes(Ngap_PDUSessionResourceFailedToSetupListSURes_t *pduSessionResourceFailedToSetupListSURes) {
+bool PDUSessionResourceFailedToSetupListSURes::encode2PDUSessionResourceFailedToSetupListSURes(
+    Ngap_PDUSessionResourceFailedToSetupListSURes_t *pduSessionResourceFailedToSetupListSURes) {
   for (int i = 0; i < numofpduSessionResourceFailedToSetupItemSURes; i++) {
-    Ngap_PDUSessionResourceFailedToSetupItemSURes_t *failedToResponse = (Ngap_PDUSessionResourceFailedToSetupItemSURes_t*) calloc(1, sizeof(Ngap_PDUSessionResourceFailedToSetupItemSURes_t));
+    Ngap_PDUSessionResourceFailedToSetupItemSURes_t *failedToResponse =
+        (Ngap_PDUSessionResourceFailedToSetupItemSURes_t*) calloc(
+            1, sizeof(Ngap_PDUSessionResourceFailedToSetupItemSURes_t));
     if (!failedToResponse)
       return false;
-    if (!pduSessionResourceFailedToSetupItemSURes[i].encode2PDUSessionResourceFailedToSetupItemSURes(failedToResponse))
+    if (!pduSessionResourceFailedToSetupItemSURes[i]
+        .encode2PDUSessionResourceFailedToSetupItemSURes(failedToResponse))
       return false;
-    if (ASN_SEQUENCE_ADD(&pduSessionResourceFailedToSetupListSURes->list, failedToResponse) != 0)
+    if (ASN_SEQUENCE_ADD(&pduSessionResourceFailedToSetupListSURes->list,
+                         failedToResponse)
+        != 0)
       return false;
   }
 
@@ -65,11 +74,16 @@ bool PDUSessionResourceFailedToSetupListSURes::encode2PDUSessionResourceFailedTo
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceFailedToSetupListSURes::decodefromPDUSessionResourceFailedToSetupListSURes(Ngap_PDUSessionResourceFailedToSetupListSURes_t *pduSessionResourceFailedToSetupListSURes) {
-  numofpduSessionResourceFailedToSetupItemSURes = pduSessionResourceFailedToSetupListSURes->list.count;
-  pduSessionResourceFailedToSetupItemSURes = new PDUSessionResourceFailedToSetupItemSURes[numofpduSessionResourceFailedToSetupItemSURes]();
+bool PDUSessionResourceFailedToSetupListSURes::decodefromPDUSessionResourceFailedToSetupListSURes(
+    Ngap_PDUSessionResourceFailedToSetupListSURes_t *pduSessionResourceFailedToSetupListSURes) {
+  numofpduSessionResourceFailedToSetupItemSURes =
+      pduSessionResourceFailedToSetupListSURes->list.count;
+  pduSessionResourceFailedToSetupItemSURes =
+      new PDUSessionResourceFailedToSetupItemSURes[numofpduSessionResourceFailedToSetupItemSURes]();
   for (int i = 0; i < numofpduSessionResourceFailedToSetupItemSURes; i++) {
-    if (!pduSessionResourceFailedToSetupItemSURes[i].decodefromPDUSessionResourceFailedToSetupItemSURes(pduSessionResourceFailedToSetupListSURes->list.array[i]))
+    if (!pduSessionResourceFailedToSetupItemSURes[i]
+        .decodefromPDUSessionResourceFailedToSetupItemSURes(
+        pduSessionResourceFailedToSetupListSURes->list.array[i]))
       return false;
   }
 
@@ -77,8 +91,11 @@ bool PDUSessionResourceFailedToSetupListSURes::decodefromPDUSessionResourceFaile
 }
 
 //------------------------------------------------------------------------------
-void PDUSessionResourceFailedToSetupListSURes::getPDUSessionResourceFailedToSetupListSURes(PDUSessionResourceFailedToSetupItemSURes *&m_pduSessionResourceFailedToSetupItemSURes, int &num) {
-  m_pduSessionResourceFailedToSetupItemSURes = pduSessionResourceFailedToSetupItemSURes;
+void PDUSessionResourceFailedToSetupListSURes::getPDUSessionResourceFailedToSetupListSURes(
+    PDUSessionResourceFailedToSetupItemSURes *&m_pduSessionResourceFailedToSetupItemSURes,
+    int &num) {
+  m_pduSessionResourceFailedToSetupItemSURes =
+      pduSessionResourceFailedToSetupItemSURes;
   num = numofpduSessionResourceFailedToSetupItemSURes;
 }
 

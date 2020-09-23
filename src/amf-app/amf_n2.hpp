@@ -34,9 +34,9 @@
 #include "ue_ngap_context.hpp"
 #include "amf.hpp"
 
-namespace amf_application{
+namespace amf_application {
 
-class amf_n2 : public ngap::ngap_app{
+class amf_n2 : public ngap::ngap_app {
  public:
   amf_n2(const std::string &address, const uint16_t port_num);
   ~amf_n2();
@@ -50,15 +50,18 @@ class amf_n2 : public ngap::ngap_app{
   void handle_itti_message(itti_ue_context_release_request &itti_msg);
   void handle_itti_message(itti_ue_radio_capability_indication &itti_msg);
   bool verifyPlmn(std::vector<SupportedItem_t> list);
-  std::vector<SupportedItem_t> get_common_plmn(std::vector<SupportedItem_t> list);
+  std::vector<SupportedItem_t> get_common_plmn(
+      std::vector<SupportedItem_t> list);
  private:
-  std::map<uint32_t, std::shared_ptr<ue_ngap_context>> ranid2uecontext;// ran ue ngap id
+  std::map<uint32_t, std::shared_ptr<ue_ngap_context>> ranid2uecontext;  // ran ue ngap id
   mutable std::shared_mutex m_ranid2uecontext;
 
-  bool is_ran_ue_id_2_ue_ngap_context(const uint32_t & ran_ue_ngap_id) const;
-  std::shared_ptr<ue_ngap_context> ran_ue_id_2_ue_ngap_context(const uint32_t & ran_ue_ngap_id) const;
-  void set_ran_ue_ngap_id_2_ue_ngap_context(const uint32_t & ran_ue_ngap_id, std::shared_ptr<ue_ngap_context> unc);
-}; 
+  bool is_ran_ue_id_2_ue_ngap_context(const uint32_t &ran_ue_ngap_id) const;
+  std::shared_ptr<ue_ngap_context> ran_ue_id_2_ue_ngap_context(
+      const uint32_t &ran_ue_ngap_id) const;
+  void set_ran_ue_ngap_id_2_ue_ngap_context(
+      const uint32_t &ran_ue_ngap_id, std::shared_ptr<ue_ngap_context> unc);
+};
 
 }
 

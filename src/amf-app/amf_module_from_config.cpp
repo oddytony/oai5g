@@ -37,15 +37,18 @@ namespace config {
 
 //------------------------------------------------------------------------------
 int amf_modules::load(const std::string &config_file) {
-  Logger::amf_app().debug("\nLoad AMF module configuration file (%s)", config_file.c_str());
+  Logger::amf_app().debug("\nLoad AMF module configuration file (%s)",
+                          config_file.c_str());
   Config cfg;
   try {
     cfg.readFile(config_file.c_str());
   } catch (const FileIOException &fioex) {
-    Logger::amf_app().error("I/O error while reading file %s - %s", config_file.c_str(), fioex.what());
+    Logger::amf_app().error("I/O error while reading file %s - %s",
+                            config_file.c_str(), fioex.what());
     throw;
   } catch (const ParseException &pex) {
-    Logger::amf_app().error("Parse error at %s:%d - %s", pex.getFile(), pex.getLine(), pex.getError());
+    Logger::amf_app().error("Parse error at %s:%d - %s", pex.getFile(),
+                            pex.getLine(), pex.getError());
     throw;
   }
   const Setting &root = cfg.getRoot();
@@ -62,9 +65,13 @@ int amf_modules::load(const std::string &config_file) {
     const Setting &item = msg[i];
     std::string typeOfMessage;
     int procedure_code;
-    item.lookupValue(MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_NAME, msgName);
-    item.lookupValue(MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_PROCEDURECODE, procedure_code);
-    item.lookupValue(MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_TYPEOFMSG, typeOfMessage);
+    item.lookupValue(MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_NAME,
+                     msgName);
+    item.lookupValue(
+        MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_PROCEDURECODE,
+        procedure_code);
+    item.lookupValue(MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_TYPEOFMSG,
+                     typeOfMessage);
     procedureCode = (Ngap_ProcedureCode_t) procedure_code;
     if (!(typeOfMessage.compare("initialMessage"))) {
       typeOfMsg = Ngap_NGAP_PDU_PR_initiatingMessage;
@@ -82,7 +89,8 @@ int amf_modules::load(const std::string &config_file) {
 void amf_modules::display() {
   Logger::config().info("=======    AMF Registered Modules   =======");
   Logger::config().info("NGAP Message Modules:");
-  Logger::config().info("- %s(Procedure code %d, Type of Msg %d)\n", msgName.c_str(), procedureCode, typeOfMsg);
+  Logger::config().info("- %s(Procedure code %d, Type of Msg %d)\n",
+                        msgName.c_str(), procedureCode, typeOfMsg);
 }
 
 }

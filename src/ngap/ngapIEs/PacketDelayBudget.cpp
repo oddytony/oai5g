@@ -54,14 +54,16 @@ bool PacketDelayBudget::getPacketDelayBudget(long &value) {
 }
 
 //------------------------------------------------------------------------------
-bool PacketDelayBudget::encode2PacketDelayBudget(Ngap_PacketDelayBudget_t *packetDelayBudget) {
+bool PacketDelayBudget::encode2PacketDelayBudget(
+    Ngap_PacketDelayBudget_t *packetDelayBudget) {
   *packetDelayBudget = packetdelaybudget;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool PacketDelayBudget::decodefromPacketDelayBudget(Ngap_PacketDelayBudget_t *packetDelayBudget) {
+bool PacketDelayBudget::decodefromPacketDelayBudget(
+    Ngap_PacketDelayBudget_t *packetDelayBudget) {
   packetdelaybudget = *packetDelayBudget;
 
   return true;

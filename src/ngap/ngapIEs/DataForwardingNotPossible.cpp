@@ -55,16 +55,20 @@ DataForwardingNotPossible::~DataForwardingNotPossible() {
 	}
 	#endif
 
-	//------------------------------------------------------------------------------
-bool DataForwardingNotPossible::encode2DataForwardingNotPossible(Ngap_DataForwardingNotPossible_t &dataForwardingNotPossible) {
-  dataForwardingNotPossible = Ngap_DataForwardingNotPossible_data_forwarding_not_possible;
+//------------------------------------------------------------------------------
+bool DataForwardingNotPossible::encode2DataForwardingNotPossible(
+    Ngap_DataForwardingNotPossible_t &dataForwardingNotPossible) {
+  dataForwardingNotPossible =
+      Ngap_DataForwardingNotPossible_data_forwarding_not_possible;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool DataForwardingNotPossible::decodefromDataForwardingNotPossible(Ngap_DataForwardingNotPossible_t &dataForwardingNotPossible) {
-  if (dataForwardingNotPossible != Ngap_DataForwardingNotPossible_data_forwarding_not_possible)
+bool DataForwardingNotPossible::decodefromDataForwardingNotPossible(
+    Ngap_DataForwardingNotPossible_t &dataForwardingNotPossible) {
+  if (dataForwardingNotPossible
+      != Ngap_DataForwardingNotPossible_data_forwarding_not_possible)
     return false;
 
   return true;

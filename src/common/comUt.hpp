@@ -33,7 +33,8 @@
 #include <string>
 
 //------------------------------------------------------------------------------
-void print_buffer(const std::string app, const std::string commit, uint8_t *buf, int len) {
+void print_buffer(const std::string app, const std::string commit, uint8_t *buf,
+                  int len) {
   if (!app.compare("amf_app"))
     Logger::amf_app().debug(commit.c_str());
   if (!app.compare("amf_n1"))

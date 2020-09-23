@@ -20,10 +20,10 @@
  */
 
 /*! \file TLVDecoder.h
-  \brief
-  \author Philippe MOREL, Sebastien ROUX, Lionel GAUTHIER
-  \company Eurecom
-*/
+ \brief
+ \author Philippe MOREL, Sebastien ROUX, Lionel GAUTHIER
+ \company Eurecom
+ */
 
 #ifndef FILE_TLV_DECODER_SEEN
 #define FILE_TLV_DECODER_SEEN
@@ -32,7 +32,6 @@
 //#include "log.h"
 #include "common_defs.h"
 //#include "log.h"
-
 
 #define IES_DECODE_U8(bUFFER, dECODED, vALUE) \
     DECODE_U8(bUFFER + dECODED, vALUE, dECODED)
@@ -46,18 +45,12 @@
 #define IES_DECODE_U32(bUFFER, dECODED, vALUE)  \
     DECODE_U32(bUFFER + dECODED, vALUE, dECODED)
 
-
-
-
 extern int errorCodeDecoder;
 
-int decode_bstring (
-  bstring * octetstring,
-  const uint16_t pdulen,
-  const uint8_t * const buffer,
-  const uint32_t buflen);
+int decode_bstring(bstring *octetstring, const uint16_t pdulen,
+                   const uint8_t *const buffer, const uint32_t buflen);
 
-bstring dump_bstring_xml (const bstring  bstr);
+bstring dump_bstring_xml(const bstring bstr);
 
 void tlv_decode_perror(void);
 

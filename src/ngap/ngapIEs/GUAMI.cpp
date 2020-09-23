@@ -46,7 +46,8 @@ GUAMI::~GUAMI() {
 }
 
 //------------------------------------------------------------------------------
-void GUAMI::setGUAMI(PlmnId *m_plmnId, AMFRegionID *m_aMFRegionID, AMFSetID *m_aMFSetID, AMFPointer *m_aMFPointer) {
+void GUAMI::setGUAMI(PlmnId *m_plmnId, AMFRegionID *m_aMFRegionID,
+                     AMFSetID *m_aMFSetID, AMFPointer *m_aMFPointer) {
   plmnId = m_plmnId;
   aMFRegionID = m_aMFRegionID;
   aMFSetID = m_aMFSetID;
@@ -86,7 +87,8 @@ bool GUAMI::decodefromGUAMI(Ngap_GUAMI_t *pdu) {
 }
 
 //------------------------------------------------------------------------------
-void GUAMI::getGUAMI(PlmnId *&m_plmnId, AMFRegionID *&m_aMFRegionID, AMFSetID *&m_aMFSetID, AMFPointer *&m_aMFPointer) {
+void GUAMI::getGUAMI(PlmnId *&m_plmnId, AMFRegionID *&m_aMFRegionID,
+                     AMFSetID *&m_aMFSetID, AMFPointer *&m_aMFPointer) {
   m_plmnId = plmnId;
   m_aMFRegionID = aMFRegionID;
   m_aMFSetID = aMFSetID;

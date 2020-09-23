@@ -27,7 +27,6 @@
  * either expressed or implied, of the FreeBSD Project.
  */
 
-
 #include "assertions.h"
 
 #ifndef FILE_CONVERSIONS_SEEN
@@ -424,7 +423,6 @@ do {                                                    \
             l_ret = snprintf(iMeI_sTr + l_offset, MaXlEn - l_offset, "%u", (iMeI_t_PtR)->u.num.cdsd);\
           }\
         }
-
 
 void hexa_to_ascii(uint8_t *from, char *to, size_t length);
 

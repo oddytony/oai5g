@@ -44,13 +44,17 @@ DLQoSFlowPerTNLInformation::~DLQoSFlowPerTNLInformation() {
 }
 
 //------------------------------------------------------------------------------
-void DLQoSFlowPerTNLInformation::setDLQoSFlowPerTNLInformation(UpTransportLayerInformation *m_uPTransportLayerInformation, AssociatedQosFlowList *m_associatedQosFlowList) {
+void DLQoSFlowPerTNLInformation::setDLQoSFlowPerTNLInformation(
+    UpTransportLayerInformation *m_uPTransportLayerInformation,
+    AssociatedQosFlowList *m_associatedQosFlowList) {
   uPTransportLayerInformation = m_uPTransportLayerInformation;
   associatedQosFlowList = m_associatedQosFlowList;
 }
 
 //------------------------------------------------------------------------------
-bool DLQoSFlowPerTNLInformation::getDLQoSFlowPerTNLInformation(UpTransportLayerInformation *&m_uPTransportLayerInformation, AssociatedQosFlowList *&m_associatedQosFlowList) {
+bool DLQoSFlowPerTNLInformation::getDLQoSFlowPerTNLInformation(
+    UpTransportLayerInformation *&m_uPTransportLayerInformation,
+    AssociatedQosFlowList *&m_associatedQosFlowList) {
   m_uPTransportLayerInformation = uPTransportLayerInformation;
   m_associatedQosFlowList = associatedQosFlowList;
 
@@ -58,22 +62,28 @@ bool DLQoSFlowPerTNLInformation::getDLQoSFlowPerTNLInformation(UpTransportLayerI
 }
 
 //------------------------------------------------------------------------------
-bool DLQoSFlowPerTNLInformation::encode2DLQoSFlowPerTNLInformation(Ngap_QosFlowPerTNLInformation_t *qosFlowPerTNLInformation) {
-  if (!uPTransportLayerInformation->encode2UpTransportLayerInformation(qosFlowPerTNLInformation->uPTransportLayerInformation))
+bool DLQoSFlowPerTNLInformation::encode2DLQoSFlowPerTNLInformation(
+    Ngap_QosFlowPerTNLInformation_t *qosFlowPerTNLInformation) {
+  if (!uPTransportLayerInformation->encode2UpTransportLayerInformation(
+      qosFlowPerTNLInformation->uPTransportLayerInformation))
     return false;
-  if (!associatedQosFlowList->encode2AssociatedQosFlowList(qosFlowPerTNLInformation->associatedQosFlowList))
+  if (!associatedQosFlowList->encode2AssociatedQosFlowList(
+      qosFlowPerTNLInformation->associatedQosFlowList))
     return false;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool DLQoSFlowPerTNLInformation::decodefromDLQoSFlowPerTNLInformation(Ngap_QosFlowPerTNLInformation_t *qosFlowPerTNLInformation) {
+bool DLQoSFlowPerTNLInformation::decodefromDLQoSFlowPerTNLInformation(
+    Ngap_QosFlowPerTNLInformation_t *qosFlowPerTNLInformation) {
   uPTransportLayerInformation = new UpTransportLayerInformation();
   associatedQosFlowList = new AssociatedQosFlowList();
-  if (!uPTransportLayerInformation->decodefromUpTransportLayerInformation(qosFlowPerTNLInformation->uPTransportLayerInformation))
+  if (!uPTransportLayerInformation->decodefromUpTransportLayerInformation(
+      qosFlowPerTNLInformation->uPTransportLayerInformation))
     return false;
-  if (!associatedQosFlowList->decodefromAssociatedQosFlowList(qosFlowPerTNLInformation->associatedQosFlowList))
+  if (!associatedQosFlowList->decodefromAssociatedQosFlowList(
+      qosFlowPerTNLInformation->associatedQosFlowList))
     return false;
 
   return true;
