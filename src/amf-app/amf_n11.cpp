@@ -145,7 +145,7 @@ void amf_n11::handle_itti_message(itti_pdu_session_resource_setup_response &itti
 //------------------------------------------------------------------------------
 void amf_n11::handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_msg) {
   std::string supi = pduid2supi.at(itti_msg.pdu_session_id);
-  Logger::amf_n11().debug("Found SUPI %s with PDU Session ID %d", supi.c_str(), itti_msg.pdu_session_id);
+  Logger::amf_n11().debug("Send PDU Session Update SM Context Request to SMF (SUPI %s, PDU Session ID %d)", supi.c_str(), itti_msg.pdu_session_id);
   std::shared_ptr<pdu_session_context> psc;
   if (is_supi_to_pdu_ctx(supi)) {
     psc = supi_to_pdu_ctx(supi);
@@ -191,6 +191,7 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_m
 
 //------------------------------------------------------------------------------
 void amf_n11::handle_itti_message(itti_smf_services_consumer &smf) {
+  Logger::amf_n11().debug("Handle ITTI_SMF_SERVICES_CONSUMER");
   std::shared_ptr<nas_context> nc;
   nc = amf_n1_inst->amf_ue_id_2_nas_context(smf.amf_ue_ngap_id);
   std::string supi = "imsi-" + nc.get()->imsi;
@@ -204,7 +205,6 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer &smf) {
   }
 
   pduid2supi[smf.pdu_sess_id] = supi;
-
   psc.get()->amf_ue_ngap_id = nc.get()->amf_ue_ngap_id;
   psc.get()->ran_ue_ngap_id = nc.get()->ran_ue_ngap_id;
   psc.get()->req_type = smf.req_type;
@@ -248,11 +248,48 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer &smf) {
       //TODO:
     }
       break;
+    default: {
+      //send Nsmf_PDUSession_UpdateSM_Context to SMF e.g., for PDU Session release request
+      send_pdu_session_update_sm_context_request(supi, psc, smf_addr, smf.sm_msg, dnn);
+    }
   }
 }
 
+
+//------------------------------------------------------------------------------
+void amf_n11::send_pdu_session_update_sm_context_request(std::string supi, std::shared_ptr<pdu_session_context> psc, std::string smf_addr, bstring sm_msg, std::string dnn) {
+  Logger::amf_n11().debug("Send PDU Session Update SM Context Request to SMF (SUPI %s, PDU Session ID %d)", supi.c_str(), psc.get()->pdu_session_id);
+
+  std::string smf_ip_addr, remote_uri;
+  //remove http port from the URI if existed
+  std::size_t found_port = smf_addr.find(":");
+  if (found_port != std::string::npos)
+    smf_ip_addr = smf_addr.substr(0, found_port - 1);
+  else
+    smf_ip_addr = smf_addr;
+
+  std::size_t found = psc.get()->smf_context_location.find(smf_ip_addr);
+  if (found != std::string::npos)
+    remote_uri = psc.get()->smf_context_location + "/modify";
+  else
+    remote_uri = smf_addr + psc.get()->smf_context_location + "/modify";
+
+  Logger::amf_n11().debug("SMF URI: %s", remote_uri.c_str());
+
+  nlohmann::json pdu_session_update_request = {};
+  pdu_session_update_request["n1SmMsg"]["contentId"] = "n1SmMsg";
+  std::string json_part = pdu_session_update_request.dump();
+
+  std::string n1SmMsg;
+  octet_stream_2_hex_stream((uint8_t*) bdata(sm_msg), blength(sm_msg), n1SmMsg);
+  curl_http_client(remote_uri, json_part, n1SmMsg, "", supi, psc.get()->pdu_session_id);
+}
+
+
 //------------------------------------------------------------------------------
 void amf_n11::handle_pdu_session_initial_request(std::string supi, std::shared_ptr<pdu_session_context> psc, std::string smf_addr, bstring sm_msg, std::string dnn) {
+  Logger::amf_n11().debug("Handle PDU Session Establishment Request (SUPI %s, PDU Session ID %d)", supi.c_str(), psc.get()->pdu_session_id);
+
   //TODO: Remove hardcoded values
   std::string remote_uri = smf_addr + "/nsmf-pdusession/v1/sm-contexts";  //TODO
   nlohmann::json pdu_session_establishment_request;
@@ -405,7 +442,8 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
     std::string n1sm = "";
     std::string n2sm = "";
     bool is_response_ok = true;
-    Logger::amf_n11().debug("Get response with httpcode (%d)", httpCode);
+    Logger::amf_n11().debug("Get response with HTTP code (%d)", httpCode);
+    //TODO: remove hardcoded HTTP Code
     if (httpCode == 0) {
       Logger::amf_n11().error("Cannot get response when calling %s", remoteUri.c_str());
       //free curl before returning
@@ -418,6 +456,8 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData, std:
       is_response_ok = false;
       if (response.size() < 1) {
         Logger::amf_n11().error("There's no content in the response");
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
         //TODO: send context response error
         return;
       }

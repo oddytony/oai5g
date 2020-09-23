@@ -47,6 +47,8 @@ class amf_n11 {
   void handle_pdu_session_initial_request(std::string supi, std::shared_ptr<pdu_session_context> psc, std::string smf_addr, bstring sm_msg, std::string dnn);
   void handle_itti_message(itti_pdu_session_resource_setup_response &itti_msg);
   void handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_msg);
+  void send_pdu_session_update_sm_context_request(std::string supi, std::shared_ptr<pdu_session_context> psc, std::string smf_addr, bstring sm_msg, std::string dnn);
+
   std::map<std::string, std::shared_ptr<pdu_session_context>> supi2pdu;  // amf ue ngap id
   mutable std::shared_mutex m_supi2pdu;
   bool is_supi_to_pdu_ctx(const std::string &supi) const;
