@@ -1536,23 +1536,20 @@ void amf_n1::ue_initiate_de_registration_handle(uint32_t ran_ue_ngap_id, long am
   DeregistrationAccept *deregAccept = new DeregistrationAccept();
   deregAccept->setHeader(PLAIN_5GS_MSG);
 
-  //nc.get()->is_auth_vectors_present = false;
-  //nc.get()->is_current_security_available = false;
-  //nc.get()->security_ctx->sc_type = SECURITY_CTX_TYPE_NOT_AVAILABLE;
-
   uint8_t buffer[512] = { 0 };
   int encoded_size = deregAccept->encode2buffer(buffer, 1024);
 
   print_buffer("amf_n1", "De-registration Accept message buffer", buffer, encoded_size);
-  if (!encoded_size) {
+  if (encoded_size < 1) {
     Logger::nas_mm().error("Encode De-registration Accept message error");
-    free_wrapper((void**) &deregAccept);
     return;
   }
 
   bstring b = blk2bstr(buffer, encoded_size);
   itti_send_dl_nas_buffer_to_task_n2(b, ran_ue_ngap_id, amf_ue_ngap_id);
-  free_wrapper((void**) &deregAccept);
+  //TODO: Update FSM
+  //TODO: Update statistic
+  nc.get()->is_stacs_available = false;
 }
 
 //------------------------------------------------------------------------------
