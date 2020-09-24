@@ -236,15 +236,15 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer &smf) {
   }
 
   switch (smf.req_type & 0x07) {
-    case PDU_SESSION_INITIAL_REQUEST: {
+    case REQUEST_TYPE_INITIAL_REQUEST: {
       handle_pdu_session_initial_request(supi, psc, smf_addr, smf.sm_msg, dnn);
     }
       break;
-    case EXISTING_PDU_SESSION: {
+    case REQUEST_TYPE_EXISTING_PDU_SESSION: {
       //TODO:
     }
       break;
-    case PDU_SESSION_MODIFICATION_REQUEST: {
+    case REQUEST_TYPE_MODIFICATION_REQUEST: {
       //TODO:
     }
       break;

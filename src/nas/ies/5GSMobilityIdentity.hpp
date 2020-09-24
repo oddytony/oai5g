@@ -47,6 +47,12 @@ typedef struct _5G_GUTI_s {
   uint8_t amf_set_id;
   uint16_t amf_pointer;
   uint32_t _5g_tmsi;
+
+  const std::string& toString() const {
+    std::string str;
+    str = mcc + mnc + std::to_string(amf_region_id) + std::to_string(amf_set_id) + std::to_string(amf_pointer) + std::to_string(_5g_tmsi);
+    return str;
+  }
 } _5G_GUTI_t;
 
 typedef struct IMEI_or_IMEISV_s {

@@ -28,26 +28,28 @@
 
 #include "amf_n1.hpp"
 
-#include "amf_n11.hpp"
 #include "amf_app.hpp"
-#include "itti.hpp"
-#include "logger.hpp"
-#include "RegistrationRequest.hpp"
-#include "RegistrationReject.hpp"
+#include "amf_config.hpp"
+#include "amf_n11.hpp"
 #include "AuthenticationRequest.hpp"
 #include "AuthenticationResponse.hpp"
 #include "AuthenticationFailure.hpp"
+#include "comUt.hpp"
+#include "DeregistrationRequest.hpp"
+#include "DeregistrationAccept.hpp"
+#include "itti_msg_n2.hpp"
+#include "itti_msg_n11.hpp"
+#include "itti.hpp"
+#include "logger.hpp"
+#include "nas_algorithms.hpp"
 #include "SecurityModeCommand.hpp"
+#include "RegistrationRequest.hpp"
 #include "RegistrationAccept.hpp"
+#include "RegistrationReject.hpp"
 #include "ULNASTransport.hpp"
 #include "ServiceRequest.hpp"
 #include "ServiceAccept.hpp"
-#include "itti_msg_n2.hpp"
-#include "itti_msg_n11.hpp"
-#include "amf_config.hpp"
 #include "String2Value.hpp"
-#include "nas_algorithms.hpp"
-#include "comUt.hpp"
 #include "sha256.hpp"
 
 extern "C" {
@@ -1513,12 +1515,44 @@ void amf_n1::run_initial_registration_procedure() {
 
 //------------------------------------------------------------------------------
 void amf_n1::ue_initiate_de_registration_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas) {
-  string guti = "1234567890";      //need modify
+  Logger::amf_n1().debug("Handling UE-initiated De-registration Request");
+
   std::shared_ptr<nas_context> nc;
-  nc = guti_2_nas_context(guti);
-  nc.get()->is_auth_vectors_present = false;
-  nc.get()->is_current_security_available = false;
-  nc.get()->security_ctx->sc_type = SECURITY_CTX_TYPE_NOT_AVAILABLE;
+  if (is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+    nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
+  else {
+    Logger::amf_n1().warn("No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+    return;
+  }
+
+  //decode NAS msg
+  DeregistrationRequest *deregReq = new DeregistrationRequest();
+  deregReq->decodefrombuffer(NULL, (uint8_t*) bdata(nas), blength(nas));
+  _5gs_deregistration_type_t type = {};
+  deregReq->getDeregistrationType(type);
+  //TODO: validate 5G Mobile Identity
+
+  //Prepare DeregistrationAccept
+  DeregistrationAccept *deregAccept = new DeregistrationAccept();
+  deregAccept->setHeader(PLAIN_5GS_MSG);
+
+  //nc.get()->is_auth_vectors_present = false;
+  //nc.get()->is_current_security_available = false;
+  //nc.get()->security_ctx->sc_type = SECURITY_CTX_TYPE_NOT_AVAILABLE;
+
+  uint8_t buffer[512] = { 0 };
+  int encoded_size = deregAccept->encode2buffer(buffer, 1024);
+
+  print_buffer("amf_n1", "De-registration Accept message buffer", buffer, encoded_size);
+  if (!encoded_size) {
+    Logger::nas_mm().error("Encode De-registration Accept message error");
+    free_wrapper((void**) &deregAccept);
+    return;
+  }
+
+  bstring b = blk2bstr(buffer, encoded_size);
+  itti_send_dl_nas_buffer_to_task_n2(b, ran_ue_ngap_id, amf_ue_ngap_id);
+  free_wrapper((void**) &deregAccept);
 }
 
 //------------------------------------------------------------------------------
