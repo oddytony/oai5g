@@ -508,7 +508,7 @@ void amf_n1::registration_request_handle(bool isNasSig, std::shared_ptr<nas_cont
           ue_info_t ueItem;
           //update_ue_information_statics(ueItem, "CM-CONNECTED", "REGISTRATION-INITIATING", ran_ue_ngap_id, amf_ue_ngap_id, nc.get()->imsi, "", uc.get()->cgi.mcc, uc.get()->cgi.mnc, uc.get()->cgi.nrCellID);
            ueItem.connStatus = "5GMM-CONNECTED";//"CM-CONNECTED";
-           ueItem.registerStatus = "5GMM-REGISTRATION-INITIATED"; //5GMM-COMMON-PROCEDURE-INITIATED
+           ueItem.registerStatus = "5GMM-REG-INITIATED"; //5GMM-COMMON-PROCEDURE-INITIATED
            ueItem.ranid = ran_ue_ngap_id;
            ueItem.amfid = amf_ue_ngap_id;
            ueItem.imsi = nc.get()->imsi;

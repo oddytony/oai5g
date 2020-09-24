@@ -60,7 +60,7 @@ void statistics::display() {
 
   int i = 0;
   for (auto const &ue : ue_infos) {
-    Logger::amf_app().info("|%7d|%22s|19%s|%15s|%16d|%11d|%9s|%7d|", i + 1, ue.second.registerStatus.c_str(), ue.second.imsi.c_str(), ue.second.guti.c_str(), ue.second.ranid, ue.second.amfid, (ue.second.mcc + ue.second.mnc).c_str(), ue.second.cellId);
+    Logger::amf_app().info("|%7d|%22s|%18s|%15s|%16d|%11d|%9s|%7d|", i + 1, ue.second.registerStatus.c_str(), ue.second.imsi.c_str(), ue.second.guti.c_str(), ue.second.ranid, ue.second.amfid, (ue.second.mcc + ue.second.mnc).c_str(), ue.second.cellId);
     i++;
   }
   Logger::amf_app().info("|----------------------------------------------------------------------------------------------------------------|");
@@ -95,6 +95,7 @@ void statistics::update_5gmm_state(const std::string& imsi, const std::string& s
   if (ue_infos.count(imsi) > 0) {
     ue_info_t ue_info = ue_infos.at(imsi);
     ue_info.registerStatus = state;
+    ue_infos.erase(ue_info.imsi);
     ue_infos.insert(std::pair<std::string, ue_info_t>(imsi, ue_info));
     Logger::amf_app().debug("Update UE State (IMSI %s, State %s) success", imsi.c_str(), state.c_str());
   } else {
