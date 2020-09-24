@@ -49,7 +49,7 @@ typedef struct {
   //long nrCellId;
 } gnb_infos;
 
-typedef struct {
+typedef struct ue_info_s {
   std::string connStatus;
   std::string registerStatus;
   uint32_t ranid;
@@ -59,20 +59,21 @@ typedef struct {
   std::string mcc;
   std::string mnc;
   uint32_t cellId;
-} ue_infos;
+} ue_info_t;
 
 class statistics {
  public:
   void display();
   statistics();
   ~statistics();
+  void update_ue_info(const ue_info_t& ue_info);
  public:
   uint32_t gNB_connected;
   uint32_t UE_connected;
   uint32_t UE_registred;
   //uint32_t        system_pdu_sessions;
   std::vector<gnb_infos> gnbs;
-  std::vector<ue_infos> ues;
+  std::map<std::string, ue_info_t> ue_infos;
 
 };
 

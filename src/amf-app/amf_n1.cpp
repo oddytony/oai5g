@@ -480,28 +480,6 @@ void amf_n1::service_request_handle(bool isNasSig, std::shared_ptr<nas_context> 
 }
 
 //------------------------------------------------------------------------------
-void amf_n1::update_ue_information_statics(ue_infos &ueItem, const string connStatus, const string registerStatus, uint32_t ranid, uint32_t amfid, string imsi, string guti, string mcc, string mnc, uint32_t cellId) {
-  if (connStatus != "")
-    ueItem.connStatus = connStatus;
-  if (registerStatus != "")
-    ueItem.registerStatus = registerStatus;
-  if (ranid != 0)
-    ueItem.ranid = ranid;
-  if (amfid != 0)
-    ueItem.amfid = amfid;
-  if (imsi != "")
-    ueItem.imsi = imsi;
-  if (guti != "")
-    ueItem.guti = guti;
-  if (mcc != "")
-    ueItem.mcc = mcc;
-  if (mnc != "")
-    ueItem.mnc = mnc;
-  if (cellId != 0)
-    ueItem.cellId = cellId;
-}
-
-//------------------------------------------------------------------------------
 void amf_n1::registration_request_handle(bool isNasSig, std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, std::string snn, bstring reg) {
   //Decode registration request message
   RegistrationRequest *regReq = new RegistrationRequest();
@@ -527,10 +505,19 @@ void amf_n1::registration_request_handle(bool isNasSig, std::shared_ptr<nas_cont
           std::shared_ptr<ue_context> uc;
           Logger::amf_n1().info("Try to find ue_context in amf_app using ran_amf_id %s", ue_context_key.c_str());
           uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
-          ue_infos ueItem;
-          update_ue_information_statics(ueItem, "CM-CONNECTED", "REGISTRATION-INITIATING", ran_ue_ngap_id, amf_ue_ngap_id, nc.get()->imsi, "", uc.get()->cgi.mcc, uc.get()->cgi.mnc, uc.get()->cgi.nrCellID);
-          nc.get()->is_stacs_available = true;
-          stacs.ues.push_back(ueItem);
+          ue_info_t ueItem;
+          //update_ue_information_statics(ueItem, "CM-CONNECTED", "REGISTRATION-INITIATING", ran_ue_ngap_id, amf_ue_ngap_id, nc.get()->imsi, "", uc.get()->cgi.mcc, uc.get()->cgi.mnc, uc.get()->cgi.nrCellID);
+           ueItem.connStatus = "CM-CONNECTED";
+           ueItem.registerStatus = "REGISTRATION-INITIATING";
+           ueItem.ranid = ran_ue_ngap_id;
+           ueItem.amfid = amf_ue_ngap_id;
+           ueItem.imsi = nc.get()->imsi;
+           ueItem.mcc = uc.get()->cgi.mcc;
+           ueItem.mnc = uc.get()->cgi.mnc;
+           ueItem.cellId = uc.get()->cgi.nrCellID;
+
+           stacs.update_ue_info(ueItem);
+           nc.get()->is_stacs_available = true;
         }
         //nc.get()->imsi = //need interface to transfer SUCI_imsi_t to string
       }
@@ -1322,14 +1309,15 @@ void amf_n1::security_mode_complete_handle(uint32_t ran_ue_ngap_id, long amf_ue_
     nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
     Logger::amf_n1().info("UE (IMSI %s, GUTI %s, current RAN ID %d, current AMF ID %d) has been registered to the network", nc.get()->imsi.c_str(), guti.c_str(), ran_ue_ngap_id, amf_ue_ngap_id);
     if (nc.get()->is_stacs_available) {
-      int index = 0;
-      for (int i = 0; i < stacs.ues.size(); i++) {
-        if (!(nc.get()->imsi).compare(stacs.ues[i].imsi)) {
-          index = i;
-          break;
-        }
-      }
-      update_ue_information_statics(stacs.ues[index], "", "RM-REGISTRED", ran_ue_ngap_id, amf_ue_ngap_id, "", guti, "", "", 0);
+      ue_info_t ueItem;
+      ueItem.connStatus = "";
+      ueItem.registerStatus = "RM-REGISTRED";
+      ueItem.ranid = ran_ue_ngap_id;
+      ueItem.amfid = amf_ue_ngap_id;
+      ueItem.guti = guti;
+      ueItem.imsi = nc.get()->imsi;
+      ueItem.cellId = 0;
+      stacs.update_ue_info(ueItem);
     }
 
     set_guti_2_nas_context(guti, nc);

@@ -121,9 +121,8 @@ class amf_n1 {
   void ue_authentication_simulator(uint8_t *rand, uint8_t *autn);
   void annex_a_4_33501(uint8_t ck[16], uint8_t ik[16], uint8_t *input, uint8_t rand[16], std::string serving_network, uint8_t *output);
   void send_itti_to_smf_services_consumer(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, uint8_t request_type, uint8_t pdu_session_id, bstring dnn, bstring sm_msg);
-  void update_ue_information_statics(ue_infos &ueItem, const std::string connStatus, const std::string registerStatus, uint32_t ranid, uint32_t amfid, std::string imsi, std::string guti, std::string mcc, std::string mnc, uint32_t cellId);
 
- private:  //nas message handlers
+private:  //nas message handlers
   void ue_initiate_de_registration_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas);
   void registration_request_handle(bool isNasSig, std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, std::string snn, bstring reg);
   void authentication_response_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg);
