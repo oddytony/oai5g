@@ -1509,9 +1509,26 @@ void amf_n1::ue_initiate_de_registration_handle(uint32_t ran_ue_ngap_id, long am
   //decode NAS msg
   DeregistrationRequest *deregReq = new DeregistrationRequest();
   deregReq->decodefrombuffer(NULL, (uint8_t*) bdata(nas), blength(nas));
+  /*
   _5gs_deregistration_type_t type = {};
   deregReq->getDeregistrationType(type);
+  uint8_t deregType = 0;
+  deregReq->getDeregistrationType(deregType);
+  Logger::amf_n1().debug("Deregistration Type %X", deregType);
+  */
+  
   //TODO: validate 5G Mobile Identity
+  uint8_t mobile_id_type = 0;
+  deregReq->getMobilityIdentityType(mobile_id_type);
+  Logger::amf_n1().debug("5G Mobile Identity %X", mobile_id_type);
+  switch(mobile_id_type) {
+    case _5G_GUTI: {
+      Logger::amf_n1().debug("5G Mobile Identity, GUTI %s", deregReq->get_5g_guti().c_str());
+    }
+    break;
+    default: {
+   }
+  }
 
   //Prepare DeregistrationAccept
   DeregistrationAccept *deregAccept = new DeregistrationAccept();
@@ -1773,7 +1790,7 @@ void amf_n1::run_mobility_registration_update_procedure(std::shared_ptr<nas_cont
 
 //------------------------------------------------------------------------------
 void amf_n1::set_5gmm_state(std::shared_ptr<nas_context> nc, _5gmm_state_t state) {
-  Logger::amf_n1().debug("Set 5GMM state to %s", _5gmm_state_e2str[state]);
+  Logger::amf_n1().debug("Set 5GMM state to %s", _5gmm_state_e2str[state].c_str());
   std::unique_lock lock(m_nas_context);
   nc.get()->_5gmm_state = state;
   //TODO:

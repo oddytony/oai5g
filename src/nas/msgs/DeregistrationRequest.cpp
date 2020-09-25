@@ -30,6 +30,7 @@
 #include "3gpp_ts24501.hpp"
 #include "logger.hpp"
 #include "String2Value.hpp"
+#include <string>
 using namespace nas;
 
 //------------------------------------------------------------------------------
@@ -76,13 +77,11 @@ void DeregistrationRequest::getDeregistrationType(_5gs_deregistration_type_t& ty
 }
 
 //------------------------------------------------------------------------------
-uint8_t DeregistrationRequest::getngKSI() {
+void DeregistrationRequest::getngKSI(uint8_t& ng_ksi) {
   if (ie_ngKSI) {
-    uint8_t a = 0;
-    a = (ie_ngKSI->getTypeOfSecurityContext()) | ie_ngKSI->getasKeyIdentifier();
-    return a;
+    ng_ksi = (ie_ngKSI->getTypeOfSecurityContext()) | ie_ngKSI->getasKeyIdentifier();
   } else {
-    return -1;
+    ng_ksi = 0;
   }
 }
 
@@ -97,11 +96,11 @@ void DeregistrationRequest::setSUCI_SUPI_format_IMSI(const string mcc, const str
 }
 
 //------------------------------------------------------------------------------
-uint8_t DeregistrationRequest::getMobilityIdentityType() {
+void DeregistrationRequest::getMobilityIdentityType(uint8_t& type) {
   if (ie_5gs_mobility_id) {
-    return ie_5gs_mobility_id->gettypeOfIdentity();
+    type = ie_5gs_mobility_id->gettypeOfIdentity();
   } else {
-    return -1;
+    type = 0;
   }
 }
 
@@ -120,7 +119,8 @@ std::string DeregistrationRequest::get_5g_guti() {
   if (ie_5gs_mobility_id) {
     nas::_5G_GUTI_t guti;
     ie_5gs_mobility_id->get5GGUTI(guti);
-    return guti.toString();
+    std::string str ;//= guti.toString();
+    return str;
   } else {
     return "error";
   }
