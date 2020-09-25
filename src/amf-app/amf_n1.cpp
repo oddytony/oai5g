@@ -506,18 +506,18 @@ void amf_n1::registration_request_handle(bool isNasSig, std::shared_ptr<nas_cont
           Logger::amf_n1().info("Try to find ue_context in amf_app using ran_amf_id %s", ue_context_key.c_str());
           uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
           ue_info_t ueItem;
-          //update_ue_information_statics(ueItem, "CM-CONNECTED", "REGISTRATION-INITIATING", ran_ue_ngap_id, amf_ue_ngap_id, nc.get()->imsi, "", uc.get()->cgi.mcc, uc.get()->cgi.mnc, uc.get()->cgi.nrCellID);
-           ueItem.connStatus = "5GMM-CONNECTED";//"CM-CONNECTED";
-           ueItem.registerStatus = "5GMM-REG-INITIATED"; //5GMM-COMMON-PROCEDURE-INITIATED
-           ueItem.ranid = ran_ue_ngap_id;
-           ueItem.amfid = amf_ue_ngap_id;
-           ueItem.imsi = nc.get()->imsi;
-           ueItem.mcc = uc.get()->cgi.mcc;
-           ueItem.mnc = uc.get()->cgi.mnc;
-           ueItem.cellId = uc.get()->cgi.nrCellID;
+          ueItem.connStatus = "5GMM-CONNECTED";//"CM-CONNECTED";
+          ueItem.registerStatus = "5GMM-REG-INITIATED"; //5GMM-COMMON-PROCEDURE-INITIATED
+          ueItem.ranid = ran_ue_ngap_id;
+          ueItem.amfid = amf_ue_ngap_id;
+          ueItem.imsi = nc.get()->imsi;
+          ueItem.mcc = uc.get()->cgi.mcc;
+          ueItem.mnc = uc.get()->cgi.mnc;
+          ueItem.cellId = uc.get()->cgi.nrCellID;
 
-           stacs.update_ue_info(ueItem);
-           nc.get()->is_stacs_available = true;
+          stacs.update_ue_info(ueItem);
+          set_5gmm_state(nc, _5GMM_COMMON_PROCEDURE_INITIATED);
+          nc.get()->is_stacs_available = true;
         }
         //nc.get()->imsi = //need interface to transfer SUCI_imsi_t to string
       }
@@ -1309,19 +1309,9 @@ void amf_n1::security_mode_complete_handle(uint32_t ran_ue_ngap_id, long amf_ue_
     nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
     Logger::amf_n1().info("UE (IMSI %s, GUTI %s, current RAN ID %d, current AMF ID %d) has been registered to the network", nc.get()->imsi.c_str(), guti.c_str(), ran_ue_ngap_id, amf_ue_ngap_id);
     if (nc.get()->is_stacs_available) {
-      /*
-      ue_info_t ueItem;
-      ueItem.connStatus = "5GMM-CONNECTED";
-      ueItem.registerStatus = "5GMM-REGISTERED";
-      ueItem.ranid = ran_ue_ngap_id;
-      ueItem.amfid = amf_ue_ngap_id;
-      ueItem.guti = guti;
-      ueItem.imsi = nc.get()->imsi;
-      ueItem.cellId = 0;
-      stacs.update_ue_info(ueItem);
-      */
       stacs.update_5gmm_state(nc.get()->imsi,"5GMM-REGISTERED");
     }
+    set_5gmm_state(nc, _5GMM_REGISTERED);
 
     set_guti_2_nas_context(guti, nc);
     nc.get()->is_common_procedure_for_security_mode_control_running = false;
@@ -1538,22 +1528,9 @@ void amf_n1::ue_initiate_de_registration_handle(uint32_t ran_ue_ngap_id, long am
 
   bstring b = blk2bstr(buffer, encoded_size);
   itti_send_dl_nas_buffer_to_task_n2(b, ran_ue_ngap_id, amf_ue_ngap_id);
-  //TODO: Update FSM
-  //TODO: Update statistic
+
+  set_5gmm_state(nc, _5GMM_DEREGISTERED);
   if (nc.get()->is_stacs_available) {
-
-   /* ue_info_t ueItem;
-    ueItem.connStatus = "";
-    ueItem.registerStatus = "5GMM-DEREGISTERED";
-    ueItem.ranid = nc.get()->ran_ue_ngap_id;
-    ueItem.amfid = nc.get()->amf_ue_ngap_id;
-    ueItem.imsi = nc.get()->imsi;
-    ueItem.mcc = uc.get()->cgi.mcc;
-    ueItem.mnc = uc.get()->cgi.mnc;
-    ueItem.cellId = uc.get()->cgi.nrCellID;
-
-    stacs.update_ue_info(ueItem);
-    */
     stacs.update_5gmm_state(nc.get()->imsi,"5GMM-DEREGISTERED");
   }
 
@@ -1793,3 +1770,18 @@ void amf_n1::run_mobility_registration_update_procedure(std::shared_ptr<nas_cont
     Logger::amf_n1().error("Could not send ITTI message %s to task TASK_AMF_N2", i->get_msg_name());
   }
 }
+
+//------------------------------------------------------------------------------
+void amf_n1::set_5gmm_state(std::shared_ptr<nas_context> nc, _5gmm_state_t state) {
+  Logger::amf_n1().debug("Set 5GMM state to %s", _5gmm_state_e2str[state]);
+  std::unique_lock lock(m_nas_context);
+  nc.get()->_5gmm_state = state;
+  //TODO:
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::get_5gmm_state(std::shared_ptr<nas_context> nc, _5gmm_state_t& state) {
+  //TODO:
+  state = nc.get()->_5gmm_state;
+}
+

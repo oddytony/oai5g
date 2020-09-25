@@ -81,6 +81,8 @@ class amf_n1 {
   std::map<std::string, long> supi2amfId;
   std::map<std::string, uint32_t> supi2ranId;
 
+  mutable std::shared_mutex m_nas_context;
+
   std::map<std::string, std::shared_ptr<nas_context>> guti2nas_context;
   mutable std::shared_mutex m_guti2nas_context;
   bool is_guti_2_nas_context(const std::string &guti) const;
@@ -121,6 +123,9 @@ class amf_n1 {
   void ue_authentication_simulator(uint8_t *rand, uint8_t *autn);
   void annex_a_4_33501(uint8_t ck[16], uint8_t ik[16], uint8_t *input, uint8_t rand[16], std::string serving_network, uint8_t *output);
   void send_itti_to_smf_services_consumer(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, uint8_t request_type, uint8_t pdu_session_id, bstring dnn, bstring sm_msg);
+
+  void set_5gmm_state(std::shared_ptr<nas_context> nc, _5gmm_state_t state);
+  void get_5gmm_state(std::shared_ptr<nas_context> nc, _5gmm_state_t& state);
 
 private:  //nas message handlers
   void ue_initiate_de_registration_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas);
