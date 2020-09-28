@@ -42,7 +42,8 @@ _5GSDeregistrationType::_5GSDeregistrationType(uint8_t type) {
   u1.b = type;
 }
 //------------------------------------------------------------------------------
-_5GSDeregistrationType::_5GSDeregistrationType(_5gs_deregistration_type_t type) {
+_5GSDeregistrationType::_5GSDeregistrationType(
+    _5gs_deregistration_type_t type) {
   u1.b = 0;
   u1.bf.switch_off = type.switch_off;
   u1.bf.dereg_required = type.dereg_required;
@@ -64,7 +65,7 @@ void _5GSDeregistrationType::set(_5gs_deregistration_type_t type) {
 }
 
 //------------------------------------------------------------------------------
-void _5GSDeregistrationType::get(_5gs_deregistration_type_t& type) {
+void _5GSDeregistrationType::get(_5gs_deregistration_type_t &type) {
   type.switch_off = u1.bf.switch_off;
   type.dereg_required = u1.bf.dereg_required;
   type.access_type = u1.bf.access_type;
@@ -77,7 +78,7 @@ void _5GSDeregistrationType::set(uint8_t type) {
 }
 
 //------------------------------------------------------------------------------
-void _5GSDeregistrationType::get(uint8_t& type) {
+void _5GSDeregistrationType::get(uint8_t &type) {
   type = u1.b;
 }
 
@@ -85,7 +86,8 @@ void _5GSDeregistrationType::get(uint8_t& type) {
 int _5GSDeregistrationType::encode2buffer(uint8_t *buf, int len) {
   Logger::nas_mm().error("Encoding 5GSDeregistrationType IE");
   if (len < 1) {
-    Logger::nas_mm().error("encoding 5GSDeregistrationType error(len is less than one)");
+    Logger::nas_mm().error(
+        "encoding 5GSDeregistrationType error(len is less than one)");
     return -1;
   }
   *buf = u1.b;

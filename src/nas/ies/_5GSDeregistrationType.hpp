@@ -34,7 +34,7 @@
 namespace nas {
 typedef struct _5gs_deregistration_type_s {
   uint8_t iei :4;
-  uint8_t switch_off:1;
+  uint8_t switch_off :1;
   uint8_t dereg_required :1;
   uint8_t access_type :2;
 } _5gs_deregistration_type_t;
@@ -49,21 +49,20 @@ class _5GSDeregistrationType {
   int encode2buffer(uint8_t *buf, int len);
 
   void set(_5gs_deregistration_type_t type);
-  void get(_5gs_deregistration_type_t& type);
+  void get(_5gs_deregistration_type_t &type);
   void set(uint8_t type);
-  void get(uint8_t& type);
+  void get(uint8_t &type);
  public:
 
   union {
     struct {
       uint8_t iei :4;
-      uint8_t switch_off:1;
+      uint8_t switch_off :1;
       uint8_t dereg_required :1;
       uint8_t access_type :2;
-   } bf;
-   uint8_t b;
+    } bf;
+    uint8_t b;
   } u1;
-
 
 };
 

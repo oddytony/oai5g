@@ -46,16 +46,21 @@ class DeregistrationRequest {
   void setngKSI(uint8_t tsc, uint8_t key_set_id);
 
   void setMobilityIdentityType(uint8_t type);
-  void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc, const string routingInd, uint8_t protection_sch_id, const string msin);
-  void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc, const string routingInd, uint8_t protection_sch_id, uint8_t hnpki, const string msin);
+  void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc,
+                                const string routingInd,
+                                uint8_t protection_sch_id, const string msin);
+  void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc,
+                                const string routingInd,
+                                uint8_t protection_sch_id, uint8_t hnpki,
+                                const string msin);
   void set5G_GUTI();
   void setIMEI_IMEISV();
   void set5G_S_TMSI();
 
   void getDeregistrationType(uint8_t &dereg_type);
-  void getDeregistrationType(_5gs_deregistration_type_t& type);
-  void getngKSI(uint8_t& ng_ksi);
-  void getMobilityIdentityType(uint8_t& type);
+  void getDeregistrationType(_5gs_deregistration_type_t &type);
+  void getngKSI(uint8_t &ng_ksi);
+  void getMobilityIdentityType(uint8_t &type);
   std::string get_5g_guti();
   bool getSuciSupiFormatImsi(nas::SUCI_imsi_t &imsi);
 
