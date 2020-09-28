@@ -54,14 +54,16 @@ bool PacketLossRate::getPacketLossRate(long &value) {
 }
 
 //------------------------------------------------------------------------------
-bool PacketLossRate::encode2PacketLossRate(Ngap_PacketLossRate_t *packetLossRate) {
+bool PacketLossRate::encode2PacketLossRate(
+    Ngap_PacketLossRate_t *packetLossRate) {
   *packetLossRate = packetlossrate;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool PacketLossRate::decodefromPacketLossRate(Ngap_PacketLossRate_t *packetLossRate) {
+bool PacketLossRate::decodefromPacketLossRate(
+    Ngap_PacketLossRate_t *packetLossRate) {
   packetlossrate = *packetLossRate;
 
   return true;

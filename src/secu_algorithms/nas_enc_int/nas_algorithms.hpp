@@ -83,10 +83,14 @@ typedef struct {
 
 class nas_algorithms {
  public:
-  static int nas_stream_encrypt_nea1(nas_stream_cipher_t *const stream_cipher, uint8_t *const out);
-  static int nas_stream_encrypt_nia1(nas_stream_cipher_t *const stream_cipher, uint8_t const out[4]);
-  static int nas_stream_encrypt_nea2(nas_stream_cipher_t *const stream_cipher, uint8_t *const out);
-  static int nas_stream_encrypt_nia2(nas_stream_cipher_t *const stream_cipher, uint8_t const out[4]);
+  static int nas_stream_encrypt_nea1(nas_stream_cipher_t *const stream_cipher,
+                                     uint8_t *const out);
+  static int nas_stream_encrypt_nia1(nas_stream_cipher_t *const stream_cipher,
+                                     uint8_t const out[4]);
+  static int nas_stream_encrypt_nea2(nas_stream_cipher_t *const stream_cipher,
+                                     uint8_t *const out);
+  static int nas_stream_encrypt_nia2(nas_stream_cipher_t *const stream_cipher,
+                                     uint8_t const out[4]);
 };
 
 #endif

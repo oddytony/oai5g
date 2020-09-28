@@ -60,19 +60,31 @@ DownLinkNasTransportMsg::~DownLinkNasTransportMsg() {
 //------------------------------------------------------------------------------
 void DownLinkNasTransportMsg::setMessageType() {
   if (!downLinkNasTransportPdu)
-    downLinkNasTransportPdu = (Ngap_NGAP_PDU_t*) calloc(1, sizeof(Ngap_NGAP_PDU_t));
+    downLinkNasTransportPdu = (Ngap_NGAP_PDU_t*) calloc(
+        1, sizeof(Ngap_NGAP_PDU_t));
 
   MessageType downLinkNasTransportPduTypeIE;
-  downLinkNasTransportPduTypeIE.setProcedureCode(Ngap_ProcedureCode_id_DownlinkNASTransport);
-  downLinkNasTransportPduTypeIE.setTypeOfMessage(Ngap_NGAP_PDU_PR_initiatingMessage);
+  downLinkNasTransportPduTypeIE.setProcedureCode(
+      Ngap_ProcedureCode_id_DownlinkNASTransport);
+  downLinkNasTransportPduTypeIE.setTypeOfMessage(
+      Ngap_NGAP_PDU_PR_initiatingMessage);
   downLinkNasTransportPduTypeIE.setCriticality(Ngap_Criticality_ignore);
-  downLinkNasTransportPduTypeIE.setValuePresent(Ngap_InitiatingMessage__value_PR_DownlinkNASTransport);
+  downLinkNasTransportPduTypeIE.setValuePresent(
+      Ngap_InitiatingMessage__value_PR_DownlinkNASTransport);
 
-  if (downLinkNasTransportPduTypeIE.getProcedureCode() == Ngap_ProcedureCode_id_DownlinkNASTransport && downLinkNasTransportPduTypeIE.getTypeOfMessage() == Ngap_NGAP_PDU_PR_initiatingMessage && downLinkNasTransportPduTypeIE.getCriticality() == Ngap_Criticality_ignore) {
+  if (downLinkNasTransportPduTypeIE.getProcedureCode()
+      == Ngap_ProcedureCode_id_DownlinkNASTransport
+      && downLinkNasTransportPduTypeIE.getTypeOfMessage()
+          == Ngap_NGAP_PDU_PR_initiatingMessage
+      && downLinkNasTransportPduTypeIE.getCriticality()
+          == Ngap_Criticality_ignore) {
     downLinkNasTransportPduTypeIE.encode2pdu(downLinkNasTransportPdu);
-    downLinkNasTransportIEs = &(downLinkNasTransportPdu->choice.initiatingMessage->value.choice.DownlinkNASTransport);
+    downLinkNasTransportIEs = &(downLinkNasTransportPdu->choice
+        .initiatingMessage->value.choice.DownlinkNASTransport);
   } else {
-    cout << "[warning] This information doesn't refer to DownlinkNASTransport Message!!!" << endl;
+    cout
+        << "[warning] This information doesn't refer to DownlinkNASTransport Message!!!"
+        << endl;
   }
 }
 
@@ -82,7 +94,9 @@ void DownLinkNasTransportMsg::setAmfUeNgapId(unsigned long id) {
     amfUeNgapId = new AMF_UE_NGAP_ID();
   amfUeNgapId->setAMF_UE_NGAP_ID(id);
 
-  Ngap_DownlinkNASTransport_IEs_t *ie = (Ngap_DownlinkNASTransport_IEs_t*) calloc(1, sizeof(Ngap_DownlinkNASTransport_IEs_t));
+  Ngap_DownlinkNASTransport_IEs_t *ie =
+      (Ngap_DownlinkNASTransport_IEs_t*) calloc(
+          1, sizeof(Ngap_DownlinkNASTransport_IEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_AMF_UE_NGAP_ID;
   ie->criticality = Ngap_Criticality_reject;
   ie->value.present = Ngap_DownlinkNASTransport_IEs__value_PR_AMF_UE_NGAP_ID;
@@ -104,7 +118,9 @@ void DownLinkNasTransportMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
     ranUeNgapId = new RAN_UE_NGAP_ID();
   ranUeNgapId->setRanUeNgapId(ran_ue_ngap_id);
 
-  Ngap_DownlinkNASTransport_IEs_t *ie = (Ngap_DownlinkNASTransport_IEs_t*) calloc(1, sizeof(Ngap_DownlinkNASTransport_IEs_t));
+  Ngap_DownlinkNASTransport_IEs_t *ie =
+      (Ngap_DownlinkNASTransport_IEs_t*) calloc(
+          1, sizeof(Ngap_DownlinkNASTransport_IEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_RAN_UE_NGAP_ID;
   ie->criticality = Ngap_Criticality_reject;
   ie->value.present = Ngap_DownlinkNASTransport_IEs__value_PR_RAN_UE_NGAP_ID;
@@ -126,7 +142,9 @@ void DownLinkNasTransportMsg::setOldAmfName(const std::string name) {
     oldAmfName = new AmfName();
   oldAmfName->setValue(name);
 
-  Ngap_DownlinkNASTransport_IEs_t *ie = (Ngap_DownlinkNASTransport_IEs_t*) calloc(1, sizeof(Ngap_DownlinkNASTransport_IEs_t));
+  Ngap_DownlinkNASTransport_IEs_t *ie =
+      (Ngap_DownlinkNASTransport_IEs_t*) calloc(
+          1, sizeof(Ngap_DownlinkNASTransport_IEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_OldAMF;
   ie->criticality = Ngap_Criticality_reject;
   ie->value.present = Ngap_DownlinkNASTransport_IEs__value_PR_AMFName;
@@ -148,12 +166,15 @@ void DownLinkNasTransportMsg::setRanPagingPriority(uint8_t pagingPriority) {
     ranPagingPriority = new RANPagingPriority();
   ranPagingPriority->setRANPagingPriority(pagingPriority);
 
-  Ngap_DownlinkNASTransport_IEs_t *ie = (Ngap_DownlinkNASTransport_IEs_t*) calloc(1, sizeof(Ngap_DownlinkNASTransport_IEs_t));
+  Ngap_DownlinkNASTransport_IEs_t *ie =
+      (Ngap_DownlinkNASTransport_IEs_t*) calloc(
+          1, sizeof(Ngap_DownlinkNASTransport_IEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_RANPagingPriority;
   ie->criticality = Ngap_Criticality_ignore;
   ie->value.present = Ngap_DownlinkNASTransport_IEs__value_PR_RANPagingPriority;
 
-  int ret = ranPagingPriority->encode2RANPagingPriority(ie->value.choice.RANPagingPriority);
+  int ret = ranPagingPriority->encode2RANPagingPriority(
+      ie->value.choice.RANPagingPriority);
   if (!ret) {
     cout << "encode RANPagingPriority IE error" << endl;
     return;
@@ -171,7 +192,9 @@ void DownLinkNasTransportMsg::setNasPdu(uint8_t *nas, size_t sizeofnas) {
 
   nasPdu->setNasPdu(nas, sizeofnas);
 
-  Ngap_DownlinkNASTransport_IEs_t *ie = (Ngap_DownlinkNASTransport_IEs_t*) calloc(1, sizeof(Ngap_DownlinkNASTransport_IEs_t));
+  Ngap_DownlinkNASTransport_IEs_t *ie =
+      (Ngap_DownlinkNASTransport_IEs_t*) calloc(
+          1, sizeof(Ngap_DownlinkNASTransport_IEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_NAS_PDU;
   ie->criticality = Ngap_Criticality_reject;
   ie->value.present = Ngap_DownlinkNASTransport_IEs__value_PR_NAS_PDU;
@@ -188,12 +211,15 @@ void DownLinkNasTransportMsg::setNasPdu(uint8_t *nas, size_t sizeofnas) {
 }
 
 //------------------------------------------------------------------------------
-void DownLinkNasTransportMsg::setIndex2Rat_Frequency_SelectionPriority(uint8_t value) {
+void DownLinkNasTransportMsg::setIndex2Rat_Frequency_SelectionPriority(
+    uint8_t value) {
   if (!indexToRFSP)
     indexToRFSP = new IndexToRFSP();
   indexToRFSP->setIndexToRFSP(value);
 
-  Ngap_DownlinkNASTransport_IEs_t *ie = (Ngap_DownlinkNASTransport_IEs_t*) calloc(1, sizeof(Ngap_DownlinkNASTransport_IEs_t));
+  Ngap_DownlinkNASTransport_IEs_t *ie =
+      (Ngap_DownlinkNASTransport_IEs_t*) calloc(
+          1, sizeof(Ngap_DownlinkNASTransport_IEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_IndexToRFSP;
   ie->criticality = Ngap_Criticality_ignore;
   ie->value.present = Ngap_DownlinkNASTransport_IEs__value_PR_IndexToRFSP;
@@ -212,7 +238,9 @@ void DownLinkNasTransportMsg::setIndex2Rat_Frequency_SelectionPriority(uint8_t v
 //------------------------------------------------------------------------------
 int DownLinkNasTransportMsg::encode2buffer(uint8_t *buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, downLinkNasTransportPdu);
-  asn_enc_rval_t er = aper_encode_to_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL, downLinkNasTransportPdu, buf, buf_size);
+  asn_enc_rval_t er = aper_encode_to_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL,
+                                            downLinkNasTransportPdu, buf,
+                                            buf_size);
   cout << "er.encoded(" << er.encoded << ")" << endl;
   return er.encoded;
 }
@@ -223,9 +251,15 @@ bool DownLinkNasTransportMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
   downLinkNasTransportPdu = ngap_msg_pdu;
 
   if (downLinkNasTransportPdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
-    if (downLinkNasTransportPdu->choice.initiatingMessage && downLinkNasTransportPdu->choice.initiatingMessage->procedureCode == Ngap_ProcedureCode_id_DownlinkNASTransport && downLinkNasTransportPdu->choice.initiatingMessage->criticality == Ngap_Criticality_ignore
-        && downLinkNasTransportPdu->choice.initiatingMessage->value.present == Ngap_InitiatingMessage__value_PR_DownlinkNASTransport) {
-      downLinkNasTransportIEs = &downLinkNasTransportPdu->choice.initiatingMessage->value.choice.DownlinkNASTransport;
+    if (downLinkNasTransportPdu->choice.initiatingMessage
+        && downLinkNasTransportPdu->choice.initiatingMessage->procedureCode
+            == Ngap_ProcedureCode_id_DownlinkNASTransport
+        && downLinkNasTransportPdu->choice.initiatingMessage->criticality
+            == Ngap_Criticality_ignore
+        && downLinkNasTransportPdu->choice.initiatingMessage->value.present
+            == Ngap_InitiatingMessage__value_PR_DownlinkNASTransport) {
+      downLinkNasTransportIEs = &downLinkNasTransportPdu->choice
+          .initiatingMessage->value.choice.DownlinkNASTransport;
     } else {
       cout << "Check DownlinkNASTransport message error!!!" << endl;
       return false;
@@ -237,9 +271,14 @@ bool DownLinkNasTransportMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
   for (int i = 0; i < downLinkNasTransportIEs->protocolIEs.list.count; i++) {
     switch (downLinkNasTransportIEs->protocolIEs.list.array[i]->id) {
       case Ngap_ProtocolIE_ID_id_AMF_UE_NGAP_ID: {
-        if (downLinkNasTransportIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && downLinkNasTransportIEs->protocolIEs.list.array[i]->value.present == Ngap_DownlinkNASTransport_IEs__value_PR_AMF_UE_NGAP_ID) {
+        if (downLinkNasTransportIEs->protocolIEs.list.array[i]->criticality
+            == Ngap_Criticality_reject
+            && downLinkNasTransportIEs->protocolIEs.list.array[i]->value.present
+                == Ngap_DownlinkNASTransport_IEs__value_PR_AMF_UE_NGAP_ID) {
           amfUeNgapId = new AMF_UE_NGAP_ID();
-          if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(downLinkNasTransportIEs->protocolIEs.list.array[i]->value.choice.AMF_UE_NGAP_ID)) {
+          if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
+              downLinkNasTransportIEs->protocolIEs.list.array[i]->value.choice
+                  .AMF_UE_NGAP_ID)) {
             cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
             return false;
           }
@@ -250,9 +289,14 @@ bool DownLinkNasTransportMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
       }
         break;
       case Ngap_ProtocolIE_ID_id_RAN_UE_NGAP_ID: {
-        if (downLinkNasTransportIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && downLinkNasTransportIEs->protocolIEs.list.array[i]->value.present == Ngap_DownlinkNASTransport_IEs__value_PR_RAN_UE_NGAP_ID) {
+        if (downLinkNasTransportIEs->protocolIEs.list.array[i]->criticality
+            == Ngap_Criticality_reject
+            && downLinkNasTransportIEs->protocolIEs.list.array[i]->value.present
+                == Ngap_DownlinkNASTransport_IEs__value_PR_RAN_UE_NGAP_ID) {
           ranUeNgapId = new RAN_UE_NGAP_ID();
-          if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(downLinkNasTransportIEs->protocolIEs.list.array[i]->value.choice.RAN_UE_NGAP_ID)) {
+          if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
+              downLinkNasTransportIEs->protocolIEs.list.array[i]->value.choice
+                  .RAN_UE_NGAP_ID)) {
             cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
             return false;
           }
@@ -263,9 +307,14 @@ bool DownLinkNasTransportMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
       }
         break;
       case Ngap_ProtocolIE_ID_id_OldAMF: {
-        if (downLinkNasTransportIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && downLinkNasTransportIEs->protocolIEs.list.array[i]->value.present == Ngap_DownlinkNASTransport_IEs__value_PR_AMFName) {
+        if (downLinkNasTransportIEs->protocolIEs.list.array[i]->criticality
+            == Ngap_Criticality_reject
+            && downLinkNasTransportIEs->protocolIEs.list.array[i]->value.present
+                == Ngap_DownlinkNASTransport_IEs__value_PR_AMFName) {
           oldAmfName = new AmfName();
-          if (!oldAmfName->decodefromAmfName(&downLinkNasTransportIEs->protocolIEs.list.array[i]->value.choice.AMFName)) {
+          if (!oldAmfName->decodefromAmfName(
+              &downLinkNasTransportIEs->protocolIEs.list.array[i]->value.choice
+                  .AMFName)) {
             cout << "decoded ngap OldAMFName IE error" << endl;
             return false;
           }
@@ -276,9 +325,14 @@ bool DownLinkNasTransportMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
       }
         break;
       case Ngap_ProtocolIE_ID_id_RANPagingPriority: {
-        if (downLinkNasTransportIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_ignore && downLinkNasTransportIEs->protocolIEs.list.array[i]->value.present == Ngap_DownlinkNASTransport_IEs__value_PR_RANPagingPriority) {
+        if (downLinkNasTransportIEs->protocolIEs.list.array[i]->criticality
+            == Ngap_Criticality_ignore
+            && downLinkNasTransportIEs->protocolIEs.list.array[i]->value.present
+                == Ngap_DownlinkNASTransport_IEs__value_PR_RANPagingPriority) {
           ranPagingPriority = new RANPagingPriority();
-          if (!ranPagingPriority->decodefromRANPagingPriority(downLinkNasTransportIEs->protocolIEs.list.array[i]->value.choice.RANPagingPriority)) {
+          if (!ranPagingPriority->decodefromRANPagingPriority(
+              downLinkNasTransportIEs->protocolIEs.list.array[i]->value.choice
+                  .RANPagingPriority)) {
             cout << "decoded ngap RANPagingPriority IE error" << endl;
             return false;
           }
@@ -289,9 +343,14 @@ bool DownLinkNasTransportMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
       }
         break;
       case Ngap_ProtocolIE_ID_id_NAS_PDU: {
-        if (downLinkNasTransportIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && downLinkNasTransportIEs->protocolIEs.list.array[i]->value.present == Ngap_DownlinkNASTransport_IEs__value_PR_NAS_PDU) {
+        if (downLinkNasTransportIEs->protocolIEs.list.array[i]->criticality
+            == Ngap_Criticality_reject
+            && downLinkNasTransportIEs->protocolIEs.list.array[i]->value.present
+                == Ngap_DownlinkNASTransport_IEs__value_PR_NAS_PDU) {
           nasPdu = new NAS_PDU();
-          if (!nasPdu->decodefromoctetstring(downLinkNasTransportIEs->protocolIEs.list.array[i]->value.choice.NAS_PDU)) {
+          if (!nasPdu->decodefromoctetstring(
+              downLinkNasTransportIEs->protocolIEs.list.array[i]->value.choice
+                  .NAS_PDU)) {
             cout << "decoded ngap NAS_PDU IE error" << endl;
             return false;
           }
@@ -302,9 +361,14 @@ bool DownLinkNasTransportMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
       }
         break;
       case Ngap_ProtocolIE_ID_id_IndexToRFSP: {
-        if (downLinkNasTransportIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_ignore && downLinkNasTransportIEs->protocolIEs.list.array[i]->value.present == Ngap_DownlinkNASTransport_IEs__value_PR_IndexToRFSP) {
+        if (downLinkNasTransportIEs->protocolIEs.list.array[i]->criticality
+            == Ngap_Criticality_ignore
+            && downLinkNasTransportIEs->protocolIEs.list.array[i]->value.present
+                == Ngap_DownlinkNASTransport_IEs__value_PR_IndexToRFSP) {
           indexToRFSP = new IndexToRFSP();
-          if (!indexToRFSP->decodefromIndexToRFSP(downLinkNasTransportIEs->protocolIEs.list.array[i]->value.choice.IndexToRFSP)) {
+          if (!indexToRFSP->decodefromIndexToRFSP(
+              downLinkNasTransportIEs->protocolIEs.list.array[i]->value.choice
+                  .IndexToRFSP)) {
             cout << "decoded ngap IndexToRFSP IE error" << endl;
             return false;
           }

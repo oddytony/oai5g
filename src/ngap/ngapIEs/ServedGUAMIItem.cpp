@@ -56,11 +56,13 @@ void ServedGUAMIItem::setBackupAMFName(AmfName *m_backupAMFName) {
 }
 
 //------------------------------------------------------------------------------
-bool ServedGUAMIItem::encode2ServedGUAMIItem(Ngap_ServedGUAMIItem *servedGUAMIItem) {
+bool ServedGUAMIItem::encode2ServedGUAMIItem(
+    Ngap_ServedGUAMIItem *servedGUAMIItem) {
   if (!guamiGroup->encode2GUAMI(&(servedGUAMIItem->gUAMI)))
     return false;
   if (backupAMFNameIsSet) {
-    Ngap_AMFName_t *backupamfname = (Ngap_AMFName_t*) calloc(1, sizeof(Ngap_AMFName_t));
+    Ngap_AMFName_t *backupamfname = (Ngap_AMFName_t*) calloc(
+        1, sizeof(Ngap_AMFName_t));
     if (!backupamfname)
       return false;
     if (!backupAMFName->encode2AmfName(backupamfname))

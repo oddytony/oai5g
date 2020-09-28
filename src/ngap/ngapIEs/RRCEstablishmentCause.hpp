@@ -40,7 +40,8 @@ class RRCEstablishmentCause {
   RRCEstablishmentCause();
   virtual ~RRCEstablishmentCause();
 
-  void setRRCEstablishmentCause(e_Ngap_RRCEstablishmentCause m_rrcestablishmentcause);
+  void setRRCEstablishmentCause(
+      e_Ngap_RRCEstablishmentCause m_rrcestablishmentcause);
   int getRRCEstablishmentCause();
 
   bool encode2RRCEstablishmentCause(Ngap_RRCEstablishmentCause_t&);

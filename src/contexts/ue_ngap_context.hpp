@@ -31,7 +31,6 @@
 
 #include <stdint.h>
 #include <map>
-#include <shared_mutex>
 
 #include "gNB_context.hpp"
 

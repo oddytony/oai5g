@@ -45,11 +45,13 @@ bool amf_n1::get_mysql_auth_info(std::string imsi, mysql_auth_info_t &resp) {  /
     Logger::amf_n1().error("Cannot connect to MySQL DB");
     return false;
   }
-  query = "SELECT `key`,`sqn`,`rand`,`OPc` FROM `users` WHERE `users`.`imsi`='" + imsi + "' ";
+  query = "SELECT `key`,`sqn`,`rand`,`OPc` FROM `users` WHERE `users`.`imsi`='"
+      + imsi + "' ";
   pthread_mutex_lock(&db_desc->db_cs_mutex);
   if (mysql_query(db_desc->db_conn, query.c_str())) {
     pthread_mutex_unlock(&db_desc->db_cs_mutex);
-    Logger::amf_n1().error("Query execution failed: %s\n", mysql_error(db_desc->db_conn));
+    Logger::amf_n1().error("Query execution failed: %s\n",
+                           mysql_error(db_desc->db_conn));
     return false;
   }
   res = mysql_store_result(db_desc->db_conn);
@@ -84,7 +86,8 @@ bool amf_n1::connect_to_mysql() {
   const int mysql_reconnect_val = 1;
   db_desc = (database_t*) calloc(1, sizeof(database_t));
   if (!db_desc) {
-    Logger::amf_n1().error("An error occurs when allocating memory for DB_DESC");
+    Logger::amf_n1().error(
+        "An error occurs when allocating memory for DB_DESC");
     return false;
   }
   pthread_mutex_init(&db_desc->db_cs_mutex, NULL);
@@ -94,8 +97,11 @@ bool amf_n1::connect_to_mysql() {
   db_desc->database = amf_cfg.auth_para.mysql_db;
   db_desc->db_conn = mysql_init(NULL);
   mysql_options(db_desc->db_conn, MYSQL_OPT_RECONNECT, &mysql_reconnect_val);
-  if (!mysql_real_connect(db_desc->db_conn, db_desc->server.c_str(), db_desc->user.c_str(), db_desc->password.c_str(), db_desc->database.c_str(), 0, NULL, 0)) {
-    Logger::amf_n1().error("An error occurred while connecting to db: %s", mysql_error(db_desc->db_conn));
+  if (!mysql_real_connect(db_desc->db_conn, db_desc->server.c_str(),
+                          db_desc->user.c_str(), db_desc->password.c_str(),
+                          db_desc->database.c_str(), 0, NULL, 0)) {
+    Logger::amf_n1().error("An error occurred while connecting to db: %s",
+                           mysql_error(db_desc->db_conn));
     mysql_thread_end();
     return false;
   }
@@ -104,7 +110,8 @@ bool amf_n1::connect_to_mysql() {
 }
 
 //------------------------------------------------------------------------------
-void amf_n1::mysql_push_rand_sqn(std::string imsi, uint8_t *rand_p, uint8_t *sqn) {
+void amf_n1::mysql_push_rand_sqn(std::string imsi, uint8_t *rand_p,
+                                 uint8_t *sqn) {
   int status = 0;
   MYSQL_RES *res;
   char query[1000];
@@ -118,18 +125,21 @@ void amf_n1::mysql_push_rand_sqn(std::string imsi, uint8_t *rand_p, uint8_t *sqn
     Logger::amf_n1().error("Need sqn and rand");
     return;
   }
-  sqn_decimal = ((uint64_t) sqn[0] << 40) | ((uint64_t) sqn[1] << 32) | ((uint64_t) sqn[2] << 24) | (sqn[3] << 16) | (sqn[4] << 8) | sqn[5];
+  sqn_decimal = ((uint64_t) sqn[0] << 40) | ((uint64_t) sqn[1] << 32)
+      | ((uint64_t) sqn[2] << 24) | (sqn[3] << 16) | (sqn[4] << 8) | sqn[5];
   query_length = sprintf(query, "UPDATE `users` SET `rand`=UNHEX('");
   for (int i = 0; i < RAND_LENGTH; i++) {
     query_length += sprintf(&query[query_length], "%02x", rand_p[i]);
   }
 
   query_length += sprintf (&query[query_length], "'),`sqn`=%" PRIu64, sqn_decimal);
-  query_length += sprintf(&query[query_length], " WHERE `users`.`imsi`='%s'", imsi.c_str());
+  query_length += sprintf(&query[query_length], " WHERE `users`.`imsi`='%s'",
+                          imsi.c_str());
   pthread_mutex_lock(&db_desc->db_cs_mutex);
   if (mysql_query(db_desc->db_conn, query)) {
     pthread_mutex_unlock(&db_desc->db_cs_mutex);
-    Logger::amf_n1().error("Query execution failed: %s", mysql_error(db_desc->db_conn));
+    Logger::amf_n1().error("Query execution failed: %s",
+                           mysql_error(db_desc->db_conn));
     return;
   }
   do {
@@ -138,7 +148,8 @@ void amf_n1::mysql_push_rand_sqn(std::string imsi, uint8_t *rand_p, uint8_t *sqn
       mysql_free_result(res);
     } else {
       if (mysql_field_count(db_desc->db_conn) == 0) {
-        Logger::amf_n1().error("[MySQL] %lld rows affected", mysql_affected_rows(db_desc->db_conn));
+        Logger::amf_n1().error("[MySQL] %lld rows affected",
+                               mysql_affected_rows(db_desc->db_conn));
       } else { /* some error occurred */
         Logger::amf_n1().error("Could not retrieve result set");
         break;
@@ -160,13 +171,16 @@ void amf_n1::mysql_increment_sqn(std::string imsi) {
     Logger::amf_n1().error("Cannot connect to MySQL DB");
     return;
   }
-  sprintf(query, "UPDATE `users` SET `sqn` = `sqn` + 32 WHERE `users`.`imsi`='%s'", imsi.c_str());
+  sprintf(query,
+          "UPDATE `users` SET `sqn` = `sqn` + 32 WHERE `users`.`imsi`='%s'",
+          imsi.c_str());
 
   pthread_mutex_lock(&db_desc->db_cs_mutex);
 
   if (mysql_query(db_desc->db_conn, query)) {
     pthread_mutex_unlock(&db_desc->db_cs_mutex);
-    Logger::amf_n1().error("Query execution failed: %s", mysql_error(db_desc->db_conn));
+    Logger::amf_n1().error("Query execution failed: %s",
+                           mysql_error(db_desc->db_conn));
     return;
   }
   do {
@@ -175,7 +189,8 @@ void amf_n1::mysql_increment_sqn(std::string imsi) {
       mysql_free_result(res);
     } else {
       if (mysql_field_count(db_desc->db_conn) == 0) {
-        Logger::amf_n1().error("[MySQL] %lld rows affected", mysql_affected_rows(db_desc->db_conn));
+        Logger::amf_n1().error("[MySQL] %lld rows affected",
+                               mysql_affected_rows(db_desc->db_conn));
       } else {
         Logger::amf_n1().error("Could not retrieve result set");
         break;

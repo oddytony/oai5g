@@ -40,8 +40,10 @@ class UERadioCapabilityForPagingOfNR {
   UERadioCapabilityForPagingOfNR();
   virtual ~UERadioCapabilityForPagingOfNR();
 
-  bool encode2UERadioCapabilityForPagingOfNR(Ngap_UERadioCapabilityForPagingOfNR_t *ueRadioCapabilityForPagingOfNR);
-  bool decodefromUERadioCapabilityForPagingOfNR(Ngap_UERadioCapabilityForPagingOfNR_t *ueRadioCapabilityForPagingOfNR);
+  bool encode2UERadioCapabilityForPagingOfNR(
+      Ngap_UERadioCapabilityForPagingOfNR_t *ueRadioCapabilityForPagingOfNR);
+  bool decodefromUERadioCapabilityForPagingOfNR(
+      Ngap_UERadioCapabilityForPagingOfNR_t *ueRadioCapabilityForPagingOfNR);
   bool getUERadioCapabilityForPagingOfNR(uint8_t *&buffer, size_t &size);
   void setUERadioCapabilityForPagingOfNR(uint8_t *buffer, size_t size);
  private:

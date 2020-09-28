@@ -53,14 +53,16 @@ bool MaximumDataBurstVolume::getMaximumDataBurstVolume(long &value) {
 }
 
 //------------------------------------------------------------------------------
-bool MaximumDataBurstVolume::encode2MaximumDataBurstVolume(Ngap_MaximumDataBurstVolume_t *maximumDataBurstVolume) {
+bool MaximumDataBurstVolume::encode2MaximumDataBurstVolume(
+    Ngap_MaximumDataBurstVolume_t *maximumDataBurstVolume) {
   *maximumDataBurstVolume = maximumdataburstvolume;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool MaximumDataBurstVolume::decodefromMaximumDataBurstVolume(Ngap_MaximumDataBurstVolume_t *maximumDataBurstVolume) {
+bool MaximumDataBurstVolume::decodefromMaximumDataBurstVolume(
+    Ngap_MaximumDataBurstVolume_t *maximumDataBurstVolume) {
   maximumdataburstvolume = *maximumDataBurstVolume;
 
   return true;

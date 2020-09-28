@@ -45,23 +45,33 @@ SecurityIndication::~SecurityIndication() {
 }
 
 //------------------------------------------------------------------------------
-void SecurityIndication::setSecurityIndication(IntegrityProtectionIndication *m_integrityProtectionIndication, ConfidentialityProtectionIndication *m_confidentialityProtectionIndication, MaximumIntegrityProtectedDataRate *m_maximumIntegrityProtectedDataRate) {
+void SecurityIndication::setSecurityIndication(
+    IntegrityProtectionIndication *m_integrityProtectionIndication,
+    ConfidentialityProtectionIndication *m_confidentialityProtectionIndication,
+    MaximumIntegrityProtectedDataRate *m_maximumIntegrityProtectedDataRate) {
   integrityProtectionIndication = m_integrityProtectionIndication;
   confidentialityProtectionIndication = m_confidentialityProtectionIndication;
   maximumIntegrityProtectedDataRate = m_maximumIntegrityProtectedDataRate;
 }
 
 //------------------------------------------------------------------------------
-bool SecurityIndication::encode2SecurityIndication(Ngap_SecurityIndication_t *securityIndication) {
-  if (!integrityProtectionIndication->encode2IntegrityProtectionIndication(securityIndication->integrityProtectionIndication))
+bool SecurityIndication::encode2SecurityIndication(
+    Ngap_SecurityIndication_t *securityIndication) {
+  if (!integrityProtectionIndication->encode2IntegrityProtectionIndication(
+      securityIndication->integrityProtectionIndication))
     return false;
-  if (!confidentialityProtectionIndication->encode2ConfidentialityProtectionIndication(securityIndication->confidentialityProtectionIndication))
+  if (!confidentialityProtectionIndication
+      ->encode2ConfidentialityProtectionIndication(
+      securityIndication->confidentialityProtectionIndication))
     return false;
   if (maximumIntegrityProtectedDataRate) {
-    Ngap_MaximumIntegrityProtectedDataRate_t *maxIPDataRate = (Ngap_MaximumIntegrityProtectedDataRate_t*) calloc(1, sizeof(Ngap_MaximumIntegrityProtectedDataRate_t));
+    Ngap_MaximumIntegrityProtectedDataRate_t *maxIPDataRate =
+        (Ngap_MaximumIntegrityProtectedDataRate_t*) calloc(
+            1, sizeof(Ngap_MaximumIntegrityProtectedDataRate_t));
     if (!maxIPDataRate)
       return false;
-    if (!maximumIntegrityProtectedDataRate->encode2MaximumIntegrityProtectedDataRate(*maxIPDataRate))
+    if (!maximumIntegrityProtectedDataRate
+        ->encode2MaximumIntegrityProtectedDataRate(*maxIPDataRate))
       return false;
     securityIndication->maximumIntegrityProtectedDataRate = maxIPDataRate;
   }
@@ -70,17 +80,24 @@ bool SecurityIndication::encode2SecurityIndication(Ngap_SecurityIndication_t *se
 }
 
 //------------------------------------------------------------------------------
-bool SecurityIndication::decodefromSecurityIndication(Ngap_SecurityIndication_t *securityIndication) {
+bool SecurityIndication::decodefromSecurityIndication(
+    Ngap_SecurityIndication_t *securityIndication) {
   integrityProtectionIndication = new IntegrityProtectionIndication();
-  confidentialityProtectionIndication = new ConfidentialityProtectionIndication();
+  confidentialityProtectionIndication =
+      new ConfidentialityProtectionIndication();
 
-  if (!integrityProtectionIndication->decodefromIntegrityProtectionIndication(securityIndication->integrityProtectionIndication))
+  if (!integrityProtectionIndication->decodefromIntegrityProtectionIndication(
+      securityIndication->integrityProtectionIndication))
     return false;
-  if (!confidentialityProtectionIndication->decodefromConfidentialityProtectionIndication(securityIndication->confidentialityProtectionIndication))
+  if (!confidentialityProtectionIndication
+      ->decodefromConfidentialityProtectionIndication(
+      securityIndication->confidentialityProtectionIndication))
     return false;
   if (securityIndication->maximumIntegrityProtectedDataRate) {
     maximumIntegrityProtectedDataRate = new MaximumIntegrityProtectedDataRate();
-    if (!maximumIntegrityProtectedDataRate->decodefromMaximumIntegrityProtectedDataRate(*securityIndication->maximumIntegrityProtectedDataRate))
+    if (!maximumIntegrityProtectedDataRate
+        ->decodefromMaximumIntegrityProtectedDataRate(
+        *securityIndication->maximumIntegrityProtectedDataRate))
       return false;
   }
 
@@ -88,7 +105,10 @@ bool SecurityIndication::decodefromSecurityIndication(Ngap_SecurityIndication_t 
 }
 
 //------------------------------------------------------------------------------
-void SecurityIndication::getSecurityIndication(IntegrityProtectionIndication *&m_integrityProtectionIndication, ConfidentialityProtectionIndication *&m_confidentialityProtectionIndication, MaximumIntegrityProtectedDataRate *&m_maximumIntegrityProtectedDataRate) {
+void SecurityIndication::getSecurityIndication(
+    IntegrityProtectionIndication *&m_integrityProtectionIndication,
+    ConfidentialityProtectionIndication *&m_confidentialityProtectionIndication,
+    MaximumIntegrityProtectedDataRate *&m_maximumIntegrityProtectedDataRate) {
   m_integrityProtectionIndication = integrityProtectionIndication;
   m_confidentialityProtectionIndication = confidentialityProtectionIndication;
   m_maximumIntegrityProtectedDataRate = maximumIntegrityProtectedDataRate;

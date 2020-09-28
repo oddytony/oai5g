@@ -31,15 +31,8 @@
 
 #include <map>
 #include <shared_mutex>
-#include <pthread.h>
 #include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <unistd.h>
 #include <string.h>
-#include <errno.h>
-#include <error.h>
-#include <inttypes.h>
 #include <mysql/mysql.h>
 
 #include "nas_context.hpp"

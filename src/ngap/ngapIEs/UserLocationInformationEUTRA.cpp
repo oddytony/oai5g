@@ -46,7 +46,8 @@ UserLocationInformationEUTRA::~UserLocationInformationEUTRA() {
 }
 
 //------------------------------------------------------------------------------
-void UserLocationInformationEUTRA::setInformationEUTRA(EUTRA_CGI *m_eUTRA_CGI, TAI *m_tAI) {
+void UserLocationInformationEUTRA::setInformationEUTRA(EUTRA_CGI *m_eUTRA_CGI,
+                                                       TAI *m_tAI) {
   eUTRA_CGI = m_eUTRA_CGI;
   tAI = m_tAI;
 }
@@ -61,7 +62,8 @@ void UserLocationInformationEUTRA::setInformationEUTRA(EUTRA_CGI *m_eUTRA_CGI, T
  }*/
 
 //------------------------------------------------------------------------------
-bool UserLocationInformationEUTRA::encode2UserLocationInformationEUTRA(Ngap_UserLocationInformationEUTRA_t *userLocationInformationEUTRA) {
+bool UserLocationInformationEUTRA::encode2UserLocationInformationEUTRA(
+    Ngap_UserLocationInformationEUTRA_t *userLocationInformationEUTRA) {
   if (!eUTRA_CGI->encode2EUTRA_CGI(&userLocationInformationEUTRA->eUTRA_CGI)) {
     cout << "[Warning] eUTRA_CGI->encode2EUTRA_CGI() error!" << endl;
     return false;
@@ -87,9 +89,11 @@ bool UserLocationInformationEUTRA::encode2UserLocationInformationEUTRA(Ngap_User
 }
 
 //------------------------------------------------------------------------------
-bool UserLocationInformationEUTRA::decodefromUserLocationInformationEUTRA(Ngap_UserLocationInformationEUTRA_t *userLocationInformationEUTRA) {
+bool UserLocationInformationEUTRA::decodefromUserLocationInformationEUTRA(
+    Ngap_UserLocationInformationEUTRA_t *userLocationInformationEUTRA) {
   eUTRA_CGI = new EUTRA_CGI();
-  if (!eUTRA_CGI->decodefromEUTRA_CGI(&userLocationInformationEUTRA->eUTRA_CGI)) {
+  if (!eUTRA_CGI->decodefromEUTRA_CGI(
+      &userLocationInformationEUTRA->eUTRA_CGI)) {
     cout << "[Warning] eUTRA_CGI->decodefromEUTRA_CGI() error!" << endl;
     return false;
   }
@@ -126,7 +130,8 @@ bool UserLocationInformationEUTRA::decodefromUserLocationInformationEUTRA(Ngap_U
  }*/
 
 //------------------------------------------------------------------------------
-void UserLocationInformationEUTRA::getInformationEUTRA(EUTRA_CGI *&m_eUTRA_CGI, TAI *&m_tAI) {
+void UserLocationInformationEUTRA::getInformationEUTRA(EUTRA_CGI *&m_eUTRA_CGI,
+                                                       TAI *&m_tAI) {
   m_eUTRA_CGI = eUTRA_CGI;
   m_tAI = tAI;
 }

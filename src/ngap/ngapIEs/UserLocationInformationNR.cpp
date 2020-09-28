@@ -61,7 +61,8 @@ void UserLocationInformationNR::setInformationNR(NR_CGI *m_nR_CGI, TAI *m_tAI) {
  }*/
 
 //------------------------------------------------------------------------------
-bool UserLocationInformationNR::encode2UserLocationInformationNR(Ngap_UserLocationInformationNR_t *userLocationInformationNR) {
+bool UserLocationInformationNR::encode2UserLocationInformationNR(
+    Ngap_UserLocationInformationNR_t *userLocationInformationNR) {
   if (!nR_CGI->encode2NR_CGI(&userLocationInformationNR->nR_CGI)) {
     cout << "[Warning] nR_CGI->encode2NR_CGI() error!" << endl;
     return false;
@@ -87,7 +88,8 @@ bool UserLocationInformationNR::encode2UserLocationInformationNR(Ngap_UserLocati
 }
 
 //------------------------------------------------------------------------------
-bool UserLocationInformationNR::decodefromUserLocationInformationNR(Ngap_UserLocationInformationNR_t *userLocationInformationNR) {
+bool UserLocationInformationNR::decodefromUserLocationInformationNR(
+    Ngap_UserLocationInformationNR_t *userLocationInformationNR) {
   nR_CGI = new NR_CGI();
   if (!nR_CGI->decodefromNR_CGI(&userLocationInformationNR->nR_CGI)) {
     cout << "[Warning] nR_CGI->decodefromNR_CGI() error!" << endl;
@@ -126,7 +128,8 @@ bool UserLocationInformationNR::decodefromUserLocationInformationNR(Ngap_UserLoc
  }*/
 
 //------------------------------------------------------------------------------
-void UserLocationInformationNR::getInformationNR(NR_CGI *&m_nR_CGI, TAI *&m_tAI) {
+void UserLocationInformationNR::getInformationNR(NR_CGI *&m_nR_CGI,
+                                                 TAI *&m_tAI) {
   m_nR_CGI = nR_CGI;
   m_tAI = tAI;
 }

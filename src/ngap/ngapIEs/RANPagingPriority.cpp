@@ -52,13 +52,15 @@ uint8_t RANPagingPriority::getRANPagingPriority() {
 }
 
 //------------------------------------------------------------------------------
-bool RANPagingPriority::encode2RANPagingPriority(Ngap_RANPagingPriority_t &ranpagingpriority) {
+bool RANPagingPriority::encode2RANPagingPriority(
+    Ngap_RANPagingPriority_t &ranpagingpriority) {
   ranpagingpriority = ranPagingPriority;
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool RANPagingPriority::decodefromRANPagingPriority(Ngap_RANPagingPriority_t &ranpagingpriority) {
+bool RANPagingPriority::decodefromRANPagingPriority(
+    Ngap_RANPagingPriority_t &ranpagingpriority) {
   ranPagingPriority = ranpagingpriority;
   return true;
 }

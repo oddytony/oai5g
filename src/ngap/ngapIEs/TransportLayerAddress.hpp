@@ -45,8 +45,10 @@ class TransportLayerAddress {
   void setTransportLayerAddress(const std::string m_ipaddress);
   bool getTransportLayerAddress(std::string &m_ipaddress);
 
-  bool encode2TransportLayerAddress(Ngap_TransportLayerAddress_t &transportLayerAddress);
-  bool decodefromTransportLayerAddress(Ngap_TransportLayerAddress_t &transportLayerAddress);
+  bool encode2TransportLayerAddress(
+      Ngap_TransportLayerAddress_t &transportLayerAddress);
+  bool decodefromTransportLayerAddress(
+      Ngap_TransportLayerAddress_t &transportLayerAddress);
  private:
   std::string ipaddress;
 };

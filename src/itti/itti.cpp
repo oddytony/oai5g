@@ -36,10 +36,12 @@
 
 extern itti_mw *itti_inst;
 
-static itti_timer null_timer(ITTI_INVALID_TIMER_ID, TASK_NONE, 0xFFFFFFFF, 0xFFFFFFFF, 0, 0);
+static itti_timer null_timer(ITTI_INVALID_TIMER_ID, TASK_NONE, 0xFFFFFFFF,
+                             0xFFFFFFFF, 0, 0);
 
 //------------------------------------------------------------------------------
-void itti_mw::timer_manager_task(const util::thread_sched_params &sched_params) {
+void itti_mw::timer_manager_task(
+    const util::thread_sched_params &sched_params) {
   Logger::itti().info("Starting timer_manager_task");
   sched_params.apply(TASK_ITTI_TIMER, Logger::itti());
   while (true) {
@@ -56,15 +58,22 @@ void itti_mw::timer_manager_task(const util::thread_sched_params &sched_params) 
       lx.unlock();
 
       // check time-out
-      if (itti_inst->current_timer.time_out > std::chrono::system_clock::now()) {
+      if (itti_inst->current_timer.time_out
+          > std::chrono::system_clock::now()) {
         std::unique_lock < std::mutex > lto(itti_inst->m_timeout);
-        auto diff = itti_inst->current_timer.time_out - std::chrono::system_clock::now();
+        auto diff = itti_inst->current_timer.time_out
+            - std::chrono::system_clock::now();
         auto rc = itti_inst->c_timeout.wait_for(lto, diff);
         lto.unlock();
         if (std::cv_status::timeout == rc) {
           // signal time-out
-          itti_msg_timeout mto(TASK_ITTI_TIMER, itti_inst->current_timer.task_id, itti_inst->current_timer.id, itti_inst->current_timer.arg1_user, itti_inst->current_timer.arg2_user);
-          std::shared_ptr<itti_msg_timeout> msgsh = std::make_shared < itti_msg_timeout > (mto);
+          itti_msg_timeout mto(TASK_ITTI_TIMER,
+                               itti_inst->current_timer.task_id,
+                               itti_inst->current_timer.id,
+                               itti_inst->current_timer.arg1_user,
+                               itti_inst->current_timer.arg2_user);
+          std::shared_ptr<itti_msg_timeout> msgsh = std::make_shared
+              < itti_msg_timeout > (mto);
           int ret = itti_inst->send_msg(msgsh);
         } else {
           // other timer required ?
@@ -78,8 +87,12 @@ void itti_mw::timer_manager_task(const util::thread_sched_params &sched_params) 
         }
       } else {
         // signal time-out
-        itti_msg_timeout mto(TASK_ITTI_TIMER, itti_inst->current_timer.task_id, itti_inst->current_timer.id, itti_inst->current_timer.arg1_user, itti_inst->current_timer.arg2_user);
-        std::shared_ptr<itti_msg_timeout> msgsh = std::make_shared < itti_msg_timeout > (mto);
+        itti_msg_timeout mto(TASK_ITTI_TIMER, itti_inst->current_timer.task_id,
+                             itti_inst->current_timer.id,
+                             itti_inst->current_timer.arg1_user,
+                             itti_inst->current_timer.arg2_user);
+        std::shared_ptr<itti_msg_timeout> msgsh = std::make_shared
+            < itti_msg_timeout > (mto);
         itti_inst->send_msg(msgsh);
       }
     }
@@ -133,7 +146,8 @@ unsigned int itti_mw::increment_message_number() {
 }
 
 //------------------------------------------------------------------------------
-int itti_mw::create_task(const task_id_t task_id, void (*start_routine)(void*), void *args_p) {
+int itti_mw::create_task(const task_id_t task_id, void (*start_routine)(void*),
+                         void *args_p) {
   if (nullptr == start_routine) {
     Logger::itti().error("Null start routine for task %d", task_id);
     return RETURNerror ;
@@ -150,7 +164,8 @@ int itti_mw::create_task(const task_id_t task_id, void (*start_routine)(void*), 
         lk.unlock();
       }
       itti_task_ctxts[task_id]->thread = std::thread(start_routine, args_p);
-      while ((itti_task_ctxts[task_id]->task_state != TASK_STATE_READY) && (itti_task_ctxts[task_id]->task_state != TASK_STATE_ENDED))
+      while ((itti_task_ctxts[task_id]->task_state != TASK_STATE_READY)
+          && (itti_task_ctxts[task_id]->task_state != TASK_STATE_ENDED))
         usleep(1000);
       return 0;
     } else {
@@ -172,7 +187,8 @@ int itti_mw::notify_task_ready(const task_id_t task_id) {
       return RETURNok ;
     }
     itti_task_ctxts[task_id]->m_state.unlock();
-    Logger::itti().error("Notify task ready, bad state %d", itti_task_ctxts[task_id]->task_state);
+    Logger::itti().error("Notify task ready, bad state %d",
+                         itti_task_ctxts[task_id]->task_state);
   } else {
     Logger::itti().error("Notify task ready, task not starting %d", task_id);
   }
@@ -182,21 +198,29 @@ int itti_mw::notify_task_ready(const task_id_t task_id) {
 //------------------------------------------------------------------------------
 int itti_mw::send_msg(std::shared_ptr<itti_msg> message) {
 
-  if ((TASK_FIRST <= message->destination) && (TASK_MAX > message->destination)) {
+  if ((TASK_FIRST <= message->destination)
+      && (TASK_MAX > message->destination)) {
 
     if (itti_task_ctxts[message->destination]) {
-      if (itti_task_ctxts[message->destination]->task_state == TASK_STATE_READY) {
-        std::unique_lock < std::mutex > l(itti_task_ctxts[message->destination]->m_queue);
+      if (itti_task_ctxts[message->destination]->task_state
+          == TASK_STATE_READY) {
+        std::unique_lock < std::mutex
+            > l(itti_task_ctxts[message->destination]->m_queue);
         //res =
         itti_task_ctxts[message->destination]->msg_queue.push(message);
         itti_task_ctxts[message->destination]->c_queue.notify_one();
         return RETURNok ;
-      } else if (itti_task_ctxts[message->destination]->task_state == TASK_STATE_ENDED) {
-        Logger::itti().warn("Unicast message number %lu can not be sent from %d to %d, ended destination task!", message->msg_num, message->origin, message->destination);
+      } else if (itti_task_ctxts[message->destination]->task_state
+          == TASK_STATE_ENDED) {
+        Logger::itti().warn(
+            "Unicast message number %lu can not be sent from %d to %d, ended destination task!",
+            message->msg_num, message->origin, message->destination);
         return RETURNerror ;
       }
     } else {
-      Logger::itti().warn("Unicast message number %lu can not be sent from %d to %d, not started destination task!", message->msg_num, message->origin, message->destination);
+      Logger::itti().warn(
+          "Unicast message number %lu can not be sent from %d to %d, not started destination task!",
+          message->msg_num, message->origin, message->destination);
     }
   } else if (message->destination == TASK_ALL) {
     return send_broadcast_msg(message);
@@ -215,9 +239,14 @@ int itti_mw::send_broadcast_msg(std::shared_ptr<itti_msg> message) {
           itti_task_ctxts[t]->msg_queue.push(message);
           itti_task_ctxts[t]->c_queue.notify_one();
         } else if (itti_task_ctxts[t]->task_state == TASK_STATE_ENDED) {
-          Logger::itti().warn("Broadcast message number %lu can not be sent from %d to %d, ended destination task!", message->msg_num, message->origin, t);
+          Logger::itti().warn(
+              "Broadcast message number %lu can not be sent from %d to %d, ended destination task!",
+              message->msg_num, message->origin, t);
         } else {
-          Logger::itti().warn("Broadcast message number %lu can not be sent from %d to %d, unknown state %d !", message->msg_num, message->origin, t, itti_task_ctxts[t]->task_state);
+          Logger::itti().warn(
+              "Broadcast message number %lu can not be sent from %d to %d, unknown state %d !",
+              message->msg_num, message->origin, t,
+              itti_task_ctxts[t]->task_state);
         }
       }
     }
@@ -231,7 +260,8 @@ int itti_mw::send_terminate_msg(task_id_t src_task_id) {
 
   itti_msg_terminate msg(src_task_id, TASK_ALL);
   terminate = true;
-  std::shared_ptr<itti_msg_terminate> smsg = std::make_shared < itti_msg_terminate > (msg);
+  std::shared_ptr<itti_msg_terminate> smsg = std::make_shared
+      < itti_msg_terminate > (msg);
   int ret = itti_inst->send_broadcast_msg(smsg);
 
   return ret;
@@ -244,7 +274,8 @@ std::shared_ptr<itti_msg> itti_mw::receive_msg(task_id_t task_id) {
       while (itti_task_ctxts[task_id]->msg_queue.empty()) {
         itti_task_ctxts[task_id]->c_queue.wait(lk);
       }
-      std::shared_ptr<itti_msg> msg = itti_task_ctxts[task_id]->msg_queue.front();
+      std::shared_ptr<itti_msg> msg =
+          itti_task_ctxts[task_id]->msg_queue.front();
       itti_task_ctxts[task_id]->msg_queue.pop();
       return msg;
     }
@@ -259,7 +290,8 @@ std::shared_ptr<itti_msg> itti_mw::poll_msg(task_id_t task_id) {
     if (itti_task_ctxts[task_id]) {
       std::lock_guard < std::mutex > lk(itti_task_ctxts[task_id]->m_queue);
       if (!itti_task_ctxts[task_id]->msg_queue.empty()) {
-        std::shared_ptr<itti_msg> msg = itti_task_ctxts[task_id]->msg_queue.front();
+        std::shared_ptr<itti_msg> msg = itti_task_ctxts[task_id]->msg_queue
+            .front();
         itti_task_ctxts[task_id]->msg_queue.pop();
         return msg;
       }
@@ -286,10 +318,13 @@ void itti_mw::wait_tasks_end(void) {
 }
 
 //------------------------------------------------------------------------------
-timer_id_t itti_mw::timer_setup(uint32_t interval_sec, uint32_t interval_us, task_id_t task_id, uint64_t arg1_user, uint64_t arg2_user) {
+timer_id_t itti_mw::timer_setup(uint32_t interval_sec, uint32_t interval_us,
+                                task_id_t task_id, uint64_t arg1_user,
+                                uint64_t arg2_user) {
   // Not sending to task timer
   if ((TASK_FIRST < task_id) && (TASK_MAX > task_id)) {
-    itti_timer t(increment_timer_id(), task_id, interval_sec, interval_us, arg1_user, arg2_user);
+    itti_timer t(increment_timer_id(), task_id, interval_sec, interval_us,
+                 arg1_user, arg2_user);
     timer_id_t id = t.id;
     std::unique_lock < std::mutex > l(m_timers);
     timers.insert(t);

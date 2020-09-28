@@ -40,11 +40,15 @@ class AdditionalQosFlowInformation {
   AdditionalQosFlowInformation();
   virtual ~AdditionalQosFlowInformation();
 
-  void setAdditionalQosFlowInformation(e_Ngap_AdditionalQosFlowInformation value);
-  bool getAdditionalQosFlowInformation(e_Ngap_AdditionalQosFlowInformation &value);
+  void setAdditionalQosFlowInformation(
+      e_Ngap_AdditionalQosFlowInformation value);
+  bool getAdditionalQosFlowInformation(
+      e_Ngap_AdditionalQosFlowInformation &value);
 
-  bool encode2AdditionalQosFlowInformation(Ngap_AdditionalQosFlowInformation_t*);
-  bool decodefromAdditionalQosFlowInformation(Ngap_AdditionalQosFlowInformation_t*);
+  bool encode2AdditionalQosFlowInformation(
+      Ngap_AdditionalQosFlowInformation_t*);
+  bool decodefromAdditionalQosFlowInformation(
+      Ngap_AdditionalQosFlowInformation_t*);
  private:
   long additional;
 };

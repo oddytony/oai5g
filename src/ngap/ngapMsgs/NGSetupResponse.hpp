@@ -51,10 +51,10 @@ class NGSetupResponseMsg {
   NGSetupResponseMsg();
   virtual ~NGSetupResponseMsg();
 
-  //Erternal interfaces
+  //External interfaces
   //Encapsulation
   void setMessageType();  //Initialize the PDU and populate the MessageType;
-  void setAMFName(const std::string name);  //���IE
+  void setAMFName(const std::string name);
   void setGUAMIList(std::vector<struct GuamiItem_s> list);
   void setRelativeAmfCapacity(long capacity);
   void setPlmnSupportList(std::vector<PlmnSliceSupport_t> list);

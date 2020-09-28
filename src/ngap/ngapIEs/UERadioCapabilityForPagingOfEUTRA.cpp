@@ -41,23 +41,27 @@ UERadioCapabilityForPagingOfEUTRA::~UERadioCapabilityForPagingOfEUTRA() {
 }
 
 //------------------------------------------------------------------------------
-bool UERadioCapabilityForPagingOfEUTRA::encode2UERadioCapabilityForPagingOfEUTRA(Ngap_UERadioCapabilityForPagingOfEUTRA_t *ueRadioCapabilityForPagingOfEUTRA) {
+bool UERadioCapabilityForPagingOfEUTRA::encode2UERadioCapabilityForPagingOfEUTRA(
+    Ngap_UERadioCapabilityForPagingOfEUTRA_t *ueRadioCapabilityForPagingOfEUTRA) {
   int ret;
-  ret = OCTET_STRING_fromBuf(ueRadioCapabilityForPagingOfEUTRA, EUTRAbuffer, sizeofEUTRAbuffer);
+  ret = OCTET_STRING_fromBuf(ueRadioCapabilityForPagingOfEUTRA, EUTRAbuffer,
+                             sizeofEUTRAbuffer);
   if (ret != 0)
     return false;
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool UERadioCapabilityForPagingOfEUTRA::decodefromUERadioCapabilityForPagingOfEUTRA(Ngap_UERadioCapabilityForPagingOfEUTRA_t *ueRadioCapabilityForPagingOfEUTRA) {
+bool UERadioCapabilityForPagingOfEUTRA::decodefromUERadioCapabilityForPagingOfEUTRA(
+    Ngap_UERadioCapabilityForPagingOfEUTRA_t *ueRadioCapabilityForPagingOfEUTRA) {
   EUTRAbuffer = (char*) ueRadioCapabilityForPagingOfEUTRA->buf;
   sizeofEUTRAbuffer = ueRadioCapabilityForPagingOfEUTRA->size;
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool UERadioCapabilityForPagingOfEUTRA::getUERadioCapabilityForPagingOfEUTRA(uint8_t *&buffer, size_t &size) {
+bool UERadioCapabilityForPagingOfEUTRA::getUERadioCapabilityForPagingOfEUTRA(
+    uint8_t *&buffer, size_t &size) {
   buffer = (uint8_t*) EUTRAbuffer;
   size = sizeofEUTRAbuffer;
   if (!EUTRAbuffer)
@@ -69,7 +73,8 @@ bool UERadioCapabilityForPagingOfEUTRA::getUERadioCapabilityForPagingOfEUTRA(uin
 }
 
 //------------------------------------------------------------------------------
-void UERadioCapabilityForPagingOfEUTRA::setUERadioCapabilityForPagingOfEUTRA(uint8_t *buffer, size_t size) {
+void UERadioCapabilityForPagingOfEUTRA::setUERadioCapabilityForPagingOfEUTRA(
+    uint8_t *buffer, size_t size) {
   EUTRAbuffer = (char*) buffer;
   sizeofEUTRAbuffer = size;
 }

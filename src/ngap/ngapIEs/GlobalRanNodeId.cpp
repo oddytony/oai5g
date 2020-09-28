@@ -43,7 +43,8 @@ GlobalRanNodeId::~GlobalRanNodeId() {
 }
 
 //------------------------------------------------------------------------------
-void GlobalRanNodeId::setChoiceOfRanNodeId(Ngap_GlobalRANNodeID_PR m_idPresent) {
+void GlobalRanNodeId::setChoiceOfRanNodeId(
+    Ngap_GlobalRANNodeID_PR m_idPresent) {
   idPresent = m_idPresent;
 }
 
@@ -63,12 +64,14 @@ void GlobalRanNodeId::getGlobalgNBID(GlobalgNBId *&ptr) {
 }
 
 //------------------------------------------------------------------------------
-bool GlobalRanNodeId::encode2GlobalRANNodeID(Ngap_GlobalRANNodeID_t *globalRANNodeID) {
+bool GlobalRanNodeId::encode2GlobalRANNodeID(
+    Ngap_GlobalRANNodeID_t *globalRANNodeID) {
   globalRANNodeID->present = idPresent;
 
   switch (idPresent) {
     case Ngap_GlobalRANNodeID_PR_globalGNB_ID: {
-      Ngap_GlobalGNB_ID_t *globalGNB_ID = (Ngap_GlobalGNB_ID_t*) calloc(1, sizeof(struct Ngap_GlobalGNB_ID));
+      Ngap_GlobalGNB_ID_t *globalGNB_ID = (Ngap_GlobalGNB_ID_t*) calloc(
+          1, sizeof(struct Ngap_GlobalGNB_ID));
       if (!globalGNB_ID)
         return false;
       if (!globalgNBId->encode2GlobalgNBId(globalGNB_ID))
@@ -92,12 +95,14 @@ bool GlobalRanNodeId::encode2GlobalRANNodeID(Ngap_GlobalRANNodeID_t *globalRANNo
 }
 
 //------------------------------------------------------------------------------
-bool GlobalRanNodeId::decodefromGlobalRANNodeID(Ngap_GlobalRANNodeID_t *globalRANNodeID) {
+bool GlobalRanNodeId::decodefromGlobalRANNodeID(
+    Ngap_GlobalRANNodeID_t *globalRANNodeID) {
   idPresent = globalRANNodeID->present;
   switch (idPresent) {
     case Ngap_GlobalRANNodeID_PR_globalGNB_ID: {
       globalgNBId = new GlobalgNBId();
-      if (!globalgNBId->decodefromGlobalgNBId(globalRANNodeID->choice.globalGNB_ID))
+      if (!globalgNBId->decodefromGlobalgNBId(
+          globalRANNodeID->choice.globalGNB_ID))
         return false;
       break;
     }

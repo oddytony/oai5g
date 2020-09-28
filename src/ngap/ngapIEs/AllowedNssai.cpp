@@ -71,7 +71,8 @@ bool AllowedNSSAI::getAllowedNSSAI(S_NSSAI *&m_snssai, int &m_numofsnssai) {
 bool AllowedNSSAI::encode2AllowedNSSAI(Ngap_AllowedNSSAI_t *allowedNssaiList) {
   cout << "AllowedNSSAI::numOfSnssai	" << numofSnssai << endl;
   for (int i = 0; i < numofSnssai; i++) {
-    Ngap_AllowedNSSAI_Item_t *allowednssaiitem = (Ngap_AllowedNSSAI_Item_t*) calloc(1, sizeof(Ngap_AllowedNSSAI_Item_t));
+    Ngap_AllowedNSSAI_Item_t *allowednssaiitem =
+        (Ngap_AllowedNSSAI_Item_t*) calloc(1, sizeof(Ngap_AllowedNSSAI_Item_t));
     if (!allowednssaiitem)
       return false;
     if (!snssai[i].encode2S_NSSAI(&allowednssaiitem->s_NSSAI))
@@ -83,7 +84,8 @@ bool AllowedNSSAI::encode2AllowedNSSAI(Ngap_AllowedNSSAI_t *allowedNssaiList) {
 }
 
 //------------------------------------------------------------------------------
-bool AllowedNSSAI::decodefromAllowedNSSAI(Ngap_AllowedNSSAI_t *allowedNssaiList) {
+bool AllowedNSSAI::decodefromAllowedNSSAI(
+    Ngap_AllowedNSSAI_t *allowedNssaiList) {
   numofSnssai = allowedNssaiList->list.count;
   snssai = new S_NSSAI[numofSnssai]();
   for (int i = 0; i < numofSnssai; i++) {

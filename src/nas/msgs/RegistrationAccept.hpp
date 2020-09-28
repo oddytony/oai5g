@@ -41,22 +41,32 @@ class RegistrationAccept {
   int decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len);
   void setHeader(uint8_t security_header_type);
   void setSOR_Transparent_Container(uint8_t header, uint8_t *value);
-  void set_5GS_Registration_Result(bool emergency, bool nssaa, bool sms, uint8_t value);
+  void set_5GS_Registration_Result(bool emergency, bool nssaa, bool sms,
+                                   uint8_t value);
   /*** belongs to _5GSMobilityIdentity**/
-  void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc, const string routingInd, uint8_t protection_sch_id, const string msin);
-  void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc, const string routingInd, uint8_t protection_sch_id, uint8_t hnpki, const string msin);
-  void set5G_GUTI(const string mcc, const string mnc, const string amfRegionId, const string amfSetId, const string amfPointer, const uint32_t tmsi);
+  void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc,
+                                const string routingInd,
+                                uint8_t protection_sch_id, const string msin);
+  void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc,
+                                const string routingInd,
+                                uint8_t protection_sch_id, uint8_t hnpki,
+                                const string msin);
+  void set5G_GUTI(const string mcc, const string mnc, const string amfRegionId,
+                  const string amfSetId, const string amfPointer,
+                  const uint32_t tmsi);
   void setIMEI_IMEISV();
   void set5G_S_TMSI();
   /*** belongs to _5GSMobilityIdentity**/
-  void setEquivalent_PLMNs(uint8_t MNC_MCC1, uint8_t MNC_MCC2, uint8_t MNC_MCC3);
+  void setEquivalent_PLMNs(uint8_t MNC_MCC1, uint8_t MNC_MCC2,
+                           uint8_t MNC_MCC3);
   void setALLOWED_NSSAI(std::vector<struct SNSSAI_s> nssai);
   void setRejected_NSSAI(uint8_t cause, uint8_t value);
   void setCONFIGURED_NSSAI(std::vector<struct SNSSAI_s> nssai);
   void set_5GS_Network_Feature_Support(uint8_t value, uint8_t value2);
   void setPDU_session_status(uint16_t value);
   void setPDU_session_reactivation_result(uint16_t value);
-  void setPDU_session_reactivation_result_error_cause(uint8_t session_id, uint8_t value);
+  void setPDU_session_reactivation_result_error_cause(uint8_t session_id,
+                                                      uint8_t value);
   void setMICO_Indication(bool sprti, bool raai);
   void setNetwork_Slicing_Indication(bool dcni, bool nssci);
   void setT3512_Value(uint8_t unit, uint8_t value);

@@ -47,17 +47,24 @@ class PduSessionResourceSetupResponseTransferIE {
   PduSessionResourceSetupResponseTransferIE();
   virtual ~PduSessionResourceSetupResponseTransferIE();
 
-  void setDLQoSFlowPerTNLInformation(GtpTunnel_t uptlinfo, std::vector<AssociatedQosFlow_t> list);
-  void setAdditionalDLQoSFlowPerTNLInformation(GtpTunnel_t uptlinfo, std::vector<AssociatedQosFlow_t> list);
-  void setSecurityResult(e_Ngap_IntegrityProtectionResult integrityProtectionResult, e_Ngap_ConfidentialityProtectionResult confidentialityProtectionResult);
+  void setDLQoSFlowPerTNLInformation(GtpTunnel_t uptlinfo,
+                                     std::vector<AssociatedQosFlow_t> list);
+  void setAdditionalDLQoSFlowPerTNLInformation(
+      GtpTunnel_t uptlinfo, std::vector<AssociatedQosFlow_t> list);
+  void setSecurityResult(
+      e_Ngap_IntegrityProtectionResult integrityProtectionResult,
+      e_Ngap_ConfidentialityProtectionResult confidentialityProtectionResult);
   //caus待续
 
   int encode2buffer(uint8_t *buf, int buf_size);
   //Decapsulation
   bool decodefromIE(uint8_t *buf, int buf_size);
-  bool getDLQoSFlowPerTNLInformation(GtpTunnel_t &uptlinfo, std::vector<AssociatedQosFlow_t> &list);
-  bool getAdditionalDLQoSFlowPerTNLInformation(GtpTunnel_t &uptlinfo, std::vector<AssociatedQosFlow_t> &list);
-  bool getSecurityResult(long &integrityProtectionResult, long &confidentialityProtectionResult);
+  bool getDLQoSFlowPerTNLInformation(GtpTunnel_t &uptlinfo,
+                                     std::vector<AssociatedQosFlow_t> &list);
+  bool getAdditionalDLQoSFlowPerTNLInformation(
+      GtpTunnel_t &uptlinfo, std::vector<AssociatedQosFlow_t> &list);
+  bool getSecurityResult(long &integrityProtectionResult,
+                         long &confidentialityProtectionResult);
   //caus待续
 
  private:

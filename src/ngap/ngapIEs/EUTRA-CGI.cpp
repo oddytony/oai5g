@@ -43,7 +43,8 @@ EUTRA_CGI::~EUTRA_CGI() {
 }
 
 //------------------------------------------------------------------------------
-void EUTRA_CGI::setEUTRA_CGI(PlmnId *m_plmnId, EUTRACellIdentity *m_eUTRACellIdentity) {
+void EUTRA_CGI::setEUTRA_CGI(PlmnId *m_plmnId,
+                             EUTRACellIdentity *m_eUTRACellIdentity) {
   plmnId = m_plmnId;
   eUTRACellIdentity = m_eUTRACellIdentity;
 }
@@ -71,7 +72,8 @@ bool EUTRA_CGI::decodefromEUTRA_CGI(Ngap_EUTRA_CGI_t *eutra_cgi) {
 }
 
 //------------------------------------------------------------------------------
-void EUTRA_CGI::getEUTRA_CGI(PlmnId *&m_plmnId, EUTRACellIdentity *&m_eUTRACellIdentity) {
+void EUTRA_CGI::getEUTRA_CGI(PlmnId *&m_plmnId,
+                             EUTRACellIdentity *&m_eUTRACellIdentity) {
   m_plmnId = plmnId;
   m_eUTRACellIdentity = eUTRACellIdentity;
 }
