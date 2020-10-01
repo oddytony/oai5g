@@ -429,6 +429,7 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
     //TODO:
   }
 
+  uint8_t number_parts = 0;
   mime_parser parser = { };
   std::string body;
 
@@ -514,11 +515,7 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
         //TODO: send context response error
         return;
       }
-      if (!(multipart_parser(response, json_data_response, n1sm, n2sm))) {
-        Logger::amf_n11().error(
-            "Could not get N1/N2 content from the response");
-        //TODO:
-      }
+      number_parts = multipart_parser(response, json_data_response, n1sm, n2sm);
     } else {
       //store location of the created context
       std::string header_response = *httpHeaderData.get();
@@ -535,10 +532,14 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
           psc.get()->smf_context_location = location;
         }
       }
+
+      if (response.size() > 0) {
+        number_parts = multipart_parser(response, json_data_response, n1sm, n2sm);
+      }
     }
 
     nlohmann::json response_data = { };
-    bstring n1sm_hex;
+    bstring n1sm_hex, n2sm_hex;
 
     if (!is_response_ok) {
       try {
@@ -561,6 +562,39 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
       if (!cause.compare("DNN_DENIED"))
         handle_post_sm_context_response_error(httpCode, cause, n1sm_hex, supi,
                                               pdu_session_id);
+    } else {
+      //If N1,N2 exist then forward to UE/gNB
+
+      itti_n1n2_message_transfer_request *itti_msg =
+          new itti_n1n2_message_transfer_request(TASK_AMF_N11, TASK_AMF_APP);
+      if (n1sm.size() > 0) {
+        msg_str_2_msg_hex(n1sm.substr(0, n1sm.length() - 2), n1sm_hex);
+        print_buffer("amf_n11", "Get response n1sm:",
+                     (uint8_t*) bdata(n1sm_hex), blength(n1sm_hex));
+
+        itti_msg->n1sm = n1sm_hex;
+        itti_msg->is_n1sm_set = true;
+
+       } else if (n2sm.size() > 0) {
+         msg_str_2_msg_hex(n2sm.substr(0, n2sm.length() - 2), n2sm_hex);
+                print_buffer("amf_n11", "Get response n1sm:",
+                             (uint8_t*) bdata(n2sm_hex), blength(n2sm_hex));
+         itti_msg->n2sm = n2sm_hex;
+         itti_msg->is_n2sm_set = true;
+       }
+
+      //itti_msg->supi = supi;
+      itti_msg->pdu_session_id = pdu_session_id;
+      std::shared_ptr<itti_n1n2_message_transfer_request> i = std::shared_ptr
+          < itti_n1n2_message_transfer_request > (itti_msg);
+      int ret = itti_inst->send_msg(i);
+      if (0 != ret) {
+        Logger::amf_n1().error(
+            "Could not send ITTI message %s to task TASK_AMF_APP",
+            i->get_msg_name());
+      }
+
+
     }
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
