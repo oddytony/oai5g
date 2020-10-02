@@ -21,7 +21,7 @@
 
 /*! \file amf_n11.cpp
  \brief
- \author  Keliang DU, BUPT, Tien-Thinh NGUYEN, EURECOM
+ \author Keliang DU (BUPT), Tien-Thinh NGUYEN (EURECOM)
  \date 2020
  \email: contact@openairinterface.org
  */
@@ -420,7 +420,11 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
                                std::string supi, uint8_t pdu_session_id) {
   Logger::amf_n11().debug("Call SMF service: %s", remoteUri.c_str());
 
+  uint8_t number_parts = 0;
+  mime_parser parser = { };
+  std::string body;
   std::shared_ptr<pdu_session_context> psc;
+
   if (is_supi_to_pdu_ctx(supi)) {
     psc = supi_to_pdu_ctx(supi);
   } else {
@@ -428,10 +432,6 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
                            supi.c_str());
     //TODO:
   }
-
-  uint8_t number_parts = 0;
-  mime_parser parser = { };
-  std::string body;
 
   if ((n1SmMsg.size() > 0) and (n2SmMsg.size() > 0)) {
     //prepare the body content for Curl
@@ -494,10 +494,12 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
     std::string json_data_response = "";
     std::string n1sm = "";
     std::string n2sm = "";
-    bool is_response_ok = true;
+    nlohmann::json response_data = { };
+    bstring n1sm_hex, n2sm_hex;
+
     Logger::amf_n11().debug("Get response with HTTP code (%d)", httpCode);
-    //TODO: remove hardcoded HTTP Code
-    if (httpCode == 0) {
+    if (static_cast<http_response_codes_e>(httpCode)
+        == http_response_codes_e::HTTP_RESPONSE_CODE_0) {
       Logger::amf_n11().error("Cannot get response when calling %s",
                               remoteUri.c_str());
       //free curl before returning
@@ -506,8 +508,17 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
       return;
     }
 
-    if (httpCode != 200 && httpCode != 201 && httpCode != 204) {
-      is_response_ok = false;
+    if (response.size() > 0) {
+      number_parts = multipart_parser(response, json_data_response, n1sm, n2sm);
+    }
+
+    if ((static_cast<http_response_codes_e>(httpCode)
+        != http_response_codes_e::HTTP_RESPONSE_CODE_200_OK)
+        && (static_cast<http_response_codes_e>(httpCode)
+            != http_response_codes_e::HTTP_RESPONSE_CODE_201_CREATED)
+        && (static_cast<http_response_codes_e>(httpCode)
+            != http_response_codes_e::HTTP_RESPONSE_CODE_204_UPDATED)) {
+      //ERROR
       if (response.size() < 1) {
         Logger::amf_n11().error("There's no content in the response");
         curl_slist_free_all(headers);
@@ -515,9 +526,31 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
         //TODO: send context response error
         return;
       }
-      number_parts = multipart_parser(response, json_data_response, n1sm, n2sm);
-    } else {
-      //store location of the created context
+
+      try {
+        response_data = nlohmann::json::parse(json_data_response);
+      } catch (nlohmann::json::exception &e) {
+        Logger::amf_n11().warn("Could not get Json content from the response");
+        //Set the default Cause
+        response_data["error"]["cause"] = "504 Gateway Timeout";
+      }
+
+      Logger::amf_n11().debug("Get response with jsonData: %s",
+                              json_data_response.c_str());
+      msg_str_2_msg_hex(n1sm.substr(0, n1sm.length() - 2), n1sm_hex);  //TODO: pdu session establishment reject bugs from SMF
+      print_buffer("amf_n11", "Get response with n1sm:",
+                   (uint8_t*) bdata(n1sm_hex), blength(n1sm_hex));
+
+      std::string cause = response_data["error"]["cause"];
+      Logger::amf_n11().warn(
+          "Call Network Function services failure (with cause %s)",
+          cause.c_str());
+      if (!cause.compare("DNN_DENIED"))
+        handle_post_sm_context_response_error(httpCode,
+                                              cause,
+                                              n1sm_hex, supi, pdu_session_id);
+    } else { //Response with success code
+      //Store location of the created context in case of PDU Session Establishment
       std::string header_response = *httpHeaderData.get();
       std::string CRLF = "\r\n";
       std::size_t location_pos = header_response.find("Location");
@@ -533,69 +566,48 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
         }
       }
 
-      if (response.size() > 0) {
-        number_parts = multipart_parser(response, json_data_response, n1sm, n2sm);
+      //Transfer N1/N2 to gNB/UE if available
+      if (number_parts > 1) {
+        try {
+          response_data = nlohmann::json::parse(json_data_response);
+        } catch (nlohmann::json::exception &e) {
+          Logger::amf_n11().warn(
+              "Could not get Json content from the response");
+          //TODO:
+        }
+
+        itti_n1n2_message_transfer_request *itti_msg =
+            new itti_n1n2_message_transfer_request(TASK_AMF_N11, TASK_AMF_APP);
+
+        if (n1sm.size() > 0) {
+          msg_str_2_msg_hex(n1sm, n1sm_hex);
+          print_buffer("amf_n11", "Get response n1sm:",
+                       (uint8_t*) bdata(n1sm_hex), blength(n1sm_hex));
+          itti_msg->n1sm = n1sm_hex;
+          itti_msg->is_n1sm_set = true;
+
+        } else if (n2sm.size() > 0) {
+          msg_str_2_msg_hex(n2sm, n2sm_hex);
+          print_buffer("amf_n11", "Get response n1sm:",
+                       (uint8_t*) bdata(n2sm_hex), blength(n2sm_hex));
+          itti_msg->n2sm = n2sm_hex;
+          itti_msg->is_n2sm_set = true;
+          itti_msg->n2sm_info_type = response_data["n2SmInfoType"];
+        }
+
+        itti_msg->supi = supi;
+        itti_msg->pdu_session_id = pdu_session_id;
+        std::shared_ptr<itti_n1n2_message_transfer_request> i = std::shared_ptr
+            < itti_n1n2_message_transfer_request > (itti_msg);
+        int ret = itti_inst->send_msg(i);
+        if (0 != ret) {
+          Logger::amf_n1().error(
+              "Could not send ITTI message %s to task TASK_AMF_APP",
+              i->get_msg_name());
+        }
       }
     }
 
-    nlohmann::json response_data = { };
-    bstring n1sm_hex, n2sm_hex;
-
-    if (!is_response_ok) {
-      try {
-        response_data = nlohmann::json::parse(json_data_response);
-      } catch (nlohmann::json::exception &e) {
-        Logger::amf_n11().warn("Could not get Json content from the response");
-        //Set the default Cause
-        response_data["error"]["cause"] = "504 Gateway Timeout";
-      }
-
-      Logger::amf_n11().debug("Get response with jsonData: %s",
-                              json_data_response.c_str());
-      msg_str_2_msg_hex(n1sm.substr(0, n1sm.length() - 2), n1sm_hex);  //pdu session establishment reject bugs from SMF
-      print_buffer("amf_n11", "Get response with n1sm:",
-                   (uint8_t*) bdata(n1sm_hex), blength(n1sm_hex));
-
-      std::string cause = response_data["error"]["cause"];
-      Logger::amf_n11().error("Call Network Function services failure");
-      Logger::amf_n11().debug("Cause value: %s", cause.c_str());
-      if (!cause.compare("DNN_DENIED"))
-        handle_post_sm_context_response_error(httpCode, cause, n1sm_hex, supi,
-                                              pdu_session_id);
-    } else {
-      //If N1,N2 exist then forward to UE/gNB
-
-      itti_n1n2_message_transfer_request *itti_msg =
-          new itti_n1n2_message_transfer_request(TASK_AMF_N11, TASK_AMF_APP);
-      if (n1sm.size() > 0) {
-        msg_str_2_msg_hex(n1sm.substr(0, n1sm.length() - 2), n1sm_hex);
-        print_buffer("amf_n11", "Get response n1sm:",
-                     (uint8_t*) bdata(n1sm_hex), blength(n1sm_hex));
-
-        itti_msg->n1sm = n1sm_hex;
-        itti_msg->is_n1sm_set = true;
-
-       } else if (n2sm.size() > 0) {
-         msg_str_2_msg_hex(n2sm.substr(0, n2sm.length() - 2), n2sm_hex);
-                print_buffer("amf_n11", "Get response n1sm:",
-                             (uint8_t*) bdata(n2sm_hex), blength(n2sm_hex));
-         itti_msg->n2sm = n2sm_hex;
-         itti_msg->is_n2sm_set = true;
-       }
-
-      //itti_msg->supi = supi;
-      itti_msg->pdu_session_id = pdu_session_id;
-      std::shared_ptr<itti_n1n2_message_transfer_request> i = std::shared_ptr
-          < itti_n1n2_message_transfer_request > (itti_msg);
-      int ret = itti_inst->send_msg(i);
-      if (0 != ret) {
-        Logger::amf_n1().error(
-            "Could not send ITTI message %s to task TASK_AMF_APP",
-            i->get_msg_name());
-      }
-
-
-    }
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
   }

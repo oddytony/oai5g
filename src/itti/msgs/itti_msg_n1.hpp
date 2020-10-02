@@ -59,6 +59,7 @@ class itti_downlink_nas_transfer : public itti_msg_n1 {
   bstring n2sm;
   bool is_n2sm_set;
   uint8_t pdu_session_id;
+  std::string n2sm_info_type;
 };
 
 #endif

@@ -21,7 +21,7 @@
 
 /*! \file amf_n1.cpp
  \brief
- \author  Keliang DU, BUPT, Tien-Thinh NGUYEN, EURECOM
+ \author Keliang DU (BUPT), Tien-Thinh NGUYEN (EURECOM)
  \date 2020
  \email: contact@openairinterface.org
  */
@@ -109,10 +109,11 @@ amf_n1::amf_n1() {
   Logger::amf_n1().startup("Started");
   Logger::amf_n1().debug("Construct amf_n1 successfully");
 }
+
+//------------------------------------------------------------------------------
 amf_n1::~amf_n1() {
 }
 
-// itti msg handlers
 //------------------------------------------------------------------------------
 void amf_n1::handle_itti_message(itti_downlink_nas_transfer &itti_msg) {
   long amf_ue_ngap_id = itti_msg.amf_ue_ngap_id;
@@ -128,25 +129,46 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer &itti_msg) {
   nas_secu_ctx *secu = nc.get()->security_ctx;
   bstring protected_nas;
   encode_nas_message_protected(secu, false, INTEGRITY_PROTECTED_AND_CIPHERED,
-                               NAS_MESSAGE_DOWNLINK,
+  NAS_MESSAGE_DOWNLINK,
                                (uint8_t*) bdata(itti_msg.dl_nas),
                                blength(itti_msg.dl_nas), protected_nas);
   if (itti_msg.is_n2sm_set) {
-    itti_pdu_session_resource_setup_request *psrsr =
-        new itti_pdu_session_resource_setup_request(TASK_AMF_N1, TASK_AMF_N2);
-    psrsr->nas = protected_nas;
-    psrsr->n2sm = itti_msg.n2sm;
-    psrsr->amf_ue_ngap_id = amf_ue_ngap_id;
-    psrsr->ran_ue_ngap_id = ran_ue_ngap_id;
-    psrsr->pdu_session_id = itti_msg.pdu_session_id;
-    std::shared_ptr<itti_pdu_session_resource_setup_request> i = std::shared_ptr
-        < itti_pdu_session_resource_setup_request > (psrsr);
-    int ret = itti_inst->send_msg(i);
-    if (0 != ret) {
-      Logger::amf_n1().error(
-          "Could not send ITTI message %s to task TASK_AMF_N2",
-          i->get_msg_name());
+    if (itti_msg.n2sm_info_type.compare("PDU_RES_REL_CMD") == 0) {  //PDU SESSION RESOURCE RELEASE COMMAND
+      itti_pdu_session_resource_release_command *release_command =
+          new itti_pdu_session_resource_release_command(TASK_AMF_N1,
+                                                        TASK_AMF_N2);
+      release_command->nas = protected_nas;
+      release_command->n2sm = itti_msg.n2sm;
+      release_command->amf_ue_ngap_id = amf_ue_ngap_id;
+      release_command->ran_ue_ngap_id = ran_ue_ngap_id;
+      release_command->pdu_session_id = itti_msg.pdu_session_id;
+      std::shared_ptr < itti_pdu_session_resource_release_command > i =
+          std::shared_ptr < itti_pdu_session_resource_release_command
+              > (release_command);
+      int ret = itti_inst->send_msg(i);
+      if (0 != ret) {
+        Logger::amf_n1().error(
+            "Could not send ITTI message %s to task TASK_AMF_N2",
+            i->get_msg_name());
+      }
+    } else {  //PDU SESSION RESOURCE SETUP_REQUEST
+      itti_pdu_session_resource_setup_request *psrsr =
+          new itti_pdu_session_resource_setup_request(TASK_AMF_N1, TASK_AMF_N2);
+      psrsr->nas = protected_nas;
+      psrsr->n2sm = itti_msg.n2sm;
+      psrsr->amf_ue_ngap_id = amf_ue_ngap_id;
+      psrsr->ran_ue_ngap_id = ran_ue_ngap_id;
+      psrsr->pdu_session_id = itti_msg.pdu_session_id;
+      std::shared_ptr<itti_pdu_session_resource_setup_request> i =
+          std::shared_ptr < itti_pdu_session_resource_setup_request > (psrsr);
+      int ret = itti_inst->send_msg(i);
+      if (0 != ret) {
+        Logger::amf_n1().error(
+            "Could not send ITTI message %s to task TASK_AMF_N2",
+            i->get_msg_name());
+      }
     }
+
   } else {
     itti_dl_nas_transport *dnt = new itti_dl_nas_transport(TASK_AMF_N1,
                                                            TASK_AMF_N2);
@@ -171,7 +193,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind &nas_data_ind) {
   std::string nas_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id)
       + ":amfid_" + to_string(amf_ue_ngap_id);  // key for nas_context, option 1
   std::string snn;
-  if (nas_data_ind.mnc.length() == 2)
+  if (nas_data_ind.mnc.length() == 2) //TODO: remove hardcoded value
     snn = "5G:mnc0" + nas_data_ind.mnc + ".mcc" + nas_data_ind.mcc
         + ".3gppnetwork.org";
   else
@@ -469,6 +491,7 @@ bool amf_n1::check_security_header_type(SecurityHeaderType &type,
     return false;
   octet = *(buffer + decoded_size);
   decoded_size++;
+  //TODO: remove hardcoded value
   switch (octet & 0x0f) {
     case 0x0:
       type = PlainNasMsg;
@@ -503,8 +526,8 @@ void amf_n1::service_request_handle(bool isNasSig,
   serApt->setHeader(PLAIN_5GS_MSG);
   serApt->setPDU_session_status(0x2000);
   serApt->setPDU_session_reactivation_result(0x0000);
-  uint8_t buffer[100];
-  int encoded_size = serApt->encode2buffer(buffer, 100);
+  uint8_t buffer[BUFFER_SIZE_256];
+  int encoded_size = serApt->encode2buffer(buffer, BUFFER_SIZE_256);
   bstring protectedNas;
   encode_nas_message_protected(secu, false, INTEGRITY_PROTECTED_AND_CIPHERED,
                                NAS_MESSAGE_DOWNLINK, buffer, encoded_size,
@@ -796,8 +819,8 @@ void amf_n1::response_registration_reject_msg(uint8_t cause_value,
   RegistrationReject *registrationRej = new RegistrationReject();
   registrationRej->setHeader(PLAIN_5GS_MSG);
   registrationRej->set_5GMM_Cause(cause_value);
-  uint8_t buffer[1024] = { 0 };
-  int encoded_size = registrationRej->encode2buffer(buffer, 1024);
+  uint8_t buffer[BUFFER_SIZE_1024] = { 0 };
+  int encoded_size = registrationRej->encode2buffer(buffer, BUFFER_SIZE_1024);
   //dump_nas_message(buffer, encoded_size);
   print_buffer("amf_n1", "Registration-Reject message buffer", buffer,
                encoded_size);
@@ -1485,8 +1508,8 @@ void amf_n1::security_mode_complete_handle(uint32_t ran_ue_ngap_id,
   //TODO: remove hardcoded values
   regAccept->set_5GS_Network_Feature_Support(0x00, 0x00);
   regAccept->setT3512_Value(0x5, 0x1e);
-  uint8_t buffer[1024] = { 0 };
-  int encoded_size = regAccept->encode2buffer(buffer, 1024);
+  uint8_t buffer[BUFFER_SIZE_1024] = { 0 };
+  int encoded_size = regAccept->encode2buffer(buffer, BUFFER_SIZE_1024);
   print_buffer("amf_n1", "Registration-Accept message buffer", buffer,
                encoded_size);
   if (!encoded_size) {
@@ -1772,8 +1795,8 @@ void amf_n1::ue_initiate_de_registration_handle(uint32_t ran_ue_ngap_id,
   DeregistrationAccept *deregAccept = new DeregistrationAccept();
   deregAccept->setHeader(PLAIN_5GS_MSG);
 
-  uint8_t buffer[512] = { 0 };
-  int encoded_size = deregAccept->encode2buffer(buffer, 1024);
+  uint8_t buffer[BUFFER_SIZE_512] = { 0 };
+  int encoded_size = deregAccept->encode2buffer(buffer, BUFFER_SIZE_512);
 
   print_buffer("amf_n1", "De-registration Accept message buffer", buffer,
                encoded_size);

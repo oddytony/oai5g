@@ -135,6 +135,26 @@ class itti_pdu_session_resource_setup_request : public itti_msg_n2 {
   uint8_t pdu_session_id;
 };
 
+class itti_pdu_session_resource_release_command : public itti_msg_n2 {
+ public:
+  itti_pdu_session_resource_release_command(const task_id_t origin,
+                                          const task_id_t destination)
+      :
+      itti_msg_n2(PDU_SESSION_RESOURCE_RELEASE_COMMAND, origin, destination) {
+  }
+  itti_pdu_session_resource_release_command(
+      const itti_pdu_session_resource_release_command &i)
+      :
+      itti_msg_n2(i) {
+  }
+  bstring nas;
+  bstring n2sm;
+  uint32_t ran_ue_ngap_id;
+  long amf_ue_ngap_id;
+  uint8_t pdu_session_id;
+};
+
+
 class itti_ue_context_release_request : public itti_msg_n2 {
  public:
   itti_ue_context_release_request(const task_id_t origin,

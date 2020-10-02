@@ -66,6 +66,7 @@ class itti_n1n2_message_transfer_request : public itti_msg_amf_app {
   bool is_n2sm_set;
   bool is_n1sm_set;
   uint8_t pdu_session_id;
+  std::string n2sm_info_type;
   //other parameters
 
 };

@@ -21,7 +21,7 @@
 
 /*! \file amf_config.cpp
  \brief
- \author  Keliang DU, BUPT
+ \author Keliang DU (BUPT), Tien-Thinh NGUYEN (EURECOM)
  \date 2020
  \email: contact@openairinterface.org
  */
