@@ -110,6 +110,7 @@ typedef enum Ngap_InitiatingMessage__value_PR {
 	Ngap_InitiatingMessage__value_PR_HandoverRequired,
 	Ngap_InitiatingMessage__value_PR_HandoverRequest,
 	Ngap_InitiatingMessage__value_PR_InitialContextSetupRequest,
+	Ngap_InitiatingMessage__value_PR_HandoverRequestAcknowledge,
 	Ngap_InitiatingMessage__value_PR_NGReset,
 	Ngap_InitiatingMessage__value_PR_NGSetupRequest,
 	Ngap_InitiatingMessage__value_PR_PathSwitchRequest,
@@ -170,6 +171,7 @@ typedef struct Ngap_InitiatingMessage {
 			Ngap_HandoverCancel_t	 HandoverCancel;
 			Ngap_HandoverRequired_t	 HandoverRequired;
 			Ngap_HandoverRequest_t	 HandoverRequest;
+			Ngap_HandoverRequestAcknowledge_t HandoverRequestAcknowledge;
 			Ngap_InitialContextSetupRequest_t	 InitialContextSetupRequest;
 			Ngap_NGReset_t	 NGReset;
 			Ngap_NGSetupRequest_t	 NGSetupRequest;
