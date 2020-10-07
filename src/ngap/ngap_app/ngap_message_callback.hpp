@@ -36,6 +36,7 @@
 #include "itti.hpp"
 #include "NGSetupRequest.hpp"
 #include "PduSessionResourceSetupResponse.hpp"
+#include "PduSessionResourceReleaseResponse.hpp"
 #include "InitialContextSetupResponse.hpp"
 
 using namespace sctp;
@@ -141,6 +142,7 @@ int ngap_amf_handle_initial_context_setup_response(
         "Decode PduSessionResourceSetupResponseList IE error or this IE is not available");
     return 0;
   }
+
   uint8_t transferIe[500];
   memcpy(transferIe, list[0].pduSessionResourceSetupResponseTransfer.buf,
          list[0].pduSessionResourceSetupResponseTransfer.size);
@@ -153,6 +155,8 @@ int ngap_amf_handle_initial_context_setup_response(
       new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
   itti_msg->pdu_session_id = list[0].pduSessionId;
   itti_msg->n2sm = n2sm;
+  itti_msg->is_n2sm_set = true;
+  itti_msg->n2sm_info_type = "PDU_RES_SETUP_RSP";
   std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i = std::shared_ptr
       < itti_nsmf_pdusession_update_sm_context > (itti_msg);
   int ret = itti_inst->send_msg(i);
@@ -232,6 +236,55 @@ int ngap_amf_handle_ue_context_release_complete(
   return 0;
 }
 
+int ngap_amf_handle_pdu_session_resource_release_response(
+    const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
+    struct Ngap_NGAP_PDU *message_p){
+  Logger::ngap().debug("Handle PDU Session Resource Setup Release Response");
+
+  PduSessionResourceReleaseResponseMsg *pduresp =
+      new PduSessionResourceReleaseResponseMsg();
+  if (!pduresp->decodefrompdu(message_p)) {
+    Logger::ngap().error(
+        "Decoding PduSessionResourceReleaseResponseMsg message error");
+    return -1;
+  }
+  //TODO: process User Location Information if this IE is available
+
+  //Transfer pduSessionResourceReleaseResponseTransfer to SMF
+  std::vector<PDUSessionResourceReleasedItem_t> list;
+  if (!pduresp->getPduSessionResourceReleasedList(list)) {
+    Logger::ngap().error(
+        "Decoding PduSessionResourceReleaseResponseMsg getPduSessionResourceReleasedList IE  error");
+    return -1;
+  }
+  //TODO: add the full list
+  uint8_t transferIe[500];
+  memcpy(transferIe, list[0].pduSessionResourceReleaseResponseTransfer.buf,
+         list[0].pduSessionResourceReleaseResponseTransfer.size);
+  bstring n2sm = blk2bstr(transferIe,
+                          list[0].pduSessionResourceReleaseResponseTransfer.size);
+  Logger::ngap().debug(
+      "Sending itti PDUSessionResourceReleaseResponse to TASK_AMF_N11");
+
+  itti_nsmf_pdusession_update_sm_context *itti_msg =
+      new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
+  itti_msg->pdu_session_id = list[0].pduSessionId;
+  itti_msg->n2sm = n2sm;
+  itti_msg->is_n2sm_set = true;
+  itti_msg->n2sm_info_type = "PDU_RES_REL_RSP";
+
+  std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i = std::shared_ptr
+      < itti_nsmf_pdusession_update_sm_context > (itti_msg);
+  int ret = itti_inst->send_msg(i);
+  if (0 != ret) {
+    Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N11",
+                         i->get_msg_name());
+  }
+  return 0;
+
+
+}
+
 //------------------------------------------------------------------------------
 int ngap_amf_handle_pdu_session_resource_setup_response(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
@@ -262,6 +315,9 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
       new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
   itti_msg->pdu_session_id = list[0].pduSessionId;
   itti_msg->n2sm = n2sm;
+  itti_msg->is_n2sm_set = true;
+  itti_msg->n2sm_info_type = "PDU_RES_SETUP_RSP";
+
   std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i = std::shared_ptr
       < itti_nsmf_pdusession_update_sm_context > (itti_msg);
   int ret = itti_inst->send_msg(i);
@@ -301,7 +357,7 @@ ngap_message_decoded_callback messages_callback[][3] = { { 0, 0, 0 }, /*0 AMFCon
     { 0, 0, 0 },  //{ngap_amf_handle_path_switch_request,0,0}, /*PathSwitchRequest*
     { 0, 0, 0 }, /*PDUSessionResourceModify*/
     { 0, 0, 0 }, /*PDUSessionResourceModifyIndication*/
-    { 0, 0, 0 }, /*PDUSessionResourceRelease*/
+    { 0, ngap_amf_handle_pdu_session_resource_release_response, 0 }, /*PDUSessionResourceRelease*/
     { 0, ngap_amf_handle_pdu_session_resource_setup_response, 0 }, /*PDUSessionResourceSetup*/
     { 0, 0, 0 }, /*PDUSessionResourceNotify*/
     { 0, 0, 0 }, /*PrivateMessage*/

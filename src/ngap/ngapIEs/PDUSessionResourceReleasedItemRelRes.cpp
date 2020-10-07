@@ -26,58 +26,58 @@
  \email: contact@openairinterface.org
  */
 
-#include "PDUSessionResourceToReleaseItemRelCmd.hpp"
+#include "PDUSessionResourceReleasedItemRelRes.hpp"
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PDUSessionResourceToReleaseItemRelCmd::PDUSessionResourceToReleaseItemRelCmd() {
+PDUSessionResourceReleasedItemRelRes::PDUSessionResourceReleasedItemRelRes() {
   pDUSessionID = NULL;
 }
 
 //------------------------------------------------------------------------------
-PDUSessionResourceToReleaseItemRelCmd::~PDUSessionResourceToReleaseItemRelCmd() {
+PDUSessionResourceReleasedItemRelRes::~PDUSessionResourceReleasedItemRelRes() {
 }
 
 //------------------------------------------------------------------------------
-void PDUSessionResourceToReleaseItemRelCmd::setPDUSessionResourceToReleaseItemRelCmd(
+void PDUSessionResourceReleasedItemRelRes::setPDUSessionResourceReleasedItemRelRes(
     PDUSessionID *m_pDUSessionID,
-    OCTET_STRING_t m_pDUSessionResourceReleaseCommandTransfer) {
+    OCTET_STRING_t m_pDUSessionResourceReleaseResponseTransfer) {
   pDUSessionID = m_pDUSessionID;
-  pDUSessionResourceReleaseCommandTransfer =
-      m_pDUSessionResourceReleaseCommandTransfer;
+  pDUSessionResourceReleaseResponseTransfer =
+      m_pDUSessionResourceReleaseResponseTransfer;
 }
 
 //------------------------------------------------------------------------------
-void PDUSessionResourceToReleaseItemRelCmd::getPDUSessionResourceToReleaseItemRelCmd(
+void PDUSessionResourceReleasedItemRelRes::getPDUSessionResourceReleasedItemRelRes(
     PDUSessionID *&m_pDUSessionID,
-    OCTET_STRING_t &m_pDUSessionResourceReleaseCommandTransfer) {
+    OCTET_STRING_t &m_pDUSessionResourceReleaseResponseTransfer) {
   m_pDUSessionID = pDUSessionID;
-  m_pDUSessionResourceReleaseCommandTransfer = pDUSessionResourceReleaseCommandTransfer;
+  m_pDUSessionResourceReleaseResponseTransfer = pDUSessionResourceReleaseResponseTransfer;
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceToReleaseItemRelCmd::encode2PDUSessionResourceToReleaseItemRelCmd(
-    Ngap_PDUSessionResourceToReleaseItemRelCmd_t *pduSessionResourceToReleaseItemRelCmd) {
+bool PDUSessionResourceReleasedItemRelRes::encode2PDUSessionResourceReleasedItemRelRes(
+    Ngap_PDUSessionResourceReleasedItemRelRes_t *pduSessionResourceReleasedItemRelRes) {
   if (!pDUSessionID->encode2PDUSessionID(
-      pduSessionResourceToReleaseItemRelCmd->pDUSessionID))
+      pduSessionResourceReleasedItemRelRes->pDUSessionID))
     return false;
 
-  pduSessionResourceToReleaseItemRelCmd
-      ->pDUSessionResourceReleaseCommandTransfer =
-      pDUSessionResourceReleaseCommandTransfer;
+  pduSessionResourceReleasedItemRelRes
+      ->pDUSessionResourceReleaseResponseTransfer =
+          pDUSessionResourceReleaseResponseTransfer;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceToReleaseItemRelCmd::decodefromPDUSessionResourceToReleaseItemRelCmd(
-    Ngap_PDUSessionResourceToReleaseItemRelCmd_t *pduSessionResourceToReleaseItemRelCmd) {
+bool PDUSessionResourceReleasedItemRelRes::decodefromPDUSessionResourceReleasedItemRelRes(
+    Ngap_PDUSessionResourceReleasedItemRelRes_t *pduSessionResourceReleasedItemRelRes) {
   pDUSessionID = new PDUSessionID();
 
-  pDUSessionResourceReleaseCommandTransfer =
-      pduSessionResourceToReleaseItemRelCmd
-          ->pDUSessionResourceReleaseCommandTransfer;
+  pDUSessionResourceReleaseResponseTransfer =
+      pduSessionResourceReleasedItemRelRes
+          ->pDUSessionResourceReleaseResponseTransfer;
 
   return true;
 }

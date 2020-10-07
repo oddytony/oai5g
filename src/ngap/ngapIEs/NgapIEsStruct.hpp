@@ -108,6 +108,13 @@ typedef struct {
   OCTET_STRING_t pduSessionResourceReleaseCommandTransfer;
 } PDUSessionResourceToReleaseItem_t;
 
+//PDU Session Resource Release Item (3GPP TS 38.413 V16.0.0 (2019-12))
+typedef struct {
+  uint8_t pduSessionId;
+  OCTET_STRING_t pduSessionResourceReleaseResponseTransfer;
+} PDUSessionResourceReleasedItem_t;
+
+
 typedef struct {
   std::string ip_address;
   uint32_t gtp_teid;

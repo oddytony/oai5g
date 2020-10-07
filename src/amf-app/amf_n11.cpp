@@ -197,7 +197,8 @@ void amf_n11::handle_itti_message(
   Logger::amf_n11().debug("SMF URI: %s", remote_uri.c_str());
 
   nlohmann::json pdu_session_update_request = { };
-  pdu_session_update_request["n2SmInfoType"] = "PDU_RES_SETUP_RSP";
+  //if (itti_msg.is_n2sm_set){
+  pdu_session_update_request["n2SmInfoType"] = itti_msg.n2sm_info_type;
   pdu_session_update_request["n2SmInfo"]["contentId"] = "n2msg";
   std::string json_part = pdu_session_update_request.dump();
   std::string n2SmMsg;
@@ -586,7 +587,8 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
           itti_msg->n1sm = n1sm_hex;
           itti_msg->is_n1sm_set = true;
 
-        } else if (n2sm.size() > 0) {
+        }
+        if (n2sm.size() > 0) {
           msg_str_2_msg_hex(n2sm, n2sm_hex);
           print_buffer("amf_n11", "Get response n1sm:",
                        (uint8_t*) bdata(n2sm_hex), blength(n2sm_hex));

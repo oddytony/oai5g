@@ -69,15 +69,24 @@ class itti_nsmf_pdusession_update_sm_context : public itti_msg_n11 {
                                          const task_id_t destination)
       :
       itti_msg_n11(NSMF_PDU_SESSION_UPDATE_SM_CTX, origin, destination) {
+    is_n2sm_set = false;
   }
   itti_nsmf_pdusession_update_sm_context(
       const itti_nsmf_pdusession_update_sm_context &i)
       :
       itti_msg_n11(i) {
+    pdu_session_id = i.pdu_session_id;
+    n2sm = i.n2sm;
+    is_n2sm_set = i.is_n2sm_set;
+    n2sm_info_type = i.n2sm_info_type;
   }
+
  public:
   uint8_t pdu_session_id;
   bstring n2sm;
+  bool is_n2sm_set;
+  std::string n2sm_info_type;
+
 };
 
 #endif
