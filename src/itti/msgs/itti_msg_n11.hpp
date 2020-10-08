@@ -46,23 +46,6 @@ class itti_smf_services_consumer : public itti_msg_n11 {
   plmn_t plmn;
 };
 
-class itti_pdu_session_resource_setup_response : public itti_msg_n11 {
- public:
-  itti_pdu_session_resource_setup_response(const task_id_t origin,
-                                           const task_id_t destination)
-      :
-      itti_msg_n11(PDU_SESS_RES_SET_RESP, origin, destination) {
-  }
-  itti_pdu_session_resource_setup_response(
-      const itti_pdu_session_resource_setup_response &i)
-      :
-      itti_msg_n11(i) {
-  }
- public:
-  uint8_t pdu_session_id;
-  bstring n2sm;
-};
-
 class itti_nsmf_pdusession_update_sm_context : public itti_msg_n11 {
  public:
   itti_nsmf_pdusession_update_sm_context(const task_id_t origin,
