@@ -282,7 +282,6 @@ int ngap_amf_handle_pdu_session_resource_release_response(
   }
   return 0;
 
-
 }
 
 //------------------------------------------------------------------------------

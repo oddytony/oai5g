@@ -55,8 +55,6 @@ using namespace web;
 using namespace web::http;
 // Common features like URIs.
 using namespace web::http::client;
-// Common HTTP functionality
-
 using namespace config;
 using namespace amf_application;
 extern itti_mw *itti_inst;
@@ -121,14 +119,10 @@ void amf_n11_task(void*) {
         amf_n11_inst->handle_itti_message(ref(*m));
       }
         break;
-      case PDU_SESS_RES_SET_RESP: {
+      default: {
         Logger::amf_n1().info(
-            "Receive PDU Session Resource Setup Response, handling ...");
-        itti_pdu_session_resource_setup_response *m =
-            dynamic_cast<itti_pdu_session_resource_setup_response*>(msg);
-        amf_n11_inst->handle_itti_message(ref(*m));
+            "Receive unknown message type %d", msg->msg_type);
       }
-        break;
     }
   } while (true);
 }
@@ -145,12 +139,6 @@ amf_n11::amf_n11() {
 
 //------------------------------------------------------------------------------
 amf_n11::~amf_n11() {
-}
-
-// itti message handlers
-//------------------------------------------------------------------------------
-void amf_n11::handle_itti_message(
-    itti_pdu_session_resource_setup_response &itti_msg) {
 }
 
 //------------------------------------------------------------------------------
