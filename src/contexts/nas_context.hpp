@@ -37,6 +37,27 @@
 #include "security_def.hpp"
 #include "authentication_algorithms_with_5gaka.hpp"
 
+typedef enum {
+  _5GMM_STATE_MIN = 0,
+  _5GMM_STATE_INVALID = _5GMM_STATE_MIN,
+  _5GMM_DEREGISTERED,
+  _5GMM_REGISTERED,
+  _5GMM_DEREGISTERED_INITIATED,
+  _5GMM_COMMON_PROCEDURE_INITIATED,
+  _5GMM_STATE_MAX
+} _5gmm_state_t;
+
+
+static const std::vector<std::string> _5gmm_state_e2str =  {
+  "_5GMM_STATE_INVALID",
+  "_5GMM_DEREGISTERED",
+  "_5GMM_REGISTERED",
+  "_5GMM_DEREGISTERED_INITIATED",
+  "_5GMM_COMMON_PROCEDURE_INITIATED",
+  "_5GMM_STATE_MAX"
+};
+
+
 class nas_context {
  public:
   nas_context();
@@ -46,6 +67,7 @@ class nas_context {
   long amf_ue_ngap_id;
   uint32_t ran_ue_ngap_id;
   std::string nas_status;
+  _5gmm_state_t _5gmm_state;
 
   /************ parameters from Registration request *************/
   uint8_t registration_type :3;

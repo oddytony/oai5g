@@ -203,12 +203,11 @@ void amf_app::handle_itti_message(
   itti_downlink_nas_transfer *dl_msg = new itti_downlink_nas_transfer(
       TASK_AMF_APP, TASK_AMF_N1);
   dl_msg->dl_nas = dl_nas;
-  if (!itti_msg.is_n2sm_set) {
-    dl_msg->is_n2sm_set = false;
-  } else {
+  if (itti_msg.is_n2sm_set) {
     dl_msg->n2sm = itti_msg.n2sm;
     dl_msg->pdu_session_id = itti_msg.pdu_session_id;
     dl_msg->is_n2sm_set = true;
+    dl_msg->n2sm_info_type = itti_msg.n2sm_info_type;
   }
   dl_msg->amf_ue_ngap_id = amf_n1_inst->supi2amfId.at(itti_msg.supi);
   dl_msg->ran_ue_ngap_id = amf_n1_inst->supi2ranId.at(itti_msg.supi);

@@ -19,60 +19,33 @@
  *      contact@openairinterface.org
  */
 
-/*! \file amf_statistics.hpp
+/*! \file
  \brief
- \author  Keliang DU, BUPT
+ \author
  \date 2020
  \email: contact@openairinterface.org
  */
 
-#ifndef _STATISTICS_H_
-#define _STATISTICS_H_
+#ifndef _DEREGISTRATION_ACCEPT_H_
+#define _DEREGISTRATION_ACCEPT_H_
 
-#include <vector>
-#include <string>
+#include "nas_ie_header.hpp"
 
-#include "amf.hpp"
-#include "ngap_app.hpp"
+namespace nas {
 
-typedef struct {
-  uint32_t gnb_id;
-  //TODO: list of PLMNs
-  std::vector<SupportedItem_t> plmn_list;
-  std::string mcc;
-  std::string mnc;
-  std::string gnb_name;
-  uint32_t tac;
-  //long nrCellId;
-} gnb_infos;
-
-typedef struct ue_info_s {
-  std::string connStatus;
-  std::string registerStatus;
-  uint32_t ranid;
-  long amfid;
-  std::string imsi;
-  std::string guti;
-  std::string mcc;
-  std::string mnc;
-  uint32_t cellId;
-} ue_info_t;
-
-class statistics {
+class DeregistrationAccept {
  public:
-  void display();
-  statistics();
-  ~statistics();
-  void update_ue_info(const ue_info_t &ue_info);
-  void update_5gmm_state(const std::string &imsi, const std::string &state);
- public:
-  uint32_t gNB_connected;
-  uint32_t UE_connected;
-  uint32_t UE_registred;
-  //uint32_t        system_pdu_sessions;
-  std::vector<gnb_infos> gnbs;
-  std::map<std::string, ue_info_t> ue_infos;
+  DeregistrationAccept();
+  ~DeregistrationAccept();
+  int encode2buffer(uint8_t *buf, int len);
+  int decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len);
+  void setHeader(uint8_t security_header_type);
 
+ public:
+  NasMmPlainHeader *plain_header;
 };
 
+}
+
 #endif
+

@@ -46,38 +46,30 @@ class itti_smf_services_consumer : public itti_msg_n11 {
   plmn_t plmn;
 };
 
-class itti_pdu_session_resource_setup_response : public itti_msg_n11 {
- public:
-  itti_pdu_session_resource_setup_response(const task_id_t origin,
-                                           const task_id_t destination)
-      :
-      itti_msg_n11(PDU_SESS_RES_SET_RESP, origin, destination) {
-  }
-  itti_pdu_session_resource_setup_response(
-      const itti_pdu_session_resource_setup_response &i)
-      :
-      itti_msg_n11(i) {
-  }
- public:
-  uint8_t pdu_session_id;
-  bstring n2sm;
-};
-
 class itti_nsmf_pdusession_update_sm_context : public itti_msg_n11 {
  public:
   itti_nsmf_pdusession_update_sm_context(const task_id_t origin,
                                          const task_id_t destination)
       :
       itti_msg_n11(NSMF_PDU_SESSION_UPDATE_SM_CTX, origin, destination) {
+    is_n2sm_set = false;
   }
   itti_nsmf_pdusession_update_sm_context(
       const itti_nsmf_pdusession_update_sm_context &i)
       :
       itti_msg_n11(i) {
+    pdu_session_id = i.pdu_session_id;
+    n2sm = i.n2sm;
+    is_n2sm_set = i.is_n2sm_set;
+    n2sm_info_type = i.n2sm_info_type;
   }
+
  public:
   uint8_t pdu_session_id;
   bstring n2sm;
+  bool is_n2sm_set;
+  std::string n2sm_info_type;
+
 };
 
 #endif

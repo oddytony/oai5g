@@ -19,60 +19,53 @@
  *      contact@openairinterface.org
  */
 
-/*! \file amf_statistics.hpp
+/*! \file
  \brief
- \author  Keliang DU, BUPT
+ \author
  \date 2020
  \email: contact@openairinterface.org
  */
 
-#ifndef _STATISTICS_H_
-#define _STATISTICS_H_
+#ifndef _5GS_DEREGISTRATION_TYPE_H_
+#define _5GS_DEREGISTRATION_TYPE_H_
 
-#include <vector>
-#include <string>
+#include <stdint.h>
 
-#include "amf.hpp"
-#include "ngap_app.hpp"
+namespace nas {
+typedef struct _5gs_deregistration_type_s {
+  uint8_t iei :4;
+  uint8_t switch_off :1;
+  uint8_t dereg_required :1;
+  uint8_t access_type :2;
+} _5gs_deregistration_type_t;
 
-typedef struct {
-  uint32_t gnb_id;
-  //TODO: list of PLMNs
-  std::vector<SupportedItem_t> plmn_list;
-  std::string mcc;
-  std::string mnc;
-  std::string gnb_name;
-  uint32_t tac;
-  //long nrCellId;
-} gnb_infos;
-
-typedef struct ue_info_s {
-  std::string connStatus;
-  std::string registerStatus;
-  uint32_t ranid;
-  long amfid;
-  std::string imsi;
-  std::string guti;
-  std::string mcc;
-  std::string mnc;
-  uint32_t cellId;
-} ue_info_t;
-
-class statistics {
+class _5GSDeregistrationType {
  public:
-  void display();
-  statistics();
-  ~statistics();
-  void update_ue_info(const ue_info_t &ue_info);
-  void update_5gmm_state(const std::string &imsi, const std::string &state);
+  _5GSDeregistrationType();
+  _5GSDeregistrationType(uint8_t type);
+  _5GSDeregistrationType(_5gs_deregistration_type_t type);
+  ~_5GSDeregistrationType();
+  int decodefrombuffer(uint8_t *buf, int len);
+  int encode2buffer(uint8_t *buf, int len);
+
+  void set(_5gs_deregistration_type_t type);
+  void get(_5gs_deregistration_type_t &type);
+  void set(uint8_t type);
+  void get(uint8_t &type);
  public:
-  uint32_t gNB_connected;
-  uint32_t UE_connected;
-  uint32_t UE_registred;
-  //uint32_t        system_pdu_sessions;
-  std::vector<gnb_infos> gnbs;
-  std::map<std::string, ue_info_t> ue_infos;
+
+  union {
+    struct {
+      uint8_t iei :4;
+      uint8_t switch_off :1;
+      uint8_t dereg_required :1;
+      uint8_t access_type :2;
+    } bf;
+    uint8_t b;
+  } u1;
 
 };
+
+}
 
 #endif

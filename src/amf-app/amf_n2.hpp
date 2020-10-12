@@ -21,7 +21,7 @@
 
 /*! \file amf_n2.hpp
  \brief
- \author  Keliang DU, BUPT
+ \author Keliang DU (BUPT), Tien-Thinh NGUYEN (EURECOM)
  \date 2020
  \email: contact@openairinterface.org
  */
@@ -47,6 +47,7 @@ class amf_n2 : public ngap::ngap_app {
   void handle_itti_message(itti_dl_nas_transport &dl_nas_transport);
   void handle_itti_message(itti_initial_context_setup_request &itti_msg);
   void handle_itti_message(itti_pdu_session_resource_setup_request &itti_msg);
+  void handle_itti_message(itti_pdu_session_resource_release_command &itti_msg);
   void handle_itti_message(itti_ue_context_release_request &itti_msg);
   void handle_itti_message(itti_ue_radio_capability_indication &itti_msg);
   bool verifyPlmn(std::vector<SupportedItem_t> list);

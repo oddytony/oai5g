@@ -91,7 +91,7 @@ typedef struct Guami_s {
 
 typedef struct {
   std::string sst;
-  std::string sd;  //可选
+  std::string sd;
 } S_Nssai;
 
 typedef struct {
@@ -101,6 +101,19 @@ typedef struct {
   S_Nssai s_nssai;
   OCTET_STRING_t pduSessionResourceSetupRequestTransfer;
 } PDUSessionResourceSetupRequestItem_t;
+
+//section 9.2.1.3 PDU Session Resource Release Command (3GPP TS 38.413 V16.0.0 (2019-12))
+typedef struct {
+  uint8_t pduSessionId;
+  OCTET_STRING_t pduSessionResourceReleaseCommandTransfer;
+} PDUSessionResourceToReleaseItem_t;
+
+//PDU Session Resource Release Item (3GPP TS 38.413 V16.0.0 (2019-12))
+typedef struct {
+  uint8_t pduSessionId;
+  OCTET_STRING_t pduSessionResourceReleaseResponseTransfer;
+} PDUSessionResourceReleasedItem_t;
+
 
 typedef struct {
   std::string ip_address;

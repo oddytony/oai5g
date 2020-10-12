@@ -21,7 +21,7 @@
 
 /*! \file amf_statistics.cpp
  \brief
- \author  Keliang DU, BUPT
+ \author Keliang DU (BUPT), Tien-Thinh NGUYEN (EURECOM)
  \date 2020
  \email: contact@openairinterface.org
  */
@@ -65,16 +65,17 @@ void statistics::display() {
   Logger::amf_app().info(
       "|----------------------------------------------------UEs' information--------------------------------------------|");
   Logger::amf_app().info(
-      "|  Index | Connection state | Registration state |      IMSI        |     GUTI      | RAN UE NGAP ID | AMF UE ID |");
-  for (int i = 0; i < ues.size(); i++) {
-    Logger::amf_app().info(
-        "|    %d   |  %s    |    %s    | %s  |  %s  |       %d        |     %d     | ",
-        i + 1, ues[i].connStatus.c_str(), ues[i].registerStatus.c_str(),
-        ues[i].imsi.c_str(), ues[i].guti.c_str(), ues[i].ranid, ues[i].amfid);
-    //Logger::amf_app().info("Current ran_ue_ngap_id[%d]; Current amf_ue_ngap_id[%d]", ues[i].ranid, ues[i].amfid);
-    Logger::amf_app().info("Location [NrCgi][PLMN(%s), cellID(%d)]",
-                           (ues[i].mcc + ues[i].mnc).c_str(), ues[i].cellId);
-    Logger::amf_app().info("");
+      "| Index |      5GMM state      |      IMSI        |     GUTI      | RAN UE NGAP ID | AMF UE ID |  PLMN   |Cell ID|");
+
+  int i = 0;
+  for (auto const &ue : ue_infos) {
+    Logger::amf_app().info("|%7d|%22s|%18s|%15s|%16d|%11d|%9s|%7d|", i + 1,
+                           ue.second.registerStatus.c_str(),
+                           ue.second.imsi.c_str(), ue.second.guti.c_str(),
+                           ue.second.ranid, ue.second.amfid,
+                           (ue.second.mcc + ue.second.mnc).c_str(),
+                           ue.second.cellId);
+    i++;
   }
   Logger::amf_app().info(
       "|----------------------------------------------------------------------------------------------------------------|");
@@ -86,6 +87,40 @@ statistics::statistics() {
   gNB_connected = 0;
   UE_connected = 0;
   UE_registred = 0;
+}
+
+//------------------------------------------------------------------------------
+void statistics::update_ue_info(const ue_info_t &ue_info) {
+  if (!(ue_info.imsi.size() > 0)) {
+    Logger::amf_app().warn("Update UE Info with invalid IMSI");
+  }
+
+  if (ue_infos.count(ue_info.imsi) > 0) {
+    ue_infos.erase(ue_info.imsi);
+    ue_infos.insert(std::pair<std::string, ue_info_t>(ue_info.imsi, ue_info));
+    Logger::amf_app().debug("Update UE Info (IMSI %s) success",
+                            ue_info.imsi.c_str());
+  } else {
+    ue_infos.insert(std::pair<std::string, ue_info_t>(ue_info.imsi, ue_info));
+    Logger::amf_app().debug("Add UE Info (IMSI %s) success",
+                            ue_info.imsi.c_str());
+  }
+}
+
+//------------------------------------------------------------------------------
+void statistics::update_5gmm_state(const std::string &imsi,
+                                   const std::string &state) {
+  if (ue_infos.count(imsi) > 0) {
+    ue_info_t ue_info = ue_infos.at(imsi);
+    ue_info.registerStatus = state;
+    ue_infos.erase(ue_info.imsi);
+    ue_infos.insert(std::pair<std::string, ue_info_t>(imsi, ue_info));
+    Logger::amf_app().debug("Update UE State (IMSI %s, State %s) success",
+                            imsi.c_str(), state.c_str());
+  } else {
+    Logger::amf_app().warn("Update UE State (IMSI %s), UE does not exist!",
+                           imsi.c_str());
+  }
 }
 
 //------------------------------------------------------------------------------

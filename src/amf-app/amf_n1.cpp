@@ -21,33 +21,35 @@
 
 /*! \file amf_n1.cpp
  \brief
- \author  Keliang DU, BUPT, Tien-Thinh NGUYEN, EURECOM
+ \author Keliang DU (BUPT), Tien-Thinh NGUYEN (EURECOM)
  \date 2020
  \email: contact@openairinterface.org
  */
 
 #include "amf_n1.hpp"
 
-#include "amf_n11.hpp"
 #include "amf_app.hpp"
-#include "itti.hpp"
-#include "logger.hpp"
-#include "RegistrationRequest.hpp"
-#include "RegistrationReject.hpp"
+#include "amf_config.hpp"
+#include "amf_n11.hpp"
 #include "AuthenticationRequest.hpp"
 #include "AuthenticationResponse.hpp"
 #include "AuthenticationFailure.hpp"
+#include "comUt.hpp"
+#include "DeregistrationRequest.hpp"
+#include "DeregistrationAccept.hpp"
+#include "itti_msg_n2.hpp"
+#include "itti_msg_n11.hpp"
+#include "itti.hpp"
+#include "logger.hpp"
+#include "nas_algorithms.hpp"
 #include "SecurityModeCommand.hpp"
+#include "RegistrationRequest.hpp"
 #include "RegistrationAccept.hpp"
+#include "RegistrationReject.hpp"
 #include "ULNASTransport.hpp"
 #include "ServiceRequest.hpp"
 #include "ServiceAccept.hpp"
-#include "itti_msg_n2.hpp"
-#include "itti_msg_n11.hpp"
-#include "amf_config.hpp"
 #include "String2Value.hpp"
-#include "nas_algorithms.hpp"
-#include "comUt.hpp"
 #include "sha256.hpp"
 
 extern "C" {
@@ -107,10 +109,11 @@ amf_n1::amf_n1() {
   Logger::amf_n1().startup("Started");
   Logger::amf_n1().debug("Construct amf_n1 successfully");
 }
+
+//------------------------------------------------------------------------------
 amf_n1::~amf_n1() {
 }
 
-// itti msg handlers
 //------------------------------------------------------------------------------
 void amf_n1::handle_itti_message(itti_downlink_nas_transfer &itti_msg) {
   long amf_ue_ngap_id = itti_msg.amf_ue_ngap_id;
@@ -126,25 +129,46 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer &itti_msg) {
   nas_secu_ctx *secu = nc.get()->security_ctx;
   bstring protected_nas;
   encode_nas_message_protected(secu, false, INTEGRITY_PROTECTED_AND_CIPHERED,
-                               NAS_MESSAGE_DOWNLINK,
+  NAS_MESSAGE_DOWNLINK,
                                (uint8_t*) bdata(itti_msg.dl_nas),
                                blength(itti_msg.dl_nas), protected_nas);
   if (itti_msg.is_n2sm_set) {
-    itti_pdu_session_resource_setup_request *psrsr =
-        new itti_pdu_session_resource_setup_request(TASK_AMF_N1, TASK_AMF_N2);
-    psrsr->nas = protected_nas;
-    psrsr->n2sm = itti_msg.n2sm;
-    psrsr->amf_ue_ngap_id = amf_ue_ngap_id;
-    psrsr->ran_ue_ngap_id = ran_ue_ngap_id;
-    psrsr->pdu_session_id = itti_msg.pdu_session_id;
-    std::shared_ptr<itti_pdu_session_resource_setup_request> i = std::shared_ptr
-        < itti_pdu_session_resource_setup_request > (psrsr);
-    int ret = itti_inst->send_msg(i);
-    if (0 != ret) {
-      Logger::amf_n1().error(
-          "Could not send ITTI message %s to task TASK_AMF_N2",
-          i->get_msg_name());
+    if (itti_msg.n2sm_info_type.compare("PDU_RES_REL_CMD") == 0) {  //PDU SESSION RESOURCE RELEASE COMMAND
+      itti_pdu_session_resource_release_command *release_command =
+          new itti_pdu_session_resource_release_command(TASK_AMF_N1,
+                                                        TASK_AMF_N2);
+      release_command->nas = protected_nas;
+      release_command->n2sm = itti_msg.n2sm;
+      release_command->amf_ue_ngap_id = amf_ue_ngap_id;
+      release_command->ran_ue_ngap_id = ran_ue_ngap_id;
+      release_command->pdu_session_id = itti_msg.pdu_session_id;
+      std::shared_ptr < itti_pdu_session_resource_release_command > i =
+          std::shared_ptr < itti_pdu_session_resource_release_command
+              > (release_command);
+      int ret = itti_inst->send_msg(i);
+      if (0 != ret) {
+        Logger::amf_n1().error(
+            "Could not send ITTI message %s to task TASK_AMF_N2",
+            i->get_msg_name());
+      }
+    } else {  //PDU SESSION RESOURCE SETUP_REQUEST
+      itti_pdu_session_resource_setup_request *psrsr =
+          new itti_pdu_session_resource_setup_request(TASK_AMF_N1, TASK_AMF_N2);
+      psrsr->nas = protected_nas;
+      psrsr->n2sm = itti_msg.n2sm;
+      psrsr->amf_ue_ngap_id = amf_ue_ngap_id;
+      psrsr->ran_ue_ngap_id = ran_ue_ngap_id;
+      psrsr->pdu_session_id = itti_msg.pdu_session_id;
+      std::shared_ptr<itti_pdu_session_resource_setup_request> i =
+          std::shared_ptr < itti_pdu_session_resource_setup_request > (psrsr);
+      int ret = itti_inst->send_msg(i);
+      if (0 != ret) {
+        Logger::amf_n1().error(
+            "Could not send ITTI message %s to task TASK_AMF_N2",
+            i->get_msg_name());
+      }
     }
+
   } else {
     itti_dl_nas_transport *dnt = new itti_dl_nas_transport(TASK_AMF_N1,
                                                            TASK_AMF_N2);
@@ -169,7 +193,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind &nas_data_ind) {
   std::string nas_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id)
       + ":amfid_" + to_string(amf_ue_ngap_id);  // key for nas_context, option 1
   std::string snn;
-  if (nas_data_ind.mnc.length() == 2)
+  if (nas_data_ind.mnc.length() == 2) //TODO: remove hardcoded value
     snn = "5G:mnc0" + nas_data_ind.mnc + ".mcc" + nas_data_ind.mcc
         + ".3gppnetwork.org";
   else
@@ -467,6 +491,7 @@ bool amf_n1::check_security_header_type(SecurityHeaderType &type,
     return false;
   octet = *(buffer + decoded_size);
   decoded_size++;
+  //TODO: remove hardcoded value
   switch (octet & 0x0f) {
     case 0x0:
       type = PlainNasMsg;
@@ -501,8 +526,8 @@ void amf_n1::service_request_handle(bool isNasSig,
   serApt->setHeader(PLAIN_5GS_MSG);
   serApt->setPDU_session_status(0x2000);
   serApt->setPDU_session_reactivation_result(0x0000);
-  uint8_t buffer[100];
-  int encoded_size = serApt->encode2buffer(buffer, 100);
+  uint8_t buffer[BUFFER_SIZE_256];
+  int encoded_size = serApt->encode2buffer(buffer, BUFFER_SIZE_256);
   bstring protectedNas;
   encode_nas_message_protected(secu, false, INTEGRITY_PROTECTED_AND_CIPHERED,
                                NAS_MESSAGE_DOWNLINK, buffer, encoded_size,
@@ -554,33 +579,6 @@ void amf_n1::service_request_handle(bool isNasSig,
 }
 
 //------------------------------------------------------------------------------
-void amf_n1::update_ue_information_statics(ue_infos &ueItem,
-                                           const string connStatus,
-                                           const string registerStatus,
-                                           uint32_t ranid, uint32_t amfid,
-                                           string imsi, string guti, string mcc,
-                                           string mnc, uint32_t cellId) {
-  if (connStatus != "")
-    ueItem.connStatus = connStatus;
-  if (registerStatus != "")
-    ueItem.registerStatus = registerStatus;
-  if (ranid != 0)
-    ueItem.ranid = ranid;
-  if (amfid != 0)
-    ueItem.amfid = amfid;
-  if (imsi != "")
-    ueItem.imsi = imsi;
-  if (guti != "")
-    ueItem.guti = guti;
-  if (mcc != "")
-    ueItem.mcc = mcc;
-  if (mnc != "")
-    ueItem.mnc = mnc;
-  if (cellId != 0)
-    ueItem.cellId = cellId;
-}
-
-//------------------------------------------------------------------------------
 void amf_n1::registration_request_handle(bool isNasSig,
                                          std::shared_ptr<nas_context> nc,
                                          uint32_t ran_ue_ngap_id,
@@ -614,15 +612,19 @@ void amf_n1::registration_request_handle(bool isNasSig,
               "Try to find ue_context in amf_app using ran_amf_id %s",
               ue_context_key.c_str());
           uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
-          ue_infos ueItem;
-          update_ue_information_statics(ueItem, "CM-CONNECTED",
-                                        "REGISTRATION-INITIATING",
-                                        ran_ue_ngap_id, amf_ue_ngap_id,
-                                        nc.get()->imsi, "", uc.get()->cgi.mcc,
-                                        uc.get()->cgi.mnc,
-                                        uc.get()->cgi.nrCellID);
+          ue_info_t ueItem;
+          ueItem.connStatus = "5GMM-CONNECTED";  //"CM-CONNECTED";
+          ueItem.registerStatus = "5GMM-REG-INITIATED";  //5GMM-COMMON-PROCEDURE-INITIATED
+          ueItem.ranid = ran_ue_ngap_id;
+          ueItem.amfid = amf_ue_ngap_id;
+          ueItem.imsi = nc.get()->imsi;
+          ueItem.mcc = uc.get()->cgi.mcc;
+          ueItem.mnc = uc.get()->cgi.mnc;
+          ueItem.cellId = uc.get()->cgi.nrCellID;
+
+          stacs.update_ue_info(ueItem);
+          set_5gmm_state(nc, _5GMM_COMMON_PROCEDURE_INITIATED);
           nc.get()->is_stacs_available = true;
-          stacs.ues.push_back(ueItem);
         }
         //nc.get()->imsi = //need interface to transfer SUCI_imsi_t to string
       }
@@ -817,8 +819,8 @@ void amf_n1::response_registration_reject_msg(uint8_t cause_value,
   RegistrationReject *registrationRej = new RegistrationReject();
   registrationRej->setHeader(PLAIN_5GS_MSG);
   registrationRej->set_5GMM_Cause(cause_value);
-  uint8_t buffer[1024] = { 0 };
-  int encoded_size = registrationRej->encode2buffer(buffer, 1024);
+  uint8_t buffer[BUFFER_SIZE_1024] = { 0 };
+  int encoded_size = registrationRej->encode2buffer(buffer, BUFFER_SIZE_1024);
   //dump_nas_message(buffer, encoded_size);
   print_buffer("amf_n1", "Registration-Reject message buffer", buffer,
                encoded_size);
@@ -1506,8 +1508,8 @@ void amf_n1::security_mode_complete_handle(uint32_t ran_ue_ngap_id,
   //TODO: remove hardcoded values
   regAccept->set_5GS_Network_Feature_Support(0x00, 0x00);
   regAccept->setT3512_Value(0x5, 0x1e);
-  uint8_t buffer[1024] = { 0 };
-  int encoded_size = regAccept->encode2buffer(buffer, 1024);
+  uint8_t buffer[BUFFER_SIZE_1024] = { 0 };
+  int encoded_size = regAccept->encode2buffer(buffer, BUFFER_SIZE_1024);
   print_buffer("amf_n1", "Registration-Accept message buffer", buffer,
                encoded_size);
   if (!encoded_size) {
@@ -1530,17 +1532,9 @@ void amf_n1::security_mode_complete_handle(uint32_t ran_ue_ngap_id,
         "UE (IMSI %s, GUTI %s, current RAN ID %d, current AMF ID %d) has been registered to the network",
         nc.get()->imsi.c_str(), guti.c_str(), ran_ue_ngap_id, amf_ue_ngap_id);
     if (nc.get()->is_stacs_available) {
-      int index = 0;
-      for (int i = 0; i < stacs.ues.size(); i++) {
-        if (!(nc.get()->imsi).compare(stacs.ues[i].imsi)) {
-          index = i;
-          break;
-        }
-      }
-      update_ue_information_statics(stacs.ues[index], "", "RM-REGISTRED",
-                                    ran_ue_ngap_id, amf_ue_ngap_id, "", guti,
-                                    "", "", 0);
+      stacs.update_5gmm_state(nc.get()->imsi, "5GMM-REGISTERED");
     }
+    set_5gmm_state(nc, _5GMM_REGISTERED);
 
     set_guti_2_nas_context(guti, nc);
     nc.get()->is_common_procedure_for_security_mode_control_running = false;
@@ -1761,12 +1755,64 @@ void amf_n1::run_initial_registration_procedure() {
 void amf_n1::ue_initiate_de_registration_handle(uint32_t ran_ue_ngap_id,
                                                 long amf_ue_ngap_id,
                                                 bstring nas) {
-  string guti = "1234567890";      //need modify
+  Logger::amf_n1().debug("Handling UE-initiated De-registration Request");
+
   std::shared_ptr<nas_context> nc;
-  nc = guti_2_nas_context(guti);
-  nc.get()->is_auth_vectors_present = false;
-  nc.get()->is_current_security_available = false;
-  nc.get()->security_ctx->sc_type = SECURITY_CTX_TYPE_NOT_AVAILABLE;
+  if (is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+    nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
+  else {
+    Logger::amf_n1().warn("No existed nas_context with amf_ue_ngap_id(0x%x)",
+                          amf_ue_ngap_id);
+    return;
+  }
+
+  //decode NAS msg
+  DeregistrationRequest *deregReq = new DeregistrationRequest();
+  deregReq->decodefrombuffer(NULL, (uint8_t*) bdata(nas), blength(nas));
+  /*
+   _5gs_deregistration_type_t type = {};
+   deregReq->getDeregistrationType(type);
+   uint8_t deregType = 0;
+   deregReq->getDeregistrationType(deregType);
+   Logger::amf_n1().debug("Deregistration Type %X", deregType);
+   */
+
+  //TODO: validate 5G Mobile Identity
+  uint8_t mobile_id_type = 0;
+  deregReq->getMobilityIdentityType(mobile_id_type);
+  Logger::amf_n1().debug("5G Mobile Identity %X", mobile_id_type);
+  switch (mobile_id_type) {
+    case _5G_GUTI: {
+      Logger::amf_n1().debug("5G Mobile Identity, GUTI %s",
+                             deregReq->get_5g_guti().c_str());
+    }
+      break;
+    default: {
+    }
+  }
+
+  //Prepare DeregistrationAccept
+  DeregistrationAccept *deregAccept = new DeregistrationAccept();
+  deregAccept->setHeader(PLAIN_5GS_MSG);
+
+  uint8_t buffer[BUFFER_SIZE_512] = { 0 };
+  int encoded_size = deregAccept->encode2buffer(buffer, BUFFER_SIZE_512);
+
+  print_buffer("amf_n1", "De-registration Accept message buffer", buffer,
+               encoded_size);
+  if (encoded_size < 1) {
+    Logger::nas_mm().error("Encode De-registration Accept message error");
+    return;
+  }
+
+  bstring b = blk2bstr(buffer, encoded_size);
+  itti_send_dl_nas_buffer_to_task_n2(b, ran_ue_ngap_id, amf_ue_ngap_id);
+
+  set_5gmm_state(nc, _5GMM_DEREGISTERED);
+  if (nc.get()->is_stacs_available) {
+    stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
+  }
+
 }
 
 //------------------------------------------------------------------------------
@@ -2035,3 +2081,21 @@ void amf_n1::run_mobility_registration_update_procedure(
                            i->get_msg_name());
   }
 }
+
+//------------------------------------------------------------------------------
+void amf_n1::set_5gmm_state(std::shared_ptr<nas_context> nc,
+                            _5gmm_state_t state) {
+  Logger::amf_n1().debug("Set 5GMM state to %s",
+                         _5gmm_state_e2str[state].c_str());
+  std::unique_lock lock(m_nas_context);
+  nc.get()->_5gmm_state = state;
+  //TODO:
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::get_5gmm_state(std::shared_ptr<nas_context> nc,
+                            _5gmm_state_t &state) {
+  //TODO:
+  state = nc.get()->_5gmm_state;
+}
+

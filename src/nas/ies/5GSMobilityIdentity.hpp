@@ -47,6 +47,7 @@ typedef struct _5G_GUTI_s {
   uint8_t amf_set_id;
   uint16_t amf_pointer;
   uint32_t _5g_tmsi;
+
 } _5G_GUTI_t;
 
 typedef struct IMEI_or_IMEISV_s {

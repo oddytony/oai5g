@@ -21,7 +21,7 @@
 
 /*! \file amf_n2.cpp
  \brief
- \author  Keliang DU, BUPT
+ \author Keliang DU (BUPT), Tien-Thinh NGUYEN (EURECOM)
  \date 2020
  \email: contact@openairinterface.org
  */
@@ -42,6 +42,7 @@
 #include "DownLinkNasTransport.hpp"
 #include "InitialContextSetupRequest.hpp"
 #include "PduSessionResourceSetupRequest.hpp"
+#include "PduSessionResourceReleaseCommand.hpp"
 #include "UEContextReleaseCommand.hpp"
 #include "amf_statistics.hpp"
 #include "Ngap_Cause.h"
@@ -110,6 +111,15 @@ void amf_n2_task(void *args_p) {
             "Encoding PDU SESSION RESOURCE SETUP REQUEST message, sending ");
         itti_pdu_session_resource_setup_request *m =
             dynamic_cast<itti_pdu_session_resource_setup_request*>(msg);
+        amf_n2_inst->handle_itti_message(ref(*m));
+      }
+        break;
+
+      case PDU_SESSION_RESOURCE_RELEASE_COMMAND: {
+        Logger::amf_n2().info(
+            "Encoding PDU SESSION RESOURCE RELEASE COMMAND message, sending ");
+        itti_pdu_session_resource_release_command *m =
+            dynamic_cast<itti_pdu_session_resource_release_command*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       }
         break;
@@ -536,7 +546,7 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request &itti_msg) {
   guami.AmfSetID = amf_cfg.guami.AmfSetID;
   guami.AmfPointer = amf_cfg.guami.AmfPointer;
   msg->setGuami(guami);
-  msg->setUESecurityCapability(0xe000, 0xe000, 0xe000, 0xe000);
+  msg->setUESecurityCapability(0xe000, 0xe000, 0xe000, 0xe000); //TODO: remove hardcoded value
   msg->setSecurityKey((uint8_t*) bdata(itti_msg.kgnb));
   msg->setNasPdu((uint8_t*) bdata(itti_msg.nas), blength(itti_msg.nas));
 
@@ -550,7 +560,7 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request &itti_msg) {
     std::vector<PDUSessionResourceSetupRequestItem_t> list;
     PDUSessionResourceSetupRequestItem_t item;
     item.pduSessionId = itti_msg.pdu_session_id;
-    item.s_nssai.sst = "01";
+    item.s_nssai.sst = "01"; //TODO: remove hardcoded value
     item.s_nssai.sd = "";
     item.pduSessionNAS_PDU = NULL;
     bstring n2sm = itti_msg.n2sm;
@@ -634,7 +644,7 @@ void amf_n2::handle_itti_message(
   list.push_back(item);
   psrsr->setPduSessionResourceSetupRequestList(list);
 
-  size_t buffer_size = 512;  //TODO: remove hardcoded value
+  size_t buffer_size = BUFFER_SIZE_512;
   char *buffer = (char*) calloc(1, buffer_size);
   int encoded_size = 0;
 
@@ -654,6 +664,67 @@ void amf_n2::handle_itti_message(
 }
 
 //------------------------------------------------------------------------------
+void amf_n2::handle_itti_message(itti_pdu_session_resource_release_command &itti_msg) {
+
+  std::shared_ptr<ue_ngap_context> unc;
+  unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
+  if (unc.get() == nullptr) {
+    Logger::amf_n2().error("Illegal UE with ran_ue_ngap_id (0x%x)",
+                           itti_msg.ran_ue_ngap_id);
+    return;
+  }
+  std::shared_ptr<gnb_context> gc;
+  gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
+  if (gc.get() == nullptr) {
+    Logger::amf_n2().error("Illegal gNB with assoc id (0x%x)",
+                           unc.get()->gnb_assoc_id);
+    return;
+  }
+
+  PduSessionResourceReleaseCommandMsg *release_cmd_msg =
+      new PduSessionResourceReleaseCommandMsg();
+
+  release_cmd_msg->setMessageType();
+  release_cmd_msg->setAmfUeNgapId(itti_msg.amf_ue_ngap_id);
+  release_cmd_msg->setRanUeNgapId(itti_msg.ran_ue_ngap_id);
+  uint8_t *nas_pdu = (uint8_t*) calloc(1, blength(itti_msg.nas) + 1);
+  memcpy(nas_pdu, (uint8_t*) bdata(itti_msg.nas), blength(itti_msg.nas));
+  nas_pdu[blength(itti_msg.nas)] = '\0';
+  release_cmd_msg->setNasPdu(nas_pdu, blength(itti_msg.nas));
+
+  std::vector<PDUSessionResourceToReleaseItem_t> list;
+  PDUSessionResourceToReleaseItem_t item;
+  item.pduSessionId = itti_msg.pdu_session_id;
+
+  item.pduSessionResourceReleaseCommandTransfer.buf = (uint8_t*) bdata(
+      itti_msg.n2sm);
+  item.pduSessionResourceReleaseCommandTransfer.size = blength(itti_msg.n2sm);
+  list.push_back(item);
+  release_cmd_msg->setPduSessionResourceToReleaseList(list);
+
+
+  size_t buffer_size = BUFFER_SIZE_512;
+  char *buffer = (char*) calloc(1, buffer_size);
+  int encoded_size = 0;
+
+  release_cmd_msg->encode2buffer_new(buffer, encoded_size);
+#if DEBUG_IS_ON
+  Logger::amf_n2().debug("N2 SM buffer data: ");
+  for (int i = 0; i < encoded_size; i++)
+    printf("%02x ", (char) buffer[i]);
+#endif
+  Logger::amf_n2().debug(" (%d bytes) \n", encoded_size);
+
+  bstring b = blk2bstr(buffer, encoded_size);
+  sctp_s_38412.sctp_send_msg(gc.get()->sctp_assoc_id,
+                             unc.get()->sctp_stream_send, &b);
+  //free memory
+  free_wrapper((void**) &nas_pdu);
+  free_wrapper((void**) &buffer);
+
+}
+
+//------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_ue_context_release_request &itti_msg) {
   Logger::amf_n2().debug("Handling UE context release request ...");
   unsigned long amf_ue_ngap_id = itti_msg.ueCtxRel->getAmfUeNgapId();
@@ -664,8 +735,8 @@ void amf_n2::handle_itti_message(itti_ue_context_release_request &itti_msg) {
   ueCtxRelCmd->setMessageType();
   ueCtxRelCmd->setUeNgapIdPair(amf_ue_ngap_id, ran_ue_ngap_id);
   ueCtxRelCmd->setCauseRadioNetwork(cause);
-  uint8_t buffer[200];
-  int encoded_size = ueCtxRelCmd->encode2buffer(buffer, 200);
+  uint8_t buffer[BUFFER_SIZE_512];
+  int encoded_size = ueCtxRelCmd->encode2buffer(buffer, BUFFER_SIZE_512);
   bstring b = blk2bstr(buffer, encoded_size);
   sctp_s_38412.sctp_send_msg(itti_msg.assoc_id, itti_msg.stream, &b);
 }

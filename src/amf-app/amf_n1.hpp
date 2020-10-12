@@ -21,7 +21,7 @@
 
 /*! \file amf_n1.hpp
  \brief
- \author  Keliang DU, BUPT
+ \author Keliang DU (BUPT), Tien-Thinh NGUYEN (EURECOM)
  \date 2020
  \email: contact@openairinterface.org
  */
@@ -78,6 +78,8 @@ class amf_n1 {
   std::map<std::string, std::shared_ptr<nas_context>> imsi2nas_context;
   std::map<std::string, long> supi2amfId;
   std::map<std::string, uint32_t> supi2ranId;
+
+  mutable std::shared_mutex m_nas_context;
 
   std::map<std::string, std::shared_ptr<nas_context>> guti2nas_context;
   mutable std::shared_mutex m_guti2nas_context;
@@ -146,13 +148,9 @@ class amf_n1 {
                                           uint8_t request_type,
                                           uint8_t pdu_session_id, bstring dnn,
                                           bstring sm_msg);
-  void update_ue_information_statics(ue_infos &ueItem,
-                                     const std::string connStatus,
-                                     const std::string registerStatus,
-                                     uint32_t ranid, uint32_t amfid,
-                                     std::string imsi, std::string guti,
-                                     std::string mcc, std::string mnc,
-                                     uint32_t cellId);
+
+  void set_5gmm_state(std::shared_ptr<nas_context> nc, _5gmm_state_t state);
+  void get_5gmm_state(std::shared_ptr<nas_context> nc, _5gmm_state_t &state);
 
  private:  //nas message handlers
   void ue_initiate_de_registration_handle(uint32_t ran_ue_ngap_id,
