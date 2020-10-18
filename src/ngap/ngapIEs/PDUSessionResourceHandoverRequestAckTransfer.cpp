@@ -1,0 +1,113 @@
+/*
+ * Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The OpenAirInterface Software Alliance licenses this file to You under
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
+ *
+ *      http://www.openairinterface.org/?page_id=698
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *-------------------------------------------------------------------------------
+ * For more information about the OpenAirInterface (OAI) Software Alliance:
+ *      contact@openairinterface.org
+ */
+
+/*! \file
+ \brief
+ \author  niuxiansheng-niu, BUPT
+ \date 2020
+ \email: contact@openairinterface.org
+ */
+#include "PDUSessionResourceHandoverRequestAckTransfer.hpp"
+
+extern "C" {
+#include "asn_codecs.h"
+#include "constr_TYPE.h"
+#include "constraints.h"
+#include "per_decoder.h"
+#include "per_encoder.h"
+}
+
+#include <iostream>
+using namespace std;
+
+namespace ngap {
+PDUSessionResourceHandoverRequestAckTransfer::
+    PDUSessionResourceHandoverRequestAckTransfer() {
+  handoverRequestAcknowledegTransferIEs =
+      (Ngap_HandoverRequestAcknowledgeTransfer_t *)calloc(
+          1, sizeof(Ngap_HandoverRequestAcknowledgeTransfer_t));
+  DL_NGU_UP_TNLInformation = NULL;
+  QosFlowSetupResponseItem = NULL;
+  numofitems = 0;
+}
+PDUSessionResourceHandoverRequestAckTransfer::
+    ~PDUSessionResourceHandoverRequestAckTransfer() {}
+bool PDUSessionResourceHandoverRequestAckTransfer::
+    decodefromHandoverRequestAckTransfer(uint8_t *buf, int buf_size) {
+  asn_dec_rval_t rc = asn_decode(
+      NULL, ATS_ALIGNED_CANONICAL_PER,
+      &asn_DEF_Ngap_HandoverRequestAcknowledgeTransfer,
+      (void **)&handoverRequestAcknowledegTransferIEs, buf, buf_size);
+  if (rc.code == RC_OK) {
+    cout << "Decoded handoverRequestAcknowledegTransfer successfully" << endl;
+  } else if (rc.code == RC_WMORE) {
+    cout << "More data expected, call again" << endl;
+    return false;
+  } else {
+    cout << "Failure to decode handoverRequestAcknowledegTransfer data" << endl;
+    return false;
+  }
+  cout << "rc.consumed to decode = " << rc.consumed << endl;
+  cout << endl;
+  DL_NGU_UP_TNLInformation = new UpTransportLayerInformation();
+  if (!DL_NGU_UP_TNLInformation->decodefromUpTransportLayerInformation(
+          handoverRequestAcknowledegTransferIEs->dL_NGU_UP_TNLInformation)) {
+    cout << "decoded ngap DL_NGU_UP_TNLInformation IE error" << endl;
+    return false;
+  }
+  numofitems = QosFlowSetupResponseList.list.count;
+  QosFlowSetupResponseItem = new QosFlowListWithDataForwarding[numofitems];
+  for (int i = 0; i < numofitems; i++) {
+    if (!QosFlowSetupResponseItem[i].decodeQosFlowListWithDataForwarding(
+            handoverRequestAcknowledegTransferIEs->qosFlowSetupResponseList.list
+                .array[i])) {
+      cout << "decoded ngap QosFlowSetupResponseList IE error" << endl;
+      return false;
+    }
+  }
+  return true;
+}
+bool PDUSessionResourceHandoverRequestAckTransfer::
+    getUpTransportLayerInformation(GtpTunnel_t &upTnlInfo) {
+  if (!DL_NGU_UP_TNLInformation)
+    return false;
+  TransportLayerAddress *m_transportLayerAddress;
+  GtpTeid *m_gtpTeid;
+  if (!DL_NGU_UP_TNLInformation->getUpTransportLayerInformation(
+          m_transportLayerAddress, m_gtpTeid))
+    return false;
+  if (!m_transportLayerAddress->getTransportLayerAddress(upTnlInfo.ip_address))
+    return false;
+  if (!m_gtpTeid->getGtpTeid(upTnlInfo.gtp_teid))
+    return false;
+  return true;
+}
+bool PDUSessionResourceHandoverRequestAckTransfer::getqosFlowSetupResponseList(
+    QosFlowListWithDataForwarding *&m_items, int &m_numofitems) {
+  m_items = QosFlowSetupResponseItem;
+  m_numofitems = numofitems;
+  if (!QosFlowSetupResponseItem)
+    return false;
+  if (!numofitems)
+    return false;
+  return true;
+}
+} // namespace ngap

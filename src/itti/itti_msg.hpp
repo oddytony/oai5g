@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -46,13 +46,13 @@ typedef enum {
 } task_id_t;
 
 typedef enum message_priorities_e {
-  MESSAGE_PRIORITY_MAX       = 100,
+  MESSAGE_PRIORITY_MAX = 100,
   MESSAGE_PRIORITY_MAX_LEAST = 85,
-  MESSAGE_PRIORITY_MED_PLUS  = 70,
-  MESSAGE_PRIORITY_MED       = 55,
+  MESSAGE_PRIORITY_MED_PLUS = 70,
+  MESSAGE_PRIORITY_MED = 55,
   MESSAGE_PRIORITY_MED_LEAST = 40,
-  MESSAGE_PRIORITY_MIN_PLUS  = 25,
-  MESSAGE_PRIORITY_MIN       = 10,
+  MESSAGE_PRIORITY_MIN_PLUS = 25,
+  MESSAGE_PRIORITY_MIN = 10,
 } message_priorities_t;
 
 typedef enum {
@@ -68,15 +68,18 @@ typedef enum {
   PDU_SESSION_RESOURCE_SETUP_REQUEST,
   UE_CONTEXT_RELEASE_REQUEST,
   UE_RADIO_CAP_IND,
-  UL_NAS_DATA_IND,//task amf_n1 message id
+  UL_NAS_DATA_IND, // task amf_n1 message id
   DOWNLINK_NAS_TRANSFER,
-  NAS_SIG_ESTAB_REQ,//task amf_app
+  NAS_SIG_ESTAB_REQ, // task amf_app
   N1N2_MESSAGE_TRANSFER_REQ,
   SMF_SERVICES_CONSUMER,
   NSMF_PDU_SESSION_UPDATE_SM_CTX,
+  HANDOVER_REQUIRED,
+  HANDOVER_REQUEST_ACK,
+  HANDOVER_NOTIFY,
   PDU_SESS_RES_SET_RESP,
   TIME_OUT,
-  HEALTH_PING, 
+  HEALTH_PING,
   TERMINATE,
   ITTI_MSG_TYPE_MAX
 } itti_msg_type_t;
@@ -86,11 +89,11 @@ typedef unsigned long message_number_t;
 class itti_msg {
 public:
   itti_msg();
-  itti_msg(const itti_msg_type_t  msg_type, const task_id_t origin, const task_id_t destination);
-  itti_msg(const itti_msg& i);
+  itti_msg(const itti_msg_type_t msg_type, const task_id_t origin,
+           const task_id_t destination);
+  itti_msg(const itti_msg &i);
 
-  itti_msg& operator=(itti_msg other)
-  {
+  itti_msg &operator=(itti_msg other) {
     std::swap(msg_num, other.msg_num);
     std::swap(origin, other.origin);
     std::swap(destination, other.destination);
@@ -99,20 +102,24 @@ public:
   }
 
   virtual ~itti_msg() = default;
-  static const char* get_msg_name();
+  static const char *get_msg_name();
 
   message_number_t msg_num;
-  task_id_t        origin;
-  task_id_t        destination;
-  itti_msg_type_t  msg_type;
+  task_id_t origin;
+  task_id_t destination;
+  itti_msg_type_t msg_type;
 };
 
 class itti_msg_timeout : public itti_msg {
 public:
-  itti_msg_timeout(const task_id_t origin, const task_id_t destination, uint32_t timer_id, uint64_t arg1_user, uint64_t arg2_user):
-    itti_msg(TIME_OUT, origin, destination), timer_id(timer_id), arg1_user(arg1_user), arg2_user(arg2_user) {}
-  itti_msg_timeout(const itti_msg_timeout& i) : itti_msg(i), timer_id(i.timer_id), arg1_user(i.arg1_user), arg2_user(i.arg2_user) {}
-  static const char* get_msg_name() {return "TIME_OUT";};
+  itti_msg_timeout(const task_id_t origin, const task_id_t destination,
+                   uint32_t timer_id, uint64_t arg1_user, uint64_t arg2_user)
+      : itti_msg(TIME_OUT, origin, destination), timer_id(timer_id),
+        arg1_user(arg1_user), arg2_user(arg2_user) {}
+  itti_msg_timeout(const itti_msg_timeout &i)
+      : itti_msg(i), timer_id(i.timer_id), arg1_user(i.arg1_user),
+        arg2_user(i.arg2_user) {}
+  static const char *get_msg_name() { return "TIME_OUT"; };
   uint32_t timer_id;
   uint64_t arg1_user;
   uint64_t arg2_user;
@@ -120,18 +127,20 @@ public:
 
 class itti_msg_ping : public itti_msg {
 public:
-  itti_msg_ping(const task_id_t origin, const task_id_t destination, uint32_t seq): itti_msg(HEALTH_PING, origin, destination), seq(seq) {}
-  itti_msg_ping(const itti_msg_ping& i) : itti_msg(i), seq(i.seq) {}
-  static const char* get_msg_name() {return "HEALTH_PING";};
+  itti_msg_ping(const task_id_t origin, const task_id_t destination,
+                uint32_t seq)
+      : itti_msg(HEALTH_PING, origin, destination), seq(seq) {}
+  itti_msg_ping(const itti_msg_ping &i) : itti_msg(i), seq(i.seq) {}
+  static const char *get_msg_name() { return "HEALTH_PING"; };
   uint32_t seq;
 };
 
 class itti_msg_terminate : public itti_msg {
 public:
-  itti_msg_terminate(const task_id_t origin, const task_id_t destination):
-    itti_msg(TERMINATE, origin, destination) {}
-  itti_msg_terminate(const itti_msg_terminate& i) : itti_msg(i) {}
-  static const char* get_msg_name() {return "TERMINATE";};
+  itti_msg_terminate(const task_id_t origin, const task_id_t destination)
+      : itti_msg(TERMINATE, origin, destination) {}
+  itti_msg_terminate(const itti_msg_terminate &i) : itti_msg(i) {}
+  static const char *get_msg_name() { return "TERMINATE"; };
 };
 
 #endif /* SRC_ITTI_ITTI_MSG_HPP_INCLUDED_ */
