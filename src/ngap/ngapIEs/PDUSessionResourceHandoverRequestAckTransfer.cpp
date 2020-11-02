@@ -45,8 +45,7 @@ PDUSessionResourceHandoverRequestAckTransfer::
       (Ngap_HandoverRequestAcknowledgeTransfer_t *)calloc(
           1, sizeof(Ngap_HandoverRequestAcknowledgeTransfer_t));
   DL_NGU_UP_TNLInformation = NULL;
-  QosFlowSetupResponseItem = NULL;
-  numofitems = 0;
+  QosFlowSetupResponseList = NULL;
 }
 PDUSessionResourceHandoverRequestAckTransfer::
     ~PDUSessionResourceHandoverRequestAckTransfer() {}
@@ -73,41 +72,46 @@ bool PDUSessionResourceHandoverRequestAckTransfer::
     cout << "decoded ngap DL_NGU_UP_TNLInformation IE error" << endl;
     return false;
   }
-  numofitems = QosFlowSetupResponseList.list.count;
-  QosFlowSetupResponseItem = new QosFlowListWithDataForwarding[numofitems];
-  for (int i = 0; i < numofitems; i++) {
-    if (!QosFlowSetupResponseItem[i].decodeQosFlowListWithDataForwarding(
-            handoverRequestAcknowledegTransferIEs->qosFlowSetupResponseList.list
-                .array[i])) {
-      cout << "decoded ngap QosFlowSetupResponseList IE error" << endl;
-      return false;
-    }
+  QosFlowSetupResponseList = new QosFlowListWithDataForwarding;
+  if (!QosFlowSetupResponseList->decodeFormQosFlowListWithDataForwarding(
+          handoverRequestAcknowledegTransferIEs->qosFlowSetupResponseList)) {
+    cout << "decoded ngap QosFlowSetupResponseList IE error" << endl;
+    return false;
   }
   return true;
 }
 bool PDUSessionResourceHandoverRequestAckTransfer::
-    getUpTransportLayerInformation(GtpTunnel_t &upTnlInfo) {
-  if (!DL_NGU_UP_TNLInformation)
+    getUpTransportLayerInformation2(GtpTunnel_t *&upTnlInfo) {
+  if (!DL_NGU_UP_TNLInformation->decodefromUpTransportLayerInformation(
+          handoverRequestAcknowledegTransferIEs->dL_NGU_UP_TNLInformation))
     return false;
   TransportLayerAddress *m_transportLayerAddress;
   GtpTeid *m_gtpTeid;
   if (!DL_NGU_UP_TNLInformation->getUpTransportLayerInformation(
           m_transportLayerAddress, m_gtpTeid))
     return false;
-  if (!m_transportLayerAddress->getTransportLayerAddress(upTnlInfo.ip_address))
+  if (!m_transportLayerAddress->getTransportLayerAddress(upTnlInfo->ip_address))
     return false;
-  if (!m_gtpTeid->getGtpTeid(upTnlInfo.gtp_teid))
+  if (!m_gtpTeid->getGtpTeid(upTnlInfo->gtp_teid))
     return false;
   return true;
 }
 bool PDUSessionResourceHandoverRequestAckTransfer::getqosFlowSetupResponseList(
-    QosFlowListWithDataForwarding *&m_items, int &m_numofitems) {
-  m_items = QosFlowSetupResponseItem;
-  m_numofitems = numofitems;
-  if (!QosFlowSetupResponseItem)
+    std::vector<QosFlowLItemWithDataForwarding_t> &list) {
+  if (!QosFlowSetupResponseList)
     return false;
-  if (!numofitems)
-    return false;
+  QosFlowItemWithDataForWarding *m_qosflowitemwithdataforwarding;
+  int num = 0;
+  if (QosFlowSetupResponseList->getQosFlowListWithDataForwarding(
+          m_qosflowitemwithdataforwarding, num)) {
+    cout << "successful" << endl;
+  }
+  for (int i = 0; i < num; i++) {
+    QosFlowLItemWithDataForwarding_t response;
+    m_qosflowitemwithdataforwarding[i].getQosFlowItemWithDataForWarding(
+        response.qosFlowIdentifier);
+    list.push_back(response);
+  }
   return true;
 }
 } // namespace ngap

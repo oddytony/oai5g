@@ -31,20 +31,28 @@
 using namespace std;
 namespace ngap {
 QosFlowListWithDataForwarding::QosFlowListWithDataForwarding() {
-  qosFlowIdentifier = NULL;
+  qosFlowItemWithDataForwarding = NULL;
+  numofQosFlowItemWithDataForwarding = 0;
 }
 QosFlowListWithDataForwarding::~QosFlowListWithDataForwarding() {}
-bool QosFlowListWithDataForwarding::decodeQosFlowListWithDataForwarding(
-    Ngap_QosFlowSetupResponseItemHOReqAck_t *qosFlowSetupResponseList) {
-  qosFlowIdentifier = new QosFlowIdentifier();
-  if (!qosFlowIdentifier->decodefromQosFlowIdentifier(
-          &qosFlowSetupResponseList->qosFlowIdentifier))
-    return false;
+
+bool QosFlowListWithDataForwarding::decodeFormQosFlowListWithDataForwarding(
+    Ngap_QosFlowSetupResponseListHOReqAck_t qosFlowSetupResponseList) {
+  numofQosFlowItemWithDataForwarding = qosFlowSetupResponseList.list.count;
+  qosFlowItemWithDataForwarding =
+      new QosFlowItemWithDataForWarding[numofQosFlowItemWithDataForwarding]();
+  for (int i = 0; i < numofQosFlowItemWithDataForwarding; i++) {
+    if (!qosFlowItemWithDataForwarding[i]
+             .decodeformQosFlowItemWithDataForWarding(
+                 qosFlowSetupResponseList.list.array[i]))
+      return false;
+  }
   return true;
 }
-bool QosFlowListWithDataForwarding::getQosFlowIdentifier(
-    QosFlowIdentifier *&m_qosFlowIdentifier) {
-  m_qosFlowIdentifier = qosFlowIdentifier;
+bool QosFlowListWithDataForwarding::getQosFlowListWithDataForwarding(
+    QosFlowItemWithDataForWarding *m_QosFlowItemWithDataForwarding, int num) {
+  m_QosFlowItemWithDataForwarding = qosFlowItemWithDataForwarding;
+  num = numofQosFlowItemWithDataForwarding;
   return true;
 }
 } // namespace ngap

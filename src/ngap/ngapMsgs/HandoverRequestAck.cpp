@@ -83,7 +83,6 @@ bool HandoverRequestAck::getPDUSessionResourceAdmittedList(
     m_pduSessionResourceAdmittedItem[i].getPDUSessionResourceAdmittedItem(
         m_pDUSessionID, response.handoverRequestAcknowledgeTransfer);
     m_pDUSessionID->getPDUSessionID(response.pduSessionId);
-
     list.push_back(response);
   }
 

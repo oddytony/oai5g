@@ -29,10 +29,9 @@
 #ifndef _QOSFLOWLISTWITHDATAFORWRADING_H_
 #define _QOSFLOWLISTWITHDATAFORWRADING_H_
 
-#include "QosFlowIdentifier.hpp"
+#include "QosFlowItemWithDataForwarding.hpp"
 #include "QosFlowLevelQosParameters.hpp"
 extern "C" {
-#include "Ngap_QosFlowSetupResponseItemHOReqAck.h"
 #include "Ngap_QosFlowSetupResponseListHOReqAck.h"
 }
 namespace ngap {
@@ -40,12 +39,15 @@ class QosFlowListWithDataForwarding {
 public:
   QosFlowListWithDataForwarding();
   virtual ~QosFlowListWithDataForwarding();
-  bool decodeQosFlowListWithDataForwarding(
-      Ngap_QosFlowSetupResponseItemHOReqAck_t *qosFlowSetupResponseList);
-  bool getQosFlowIdentifier(QosFlowIdentifier *&m_qosFlowIdentifier);
+  bool getQosFlowListWithDataForwarding(
+      QosFlowItemWithDataForWarding *m_QosFlowItemWithDataForwarding, int num);
+  bool decodeFormQosFlowListWithDataForwarding(
+      Ngap_QosFlowSetupResponseListHOReqAck_t qosFlowSetupResponseList);
 
 private:
-  QosFlowIdentifier *qosFlowIdentifier;
+  // QosFlowIdentifier *qosFlowIdentifier;
+  QosFlowItemWithDataForWarding *qosFlowItemWithDataForwarding;
+  int numofQosFlowItemWithDataForwarding;
 };
 } // namespace ngap
 #endif

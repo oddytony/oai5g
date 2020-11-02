@@ -43,17 +43,15 @@ public:
   PDUSessionResourceHandoverRequestAckTransfer();
   virtual ~PDUSessionResourceHandoverRequestAckTransfer();
   bool decodefromHandoverRequestAckTransfer(uint8_t *buf, int buf_size);
-  bool getUpTransportLayerInformation(GtpTunnel_t &upTnlInfo);
-  bool getqosFlowSetupResponseList(QosFlowListWithDataForwarding *&m_items,
-                                   int &m_numofitems);
+  bool getUpTransportLayerInformation2(GtpTunnel_t *&upTnlInfo);
+  bool getqosFlowSetupResponseList(
+      std::vector<QosFlowLItemWithDataForwarding_t> &list);
 
 private:
   Ngap_HandoverRequestAcknowledgeTransfer_t
       *handoverRequestAcknowledegTransferIEs;
   UpTransportLayerInformation *DL_NGU_UP_TNLInformation;
-  Ngap_QosFlowSetupResponseListHOReqAck_t QosFlowSetupResponseList;
-  QosFlowListWithDataForwarding *QosFlowSetupResponseItem;
-  int numofitems;
+  QosFlowListWithDataForwarding *QosFlowSetupResponseList;
 };
 } // namespace ngap
 
