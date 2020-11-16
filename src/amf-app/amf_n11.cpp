@@ -105,14 +105,14 @@ void amf_n11_task(void*) {
     auto *msg = shared_msg.get();
     switch (msg->msg_type) {
       case SMF_SERVICES_CONSUMER: {
-        Logger::amf_n1().info("Running SMF_SERVICES_CONSUMER");
+        Logger::amf_n11().info("Running SMF_SERVICES_CONSUMER");
         itti_smf_services_consumer *m =
             dynamic_cast<itti_smf_services_consumer*>(msg);
         amf_n11_inst->handle_itti_message(ref(*m));
       }
         break;
       case NSMF_PDU_SESSION_UPDATE_SM_CTX: {
-        Logger::amf_n1().info(
+        Logger::amf_n11().info(
             "Receive Nsmf_PDUSessionUpdateSMContext, handling ...");
         itti_nsmf_pdusession_update_sm_context *m =
             dynamic_cast<itti_nsmf_pdusession_update_sm_context*>(msg);
@@ -120,7 +120,7 @@ void amf_n11_task(void*) {
       }
         break;
       default: {
-        Logger::amf_n1().info(
+        Logger::amf_n11().info(
             "Receive unknown message type %d", msg->msg_type);
       }
     }
@@ -133,8 +133,8 @@ amf_n11::amf_n11() {
     Logger::amf_n11().error("Cannot create task TASK_AMF_N1");
     throw std::runtime_error("Cannot create task TASK_AMF_N1");
   }
-  Logger::amf_n1().startup("Started");
-  Logger::amf_n1().debug("Construct amf_n1 successfully");
+  Logger::amf_n11().startup("Started");
+  Logger::amf_n11().debug("Construct amf_n1 successfully");
 }
 
 //------------------------------------------------------------------------------
@@ -397,7 +397,7 @@ void amf_n11::handle_post_sm_context_response_error(long code,
       < itti_n1n2_message_transfer_request > (itti_msg);
   int ret = itti_inst->send_msg(i);
   if (0 != ret) {
-    Logger::amf_n1().error(
+    Logger::amf_n11().error(
         "Could not send ITTI message %s to task TASK_AMF_APP",
         i->get_msg_name());
   }
@@ -578,11 +578,11 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
         }
         if (n2sm.size() > 0) {
           msg_str_2_msg_hex(n2sm, n2sm_hex);
-          print_buffer("amf_n11", "Get response n1sm:",
+          print_buffer("amf_n11", "Get response n2sm:",
                        (uint8_t*) bdata(n2sm_hex), blength(n2sm_hex));
           itti_msg->n2sm = n2sm_hex;
           itti_msg->is_n2sm_set = true;
-          itti_msg->n2sm_info_type = response_data["n2InfoContainer"]["smInfo"]["n2InfoContent"]["ngapIeType"];
+          itti_msg->n2sm_info_type = response_data["n2SmInfoType"]; //response_data["n2InfoContainer"]["smInfo"]["n2InfoContent"]["ngapIeType"];
         }
 
         itti_msg->supi = supi;
@@ -591,7 +591,7 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
             < itti_n1n2_message_transfer_request > (itti_msg);
         int ret = itti_inst->send_msg(i);
         if (0 != ret) {
-          Logger::amf_n1().error(
+          Logger::amf_n11().error(
               "Could not send ITTI message %s to task TASK_AMF_APP",
               i->get_msg_name());
         }
