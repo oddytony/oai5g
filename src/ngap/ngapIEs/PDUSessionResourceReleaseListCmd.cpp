@@ -9,7 +9,9 @@ namespace ngap{
 		pduSessionResourceReleaseItemCmd = NULL;
 		numofpduSessionResourceReleaseItemCmd = 0;
 	}
-	PDUSessionResourceReleaseListCmd::~PDUSessionResourceReleaseListCmd(){}
+	PDUSessionResourceReleaseListCmd::~PDUSessionResourceReleaseListCmd(){
+		if (pduSessionResourceReleaseItemCmd) delete[] pduSessionResourceReleaseItemCmd;
+	}
 	
 	void PDUSessionResourceReleaseListCmd::setPDUSessionResourceReleaseListCmd(PDUSessionResourceReleaseItemCmd *m_pduSessionResourceReleaseItemCmd,int num)
 	{
