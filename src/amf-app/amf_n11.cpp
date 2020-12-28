@@ -270,7 +270,34 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer &smf)
   {
   case PDU_SESSION_INITIAL_REQUEST:
   {
-    handle_pdu_session_initial_request(supi, psc, smf_addr, smf.sm_msg, dnn);
+    //get pti
+    uint8_t *sm_msg = (uint8_t*)bdata(smf.sm_msg);
+    uint8_t pti = sm_msg[2];
+    Logger::amf_n1().debug("decoded PTI for PDUSessionEstablishmentRequest(0x%x)", pti);
+    if(psc.get()->isn1sm_avaliable && psc.get()->isn2sm_avaliable){
+      itti_n1n2_message_transfer_request * itti_msg = new itti_n1n2_message_transfer_request(TASK_AMF_N11, TASK_AMF_APP);
+      itti_msg->supi = supi;
+
+      uint8_t accept_len = blength(psc.get()->n1sm);
+      uint8_t *accept = (uint8_t*)calloc(1, accept_len);
+      memcpy(accept, (uint8_t*)bdata(psc.get()->n1sm), accept_len);
+      accept[2] = pti;
+      itti_msg->n1sm = blk2bstr(accept, accept_len);
+      free(accept);
+      itti_msg->is_n1sm_set = true;
+      itti_msg->n2sm = psc.get()->n2sm;
+      itti_msg->is_n2sm_set = true;
+      itti_msg->pdu_session_id = psc.get()->pdu_session_id;
+      std::shared_ptr<itti_n1n2_message_transfer_request> i = std::shared_ptr<itti_n1n2_message_transfer_request>(itti_msg);
+      int ret = itti_inst->send_msg(i);
+      if (0 != ret) {
+        Logger::amf_server().error( "Could not send ITTI message %s to task TASK_AMF_APP", i->get_msg_name());
+      }
+    }else{
+      psc.get()->isn2sm_avaliable = false;
+      handle_pdu_session_initial_request(supi, psc, smf_addr, smf.sm_msg, dnn);
+    }
+    //handle_pdu_session_initial_request(supi, psc, smf_addr, smf.sm_msg, dnn);
   }
   break;
   case EXISTING_PDU_SESSION:

@@ -82,7 +82,10 @@ class itti_initial_context_setup_request : public itti_msg_n2
 {
 public:
   itti_initial_context_setup_request(const task_id_t origin, const task_id_t destination) : itti_msg_n2(INITIAL_CONTEXT_SETUP_REQUEST, origin, destination) {}
-  itti_initial_context_setup_request(const itti_initial_context_setup_request &i) : itti_msg_n2(i) {}
+  itti_initial_context_setup_request(const itti_initial_context_setup_request &i) : itti_msg_n2(i) {
+    is_pdu_exist = false;
+    isn2sm_avaliable = false;
+  }
   uint32_t ran_ue_ngap_id;
   long amf_ue_ngap_id;
   bstring kgnb;

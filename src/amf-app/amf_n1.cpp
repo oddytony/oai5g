@@ -197,7 +197,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind &nas_data_ind)
     else
     {
       Logger::amf_n1().error("No existing nas_context with GUTI %s", nas_data_ind.guti.c_str());
-      return;
+      //return;
     }
   }
   else
@@ -342,10 +342,15 @@ void amf_n1::nas_signalling_establishment_request_handle(SecurityHeaderType type
   case SERVICE_REQUEST:
   {
     Logger::amf_n1().debug("Received service request message, handling...");
-    nc.get()->security_ctx->ul_count.seq_num = ulCount;
+    if(nc.get())
+      nc.get()->security_ctx->ul_count.seq_num = ulCount;
     service_request_handle(true, nc, ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
   }
   break;
+  case UE_INIT_DEREGISTER:{
+    Logger::amf_n1().debug("received initialUeMessage de-registration request messgae , handle ...");
+    //ue_initiate_de_registration_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
+  }break;
   default:
     Logger::amf_n1().error("No handler for NAS message 0x%x", message_type);
   }
@@ -356,6 +361,7 @@ void amf_n1::uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
 {
   uint8_t *buf = (uint8_t *)bdata(plain_msg);
   uint8_t message_type = *(buf + 2);
+  Logger::amf_n1().debug("received message(0x%x)", message_type);
   switch (message_type)
   {
   case AUTHENTICATION_RESPONSE:
@@ -394,6 +400,12 @@ void amf_n1::uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
     ue_initiate_de_registration_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
   }
   break;
+  case IDENTITY_RESPONSE:
+  {
+    Logger::amf_n1().debug("received identity response messgae , handle ...");
+    identity_response_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
+  }
+  break;
   case REGISTRATION_COMPLETE:
   {
     Logger::amf_n1().debug("Received registration complete message, handling...");
@@ -402,67 +414,63 @@ void amf_n1::uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
   break;
   default:
   {
+    Logger::amf_n1().debug("No message available (0x%x)", message_type);
     //TODO:
   }
   }
 }
 
 //------------------------------------------------------------------------------
-void amf_n1::uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg, plmn_t plmn)
-{
-  uint8_t *buf = (uint8_t *)bdata(plain_msg);
+void amf_n1::uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg, plmn_t plmn) {
+  uint8_t *buf = (uint8_t*) bdata(plain_msg);
   uint8_t message_type = *(buf + 2);
-  switch (message_type)
-  {
-  case AUTHENTICATION_RESPONSE:
-  {
-    Logger::amf_n1().debug("Received authentication response message, handling...");
-    authentication_response_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
-  }
-  break;
-  case AUTHENTICATION_FAILURE:
-  {
-    Logger::amf_n1().debug("Received authentication failure message, handling...");
-    authentication_failure_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
-  }
-  break;
-  case SECURITY_MODE_COMPLETE:
-  {
-    Logger::amf_n1().debug("Received security mode complete message, handling...");
-    security_mode_complete_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
-  }
-  break;
-  case SECURITY_MODE_REJECT:
-  {
-    Logger::amf_n1().debug("Received security mode reject message, handling...");
-    security_mode_reject_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
-  }
-  break;
-  case UL_NAS_TRANSPORT:
-  {
-    Logger::amf_n1().debug("Received ul NAS transport message, handling...");
-    ul_nas_transport_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg, plmn);
-  }
-  break;
-  case UE_INIT_DEREGISTER:
-  {
-    Logger::amf_n1().debug("Received de-registration request message, handling...");
-    ue_initiate_de_registration_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
-  }
-  break;
-  case REGISTRATION_COMPLETE:
-  {
-    Logger::amf_n1().debug("Received registration complete message, handling...");
-    //TODO
-  }
-  break;
-  default:
-  {
-    //TODO:
-  }
+  switch (message_type) {
+    case AUTHENTICATION_RESPONSE: {
+      Logger::amf_n1().debug("Received authentication response message, handling...");
+      authentication_response_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
+    }
+      break;
+    case AUTHENTICATION_FAILURE: {
+      Logger::amf_n1().debug("Received authentication failure message, handling...");
+      authentication_failure_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
+    }
+      break;
+    case SECURITY_MODE_COMPLETE: {
+      Logger::amf_n1().debug("Received security mode complete message, handling...");
+      security_mode_complete_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
+    }
+      break;
+    case SECURITY_MODE_REJECT: {
+      Logger::amf_n1().debug("Received security mode reject message, handling...");
+      security_mode_reject_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
+    }
+      break;
+    case UL_NAS_TRANSPORT: {
+      Logger::amf_n1().debug("Received ul NAS transport message, handling...");
+      ul_nas_transport_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg, plmn);
+    }
+      break;
+    case UE_INIT_DEREGISTER: {
+      Logger::amf_n1().debug("Received de-registration request message, handling...");
+      ue_initiate_de_registration_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
+    }
+      break;
+    case IDENTITY_RESPONSE:
+    {
+      Logger::amf_n1().debug("received identity response messgae , handle ...");
+      identity_response_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
+    }
+      break;
+    case REGISTRATION_COMPLETE: {
+      Logger::amf_n1().debug("Received registration complete message, handling...");
+      //TODO
+    }
+      break;
+    default: {
+      //TODO:
+    }
   }
 }
-
 // nas message decode
 //------------------------------------------------------------------------------
 bool amf_n1::check_security_header_type(SecurityHeaderType &type, uint8_t *buffer)
@@ -1349,7 +1357,8 @@ void amf_n1::handle_auth_vector_successful_result(std::shared_ptr<nas_context> n
   {
     nc.get()->security_ctx = new nas_secu_ctx();
     if (nc.get()->security_ctx && nc.get()->ngKsi != NAS_KEY_SET_IDENTIFIER_NOT_AVAILABLE)
-      ngksi = (nc.get()->security_ctx->ngksi + 1) % (NGKSI_MAX_VALUE + 1);
+      //ngksi = (nc.get()->security_ctx->ngksi + 1) % (NGKSI_MAX_VALUE + 1);
+      ngksi = (nc.get()->amf_ue_ngap_id + 1) % (NGKSI_MAX_VALUE + 1);
     // ensure which vector is available?
     nc.get()->ngKsi = ngksi;
   }
@@ -1955,12 +1964,33 @@ void amf_n1::run_initial_registration_procedure()
 //------------------------------------------------------------------------------
 void amf_n1::ue_initiate_de_registration_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas)
 {
-  string guti = "1234567890"; //need modify
+  string guti = "1234567890";//need modify
+
+  _5G_GUTI_t Guti;
+  _5GSMobilityIdentity *ulNas = new _5GSMobilityIdentity();
+  ulNas->decodefrombuffer((uint8_t*)bdata(nas)+4, blength(nas),false);
+  ulNas->get5GGUTI(Guti);
+  delete ulNas;
+  string amf_region_id = std::to_string(Guti.amf_region_id);
+  guti = Guti.mcc + Guti.mnc + std::to_string(Guti.amf_region_id) + std::to_string(Guti.amf_set_id) + std::to_string(Guti.amf_pointer) + std::to_string(Guti._5g_tmsi);
   std::shared_ptr<nas_context> nc;
+  if(!is_guti_2_nas_context(guti))
+    return;
   nc = guti_2_nas_context(guti);
-  nc.get()->is_auth_vectors_present = false;
-  nc.get()->is_current_security_available = false;
+  nc.get()-> is_auth_vectors_present = false;
+  nc.get()-> is_current_security_available = false;
   nc.get()->security_ctx->sc_type = SECURITY_CTX_TYPE_NOT_AVAILABLE;
+  Logger::ngap().debug("sending itti ue context release command to TASK_AMF_N2");
+  itti_ue_context_release_command * itti_msg = new itti_ue_context_release_command(TASK_AMF_N1, TASK_AMF_N2);
+  itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
+  itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
+  itti_msg->cause.setChoiceOfCause(Ngap_Cause_PR_nas);
+  itti_msg->cause.setValue(2);//cause nas(2)--deregister
+  std::shared_ptr<itti_ue_context_release_command> i = std::shared_ptr<itti_ue_context_release_command>(itti_msg);
+  int ret = itti_inst->send_msg(i);
+  if (0 != ret) {
+        Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N2", i->get_msg_name());
+  }
 }
 
 //------------------------------------------------------------------------------

@@ -62,13 +62,16 @@ void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(const std::str
   }
 
   bstring n1sm;
-  msg_str_2_msg_hex(n1sm_str.substr(0, n1sm_str.length()), n1sm);
-
+  msg_str_2_msg_hex(n1sm_str.substr(0, n1sm_str.length()-2), n1sm);
+  
   bstring n2sm;
   msg_str_2_msg_hex(n2sm_str, n2sm);
   
+  psc.get()->n1sm = n1sm;
+  psc.get()->isn1sm_avaliable = true;
   psc.get()->n2sm = n2sm;
-  Logger::amf_server().debug("n2sm size in amf_server (%d)", blength(psc.get()->n2sm));
+  psc.get()->isn2sm_avaliable = true;
+  Logger::amf_server().debug("n2sm size in amf_server(%d)", blength(psc.get()->n2sm));
 
   itti_n1n2_message_transfer_request * itti_msg = new itti_n1n2_message_transfer_request(AMF_SERVER, TASK_AMF_APP);
   itti_msg->supi = ueContextId;

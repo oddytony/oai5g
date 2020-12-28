@@ -109,6 +109,6 @@ int IdentityResponse::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, i
   decoded_size += ie_mobility_id->decodefrombuffer(buf + decoded_size, len - decoded_size, false);
   Logger::nas_mm().debug("decoded_size(%d)", decoded_size);
   Logger::nas_mm().debug("decoded IdentityResponse message len(%d)", decoded_size);
-
+  return true;
 }
 

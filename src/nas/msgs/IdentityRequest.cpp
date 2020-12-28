@@ -59,24 +59,26 @@ int IdentityRequest::encode2buffer(uint8_t *buf, int len) {
   Logger::nas_mm().debug("encoding IdentityRequest message");
   int encoded_size = 0;
   if (!plain_header) {
-    Logger::nas_mm().error("Mandatory IE missing Header");
+    Logger::nas_mm().error("Mandontary IE missing Header");
     return 0;
   }
-  if (!(plain_header->encode2buffer(buf, len)))
-    return 0;
-  encoded_size += 3;
-  if (!_5gs_identity_type) {
-    Logger::nas_mm().warn("IE _5gs_identity_type is not available");
-  } else {
-    if (int size = _5gs_identity_type->encode2buffer(buf + encoded_size, len - encoded_size)) {
-      encoded_size += size;
-    } else {
-      Logger::nas_mm().error("encoding _5gs_identity_type  error");
-      return 0;
+  if (!(plain_header->encode2buffer(buf, len))) return 0;
+    encoded_size += 3;
+    if (!_5gs_identity_type) {
+      Logger::nas_mm().warn("IE _5gs_identity_type is not avaliable");
     }
+  else {
+    int size = _5gs_identity_type->encode2buffer(buf + encoded_size, len - encoded_size);
+      if (size) {
+        encoded_size += size;
+      }
+      else {
+        Logger::nas_mm().error("encoding _5gs_identity_type  error");
+        return 0;
+      }
   }
   Logger::nas_mm().debug("encoded IdentityRequest message len(%d)", encoded_size);
-  return 1;
+  return encoded_size;
 }
 
 //------------------------------------------------------------------------------
