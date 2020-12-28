@@ -43,9 +43,10 @@ void statistics::display() {
   Logger::amf_app().info("|----------------------------------------------------------------------------------------------------------------|");
   Logger::amf_app().info("|----------------------------------------------------gNBs' information-------------------------------------------|");
   Logger::amf_app().info("|    Index    |      Status      |       Global ID       |       gNB Name       |    Tracking Area (PLMN, TAC)   |");
-  if (gnbs.size() ==0 ) {
-    Logger::amf_app().info("|      -      |          -       |           -           |           -          |                -               |");
-  }
+  Logger::amf_app().info("|      -      |          -       |           -           |           -          |                -               |");
+  //if (gnbs.size() ==0 ) {
+  //  Logger::amf_app().info("|      -      |          -       |           -           |           -          |                -               |");
+  //}
 
   //TODO: Show the list of common PLMNs
   for (int i = 0; i < gnbs.size(); i++) {

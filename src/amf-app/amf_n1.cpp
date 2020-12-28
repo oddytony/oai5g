@@ -1739,6 +1739,7 @@ void amf_n1::security_mode_complete_handle(uint32_t ran_ue_ngap_id, long amf_ue_
     std::shared_ptr<nas_context> nc;
     nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
     Logger::amf_n1().info("UE (IMSI %s, GUTI %s, current RAN ID %d, current AMF ID %d) has been registered to the network", nc.get()->imsi.c_str(), guti.c_str(), ran_ue_ngap_id, amf_ue_ngap_id);
+    //nc.get()->is_stacs_available = true;
     if (nc.get()->is_stacs_available)
     {
       int index = 0;
@@ -1751,6 +1752,11 @@ void amf_n1::security_mode_complete_handle(uint32_t ran_ue_ngap_id, long amf_ue_
         }
       }
       update_ue_information_statics(stacs.ues[index], "", "RM-REGISTRED", ran_ue_ngap_id, amf_ue_ngap_id, "", guti, "", "", 0);
+    }else{
+      ue_infos ueItem;
+      update_ue_information_statics(ueItem, "CM-CONNECTED", "REGISTRATION-REGISTRED", ran_ue_ngap_id, amf_ue_ngap_id, nc.get()->imsi, "", mcc, mnc, uc.get()->cgi.nrCellID); 
+      stacs.ues.push_back(ueItem);
+      nc.get()->is_stacs_available = true; 
     }
 
     set_guti_2_nas_context(guti, nc);
