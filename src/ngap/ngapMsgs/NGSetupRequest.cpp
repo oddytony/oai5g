@@ -206,8 +206,7 @@ bool NGSetupRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
   ngSetupRequestPdu = ngap_msg_pdu;
 
   if (ngSetupRequestPdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
-    if (ngSetupRequestPdu->choice.initiatingMessage && ngSetupRequestPdu->choice.initiatingMessage->procedureCode == Ngap_ProcedureCode_id_NGSetup && ngSetupRequestPdu->choice.initiatingMessage->criticality == Ngap_Criticality_reject
-        && ngSetupRequestPdu->choice.initiatingMessage->value.present == Ngap_InitiatingMessage__value_PR_NGSetupRequest) {
+    if (ngSetupRequestPdu->choice.initiatingMessage && ngSetupRequestPdu->choice.initiatingMessage->procedureCode == Ngap_ProcedureCode_id_NGSetup && ngSetupRequestPdu->choice.initiatingMessage->criticality == Ngap_Criticality_reject && ngSetupRequestPdu->choice.initiatingMessage->value.present == Ngap_InitiatingMessage__value_PR_NGSetupRequest) {
       ngSetupRequestIEs = &ngSetupRequestPdu->choice.initiatingMessage->value.choice.NGSetupRequest;
       for (int i = 0; i < ngSetupRequestIEs->protocolIEs.list.count; i++) {
         switch (ngSetupRequestIEs->protocolIEs.list.array[i]->id) {

@@ -33,8 +33,9 @@
 #include "bstrlib.h"
 #include "amf.hpp"
 
-class pdu_session_context {
- public:
+class pdu_session_context
+{
+public:
   pdu_session_context();
   ~pdu_session_context();
 
@@ -43,9 +44,13 @@ class pdu_session_context {
   uint8_t req_type;
   uint8_t pdu_session_id;
   bstring n2sm;
+  bool isn2sm_avaliable;
+  bstring n1sm;
+  bool isn1sm_avaliable;
   std::string dnn;
-  std::string remote_smf_addr[0];  //"192.168.12.10:8080"
+  std::string remote_smf_addr[0]; //"192.168.12.10:8080"
   bool smf_available;
+  std::string location;
   snssai_t snssai;
   plmn_t plmn;
   std::string smf_context_location;

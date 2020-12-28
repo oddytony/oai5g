@@ -132,7 +132,7 @@ int UEContextReleaseRequestMsg::encode2buffer(uint8_t *buf, int buf_size) {
 bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
   pdu = ngap_msg_pdu;
   if (pdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
-    if (pdu->choice.initiatingMessage && pdu->choice.initiatingMessage->procedureCode == Ngap_ProcedureCode_id_UEContextReleaseRequest && pdu->choice.initiatingMessage->criticality == Ngap_Criticality_reject
+    if (pdu->choice.initiatingMessage && pdu->choice.initiatingMessage->procedureCode == Ngap_ProcedureCode_id_UEContextReleaseRequest && pdu->choice.initiatingMessage->criticality == Ngap_Criticality_ignore
         && pdu->choice.initiatingMessage->value.present == Ngap_InitiatingMessage__value_PR_UEContextReleaseRequest) {
       ies = &pdu->choice.initiatingMessage->value.choice.UEContextReleaseRequest;
     } else {

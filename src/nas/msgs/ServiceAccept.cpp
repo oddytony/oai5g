@@ -32,13 +32,17 @@
 using namespace nas;
 
 //------------------------------------------------------------------------------
-ServiceAccept::ServiceAccept() {
+ServiceAccept::ServiceAccept(){
+        plain_header = NULL;
+        ie_PDU_session_status = NULL;
+        ie_session_reactivation_result = NULL;
 }
 
-//------------------------------------------------------------------------------
-ServiceAccept::~ServiceAccept() {
+ServiceAccept::~ServiceAccept(){
+        if (plain_header) delete plain_header;
+        if (ie_PDU_session_status) delete ie_PDU_session_status;
+        if (ie_session_reactivation_result) delete ie_session_reactivation_result;
 }
-
 //------------------------------------------------------------------------------
 void ServiceAccept::setHeader(uint8_t security_header_type) {
   plain_header = new NasMmPlainHeader();

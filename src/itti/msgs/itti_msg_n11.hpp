@@ -49,8 +49,18 @@ public:
   itti_nsmf_pdusession_update_sm_context(const task_id_t origin, const task_id_t destination) : itti_msg_n11(NSMF_PDU_SESSION_UPDATE_SM_CTX, origin, destination){}
   itti_nsmf_pdusession_update_sm_context(const itti_nsmf_pdusession_update_sm_context &i) : itti_msg_n11(i){}
 public:
+  std::string supi;
   uint8_t pdu_session_id;
   bstring n2sm;
+};
+class itti_nsmf_pdusession_release_sm_context : public itti_msg_n11
+{
+public:
+  itti_nsmf_pdusession_release_sm_context(const task_id_t origin, const task_id_t destination) : itti_msg_n11(NSMF_PDU_SESS_RELEASE_SMCTX, origin, destination) {}
+  itti_nsmf_pdusession_release_sm_context(const itti_nsmf_pdusession_update_sm_context &i) : itti_msg_n11(i) {}
+
+public:
+  std::string supi;
 };
 
 #endif
