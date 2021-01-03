@@ -98,11 +98,17 @@ class itti_dl_nas_transport : public itti_msg_n2 {
   bstring nas;
 };
 
-class itti_initial_context_setup_request : public itti_msg_n2
-{
-public:
-  itti_initial_context_setup_request(const task_id_t origin, const task_id_t destination) : itti_msg_n2(INITIAL_CONTEXT_SETUP_REQUEST, origin, destination) {}
-  itti_initial_context_setup_request(const itti_initial_context_setup_request &i) : itti_msg_n2(i) {
+class itti_initial_context_setup_request : public itti_msg_n2 {
+ public:
+  itti_initial_context_setup_request(const task_id_t origin,
+                                     const task_id_t destination)
+      :
+      itti_msg_n2(INITIAL_CONTEXT_SETUP_REQUEST, origin, destination) {
+  }
+  itti_initial_context_setup_request(
+      const itti_initial_context_setup_request &i)
+      :
+      itti_msg_n2(i) {
     is_pdu_exist = false;
     isn2sm_avaliable = false;
 
@@ -114,7 +120,7 @@ public:
   bool is_sr;
   bstring n2sm;
   uint8_t pdu_session_id;
-  bool is_pdu_exist; //true is no pdu context
+  bool is_pdu_exist;  //true is no pdu context
   bool isn2sm_avaliable;
 };
 
@@ -140,7 +146,7 @@ class itti_pdu_session_resource_setup_request : public itti_msg_n2 {
 class itti_pdu_session_resource_release_command : public itti_msg_n2 {
  public:
   itti_pdu_session_resource_release_command(const task_id_t origin,
-                                          const task_id_t destination)
+                                            const task_id_t destination)
       :
       itti_msg_n2(PDU_SESSION_RESOURCE_RELEASE_COMMAND, origin, destination) {
   }
@@ -156,7 +162,6 @@ class itti_pdu_session_resource_release_command : public itti_msg_n2 {
   uint8_t pdu_session_id;
 };
 
-
 class itti_ue_context_release_request : public itti_msg_n2 {
  public:
   itti_ue_context_release_request(const task_id_t origin,
@@ -171,55 +176,89 @@ class itti_ue_context_release_request : public itti_msg_n2 {
   UEContextReleaseRequestMsg *ueCtxRel;
 };
 
-class itti_ue_context_release_command : public itti_msg_n2
-{
-public:
-  itti_ue_context_release_command(const task_id_t origin, const task_id_t destination) : itti_msg_n2(UE_CONTEXT_RELEASE_COMMAND, origin, destination) {}
-  itti_ue_context_release_command(const itti_dl_nas_transport &i) : itti_msg_n2(i) {}
+class itti_ue_context_release_command : public itti_msg_n2 {
+ public:
+  itti_ue_context_release_command(const task_id_t origin,
+                                  const task_id_t destination)
+      :
+      itti_msg_n2(UE_CONTEXT_RELEASE_COMMAND, origin, destination) {
+  }
+  itti_ue_context_release_command(const itti_dl_nas_transport &i)
+      :
+      itti_msg_n2(i) {
+  }
 
-public:
+ public:
   uint32_t ran_ue_ngap_id;
   long amf_ue_ngap_id;
   Cause cause;
 };
 
-class itti_ue_radio_capability_indication : public itti_msg_n2
-{
-public:
-  itti_ue_radio_capability_indication(const task_id_t origin, const task_id_t destination) : itti_msg_n2(UE_RADIO_CAP_IND, origin, destination) {}
-  itti_ue_radio_capability_indication(const itti_ue_radio_capability_indication &i) : itti_msg_n2(i) {}
+class itti_ue_radio_capability_indication : public itti_msg_n2 {
+ public:
+  itti_ue_radio_capability_indication(const task_id_t origin,
+                                      const task_id_t destination)
+      :
+      itti_msg_n2(UE_RADIO_CAP_IND, origin, destination) {
+  }
+  itti_ue_radio_capability_indication(
+      const itti_ue_radio_capability_indication &i)
+      :
+      itti_msg_n2(i) {
+  }
   UeRadioCapabilityInfoIndicationMsg *ueRadioCap;
 };
 
-class itti_handover_required : public itti_msg_n2
-{
-public:
-  itti_handover_required(const task_id_t origin, const task_id_t destination) : itti_msg_n2(HANDOVER_REQUIRED, origin, destination) {}
-  itti_handover_required(const itti_handover_required &i) : itti_msg_n2(i) {}
+class itti_handover_required : public itti_msg_n2 {
+ public:
+  itti_handover_required(const task_id_t origin, const task_id_t destination)
+      :
+      itti_msg_n2(HANDOVER_REQUIRED, origin, destination) {
+  }
+  itti_handover_required(const itti_handover_required &i)
+      :
+      itti_msg_n2(i) {
+  }
   HandoverRequiredMsg *handvoerRequ;
 };
 
-class itti_handover_request_Ack : public itti_msg_n2
-{
-public:
-  itti_handover_request_Ack(const task_id_t origin, const task_id_t destination) : itti_msg_n2(HANDOVER_REQUEST_ACK, origin, destination) {}
-  itti_handover_request_Ack(const itti_handover_request_Ack &i) : itti_msg_n2(i) {}
+class itti_handover_request_Ack : public itti_msg_n2 {
+ public:
+  itti_handover_request_Ack(const task_id_t origin, const task_id_t destination)
+      :
+      itti_msg_n2(HANDOVER_REQUEST_ACK, origin, destination) {
+  }
+  itti_handover_request_Ack(const itti_handover_request_Ack &i)
+      :
+      itti_msg_n2(i) {
+  }
   HandoverRequestAck *handoverrequestAck;
 };
 
-class itti_handover_notify : public itti_msg_n2
-{
-public:
-  itti_handover_notify(const task_id_t origin, const task_id_t destination) : itti_msg_n2(HANDOVER_NOTIFY, origin, destination) {}
-  itti_handover_notify(const itti_handover_notify &i) : itti_msg_n2(i) {}
+class itti_handover_notify : public itti_msg_n2 {
+ public:
+  itti_handover_notify(const task_id_t origin, const task_id_t destination)
+      :
+      itti_msg_n2(HANDOVER_NOTIFY, origin, destination) {
+  }
+  itti_handover_notify(const itti_handover_notify &i)
+      :
+      itti_msg_n2(i) {
+  }
   HandoverNotifyMsg *handovernotify;
 };
 
-class itti_uplinkranstatsutransfer : public itti_msg_n2
-{
-public:
-  itti_uplinkranstatsutransfer(const task_id_t origin, const task_id_t destination) : itti_msg_n2(UPLINKRANSTATUSTRANSFER, origin, destination) {}
-  itti_uplinkranstatsutransfer(const itti_uplinkranstatsutransfer &i) : itti_msg_n2(i) {}
+class itti_uplinkranstatsutransfer : public itti_msg_n2 {
+ public:
+  itti_uplinkranstatsutransfer(const task_id_t origin,
+                               const task_id_t destination)
+      :
+      itti_msg_n2(UPLINKRANSTATUSTRANSFER, origin, destination) {
+  }
+  itti_uplinkranstatsutransfer(const itti_uplinkranstatsutransfer &i)
+      :
+      itti_msg_n2(i) {
+  }
   UplinkRANStatusTransfer *uplinkrantransfer;
 };
 

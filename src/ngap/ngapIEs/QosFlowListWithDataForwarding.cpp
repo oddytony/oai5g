@@ -19,36 +19,41 @@
  *      contact@openairinterface.org
  */
 
- /*! \file
-  \brief
-  \author  niuxiansheng-niu, BUPT
-  \date 2020
-  \email: contact@openairinterface.org
-  */
+/*! \file
+ \brief
+ \author  niuxiansheng-niu, BUPT
+ \date 2020
+ \email: contact@openairinterface.org
+ */
 #include "QosFlowListWithDataForwarding.hpp"
 
 #include <iostream>
 using namespace std;
 namespace ngap {
-	QosFlowListWithDataForwarding::QosFlowListWithDataForwarding()
-	{
-		qosFlowItemWithDataForwarding = NULL;
-		numofQosFlowItemWithDataForwarding = 0;
-	}
-	QosFlowListWithDataForwarding::~QosFlowListWithDataForwarding(){}
+QosFlowListWithDataForwarding::QosFlowListWithDataForwarding() {
+  qosFlowItemWithDataForwarding = NULL;
+  numofQosFlowItemWithDataForwarding = 0;
+}
+QosFlowListWithDataForwarding::~QosFlowListWithDataForwarding() {
+}
 
-	bool QosFlowListWithDataForwarding::decodeFormQosFlowListWithDataForwarding(Ngap_QosFlowSetupResponseListHOReqAck_t qosFlowSetupResponseList) {
-		numofQosFlowItemWithDataForwarding = qosFlowSetupResponseList.list.count;
-		qosFlowItemWithDataForwarding = new QosFlowItemWithDataForWarding[numofQosFlowItemWithDataForwarding]();
-		for (int i = 0; i < numofQosFlowItemWithDataForwarding; i++) {
-			if (!qosFlowItemWithDataForwarding[i].decodeformQosFlowItemWithDataForWarding(qosFlowSetupResponseList.list.array[i]))
-				return false;
-		}
-		return true;
-	}
-	bool QosFlowListWithDataForwarding::getQosFlowListWithDataForwarding(QosFlowItemWithDataForWarding *&m_QosFlowItemWithDataForwarding, int &num){
-		m_QosFlowItemWithDataForwarding = qosFlowItemWithDataForwarding;
-			num = numofQosFlowItemWithDataForwarding;
-			return true;
-	}
+bool QosFlowListWithDataForwarding::decodeFormQosFlowListWithDataForwarding(
+    Ngap_QosFlowSetupResponseListHOReqAck_t qosFlowSetupResponseList) {
+  numofQosFlowItemWithDataForwarding = qosFlowSetupResponseList.list.count;
+  qosFlowItemWithDataForwarding =
+      new QosFlowItemWithDataForWarding[numofQosFlowItemWithDataForwarding]();
+  for (int i = 0; i < numofQosFlowItemWithDataForwarding; i++) {
+    if (!qosFlowItemWithDataForwarding[i]
+        .decodeformQosFlowItemWithDataForWarding(
+        qosFlowSetupResponseList.list.array[i]))
+      return false;
+  }
+  return true;
+}
+bool QosFlowListWithDataForwarding::getQosFlowListWithDataForwarding(
+    QosFlowItemWithDataForWarding *&m_QosFlowItemWithDataForwarding, int &num) {
+  m_QosFlowItemWithDataForwarding = qosFlowItemWithDataForwarding;
+  num = numofQosFlowItemWithDataForwarding;
+  return true;
+}
 }

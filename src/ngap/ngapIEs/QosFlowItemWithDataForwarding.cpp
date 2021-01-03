@@ -20,42 +20,40 @@
  */
 
 /*! \file
-  \brief
-  \author  niuxiansheng-niu, BUPT
-  \date 2020
-  \email: contact@openairinterface.org
-  */
+ \brief
+ \author  niuxiansheng-niu, BUPT
+ \date 2020
+ \email: contact@openairinterface.org
+ */
 #include "QosFlowItemWithDataForwarding.hpp"
 #include <iostream>
 using namespace std;
 
-namespace ngap
-{
-	QosFlowItemWithDataForWarding::QosFlowItemWithDataForWarding()
-	{
-		qosFlowIdentifier = NULL;
-	}
-	QosFlowItemWithDataForWarding::~QosFlowItemWithDataForWarding() {}
-	void QosFlowItemWithDataForWarding::getQosFlowItemWithDataForWarding(Ngap_QosFlowIdentifier_t &m_QosFlowIdentifier)
-	{
-		if (!qosFlowIdentifier)
-			printf("qosFlowIdentifier null\n");
-		else
-			printf("qosFlowIdentifier \n");
-		if (qosFlowIdentifier->getQosFlowIdentifier(value))
-		{
-			m_QosFlowIdentifier = (Ngap_QosFlowIdentifier_t)value;
-		}
-	}
-	bool QosFlowItemWithDataForWarding::decodeformQosFlowItemWithDataForWarding(Ngap_QosFlowSetupResponseItemHOReqAck_t *qosFlowItemWithDataForWarding)
-	{
-		qosFlowIdentifier = new QosFlowIdentifier();
-		if (!qosFlowIdentifier->decodefromQosFlowIdentifier(&(qosFlowItemWithDataForWarding->qosFlowIdentifier)))
-		{
-			printf("false\n");
-			return false;
-		}
-		printf("true\n");
-		return true;
-	}
-} // namespace ngap
+namespace ngap {
+QosFlowItemWithDataForWarding::QosFlowItemWithDataForWarding() {
+  qosFlowIdentifier = NULL;
+}
+QosFlowItemWithDataForWarding::~QosFlowItemWithDataForWarding() {
+}
+void QosFlowItemWithDataForWarding::getQosFlowItemWithDataForWarding(
+    Ngap_QosFlowIdentifier_t &m_QosFlowIdentifier) {
+  if (!qosFlowIdentifier)
+    printf("qosFlowIdentifier null\n");
+  else
+    printf("qosFlowIdentifier \n");
+  if (qosFlowIdentifier->getQosFlowIdentifier(value)) {
+    m_QosFlowIdentifier = (Ngap_QosFlowIdentifier_t) value;
+  }
+}
+bool QosFlowItemWithDataForWarding::decodeformQosFlowItemWithDataForWarding(
+    Ngap_QosFlowSetupResponseItemHOReqAck_t *qosFlowItemWithDataForWarding) {
+  qosFlowIdentifier = new QosFlowIdentifier();
+  if (!qosFlowIdentifier->decodefromQosFlowIdentifier(
+      &(qosFlowItemWithDataForWarding->qosFlowIdentifier))) {
+    printf("false\n");
+    return false;
+  }
+  printf("true\n");
+  return true;
+}
+}  // namespace ngap

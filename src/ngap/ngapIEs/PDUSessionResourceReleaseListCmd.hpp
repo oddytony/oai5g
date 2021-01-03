@@ -3,26 +3,32 @@
 
 #include "PDUSessionResourceReleaseItemCmd.hpp"
 
-extern "C"{
-  #include "Ngap_PDUSessionResourceToReleaseListRelCmd.h"
+extern "C" {
+#include "Ngap_PDUSessionResourceToReleaseListRelCmd.h"
 }
 
-namespace ngap{
+namespace ngap {
 
-	class PDUSessionResourceReleaseListCmd {
-	public:
-		PDUSessionResourceReleaseListCmd();
-		virtual ~PDUSessionResourceReleaseListCmd();
-		
-		void setPDUSessionResourceReleaseListCmd(PDUSessionResourceReleaseItemCmd *m_pduSessionResourceReleaseItemCmd,int num);
-		void getPDUSessionResourceReleaseListCmd(PDUSessionResourceReleaseItemCmd *&m_pduSessionResourceReleaseItemCmd,int &num);
-		
-		bool encode2PDUSessionResourceReleaseListCmd(Ngap_PDUSessionResourceToReleaseListRelCmd_t *pduSessionResourceReleaseListCmd);
-		bool decodefromPDUSessionResourceReleaseListCmd(Ngap_PDUSessionResourceToReleaseListRelCmd_t *pduSessionResourceReleaseListCmd);
-	private:
-		PDUSessionResourceReleaseItemCmd *pduSessionResourceReleaseItemCmd;
-		int numofpduSessionResourceReleaseItemCmd;
-	};
+class PDUSessionResourceReleaseListCmd {
+ public:
+  PDUSessionResourceReleaseListCmd();
+  virtual ~PDUSessionResourceReleaseListCmd();
+
+  void setPDUSessionResourceReleaseListCmd(
+      PDUSessionResourceReleaseItemCmd *m_pduSessionResourceReleaseItemCmd,
+      int num);
+  void getPDUSessionResourceReleaseListCmd(
+      PDUSessionResourceReleaseItemCmd *&m_pduSessionResourceReleaseItemCmd,
+      int &num);
+
+  bool encode2PDUSessionResourceReleaseListCmd(
+      Ngap_PDUSessionResourceToReleaseListRelCmd_t *pduSessionResourceReleaseListCmd);
+  bool decodefromPDUSessionResourceReleaseListCmd(
+      Ngap_PDUSessionResourceToReleaseListRelCmd_t *pduSessionResourceReleaseListCmd);
+ private:
+  PDUSessionResourceReleaseItemCmd *pduSessionResourceReleaseItemCmd;
+  int numofpduSessionResourceReleaseItemCmd;
+};
 
 }
 

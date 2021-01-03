@@ -44,8 +44,7 @@ PDUSessionResourceReleasedListRelRes::~PDUSessionResourceReleasedListRelRes() {
 void PDUSessionResourceReleasedListRelRes::setPDUSessionResourceReleasedListRelRes(
     PDUSessionResourceReleasedItemRelRes *m_pduSessionResourceReleasedItemRelRes,
     int num) {
-  pduSessionResourceReleasedItemRelRes =
-      m_pduSessionResourceReleasedItemRelRes;
+  pduSessionResourceReleasedItemRelRes = m_pduSessionResourceReleasedItemRelRes;
   maxnoofPDUSessions = num;
 }
 
@@ -53,8 +52,7 @@ void PDUSessionResourceReleasedListRelRes::setPDUSessionResourceReleasedListRelR
 void PDUSessionResourceReleasedListRelRes::getPDUSessionResourceReleasedListRelRes(
     PDUSessionResourceReleasedItemRelRes *&m_pduSessionResourceReleasedItemRelRes,
     int &num) {
-  m_pduSessionResourceReleasedItemRelRes =
-      pduSessionResourceReleasedItemRelRes;
+  m_pduSessionResourceReleasedItemRelRes = pduSessionResourceReleasedItemRelRes;
   num = maxnoofPDUSessions;
 }
 
@@ -70,8 +68,7 @@ bool PDUSessionResourceReleasedListRelRes::encode2PDUSessionResourceReleasedList
     if (!pduSessionResourceReleasedItemRelRes[i]
         .encode2PDUSessionResourceReleasedItemRelRes(rel))
       return false;
-    if (ASN_SEQUENCE_ADD(&pduSessionResourceReleasedListRelRes->list, rel)
-        != 0)
+    if (ASN_SEQUENCE_ADD(&pduSessionResourceReleasedListRelRes->list, rel) != 0)
       return false;
   }
   return true;
@@ -86,7 +83,7 @@ bool PDUSessionResourceReleasedListRelRes::decodefromPDUSessionResourceReleasedL
   for (int i = 0; i < maxnoofPDUSessions; i++) {
     if (!pduSessionResourceReleasedItemRelRes[i]
         .decodefromPDUSessionResourceReleasedItemRelRes(
-            pduSessionResourceReleasedListRelRes->list.array[i]))
+        pduSessionResourceReleasedListRelRes->list.array[i]))
       return false;
   }
   return true;

@@ -30,40 +30,33 @@
 #include <vector>
 using namespace std;
 
-namespace ngap
-{
-    dRBStatusUL::dRBStatusUL()
-    {
-        ul18 = (dRBStatusUL18 *)calloc(1, sizeof(dRBStatusUL18));
-    }
-    dRBStatusUL::~dRBStatusUL() {}
-    void dRBStatusUL::setdRBStatusUL(dRBStatusUL18 *uL18)
-    {
-        ul18 = uL18;
-    }
-    void dRBStatusUL::getdRBStatusUL(dRBStatusUL18 *&uL18)
-    {
-        uL18 = ul18;
-    }
-    bool dRBStatusUL::encodedRBStatusUL(Ngap_DRBStatusUL_t *uL)
-    {
-        if (ul18->encodeddRBStatusUL18(uL->choice.dRBStatusUL18))
-        {
-            cout << "encodeddRBStatusUL18 error" << endl;
-            return false;
-        }
-        cout << "encodedRBStatusUL successfully" << endl;
-        return true;
-    }
-    bool dRBStatusUL::decodedRBStatusUL(Ngap_DRBStatusUL_t *uL)
-    {
-        ul18 = new dRBStatusUL18();
-        if (!ul18->decodeddRBStatusUL18(uL->choice.dRBStatusUL18))
-        {
-            cout << "decodeddRBStatusUL18 error" << endl;
-            return false;
-        }
-        cout << "decodedRBStatusUL successfully" << endl;
-        return true;
-    }
-} // namespace ngap
+namespace ngap {
+dRBStatusUL::dRBStatusUL() {
+  ul18 = (dRBStatusUL18*) calloc(1, sizeof(dRBStatusUL18));
+}
+dRBStatusUL::~dRBStatusUL() {
+}
+void dRBStatusUL::setdRBStatusUL(dRBStatusUL18 *uL18) {
+  ul18 = uL18;
+}
+void dRBStatusUL::getdRBStatusUL(dRBStatusUL18 *&uL18) {
+  uL18 = ul18;
+}
+bool dRBStatusUL::encodedRBStatusUL(Ngap_DRBStatusUL_t *uL) {
+  if (ul18->encodeddRBStatusUL18(uL->choice.dRBStatusUL18)) {
+    cout << "encodeddRBStatusUL18 error" << endl;
+    return false;
+  }
+  cout << "encodedRBStatusUL successfully" << endl;
+  return true;
+}
+bool dRBStatusUL::decodedRBStatusUL(Ngap_DRBStatusUL_t *uL) {
+  ul18 = new dRBStatusUL18();
+  if (!ul18->decodeddRBStatusUL18(uL->choice.dRBStatusUL18)) {
+    cout << "decodeddRBStatusUL18 error" << endl;
+    return false;
+  }
+  cout << "decodedRBStatusUL successfully" << endl;
+  return true;
+}
+}  // namespace ngap

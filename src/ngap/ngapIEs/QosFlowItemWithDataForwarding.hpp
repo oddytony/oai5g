@@ -20,35 +20,34 @@
  */
 
 /*! \file
-  \brief
-  \author  niuxiansheng-niu, BUPT
-  \date 2020
-  \email: contact@openairinterface.org
-  */
+ \brief
+ \author  niuxiansheng-niu, BUPT
+ \date 2020
+ \email: contact@openairinterface.org
+ */
 #ifndef _QOSFLOWITEMWITHDATAFORWARDING_H_
 #define _QOSFLOWITEMWITHDATAFORWARDING_H_
 
 #include "QosFlowLevelQosParameters.hpp"
 #include "QosFlowIdentifier.hpp"
-extern "C"
-{
+extern "C" {
 #include "Ngap_QosFlowSetupResponseItemHOReqAck.h"
 }
-namespace ngap
-{
-	class QosFlowItemWithDataForWarding
-	{
-	public:
-		QosFlowItemWithDataForWarding();
-		virtual ~QosFlowItemWithDataForWarding();
+namespace ngap {
+class QosFlowItemWithDataForWarding {
+ public:
+  QosFlowItemWithDataForWarding();
+  virtual ~QosFlowItemWithDataForWarding();
 
-		void getQosFlowItemWithDataForWarding(Ngap_QosFlowIdentifier_t &m_QosFlowIdentifier);
-		bool decodeformQosFlowItemWithDataForWarding(Ngap_QosFlowSetupResponseItemHOReqAck_t *qosFlowItemWithDataForWarding);
+  void getQosFlowItemWithDataForWarding(
+      Ngap_QosFlowIdentifier_t &m_QosFlowIdentifier);
+  bool decodeformQosFlowItemWithDataForWarding(
+      Ngap_QosFlowSetupResponseItemHOReqAck_t *qosFlowItemWithDataForWarding);
 
-	private:
-		long value;
-		QosFlowIdentifier *qosFlowIdentifier;
-	};
-} // namespace ngap
+ private:
+  long value;
+  QosFlowIdentifier *qosFlowIdentifier;
+};
+}  // namespace ngap
 
 #endif // !_QOSFLOWITEMWITHDATAFORWARDING_H_

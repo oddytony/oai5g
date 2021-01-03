@@ -31,8 +31,7 @@
 #include "RAN-UE-NGAP-ID.hpp"
 #include "NgapIEsStruct.hpp"
 #include "RANStatusTransferTransparentContainer.hpp"
-extern "C"
-{
+extern "C" {
 #include "Ngap_UplinkRANStatusTransfer.h"
 #include "Ngap_RANStatusTransfer-TransparentContainer.h"
 #include "Ngap_NGAP-PDU.h"
@@ -41,23 +40,23 @@ extern "C"
 }
 namespace ngap
 {
-    class UplinkRANStatusTransfer
-    {
-    public:
-        UplinkRANStatusTransfer();
-        virtual ~UplinkRANStatusTransfer();
-        unsigned long getAmfUeNgapId(); //return -1;(不存在)
-        uint32_t getRanUeNgapId();      //return -1;(不存在)
-        void getRANStatusTransfer_TransparentContainer(RANStatusTransferTransparentContainer *&ranstatustransfer_transparentcontainer);
-        bool defromPDU(Ngap_NGAP_PDU_t *ngap_msg_pdu);
+class UplinkRANStatusTransfer
+{
+public:
+  UplinkRANStatusTransfer();
+  virtual ~UplinkRANStatusTransfer();
+  unsigned long getAmfUeNgapId();  //return -1;(不存在)
+  uint32_t getRanUeNgapId();//return -1;(不存在)
+  void getRANStatusTransfer_TransparentContainer(RANStatusTransferTransparentContainer *&ranstatustransfer_transparentcontainer);
+  bool defromPDU(Ngap_NGAP_PDU_t *ngap_msg_pdu);
 
-    private:
-        Ngap_NGAP_PDU_t *UplinkRANStatusTransferPDU;
-        Ngap_UplinkRANStatusTransfer_t *UplinkRANStatusTransferIEs;
-        AMF_UE_NGAP_ID *amfUeNgapId;
-        RAN_UE_NGAP_ID *ranUeNgapId;
-        RANStatusTransferTransparentContainer *ranStatusTransfer_TransparentContainer;
-    };
-} // namespace ngap
+private:
+  Ngap_NGAP_PDU_t *UplinkRANStatusTransferPDU;
+  Ngap_UplinkRANStatusTransfer_t *UplinkRANStatusTransferIEs;
+  AMF_UE_NGAP_ID *amfUeNgapId;
+  RAN_UE_NGAP_ID *ranUeNgapId;
+  RANStatusTransferTransparentContainer *ranStatusTransfer_TransparentContainer;
+};
+}  // namespace ngap
 
 #endif

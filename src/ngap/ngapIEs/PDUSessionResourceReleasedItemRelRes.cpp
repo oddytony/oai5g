@@ -53,7 +53,8 @@ void PDUSessionResourceReleasedItemRelRes::getPDUSessionResourceReleasedItemRelR
     PDUSessionID *&m_pDUSessionID,
     OCTET_STRING_t &m_pDUSessionResourceReleaseResponseTransfer) {
   m_pDUSessionID = pDUSessionID;
-  m_pDUSessionResourceReleaseResponseTransfer = pDUSessionResourceReleaseResponseTransfer;
+  m_pDUSessionResourceReleaseResponseTransfer =
+      pDUSessionResourceReleaseResponseTransfer;
 }
 
 //------------------------------------------------------------------------------
@@ -65,7 +66,7 @@ bool PDUSessionResourceReleasedItemRelRes::encode2PDUSessionResourceReleasedItem
 
   pduSessionResourceReleasedItemRelRes
       ->pDUSessionResourceReleaseResponseTransfer =
-          pDUSessionResourceReleaseResponseTransfer;
+      pDUSessionResourceReleaseResponseTransfer;
 
   return true;
 }
