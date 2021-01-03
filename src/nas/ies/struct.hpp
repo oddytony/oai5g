@@ -41,9 +41,9 @@ namespace nas {
 
 typedef struct SNSSAI_s {
   uint8_t sst;
-  int32_t sd;  //若sd不存在，则sd设置为-1
-  int32_t mHplmnSst;  //若sd不存在，则sd设置为-1
-  int32_t mHplmnSd;  //若sd不存在，则sd设置为-1
+  int32_t sd;
+  int32_t mHplmnSst;
+  int32_t mHplmnSd;
 } SNSSAI_t;
 typedef struct {
   uint8_t ie_type;

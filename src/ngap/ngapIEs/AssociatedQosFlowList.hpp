@@ -42,11 +42,15 @@ class AssociatedQosFlowList {
   AssociatedQosFlowList();
   virtual ~AssociatedQosFlowList();
 
-  void setAssociatedQosFlowList(AssociatedQosFlowItem *m_associatedQosFlowItem, int numofitem);
-  bool getAssociatedQosFlowList(AssociatedQosFlowItem *&m_associatedQosFlowItem, int &numofitem);
+  void setAssociatedQosFlowList(AssociatedQosFlowItem *m_associatedQosFlowItem,
+                                int numofitem);
+  bool getAssociatedQosFlowList(AssociatedQosFlowItem *&m_associatedQosFlowItem,
+                                int &numofitem);
 
-  bool encode2AssociatedQosFlowList(Ngap_AssociatedQosFlowList_t &associatedQosFlowList);
-  bool decodefromAssociatedQosFlowList(Ngap_AssociatedQosFlowList_t &associatedQosFlowList);
+  bool encode2AssociatedQosFlowList(
+      Ngap_AssociatedQosFlowList_t &associatedQosFlowList);
+  bool decodefromAssociatedQosFlowList(
+      Ngap_AssociatedQosFlowList_t &associatedQosFlowList);
  private:
   AssociatedQosFlowItem *associatedQosFlowItem;
   int numofassociatedQosFlowItem;

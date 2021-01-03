@@ -53,24 +53,33 @@ class PduSessionResourceSetupRequestTransferIE {
   PduSessionResourceSetupRequestTransferIE();
   virtual ~PduSessionResourceSetupRequestTransferIE();
 
-  void setPduSessionAggregateMaximumBitRate(long bit_rate_downlink, long bit_rate_uplink);  //O
+  void setPduSessionAggregateMaximumBitRate(long bit_rate_downlink,
+                                            long bit_rate_uplink);  //O
   void setUL_NG_U_UP_TNL_Information(GtpTunnel_t upTnlInfo);  //M
   //void setAdditionalUL_NG_U_UP_TNL_Information(std::vector<GtpTunnel>list);//O
   void setDataForwardingNotPossible();		//O
   void setPduSessionType(e_Ngap_PDUSessionType type);		//M
-  void setSecurityIndication(e_Ngap_IntegrityProtectionIndication integrity_protection, e_Ngap_ConfidentialityProtectionIndication confidentiality_protection, e_Ngap_MaximumIntegrityProtectedDataRate maxIntProtDataRate);
-  void setSecurityIndication(e_Ngap_IntegrityProtectionIndication integrity_protection, e_Ngap_ConfidentialityProtectionIndication confidentiality_protection);
+  void setSecurityIndication(
+      e_Ngap_IntegrityProtectionIndication integrity_protection,
+      e_Ngap_ConfidentialityProtectionIndication confidentiality_protection,
+      e_Ngap_MaximumIntegrityProtectedDataRate maxIntProtDataRate);
+  void setSecurityIndication(
+      e_Ngap_IntegrityProtectionIndication integrity_protection,
+      e_Ngap_ConfidentialityProtectionIndication confidentiality_protection);
   void setNetworkInstance(long value);
   void setQosFlowSetupRequestList(std::vector<QosFlowSetupReq_t> list);
   int encode2buffer(uint8_t *buf, int buf_size);
   //Decapsulation
   bool decodefromIE(uint8_t *buf, int buf_size);
-  bool getPduSessionAggregateMaximumBitRate(long &bit_rate_downlink, long &bit_rate_uplink);		//O
+  bool getPduSessionAggregateMaximumBitRate(long &bit_rate_downlink,
+                                            long &bit_rate_uplink);		//O
   bool getUL_NG_U_UP_TNL_Information(GtpTunnel_t &upTnlInfo);		//M
   //bool getAdditionalUL_NG_U_UP_TNL_Information(std::vector<GtpTunnel>&list);//O
   bool getDataForwardingNotPossible();		//O
   bool getPduSessionType(long &type);		//M
-  bool getSecurityIndication(long &integrity_protection, long &confidentiality_protection, long &maxIntProtDataRate);
+  bool getSecurityIndication(long &integrity_protection,
+                             long &confidentiality_protection,
+                             long &maxIntProtDataRate);
   bool getNetworkInstance(long &value);
   bool getQosFlowSetupRequestList(std::vector<QosFlowSetupReq_t> &list);
 

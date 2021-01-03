@@ -43,7 +43,8 @@ UEContextRequest::~UEContextRequest() {
 }
 
 //------------------------------------------------------------------------------
-void UEContextRequest::setUEContextRequest(e_Ngap_UEContextRequest m_uecontextrequest) {
+void UEContextRequest::setUEContextRequest(
+    e_Ngap_UEContextRequest m_uecontextrequest) {
   uecontextrequest = m_uecontextrequest;
 }
 
@@ -54,13 +55,15 @@ int UEContextRequest::getUEContextRequest() {
 }
 
 //------------------------------------------------------------------------------
-bool UEContextRequest::encode2UEContextRequest(Ngap_UEContextRequest_t &uEContextRequest) {
+bool UEContextRequest::encode2UEContextRequest(
+    Ngap_UEContextRequest_t &uEContextRequest) {
   uEContextRequest = uecontextrequest;
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool UEContextRequest::decodefromUEContextRequest(Ngap_UEContextRequest_t &uEContextRequest) {
+bool UEContextRequest::decodefromUEContextRequest(
+    Ngap_UEContextRequest_t &uEContextRequest) {
   uecontextrequest = uEContextRequest;
   return true;
 }

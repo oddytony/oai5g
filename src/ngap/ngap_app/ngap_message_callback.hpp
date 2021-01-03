@@ -26,7 +26,6 @@
  \email: contact@openairinterface.org
  */
 
-
 #ifndef _NGAP_MESSAGE_CALLBACK_H_
 #define _NGAP_MESSAGE_CALLBACK_H_
 
@@ -41,6 +40,7 @@
 #include "itti.hpp"
 #include "NGSetupRequest.hpp"
 #include "PduSessionResourceSetupResponse.hpp"
+#include "PduSessionResourceReleaseResponse.hpp"
 #include "InitialContextSetupResponse.hpp"
 #include "pdu_session_context.hpp"
 #include "nas_context.hpp"
@@ -56,9 +56,10 @@ extern amf_n11 *amf_n11_inst;
 typedef int (*ngap_message_decoded_callback)(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p);
 
 //------------------------------------------------------------------------------
-int ngap_amf_handle_ng_setup_request(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
+int ngap_amf_handle_ng_setup_request(const sctp_assoc_id_t assoc_id,
+                                     const sctp_stream_id_t stream,
+                                     struct Ngap_NGAP_PDU *message_p) {
   Logger::ngap().debug("Sending ITTI NG Setup Request message to TASK_AMF_N2");
-  //need code from yangjian and send itti message to TASK_AMF_N2
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   NGSetupRequestMsg *ngSetupReq = new NGSetupRequestMsg();
   if (!ngSetupReq->decodefrompdu(message_p)) {
@@ -66,19 +67,24 @@ int ngap_amf_handle_ng_setup_request(const sctp_assoc_id_t assoc_id, const sctp_
     return -1;
   }
   //after decoding, need free(message_p)
-  itti_ng_setup_request *itti_msg = new itti_ng_setup_request(TASK_NGAP, TASK_AMF_N2);
+  itti_ng_setup_request *itti_msg = new itti_ng_setup_request(TASK_NGAP,
+                                                              TASK_AMF_N2);
   itti_msg->assoc_id = assoc_id;
   itti_msg->stream = stream;
   itti_msg->ngSetupReq = ngSetupReq;
-  std::shared_ptr<itti_ng_setup_request> i = std::shared_ptr < itti_ng_setup_request > (itti_msg);
+  std::shared_ptr<itti_ng_setup_request> i = std::shared_ptr
+      < itti_ng_setup_request > (itti_msg);
   int ret = itti_inst->send_msg(i);
   if (0 != ret) {
-    Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N2", i->get_msg_name());
+    Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N2",
+                         i->get_msg_name());
   }
 }
 
 //------------------------------------------------------------------------------
-int ngap_amf_handle_initial_ue_message(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
+int ngap_amf_handle_initial_ue_message(const sctp_assoc_id_t assoc_id,
+                                       const sctp_stream_id_t stream,
+                                       struct Ngap_NGAP_PDU *message_p) {
   Logger::ngap().debug("Sending itti initial ue message to TASK_AMF_N2");
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   //decode INITIAL_UE_MESSAGE
@@ -87,114 +93,203 @@ int ngap_amf_handle_initial_ue_message(const sctp_assoc_id_t assoc_id, const sct
     Logger::ngap().error("decoding initialuemessage message error");
     return -1;
   }
-  itti_initial_ue_message *init_ue_msg = new itti_initial_ue_message(TASK_NGAP, TASK_AMF_N2);
+  itti_initial_ue_message *init_ue_msg = new itti_initial_ue_message(
+      TASK_NGAP, TASK_AMF_N2);
   init_ue_msg->assoc_id = assoc_id;
   init_ue_msg->stream = stream;
   init_ue_msg->initUeMsg = initUeMsg;
-  std::shared_ptr<itti_initial_ue_message> i = std::shared_ptr < itti_initial_ue_message > (init_ue_msg);
+  std::shared_ptr<itti_initial_ue_message> i = std::shared_ptr
+      < itti_initial_ue_message > (init_ue_msg);
   int ret = itti_inst->send_msg(i);
   if (0 != ret) {
-    Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N2", i->get_msg_name());
+    Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N2",
+                         i->get_msg_name());
   }
 }
 
 //------------------------------------------------------------------------------
-int ngap_amf_handle_uplink_nas_transport(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
-  Logger::ngap().debug("Sending ITTI Uplink NAS Transport message to TASK_AMF_N2");
+int ngap_amf_handle_uplink_nas_transport(const sctp_assoc_id_t assoc_id,
+                                         const sctp_stream_id_t stream,
+                                         struct Ngap_NGAP_PDU *message_p) {
+  Logger::ngap().debug(
+      "Sending ITTI Uplink NAS Transport message to TASK_AMF_N2");
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   UplinkNASTransportMsg *uplinkNasT = new UplinkNASTransportMsg();
   if (!uplinkNasT->decodefrompdu(message_p)) {
     Logger::ngap().error("Decoding UplinkNasTransport message error");
     return -1;
   }
-  itti_ul_nas_transport *itti_ul_nas = new itti_ul_nas_transport(TASK_NGAP, TASK_AMF_N2);
+  itti_ul_nas_transport *itti_ul_nas = new itti_ul_nas_transport(TASK_NGAP,
+                                                                 TASK_AMF_N2);
   itti_ul_nas->assoc_id = assoc_id;
   itti_ul_nas->stream = stream;
   itti_ul_nas->ulNas = uplinkNasT;
-  std::shared_ptr<itti_ul_nas_transport> i = std::shared_ptr < itti_ul_nas_transport > (itti_ul_nas);
+  std::shared_ptr<itti_ul_nas_transport> i = std::shared_ptr
+      < itti_ul_nas_transport > (itti_ul_nas);
   int ret = itti_inst->send_msg(i);
   if (0 != ret) {
-    Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N2", i->get_msg_name());
+    Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N2",
+                         i->get_msg_name());
   }
 }
 
 //------------------------------------------------------------------------------
-int ngap_amf_handle_initial_context_setup_response(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
+int ngap_amf_handle_initial_context_setup_response(
+    const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
+    struct Ngap_NGAP_PDU *message_p) {
   Logger::ngap().debug("Handling Initial Context Setup Response...");
-  InitialContextSetupResponseMsg *initCtxResp = new InitialContextSetupResponseMsg();
+  InitialContextSetupResponseMsg *initCtxResp =
+      new InitialContextSetupResponseMsg();
   if (!initCtxResp->decodefrompdu(message_p)) {
     Logger::ngap().error("Decoding InitialContextSetupResponse message error");
     return -1;
   }
   std::vector<PDUSessionResourceSetupResponseItem_t> list;
   if (!initCtxResp->getPduSessionResourceSetupResponseList(list)) {
-    Logger::ngap().error("Decode PduSessionResourceSetupResponseList IE error or this IE is not available");
+    Logger::ngap().error(
+        "Decode PduSessionResourceSetupResponseList IE error or this IE is not available");
     return 0;
   }
-  uint8_t transferIe[500];
-  memcpy(transferIe, list[0].pduSessionResourceSetupResponseTransfer.buf, list[0].pduSessionResourceSetupResponseTransfer.size);
-  bstring n2sm = blk2bstr(transferIe, list[0].pduSessionResourceSetupResponseTransfer.size);
 
-  Logger::ngap().debug("Sending ITTI Initial Context Setup Response to TASK_AMF_N11");
-  itti_nsmf_pdusession_update_sm_context *itti_msg = new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
+  uint8_t transferIe[500];
+  memcpy(transferIe, list[0].pduSessionResourceSetupResponseTransfer.buf,
+         list[0].pduSessionResourceSetupResponseTransfer.size);
+  bstring n2sm = blk2bstr(transferIe,
+                          list[0].pduSessionResourceSetupResponseTransfer.size);
+
+  Logger::ngap().debug(
+      "Sending ITTI Initial Context Setup Response to TASK_AMF_N11");
+  itti_nsmf_pdusession_update_sm_context *itti_msg =
+      new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
   itti_msg->pdu_session_id = list[0].pduSessionId;
   itti_msg->n2sm = n2sm;
-  std::shared_ptr < itti_nsmf_pdusession_update_sm_context > i = std::shared_ptr < itti_nsmf_pdusession_update_sm_context > (itti_msg);
+  itti_msg->is_n2sm_set = true;
+  itti_msg->n2sm_info_type = "PDU_RES_SETUP_RSP";
+  std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i = std::shared_ptr
+      < itti_nsmf_pdusession_update_sm_context > (itti_msg);
   int ret = itti_inst->send_msg(i);
   if (0 != ret) {
-    Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N11", i->get_msg_name());
+    Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N11",
+                         i->get_msg_name());
   }
   return 0;
 }
 
 //------------------------------------------------------------------------------
-int ngap_amf_handle_initial_context_setup_failure(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
-  Logger::ngap().debug("Sending itti initial context setup failure to TASK_AMF_N2");
+int ngap_amf_handle_initial_context_setup_failure(
+    const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
+    struct Ngap_NGAP_PDU *message_p) {
+  Logger::ngap().debug(
+      "Sending itti initial context setup failure to TASK_AMF_N2");
   return 0;
 }
 
 //------------------------------------------------------------------------------
-int ngap_amf_handle_ue_radio_cap_indication(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
-  Logger::ngap().debug("Sending itti ue radio capability indication to TASK_AMF_N2");
-  UeRadioCapabilityInfoIndicationMsg *ueRadioCap = new UeRadioCapabilityInfoIndicationMsg();
+int ngap_amf_handle_ue_radio_cap_indication(const sctp_assoc_id_t assoc_id,
+                                            const sctp_stream_id_t stream,
+                                            struct Ngap_NGAP_PDU *message_p) {
+  Logger::ngap().debug(
+      "Sending itti ue radio capability indication to TASK_AMF_N2");
+  UeRadioCapabilityInfoIndicationMsg *ueRadioCap =
+      new UeRadioCapabilityInfoIndicationMsg();
   if (!ueRadioCap->decodefrompdu(message_p)) {
     Logger::ngap().error("Decoding UEContextReleaseRequest message error");
     return -1;
   }
-  itti_ue_radio_capability_indication *itti_msg = new itti_ue_radio_capability_indication(TASK_NGAP, TASK_AMF_N2);
+  itti_ue_radio_capability_indication *itti_msg =
+      new itti_ue_radio_capability_indication(TASK_NGAP, TASK_AMF_N2);
   itti_msg->assoc_id = assoc_id;
   itti_msg->stream = stream;
   itti_msg->ueRadioCap = ueRadioCap;
-  std::shared_ptr<itti_ue_radio_capability_indication> i = std::shared_ptr < itti_ue_radio_capability_indication > (itti_msg);
+  std::shared_ptr<itti_ue_radio_capability_indication> i = std::shared_ptr
+      < itti_ue_radio_capability_indication > (itti_msg);
   int ret = itti_inst->send_msg(i);
   if (0 != ret) {
-    Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N2", i->get_msg_name());
+    Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N2",
+                         i->get_msg_name());
   }
 }
 
 //------------------------------------------------------------------------------
-int ngap_amf_handle_ue_context_release_request(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
-  Logger::ngap().debug("Sending itti ue context release request to TASK_AMF_N2");
+int ngap_amf_handle_ue_context_release_request(
+    const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
+    struct Ngap_NGAP_PDU *message_p) {
+  Logger::ngap().debug(
+      "Sending itti ue context release request to TASK_AMF_N2");
   UEContextReleaseRequestMsg *ueCtxRelReq = new UEContextReleaseRequestMsg();
   if (!ueCtxRelReq->decodefrompdu(message_p)) {
     Logger::ngap().error("Decoding UEContextReleaseRequest message error");
     return -1;
   }
-  itti_ue_context_release_request *itti_msg = new itti_ue_context_release_request(TASK_NGAP, TASK_AMF_N2);
+  itti_ue_context_release_request *itti_msg =
+      new itti_ue_context_release_request(TASK_NGAP, TASK_AMF_N2);
   itti_msg->assoc_id = assoc_id;
   itti_msg->stream = stream;
   itti_msg->ueCtxRel = ueCtxRelReq;
-  std::shared_ptr<itti_ue_context_release_request> i = std::shared_ptr < itti_ue_context_release_request > (itti_msg);
+  std::shared_ptr<itti_ue_context_release_request> i = std::shared_ptr
+      < itti_ue_context_release_request > (itti_msg);
   int ret = itti_inst->send_msg(i);
   if (0 != ret) {
-    Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N2", i->get_msg_name());
+    Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N2",
+                         i->get_msg_name());
   }
 }
 
 //------------------------------------------------------------------------------
-int ngap_amf_handle_ue_context_release_complete(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
-  Logger::ngap().debug("Sending itti ue context release complete to TASK_AMF_N2");
+int ngap_amf_handle_ue_context_release_complete(
+    const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
+    struct Ngap_NGAP_PDU *message_p) {
+  Logger::ngap().debug(
+      "Sending itti ue context release complete to TASK_AMF_N2");
   return 0;
+}
+
+int ngap_amf_handle_pdu_session_resource_release_response(
+    const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
+    struct Ngap_NGAP_PDU *message_p){
+  Logger::ngap().debug("Handle PDU Session Resource Setup Release Response");
+
+  PduSessionResourceReleaseResponseMsg *pduresp =
+      new PduSessionResourceReleaseResponseMsg();
+  if (!pduresp->decodefrompdu(message_p)) {
+    Logger::ngap().error(
+        "Decoding PduSessionResourceReleaseResponseMsg message error");
+    return -1;
+  }
+  //TODO: process User Location Information if this IE is available
+
+  //Transfer pduSessionResourceReleaseResponseTransfer to SMF
+  std::vector<PDUSessionResourceReleasedItem_t> list;
+  if (!pduresp->getPduSessionResourceReleasedList(list)) {
+    Logger::ngap().error(
+        "Decoding PduSessionResourceReleaseResponseMsg getPduSessionResourceReleasedList IE  error");
+    return -1;
+  }
+  //TODO: add the full list
+  uint8_t transferIe[500];
+  memcpy(transferIe, list[0].pduSessionResourceReleaseResponseTransfer.buf,
+         list[0].pduSessionResourceReleaseResponseTransfer.size);
+  bstring n2sm = blk2bstr(transferIe,
+                          list[0].pduSessionResourceReleaseResponseTransfer.size);
+  Logger::ngap().debug(
+      "Sending itti PDUSessionResourceReleaseResponse to TASK_AMF_N11");
+
+  itti_nsmf_pdusession_update_sm_context *itti_msg =
+      new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
+  itti_msg->pdu_session_id = list[0].pduSessionId;
+  itti_msg->n2sm = n2sm;
+  itti_msg->is_n2sm_set = true;
+  itti_msg->n2sm_info_type = "PDU_RES_REL_RSP";
+
+  std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i = std::shared_ptr
+      < itti_nsmf_pdusession_update_sm_context > (itti_msg);
+  int ret = itti_inst->send_msg(i);
+  if (0 != ret) {
+    Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N11",
+                         i->get_msg_name());
+  }
+  return 0;
+
 }
 
 //------------------------------------------------------------------------------
@@ -284,11 +379,6 @@ int ngap_amf_handle_pdu_session_resource_setup_response(const sctp_assoc_id_t as
   }
 }
 
-//------------------------------------------------------------------------------
-int ngap_amf_handle_pdu_session_resource_release_response(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {	
-  Logger::ngap().debug("sending itti pdu session resource release response to TASK_AMF_N2");
-  return 0;
-}
 
 //------------------------------------------------------------------------------
 int ngap_amf_handle_error_indication(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
@@ -423,7 +513,6 @@ int handover_resource_allocation(const sctp_assoc_id_t assoc_id, const sctp_stre
   {
     Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N2", i->get_msg_name());
   }
-  /****************************************************/
   return 0;
 }
 
@@ -603,9 +692,11 @@ int uplink_ran_status_transfer(const sctp_assoc_id_t assoc_id, const sctp_stream
   if (0 != ret)
   {
     Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N2", i->get_msg_name());
+
   }
   return 0;
 }
+
 
 //------------------------------------------------------------------------------
 int uplink_ue_associated_nrppa_transport(const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream, struct Ngap_NGAP_PDU *message_p) {
@@ -674,6 +765,7 @@ ngap_message_decoded_callback messages_callback[][3] = {  {ngap_amf_configuratio
     {0, 0, 0},                                                                                                                         /*WriteReplaceWarning*/
     {0, 0, 0},                                                                                                                         /*WriteReplaceWarning*/
     {0, 0, 0}                                                                                                                          /*WriteReplaceWarning*/
+
 };
 
 #endif

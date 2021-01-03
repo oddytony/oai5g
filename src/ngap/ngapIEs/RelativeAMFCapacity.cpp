@@ -54,14 +54,16 @@ long RelativeAMFCapacity::getValue() {
 }
 
 //------------------------------------------------------------------------------
-bool RelativeAMFCapacity::encode2RelativeAMFCapacity(Ngap_RelativeAMFCapacity_t *amfCapacityIe) {
+bool RelativeAMFCapacity::encode2RelativeAMFCapacity(
+    Ngap_RelativeAMFCapacity_t *amfCapacityIe) {
   *amfCapacityIe = amfcapacity;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool RelativeAMFCapacity::decodefromRelativeAMFCapacity(Ngap_RelativeAMFCapacity_t *pdu) {
+bool RelativeAMFCapacity::decodefromRelativeAMFCapacity(
+    Ngap_RelativeAMFCapacity_t *pdu) {
   amfcapacity = *pdu;
 
   return true;

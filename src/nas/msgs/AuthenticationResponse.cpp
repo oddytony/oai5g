@@ -46,12 +46,15 @@ AuthenticationResponse::~AuthenticationResponse() {
 //------------------------------------------------------------------------------
 void AuthenticationResponse::setHeader(uint8_t security_header_type) {
   plain_header = new NasMmPlainHeader();
-  plain_header->setHeader(EPD_5GS_MM_MSG, security_header_type, AUTHENTICATION_RESPONSE);
+  plain_header->setHeader(EPD_5GS_MM_MSG, security_header_type,
+                          AUTHENTICATION_RESPONSE);
 }
 
 //------------------------------------------------------------------------------
-void AuthenticationResponse::setAuthentication_Response_Parameter(bstring para) {
-  ie_authentication_response_parameter = new Authentication_Response_Parameter(0x2D, para);
+void AuthenticationResponse::setAuthentication_Response_Parameter(
+    bstring para) {
+  ie_authentication_response_parameter = new Authentication_Response_Parameter(
+      0x2D, para);
 }
 
 //------------------------------------------------------------------------------
@@ -91,31 +94,37 @@ int AuthenticationResponse::encode2buffer(uint8_t *buf, int len) {
     return 0;
   encoded_size += 3;
   if (!ie_authentication_response_parameter) {
-    Logger::nas_mm().warn("IE ie_authentication_response_parameter is not available");
+    Logger::nas_mm().warn(
+        "IE ie_authentication_response_parameter is not available");
   } else {
-    if (int size = ie_authentication_response_parameter->encode2buffer(buf + encoded_size, len - encoded_size)) {
+    if (int size = ie_authentication_response_parameter->encode2buffer(
+        buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
     } else {
-      Logger::nas_mm().error("Encoding ie_authentication_response_parameter error");
+      Logger::nas_mm().error(
+          "Encoding ie_authentication_response_parameter error");
       return 0;
     }
   }
   if (!ie_eap_message) {
     Logger::nas_mm().warn("IE ie_eap_message is not available");
   } else {
-    if (int size = ie_eap_message->encode2buffer(buf + encoded_size, len - encoded_size)) {
+    if (int size = ie_eap_message->encode2buffer(buf + encoded_size,
+                                                 len - encoded_size)) {
       encoded_size += size;
     } else {
       Logger::nas_mm().error("Encoding ie_eap_message error");
       return 0;
     }
   }
-  Logger::nas_mm().debug("Encoded AuthenticationResponse message len (%d)", encoded_size);
+  Logger::nas_mm().debug("Encoded AuthenticationResponse message len (%d)",
+                         encoded_size);
   return 1;
 }
 
 //------------------------------------------------------------------------------
-int AuthenticationResponse::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len) {
+int AuthenticationResponse::decodefrombuffer(NasMmPlainHeader *header,
+                                             uint8_t *buf, int len) {
   Logger::nas_mm().debug("Decoding AuthenticationResponse message");
   int decoded_size = 3;
   plain_header = header;
@@ -126,8 +135,10 @@ int AuthenticationResponse::decodefrombuffer(NasMmPlainHeader *header, uint8_t *
     switch (octet) {
       case 0x2D: {
         Logger::nas_mm().debug("Decoding IEI (0x2D)");
-        ie_authentication_response_parameter = new Authentication_Response_Parameter();
-        decoded_size += ie_authentication_response_parameter->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
+        ie_authentication_response_parameter =
+            new Authentication_Response_Parameter();
+        decoded_size += ie_authentication_response_parameter->decodefrombuffer(
+            buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
         Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
@@ -135,14 +146,17 @@ int AuthenticationResponse::decodefrombuffer(NasMmPlainHeader *header, uint8_t *
       case 0x78: {
         Logger::nas_mm().debug("Decoding IEI (0x78)");
         ie_eap_message = new EAP_Message();
-        decoded_size += ie_eap_message->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
+        decoded_size += ie_eap_message->decodefrombuffer(buf + decoded_size,
+                                                         len - decoded_size,
+                                                         true);
         octet = *(buf + decoded_size);
         Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
     }
   }
-  Logger::nas_mm().debug("Decoded AuthenticationResponse message len (%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded AuthenticationResponse message len (%d)",
+                         decoded_size);
 
 }
 

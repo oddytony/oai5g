@@ -62,20 +62,29 @@ void NGSetupFailureMsg::setMessageType() {
 
   MessageType NgSetupFailureMessageTypeIE;
   NgSetupFailureMessageTypeIE.setProcedureCode(Ngap_ProcedureCode_id_NGSetup);
-  NgSetupFailureMessageTypeIE.setTypeOfMessage(Ngap_NGAP_PDU_PR_unsuccessfulOutcome);
-  NgSetupFailureMessageTypeIE.setValuePresent(Ngap_UnsuccessfulOutcome__value_PR_NGSetupFailure);
+  NgSetupFailureMessageTypeIE.setTypeOfMessage(
+      Ngap_NGAP_PDU_PR_unsuccessfulOutcome);
+  NgSetupFailureMessageTypeIE.setValuePresent(
+      Ngap_UnsuccessfulOutcome__value_PR_NGSetupFailure);
 
-  if (NgSetupFailureMessageTypeIE.getProcedureCode() == Ngap_ProcedureCode_id_NGSetup && NgSetupFailureMessageTypeIE.getTypeOfMessage() == Ngap_NGAP_PDU_PR_unsuccessfulOutcome) {
+  if (NgSetupFailureMessageTypeIE.getProcedureCode()
+      == Ngap_ProcedureCode_id_NGSetup
+      && NgSetupFailureMessageTypeIE.getTypeOfMessage()
+          == Ngap_NGAP_PDU_PR_unsuccessfulOutcome) {
     NgSetupFailureMessageTypeIE.encode2pdu(ngSetupFailurePdu);
-    ngSetupFailureIEs = &(ngSetupFailurePdu->choice.unsuccessfulOutcome->value.choice.NGSetupFailure);
+    ngSetupFailureIEs = &(ngSetupFailurePdu->choice.unsuccessfulOutcome->value
+        .choice.NGSetupFailure);
   } else {
-    cout << "[warning] This information doesn't refer to NGSetupFailure Message!!!" << endl;
+    cout
+        << "[warning] This information doesn't refer to NGSetupFailure Message!!!"
+        << endl;
   }
 }
 
 //------------------------------------------------------------------------------
 void NGSetupFailureMsg::addCauseIE() {
-  Ngap_NGSetupFailureIEs_t *ie = (Ngap_NGSetupFailureIEs_t*) calloc(1, sizeof(Ngap_NGSetupFailureIEs_t));
+  Ngap_NGSetupFailureIEs_t *ie = (Ngap_NGSetupFailureIEs_t*) calloc(
+      1, sizeof(Ngap_NGSetupFailureIEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_Cause;
   ie->criticality = Ngap_Criticality_ignore;
   ie->value.present = Ngap_NGSetupFailureIEs__value_PR_Cause;
@@ -89,7 +98,8 @@ void NGSetupFailureMsg::addCauseIE() {
 
 //------------------------------------------------------------------------------
 void NGSetupFailureMsg::addTimeToWaitIE() {
-  Ngap_NGSetupFailureIEs_t *ie = (Ngap_NGSetupFailureIEs_t*) calloc(1, sizeof(Ngap_NGSetupFailureIEs_t));
+  Ngap_NGSetupFailureIEs_t *ie = (Ngap_NGSetupFailureIEs_t*) calloc(
+      1, sizeof(Ngap_NGSetupFailureIEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_TimeToWait;
   ie->criticality = Ngap_Criticality_ignore;
   ie->value.present = Ngap_NGSetupFailureIEs__value_PR_TimeToWait;
@@ -102,7 +112,8 @@ void NGSetupFailureMsg::addTimeToWaitIE() {
 }
 
 //------------------------------------------------------------------------------
-void NGSetupFailureMsg::setCauseRadioNetwork(e_Ngap_CauseRadioNetwork cause_value, e_Ngap_TimeToWait time_to_wait) {
+void NGSetupFailureMsg::setCauseRadioNetwork(
+    e_Ngap_CauseRadioNetwork cause_value, e_Ngap_TimeToWait time_to_wait) {
   if (!cause)
     cause = new Cause();
   cause->setChoiceOfCause(Ngap_Cause_PR_radioNetwork);
@@ -116,7 +127,8 @@ void NGSetupFailureMsg::setCauseRadioNetwork(e_Ngap_CauseRadioNetwork cause_valu
 }
 
 //------------------------------------------------------------------------------
-void NGSetupFailureMsg::setCauseRadioNetwork(e_Ngap_CauseRadioNetwork cause_value) {
+void NGSetupFailureMsg::setCauseRadioNetwork(
+    e_Ngap_CauseRadioNetwork cause_value) {
   if (!cause)
     cause = new Cause();
   cause->setChoiceOfCause(Ngap_Cause_PR_radioNetwork);
@@ -125,7 +137,8 @@ void NGSetupFailureMsg::setCauseRadioNetwork(e_Ngap_CauseRadioNetwork cause_valu
 }
 
 //------------------------------------------------------------------------------
-void NGSetupFailureMsg::setCauseTransport(e_Ngap_CauseTransport cause_value, e_Ngap_TimeToWait time_to_wait) {
+void NGSetupFailureMsg::setCauseTransport(e_Ngap_CauseTransport cause_value,
+                                          e_Ngap_TimeToWait time_to_wait) {
   if (!cause)
     cause = new Cause();
   cause->setChoiceOfCause(Ngap_Cause_PR_transport);
@@ -148,7 +161,8 @@ void NGSetupFailureMsg::setCauseTransport(e_Ngap_CauseTransport cause_value) {
 }
 
 //------------------------------------------------------------------------------
-void NGSetupFailureMsg::setCauseNas(e_Ngap_CauseNas cause_value, e_Ngap_TimeToWait time_to_wait) {
+void NGSetupFailureMsg::setCauseNas(e_Ngap_CauseNas cause_value,
+                                    e_Ngap_TimeToWait time_to_wait) {
   if (!cause)
     cause = new Cause();
   cause->setChoiceOfCause(Ngap_Cause_PR_nas);
@@ -171,7 +185,8 @@ void NGSetupFailureMsg::setCauseNas(e_Ngap_CauseNas cause_value) {
 }
 
 //------------------------------------------------------------------------------
-void NGSetupFailureMsg::setCauseProtocol(e_Ngap_CauseProtocol cause_value, e_Ngap_TimeToWait time_to_wait) {
+void NGSetupFailureMsg::setCauseProtocol(e_Ngap_CauseProtocol cause_value,
+                                         e_Ngap_TimeToWait time_to_wait) {
   if (!cause)
     cause = new Cause();
   cause->setChoiceOfCause(Ngap_Cause_PR_protocol);
@@ -194,7 +209,8 @@ void NGSetupFailureMsg::setCauseProtocol(e_Ngap_CauseProtocol cause_value) {
 }
 
 //------------------------------------------------------------------------------
-void NGSetupFailureMsg::setCauseMisc(e_Ngap_CauseMisc cause_value, e_Ngap_TimeToWait time_to_wait) {
+void NGSetupFailureMsg::setCauseMisc(e_Ngap_CauseMisc cause_value,
+                                     e_Ngap_TimeToWait time_to_wait) {
   if (!cause)
     cause = new Cause();
   cause->setChoiceOfCause(Ngap_Cause_PR_misc);
@@ -219,7 +235,8 @@ void NGSetupFailureMsg::setCauseMisc(e_Ngap_CauseMisc cause_value) {
 //------------------------------------------------------------------------------
 int NGSetupFailureMsg::encode2buffer(uint8_t *buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, ngSetupFailurePdu);
-  asn_enc_rval_t er = aper_encode_to_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL, ngSetupFailurePdu, buf, buf_size);
+  asn_enc_rval_t er = aper_encode_to_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL,
+                                            ngSetupFailurePdu, buf, buf_size);
   cout << "er.encoded(" << er.encoded << ")" << endl;
   return er.encoded;
 }
@@ -229,9 +246,15 @@ int NGSetupFailureMsg::encode2buffer(uint8_t *buf, int buf_size) {
 bool NGSetupFailureMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
   ngSetupFailurePdu = ngap_msg_pdu;
   if (ngSetupFailurePdu->present == Ngap_NGAP_PDU_PR_unsuccessfulOutcome) {
-    if (ngSetupFailurePdu->choice.unsuccessfulOutcome && ngSetupFailurePdu->choice.unsuccessfulOutcome->procedureCode == Ngap_ProcedureCode_id_NGSetup && ngSetupFailurePdu->choice.unsuccessfulOutcome->criticality == Ngap_Criticality_reject
-        && ngSetupFailurePdu->choice.unsuccessfulOutcome->value.present == Ngap_UnsuccessfulOutcome__value_PR_NGSetupFailure) {
-      ngSetupFailureIEs = &ngSetupFailurePdu->choice.initiatingMessage->value.choice.NGSetupFailure;
+    if (ngSetupFailurePdu->choice.unsuccessfulOutcome
+        && ngSetupFailurePdu->choice.unsuccessfulOutcome->procedureCode
+            == Ngap_ProcedureCode_id_NGSetup
+        && ngSetupFailurePdu->choice.unsuccessfulOutcome->criticality
+            == Ngap_Criticality_reject
+        && ngSetupFailurePdu->choice.unsuccessfulOutcome->value.present
+            == Ngap_UnsuccessfulOutcome__value_PR_NGSetupFailure) {
+      ngSetupFailureIEs = &ngSetupFailurePdu->choice.initiatingMessage->value
+          .choice.NGSetupFailure;
     } else {
       cout << "Check NGSetupFailure message error!!!" << endl;
       return false;
@@ -243,9 +266,13 @@ bool NGSetupFailureMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
   for (int i = 0; i < ngSetupFailureIEs->protocolIEs.list.count; i++) {
     switch (ngSetupFailureIEs->protocolIEs.list.array[i]->id) {
       case Ngap_ProtocolIE_ID_id_Cause: {
-        if (ngSetupFailureIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_ignore && ngSetupFailureIEs->protocolIEs.list.array[i]->value.present == Ngap_NGSetupFailureIEs__value_PR_Cause) {
+        if (ngSetupFailureIEs->protocolIEs.list.array[i]->criticality
+            == Ngap_Criticality_ignore
+            && ngSetupFailureIEs->protocolIEs.list.array[i]->value.present
+                == Ngap_NGSetupFailureIEs__value_PR_Cause) {
           cause = new Cause();
-          if (!cause->decodefromCause(&ngSetupFailureIEs->protocolIEs.list.array[i]->value.choice.Cause)) {
+          if (!cause->decodefromCause(
+              &ngSetupFailureIEs->protocolIEs.list.array[i]->value.choice.Cause)) {
             cout << "decoded ngap Cause IE error" << endl;
             return false;
           }
@@ -256,9 +283,14 @@ bool NGSetupFailureMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
       }
         break;
       case Ngap_ProtocolIE_ID_id_TimeToWait: {
-        if (ngSetupFailureIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_ignore && ngSetupFailureIEs->protocolIEs.list.array[i]->value.present == Ngap_NGSetupFailureIEs__value_PR_TimeToWait) {
+        if (ngSetupFailureIEs->protocolIEs.list.array[i]->criticality
+            == Ngap_Criticality_ignore
+            && ngSetupFailureIEs->protocolIEs.list.array[i]->value.present
+                == Ngap_NGSetupFailureIEs__value_PR_TimeToWait) {
           timeToWait = new TimeToWait();
-          if (!timeToWait->decodefromTimeToWait(&ngSetupFailureIEs->protocolIEs.list.array[i]->value.choice.TimeToWait)) {
+          if (!timeToWait->decodefromTimeToWait(
+              &ngSetupFailureIEs->protocolIEs.list.array[i]->value.choice
+                  .TimeToWait)) {
             cout << "decoded ngap TimeToWait IE error" << endl;
             return false;
           }
@@ -292,7 +324,8 @@ bool NGSetupFailureMsg::getCauseType(Ngap_Cause_PR &causePresent) {
 }
 
 //------------------------------------------------------------------------------
-bool NGSetupFailureMsg::getCauseRadioNetwork(e_Ngap_CauseRadioNetwork &causeRadioNetwork) {
+bool NGSetupFailureMsg::getCauseRadioNetwork(
+    e_Ngap_CauseRadioNetwork &causeRadioNetwork) {
   if (cause->getValue() < 0) {
     return false;
   }
@@ -301,7 +334,8 @@ bool NGSetupFailureMsg::getCauseRadioNetwork(e_Ngap_CauseRadioNetwork &causeRadi
 }
 
 //------------------------------------------------------------------------------
-bool NGSetupFailureMsg::getCauseTransport(e_Ngap_CauseTransport &causeTransport) {
+bool NGSetupFailureMsg::getCauseTransport(
+    e_Ngap_CauseTransport &causeTransport) {
   if (cause->getValue() < 0) {
     return false;
   }

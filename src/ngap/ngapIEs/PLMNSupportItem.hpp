@@ -48,7 +48,8 @@ class PLMNSupportItem {
   bool encode2PLMNSupportItem(Ngap_PLMNSupportItem_t*);
   bool decodefromPLMNSupportItem(Ngap_PLMNSupportItem_t*);
 
-  void getPlmnSliceSupportList(PlmnId *&m_plmn, S_NSSAI *&m_snssai, int &snssainum);
+  void getPlmnSliceSupportList(PlmnId *&m_plmn, S_NSSAI *&m_snssai,
+                               int &snssainum);
  private:
   PlmnId *plmn;
   S_NSSAI *snssai;

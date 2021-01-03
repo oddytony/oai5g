@@ -29,14 +29,7 @@
 #ifndef _AMF_MODULE_FROM_CONFIG_H_
 #define _AMF_MODULE_FROM_CONFIG_H_
 
-#include <arpa/inet.h>
 #include <libconfig.h++>
-#include <netinet/in.h>
-#include <sys/socket.h>
-
-#include <mutex>
-#include <vector>
-
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>

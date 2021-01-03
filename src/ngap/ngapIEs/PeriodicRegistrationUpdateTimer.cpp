@@ -42,15 +42,18 @@ PeriodicRegistrationUpdateTimer::~PeriodicRegistrationUpdateTimer() {
 }
 
 //------------------------------------------------------------------------------
-void PeriodicRegistrationUpdateTimer::setPeriodicRegistrationUpdateTimer(uint8_t m_updatetimer) {
+void PeriodicRegistrationUpdateTimer::setPeriodicRegistrationUpdateTimer(
+    uint8_t m_updatetimer) {
   updatetimer = m_updatetimer;
 }
 
 //------------------------------------------------------------------------------
-bool PeriodicRegistrationUpdateTimer::encode2PeriodicRegistrationUpdateTimer(Ngap_PeriodicRegistrationUpdateTimer_t *periodicRegistrationUpdateTimer) {
+bool PeriodicRegistrationUpdateTimer::encode2PeriodicRegistrationUpdateTimer(
+    Ngap_PeriodicRegistrationUpdateTimer_t *periodicRegistrationUpdateTimer) {
   periodicRegistrationUpdateTimer->size = sizeof(uint8_t);
   periodicRegistrationUpdateTimer->bits_unused = 0;
-  periodicRegistrationUpdateTimer->buf = (uint8_t*) calloc(1, periodicRegistrationUpdateTimer->size);
+  periodicRegistrationUpdateTimer->buf = (uint8_t*) calloc(
+      1, periodicRegistrationUpdateTimer->size);
   if (!periodicRegistrationUpdateTimer->buf)
     return false;
   periodicRegistrationUpdateTimer->buf[0] = updatetimer;
@@ -59,7 +62,8 @@ bool PeriodicRegistrationUpdateTimer::encode2PeriodicRegistrationUpdateTimer(Nga
 }
 
 //------------------------------------------------------------------------------
-bool PeriodicRegistrationUpdateTimer::decodefromPeriodicRegistrationUpdateTimer(Ngap_PeriodicRegistrationUpdateTimer_t *periodicRegistrationUpdateTimer) {
+bool PeriodicRegistrationUpdateTimer::decodefromPeriodicRegistrationUpdateTimer(
+    Ngap_PeriodicRegistrationUpdateTimer_t *periodicRegistrationUpdateTimer) {
   if (!periodicRegistrationUpdateTimer->buf)
     return false;
   updatetimer = periodicRegistrationUpdateTimer->buf[0];
@@ -68,7 +72,8 @@ bool PeriodicRegistrationUpdateTimer::decodefromPeriodicRegistrationUpdateTimer(
 }
 
 //------------------------------------------------------------------------------
-void PeriodicRegistrationUpdateTimer::getPeriodicRegistrationUpdateTimer(uint8_t &m_updatetimer) {
+void PeriodicRegistrationUpdateTimer::getPeriodicRegistrationUpdateTimer(
+    uint8_t &m_updatetimer) {
   m_updatetimer = updatetimer;
 }
 

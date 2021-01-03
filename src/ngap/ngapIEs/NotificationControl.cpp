@@ -42,12 +42,14 @@ NotificationControl::~NotificationControl() {
 }
 
 //------------------------------------------------------------------------------
-void NotificationControl::setNotificationControl(e_Ngap_NotificationControl value) {
+void NotificationControl::setNotificationControl(
+    e_Ngap_NotificationControl value) {
   notificationcontrol = value;
 }
 
 //------------------------------------------------------------------------------
-bool NotificationControl::getNotificationControl(e_Ngap_NotificationControl &value) {
+bool NotificationControl::getNotificationControl(
+    e_Ngap_NotificationControl &value) {
   if (notificationcontrol == Ngap_NotificationControl_notification_requested)
     value = Ngap_NotificationControl_notification_requested;
   else
@@ -57,14 +59,16 @@ bool NotificationControl::getNotificationControl(e_Ngap_NotificationControl &val
 }
 
 //------------------------------------------------------------------------------
-bool NotificationControl::encode2NotificationControl(Ngap_NotificationControl_t *notificationControl) {
+bool NotificationControl::encode2NotificationControl(
+    Ngap_NotificationControl_t *notificationControl) {
   *notificationControl = notificationcontrol;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool NotificationControl::decodefromNotificationControl(Ngap_NotificationControl_t *notificationControl) {
+bool NotificationControl::decodefromNotificationControl(
+    Ngap_NotificationControl_t *notificationControl) {
   notificationcontrol = *notificationControl;
 
   return true;

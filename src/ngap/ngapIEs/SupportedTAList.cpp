@@ -44,10 +44,13 @@ SupportedTAList::~SupportedTAList() {
 }
 
 //------------------------------------------------------------------------------
-bool SupportedTAList::encode2SupportedTAList(Ngap_SupportedTAList_t *supportedTAList) {
-  cout << "SupportedTAList::numberOfSupportedTaItem	" << numberOfSupportedTaItem << endl;
+bool SupportedTAList::encode2SupportedTAList(
+    Ngap_SupportedTAList_t *supportedTAList) {
+  cout << "SupportedTAList::numberOfSupportedTaItem	" << numberOfSupportedTaItem
+      << endl;
   for (int i = 0; i < numberOfSupportedTaItem; i++) {
-    Ngap_SupportedTAItem_t *ta = (Ngap_SupportedTAItem_t*) calloc(1, sizeof(Ngap_SupportedTAItem_t));
+    Ngap_SupportedTAItem_t *ta = (Ngap_SupportedTAItem_t*) calloc(
+        1, sizeof(Ngap_SupportedTAItem_t));
     if (!supportedTaItem[i].encode2SupportedTaItem(ta))
       return false;
     if (ASN_SEQUENCE_ADD(&supportedTAList->list, ta) != 0)
@@ -69,13 +72,15 @@ bool SupportedTAList::decodefromSupportedTAList(Ngap_SupportedTAList_t *pdu) {
 }
 
 //------------------------------------------------------------------------------
-void SupportedTAList::setSupportedTaItems(SupportedTaItem *m_supportedTaItem, int numOfItem) {
+void SupportedTAList::setSupportedTaItems(SupportedTaItem *m_supportedTaItem,
+                                          int numOfItem) {
   supportedTaItem = m_supportedTaItem;
   numberOfSupportedTaItem = numOfItem;
 }
 
 //------------------------------------------------------------------------------
-void SupportedTAList::getSupportedTaItems(SupportedTaItem *&m_supportedTaItem, int &numOfItem) {
+void SupportedTAList::getSupportedTaItems(SupportedTaItem *&m_supportedTaItem,
+                                          int &numOfItem) {
   m_supportedTaItem = supportedTaItem;
   numOfItem = numberOfSupportedTaItem;
 }

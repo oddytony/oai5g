@@ -43,16 +43,20 @@ ServedGUAMIList::~ServedGUAMIList() {
 }
 
 //------------------------------------------------------------------------------
-void ServedGUAMIList::addServedGUAMIItems(ServedGUAMIItem *m_supportedGuamiItem, int numOfItem) {
+void ServedGUAMIList::addServedGUAMIItems(ServedGUAMIItem *m_supportedGuamiItem,
+                                          int numOfItem) {
   servedGUAMIItem = m_supportedGuamiItem;
   numberOfservedGUAMIItem = numOfItem;
 }
 
 //------------------------------------------------------------------------------
-bool ServedGUAMIList::encode2ServedGUAMIList(Ngap_ServedGUAMIList_t *servedGUAMIList) {
-  cout << "ServedGUAMIList::numberOfservedGUAMIItem	(" << numberOfservedGUAMIItem << ")" << endl;
+bool ServedGUAMIList::encode2ServedGUAMIList(
+    Ngap_ServedGUAMIList_t *servedGUAMIList) {
+  cout << "ServedGUAMIList::numberOfservedGUAMIItem	("
+      << numberOfservedGUAMIItem << ")" << endl;
   for (int i = 0; i < numberOfservedGUAMIItem; i++) {
-    Ngap_ServedGUAMIItem *guamiItem = (Ngap_ServedGUAMIItem*) calloc(1, sizeof(Ngap_ServedGUAMIItem));
+    Ngap_ServedGUAMIItem *guamiItem = (Ngap_ServedGUAMIItem*) calloc(
+        1, sizeof(Ngap_ServedGUAMIItem));
     if (!guamiItem)
       return false;
     if (!servedGUAMIItem[i].encode2ServedGUAMIItem(guamiItem))
@@ -75,7 +79,8 @@ bool ServedGUAMIList::decodefromServedGUAMIList(Ngap_ServedGUAMIList_t *pdu) {
 }
 
 //------------------------------------------------------------------------------
-void ServedGUAMIList::getServedGUAMIItems(ServedGUAMIItem *&m_supportedGuamiItem, int &numOfItem) {
+void ServedGUAMIList::getServedGUAMIItems(
+    ServedGUAMIItem *&m_supportedGuamiItem, int &numOfItem) {
   m_supportedGuamiItem = servedGUAMIItem;
   numOfItem = numberOfservedGUAMIItem;
 }

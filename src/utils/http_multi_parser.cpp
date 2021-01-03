@@ -2,7 +2,8 @@
 #include <string>
 #include <iostream>
 
-bool multipart_parser(std::string input, std::string &jsonData, std::string &n1sm, std::string &n2sm) {
+uint8_t multipart_parser(std::string input, std::string &jsonData,
+                      std::string &n1sm, std::string &n2sm) {
 
   //simple parser
   mime_parser sp = { };
@@ -13,7 +14,7 @@ bool multipart_parser(std::string input, std::string &jsonData, std::string &n1s
   uint8_t size = parts.size();
   //at least 2 parts for Json data and N1 (+ N2)
   if (size < 2) {
-    return false;
+    return size;
   }
 
   jsonData = parts[0].body;
@@ -25,6 +26,6 @@ bool multipart_parser(std::string input, std::string &jsonData, std::string &n1s
     n2sm = "null";
   }
 
-  return true;
+  return size;
 }
 

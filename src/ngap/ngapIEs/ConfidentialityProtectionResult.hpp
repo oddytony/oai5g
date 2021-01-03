@@ -40,11 +40,15 @@ class ConfidentialityProtectionResult {
   ConfidentialityProtectionResult();
   virtual ~ConfidentialityProtectionResult();
 
-  void setConfidentialityProtectionResult(e_Ngap_ConfidentialityProtectionResult m_confidentialityProtectionResult);
-  bool getConfidentialityProtectionResult(long &m_confidentialityProtectionResult);
+  void setConfidentialityProtectionResult(
+      e_Ngap_ConfidentialityProtectionResult m_confidentialityProtectionResult);
+  bool getConfidentialityProtectionResult(
+      long &m_confidentialityProtectionResult);
 
-  bool encode2ConfidentialityProtectionResult(Ngap_ConfidentialityProtectionResult_t&);
-  bool decodefromConfidentialityProtectionResult(Ngap_ConfidentialityProtectionResult_t);
+  bool encode2ConfidentialityProtectionResult(
+      Ngap_ConfidentialityProtectionResult_t&);
+  bool decodefromConfidentialityProtectionResult(
+      Ngap_ConfidentialityProtectionResult_t);
  private:
   long confidentialityProtectionResult;
 };

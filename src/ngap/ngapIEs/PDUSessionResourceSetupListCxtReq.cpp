@@ -44,21 +44,28 @@ PDUSessionResourceSetupListCxtReq::~PDUSessionResourceSetupListCxtReq() {
 }
 
 //------------------------------------------------------------------------------
-void PDUSessionResourceSetupListCxtReq::setPDUSessionResourceSetupListCxtReq(PDUSessionResourceSetupItemCxtReq *m_pduSessionResourceSetupItemCxtReq, int num) {
+void PDUSessionResourceSetupListCxtReq::setPDUSessionResourceSetupListCxtReq(
+    PDUSessionResourceSetupItemCxtReq *m_pduSessionResourceSetupItemCxtReq,
+    int num) {
   pduSessionResourceSetupItemCxtReq = m_pduSessionResourceSetupItemCxtReq;
   numofpduSessionResourceSetupItemCxtReq = num;
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceSetupListCxtReq::encode2PDUSessionResourceSetupListCxtReq(Ngap_PDUSessionResourceSetupListCxtReq_t *pduSessionResourceSetupListCxtReq) {
+bool PDUSessionResourceSetupListCxtReq::encode2PDUSessionResourceSetupListCxtReq(
+    Ngap_PDUSessionResourceSetupListCxtReq_t *pduSessionResourceSetupListCxtReq) {
   for (int i = 0; i < numofpduSessionResourceSetupItemCxtReq; i++) {
     cout << "encoding items" << endl;
-    Ngap_PDUSessionResourceSetupItemCxtReq_t *request = (Ngap_PDUSessionResourceSetupItemCxtReq_t*) calloc(1, sizeof(Ngap_PDUSessionResourceSetupItemCxtReq_t));
+    Ngap_PDUSessionResourceSetupItemCxtReq_t *request =
+        (Ngap_PDUSessionResourceSetupItemCxtReq_t*) calloc(
+            1, sizeof(Ngap_PDUSessionResourceSetupItemCxtReq_t));
     if (!request)
       return false;
-    if (!pduSessionResourceSetupItemCxtReq[i].encode2PDUSessionResourceSetupItemCxtReq(request))
+    if (!pduSessionResourceSetupItemCxtReq[i]
+        .encode2PDUSessionResourceSetupItemCxtReq(request))
       return false;
-    if (ASN_SEQUENCE_ADD(&pduSessionResourceSetupListCxtReq->list, request) != 0)
+    if (ASN_SEQUENCE_ADD(&pduSessionResourceSetupListCxtReq->list, request)
+        != 0)
       return false;
   }
 
@@ -66,11 +73,16 @@ bool PDUSessionResourceSetupListCxtReq::encode2PDUSessionResourceSetupListCxtReq
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceSetupListCxtReq::decodefromPDUSessionResourceSetupListCxtReq(Ngap_PDUSessionResourceSetupListCxtReq_t *pduSessionResourceSetupListCxtReq) {
-  numofpduSessionResourceSetupItemCxtReq = pduSessionResourceSetupListCxtReq->list.count;
-  pduSessionResourceSetupItemCxtReq = new PDUSessionResourceSetupItemCxtReq[numofpduSessionResourceSetupItemCxtReq]();
+bool PDUSessionResourceSetupListCxtReq::decodefromPDUSessionResourceSetupListCxtReq(
+    Ngap_PDUSessionResourceSetupListCxtReq_t *pduSessionResourceSetupListCxtReq) {
+  numofpduSessionResourceSetupItemCxtReq = pduSessionResourceSetupListCxtReq
+      ->list.count;
+  pduSessionResourceSetupItemCxtReq =
+      new PDUSessionResourceSetupItemCxtReq[numofpduSessionResourceSetupItemCxtReq]();
   for (int i = 0; i < numofpduSessionResourceSetupItemCxtReq; i++) {
-    if (!pduSessionResourceSetupItemCxtReq[i].decodefromPDUSessionResourceSetupItemCxtReq(pduSessionResourceSetupListCxtReq->list.array[i]))
+    if (!pduSessionResourceSetupItemCxtReq[i]
+        .decodefromPDUSessionResourceSetupItemCxtReq(
+        pduSessionResourceSetupListCxtReq->list.array[i]))
       return false;
   }
 
@@ -78,7 +90,9 @@ bool PDUSessionResourceSetupListCxtReq::decodefromPDUSessionResourceSetupListCxt
 }
 
 //------------------------------------------------------------------------------
-void PDUSessionResourceSetupListCxtReq::getPDUSessionResourceSetupListCxtReq(PDUSessionResourceSetupItemCxtReq *&m_pduSessionResourceSetupItemCxtReq, int &num) {
+void PDUSessionResourceSetupListCxtReq::getPDUSessionResourceSetupListCxtReq(
+    PDUSessionResourceSetupItemCxtReq *&m_pduSessionResourceSetupItemCxtReq,
+    int &num) {
   m_pduSessionResourceSetupItemCxtReq = pduSessionResourceSetupItemCxtReq;
   num = numofpduSessionResourceSetupItemCxtReq;
 }

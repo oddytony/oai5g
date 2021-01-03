@@ -44,20 +44,29 @@ PDUSessionResourceFailedToSetupListCxtFail::~PDUSessionResourceFailedToSetupList
 }
 
 //------------------------------------------------------------------------------
-void PDUSessionResourceFailedToSetupListCxtFail::setPDUSessionResourceFailedToSetupListCxtFail(PDUSessionResourceFailedToSetupItemCxtFail *m_pduSessionResourceFailedToSetupItemCxtFail, int num) {
-  pduSessionResourceFailedToSetupItemCxtFail = m_pduSessionResourceFailedToSetupItemCxtFail;
+void PDUSessionResourceFailedToSetupListCxtFail::setPDUSessionResourceFailedToSetupListCxtFail(
+    PDUSessionResourceFailedToSetupItemCxtFail *m_pduSessionResourceFailedToSetupItemCxtFail,
+    int num) {
+  pduSessionResourceFailedToSetupItemCxtFail =
+      m_pduSessionResourceFailedToSetupItemCxtFail;
   numofpduSessionResourceFailedToSetupItemCxtFail = num;
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceFailedToSetupListCxtFail::encode2PDUSessionResourceFailedToSetupListCxtFail(Ngap_PDUSessionResourceFailedToSetupListCxtFail_t *pduSessionResourceFailedToSetupListCxtFail) {
+bool PDUSessionResourceFailedToSetupListCxtFail::encode2PDUSessionResourceFailedToSetupListCxtFail(
+    Ngap_PDUSessionResourceFailedToSetupListCxtFail_t *pduSessionResourceFailedToSetupListCxtFail) {
   for (int i = 0; i < numofpduSessionResourceFailedToSetupItemCxtFail; i++) {
-    Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t *failedToFailure = (Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t*) calloc(1, sizeof(Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t));
+    Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t *failedToFailure =
+        (Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t*) calloc(
+            1, sizeof(Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t));
     if (!failedToFailure)
       return false;
-    if (!pduSessionResourceFailedToSetupItemCxtFail[i].encode2PDUSessionResourceFailedToSetupItemCxtFail(failedToFailure))
+    if (!pduSessionResourceFailedToSetupItemCxtFail[i]
+        .encode2PDUSessionResourceFailedToSetupItemCxtFail(failedToFailure))
       return false;
-    if (ASN_SEQUENCE_ADD(&pduSessionResourceFailedToSetupListCxtFail->list, failedToFailure) != 0)
+    if (ASN_SEQUENCE_ADD(&pduSessionResourceFailedToSetupListCxtFail->list,
+                         failedToFailure)
+        != 0)
       return false;
   }
 
@@ -65,11 +74,16 @@ bool PDUSessionResourceFailedToSetupListCxtFail::encode2PDUSessionResourceFailed
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceFailedToSetupListCxtFail::decodefromPDUSessionResourceFailedToSetupListCxtFail(Ngap_PDUSessionResourceFailedToSetupListCxtFail_t *pduSessionResourceFailedToSetupListCxtFail) {
-  numofpduSessionResourceFailedToSetupItemCxtFail = pduSessionResourceFailedToSetupListCxtFail->list.count;
-  pduSessionResourceFailedToSetupItemCxtFail = new PDUSessionResourceFailedToSetupItemCxtFail[numofpduSessionResourceFailedToSetupItemCxtFail]();
+bool PDUSessionResourceFailedToSetupListCxtFail::decodefromPDUSessionResourceFailedToSetupListCxtFail(
+    Ngap_PDUSessionResourceFailedToSetupListCxtFail_t *pduSessionResourceFailedToSetupListCxtFail) {
+  numofpduSessionResourceFailedToSetupItemCxtFail =
+      pduSessionResourceFailedToSetupListCxtFail->list.count;
+  pduSessionResourceFailedToSetupItemCxtFail =
+      new PDUSessionResourceFailedToSetupItemCxtFail[numofpduSessionResourceFailedToSetupItemCxtFail]();
   for (int i = 0; i < numofpduSessionResourceFailedToSetupItemCxtFail; i++) {
-    if (!pduSessionResourceFailedToSetupItemCxtFail[i].decodefromPDUSessionResourceFailedToSetupItemCxtFail(pduSessionResourceFailedToSetupListCxtFail->list.array[i]))
+    if (!pduSessionResourceFailedToSetupItemCxtFail[i]
+        .decodefromPDUSessionResourceFailedToSetupItemCxtFail(
+        pduSessionResourceFailedToSetupListCxtFail->list.array[i]))
       return false;
   }
 
@@ -77,8 +91,11 @@ bool PDUSessionResourceFailedToSetupListCxtFail::decodefromPDUSessionResourceFai
 }
 
 //------------------------------------------------------------------------------
-void PDUSessionResourceFailedToSetupListCxtFail::getPDUSessionResourceFailedToSetupListCxtFail(PDUSessionResourceFailedToSetupItemCxtFail *&m_pduSessionResourceFailedToSetupItemCxtFail, int &num) {
-  m_pduSessionResourceFailedToSetupItemCxtFail = pduSessionResourceFailedToSetupItemCxtFail;
+void PDUSessionResourceFailedToSetupListCxtFail::getPDUSessionResourceFailedToSetupListCxtFail(
+    PDUSessionResourceFailedToSetupItemCxtFail *&m_pduSessionResourceFailedToSetupItemCxtFail,
+    int &num) {
+  m_pduSessionResourceFailedToSetupItemCxtFail =
+      pduSessionResourceFailedToSetupItemCxtFail;
   num = numofpduSessionResourceFailedToSetupItemCxtFail;
 }
 

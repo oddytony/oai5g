@@ -47,18 +47,22 @@ class NGSetupFailureMsg {
   NGSetupFailureMsg();
   virtual ~NGSetupFailureMsg();
 
-  //Erternal interfaces
+  //External interfaces
   //Encapsulation
   void setMessageType();
-  void setCauseRadioNetwork(e_Ngap_CauseRadioNetwork cause_value, e_Ngap_TimeToWait time_to_wait);
+  void setCauseRadioNetwork(e_Ngap_CauseRadioNetwork cause_value,
+                            e_Ngap_TimeToWait time_to_wait);
   void setCauseRadioNetwork(e_Ngap_CauseRadioNetwork cause_value);
-  void setCauseTransport(e_Ngap_CauseTransport cause_value, e_Ngap_TimeToWait time_to_wait);
+  void setCauseTransport(e_Ngap_CauseTransport cause_value,
+                         e_Ngap_TimeToWait time_to_wait);
   void setCauseTransport(e_Ngap_CauseTransport cause_value);
   void setCauseNas(e_Ngap_CauseNas cause_value, e_Ngap_TimeToWait time_to_wait);
   void setCauseNas(e_Ngap_CauseNas cause_value);
-  void setCauseProtocol(e_Ngap_CauseProtocol cause_value, e_Ngap_TimeToWait time_to_wait);
+  void setCauseProtocol(e_Ngap_CauseProtocol cause_value,
+                        e_Ngap_TimeToWait time_to_wait);
   void setCauseProtocol(e_Ngap_CauseProtocol cause_value);
-  void setCauseMisc(e_Ngap_CauseMisc cause_value, e_Ngap_TimeToWait time_to_wait);
+  void setCauseMisc(e_Ngap_CauseMisc cause_value,
+                    e_Ngap_TimeToWait time_to_wait);
   void setCauseMisc(e_Ngap_CauseMisc cause_value);
   int encode2buffer(uint8_t *buf, int buf_size);
   //Decapsulation

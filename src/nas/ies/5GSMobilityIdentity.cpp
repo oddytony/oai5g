@@ -194,7 +194,13 @@ void _5GSMobilityIdentity::getSuciWithSupiImsi(SUCI_imsi_t &ptr) {
 
 //------------------------------------------------------------------------------
 void _5GSMobilityIdentity::get5GGUTI(_5G_GUTI_t &ptr) {
-  ptr = *_5g_guti;
+  //ptr = *_5g_guti;
+  ptr.mcc = _5g_guti->mcc;
+  ptr.mnc = _5g_guti->mnc;
+  ptr.amf_region_id = _5g_guti->amf_region_id;
+  ptr.amf_set_id = _5g_guti->amf_set_id;
+  ptr.amf_pointer = _5g_guti->amf_pointer;
+  ptr._5g_tmsi =  _5g_guti->_5g_tmsi;
 }
 
 //------------------------------------------------------------------------------

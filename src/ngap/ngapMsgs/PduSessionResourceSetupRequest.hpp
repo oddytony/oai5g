@@ -57,8 +57,10 @@ class PduSessionResourceSetupRequestMsg {
   void setRanUeNgapId(uint32_t id);  // 32 bits
   void setRanPagingPriority(uint8_t priority);
   void setNasPdu(uint8_t *nas, size_t sizeofnas);
-  void setPduSessionResourceSetupRequestList(std::vector<PDUSessionResourceSetupRequestItem_t> list);
-  void setPduSessionAggregateMaximumBitRate(long bit_rate_downlink, long bit_rate_uplink);
+  void setPduSessionResourceSetupRequestList(
+      std::vector<PDUSessionResourceSetupRequestItem_t> list);
+  void setPduSessionAggregateMaximumBitRate(long bit_rate_downlink,
+                                            long bit_rate_uplink);
   int encode2buffer(uint8_t *buf, int buf_size);
   void encode2buffer_new(char *buf, int &encoded_size);
   //Decapsulation
@@ -67,7 +69,8 @@ class PduSessionResourceSetupRequestMsg {
   uint32_t getRanUeNgapId();
   int getRanPagingPriority();
   bool getNasPdu(uint8_t *&nas, size_t &sizeofnas);
-  bool getPduSessionResourceSetupRequestList(std::vector<PDUSessionResourceSetupRequestItem_t> &list);
+  bool getPduSessionResourceSetupRequestList(
+      std::vector<PDUSessionResourceSetupRequestItem_t> &list);
   //void setPduSessionAggregateMaximumBitRate(long bit_rate_downlink, long bit_rate_uplink);
 
  private:

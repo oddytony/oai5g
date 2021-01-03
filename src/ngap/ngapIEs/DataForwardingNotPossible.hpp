@@ -43,8 +43,10 @@ class DataForwardingNotPossible {
   //void setDataForwardingNotPossible(const bool m_gtp_teid);
   //bool getDataForwardingNotPossible(uint32_t &m_gtp_teid);
 
-  bool encode2DataForwardingNotPossible(Ngap_DataForwardingNotPossible_t &dataForwardingNotPossible);
-  bool decodefromDataForwardingNotPossible(Ngap_DataForwardingNotPossible_t &dataForwardingNotPossible);
+  bool encode2DataForwardingNotPossible(
+      Ngap_DataForwardingNotPossible_t &dataForwardingNotPossible);
+  bool decodefromDataForwardingNotPossible(
+      Ngap_DataForwardingNotPossible_t &dataForwardingNotPossible);
 };
 
 }

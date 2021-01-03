@@ -43,10 +43,16 @@ class UERadioCapabilityForPaging {
   UERadioCapabilityForPaging();
   virtual ~UERadioCapabilityForPaging();
 
-  bool encode2UERadioCapabilityForPaging(Ngap_UERadioCapabilityForPaging_t *ueRadioCapabilityForPaging);
-  bool decodefromUERadioCapabilityForPaging(Ngap_UERadioCapabilityForPaging_t *ueRadioCapabilityForPaging);
-  bool getUERadioCapabilityForPaging(UERadioCapabilityForPagingOfNR *&m_ueRadioCapabilityForPagingOfNR, UERadioCapabilityForPagingOfEUTRA *&m_ueRadioCapabilityForPagingOfEUTRA);
-  void setUERadioCapabilityForPaging(UERadioCapabilityForPagingOfNR *m_ueRadioCapabilityForPagingOfNR, UERadioCapabilityForPagingOfEUTRA *m_ueRadioCapabilityForPagingOfEUTRA);
+  bool encode2UERadioCapabilityForPaging(
+      Ngap_UERadioCapabilityForPaging_t *ueRadioCapabilityForPaging);
+  bool decodefromUERadioCapabilityForPaging(
+      Ngap_UERadioCapabilityForPaging_t *ueRadioCapabilityForPaging);
+  bool getUERadioCapabilityForPaging(
+      UERadioCapabilityForPagingOfNR *&m_ueRadioCapabilityForPagingOfNR,
+      UERadioCapabilityForPagingOfEUTRA *&m_ueRadioCapabilityForPagingOfEUTRA);
+  void setUERadioCapabilityForPaging(
+      UERadioCapabilityForPagingOfNR *m_ueRadioCapabilityForPagingOfNR,
+      UERadioCapabilityForPagingOfEUTRA *m_ueRadioCapabilityForPagingOfEUTRA);
  private:
   UERadioCapabilityForPagingOfNR *ueRadioCapabilityForPagingOfNR;
   UERadioCapabilityForPagingOfEUTRA *ueRadioCapabilityForPagingOfEUTRA;

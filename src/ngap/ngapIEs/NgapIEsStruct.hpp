@@ -30,8 +30,8 @@
 
 #include <vector>
 #include <string>
-extern "C"
-{
+
+extern "C" {
 #include <OCTET_STRING.h>
 #include "Ngap_DelayCritical.h"
 #include "Ngap_Pre-emptionCapability.h"
@@ -42,76 +42,78 @@ extern "C"
 #include "Ngap_AssociatedQosFlowItem.h"
 }
 
-namespace ngap
-{
+namespace ngap {
 
-	typedef struct SliceSupportItem_s
-	{
-		std::string sst;
-		std::string sd;
-	} SliceSupportItem_t;
-	typedef struct PlmnSliceSupport_s
-	{
-		std::string mcc;
-		std::string mnc;
-		std::vector<SliceSupportItem_t> slice_list;
-	} PlmnSliceSupport_t;
+typedef struct SliceSupportItem_s {
+  std::string sst;
+  std::string sd;
+} SliceSupportItem_t;
+typedef struct PlmnSliceSupport_s {
+  std::string mcc;
+  std::string mnc;
+  std::vector<SliceSupportItem_t> slice_list;
+} PlmnSliceSupport_t;
 
-	typedef struct SupportedItem_s
-	{
-		uint32_t tac;
-		std::vector<PlmnSliceSupport_t> b_plmn_list;
-	} SupportedItem_t;
+typedef struct SupportedItem_s {
+  uint32_t tac;
+  std::vector<PlmnSliceSupport_t> b_plmn_list;
+} SupportedItem_t;
 
-	typedef struct GuamiItem_s
-	{
-		std::string mcc;
-		std::string mnc;
-		std::string regionID;
-		std::string AmfSetID;
-		std::string AmfPointer;
-		std::string backupAMFName; //optional
-	} GuamiItem_t;
+typedef struct GuamiItem_s {
+  std::string mcc;
+  std::string mnc;
+  std::string regionID;
+  std::string AmfSetID;
+  std::string AmfPointer;
+  std::string backupAMFName;  //optional
+} GuamiItem_t;
 
-	typedef struct NrCgi_s
-	{
-		std::string mcc;
-		std::string mnc;
-		unsigned long nrCellID;
-	} NrCgi_t;
+typedef struct NrCgi_s {
+  std::string mcc;
+  std::string mnc;
+  unsigned long nrCellID;
+} NrCgi_t;
 
-	typedef struct Tai_s
-	{
-		std::string mcc;
-		std::string mnc;
-		uint32_t tac : 24;
-	} Tai_t;
+typedef struct Tai_s {
+  std::string mcc;
+  std::string mnc;
+  uint32_t tac :24;
+} Tai_t;
 
-	typedef struct Guami_s
-	{
-		std::string mcc;
-		std::string mnc;
-		std::string regionID;
-		std::string AmfSetID;
-		std::string AmfPointer;
-	} Guami_t;
+typedef struct Guami_s {
+  std::string mcc;
+  std::string mnc;
+  std::string regionID;
+  std::string AmfSetID;
+  std::string AmfPointer;
+} Guami_t;
 
-	typedef struct
-	{
-		std::string sst;
-		std::string sd; //可选
-	} S_Nssai;
+typedef struct {
+  std::string sst;
+  std::string sd;
+} S_Nssai;
 
-	typedef struct
-	{
-		uint8_t pduSessionId;
-		uint8_t *pduSessionNAS_PDU;
-		size_t sizeofpduSessionNAS_PDU;
-		S_Nssai s_nssai;
-		OCTET_STRING_t pduSessionResourceSetupRequestTransfer;
-	} PDUSessionResourceSetupRequestItem_t;
+typedef struct {
+  uint8_t pduSessionId;
+  uint8_t *pduSessionNAS_PDU;
+  size_t sizeofpduSessionNAS_PDU;
+  S_Nssai s_nssai;
+  OCTET_STRING_t pduSessionResourceSetupRequestTransfer;
+} PDUSessionResourceSetupRequestItem_t;
 
-	typedef struct
+//section 9.2.1.3 PDU Session Resource Release Command (3GPP TS 38.413 V16.0.0 (2019-12))
+typedef struct {
+  uint8_t pduSessionId;
+  OCTET_STRING_t pduSessionResourceReleaseCommandTransfer;
+} PDUSessionResourceToReleaseItem_t;
+
+//PDU Session Resource Release Item (3GPP TS 38.413 V16.0.0 (2019-12))
+typedef struct {
+  uint8_t pduSessionId;
+  OCTET_STRING_t pduSessionResourceReleaseResponseTransfer;
+} PDUSessionResourceReleasedItem_t;
+	
+typedef struct
 	{
 		std::string ip_address;
 		uint32_t gtp_teid;
@@ -232,5 +234,6 @@ namespace ngap
 		long QFI;
 	} QosFlowToBeForwardedItem_t;
 } // namespace ngap
+
 
 #endif

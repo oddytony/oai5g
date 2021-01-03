@@ -62,13 +62,15 @@ void SupportedTaItem::getTac(TAC *&m_tac) {
 }
 
 //------------------------------------------------------------------------------
-void SupportedTaItem::setBroadcastPlmnList(BroadcastPLMNItem *m_broadcastPLMNItem, int numOfItem) {
+void SupportedTaItem::setBroadcastPlmnList(
+    BroadcastPLMNItem *m_broadcastPLMNItem, int numOfItem) {
   numberOfBroadcastItem = numOfItem;
   broadcastPLMNItem = m_broadcastPLMNItem;
 }
 
 //------------------------------------------------------------------------------
-void SupportedTaItem::getBroadcastPlmnList(BroadcastPLMNItem *&m_broadcastPLMNItem, int &numOfItem) {
+void SupportedTaItem::getBroadcastPlmnList(
+    BroadcastPLMNItem *&m_broadcastPLMNItem, int &numOfItem) {
   numOfItem = numberOfBroadcastItem;
   m_broadcastPLMNItem = broadcastPLMNItem;
 }
@@ -77,9 +79,11 @@ void SupportedTaItem::getBroadcastPlmnList(BroadcastPLMNItem *&m_broadcastPLMNIt
 bool SupportedTaItem::encode2SupportedTaItem(Ngap_SupportedTAItem_t *ta) {
   if (!tac->encode2octetstring(ta->tAC))
     return false;
-  cout << "SupportedTaItem::numberOfBroadcastItem	" << numberOfBroadcastItem << endl;
+  cout << "SupportedTaItem::numberOfBroadcastItem	" << numberOfBroadcastItem
+      << endl;
   for (int i = 0; i < numberOfBroadcastItem; i++) {
-    Ngap_BroadcastPLMNItem_t *plmnItem = (Ngap_BroadcastPLMNItem*) calloc(1, sizeof(Ngap_BroadcastPLMNItem));
+    Ngap_BroadcastPLMNItem_t *plmnItem = (Ngap_BroadcastPLMNItem*) calloc(
+        1, sizeof(Ngap_BroadcastPLMNItem));
     if (!broadcastPLMNItem[i].encode2BroadcastPLMNItem(plmnItem))
       return false;
     if (ASN_SEQUENCE_ADD(&ta->broadcastPLMNList.list, plmnItem) != 0)
@@ -96,7 +100,8 @@ bool SupportedTaItem::decodefromSupportedTaItem(Ngap_SupportedTAItem_t *pdu) {
   numberOfBroadcastItem = pdu->broadcastPLMNList.list.count;
   broadcastPLMNItem = new BroadcastPLMNItem[numberOfBroadcastItem]();
   for (int i = 0; i < numberOfBroadcastItem; i++) {
-    if (!broadcastPLMNItem[i].decodefromBroadcastPLMNItem(pdu->broadcastPLMNList.list.array[i]))
+    if (!broadcastPLMNItem[i].decodefromBroadcastPLMNItem(
+        pdu->broadcastPLMNList.list.array[i]))
       return false;
   }
   return true;

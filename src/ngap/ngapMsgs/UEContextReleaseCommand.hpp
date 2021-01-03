@@ -25,6 +25,7 @@
  \date 2020
  \email: contact@openairinterface.org
  */
+
 #ifndef _UE_CONTEXT_RELEASE_COMMAND_H_
 #define _UE_CONTEXT_RELEASE_COMMAND_H_
 
@@ -33,10 +34,9 @@
 #include "AMF-UE-NGAP-ID.hpp"
 #include "RAN-UE-NGAP-ID.hpp"
 
-
-extern "C"{
-  #include "Ngap_NGAP-PDU.h"
-  #include "Ngap_ProtocolIE-Field.h"
+extern "C" {
+#include "Ngap_NGAP-PDU.h"
+#include "Ngap_ProtocolIE-Field.h"
 }
 
 
@@ -66,13 +66,5 @@ private:
 };
 
 }
-
-
-
-
-
-
-
-
 
 #endif

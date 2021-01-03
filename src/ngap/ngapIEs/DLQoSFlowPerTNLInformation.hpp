@@ -43,11 +43,17 @@ class DLQoSFlowPerTNLInformation {
   DLQoSFlowPerTNLInformation();
   virtual ~DLQoSFlowPerTNLInformation();
 
-  void setDLQoSFlowPerTNLInformation(UpTransportLayerInformation *m_uPTransportLayerInformation, AssociatedQosFlowList *m_associatedQosFlowList);
-  bool getDLQoSFlowPerTNLInformation(UpTransportLayerInformation *&m_uPTransportLayerInformation, AssociatedQosFlowList *&m_associatedQosFlowList);
+  void setDLQoSFlowPerTNLInformation(
+      UpTransportLayerInformation *m_uPTransportLayerInformation,
+      AssociatedQosFlowList *m_associatedQosFlowList);
+  bool getDLQoSFlowPerTNLInformation(
+      UpTransportLayerInformation *&m_uPTransportLayerInformation,
+      AssociatedQosFlowList *&m_associatedQosFlowList);
 
-  bool encode2DLQoSFlowPerTNLInformation(Ngap_QosFlowPerTNLInformation_t *qosFlowPerTNLInformation);
-  bool decodefromDLQoSFlowPerTNLInformation(Ngap_QosFlowPerTNLInformation_t *qosFlowPerTNLInformation);
+  bool encode2DLQoSFlowPerTNLInformation(
+      Ngap_QosFlowPerTNLInformation_t *qosFlowPerTNLInformation);
+  bool decodefromDLQoSFlowPerTNLInformation(
+      Ngap_QosFlowPerTNLInformation_t *qosFlowPerTNLInformation);
  private:
   UpTransportLayerInformation *uPTransportLayerInformation;
   AssociatedQosFlowList *associatedQosFlowList;

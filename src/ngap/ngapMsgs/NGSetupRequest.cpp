@@ -66,19 +66,30 @@ void NGSetupRequestMsg::setMessageType() {
 
   MessageType NgSetupRequestMessageTypeIE;
   NgSetupRequestMessageTypeIE.setProcedureCode(Ngap_ProcedureCode_id_NGSetup);
-  NgSetupRequestMessageTypeIE.setTypeOfMessage(Ngap_NGAP_PDU_PR_initiatingMessage);
-  NgSetupRequestMessageTypeIE.setValuePresent(Ngap_InitiatingMessage__value_PR_NGSetupRequest);
+  NgSetupRequestMessageTypeIE.setTypeOfMessage(
+      Ngap_NGAP_PDU_PR_initiatingMessage);
+  NgSetupRequestMessageTypeIE.setValuePresent(
+      Ngap_InitiatingMessage__value_PR_NGSetupRequest);
 
-  if (NgSetupRequestMessageTypeIE.getProcedureCode() == Ngap_ProcedureCode_id_NGSetup && NgSetupRequestMessageTypeIE.getTypeOfMessage() == Ngap_NGAP_PDU_PR_initiatingMessage) {
+  if (NgSetupRequestMessageTypeIE.getProcedureCode()
+      == Ngap_ProcedureCode_id_NGSetup
+      && NgSetupRequestMessageTypeIE.getTypeOfMessage()
+          == Ngap_NGAP_PDU_PR_initiatingMessage) {
     NgSetupRequestMessageTypeIE.encode2pdu(ngSetupRequestPdu);
-    ngSetupRequestIEs = &(ngSetupRequestPdu->choice.initiatingMessage->value.choice.NGSetupRequest);
+    ngSetupRequestIEs = &(ngSetupRequestPdu->choice.initiatingMessage->value
+        .choice.NGSetupRequest);
   } else {
-    cout << "[warning] This information doesn't refer to NGSetupRequest Message!!!" << endl;
+    cout
+        << "[warning] This information doesn't refer to NGSetupRequest Message!!!"
+        << endl;
   }
 }
 
 //------------------------------------------------------------------------------
-void NGSetupRequestMsg::setGlobalRanNodeID(const std::string mcc, const std::string mnc, Ngap_GlobalRANNodeID_PR ranNodeType, uint32_t ranNodeId) {
+void NGSetupRequestMsg::setGlobalRanNodeID(const std::string mcc,
+                                           const std::string mnc,
+                                           Ngap_GlobalRANNodeID_PR ranNodeType,
+                                           uint32_t ranNodeId) {
   GlobalRanNodeId globalRanNodeIdIE;
   globalRanNodeIdIE.setChoiceOfRanNodeId(ranNodeType);
   GlobalgNBId globalgNBId;
@@ -89,12 +100,14 @@ void NGSetupRequestMsg::setGlobalRanNodeID(const std::string mcc, const std::str
   globalgNBId.setGlobalgNBId(&plmn, &gnbid);
   globalRanNodeIdIE.setGlobalgNBID(&globalgNBId);
 
-  Ngap_NGSetupRequestIEs_t *ie = (Ngap_NGSetupRequestIEs_t*) calloc(1, sizeof(Ngap_NGSetupRequestIEs_t));
+  Ngap_NGSetupRequestIEs_t *ie = (Ngap_NGSetupRequestIEs_t*) calloc(
+      1, sizeof(Ngap_NGSetupRequestIEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_GlobalRANNodeID;
   ie->criticality = Ngap_Criticality_reject;
   ie->value.present = Ngap_NGSetupRequestIEs__value_PR_GlobalRANNodeID;
 
-  int ret = globalRanNodeIdIE.encode2GlobalRANNodeID(&ie->value.choice.GlobalRANNodeID);
+  int ret = globalRanNodeIdIE.encode2GlobalRANNodeID(
+      &ie->value.choice.GlobalRANNodeID);
   if (!ret) {
     cout << "encode GlobalRANNodeID IE error" << endl;
     return;
@@ -110,7 +123,8 @@ void NGSetupRequestMsg::setRanNodeName(const std::string ranNodeName) {
   RanNodeName ranNodeNameIE;
   ranNodeNameIE.setValue(ranNodeName);
 
-  Ngap_NGSetupRequestIEs_t *ie = (Ngap_NGSetupRequestIEs_t*) calloc(1, sizeof(Ngap_NGSetupRequestIEs_t));
+  Ngap_NGSetupRequestIEs_t *ie = (Ngap_NGSetupRequestIEs_t*) calloc(
+      1, sizeof(Ngap_NGSetupRequestIEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_RANNodeName;
   ie->criticality = Ngap_Criticality_ignore;
   ie->value.present = Ngap_NGSetupRequestIEs__value_PR_RANNodeName;
@@ -127,7 +141,8 @@ void NGSetupRequestMsg::setRanNodeName(const std::string ranNodeName) {
 }
 
 //------------------------------------------------------------------------------
-void NGSetupRequestMsg::setSupportedTAList(const std::vector<struct SupportedItem_s> list) {
+void NGSetupRequestMsg::setSupportedTAList(
+    const std::vector<struct SupportedItem_s> list) {
   if (list.size() == 0) {
     cout << "[Warning] Setup failed, vector is empty!!!" << endl;
     return;
@@ -139,28 +154,34 @@ void NGSetupRequestMsg::setSupportedTAList(const std::vector<struct SupportedIte
     TAC *tac = new TAC();
     tac->setTac(list[i].tac);
     supportedTaItems[i].setTac(tac);
-    BroadcastPLMNItem *broadcastPlmnItems = new BroadcastPLMNItem[list[i].b_plmn_list.size()]();
+    BroadcastPLMNItem *broadcastPlmnItems = new BroadcastPLMNItem[list[i]
+        .b_plmn_list.size()]();
     for (int j = 0; j < list[i].b_plmn_list.size(); j++) {
       PlmnId *broadPlmn = new PlmnId();
-      broadPlmn->setMccMnc(list[i].b_plmn_list[j].mcc, list[i].b_plmn_list[j].mnc);
+      broadPlmn->setMccMnc(list[i].b_plmn_list[j].mcc,
+                           list[i].b_plmn_list[j].mnc);
       S_NSSAI *snssai = new S_NSSAI[list[i].b_plmn_list[j].slice_list.size()]();
       for (int k = 0; k < list[i].b_plmn_list[j].slice_list.size(); k++) {
         snssai[k].setSst(list[i].b_plmn_list[j].slice_list[k].sst);
         if (list[i].b_plmn_list[j].slice_list[k].sd.size())
           snssai[k].setSd(list[i].b_plmn_list[j].slice_list[k].sd);
       }
-      broadcastPlmnItems[j].setPlmnSliceSupportList(broadPlmn, snssai, list[i].b_plmn_list[j].slice_list.size());
+      broadcastPlmnItems[j].setPlmnSliceSupportList(
+          broadPlmn, snssai, list[i].b_plmn_list[j].slice_list.size());
     }
-    supportedTaItems[i].setBroadcastPlmnList(broadcastPlmnItems, list[i].b_plmn_list.size());
+    supportedTaItems[i].setBroadcastPlmnList(broadcastPlmnItems,
+                                             list[i].b_plmn_list.size());
   }
   supportedTAListIE.setSupportedTaItems(supportedTaItems, list.size());
 
-  Ngap_NGSetupRequestIEs_t *ie = (Ngap_NGSetupRequestIEs_t*) calloc(1, sizeof(Ngap_NGSetupRequestIEs_t));
+  Ngap_NGSetupRequestIEs_t *ie = (Ngap_NGSetupRequestIEs_t*) calloc(
+      1, sizeof(Ngap_NGSetupRequestIEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_SupportedTAList;
   ie->criticality = Ngap_Criticality_reject;
   ie->value.present = Ngap_NGSetupRequestIEs__value_PR_SupportedTAList;
 
-  int ret = supportedTAListIE.encode2SupportedTAList(&ie->value.choice.SupportedTAList);
+  int ret = supportedTAListIE.encode2SupportedTAList(
+      &ie->value.choice.SupportedTAList);
   if (!ret) {
     cout << "encode SupportedTAList IE error" << endl;
     return;
@@ -177,12 +198,14 @@ void NGSetupRequestMsg::setDefaultPagingDRX(e_Ngap_PagingDRX value) {
   DefaultPagingDRX defaultPagingDRXIE;
   defaultPagingDRXIE.setValue(value);
 
-  Ngap_NGSetupRequestIEs_t *ie = (Ngap_NGSetupRequestIEs_t*) calloc(1, sizeof(Ngap_NGSetupRequestIEs_t));
+  Ngap_NGSetupRequestIEs_t *ie = (Ngap_NGSetupRequestIEs_t*) calloc(
+      1, sizeof(Ngap_NGSetupRequestIEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_DefaultPagingDRX;
   ie->criticality = Ngap_Criticality_ignore;
   ie->value.present = Ngap_NGSetupRequestIEs__value_PR_PagingDRX;
 
-  int ret = defaultPagingDRXIE.encode2DefaultPagingDRX(ie->value.choice.PagingDRX);
+  int ret = defaultPagingDRXIE.encode2DefaultPagingDRX(
+      ie->value.choice.PagingDRX);
   if (!ret) {
     cout << "encode DefaultPagingDRX IE error" << endl;
     return;
@@ -196,7 +219,8 @@ void NGSetupRequestMsg::setDefaultPagingDRX(e_Ngap_PagingDRX value) {
 //------------------------------------------------------------------------------
 int NGSetupRequestMsg::encode2buffer(uint8_t *buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, ngSetupRequestPdu);
-  asn_enc_rval_t er = aper_encode_to_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL, ngSetupRequestPdu, buf, buf_size);
+  asn_enc_rval_t er = aper_encode_to_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL,
+                                            ngSetupRequestPdu, buf, buf_size);
   printf("er.encoded(%ld)\n", er.encoded);
   return er.encoded;
 }
@@ -206,14 +230,26 @@ bool NGSetupRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
   ngSetupRequestPdu = ngap_msg_pdu;
 
   if (ngSetupRequestPdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
-    if (ngSetupRequestPdu->choice.initiatingMessage && ngSetupRequestPdu->choice.initiatingMessage->procedureCode == Ngap_ProcedureCode_id_NGSetup && ngSetupRequestPdu->choice.initiatingMessage->criticality == Ngap_Criticality_reject && ngSetupRequestPdu->choice.initiatingMessage->value.present == Ngap_InitiatingMessage__value_PR_NGSetupRequest) {
-      ngSetupRequestIEs = &ngSetupRequestPdu->choice.initiatingMessage->value.choice.NGSetupRequest;
+    if (ngSetupRequestPdu->choice.initiatingMessage
+        && ngSetupRequestPdu->choice.initiatingMessage->procedureCode
+            == Ngap_ProcedureCode_id_NGSetup
+        && ngSetupRequestPdu->choice.initiatingMessage->criticality
+            == Ngap_Criticality_reject
+        && ngSetupRequestPdu->choice.initiatingMessage->value.present
+            == Ngap_InitiatingMessage__value_PR_NGSetupRequest) {
+      ngSetupRequestIEs = &ngSetupRequestPdu->choice.initiatingMessage->value
+          .choice.NGSetupRequest;
       for (int i = 0; i < ngSetupRequestIEs->protocolIEs.list.count; i++) {
         switch (ngSetupRequestIEs->protocolIEs.list.array[i]->id) {
           case Ngap_ProtocolIE_ID_id_GlobalRANNodeID: {
-            if (ngSetupRequestIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && ngSetupRequestIEs->protocolIEs.list.array[i]->value.present == Ngap_NGSetupRequestIEs__value_PR_GlobalRANNodeID) {
+            if (ngSetupRequestIEs->protocolIEs.list.array[i]->criticality
+                == Ngap_Criticality_reject
+                && ngSetupRequestIEs->protocolIEs.list.array[i]->value.present
+                    == Ngap_NGSetupRequestIEs__value_PR_GlobalRANNodeID) {
               globalRanNodeId = new GlobalRanNodeId();
-              if (!globalRanNodeId->decodefromGlobalRANNodeID(&ngSetupRequestIEs->protocolIEs.list.array[i]->value.choice.GlobalRANNodeID)) {
+              if (!globalRanNodeId->decodefromGlobalRANNodeID(
+                  &ngSetupRequestIEs->protocolIEs.list.array[i]->value.choice
+                      .GlobalRANNodeID)) {
                 cout << "Decoded NGAP GlobalRanNodeId IE error!" << endl;
                 return false;
               }
@@ -224,9 +260,14 @@ bool NGSetupRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
           }
             break;
           case Ngap_ProtocolIE_ID_id_RANNodeName: {
-            if (ngSetupRequestIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_ignore && ngSetupRequestIEs->protocolIEs.list.array[i]->value.present == Ngap_NGSetupRequestIEs__value_PR_RANNodeName) {
+            if (ngSetupRequestIEs->protocolIEs.list.array[i]->criticality
+                == Ngap_Criticality_ignore
+                && ngSetupRequestIEs->protocolIEs.list.array[i]->value.present
+                    == Ngap_NGSetupRequestIEs__value_PR_RANNodeName) {
               ranNodeName = new RanNodeName();
-              if (!ranNodeName->decodefromRanNodeName(&ngSetupRequestIEs->protocolIEs.list.array[i]->value.choice.RANNodeName)) {
+              if (!ranNodeName->decodefromRanNodeName(
+                  &ngSetupRequestIEs->protocolIEs.list.array[i]->value.choice
+                      .RANNodeName)) {
                 cout << "Decoded NGAP RanNodeName IE error" << endl;
                 return false;
               }
@@ -237,9 +278,14 @@ bool NGSetupRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
           }
             break;
           case Ngap_ProtocolIE_ID_id_SupportedTAList: {
-            if (ngSetupRequestIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_reject && ngSetupRequestIEs->protocolIEs.list.array[i]->value.present == Ngap_NGSetupRequestIEs__value_PR_SupportedTAList) {
+            if (ngSetupRequestIEs->protocolIEs.list.array[i]->criticality
+                == Ngap_Criticality_reject
+                && ngSetupRequestIEs->protocolIEs.list.array[i]->value.present
+                    == Ngap_NGSetupRequestIEs__value_PR_SupportedTAList) {
               supportedTAList = new SupportedTAList();
-              if (!supportedTAList->decodefromSupportedTAList(&ngSetupRequestIEs->protocolIEs.list.array[i]->value.choice.SupportedTAList)) {
+              if (!supportedTAList->decodefromSupportedTAList(
+                  &ngSetupRequestIEs->protocolIEs.list.array[i]->value.choice
+                      .SupportedTAList)) {
                 cout << "Decoded NGAP SupportedTAList IE error" << endl;
                 return false;
               }
@@ -250,9 +296,14 @@ bool NGSetupRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
           }
             break;
           case Ngap_ProtocolIE_ID_id_DefaultPagingDRX: {
-            if (ngSetupRequestIEs->protocolIEs.list.array[i]->criticality == Ngap_Criticality_ignore && ngSetupRequestIEs->protocolIEs.list.array[i]->value.present == Ngap_NGSetupRequestIEs__value_PR_PagingDRX) {
+            if (ngSetupRequestIEs->protocolIEs.list.array[i]->criticality
+                == Ngap_Criticality_ignore
+                && ngSetupRequestIEs->protocolIEs.list.array[i]->value.present
+                    == Ngap_NGSetupRequestIEs__value_PR_PagingDRX) {
               defaultPagingDrx = new DefaultPagingDRX();
-              if (!defaultPagingDrx->decodefromDefaultPagingDRX(ngSetupRequestIEs->protocolIEs.list.array[i]->value.choice.PagingDRX)) {
+              if (!defaultPagingDrx->decodefromDefaultPagingDRX(
+                  ngSetupRequestIEs->protocolIEs.list.array[i]->value.choice
+                      .PagingDRX)) {
                 cout << "Decoded NGAP DefaultPagingDRX IE error" << endl;
                 return false;
               }
@@ -280,10 +331,12 @@ bool NGSetupRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
 }
 
 //------------------------------------------------------------------------------
-bool NGSetupRequestMsg::getGlobalGnbID(uint32_t &gnbId, std::string &mcc, std::string &mnc) {
+bool NGSetupRequestMsg::getGlobalGnbID(uint32_t &gnbId, std::string &mcc,
+                                       std::string &mnc) {
   if (!globalRanNodeId)
     return false;
-  if (globalRanNodeId->getChoiceOfRanNodeId() != Ngap_GlobalRANNodeID_PR_globalGNB_ID)
+  if (globalRanNodeId->getChoiceOfRanNodeId()
+      != Ngap_GlobalRANNodeID_PR_globalGNB_ID)
     return false;
   GlobalgNBId *globalgNBId;
   globalRanNodeId->getGlobalgNBID(globalgNBId);
@@ -305,7 +358,8 @@ bool NGSetupRequestMsg::getRanNodeName(std::string &name) {
 }
 
 //------------------------------------------------------------------------------
-bool NGSetupRequestMsg::getSupportedTAList(std::vector<struct SupportedItem_s> &list) {
+bool NGSetupRequestMsg::getSupportedTAList(
+    std::vector<struct SupportedItem_s> &list) {
   if (!supportedTAList)
     return false;
   SupportedTaItem *supportedTaItem;
@@ -319,12 +373,14 @@ bool NGSetupRequestMsg::getSupportedTAList(std::vector<struct SupportedItem_s> &
 
     BroadcastPLMNItem *broadcastPLMNItem;
     int numOfbroadcastPLMNItem;
-    supportedTaItem[i].getBroadcastPlmnList(broadcastPLMNItem, numOfbroadcastPLMNItem);
+    supportedTaItem[i].getBroadcastPlmnList(broadcastPLMNItem,
+                                            numOfbroadcastPLMNItem);
     for (int j = 0; j < numOfbroadcastPLMNItem; j++) {
       PlmnId *plmnId_decode;
       S_NSSAI *snssai_decode;
       int numofsnssai;
-      broadcastPLMNItem[j].getPlmnSliceSupportList(plmnId_decode, snssai_decode, numofsnssai);
+      broadcastPLMNItem[j].getPlmnSliceSupportList(plmnId_decode, snssai_decode,
+                                                   numofsnssai);
       PlmnSliceSupport_t broadcastplmn_data;
       plmnId_decode->getMcc(broadcastplmn_data.mcc);
       plmnId_decode->getMnc(broadcastplmn_data.mnc);

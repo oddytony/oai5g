@@ -44,8 +44,10 @@ class PLMNSupportList {
 
   bool encode2PLMNSupportList(Ngap_PLMNSupportList_t*);
   bool decodefromPLMNSupportList(Ngap_PLMNSupportList_t*);
-  void addPLMNSupportItems(PLMNSupportItem *m_plmnsupportItemItem, int numOfItem);
-  void getPLMNSupportItems(PLMNSupportItem *&m_plmnsupportItemItem, int &numOfItem);
+  void addPLMNSupportItems(PLMNSupportItem *m_plmnsupportItemItem,
+                           int numOfItem);
+  void getPLMNSupportItems(PLMNSupportItem *&m_plmnsupportItemItem,
+                           int &numOfItem);
  private:
   PLMNSupportItem *plmnsupportItemItem;
   int numberOfplmnsupportItemItem;

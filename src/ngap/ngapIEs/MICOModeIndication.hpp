@@ -44,7 +44,8 @@ class MICOModeIndication {
   //bool getMICOModeIndication();
 
   bool encode2MICOModeIndication(Ngap_MICOModeIndication_t *micoModeIndication);
-  bool decodefromMICOModeIndication(Ngap_MICOModeIndication_t *micoModeIndication);
+  bool decodefromMICOModeIndication(
+      Ngap_MICOModeIndication_t *micoModeIndication);
   //private:
   //	uint16_t indexLength10;
 };

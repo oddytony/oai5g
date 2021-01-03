@@ -46,12 +46,15 @@ RegistrationComplete::~RegistrationComplete() {
 //------------------------------------------------------------------------------
 void RegistrationComplete::setHeader(uint8_t security_header_type) {
   plain_header = new NasMmPlainHeader();
-  plain_header->setHeader(EPD_5GS_MM_MSG, security_header_type, REGISTRATION_COMPLETE);
+  plain_header->setHeader(EPD_5GS_MM_MSG, security_header_type,
+                          REGISTRATION_COMPLETE);
 }
 
 //------------------------------------------------------------------------------
-void RegistrationComplete::setSOR_Transparent_Container(uint8_t header, uint8_t *value) {
-  ie_sor_transparent_container = new SOR_Transparent_Container(0x73, header, value);
+void RegistrationComplete::setSOR_Transparent_Container(uint8_t header,
+                                                        uint8_t *value) {
+  ie_sor_transparent_container = new SOR_Transparent_Container(0x73, header,
+                                                               value);
 }
 
 //------------------------------------------------------------------------------
@@ -68,19 +71,22 @@ int RegistrationComplete::encode2buffer(uint8_t *buf, int len) {
   if (!ie_sor_transparent_container) {
     Logger::nas_mm().warn("IE ie_sor_transparent_container is not available");
   } else {
-    if (int size = ie_sor_transparent_container->encode2buffer(buf + encoded_size, len - encoded_size)) {
+    if (int size = ie_sor_transparent_container->encode2buffer(
+        buf + encoded_size, len - encoded_size)) {
       encoded_size += size;
     } else {
       Logger::nas_mm().error("Encoding ie_sor_transparent_container error");
       return 0;
     }
   }
-  Logger::nas_mm().debug("Encoded RegistrationComplete message len (%d)", encoded_size);
+  Logger::nas_mm().debug("Encoded RegistrationComplete message len (%d)",
+                         encoded_size);
   return 1;
 }
 
 //------------------------------------------------------------------------------
-int RegistrationComplete::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len) {
+int RegistrationComplete::decodefrombuffer(NasMmPlainHeader *header,
+                                           uint8_t *buf, int len) {
   Logger::nas_mm().debug("Decoding RegistrationComplete message");
   int decoded_size = 3;
   plain_header = header;
@@ -92,14 +98,16 @@ int RegistrationComplete::decodefrombuffer(NasMmPlainHeader *header, uint8_t *bu
       case 0x73: {
         Logger::nas_mm().debug("Decoding IEI (0x73)");
         ie_sor_transparent_container = new SOR_Transparent_Container();
-        decoded_size += ie_sor_transparent_container->decodefrombuffer(buf + decoded_size, len - decoded_size, true);
+        decoded_size += ie_sor_transparent_container->decodefrombuffer(
+            buf + decoded_size, len - decoded_size, true);
         octet = *(buf + decoded_size);
         Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       }
         break;
     }
   }
-  Logger::nas_mm().debug("Decoded RegistrationComplete message len (%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded RegistrationComplete message len (%d)",
+                         decoded_size);
 
 }
 

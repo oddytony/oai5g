@@ -44,7 +44,8 @@ class BroadcastPLMNItem {
   virtual ~BroadcastPLMNItem();
 
   void setPlmnSliceSupportList(PlmnId *m_plmn, S_NSSAI *snssai, int num);
-  void getPlmnSliceSupportList(PlmnId *&m_plmn, S_NSSAI *&m_snssai, int &snssainum);
+  void getPlmnSliceSupportList(PlmnId *&m_plmn, S_NSSAI *&m_snssai,
+                               int &snssainum);
   bool encode2BroadcastPLMNItem(Ngap_BroadcastPLMNItem_t*);
   bool decodefromBroadcastPLMNItem(Ngap_BroadcastPLMNItem_t *pdu);
  private:

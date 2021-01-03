@@ -42,11 +42,17 @@ class PDUSessionResourceSetupListCxtRes {
   PDUSessionResourceSetupListCxtRes();
   virtual ~PDUSessionResourceSetupListCxtRes();
 
-  void setPDUSessionResourceSetupListCxtRes(PDUSessionResourceSetupItemCxtRes *m_pduSessionResourceSetupItemCxtRes, int num);
-  void getPDUSessionResourceSetupListCxtRes(PDUSessionResourceSetupItemCxtRes *&m_pduSessionResourceSetupItemCxtRes, int &num);
+  void setPDUSessionResourceSetupListCxtRes(
+      PDUSessionResourceSetupItemCxtRes *m_pduSessionResourceSetupItemCxtRes,
+      int num);
+  void getPDUSessionResourceSetupListCxtRes(
+      PDUSessionResourceSetupItemCxtRes *&m_pduSessionResourceSetupItemCxtRes,
+      int &num);
 
-  bool encode2PDUSessionResourceSetupListCxtRes(Ngap_PDUSessionResourceSetupListCxtRes_t *pduSessionResourceSetupListCxtRes);
-  bool decodefromPDUSessionResourceSetupListCxtRes(Ngap_PDUSessionResourceSetupListCxtRes_t *pduSessionResourceSetupListCxtRes);
+  bool encode2PDUSessionResourceSetupListCxtRes(
+      Ngap_PDUSessionResourceSetupListCxtRes_t *pduSessionResourceSetupListCxtRes);
+  bool decodefromPDUSessionResourceSetupListCxtRes(
+      Ngap_PDUSessionResourceSetupListCxtRes_t *pduSessionResourceSetupListCxtRes);
  private:
   PDUSessionResourceSetupItemCxtRes *pduSessionResourceSetupItemCxtRes;
   int numofpduSessionResourceSetupItemCxtRes;

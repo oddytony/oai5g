@@ -42,10 +42,14 @@ class QosFlowSetupRequestList {
   QosFlowSetupRequestList();
   virtual ~QosFlowSetupRequestList();
 
-  void setQosFlowSetupRequestList(QosFlowSetupRequestItem *m_items, int m_numofitems);
-  bool getQosFlowSetupRequestList(QosFlowSetupRequestItem *&m_items, int &m_numofitems);
-  bool encode2QosFlowSetupRequestList(Ngap_QosFlowSetupRequestList_t *qosFlowSetupRequestList);
-  bool decodefromQosFlowSetupRequestList(Ngap_QosFlowSetupRequestList_t *qosFlowSetupRequestList);
+  void setQosFlowSetupRequestList(QosFlowSetupRequestItem *m_items,
+                                  int m_numofitems);
+  bool getQosFlowSetupRequestList(QosFlowSetupRequestItem *&m_items,
+                                  int &m_numofitems);
+  bool encode2QosFlowSetupRequestList(
+      Ngap_QosFlowSetupRequestList_t *qosFlowSetupRequestList);
+  bool decodefromQosFlowSetupRequestList(
+      Ngap_QosFlowSetupRequestList_t *qosFlowSetupRequestList);
  private:
   QosFlowSetupRequestItem *items;
   int numofitems;

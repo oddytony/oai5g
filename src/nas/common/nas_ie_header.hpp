@@ -28,6 +28,7 @@
 
 #include "nas_mm_plain_header.hpp"
 #include "5GSRegistrationType.hpp"
+#include "_5GSDeregistrationType.hpp"
 #include "NasKeySetIdentifier.hpp"
 #include "5GSMobilityIdentity.hpp"
 #include "5GMMCapability.hpp"

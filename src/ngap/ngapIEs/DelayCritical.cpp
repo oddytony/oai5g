@@ -64,7 +64,8 @@ bool DelayCritical::encode2DelayCritical(Ngap_DelayCritical_t *delayCritical) {
 }
 
 //------------------------------------------------------------------------------
-bool DelayCritical::decodefromDelayCritical(Ngap_DelayCritical_t *delayCritical) {
+bool DelayCritical::decodefromDelayCritical(
+    Ngap_DelayCritical_t *delayCritical) {
   delaycritical = *delayCritical;
 
   return true;
