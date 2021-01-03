@@ -203,7 +203,9 @@ void amf_app::handle_itti_message(
   itti_downlink_nas_transfer *dl_msg = new itti_downlink_nas_transfer(
       TASK_AMF_APP, TASK_AMF_N1);
   dl_msg->dl_nas = dl_nas;
-  if (itti_msg.is_n2sm_set) {
+  if (!itti_msg.is_n2sm_set) {
+    dl_msg->is_n2sm_set = false;
+  } else {
     dl_msg->n2sm = itti_msg.n2sm;
     dl_msg->pdu_session_id = itti_msg.pdu_session_id;
     dl_msg->is_n2sm_set = true;
@@ -211,7 +213,7 @@ void amf_app::handle_itti_message(
   }
   dl_msg->amf_ue_ngap_id = amf_n1_inst->supi2amfId.at(itti_msg.supi);
   dl_msg->ran_ue_ngap_id = amf_n1_inst->supi2ranId.at(itti_msg.supi);
-  std::shared_ptr<itti_downlink_nas_transfer> i = std::shared_ptr
+  std::shared_ptr < itti_downlink_nas_transfer > i = std::shared_ptr
       < itti_downlink_nas_transfer > (dl_msg);
   int ret = itti_inst->send_msg(i);
   if (0 != ret) {
@@ -229,7 +231,7 @@ void amf_app::handle_itti_message(
 //3. store ue-reated core information
 //4. send nas-pdu to task_amf_n1
   long amf_ue_ngap_id = 0;
-  std::shared_ptr<ue_context> uc;
+  std::shared_ptr < ue_context > uc;
   //check ue context with 5g-s-tmsi
 
   if ((amf_ue_ngap_id = itti_msg.amf_ue_ngap_id) == -1) {
@@ -283,7 +285,7 @@ void amf_app::handle_itti_message(
     if (is_guti_valid) {
       itti_n1_msg->guti = guti;
     }
-    std::shared_ptr<itti_uplink_nas_data_ind> i = std::shared_ptr
+    std::shared_ptr < itti_uplink_nas_data_ind > i = std::shared_ptr
         < itti_uplink_nas_data_ind > (itti_n1_msg);
     int ret = itti_inst->send_msg(i);
     if (0 != ret) {
@@ -309,7 +311,7 @@ bool amf_app::generate_5g_guti(uint32_t ranid, long amfid, string &mcc,
                             ue_context_key.c_str());
     return false;
   }
-  std::shared_ptr<ue_context> uc;
+  std::shared_ptr < ue_context > uc;
   uc = ran_amf_id_2_ue_context(ue_context_key);
   mcc = uc.get()->tai.mcc;
   mnc = uc.get()->tai.mnc;

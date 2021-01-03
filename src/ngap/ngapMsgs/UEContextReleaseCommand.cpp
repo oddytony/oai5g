@@ -48,11 +48,15 @@ UEContextReleaseCommandMsg::UEContextReleaseCommandMsg() {
   causeValue = NULL;
 }
 
-UEContextReleaseCommandMsg::~UEContextReleaseCommandMsg(){
-if(pdu) ASN_STRUCT_FREE(asn_DEF_Ngap_NGAP_PDU,pdu);
-  if (amfUeNgapId) delete amfUeNgapId;
-  if (ranUeNgapId) delete ranUeNgapId;
-  if (causeValue) delete causeValue;
+UEContextReleaseCommandMsg::~UEContextReleaseCommandMsg() {
+  if (pdu)
+    ASN_STRUCT_FREE(asn_DEF_Ngap_NGAP_PDU, pdu);
+  if (amfUeNgapId)
+    delete amfUeNgapId;
+  if (ranUeNgapId)
+    delete ranUeNgapId;
+  if (causeValue)
+    delete causeValue;
 }
 
 //------------------------------------------------------------------------------
@@ -138,10 +142,11 @@ void UEContextReleaseCommandMsg::setCauseRadioNetwork(
 }
 
 void UEContextReleaseCommandMsg::setCauseNas(e_Ngap_CauseNas cause_value) {
-	if (!causeValue) causeValue = new Cause();
-	causeValue->setChoiceOfCause(Ngap_Cause_PR_nas);
-	causeValue->setValue(cause_value);
-	addCauseIE();
+  if (!causeValue)
+    causeValue = new Cause();
+  causeValue->setChoiceOfCause(Ngap_Cause_PR_nas);
+  causeValue->setValue(cause_value);
+  addCauseIE();
 }
 
 //------------------------------------------------------------------------------

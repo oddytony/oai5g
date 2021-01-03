@@ -49,7 +49,7 @@ class amf_n11 {
       std::string smf_addr, bstring sm_msg, std::string dnn);
   void handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_msg);
   void handle_itti_message(itti_nsmf_pdusession_release_sm_context &itti_msg);
-void handle_itti_message(itti_pdu_session_resource_setup_response &itti_msg);
+  void handle_itti_message(itti_pdu_session_resource_setup_response &itti_msg);
   void send_pdu_session_update_sm_context_request(
       std::string supi, std::shared_ptr<pdu_session_context> psc,
       std::string smf_addr, bstring sm_msg, std::string dnn);

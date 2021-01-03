@@ -105,26 +105,31 @@ void amf_n11_task(void*) {
     auto *msg = shared_msg.get();
     switch (msg->msg_type) {
       case SMF_SERVICES_CONSUMER: {
-        Logger::amf_n1().info("Running SMF_SERVICES_CONSUMER");
-        itti_smf_services_consumer *m = dynamic_cast<itti_smf_services_consumer *>(msg);
+        Logger::amf_n11().info("Running SMF_SERVICES_CONSUMER");
+        itti_smf_services_consumer *m =
+            dynamic_cast<itti_smf_services_consumer*>(msg);
         amf_n11_inst->handle_itti_message(ref(*m));
       }
         break;
-    case NSMF_PDU_SESSION_UPDATE_SM_CTX: {
-      Logger::amf_n1().info("Receive Nsmf_PDUSessionUpdateSMContext, handling ...");
-      itti_nsmf_pdusession_update_sm_context *m = dynamic_cast<itti_nsmf_pdusession_update_sm_context *>(msg);
-      amf_n11_inst->handle_itti_message(ref(*m));
-    }
-      break;
-    case PDU_SESS_RES_SET_RESP: {
-      Logger::amf_n1().info("Receive PDU Session Resource Setup Response, handling ...");
-      itti_pdu_session_resource_setup_response *m = dynamic_cast<itti_pdu_session_resource_setup_response *>(msg);
-      amf_n11_inst->handle_itti_message(ref(*m));
-    }
-    break;
-      default: {
+      case NSMF_PDU_SESSION_UPDATE_SM_CTX: {
         Logger::amf_n11().info(
-            "Receive unknown message type %d", msg->msg_type);
+            "Receive Nsmf_PDUSessionUpdateSMContext, handling ...");
+        itti_nsmf_pdusession_update_sm_context *m =
+            dynamic_cast<itti_nsmf_pdusession_update_sm_context*>(msg);
+        amf_n11_inst->handle_itti_message(ref(*m));
+      }
+        break;
+      case PDU_SESS_RES_SET_RESP: {
+        Logger::amf_n11().info(
+            "Receive PDU Session Resource Setup Response, handling ...");
+        itti_pdu_session_resource_setup_response *m =
+            dynamic_cast<itti_pdu_session_resource_setup_response*>(msg);
+        amf_n11_inst->handle_itti_message(ref(*m));
+      }
+        break;
+      default: {
+        Logger::amf_n11().info("Receive unknown message type %d",
+                               msg->msg_type);
       }
     }
   } while (true);
@@ -146,13 +151,13 @@ amf_n11::~amf_n11() {
 
 //------------------------------------------------------------------------------
 
-void amf_n11::handle_itti_message(itti_pdu_session_resource_setup_response &itti_msg)
-{
+void amf_n11::handle_itti_message(
+    itti_pdu_session_resource_setup_response &itti_msg) {
 }
 
 //------------------------------------------------------------------------------
-void amf_n11::handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_msg)
-{
+void amf_n11::handle_itti_message(
+    itti_nsmf_pdusession_update_sm_context &itti_msg) {
   std::string supi = pduid2supi.at(itti_msg.pdu_session_id);
   Logger::amf_n11().debug(
       "Send PDU Session Update SM Context Request to SMF (SUPI %s, PDU Session ID %d)",
@@ -208,7 +213,7 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_m
 //------------------------------------------------------------------------------
 void amf_n11::handle_itti_message(itti_smf_services_consumer &smf) {
   Logger::amf_n11().debug("Handle ITTI_SMF_SERVICES_CONSUMER");
-  std::shared_ptr<nas_context> nc;
+  std::shared_ptr < nas_context > nc;
   nc = amf_n1_inst->amf_ue_id_2_nas_context(smf.amf_ue_ngap_id);
   std::string supi = "imsi-" + nc.get()->imsi;
 
@@ -251,49 +256,51 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer &smf) {
     smf_selection_from_context(smf_addr);
   }
 
-  switch (smf.req_type & 0x07)
-  {
-  case PDU_SESSION_INITIAL_REQUEST:
-  {
-    //get pti
-    uint8_t *sm_msg = (uint8_t*)bdata(smf.sm_msg);
-    uint8_t pti = sm_msg[2];
-    Logger::amf_n1().debug("decoded PTI for PDUSessionEstablishmentRequest(0x%x)", pti);
-    if(psc.get()->isn1sm_avaliable && psc.get()->isn2sm_avaliable){
-      itti_n1n2_message_transfer_request * itti_msg = new itti_n1n2_message_transfer_request(TASK_AMF_N11, TASK_AMF_APP);
-      itti_msg->supi = supi;
+  switch (smf.req_type & 0x07) {
+    case PDU_SESSION_INITIAL_REQUEST: {
+      //get pti
+      uint8_t *sm_msg = (uint8_t*) bdata(smf.sm_msg);
+      uint8_t pti = sm_msg[2];
+      Logger::amf_n11().debug(
+          "Decoded PTI for PDUSessionEstablishmentRequest(0x%x)", pti);
+      if (psc.get()->isn1sm_avaliable && psc.get()->isn2sm_avaliable) {
+        itti_n1n2_message_transfer_request *itti_msg =
+            new itti_n1n2_message_transfer_request(TASK_AMF_N11, TASK_AMF_APP);
+        itti_msg->supi = supi;
 
-      uint8_t accept_len = blength(psc.get()->n1sm);
-      uint8_t *accept = (uint8_t*)calloc(1, accept_len);
-      memcpy(accept, (uint8_t*)bdata(psc.get()->n1sm), accept_len);
-      accept[2] = pti;
-      itti_msg->n1sm = blk2bstr(accept, accept_len);
-      free(accept);
-      itti_msg->is_n1sm_set = true;
-      itti_msg->n2sm = psc.get()->n2sm;
-      itti_msg->is_n2sm_set = true;
-      itti_msg->pdu_session_id = psc.get()->pdu_session_id;
-      std::shared_ptr<itti_n1n2_message_transfer_request> i = std::shared_ptr<itti_n1n2_message_transfer_request>(itti_msg);
-      int ret = itti_inst->send_msg(i);
-      if (0 != ret) {
-        Logger::amf_server().error( "Could not send ITTI message %s to task TASK_AMF_APP", i->get_msg_name());
+        uint8_t accept_len = blength(psc.get()->n1sm);
+        uint8_t *accept = (uint8_t*) calloc(1, accept_len);
+        memcpy(accept, (uint8_t*) bdata(psc.get()->n1sm), accept_len);
+        accept[2] = pti;
+        itti_msg->n1sm = blk2bstr(accept, accept_len);
+        free(accept);
+        itti_msg->is_n1sm_set = true;
+        itti_msg->n2sm = psc.get()->n2sm;
+        itti_msg->is_n2sm_set = true;
+        itti_msg->pdu_session_id = psc.get()->pdu_session_id;
+        std::shared_ptr < itti_n1n2_message_transfer_request > i =
+            std::shared_ptr < itti_n1n2_message_transfer_request > (itti_msg);
+        int ret = itti_inst->send_msg(i);
+        if (0 != ret) {
+          Logger::amf_n11().error(
+              "Could not send ITTI message %s to task TASK_AMF_APP",
+              i->get_msg_name());
+        }
+      } else {
+        psc.get()->isn2sm_avaliable = false;
+        handle_pdu_session_initial_request(supi, psc, smf_addr, smf.sm_msg,
+                                           dnn);
       }
-    }else{
-      psc.get()->isn2sm_avaliable = false;
-      handle_pdu_session_initial_request(supi, psc, smf_addr, smf.sm_msg, dnn);
     }
-  }
-  break;
-  case EXISTING_PDU_SESSION:
-  {
-    //TODO:
-  }
-  break;
-  case PDU_SESSION_TYPE_MODIFICATION_REQUEST:
-  {
-    //TODO:
-  }
-  break;
+      break;
+    case EXISTING_PDU_SESSION: {
+      //TODO:
+    }
+      break;
+    case PDU_SESSION_TYPE_MODIFICATION_REQUEST: {
+      //TODO:
+    }
+      break;
     default: {
       //send Nsmf_PDUSession_UpdateSM_Context to SMF e.g., for PDU Session release request
       send_pdu_session_update_sm_context_request(supi, psc, smf_addr,
@@ -373,24 +380,20 @@ void amf_n11::handle_pdu_session_initial_request(
   std::string n1SmMsg;
   octet_stream_2_hex_stream((uint8_t*) bdata(sm_msg), blength(sm_msg), n1SmMsg);
   curl_http_client(remote_uri, json_part, n1SmMsg, "", supi,
-                  psc.get()->pdu_session_id);
+                   psc.get()->pdu_session_id);
 }
 
 //------------------------------------------------------------------------------
-void amf_n11::handle_itti_message(itti_nsmf_pdusession_release_sm_context &itti_msg)
-{
+void amf_n11::handle_itti_message(
+    itti_nsmf_pdusession_release_sm_context &itti_msg) {
   std::shared_ptr<pdu_session_context> psc = supi_to_pdu_ctx(itti_msg.supi);
   string smf_addr;
-  if (!psc.get()->smf_available)
-  {
-    if (!smf_selection_from_configuration(smf_addr))
-    {
+  if (!psc.get()->smf_available) {
+    if (!smf_selection_from_configuration(smf_addr)) {
       Logger::amf_n11().error("No candidate smf is avaliable");
       return;
     }
-  }
-  else
-  {
+  } else {
     smf_selection_from_context(smf_addr);
   }
   string remote_uri = psc.get()->location + "release";
@@ -403,7 +406,8 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_release_sm_context &itti_
   pdu_session_release_request["cause"] = "REL_DUE_TO_REACTIVATION";
   pdu_session_release_request["ngApCause"] = "radioNetwork";
   std::string json_part = pdu_session_release_request.dump();
-  curl_http_client(remote_uri, json_part, "", "", itti_msg.supi, psc.get()->pdu_session_id);
+  curl_http_client(remote_uri, json_part, "", "", itti_msg.supi,
+                   psc.get()->pdu_session_id);
 }
 
 //Context management functions
@@ -462,7 +466,7 @@ void amf_n11::handle_post_sm_context_response_error(long code,
   itti_msg->is_n2sm_set = false;
   itti_msg->supi = supi;
   itti_msg->pdu_session_id = pdu_session_id;
-  std::shared_ptr<itti_n1n2_message_transfer_request> i = std::shared_ptr
+  std::shared_ptr < itti_n1n2_message_transfer_request > i = std::shared_ptr
       < itti_n1n2_message_transfer_request > (itti_msg);
   int ret = itti_inst->send_msg(i);
   if (0 != ret) {
@@ -604,10 +608,9 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
           "Call Network Function services failure (with cause %s)",
           cause.c_str());
       if (!cause.compare("DNN_DENIED"))
-        handle_post_sm_context_response_error(httpCode,
-                                              cause,
-                                              n1sm_hex, supi, pdu_session_id);
-    } else { //Response with success code
+        handle_post_sm_context_response_error(httpCode, cause, n1sm_hex, supi,
+                                              pdu_session_id);
+    } else {  //Response with success code
       //Store location of the created context in case of PDU Session Establishment
       std::string header_response = *httpHeaderData.get();
       std::string CRLF = "\r\n";
@@ -651,13 +654,13 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
                        (uint8_t*) bdata(n2sm_hex), blength(n2sm_hex));
           itti_msg->n2sm = n2sm_hex;
           itti_msg->is_n2sm_set = true;
-          itti_msg->n2sm_info_type = response_data["n2SmInfoType"]; //response_data["n2InfoContainer"]["smInfo"]["n2InfoContent"]["ngapIeType"];
+          itti_msg->n2sm_info_type = response_data["n2SmInfoType"];  //response_data["n2InfoContainer"]["smInfo"]["n2InfoContent"]["ngapIeType"];
         }
 
         itti_msg->supi = supi;
         itti_msg->pdu_session_id = pdu_session_id;
-        std::shared_ptr<itti_n1n2_message_transfer_request> i = std::shared_ptr
-            < itti_n1n2_message_transfer_request > (itti_msg);
+        std::shared_ptr < itti_n1n2_message_transfer_request > i =
+            std::shared_ptr < itti_n1n2_message_transfer_request > (itti_msg);
         int ret = itti_inst->send_msg(i);
         if (0 != ret) {
           Logger::amf_n11().error(

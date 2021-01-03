@@ -60,7 +60,7 @@ class amf_n2 : public ngap::ngap_app {
   void handle_itti_message(itti_handover_request_Ack &itti_msg);
   void handle_itti_message(itti_handover_notify &itti_msg);
   void handle_itti_message(itti_uplinkranstatsutransfer &itti_msg);
- 
+
   bool verifyPlmn(std::vector<SupportedItem_t> list);
   std::vector<SupportedItem_t> get_common_plmn(
       std::vector<SupportedItem_t> list);
@@ -75,7 +75,6 @@ class amf_n2 : public ngap::ngap_app {
  private:
   std::map<uint32_t, std::shared_ptr<ue_ngap_context>> ranid2uecontext;  // ran ue ngap id
   mutable std::shared_mutex m_ranid2uecontext;
-
 
 };
 

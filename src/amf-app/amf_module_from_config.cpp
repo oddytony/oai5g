@@ -68,8 +68,8 @@ int amf_modules::load(const std::string &config_file) {
     item.lookupValue(MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_NAME,
                      msgName);
     item.lookupValue(
-        MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_PROCEDURECODE,
-        procedure_code);
+    MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_PROCEDURECODE,
+                     procedure_code);
     item.lookupValue(MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_TYPEOFMSG,
                      typeOfMessage);
     procedureCode = (Ngap_ProcedureCode_t) procedure_code;

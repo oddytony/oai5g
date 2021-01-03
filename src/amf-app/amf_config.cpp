@@ -429,7 +429,8 @@ int amf_config::load_thread_sched_params(const Setting &thread_sched_params_cfg,
   try {
     std::string thread_rd_sched_policy;
     thread_sched_params_cfg.lookupValue(
-        AMF_CONFIG_STRING_THREAD_RD_SCHED_POLICY, thread_rd_sched_policy);
+    AMF_CONFIG_STRING_THREAD_RD_SCHED_POLICY,
+                                        thread_rd_sched_policy);
     util::trim(thread_rd_sched_policy);
     if (boost::iequals(thread_rd_sched_policy, "SCHED_OTHER")) {
       cfg.sched_policy = SCHED_OTHER;
@@ -454,7 +455,8 @@ int amf_config::load_thread_sched_params(const Setting &thread_sched_params_cfg,
 
   try {
     thread_sched_params_cfg.lookupValue(
-        AMF_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY, cfg.sched_priority);
+    AMF_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY,
+                                        cfg.sched_priority);
     if ((cfg.sched_priority > 99) || (cfg.sched_priority < 1)) {
       Logger::amf_app().error(
           "thread_rd_sched_priority: %d, must be in interval [1..99] in config file",

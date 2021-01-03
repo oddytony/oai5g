@@ -175,7 +175,8 @@ class amf_n1 {
   void service_request_handle(bool isNasSig, std::shared_ptr<nas_context> nc,
                               uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
                               bstring nas);
-  void identity_response_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg);
+  void identity_response_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
+                                bstring plain_msg);
 
   //authentication vector
   bool generate_authentication_vector();
