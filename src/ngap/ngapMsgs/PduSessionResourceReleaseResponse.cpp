@@ -97,7 +97,7 @@ void PduSessionResourceReleaseResponseMsg::setAmfUeNgapId(unsigned long id) {
           1, sizeof(Ngap_PDUSessionResourceReleaseResponseIEs_t));
 
   ie->id = Ngap_ProtocolIE_ID_id_AMF_UE_NGAP_ID;
-  ie->criticality = Ngap_Criticality_reject;
+  ie->criticality = Ngap_Criticality_ignore;
   ie->value.present =
       Ngap_PDUSessionResourceReleaseResponseIEs__value_PR_AMF_UE_NGAP_ID;
 
@@ -125,7 +125,7 @@ void PduSessionResourceReleaseResponseMsg::setRanUeNgapId(
       (Ngap_PDUSessionResourceReleaseResponseIEs_t*) calloc(
           1, sizeof(Ngap_PDUSessionResourceReleaseResponseIEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_RAN_UE_NGAP_ID;
-  ie->criticality = Ngap_Criticality_reject;
+  ie->criticality = Ngap_Criticality_ignore;
   ie->value.present =
       Ngap_PDUSessionResourceReleaseResponseIEs__value_PR_RAN_UE_NGAP_ID;
 
@@ -168,7 +168,7 @@ void PduSessionResourceReleaseResponseMsg::setPduSessionResourceReleasedList(
           1, sizeof(Ngap_PDUSessionResourceReleaseResponseIEs_t));
 
   ie->id = Ngap_ProtocolIE_ID_id_PDUSessionResourceReleasedListRelRes;
-  ie->criticality = Ngap_Criticality_reject;
+  ie->criticality = Ngap_Criticality_ignore;
   ie->value.present =
       Ngap_PDUSessionResourceReleaseResponseIEs__value_PR_PDUSessionResourceReleasedListRelRes;
 
@@ -216,7 +216,7 @@ void PduSessionResourceReleaseResponseMsg::setUserLocationInfoNR(
       (Ngap_PDUSessionResourceReleaseResponseIEs_t*) calloc(
           1, sizeof(Ngap_PDUSessionResourceReleaseResponseIEs_t));
   ie->id = Ngap_ProtocolIE_ID_id_UserLocationInformation;
-  ie->criticality = Ngap_Criticality_reject;
+  ie->criticality = Ngap_Criticality_ignore;
   ie->value.present =
       Ngap_PDUSessionResourceReleaseResponseIEs__value_PR_UserLocationInformation;
 
@@ -299,7 +299,7 @@ bool PduSessionResourceReleaseResponseMsg::decodefrompdu(
     switch (pduSessionResourceReleaseResponseIEs->protocolIEs.list.array[i]->id) {
       case Ngap_ProtocolIE_ID_id_AMF_UE_NGAP_ID: {
         if (pduSessionResourceReleaseResponseIEs->protocolIEs.list.array[i]
-            ->criticality == Ngap_Criticality_reject
+            ->criticality == Ngap_Criticality_ignore
             && pduSessionResourceReleaseResponseIEs->protocolIEs.list.array[i]
                 ->value.present
                 == Ngap_PDUSessionResourceReleaseResponseIEs__value_PR_AMF_UE_NGAP_ID) {
@@ -319,7 +319,7 @@ bool PduSessionResourceReleaseResponseMsg::decodefrompdu(
 
       case Ngap_ProtocolIE_ID_id_RAN_UE_NGAP_ID: {
         if (pduSessionResourceReleaseResponseIEs->protocolIEs.list.array[i]
-            ->criticality == Ngap_Criticality_reject
+            ->criticality == Ngap_Criticality_ignore
             && pduSessionResourceReleaseResponseIEs->protocolIEs.list.array[i]
                 ->value.present
                 == Ngap_PDUSessionResourceReleaseResponseIEs__value_PR_RAN_UE_NGAP_ID) {
@@ -339,7 +339,7 @@ bool PduSessionResourceReleaseResponseMsg::decodefrompdu(
 
       case Ngap_ProtocolIE_ID_id_PDUSessionResourceReleasedListRelRes: {
         if (pduSessionResourceReleaseResponseIEs->protocolIEs.list.array[i]
-            ->criticality == Ngap_Criticality_reject
+            ->criticality == Ngap_Criticality_ignore
             && pduSessionResourceReleaseResponseIEs->protocolIEs.list.array[i]
                 ->value.present
                 == Ngap_PDUSessionResourceReleaseResponseIEs__value_PR_PDUSessionResourceReleasedListRelRes) {

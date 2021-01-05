@@ -148,7 +148,7 @@ void amf_n1::mysql_push_rand_sqn(std::string imsi, uint8_t *rand_p,
       mysql_free_result(res);
     } else {
       if (mysql_field_count(db_desc->db_conn) == 0) {
-        Logger::amf_n1().error("[MySQL] %lld rows affected",
+        Logger::amf_n1().debug("[MySQL] %lld rows affected",
                                mysql_affected_rows(db_desc->db_conn));
       } else { /* some error occurred */
         Logger::amf_n1().error("Could not retrieve result set");
@@ -189,7 +189,7 @@ void amf_n1::mysql_increment_sqn(std::string imsi) {
       mysql_free_result(res);
     } else {
       if (mysql_field_count(db_desc->db_conn) == 0) {
-        Logger::amf_n1().error("[MySQL] %lld rows affected",
+        Logger::amf_n1().debug("[MySQL] %lld rows affected",
                                mysql_affected_rows(db_desc->db_conn));
       } else {
         Logger::amf_n1().error("Could not retrieve result set");
