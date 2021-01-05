@@ -582,7 +582,7 @@ void amf_n11::curl_http_client(std::string remoteUri, std::string jsonData,
                        (uint8_t*) bdata(n2sm_hex), blength(n2sm_hex));
           itti_msg->n2sm = n2sm_hex;
           itti_msg->is_n2sm_set = true;
-          itti_msg->n2sm_info_type = response_data["n2SmInfoType"]; //response_data["n2InfoContainer"]["smInfo"]["n2InfoContent"]["ngapIeType"];
+          itti_msg->n2sm_info_type = response_data["n2SmInfoType"]; //response_data["n2InfoContainer"]["smInfo"]["n2InfoContent"]["ngapIeType"]; //response_data["n2SmInfoType"]; 
         }
 
         itti_msg->supi = supi;

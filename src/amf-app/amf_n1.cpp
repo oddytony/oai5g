@@ -279,7 +279,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind &nas_data_ind) {
                                mac32_recv);
         if (mac32 == mac32_recv) {
           isMatched = true;
-          Logger::amf_n1().error("Integrity matched");
+          Logger::amf_n1().debug("Integrity matched");
           //nc.get()->security_ctx->ul_count.seq_num ++;
         }
         if (!isMatched) {
@@ -724,18 +724,18 @@ void amf_n1::registration_request_handle(bool isNasSig,
     }
       break;
     case MOBILITY_REGISTRATION_UPDATING: {
-      Logger::amf_n1().error("Network handling mobility registration ...");
+      Logger::amf_n1().debug("Network handling mobility registration ...");
       run_mobility_registration_update_procedure(nc);
     }
       break;
     case PERIODIC_REGISTRATION_UPDATING: {
-      Logger::amf_n1().error(
+      Logger::amf_n1().warn(
           "Network doesn't support periodic registration, reject ...");
     }
       break;
     case EMERGENCY_REGISTRATION: {
       if (!amf_cfg.is_emergency_support.compare("false")) {
-        Logger::amf_n1().error(
+        Logger::amf_n1().warn(
             "Network doesn't support emergency registration, reject ...");
         response_registration_reject_msg(_5GMM_CAUSE_ILLEGAL_UE, ran_ue_ngap_id,
                                          amf_ue_ngap_id);  //cause?
@@ -857,7 +857,7 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context> &nc) {
         nc.get()->ngKsi = ngksi;
         handle_auth_vector_successful_result(nc);
       } else {
-        Logger::amf_n1().error("Request authentication vectors failure");
+        Logger::amf_n1().warn("Request authentication vectors failure");
         response_registration_reject_msg(_5GMM_CAUSE_ILLEGAL_UE,
                                          nc.get()->ran_ue_ngap_id,
                                          nc.get()->amf_ue_ngap_id);  //cause?
