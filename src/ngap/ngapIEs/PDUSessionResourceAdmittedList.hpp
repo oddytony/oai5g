@@ -3,32 +3,26 @@
 
 #include "PDUSessionResourceAdmittedItem.hpp"
 
-extern "C" {
-#include "Ngap_PDUSessionResourceAdmittedList.h"
+extern "C"{
+  #include "Ngap_PDUSessionResourceAdmittedList.h"
 }
 
-namespace ngap {
+namespace ngap{
 
-class PDUSessionResourceAdmittedList {
- public:
-  PDUSessionResourceAdmittedList();
-  virtual ~PDUSessionResourceAdmittedList();
-
-  void setPDUSessionResourceAdmittedList(
-      PDUSessionResourceAdmittedItem *m_pduSessionResourceAdmittedItem,
-      int num);
-  void getPDUSessionResourceAdmittedList(
-      PDUSessionResourceAdmittedItem *&m_pduSessionResourceAdmittedItem,
-      int &num);
-
-  bool encode2PDUSessionResourceAdmittedList(
-      Ngap_PDUSessionResourceAdmittedList_t *pduSessionResourceAdmittedList);
-  bool decodefromPDUSessionResourceAdmittedList(
-      Ngap_PDUSessionResourceAdmittedList_t *pduSessionResourceAdmittedList);
- private:
-  PDUSessionResourceAdmittedItem *pduSessionResourceAdmittedItem;
-  int numofSessionResourceAdmittedItem;
-};
+	class PDUSessionResourceAdmittedList {
+	public:
+		PDUSessionResourceAdmittedList();
+		virtual ~PDUSessionResourceAdmittedList();
+		
+		void setPDUSessionResourceAdmittedList(PDUSessionResourceAdmittedItem *m_pduSessionResourceAdmittedItem,int num);
+		void getPDUSessionResourceAdmittedList(PDUSessionResourceAdmittedItem *&m_pduSessionResourceAdmittedItem,int &num);
+		
+		bool encode2PDUSessionResourceAdmittedList(Ngap_PDUSessionResourceAdmittedList_t *pduSessionResourceAdmittedList);
+		bool decodefromPDUSessionResourceAdmittedList(Ngap_PDUSessionResourceAdmittedList_t *pduSessionResourceAdmittedList);
+	private:
+		PDUSessionResourceAdmittedItem *pduSessionResourceAdmittedItem;
+		int numofSessionResourceAdmittedItem;
+	};
 
 }
 

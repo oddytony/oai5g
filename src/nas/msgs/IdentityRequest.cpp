@@ -79,7 +79,7 @@ int IdentityRequest::encode2buffer(uint8_t *buf, int len) {
   }
   Logger::nas_mm().debug("encoded IdentityRequest message len(%d)",
                          encoded_size);
-  return 1;
+  return encoded_size;
 }
 
 //------------------------------------------------------------------------------

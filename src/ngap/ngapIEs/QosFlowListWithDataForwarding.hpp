@@ -19,35 +19,33 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  niuxiansheng-niu, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
+ /*! \file
+  \brief
+  \author  niuxiansheng-niu, BUPT
+  \date 2020
+  \email: contact@openairinterface.org
+  */
 
 #ifndef _QOSFLOWLISTWITHDATAFORWRADING_H_
 #define _QOSFLOWLISTWITHDATAFORWRADING_H_
 
 #include "QosFlowLevelQosParameters.hpp"
 #include "QosFlowItemWithDataForwarding.hpp"
-extern "C" {
-#include "Ngap_QosFlowSetupResponseListHOReqAck.h"
+extern "C"
+{
+	#include "Ngap_QosFlowSetupResponseListHOReqAck.h"
 }
 namespace ngap {
-class QosFlowListWithDataForwarding {
- public:
-  QosFlowListWithDataForwarding();
-  virtual ~QosFlowListWithDataForwarding();
-  bool getQosFlowListWithDataForwarding(
-      QosFlowItemWithDataForWarding *&m_QosFlowItemWithDataForwarding,
-      int &num);
-  bool decodeFormQosFlowListWithDataForwarding(
-      Ngap_QosFlowSetupResponseListHOReqAck_t qosFlowSetupResponseList);
- private:
-  //QosFlowIdentifier *qosFlowIdentifier;
-  QosFlowItemWithDataForWarding *qosFlowItemWithDataForwarding;
-  int numofQosFlowItemWithDataForwarding;
-};
+	class QosFlowListWithDataForwarding {
+	public:
+		QosFlowListWithDataForwarding();
+		virtual ~QosFlowListWithDataForwarding();
+		bool getQosFlowListWithDataForwarding(QosFlowItemWithDataForWarding *&m_QosFlowItemWithDataForwarding, int &num);
+		bool decodeFormQosFlowListWithDataForwarding(Ngap_QosFlowSetupResponseListHOReqAck_t qosFlowSetupResponseList);
+	private:
+		//QosFlowIdentifier *qosFlowIdentifier;
+		QosFlowItemWithDataForWarding* qosFlowItemWithDataForwarding;
+		int numofQosFlowItemWithDataForwarding;
+	};
 }
 #endif

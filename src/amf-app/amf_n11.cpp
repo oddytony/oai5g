@@ -352,7 +352,7 @@ void amf_n11::handle_pdu_session_initial_request(
       supi.c_str(), psc.get()->pdu_session_id);
 
   //TODO: Remove hardcoded values
-  std::string remote_uri = smf_addr + "/nsmf-pdusession/v1/sm-contexts";  //TODO
+  std::string remote_uri = smf_addr + "/nsmf-pdusession/v2/sm-contexts";  //TODO
   nlohmann::json pdu_session_establishment_request;
   pdu_session_establishment_request["supi"] = supi.c_str();
   pdu_session_establishment_request["pei"] = "imei-200000000000001";
