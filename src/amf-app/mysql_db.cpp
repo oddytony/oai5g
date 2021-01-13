@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -26,9 +26,9 @@
  \email: contact@openairinterface.org
  */
 
+#include "amf_config.hpp"
 #include "amf_n1.hpp"
 #include "logger.hpp"
-#include "amf_config.hpp"
 
 using namespace amf_application;
 using namespace config;
@@ -36,7 +36,10 @@ using namespace config;
 extern amf_config amf_cfg;
 
 //------------------------------------------------------------------------------
-bool amf_n1::get_mysql_auth_info(std::string imsi, mysql_auth_info_t &resp) {  //openair-cn/tree/v0.5.0/src/oai_hss/db/db_connector.c
+bool amf_n1::get_mysql_auth_info(
+    std::string imsi,
+    mysql_auth_info_t
+        &resp) {  // openair-cn/tree/v0.5.0/src/oai_hss/db/db_connector.c
   MYSQL_RES *res;
   MYSQL_ROW row;
   std::string query;
@@ -45,8 +48,9 @@ bool amf_n1::get_mysql_auth_info(std::string imsi, mysql_auth_info_t &resp) {  /
     Logger::amf_n1().error("Cannot connect to MySQL DB");
     return false;
   }
-  query = "SELECT `key`,`sqn`,`rand`,`OPc` FROM `users` WHERE `users`.`imsi`='"
-      + imsi + "' ";
+  query =
+      "SELECT `key`,`sqn`,`rand`,`OPc` FROM `users` WHERE `users`.`imsi`='" +
+      imsi + "' ";
   pthread_mutex_lock(&db_desc->db_cs_mutex);
   if (mysql_query(db_desc->db_conn, query.c_str())) {
     pthread_mutex_unlock(&db_desc->db_cs_mutex);
@@ -84,7 +88,7 @@ bool amf_n1::get_mysql_auth_info(std::string imsi, mysql_auth_info_t &resp) {  /
 //------------------------------------------------------------------------------
 bool amf_n1::connect_to_mysql() {
   const int mysql_reconnect_val = 1;
-  db_desc = (database_t*) calloc(1, sizeof(database_t));
+  db_desc = (database_t *)calloc(1, sizeof(database_t));
   if (!db_desc) {
     Logger::amf_n1().error(
         "An error occurs when allocating memory for DB_DESC");
@@ -125,16 +129,18 @@ void amf_n1::mysql_push_rand_sqn(std::string imsi, uint8_t *rand_p,
     Logger::amf_n1().error("Need sqn and rand");
     return;
   }
-  sqn_decimal = ((uint64_t) sqn[0] << 40) | ((uint64_t) sqn[1] << 32)
-      | ((uint64_t) sqn[2] << 24) | (sqn[3] << 16) | (sqn[4] << 8) | sqn[5];
+  sqn_decimal = ((uint64_t)sqn[0] << 40) | ((uint64_t)sqn[1] << 32) |
+                ((uint64_t)sqn[2] << 24) | (sqn[3] << 16) | (sqn[4] << 8) |
+                sqn[5];
   query_length = sprintf(query, "UPDATE `users` SET `rand`=UNHEX('");
   for (int i = 0; i < RAND_LENGTH; i++) {
     query_length += sprintf(&query[query_length], "%02x", rand_p[i]);
   }
 
-  query_length += sprintf (&query[query_length], "'),`sqn`=%" PRIu64, sqn_decimal);
-  query_length += sprintf(&query[query_length], " WHERE `users`.`imsi`='%s'",
-                          imsi.c_str());
+  query_length +=
+      sprintf(&query[query_length], "'),`sqn`=%" PRIu64, sqn_decimal);
+  query_length +=
+      sprintf(&query[query_length], " WHERE `users`.`imsi`='%s'", imsi.c_str());
   pthread_mutex_lock(&db_desc->db_cs_mutex);
   if (mysql_query(db_desc->db_conn, query)) {
     pthread_mutex_unlock(&db_desc->db_cs_mutex);

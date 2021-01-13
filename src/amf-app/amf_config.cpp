@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,10 +37,10 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
-#include "logger.hpp"
+#include "3gpp_ts24501.hpp"
 #include "amf_app.hpp"
 #include "if.hpp"
-#include "3gpp_ts24501.hpp"
+#include "logger.hpp"
 
 extern "C" {
 #include <arpa/inet.h>
@@ -57,12 +57,11 @@ namespace config {
 
 //------------------------------------------------------------------------------
 amf_config::amf_config() {
-  //TODO:
+  // TODO:
 }
 
 //------------------------------------------------------------------------------
-amf_config::~amf_config() {
-}
+amf_config::~amf_config() {}
 
 //------------------------------------------------------------------------------
 int amf_config::load(const std::string &config_file) {
@@ -126,7 +125,8 @@ int amf_config::load(const std::string &config_file) {
                             nfex.getPath());
   }
   try {
-    const Setting &guami_list_cfg = amf_cfg[AMF_CONFIG_STRING_SERVED_GUAMI_LIST];
+    const Setting &guami_list_cfg =
+        amf_cfg[AMF_CONFIG_STRING_SERVED_GUAMI_LIST];
     int count = guami_list_cfg.getLength();
     for (int i = 0; i < count; i++) {
       guami_t guami;
@@ -176,11 +176,13 @@ int amf_config::load(const std::string &config_file) {
   }
   try {
     const Setting &new_if_cfg = amf_cfg[AMF_CONFIG_STRING_INTERFACES];
-    const Setting &n2_amf_cfg = new_if_cfg[AMF_CONFIG_STRING_INTERFACE_NGAP_AMF];
+    const Setting &n2_amf_cfg =
+        new_if_cfg[AMF_CONFIG_STRING_INTERFACE_NGAP_AMF];
     load_interface(n2_amf_cfg, n2);
     const Setting &n11_cfg = new_if_cfg[AMF_CONFIG_STRING_INTERFACE_N11];
     load_interface(n11_cfg, n11);
-    const Setting &smf_addr_pool = n11_cfg[AMF_CONFIG_STRING_SMF_INSTANCES_POOL];
+    const Setting &smf_addr_pool =
+        n11_cfg[AMF_CONFIG_STRING_SMF_INSTANCES_POOL];
     int count = smf_addr_pool.getLength();
     for (int i = 0; i < count; i++) {
       const Setting &smf_addr_item = smf_addr_pool[i];
@@ -291,11 +293,10 @@ void amf_config::display() {
   Logger::config().info(
       "- SERVED_GUAMI_LIST...................................: ");
   for (int i = 0; i < guami_list.size(); i++) {
-    Logger::config().info("   (%s, %s, %s , %s, %s)", guami_list[i].mcc.c_str(),
-                          guami_list[i].mnc.c_str(),
-                          guami_list[i].regionID.c_str(),
-                          guami_list[i].AmfSetID.c_str(),
-                          guami_list[i].AmfPointer.c_str());
+    Logger::config().info(
+        "   (%s, %s, %s , %s, %s)", guami_list[i].mcc.c_str(),
+        guami_list[i].mnc.c_str(), guami_list[i].regionID.c_str(),
+        guami_list[i].AmfSetID.c_str(), guami_list[i].AmfPointer.c_str());
   }
   Logger::config().info(
       "- RELATIVE_CAPACITY...................................: %d",
@@ -345,7 +346,7 @@ void amf_config::display() {
   Logger::config().info("    iface ................: %s", n11.if_name.c_str());
   Logger::config().info("    ip ...................: %s", inet_ntoa(n11.addr4));
   Logger::config().info("    port .................: %d", n11.port);
-//  Logger::config().info("    HTTP2 port ............: %d", n11_http2_port);
+  //  Logger::config().info("    HTTP2 port ............: %d", n11_http2_port);
 
   Logger::config().info(
       "- Remote SMF Pool.....................................: ");
@@ -368,7 +369,7 @@ int amf_config::load_interface(const libconfig::Setting &if_cfg,
   if_cfg.lookupValue(AMF_CONFIG_STRING_INTERFACE_NAME, cfg.if_name);
   util::trim(cfg.if_name);
   if (not boost::iequals(cfg.if_name, "none")) {
-    std::string address = { };
+    std::string address = {};
     if_cfg.lookupValue(AMF_CONFIG_STRING_IPV4_ADDRESS, address);
     util::trim(address);
     if (boost::iequals(address, "read")) {
@@ -376,31 +377,32 @@ int amf_config::load_interface(const libconfig::Setting &if_cfg,
                                          cfg.mtu)) {
         Logger::amf_app().error(
             "Could not read %s network interface configuration", cfg.if_name);
-        return RETURNerror ;
+        return RETURNerror;
       }
     } else {
-      std::vector < std::string > words;
+      std::vector<std::string> words;
       boost::split(words, address, boost::is_any_of("/"),
                    boost::token_compress_on);
       if (words.size() != 2) {
-        Logger::amf_app().error(
-            "Bad value " AMF_CONFIG_STRING_IPV4_ADDRESS " = %s in config file",
-            address.c_str());
-        return RETURNerror ;
+        Logger::amf_app().error("Bad value " AMF_CONFIG_STRING_IPV4_ADDRESS
+                                " = %s in config file",
+                                address.c_str());
+        return RETURNerror;
       }
       unsigned char buf_in_addr[sizeof(struct in6_addr)];  // you never know...
-      if (inet_pton(AF_INET, util::trim(words.at(0)).c_str(), buf_in_addr)
-          == 1) {
+      if (inet_pton(AF_INET, util::trim(words.at(0)).c_str(), buf_in_addr) ==
+          1) {
         memcpy(&cfg.addr4, buf_in_addr, sizeof(struct in_addr));
       } else {
         Logger::amf_app().error(
-            "In conversion: Bad value " AMF_CONFIG_STRING_IPV4_ADDRESS " = %s in config file",
+            "In conversion: Bad value " AMF_CONFIG_STRING_IPV4_ADDRESS
+            " = %s in config file",
             util::trim(words.at(0)).c_str());
-        return RETURNerror ;
+        return RETURNerror;
       }
-      cfg.network4.s_addr = htons(
-          ntohs(cfg.addr4.s_addr)
-              & 0xFFFFFFFF << (32 - std::stoi(util::trim(words.at(1)))));
+      cfg.network4.s_addr =
+          htons(ntohs(cfg.addr4.s_addr) &
+                0xFFFFFFFF << (32 - std::stoi(util::trim(words.at(1)))));
     }
     if_cfg.lookupValue(AMF_CONFIG_STRING_PORT, cfg.port);
 
@@ -412,13 +414,12 @@ int amf_config::load_interface(const libconfig::Setting &if_cfg,
                               nfex.getPath());
     }
   }
-  return RETURNok ;
+  return RETURNok;
 }
 
 //------------------------------------------------------------------------------
 int amf_config::load_thread_sched_params(const Setting &thread_sched_params_cfg,
                                          util::thread_sched_params &cfg) {
-
   try {
     thread_sched_params_cfg.lookupValue(AMF_CONFIG_STRING_THREAD_RD_CPU_ID,
                                         cfg.cpu_id);
@@ -429,8 +430,7 @@ int amf_config::load_thread_sched_params(const Setting &thread_sched_params_cfg,
   try {
     std::string thread_rd_sched_policy;
     thread_sched_params_cfg.lookupValue(
-    AMF_CONFIG_STRING_THREAD_RD_SCHED_POLICY,
-                                        thread_rd_sched_policy);
+        AMF_CONFIG_STRING_THREAD_RD_SCHED_POLICY, thread_rd_sched_policy);
     util::trim(thread_rd_sched_policy);
     if (boost::iequals(thread_rd_sched_policy, "SCHED_OTHER")) {
       cfg.sched_policy = SCHED_OTHER;
@@ -446,7 +446,7 @@ int amf_config::load_thread_sched_params(const Setting &thread_sched_params_cfg,
       Logger::amf_app().error(
           "thread_rd_sched_policy: %s, unknown in config file",
           thread_rd_sched_policy.c_str());
-      return RETURNerror ;
+      return RETURNerror;
     }
   } catch (const SettingNotFoundException &nfex) {
     Logger::amf_app().info("%s : %s, using defaults", nfex.what(),
@@ -455,19 +455,19 @@ int amf_config::load_thread_sched_params(const Setting &thread_sched_params_cfg,
 
   try {
     thread_sched_params_cfg.lookupValue(
-    AMF_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY,
-                                        cfg.sched_priority);
+        AMF_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY, cfg.sched_priority);
     if ((cfg.sched_priority > 99) || (cfg.sched_priority < 1)) {
       Logger::amf_app().error(
-          "thread_rd_sched_priority: %d, must be in interval [1..99] in config file",
+          "thread_rd_sched_priority: %d, must be in interval [1..99] in config "
+          "file",
           cfg.sched_priority);
-      return RETURNerror ;
+      return RETURNerror;
     }
   } catch (const SettingNotFoundException &nfex) {
     Logger::amf_app().info("%s : %s, using defaults", nfex.what(),
                            nfex.getPath());
   }
-  return RETURNok ;
+  return RETURNok;
 }
 
-}
+}  // namespace config

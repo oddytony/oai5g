@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -68,11 +68,11 @@ int amf_modules::load(const std::string &config_file) {
     item.lookupValue(MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_NAME,
                      msgName);
     item.lookupValue(
-    MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_PROCEDURECODE,
-                     procedure_code);
+        MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_PROCEDURECODE,
+        procedure_code);
     item.lookupValue(MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_TYPEOFMSG,
                      typeOfMessage);
-    procedureCode = (Ngap_ProcedureCode_t) procedure_code;
+    procedureCode = (Ngap_ProcedureCode_t)procedure_code;
     if (!(typeOfMessage.compare("initialMessage"))) {
       typeOfMsg = Ngap_NGAP_PDU_PR_initiatingMessage;
     } else if (!(typeOfMessage.compare("successfuloutcome"))) {
@@ -93,4 +93,4 @@ void amf_modules::display() {
                         msgName.c_str(), procedureCode, typeOfMsg);
 }
 
-}
+}  // namespace config

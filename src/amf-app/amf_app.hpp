@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -48,14 +48,14 @@ namespace amf_application {
 class amf_app {
  public:
   explicit amf_app(const amf_config &amf_cfg);
-  amf_app(amf_app const&) = delete;
-  void operator=(amf_app const&) = delete;
+  amf_app(amf_app const &) = delete;
+  void operator=(amf_app const &) = delete;
   void allRegistredModulesInit(const amf_modules &modules);
   long generate_amf_ue_ngap_id();
-  //itti handlers
+  // itti handlers
   void handle_itti_message(itti_nas_signalling_establishment_request &itti_msg);
   void handle_itti_message(itti_n1n2_message_transfer_request &itti_msg);
-  //context management
+  // context management
   std::map<long, std::shared_ptr<ue_context>> amf_ue_ngap_id2ue_ctx;
   mutable std::shared_mutex m_amf_ue_ngap_id2ue_ctx;
   std::map<std::string, std::shared_ptr<ue_context>> ue_ctx_key;
@@ -74,11 +74,11 @@ class amf_app {
                                    std::shared_ptr<ue_context> uc);
   // SMF Client response handlers
   void handle_post_sm_context_response_error_400();
-  //others
+  // others
   bool generate_5g_guti(uint32_t ranid, long amfid, std::string &mcc,
                         std::string &mnc, uint32_t &tmsi);
 };
 
-}
+}  // namespace amf_application
 
 #endif

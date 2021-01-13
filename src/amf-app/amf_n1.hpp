@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -29,25 +29,25 @@
 #ifndef _AMF_N1_H_
 #define _AMF_N1_H_
 
-#include <map>
-#include <shared_mutex>
+#include <mysql/mysql.h>
 #include <stdlib.h>
 #include <string.h>
-#include <mysql/mysql.h>
+#include <map>
+#include <shared_mutex>
 
+#include "3gpp_ts24501.hpp"
+#include "amf.hpp"
+#include "amf_statistics.hpp"
+#include "bstrlib.h"
+#include "itti_msg_n1.hpp"
+#include "mysql_db.hpp"
 #include "nas_context.hpp"
 #include "pdu_session_context.hpp"
-#include "itti_msg_n1.hpp"
-#include "bstrlib.h"
-#include "3gpp_ts24501.hpp"
-#include "amf_statistics.hpp"
-#include "amf.hpp"
-#include "mysql_db.hpp"
 
 namespace amf_application {
 
 #define NAS_MESSAGE_DOWNLINK 1
-#define NAS_MESSAGE_UPLINK   0
+#define NAS_MESSAGE_UPLINK 0
 
 typedef enum {
   PlainNasMsg = 0x0,
@@ -61,7 +61,7 @@ class amf_n1 {
  public:
   amf_n1();
   ~amf_n1();
-  void handle_itti_message(itti_uplink_nas_data_ind&);
+  void handle_itti_message(itti_uplink_nas_data_ind &);
   void handle_itti_message(itti_downlink_nas_transfer &itti_msg);
   // nas message decode
   void nas_signalling_establishment_request_handle(
@@ -74,7 +74,8 @@ class amf_n1 {
                              bstring plain_msg, plmn_t plmn);
   bool check_security_header_type(SecurityHeaderType &type, uint8_t *buffer);
 
-  std::map<long, std::shared_ptr<nas_context>> amfueid2nas_context;  // amf ue ngap id
+  std::map<long, std::shared_ptr<nas_context>>
+      amfueid2nas_context;  // amf ue ngap id
   std::map<std::string, std::shared_ptr<nas_context>> imsi2nas_context;
   std::map<std::string, long> supi2amfId;
   std::map<std::string, uint32_t> supi2ranId;
@@ -97,18 +98,18 @@ class amf_n1 {
                                         std::shared_ptr<nas_context> nc);
   database_t *db_desc;
 
-  //procedures
+  // procedures
   void run_registration_procedure(std::shared_ptr<nas_context> &nc);
   void run_initial_registration_procedure();
   void run_mobility_registration_update_procedure(
       std::shared_ptr<nas_context> nc);
-  //authentication
+  // authentication
   bool auth_vectors_generator(std::shared_ptr<nas_context> &nc);
   bool authentication_vectors_generator_in_ausf(
       std::shared_ptr<nas_context> &nc);
   bool authentication_vectors_generator_in_udm(
       std::shared_ptr<nas_context> &nc);
-  //mysql handlers in mysql_db.cpp
+  // mysql handlers in mysql_db.cpp
   bool get_mysql_auth_info(std::string imsi, mysql_auth_info_t &resp);
   void mysql_push_rand_sqn(std::string imsi, uint8_t *rand_p, uint8_t *sqn);
   void mysql_increment_sqn(std::string imsi);
@@ -152,7 +153,7 @@ class amf_n1 {
   void set_5gmm_state(std::shared_ptr<nas_context> nc, _5gmm_state_t state);
   void get_5gmm_state(std::shared_ptr<nas_context> nc, _5gmm_state_t &state);
 
- private:  //nas message handlers
+ private:  // nas message handlers
   void ue_initiate_de_registration_handle(uint32_t ran_ue_ngap_id,
                                           long amf_ue_ngap_id, bstring nas);
   void registration_request_handle(bool isNasSig,
@@ -178,15 +179,15 @@ class amf_n1 {
   void identity_response_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
                                 bstring plain_msg);
 
-  //authentication vector
+  // authentication vector
   bool generate_authentication_vector();
   void itti_send_dl_nas_buffer_to_task_n2(bstring &b, uint32_t ran_ue_ngap_id,
                                           long amf_ue_ngap_id);
-  //response message
+  // response message
   void response_registration_reject_msg(uint8_t cause_value,
                                         uint32_t ran_ue_ngap_id,
                                         long amf_ue_ngap_id);
 };
-}
+}  // namespace amf_application
 
 #endif
