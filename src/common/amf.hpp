@@ -28,6 +28,8 @@
 #ifndef __AMF_HPP
 #define __AMF_HPP
 
+#include "3gpp_23.003.h"
+/*
 typedef struct {
   std::string mcc;
   std::string mnc;
@@ -63,6 +65,7 @@ typedef struct s_nssai  // section 28.4, TS23.003
   }
 
 } snssai_t;
+*/
 
 //SMF + AMF + 3GPP TS 29.571 (Common data)
 enum class http_response_codes_e {
@@ -96,6 +99,7 @@ enum class http_response_codes_e {
 #define SMF_CURL_TIMEOUT_MS 100L
 #define SMF_NUMBER_RETRIES 3
 constexpr auto CURL_MIME_BOUNDARY = "----Boundary";
+#define NRF_CURL_TIMEOUT_MS 100L
 
 #define BUFFER_SIZE_1024  1024
 #define BUFFER_SIZE_512   512
