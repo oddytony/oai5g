@@ -75,74 +75,74 @@ class HtmlReport():
 		self.file.write('</head>\n')
 		self.file.write('<body><div class="container">\n')
 		self.file.write('  <table width = "100%" style="border-collapse: collapse; border: none;">\n')
-		self.file.write('	<tr style="border-collapse: collapse; border: none;">\n')
-		self.file.write('	  <td style="border-collapse: collapse; border: none;">\n')
-		self.file.write('		<a href="http://www.openairinterface.org/">\n')
-		self.file.write('		   <img src="http://www.openairinterface.org/wp-content/uploads/2016/03/cropped-oai_final_logo2.png" alt="" border="none" height=50 width=150>\n')
-		self.file.write('		   </img>\n')
-		self.file.write('		</a>\n')
-		self.file.write('	  </td>\n')
-		self.file.write('	  <td style="border-collapse: collapse; border: none; vertical-align: center;">\n')
-		self.file.write('		<b><font size = "6">Job Summary -- Job: ' + self.job_name + ' -- Build-ID: <a href="' + self.job_url + '">' + self.job_id + '</a></font></b>\n')
-		self.file.write('	  </td>\n')
-		self.file.write('	</tr>\n')
+		self.file.write('   <tr style="border-collapse: collapse; border: none;">\n')
+		self.file.write('     <td style="border-collapse: collapse; border: none;">\n')
+		self.file.write('       <a href="http://www.openairinterface.org/">\n')
+		self.file.write('          <img src="http://www.openairinterface.org/wp-content/uploads/2016/03/cropped-oai_final_logo2.png" alt="" border="none" height=50 width=150>\n')
+		self.file.write('          </img>\n')
+		self.file.write('        </a>\n')
+		self.file.write('      </td>\n')
+		self.file.write('      <td style="border-collapse: collapse; border: none; vertical-align: center;">\n')
+		self.file.write('        <b><font size = "6">Job Summary -- Job: ' + self.job_name + ' -- Build-ID: <a href="' + self.job_url + '">' + self.job_id + '</a></font></b>\n')
+		self.file.write('      </td>\n')
+		self.file.write('    </tr>\n')
 		self.file.write('  </table>\n')
 		self.file.write('  <br>\n')
 
 		# Build Info Summary
 		buildSummary = ''
 		buildSummary += '  <table class="table-bordered" width = "80%" align = "center" border = "1">\n'
-		buildSummary += '	 <tr>\n'
-		buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-time"></span> Build Start Time</td>\n'
+		buildSummary += '    <tr>\n'
+		buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-time"></span> Build Start Time</td>\n'
 		#date_formatted = re.sub('\..*', '', self.created)
-		buildSummary += '	   <td>' + self.job_start_time + '</td>\n'
-		buildSummary += '	 </tr>\n'
-		buildSummary += '	 <tr>\n'
-		buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-wrench"></span> Build Trigger</td>\n'
+		buildSummary += '      <td>' + self.job_start_time + '</td>\n'
+		buildSummary += '    </tr>\n'
+		buildSummary += '    <tr>\n'
+		buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-wrench"></span> Build Trigger</td>\n'
 		if self.git_pull_request:
-			buildSummary += '	   <td>Pull Request</td>\n'
+			buildSummary += '      <td>Pull Request</td>\n'
 		else:
-			buildSummary += '	   <td>Push Event</td>\n'
-		buildSummary += '	 </tr>\n'
-		buildSummary += '	 <tr>\n'
-		buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-cloud-upload"></span> GIT Repository</td>\n'
-		buildSummary += '	   <td><a href="' + self.git_url + '">' + self.git_url + '</a></td>\n'
-		buildSummary += '	 </tr>\n'
+			buildSummary += '      <td>Push Event</td>\n'
+		buildSummary += '    </tr>\n'
+		buildSummary += '    <tr>\n'
+		buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-cloud-upload"></span> GIT Repository</td>\n'
+		buildSummary += '      <td><a href="' + self.git_url + '">' + self.git_url + '</a></td>\n'
+		buildSummary += '    </tr>\n'
 		if self.git_pull_request:
-			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-log-out"></span> Source Branch</td>\n'
-			buildSummary += '	   <td>' + self.git_src_branch + '</td>\n'
-			buildSummary += '	 </tr>\n'
-			buildSummary += '	 <tr>\n'
-			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tag"></span> Source Commit ID</td>\n'
-			buildSummary += '	   <td>' + self.git_src_commit + '</td>\n'
-			buildSummary += '	 </tr>\n'
+			buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-log-out"></span> Source Branch</td>\n'
+			buildSummary += '      <td>' + self.git_src_branch + '</td>\n'
+			buildSummary += '    </tr>\n'
+			buildSummary += '    <tr>\n'
+			buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tag"></span> Source Commit ID</td>\n'
+			buildSummary += '      <td>' + self.git_src_commit + '</td>\n'
+			buildSummary += '    </tr>\n'
 			if (self.git_src_commit_msg is not None):
-				buildSummary += '	 <tr>\n'
-				buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-comment"></span> Source Commit Message</td>\n'
-				buildSummary += '	   <td>' + self.git_src_commit_msg + '</td>\n'
-				buildSummary += '	 </tr>\n'
-			buildSummary += '	 <tr>\n'
-			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-log-in"></span> Target Branch</td>\n'
-			buildSummary += '	   <td>' + self.git_target_branch + '</td>\n'
-			buildSummary += '	 </tr>\n'
-			buildSummary += '	 <tr>\n'
-			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tag"></span> Target Commit ID</td>\n'
-			buildSummary += '	   <td>' + self.git_target_commit + '</td>\n'
-			buildSummary += '	 </tr>\n'
+				buildSummary += '    <tr>\n'
+				buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-comment"></span> Source Commit Message</td>\n'
+				buildSummary += '      <td>' + self.git_src_commit_msg + '</td>\n'
+				buildSummary += '    </tr>\n'
+			buildSummary += '    <tr>\n'
+			buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-log-in"></span> Target Branch</td>\n'
+			buildSummary += '      <td>' + self.git_target_branch + '</td>\n'
+			buildSummary += '    </tr>\n'
+			buildSummary += '    <tr>\n'
+			buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tag"></span> Target Commit ID</td>\n'
+			buildSummary += '      <td>' + self.git_target_commit + '</td>\n'
+			buildSummary += '    </tr>\n'
 		else:
-			buildSummary += '	 <tr>\n'
-			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tree-deciduous"></span> Branch</td>\n'
-			buildSummary += '	   <td>' + self.git_src_branch + '</td>\n'
-			buildSummary += '	 </tr>\n'
-			buildSummary += '	 <tr>\n'
-			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tag"></span> Commit ID</td>\n'
-			buildSummary += '	   <td>' + self.git_src_commit + '</td>\n'
-			buildSummary += '	 </tr>\n'
+			buildSummary += '    <tr>\n'
+			buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tree-deciduous"></span> Branch</td>\n'
+			buildSummary += '      <td>' + self.git_src_branch + '</td>\n'
+			buildSummary += '    </tr>\n'
+			buildSummary += '    <tr>\n'
+			buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tag"></span> Commit ID</td>\n'
+			buildSummary += '      <td>' + self.git_src_commit + '</td>\n'
+			buildSummary += '    </tr>\n'
 			if (self.git_src_commit_msg is not None):
-				buildSummary += '	 <tr>\n'
-				buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-comment"></span> Commit Message</td>\n'
-				buildSummary += '	   <td>' + self.git_src_commit_msg + '</td>\n'
-				buildSummary += '	 </tr>\n'
+				buildSummary += '    <tr>\n'
+				buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-comment"></span> Commit Message</td>\n'
+				buildSummary += '      <td>' + self.git_src_commit_msg + '</td>\n'
+				buildSummary += '    </tr>\n'
 		buildSummary += '  </table>\n'
 		buildSummary += '  <br>\n'
 		self.file.write(buildSummary)
@@ -218,7 +218,7 @@ class HtmlReport():
 					self.file.write('  </div>\n')
 		else:
 			self.file.write('  <div class="alert alert-danger">\n')
-			self.file.write('	  <strong>Was NOT performed (with CLANG-FORMAT tool). <span class="glyphicon glyphicon-ban-circle"></span></strong>\n')
+			self.file.write('     <strong>Was NOT performed (with CLANG-FORMAT tool). <span class="glyphicon glyphicon-ban-circle"></span></strong>\n')
 			self.file.write('  </div>\n')
 
 		self.file.write('  <br>\n')
@@ -277,83 +277,83 @@ class HtmlReport():
 				xmlfile.close()
 			if (nb_errors == 0) and (nb_warnings == 0):
 				self.file.write('   <div class="alert alert-success">\n')
-				self.file.write('	  <strong>CPPCHECK found NO error and NO warning <span class="glyphicon glyphicon-ok-circle"></span></strong>\n')
+				self.file.write('     <strong>CPPCHECK found NO error and NO warning <span class="glyphicon glyphicon-ok-circle"></span></strong>\n')
 				self.file.write('   </div>\n')
 			elif (nb_errors == 0):
 				self.file.write('   <div class="alert alert-warning">\n')
-				self.file.write('	  <strong>CPPCHECK found NO error and ' + str(nb_warnings) + ' warnings <span class="glyphicon glyphicon-warning-sign"></span></strong>\n')
+				self.file.write('     <strong>CPPCHECK found NO error and ' + str(nb_warnings) + ' warnings <span class="glyphicon glyphicon-warning-sign"></span></strong>\n')
 				self.file.write('   </div>\n')
 			else:
 				self.file.write('   <div class="alert alert-danger">\n')
-				self.file.write('	  <strong>CPPCHECK found ' +  str(nb_errors) + ' errors and ' + str(nb_warnings) + ' warnings <span class="glyphicon glyphicon-ban-circle"></span></strong>\n')
+				self.file.write('     <strong>CPPCHECK found ' +  str(nb_errors) + ' errors and ' + str(nb_warnings) + ' warnings <span class="glyphicon glyphicon-ban-circle"></span></strong>\n')
 				self.file.write('   </div>\n')
 			if (nb_errors > 0) or (nb_warnings > 0):
 				self.file.write('   <button data-toggle="collapse" data-target="#oai-cppcheck-details">More details on CPPCHECK results</button>\n')
 				self.file.write('   <div id="oai-cppcheck-details" class="collapse">\n')
 				self.file.write('   <br>\n')
 				self.file.write('   <table class="table-bordered" width = "80%" align = "center" border = "1">\n')
-				self.file.write('	  <tr bgcolor = "#33CCFF" >\n')
-				self.file.write('		<th>Error / Warning Type</th>\n')
-				self.file.write('		<th>Nb Errors</th>\n')
-				self.file.write('		<th>Nb Warnings</th>\n')
-				self.file.write('	  </tr>\n')
-				self.file.write('	  <tr>\n')
-				self.file.write('		<td>Uninitialized variable</td>\n')
-				self.file.write('		<td>' + str(nb_uninitvar) + '</td>\n')
-				self.file.write('		<td>N/A</td>\n')
-				self.file.write('	  </tr>\n')
-				self.file.write('	  <tr>\n')
-				self.file.write('		<td>Uninitialized struct member</td>\n')
-				self.file.write('		<td>' + str(nb_uninitStructMember) + '</td>\n')
-				self.file.write('		<td>N/A</td>\n')
-				self.file.write('	  </tr>\n')
-				self.file.write('	  <tr>\n')
-				self.file.write('		<td>Memory leak</td>\n')
-				self.file.write('		<td>' + str(nb_memleak) + '</td>\n')
-				self.file.write('		<td>N/A</td>\n')
-				self.file.write('	  </tr>\n')
-				self.file.write('	  <tr>\n')
-				self.file.write('		<td>Memory is freed twice</td>\n')
-				self.file.write('		<td>' + str(nb_doubleFree) + '</td>\n')
-				self.file.write('		<td>N/A</td>\n')
-				self.file.write('	  </tr>\n')
-				self.file.write('	  <tr>\n')
-				self.file.write('		<td>Resource leak</td>\n')
-				self.file.write('		<td>' + str(nb_resourceLeak) + '</td>\n')
-				self.file.write('		<td>N/A</td>\n')
-				self.file.write('	  </tr>\n')
-				self.file.write('	  <tr>\n')
-				self.file.write('		<td>Possible null pointer dereference</td>\n')
-				self.file.write('		<td>' + str(nb_nullPointer) + '</td>\n')
-				self.file.write('		<td>N/A</td>\n')
-				self.file.write('	  </tr>\n')
-				self.file.write('	  <tr>\n')
-				self.file.write('		<td>Array access  out of bounds</td>\n')
-				self.file.write('		<td>' + str(nb_arrayIndexOutOfBounds) + '</td>\n')
-				self.file.write('		<td>N/A</td>\n')
-				self.file.write('	  </tr>\n')
-				self.file.write('	  <tr>\n')
-				self.file.write('		<td>Buffer is accessed out of bounds</td>\n')
-				self.file.write('		<td>' + str(nb_bufferAccessOutOfBounds) + '</td>\n')
-				self.file.write('		<td>N/A</td>\n')
-				self.file.write('	  </tr>\n')
-				self.file.write('	  <tr>\n')
-				self.file.write('		<td>Expression depends on order of evaluation of side effects</td>\n')
-				self.file.write('		<td>' + str(nb_unknownEvaluationOrder) + '</td>\n')
-				self.file.write('		<td>N/A</td>\n')
-				self.file.write('	  </tr>\n')
-				self.file.write('	  <tr>\n')
-				self.file.write('		<td>Others</td>\n')
+				self.file.write('     <tr bgcolor = "#33CCFF" >\n')
+				self.file.write('   	<th>Error / Warning Type</th>\n')
+				self.file.write('   	<th>Nb Errors</th>\n')
+				self.file.write('   	<th>Nb Warnings</th>\n')
+				self.file.write('     </tr>\n')
+				self.file.write('     <tr>\n')
+				self.file.write('   	<td>Uninitialized variable</td>\n')
+				self.file.write('   	<td>' + str(nb_uninitvar) + '</td>\n')
+				self.file.write('   	<td>N/A</td>\n')
+				self.file.write('     </tr>\n')
+				self.file.write('     <tr>\n')
+				self.file.write('       <td>Uninitialized struct member</td>\n')
+				self.file.write('       <td>' + str(nb_uninitStructMember) + '</td>\n')
+				self.file.write('       <td>N/A</td>\n')
+				self.file.write('     </tr>\n')
+				self.file.write('     <tr>\n')
+				self.file.write('       <td>Memory leak</td>\n')
+				self.file.write('       <td>' + str(nb_memleak) + '</td>\n')
+				self.file.write('       <td>N/A</td>\n')
+				self.file.write('     </tr>\n')
+				self.file.write('     <tr>\n')
+				self.file.write('       <td>Memory is freed twice</td>\n')
+				self.file.write('       <td>' + str(nb_doubleFree) + '</td>\n')
+				self.file.write('       <td>N/A</td>\n')
+				self.file.write('     </tr>\n')
+				self.file.write('     <tr>\n')
+				self.file.write('       <td>Resource leak</td>\n')
+				self.file.write('       <td>' + str(nb_resourceLeak) + '</td>\n')
+				self.file.write('       <td>N/A</td>\n')
+				self.file.write('     </tr>\n')
+				self.file.write('     <tr>\n')
+				self.file.write('       <td>Possible null pointer dereference</td>\n')
+				self.file.write('       <td>' + str(nb_nullPointer) + '</td>\n')
+				self.file.write('       <td>N/A</td>\n')
+				self.file.write('     </tr>\n')
+				self.file.write('     <tr>\n')
+				self.file.write('       <td>Array access  out of bounds</td>\n')
+				self.file.write('       <td>' + str(nb_arrayIndexOutOfBounds) + '</td>\n')
+				self.file.write('       <td>N/A</td>\n')
+				self.file.write('     </tr>\n')
+				self.file.write('     <tr>\n')
+				self.file.write('   	<td>Buffer is accessed out of bounds</td>\n')
+				self.file.write('   	<td>' + str(nb_bufferAccessOutOfBounds) + '</td>\n')
+				self.file.write('   	<td>N/A</td>\n')
+				self.file.write('     </tr>\n')
+				self.file.write('     <tr>\n')
+				self.file.write('       <td>Expression depends on order of evaluation of side effects</td>\n')
+				self.file.write('       <td>' + str(nb_unknownEvaluationOrder) + '</td>\n')
+				self.file.write('       <td>N/A</td>\n')
+				self.file.write('     </tr>\n')
+				self.file.write('     <tr>\n')
+				self.file.write('       <td>Others</td>\n')
 				nb_others = nb_uninitvar + nb_uninitStructMember + nb_memleak + nb_doubleFree + nb_resourceLeak + nb_nullPointer + nb_arrayIndexOutOfBounds + nb_arrayIndexOutOfBounds + nb_bufferAccessOutOfBounds + nb_unknownEvaluationOrder
 				nb_others = nb_errors - nb_others
-				self.file.write('		<td>' + str(nb_others) + '</td>\n')
-				self.file.write('		<td>' + str(nb_warnings) + '</td>\n')
-				self.file.write('	  </tr>\n')
-				self.file.write('	  <tr bgcolor = "#33CCFF" >\n')
-				self.file.write('		<th>Total</th>\n')
-				self.file.write('		<th>' + str(nb_errors) + '</th>\n')
-				self.file.write('		<th>' + str(nb_warnings) + '</th>\n')
-				self.file.write('	  </tr>\n')
+				self.file.write('   	<td>' + str(nb_others) + '</td>\n')
+				self.file.write('   	<td>' + str(nb_warnings) + '</td>\n')
+				self.file.write('     </tr>\n')
+				self.file.write('     <tr bgcolor = "#33CCFF" >\n')
+				self.file.write('   	<th>Total</th>\n')
+				self.file.write('   	<th>' + str(nb_errors) + '</th>\n')
+				self.file.write('   	<th>' + str(nb_warnings) + '</th>\n')
+				self.file.write('     </tr>\n')
 				self.file.write('   </table>\n')
 				self.file.write('   <br>\n')
 				self.file.write('   <p>Full details in artifact (cppcheck.xml) </p>\n')
@@ -362,17 +362,17 @@ class HtmlReport():
 				self.file.write('   </div>\n')
 		else:
 			self.file.write('  <div class="alert alert-danger">\n')
-			self.file.write('	  <strong>Was NOT performed (with CPPCHECK tool). <span class="glyphicon glyphicon-ban-circle"></span></strong>\n')
+			self.file.write('     <strong>Was NOT performed (with CPPCHECK tool). <span class="glyphicon glyphicon-ban-circle"></span></strong>\n')
 			self.file.write('  </div>\n')
 
 	def buildSummaryHeader(self):
 		self.file.write('  <h2>Docker Image Build Summary</h2>\n')
 		self.file.write('  <table class="table-bordered" width = "100%" align = "center" border = "1">\n')
-		self.file.write('	  <tr bgcolor="#33CCFF" >\n')
-		self.file.write('		<th>Stage Name</th>\n')
-		self.file.write('		<th>Image Kind</th>\n')
-		self.file.write('		<th>OAI AMF cNF</th>\n')
-		self.file.write('	  </tr>\n')
+		self.file.write('     <tr bgcolor="#33CCFF" >\n')
+		self.file.write('   	<th>Stage Name</th>\n')
+		self.file.write('   	<th>Image Kind</th>\n')
+		self.file.write('   	<th>OAI AMF cNF</th>\n')
+		self.file.write('     </tr>\n')
 
 	def buildSummaryFooter(self):
 		self.file.write('  </table>\n')
@@ -393,15 +393,15 @@ class HtmlReport():
 			self.file.write('  </div>\n')
 
 	def initialGitSetup(self):
-		self.file.write('	 <tr>\n')
-		self.file.write('	   <td bgcolor="lightcyan" >Initial Git Setup</td>\n')
+		self.file.write('    <tr>\n')
+		self.file.write('      <td bgcolor="lightcyan" >Initial Git Setup</td>\n')
 		self.analyze_docker_build_git_part('AMF')
 		self.file.write('	 </tr>\n')
 
 	def analyze_docker_build_git_part(self, nfType):
 		if nfType != 'AMF':
 			self.file.write('      <td>N/A</td>\n')
-			self.file.write('	   <td>Wrong NF Type for this Report</td>\n')
+			self.file.write('      <td>Wrong NF Type for this Report</td>\n')
 			return
 
 		logFileName = 'amf_docker_image_build.log'
@@ -425,7 +425,7 @@ class HtmlReport():
 				logfile.close()
 
 			if status:
-				cell_msg = '	  <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+				cell_msg = '      <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
 				cell_msg += 'OK:\n'
 				cell_msg += ' -- All Git Operations went successfully</b></pre></td>\n'
 			else:
@@ -439,15 +439,15 @@ class HtmlReport():
 		self.file.write(cell_msg)
 
 	def installLibsPackagesRow(self):
-		self.file.write('	 <tr>\n')
-		self.file.write('	   <td bgcolor="lightcyan" >SW libs and packages Installation</td>\n')
+		self.file.write('    <tr>\n')
+		self.file.write('      <td bgcolor="lightcyan" >SW libs and packages Installation</td>\n')
 		self.analyze_install_log('AMF')
 		self.file.write('	 </tr>\n')
 
 	def analyze_install_log(self, nfType):
 		if nfType != 'AMF':
 			self.file.write('      <td>N/A</td>\n')
-			self.file.write('	   <td>Wrong NF Type for this Report</td>\n')
+			self.file.write('      <td>Wrong NF Type for this Report</td>\n')
 			return
 
 		logFileName = 'amf_docker_image_build.log'
