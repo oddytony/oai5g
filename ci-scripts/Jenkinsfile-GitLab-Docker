@@ -328,8 +328,7 @@ pipeline {
         if (params.sendToCommitterEmail != null) {
           if (params.sendToCommitterEmail) {
             emailext attachmentsPattern: '*results*.html',
-              body: '''Hi,
-
+            body: '''Hi,
 Here are attached HTML report files for $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!
 
 Regards,
