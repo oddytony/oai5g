@@ -45,7 +45,7 @@ typedef struct {
 
 typedef struct {
   // mysql reference connector object
-  MYSQL *db_conn;
+  MYSQL* db_conn;
   std::string server;
   std::string user;
   std::string password;

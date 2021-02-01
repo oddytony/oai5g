@@ -348,7 +348,8 @@ void amf_n11::send_pdu_session_update_sm_context_request(
 //------------------------------------------------------------------------------
 void amf_n11::handle_pdu_session_initial_request(
     std::string supi, std::shared_ptr<pdu_session_context> psc,
-    std::string smf_addr, std::string smf_api_version, bstring sm_msg, std::string dnn) {
+    std::string smf_addr, std::string smf_api_version, bstring sm_msg,
+    std::string dnn) {
   Logger::amf_n11().debug(
       "Handle PDU Session Establishment Request (SUPI %s, PDU Session ID %d)",
       supi.c_str(), psc.get()->pdu_session_id);
@@ -437,7 +438,8 @@ void amf_n11::set_supi_to_pdu_ctx(
 
 // SMF selection
 //------------------------------------------------------------------------------
-bool amf_n11::smf_selection_from_configuration(std::string& smf_addr, std::string& smf_api_version) {
+bool amf_n11::smf_selection_from_configuration(
+    std::string& smf_addr, std::string& smf_api_version) {
   for (int i = 0; i < amf_cfg.smf_pool.size(); i++) {
     if (amf_cfg.smf_pool[i].selected) {
       smf_addr = amf_cfg.smf_pool[i].ipv4 + ":" + amf_cfg.smf_pool[i].port;
@@ -449,7 +451,8 @@ bool amf_n11::smf_selection_from_configuration(std::string& smf_addr, std::strin
 }
 
 //------------------------------------------------------------------------------
-bool amf_n11::smf_selection_from_context(std::string& smf_addr, std::string& smf_api_version) {
+bool amf_n11::smf_selection_from_context(
+    std::string& smf_addr, std::string& smf_api_version) {
   // TODO:
 }
 

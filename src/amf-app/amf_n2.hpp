@@ -43,34 +43,34 @@ namespace amf_application {
 
 class amf_n2 : public ngap::ngap_app {
  public:
-  amf_n2(const std::string &address, const uint16_t port_num);
+  amf_n2(const std::string& address, const uint16_t port_num);
   ~amf_n2();
-  void handle_itti_message(itti_new_sctp_association &new_assoc);
-  void handle_itti_message(itti_ng_setup_request &ngsetupreq);
-  void handle_itti_message(itti_initial_ue_message &init_ue_msg);
-  void handle_itti_message(itti_ul_nas_transport &ul_nas_transport);
-  void handle_itti_message(itti_dl_nas_transport &dl_nas_transport);
-  void handle_itti_message(itti_initial_context_setup_request &itti_msg);
-  void handle_itti_message(itti_pdu_session_resource_setup_request &itti_msg);
-  void handle_itti_message(itti_ue_context_release_request &itti_msg);
-  void handle_itti_message(itti_ue_radio_capability_indication &itti_msg);
-  void handle_itti_message(itti_ue_context_release_command &itti_msg);
-  void handle_itti_message(itti_pdu_session_resource_release_command &itti_msg);
-  void handle_itti_message(itti_handover_required &itti_msg);
-  void handle_itti_message(itti_handover_request_Ack &itti_msg);
-  void handle_itti_message(itti_handover_notify &itti_msg);
-  void handle_itti_message(itti_uplinkranstatsutransfer &itti_msg);
+  void handle_itti_message(itti_new_sctp_association& new_assoc);
+  void handle_itti_message(itti_ng_setup_request& ngsetupreq);
+  void handle_itti_message(itti_initial_ue_message& init_ue_msg);
+  void handle_itti_message(itti_ul_nas_transport& ul_nas_transport);
+  void handle_itti_message(itti_dl_nas_transport& dl_nas_transport);
+  void handle_itti_message(itti_initial_context_setup_request& itti_msg);
+  void handle_itti_message(itti_pdu_session_resource_setup_request& itti_msg);
+  void handle_itti_message(itti_ue_context_release_request& itti_msg);
+  void handle_itti_message(itti_ue_radio_capability_indication& itti_msg);
+  void handle_itti_message(itti_ue_context_release_command& itti_msg);
+  void handle_itti_message(itti_pdu_session_resource_release_command& itti_msg);
+  void handle_itti_message(itti_handover_required& itti_msg);
+  void handle_itti_message(itti_handover_request_Ack& itti_msg);
+  void handle_itti_message(itti_handover_notify& itti_msg);
+  void handle_itti_message(itti_uplinkranstatsutransfer& itti_msg);
 
   bool verifyPlmn(std::vector<SupportedItem_t> list);
   std::vector<SupportedItem_t> get_common_plmn(
       std::vector<SupportedItem_t> list);
   std::shared_ptr<ue_ngap_context> ran_ue_id_2_ue_ngap_context(
-      const uint32_t &ran_ue_ngap_id) const;
+      const uint32_t& ran_ue_ngap_id) const;
 
-  bool is_ran_ue_id_2_ue_ngap_context(const uint32_t &ran_ue_ngap_id) const;
+  bool is_ran_ue_id_2_ue_ngap_context(const uint32_t& ran_ue_ngap_id) const;
 
   void set_ran_ue_ngap_id_2_ue_ngap_context(
-      const uint32_t &ran_ue_ngap_id, std::shared_ptr<ue_ngap_context> unc);
+      const uint32_t& ran_ue_ngap_id, std::shared_ptr<ue_ngap_context> unc);
 
  private:
   std::map<uint32_t, std::shared_ptr<ue_ngap_context>>

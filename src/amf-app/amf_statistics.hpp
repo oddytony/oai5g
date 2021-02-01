@@ -63,8 +63,8 @@ class statistics {
   void display();
   statistics();
   ~statistics();
-  void update_ue_info(const ue_info_t &ue_info);
-  void update_5gmm_state(const std::string &imsi, const std::string &state);
+  void update_ue_info(const ue_info_t& ue_info);
+  void update_5gmm_state(const std::string& imsi, const std::string& state);
 
  public:
   uint32_t gNB_connected;

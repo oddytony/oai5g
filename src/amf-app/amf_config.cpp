@@ -379,9 +379,11 @@ void amf_config::display() {
   Logger::config().info("    port .................: %d", n11.port);
 
   Logger::config().info("- NRF:");
-  Logger::config().info("    IP addr ..............: %s", inet_ntoa(nrf_addr.ipv4_addr));
+  Logger::config().info(
+      "    IP addr ..............: %s", inet_ntoa(nrf_addr.ipv4_addr));
   Logger::config().info("    Port .................: %d", nrf_addr.port);
-  Logger::config().info("    Api version ..........: %s", nrf_addr.api_version.c_str());
+  Logger::config().info(
+      "    Api version ..........: %s", nrf_addr.api_version.c_str());
 
   //  Logger::config().info("    HTTP2 port ............: %d", n11_http2_port);
 

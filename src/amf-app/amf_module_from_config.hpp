@@ -40,7 +40,7 @@
 #define MODULES_CONFIG_STRING_AMF_MODULES "MODULES"
 #define MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE "NGAP_MESSAGE"
 #define MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_NAME "MSG_NAME"
-#define MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_PROCEDURECODE \
+#define MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_PROCEDURECODE           \
   "ProcedureCode"
 #define MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE_TYPEOFMSG "TypeOfMessage"
 
@@ -50,7 +50,7 @@ namespace config {
 
 class amf_modules {
  public:
-  int load(const std::string &config_file);
+  int load(const std::string& config_file);
   void display();
   void makeModulesAlive();
 
