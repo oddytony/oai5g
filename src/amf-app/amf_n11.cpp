@@ -169,8 +169,9 @@ void amf_n11::handle_itti_message(
     return;
   }
   std::string smf_addr;
+  std::string smf_api_version;
   if (!psc.get()->smf_available) {
-    if (!smf_selection_from_configuration(smf_addr)) {
+    if (!smf_selection_from_configuration(smf_addr, smf_api_version)) {
       // use NRF to find suitable SMF based on snssai, plmn and dnn
       if (!discover_smf(
               smf_addr, psc.get()->snssai, psc.get()->plmn, psc.get()->dnn)) {
@@ -179,7 +180,7 @@ void amf_n11::handle_itti_message(
       }
     }
   } else {
-    smf_selection_from_context(smf_addr);
+    smf_selection_from_context(smf_addr, smf_api_version);
   }
 
   std::string smf_ip_addr, remote_uri;
@@ -248,13 +249,14 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer& smf) {
   psc.get()->dnn = dnn;
 
   std::string smf_addr;
+  std::string smf_api_version;
   if (!psc.get()->smf_available) {
-    if (!smf_selection_from_configuration(smf_addr)) {
+    if (!smf_selection_from_configuration(smf_addr, smf_api_version)) {
       Logger::amf_n11().error("No candidate for SMF is available");
       return;
     }
   } else {
-    smf_selection_from_context(smf_addr);
+    smf_selection_from_context(smf_addr, smf_api_version);
   }
 
   switch (smf.req_type & 0x07) {
@@ -290,7 +292,7 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer& smf) {
       } else {
         psc.get()->isn2sm_avaliable = false;
         handle_pdu_session_initial_request(
-            supi, psc, smf_addr, smf.sm_msg, dnn);
+            supi, psc, smf_addr, smf_api_version, smf.sm_msg, dnn);
       }
     } break;
     case EXISTING_PDU_SESSION: {
@@ -346,14 +348,14 @@ void amf_n11::send_pdu_session_update_sm_context_request(
 //------------------------------------------------------------------------------
 void amf_n11::handle_pdu_session_initial_request(
     std::string supi, std::shared_ptr<pdu_session_context> psc,
-    std::string smf_addr, bstring sm_msg, std::string dnn) {
+    std::string smf_addr, std::string smf_api_version, bstring sm_msg, std::string dnn) {
   Logger::amf_n11().debug(
       "Handle PDU Session Establishment Request (SUPI %s, PDU Session ID %d)",
       supi.c_str(), psc.get()->pdu_session_id);
 
   // TODO: Remove hardcoded values
   std::string remote_uri =
-      smf_addr + "/nsmf-pdusession/v2/sm-contexts";  // TODO
+      smf_addr + "/nsmf-pdusession/" + smf_api_version + "/sm-contexts";
   nlohmann::json pdu_session_establishment_request;
   pdu_session_establishment_request["supi"]          = supi.c_str();
   pdu_session_establishment_request["pei"]           = "imei-200000000000001";
@@ -390,13 +392,14 @@ void amf_n11::handle_itti_message(
     itti_nsmf_pdusession_release_sm_context& itti_msg) {
   std::shared_ptr<pdu_session_context> psc = supi_to_pdu_ctx(itti_msg.supi);
   string smf_addr;
+  std::string smf_api_version;
   if (!psc.get()->smf_available) {
-    if (!smf_selection_from_configuration(smf_addr)) {
+    if (!smf_selection_from_configuration(smf_addr, smf_api_version)) {
       Logger::amf_n11().error("No candidate smf is avaliable");
       return;
     }
   } else {
-    smf_selection_from_context(smf_addr);
+    smf_selection_from_context(smf_addr, smf_api_version);
   }
   string remote_uri = psc.get()->location + "release";
   nlohmann::json pdu_session_release_request;
@@ -434,12 +437,11 @@ void amf_n11::set_supi_to_pdu_ctx(
 
 // SMF selection
 //------------------------------------------------------------------------------
-bool amf_n11::smf_selection_from_configuration(std::string& smf_addr) {
+bool amf_n11::smf_selection_from_configuration(std::string& smf_addr, std::string& smf_api_version) {
   for (int i = 0; i < amf_cfg.smf_pool.size(); i++) {
     if (amf_cfg.smf_pool[i].selected) {
-      // smf_addr = "http://" + amf_cfg.smf_pool[i].ipv4 + ":" +
-      // amf_cfg.smf_pool[i].port;
       smf_addr = amf_cfg.smf_pool[i].ipv4 + ":" + amf_cfg.smf_pool[i].port;
+      smf_api_version = amf_cfg.smf_pool[i].version;
       return true;
     }
   }
@@ -447,7 +449,7 @@ bool amf_n11::smf_selection_from_configuration(std::string& smf_addr) {
 }
 
 //------------------------------------------------------------------------------
-bool amf_n11::smf_selection_from_context(std::string& smf_addr) {
+bool amf_n11::smf_selection_from_context(std::string& smf_addr, std::string& smf_api_version) {
   // TODO:
 }
 

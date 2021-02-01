@@ -378,6 +378,7 @@ void amf_n1::nas_signalling_establishment_request_handle(
   }
 }
 
+/*
 //------------------------------------------------------------------------------
 void amf_n1::uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
                                    bstring plain_msg) {
@@ -428,6 +429,7 @@ void amf_n1::uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
     }
   }
 }
+*/
 
 //------------------------------------------------------------------------------
 void amf_n1::uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,

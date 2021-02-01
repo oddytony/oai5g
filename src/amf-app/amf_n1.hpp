@@ -68,8 +68,8 @@ class amf_n1 {
       SecurityHeaderType type, std::shared_ptr<nas_context> nc,
       uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg,
       std::string snn, uint8_t ulCount);
-  void uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
-                             bstring plain_msg);
+//  void uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
+//                             bstring plain_msg);
   void uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
                              bstring plain_msg, plmn_t plmn);
   bool check_security_header_type(SecurityHeaderType &type, uint8_t *buffer);
