@@ -48,6 +48,7 @@ class ue_context {
   bool isUeContextRequest;
   NrCgi_t cgi;
   Tai_t tai;
+  std::string supi;
 };
 
 #endif
