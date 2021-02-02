@@ -349,7 +349,7 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
   // gNB, for example, here RAN UE NGAP ID and location information and RRC
   // Establishment Cause send NAS-PDU to NAS layer Get INITIAL_UE_MESSAGE IEs
 
-  // check the gNB context on which  this UE is attached with assoc_id
+  // Check the gNB context on which  this UE is attached with assoc_id
   itti_nas_signalling_establishment_request* itti_msg =
       new itti_nas_signalling_establishment_request(TASK_AMF_N2, TASK_AMF_APP);
 
@@ -358,6 +358,7 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
         "No existing gNG context with assoc_id (%d)", init_ue_msg.assoc_id);
     return;
   }
+
   std::shared_ptr<gnb_context> gc;
   gc = assoc_id_2_gnb_context(init_ue_msg.assoc_id);
   if (gc.get()->ng_state == NGAP_RESETING ||
@@ -378,6 +379,7 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
     Logger::amf_n2().error("Missing Mandatory IE (RanUeNgapId)");
     return;
   }
+
   std::shared_ptr<ue_ngap_context> unc;
   if (!is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
     Logger::amf_n2().debug(
@@ -388,11 +390,12 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
   } else {
     unc = ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
   }
+
   if (unc.get() == nullptr) {
     Logger::amf_n2().error(
         "Failed to get UE NGAP context for ran_ue_ngap_id 0x%x", 21);
   } else {
-    // store information into UE NGAP context
+    // Store related information into UE NGAP context
     unc.get()->ran_ue_ngap_id   = ran_ue_ngap_id;
     unc.get()->sctp_stream_recv = init_ue_msg.stream;
     unc.get()->sctp_stream_send == gc.get()->next_sctp_stream;
@@ -402,6 +405,7 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
     unc.get()->gnb_assoc_id = init_ue_msg.assoc_id;
     NrCgi_t cgi;
     Tai_t tai;
+
     if (init_ue_msg.initUeMsg->getUserLocationInfoNR(cgi, tai)) {
       itti_msg->cgi = cgi;
       itti_msg->tai = tai;
@@ -409,12 +413,14 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
       Logger::amf_n2().error("Missing Mandatory IE UserLocationInfoNR");
       return;
     }
+
     if (init_ue_msg.initUeMsg->getRRCEstablishmentCause() == -1) {
       Logger::amf_n2().warn("IE RRCEstablishmentCause not present");
       itti_msg->rrc_cause = -1;  // not present
     } else {
       itti_msg->rrc_cause = init_ue_msg.initUeMsg->getRRCEstablishmentCause();
     }
+
 #if 0
     if(init_ue_msg.initUeMsg->getUeContextRequest() == -1){
       Logger::amf_n2().warn("IE UeContextRequest not present");
@@ -423,6 +429,7 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
       itti_msg->ueCtxReq = init_ue_msg.initUeMsg->getUeContextRequest();
     }
 #endif
+
     std::string _5g_s_tmsi;
     if (!init_ue_msg.initUeMsg->get5GS_TMSI(_5g_s_tmsi)) {
       itti_msg->is_5g_s_tmsi_present = false;
@@ -688,18 +695,20 @@ void amf_n2::handle_itti_message(
   Logger::amf_n2().debug("SUPI (%s)", supi.c_str());
   std::shared_ptr<pdu_session_context> psc;
 
-  //TODO: REMOVE supi_to_pdu_ctx
-  if (!amf_app_inst->find_pdu_session_context(supi, itti_msg.pdu_session_id, psc)){
-	  Logger::amf_n2().warn("Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
-  }
-/*
-  if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
-    psc = amf_n11_inst->supi_to_pdu_ctx(supi);
-  } else {
+  // TODO: REMOVE supi_to_pdu_ctx
+  if (!amf_app_inst->find_pdu_session_context(
+          supi, itti_msg.pdu_session_id, psc)) {
     Logger::amf_n2().warn(
         "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
   }
-  */
+  /*
+    if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
+      psc = amf_n11_inst->supi_to_pdu_ctx(supi);
+    } else {
+      Logger::amf_n2().warn(
+          "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
+    }
+    */
 
   // item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
   // item.s_nssai.sd = psc.get()->snssai.sD;
@@ -1023,7 +1032,7 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   // handoverrequest->setSourceToTarget_TransparentContainer(sourceTotarget);
   string supi = "imsi-" + nc.get()->imsi;
 
-  //TODO: REMOVE supi_to_pdu_ctx (need PDU Session ID)/ list of PDU Session ID
+  // TODO: REMOVE supi_to_pdu_ctx (need PDU Session ID)/ list of PDU Session ID
   std::shared_ptr<pdu_session_context> psc =
       amf_n11_inst->supi_to_pdu_ctx(supi);
 

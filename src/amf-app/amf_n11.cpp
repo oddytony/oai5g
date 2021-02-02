@@ -427,8 +427,8 @@ void amf_n11::handle_pdu_session_initial_request(
 //------------------------------------------------------------------------------
 void amf_n11::handle_itti_message(
     itti_nsmf_pdusession_release_sm_context& itti_msg) {
-	//TTN: Should be replace by new mechanism to support multiple PDU sessions
-	//Need PDU session ID
+  // TTN: Should be replace by new mechanism to support multiple PDU sessions
+  // Need PDU session ID
   std::shared_ptr<pdu_session_context> psc = supi_to_pdu_ctx(itti_msg.supi);
   string smf_addr;
   std::string smf_api_version;
@@ -530,21 +530,21 @@ void amf_n11::curl_http_client(
   std::string body;
   std::shared_ptr<pdu_session_context> psc;
 
-  //TTN: Should be replace by new mechanism to support multiple PDU sessions
-  if (!amf_app_inst->find_pdu_session_context(supi,pdu_session_id, psc)) {
-	  Logger::amf_n11().warn(
-	          "PDU Session context for SUPI %s doesn't exit!", supi.c_str());
-	  //TODO:
-  }
-/*
-  if (is_supi_to_pdu_ctx(supi)) {
-    psc = supi_to_pdu_ctx(supi);
-  } else {
+  // TTN: Should be replace by new mechanism to support multiple PDU sessions
+  if (!amf_app_inst->find_pdu_session_context(supi, pdu_session_id, psc)) {
     Logger::amf_n11().warn(
         "PDU Session context for SUPI %s doesn't exit!", supi.c_str());
     // TODO:
   }
-*/
+  /*
+    if (is_supi_to_pdu_ctx(supi)) {
+      psc = supi_to_pdu_ctx(supi);
+    } else {
+      Logger::amf_n11().warn(
+          "PDU Session context for SUPI %s doesn't exit!", supi.c_str());
+      // TODO:
+    }
+  */
 
   if ((n1SmMsg.size() > 0) and (n2SmMsg.size() > 0)) {
     // prepare the body content for Curl

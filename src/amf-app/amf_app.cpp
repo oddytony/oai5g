@@ -21,7 +21,7 @@
 
 /*! \file amf_app.cpp
  \brief
- \author  Keliang DU, BUPT
+ \author  Keliang DU, BUPT, Tien-Thinh NGUYEN, EURECOM
  \date 2020
  \email: contact@openairinterface.org
  */
@@ -162,7 +162,7 @@ std::shared_ptr<ue_context> amf_app::amf_ue_id_2_ue_context(
 //------------------------------------------------------------------------------
 void amf_app::set_amf_ue_ngap_id_2_ue_context(
     const long& amf_ue_ngap_id, std::shared_ptr<ue_context> uc) {
-  std::shared_lock lock(m_amf_ue_ngap_id2ue_ctx);
+  std::unique_lock lock(m_amf_ue_ngap_id2ue_ctx);
   amf_ue_ngap_id2ue_ctx[amf_ue_ngap_id] = uc;
 }
 
@@ -182,7 +182,7 @@ std::shared_ptr<ue_context> amf_app::ran_amf_id_2_ue_context(
 //------------------------------------------------------------------------------
 void amf_app::set_ran_amf_id_2_ue_context(
     const string& ue_context_key, std::shared_ptr<ue_context> uc) {
-  std::shared_lock lock(m_ue_ctx_key);
+  std::unique_lock lock(m_ue_ctx_key);
   ue_ctx_key[ue_context_key] = uc;
 }
 
@@ -202,14 +202,16 @@ std::shared_ptr<ue_context> amf_app::supi_2_ue_context(
 //------------------------------------------------------------------------------
 void amf_app::set_supi_2_ue_context(
     const string& supi, std::shared_ptr<ue_context>& uc) {
-  std::unique_lock  lock(m_supi2ue_ctx);
+  std::unique_lock lock(m_supi2ue_ctx);
   supi2ue_ctx[supi] = uc;
 }
 
-bool amf_app::find_pdu_session_context(const string& supi, const std::uint8_t pdu_session_id, std::shared_ptr<pdu_session_context>& psc){
+bool amf_app::find_pdu_session_context(
+    const string& supi, const std::uint8_t pdu_session_id,
+    std::shared_ptr<pdu_session_context>& psc) {
   if (!is_supi_2_ue_context(supi)) return false;
   std::shared_ptr<ue_context> uc = {};
-  uc = supi_2_ue_context(supi);
+  uc                             = supi_2_ue_context(supi);
   if (!uc.get()->find_pdu_session_context(pdu_session_id, psc)) return false;
   return true;
 }
@@ -218,13 +220,14 @@ bool amf_app::find_pdu_session_context(const string& supi, const std::uint8_t pd
 //------------------------------------------------------------------------------
 void amf_app::handle_itti_message(
     itti_n1n2_message_transfer_request& itti_msg) {
-  // 1. encode DL NAS TRANSPORT message(NAS message)
+  // Encode DL NAS TRANSPORT message(NAS message)
   DLNASTransport* dl = new DLNASTransport();
   dl->setHeader(PLAIN_5GS_MSG);
   dl->setPayload_Container_Type(N1_SM_INFORMATION);
   dl->setPayload_Container(
       (uint8_t*) bdata(itti_msg.n1sm), blength(itti_msg.n1sm));
   dl->setPDUSessionId(itti_msg.pdu_session_id);
+
   uint8_t nas[1024];
   int encoded_size = dl->encode2buffer(nas, 1024);
   print_buffer("amf_app", "n1n2 transfer", nas, encoded_size);
@@ -256,28 +259,28 @@ void amf_app::handle_itti_message(
 //------------------------------------------------------------------------------
 void amf_app::handle_itti_message(
     itti_nas_signalling_establishment_request& itti_msg) {
-  // 1. generate amf_ue_ngap_id
-  // 2. establish ue_context associated with amf_ue_ngap_id
-  // 3. store ue-reated core information
-  // 4. send nas-pdu to task_amf_n1
+  // 1. Generate amf_ue_ngap_id
+  // 2. Create UE Context and store related information information
+  // 3. Send nas-pdu to task_amf_n1
+
   long amf_ue_ngap_id = 0;
   std::shared_ptr<ue_context> uc;
-  // check ue context with 5g-s-tmsi
 
+  // check UE Context with 5g-s-tmsi
   if ((amf_ue_ngap_id = itti_msg.amf_ue_ngap_id) == -1) {
     amf_ue_ngap_id = generate_amf_ue_ngap_id();
   }
+
   string ue_context_key = "app_ue_ranid_" + to_string(itti_msg.ran_ue_ngap_id) +
                           ":amfid_" + to_string(amf_ue_ngap_id);
-  // if(!is_amf_ue_id_2_ue_context(amf_ue_ngap_id)){
   if (!is_ran_amf_id_2_ue_context(ue_context_key)) {
     Logger::amf_app().debug(
         "No existing UE Context, Create a new one with ran_amf_id %s",
         ue_context_key.c_str());
     uc = std::shared_ptr<ue_context>(new ue_context());
-    // set_amf_ue_ngap_id_2_ue_context(amf_ue_ngap_id, uc);
     set_ran_amf_id_2_ue_context(ue_context_key, uc);
   }
+
   if (uc.get() == nullptr) {
     Logger::amf_app().error(
         "Failed to create ue_context with ran_amf_id %s",

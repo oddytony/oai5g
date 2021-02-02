@@ -126,7 +126,7 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
     nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
   else {
     Logger::amf_n1().warn(
-        "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+        "No existed nas_context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
     return;
   }
   nas_secu_ctx* secu = nc.get()->security_ctx;
@@ -135,9 +135,10 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
       secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
       (uint8_t*) bdata(itti_msg.dl_nas), blength(itti_msg.dl_nas),
       protected_nas);
+
   if (itti_msg.is_n2sm_set) {
-    if (itti_msg.n2sm_info_type.compare("PDU_RES_REL_CMD") ==
-        0) {  // PDU SESSION RESOURCE RELEASE COMMAND
+    if (itti_msg.n2sm_info_type.compare("PDU_RES_REL_CMD") == 0) {
+      // PDU SESSION RESOURCE RELEASE COMMAND
       itti_pdu_session_resource_release_command* release_command =
           new itti_pdu_session_resource_release_command(
               TASK_AMF_N1, TASK_AMF_N2);
@@ -155,7 +156,8 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
             "Could not send ITTI message %s to task TASK_AMF_N2",
             i->get_msg_name());
       }
-    } else {  // PDU SESSION RESOURCE SETUP_REQUEST
+    } else {
+      // PDU SESSION RESOURCE SETUP_REQUEST
       itti_pdu_session_resource_setup_request* psrsr =
           new itti_pdu_session_resource_setup_request(TASK_AMF_N1, TASK_AMF_N2);
       psrsr->nas            = protected_nas;
@@ -194,9 +196,11 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
 void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
   long amf_ue_ngap_id     = nas_data_ind.amf_ue_ngap_id;
   uint32_t ran_ue_ngap_id = nas_data_ind.ran_ue_ngap_id;
+
   std::string nas_context_key =
       "app_ue_ranid_" + to_string(ran_ue_ngap_id) + ":amfid_" +
       to_string(amf_ue_ngap_id);  // key for nas_context, option 1
+
   std::string snn;
   if (nas_data_ind.mnc.length() == 2)  // TODO: remove hardcoded value
     snn = "5G:mnc0" + nas_data_ind.mnc + ".mcc" + nas_data_ind.mcc +
@@ -205,6 +209,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
     snn = "5G:mnc" + nas_data_ind.mnc + ".mcc" + nas_data_ind.mcc +
           ".3gppnetwork.org";
   Logger::amf_n1().debug("Serving network name %s", snn.c_str());
+
   plmn_t plmn = {};
   plmn.mnc    = nas_data_ind.mnc;
   plmn.mcc    = nas_data_ind.mcc;
@@ -235,12 +240,15 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
     Logger::amf_n1().error("Not 5GS MOBILITY MANAGEMENT message");
     return;
   }
+
   uint8_t ulCount = 0;
+
   switch (type) {
     case PlainNasMsg: {
       Logger::amf_n1().debug("Received plain NAS message");
       decoded_plain_msg = recved_nas_msg;
     } break;
+
     case IntegrityProtected: {
       Logger::amf_n1().debug("Received integrity protected NAS message");
       ulCount = *((uint8_t*) bdata(recved_nas_msg) + 6);
@@ -249,6 +257,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
       decoded_plain_msg = blk2bstr(
           (uint8_t*) bdata(recved_nas_msg) + 7, blength(recved_nas_msg) - 7);
     } break;
+
     case IntegrityProtectedAndCiphered: {
       Logger::amf_n1().debug(
           "Received integrity protected and ciphered NAS message");
@@ -266,6 +275,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
             "Abnormal condition: no existed nas_context. exit...");
         return;
       }
+
       uint32_t mac32 = 0;
       if (!nas_message_integrity_protected(
               nc.get()->security_ctx, NAS_MESSAGE_UPLINK,
@@ -299,11 +309,14 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
         }
       }
     } break;
+    default: {
+      Logger::amf_n1().error("unknown NAS msg type");
+      return;
+    }
   }
+
   if (nas_data_ind.is_nas_signalling_estab_req) {
     Logger::amf_n1().debug("Received NAS signalling establishment request...");
-    // dump_nas_message((uint8_t*)bdata(decoded_plain_msg),
-    // blength(decoded_plain_msg));
     print_buffer(
         "amf_n1", "Decoded plain NAS Message buffer",
         (uint8_t*) bdata(decoded_plain_msg), blength(decoded_plain_msg));
@@ -327,7 +340,7 @@ void amf_n1::nas_signalling_establishment_request_handle(
     SecurityHeaderType type, std::shared_ptr<nas_context> nc,
     uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg,
     std::string snn, uint8_t ulCount) {
-  // 1. Create nas context, or update nas context
+  // Create NAS Context, or Update if existed
   if ((nc.get() == nullptr) && (type == PlainNasMsg)) {
     Logger::amf_n1().debug(
         "No existing nas_context with amf_ue_ngap_id 0x%x --> Create a new one",
@@ -355,6 +368,7 @@ void amf_n1::nas_signalling_establishment_request_handle(
   uint8_t* buf         = (uint8_t*) bdata(plain_msg);
   uint8_t message_type = *(buf + 2);
   Logger::amf_n1().debug("NAS message type 0x%x", message_type);
+
   switch (message_type) {
     case REGISTRATION_REQUEST: {
       Logger::amf_n1().debug(
@@ -362,19 +376,22 @@ void amf_n1::nas_signalling_establishment_request_handle(
       registration_request_handle(
           true, nc, ran_ue_ngap_id, amf_ue_ngap_id, snn, plain_msg);
     } break;
+
     case SERVICE_REQUEST: {
       Logger::amf_n1().debug("Received service request message, handling...");
       nc.get()->security_ctx->ul_count.seq_num = ulCount;
       service_request_handle(
           true, nc, ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
+
     case UE_INIT_DEREGISTER: {
       Logger::amf_n1().debug(
-          "received initialUeMessage de-registration request messgae , handle "
-          "...");
+          "Received initialUeMessage de-registration request message, "
+          "handling...");
       // ue_initiate_de_registration_handle(ran_ue_ngap_id, amf_ue_ngap_id,
       // plain_msg);
     } break;
+
     default:
       Logger::amf_n1().error("No handler for NAS message 0x%x", message_type);
   }
@@ -598,19 +615,20 @@ void amf_n1::service_request_handle(
       "amf_ue_ngap_id %d, ran_ue_ngap_id %d", amf_ue_ngap_id, ran_ue_ngap_id);
   Logger::amf_n1().debug("Key for pdu session context: SUPI %s", supi.c_str());
   std::shared_ptr<pdu_session_context> psc;
-/*
- //TODO: get the pdu_session_context from AMF_APP based on both SUPI and PDU Session ID
-  string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
-                          ":amfid_" + to_string(amf_ue_ngap_id);
-  std::shared_ptr<ue_context> uc;
+  /*
+   //TODO: get the pdu_session_context from AMF_APP based on both SUPI and PDU
+   Session ID string ue_context_key = "app_ue_ranid_" +
+   to_string(ran_ue_ngap_id) +
+                            ":amfid_" + to_string(amf_ue_ngap_id);
+    std::shared_ptr<ue_context> uc;
 
-  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
-  if (uc.get() !=nullptr){
-	  if (!uc.get()->find_pdu_session_context(pdu_session_id,psc)) {
-	  }
-  }
-  //TO check: in which condition we should have PDU Session ID
-*/
+    uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+    if (uc.get() !=nullptr){
+            if (!uc.get()->find_pdu_session_context(pdu_session_id,psc)) {
+            }
+    }
+    //TO check: in which condition we should have PDU Session ID
+  */
 
   if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
     psc = amf_n11_inst->supi_to_pdu_ctx(supi);
@@ -717,7 +735,8 @@ void amf_n1::registration_request_handle(
   RegistrationRequest* regReq = new RegistrationRequest();
   regReq->decodefrombuffer(nullptr, (uint8_t*) bdata(reg), blength(reg));
   bdestroy(reg);  // free buffer
-  //find UE context
+
+  // Find UE context
   string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
                           ":amfid_" + to_string(amf_ue_ngap_id);
   std::shared_ptr<ue_context> uc;
@@ -779,31 +798,13 @@ void amf_n1::registration_request_handle(
           stacs.update_ue_info(ueItem);
           set_5gmm_state(nc, _5GMM_COMMON_PROCEDURE_INITIATED);
           nc.get()->is_stacs_available = true;
-          /*
-           bool add_new_ue = true;
-           for(int i=0; i< stacs.ues.size(); i++){
-           if(!stacs.ues[i].imsi.compare(nc.get()->imsi)){
-           stacs.ues[i].connStatus = ueItem.connStatus;
-           stacs.ues[i].registerStatus = ueItem.registerStatus;
-           stacs.ues[i].ranid = ueItem.ranid;
-           stacs.ues[i].amfid = ueItem.amfid;
-           stacs.ues[i].guti = ueItem.guti;
-           stacs.ues[i].mcc = ueItem.mcc;
-           stacs.ues[i].mnc = ueItem.mnc;
-           stacs.ues[i].cellId = ueItem.cellId;
-           add_new_ue = false;
-           break;
-           }
-           }
-           if(add_new_ue)
-           stacs.ues.push_back(ueItem);
-           */}
-          // nc.get()->imsi = //need interface to transfer SUCI_imsi_t to string
+        }
       }
     } break;
+
     case _5G_GUTI: {
       guti = regReq->get_5g_guti();
-      Logger::amf_n1().debug("Decoded GUTI from registeration request message");
+      Logger::amf_n1().debug("Decoded GUTI from registration request message");
       if (!guti.compare("error")) {
         Logger::amf_n1().warn("No GUTI IE");
       }
@@ -847,6 +848,10 @@ void amf_n1::registration_request_handle(
         // supi2ranId[("imsi-"+nc.get()->imsi)] = ran_ue_ngap_id;
       }
     } break;
+
+    default: {
+      Logger::amf_n1().warn("Unknown UE Mobility Identity");
+    }
   }
 
   // Create NAS context
@@ -883,12 +888,12 @@ void amf_n1::registration_request_handle(
   nc.get()->amf_ue_ngap_id  = amf_ue_ngap_id;
   nc.get()->serving_network = snn;
 
-  // update UE conext
+  // Update UE conext
   if (uc.get() != nullptr) {
-	  std::string supi = "imsi-" + nc.get()->imsi;
-	  uc.get()->supi = supi;
-	  //associate SUPI with UC
-	  amf_app_inst->set_supi_2_ue_context(supi, uc);
+    std::string supi = "imsi-" + nc.get()->imsi;
+    uc.get()->supi   = supi;
+    // associate SUPI with UC
+    amf_app_inst->set_supi_2_ue_context(supi, uc);
   }
 
   // Check 5GS_Registration_type IE (Mandatory IE)
@@ -916,7 +921,7 @@ void amf_n1::registration_request_handle(
   }
   nc.get()->ngKsi = ngKSI;
 
-  // Get non-current native nas key set identity (Optional IE), used for
+  // Get non-current native NAS key set identity (Optional IE), used for
   // inter-system change from S1 to N1 Get 5GMM Capability IE (optional), not
   // included for periodic registration updating procedure
   uint8_t _5g_mm_cap = regReq->get5GMMCapability();
@@ -957,24 +962,32 @@ void amf_n1::registration_request_handle(
       run_initial_registration_procedure();  // IEs?
       run_registration_procedure(nc);
     } break;
+
     case MOBILITY_REGISTRATION_UPDATING: {
       Logger::amf_n1().error("Network handling mobility registration ...");
       run_mobility_registration_update_procedure(nc);
     } break;
+
     case PERIODIC_REGISTRATION_UPDATING: {
       Logger::amf_n1().error(
-          "Network doesn't support periodic registration, reject ...");
+          "Network does not support periodic registration, reject ...");
     } break;
+
     case EMERGENCY_REGISTRATION: {
       if (!amf_cfg.is_emergency_support.compare("false")) {
         Logger::amf_n1().error(
-            "Network doesn't support emergency registration, reject ...");
+            "Network does not support emergency registration, reject ...");
         response_registration_reject_msg(
             _5GMM_CAUSE_ILLEGAL_UE, ran_ue_ngap_id,
             amf_ue_ngap_id);  // cause?
         return;
       }
     } break;
+    default :{
+    	 Logger::amf_n1().error("Unknown registration type ...");
+    	 //TODO:
+    	 return;
+    }
   }
 }
 
@@ -2357,15 +2370,16 @@ void amf_n1::run_mobility_registration_update_procedure(
   Logger::amf_n1().debug("Key for pdu session context SUPI (%s)", supi.c_str());
   std::shared_ptr<pdu_session_context> psc;
   /*
-   //TODO: get the pdu_session_context from AMF_APP based on both SUPI and PDU Session ID
-    string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
+   //TODO: get the pdu_session_context from AMF_APP based on both SUPI and PDU
+   Session ID string ue_context_key = "app_ue_ranid_" +
+   to_string(ran_ue_ngap_id) +
                             ":amfid_" + to_string(amf_ue_ngap_id);
     std::shared_ptr<ue_context> uc;
 
     uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
     if (uc.get() !=nullptr){
-  	  if (!uc.get()->find_pdu_session_context()) {
-  	  }
+          if (!uc.get()->find_pdu_session_context()) {
+          }
     }
       //TO check: in which condition we should have PDU Session ID
   */
