@@ -192,20 +192,12 @@ void amf_n11::handle_itti_message(
 
   std::string smf_addr;
   std::string smf_api_version;
+
   if (!psc.get()->smf_available) {
-    // TODO:
-    if (!smf_selection_from_configuration(smf_addr, smf_api_version)) {
-      // use NRF to find suitable SMF based on snssai, plmn and dnn
-      if (!discover_smf(
-              smf_addr, psc.get()->snssai, psc.get()->plmn, psc.get()->dnn)) {
-        Logger::amf_n11().error("No SMF candidate is available");
-        return;
-      }
-    }
+    Logger::amf_n11().error("No SMF is available for this PDU session");
   } else {
     smf_addr        = psc->smf_addr;
     smf_api_version = psc->smf_api_version;
-    // smf_selection_from_context(smf_addr, smf_api_version);
   }
 
   std::string smf_ip_addr, remote_uri;
@@ -287,17 +279,43 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer& smf) {
   Logger::amf_n11().debug("Requested DNN: %s", dnn.c_str());
   psc.get()->dnn = dnn;
 
+  /* std::string smf_addr;
+   std::string smf_api_version;
+   if (!psc.get()->smf_available) {
+     if (!smf_selection_from_configuration(smf_addr, smf_api_version)) {
+       Logger::amf_n11().error("No candidate for SMF is available");
+       return;
+     }
+   } else {
+     smf_addr        = psc->smf_addr;
+     smf_api_version = psc->smf_api_version;
+     // smf_selection_from_context(smf_addr, smf_api_version);
+   }
+ */
+
   std::string smf_addr;
   std::string smf_api_version;
   if (!psc.get()->smf_available) {
-    if (!smf_selection_from_configuration(smf_addr, smf_api_version)) {
-      Logger::amf_n11().error("No candidate for SMF is available");
+    if (amf_cfg.enable_smf_selection) {
+      // use NRF to find suitable SMF based on snssai, plmn and dnn
+      if (!discover_smf(
+              smf_addr, smf_api_version, psc.get()->snssai, psc.get()->plmn,
+              psc.get()->dnn)) {
+        Logger::amf_n11().error("SMF Selection, no SMF candidate is available");
+        return;
+      }
+    } else if (!smf_selection_from_configuration(smf_addr, smf_api_version)) {
+      Logger::amf_n11().error(
+          "No SMF candidate is available (from configuration file)");
       return;
     }
+    // store smf info to be used with this PDU session
+    psc.get()->smf_available = true;
+    psc->smf_addr            = smf_addr;
+    psc->smf_api_version     = smf_api_version;
   } else {
     smf_addr        = psc->smf_addr;
     smf_api_version = psc->smf_api_version;
-    // smf_selection_from_context(smf_addr, smf_api_version);
   }
 
   switch (smf.req_type & 0x07) {
@@ -437,16 +455,14 @@ void amf_n11::handle_itti_message(
   std::shared_ptr<pdu_session_context> psc = supi_to_pdu_ctx(itti_msg.supi);
   string smf_addr;
   std::string smf_api_version;
+
   if (!psc.get()->smf_available) {
-    if (!smf_selection_from_configuration(smf_addr, smf_api_version)) {
-      Logger::amf_n11().error("No candidate smf is avaliable");
-      return;
-    }
+    Logger::amf_n11().error("No SMF is available for this PDU session");
   } else {
     smf_addr        = psc->smf_addr;
     smf_api_version = psc->smf_api_version;
-    // smf_selection_from_context(smf_addr, smf_api_version);
   }
+
   string remote_uri = psc.get()->location + "release";
   nlohmann::json pdu_session_release_request;
   pdu_session_release_request["supi"]          = itti_msg.supi.c_str();
@@ -743,10 +759,11 @@ void amf_n11::curl_http_client(
 }
 
 bool amf_n11::discover_smf(
-    std::string& smf_addr, const snssai_t snssai, const plmn_t plmn,
-    const std::string dnn) {
+    std::string& smf_addr, std::string& smf_api_version, const snssai_t snssai,
+    const plmn_t plmn, const std::string dnn) {
   Logger::amf_n11().debug(
       "Send NFDiscovery to NRF to discover the available SMF");
+  bool result = true;
 
   // curl -X GET
   // "http://192.168.1.23/nnrf-disc/v1/nf-instances?target-nf-type=SMF&requester-nf-type=AMF"
@@ -816,17 +833,31 @@ bool amf_n11::discover_smf(
             if (instance_json["ipv4Addresses"].size() > 0)
               smf_addr =
                   instance_json["ipv4Addresses"].at(0).get<std::string>();
+            // break;
+          }
+          if (instance_json.find("nfServices") != instance_json.end()) {
+            if (instance_json["nfServices"].size() > 0) {
+              nlohmann::json nf_service = instance_json["nfServices"].at(0);
+              if (nf_service.find("versions") != nf_service.end()) {
+                nlohmann::json nf_version = nf_service["versions"].at(0);
+                if (nf_version.find("apiVersionInUri") != nf_version.end()) {
+                  smf_api_version =
+                      nf_version["apiVersionInUri"].get<std::string>();
+                }
+              }
+            }
             break;
           }
         }
       }
     } else {
       Logger::amf_n11().warn("NFDiscovery, could not get response from NRF");
+      result = false;
     }
 
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
   }
   curl_global_cleanup();
-  return true;
+  return result;
 }

@@ -79,8 +79,8 @@ class amf_n11 {
       std::string n2SmMsg, std::string supi, uint8_t pdu_session_id);
 
   bool discover_smf(
-      std::string& smf_addr, const snssai_t snssai, const plmn_t plmn,
-      const std::string dnn);
+      std::string& smf_addr, std::string& smf_api_version,
+      const snssai_t snssai, const plmn_t plmn, const std::string dnn);
 };
 
 }  // namespace amf_application
