@@ -68,6 +68,9 @@ class amf_app {
   std::map<std::string, std::shared_ptr<ue_context>> ue_ctx_key;
   mutable std::shared_mutex m_ue_ctx_key;
 
+  std::map<std::string, std::shared_ptr<ue_context>> supi2ue_ctx;
+  mutable std::shared_mutex m_supi2ue_ctx;
+
   bool is_amf_ue_id_2_ue_context(const long& amf_ue_ngap_id) const;
   std::shared_ptr<ue_context> amf_ue_id_2_ue_context(
       const long& amf_ue_ngap_id) const;
@@ -79,6 +82,13 @@ class amf_app {
       const std::string& ue_context_key) const;
   void set_ran_amf_id_2_ue_context(
       const std::string& ue_context_key, std::shared_ptr<ue_context> uc);
+
+  bool is_supi_2_ue_context(const string& supi) const;
+  std::shared_ptr<ue_context> supi_2_ue_context(const string& supi) const;
+  void set_supi_2_ue_context(const string& ue_context_key, std::shared_ptr<ue_context>& uc);
+
+  bool find_pdu_session_context(const string& supi, const std::uint8_t pdu_session_id, std::shared_ptr<pdu_session_context>& psc);
+
   // SMF Client response handlers
   void handle_post_sm_context_response_error_400();
   // others

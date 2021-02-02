@@ -167,6 +167,9 @@ int ngap_amf_handle_initial_context_setup_response(
   itti_msg->n2sm = n2sm;
   itti_msg->is_n2sm_set = true;
   itti_msg->n2sm_info_type = "PDU_RES_SETUP_RSP";
+  itti_msg->amf_ue_ngap_id = initCtxResp->getAmfUeNgapId();
+  itti_msg->ran_ue_ngap_id = initCtxResp->getRanUeNgapId();
+
   std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i = std::shared_ptr
       < itti_nsmf_pdusession_update_sm_context > (itti_msg);
   int ret = itti_inst->send_msg(i);
@@ -282,6 +285,8 @@ int ngap_amf_handle_pdu_session_resource_release_response(
   itti_msg->n2sm = n2sm;
   itti_msg->is_n2sm_set = true;
   itti_msg->n2sm_info_type = "PDU_RES_REL_RSP";
+  itti_msg->amf_ue_ngap_id = pduresp->getAmfUeNgapId();
+  itti_msg->ran_ue_ngap_id = pduresp->getRanUeNgapId();
 
   std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i = std::shared_ptr
       < itti_nsmf_pdusession_update_sm_context > (itti_msg);
@@ -312,6 +317,7 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
         "Decoding PduSessionResourceSetupResponseMsg getPduSessionResourceSetupResponseList IE  error");
     return -1;
   } else {
+	  //TODO: for multiple PDU Sessions
     uint8_t transferIe[500];
     memcpy(transferIe, list[0].pduSessionResourceSetupResponseTransfer.buf,
            list[0].pduSessionResourceSetupResponseTransfer.size);
@@ -327,6 +333,9 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
     itti_msg->n2sm = n2sm;
     itti_msg->is_n2sm_set = true;
     itti_msg->n2sm_info_type = "PDU_RES_SETUP_RSP";
+    itti_msg->amf_ue_ngap_id = pduresp->getAmfUeNgapId();
+    itti_msg->ran_ue_ngap_id = pduresp->getRanUeNgapId();
+
     std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i = std::shared_ptr
         < itti_nsmf_pdusession_update_sm_context > (itti_msg);
     int ret = itti_inst->send_msg(i);
@@ -337,6 +346,8 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
     }
     return 0;
   }
+
+  //TTN: Should be removed
   std::vector<PDUSessionResourceFailedToSetupItem_t> list_fail;
   if (!pduresp->getPduSessionResourceFailedToSetupList(list_fail)) {
     Logger::ngap().error(

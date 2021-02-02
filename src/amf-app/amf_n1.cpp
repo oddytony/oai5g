@@ -598,6 +598,20 @@ void amf_n1::service_request_handle(
       "amf_ue_ngap_id %d, ran_ue_ngap_id %d", amf_ue_ngap_id, ran_ue_ngap_id);
   Logger::amf_n1().debug("Key for pdu session context: SUPI %s", supi.c_str());
   std::shared_ptr<pdu_session_context> psc;
+/*
+ //TODO: get the pdu_session_context from AMF_APP based on both SUPI and PDU Session ID
+  string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
+                          ":amfid_" + to_string(amf_ue_ngap_id);
+  std::shared_ptr<ue_context> uc;
+
+  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+  if (uc.get() !=nullptr){
+	  if (!uc.get()->find_pdu_session_context(pdu_session_id,psc)) {
+	  }
+  }
+  //TO check: in which condition we should have PDU Session ID
+*/
+
   if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
     psc = amf_n11_inst->supi_to_pdu_ctx(supi);
     if (!psc) {
@@ -703,8 +717,7 @@ void amf_n1::registration_request_handle(
   RegistrationRequest* regReq = new RegistrationRequest();
   regReq->decodefrombuffer(nullptr, (uint8_t*) bdata(reg), blength(reg));
   bdestroy(reg);  // free buffer
-  // Check 5gs Mobility Identity (Mandatory IE)
-  std::string guti;
+  //find UE context
   string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
                           ":amfid_" + to_string(amf_ue_ngap_id);
   std::shared_ptr<ue_context> uc;
@@ -713,6 +726,8 @@ void amf_n1::registration_request_handle(
       ue_context_key.c_str());
   uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
 
+  // Check 5gs Mobility Identity (Mandatory IE)
+  std::string guti;
   uint8_t mobility_id_type = regReq->getMobilityIdentityType();
   switch (mobility_id_type) {
     case SUCI: {
@@ -869,7 +884,12 @@ void amf_n1::registration_request_handle(
   nc.get()->serving_network = snn;
 
   // update UE conext
-  if (uc.get() != nullptr) uc.get()->supi = "imsi-" + nc.get()->imsi;
+  if (uc.get() != nullptr) {
+	  std::string supi = "imsi-" + nc.get()->imsi;
+	  uc.get()->supi = supi;
+	  //associate SUPI with UC
+	  amf_app_inst->set_supi_2_ue_context(supi, uc);
+  }
 
   // Check 5GS_Registration_type IE (Mandatory IE)
   uint8_t reg_type;
@@ -2336,6 +2356,20 @@ void amf_n1::run_mobility_registration_update_procedure(
   string supi = "imsi-" + nc.get()->imsi;
   Logger::amf_n1().debug("Key for pdu session context SUPI (%s)", supi.c_str());
   std::shared_ptr<pdu_session_context> psc;
+  /*
+   //TODO: get the pdu_session_context from AMF_APP based on both SUPI and PDU Session ID
+    string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
+                            ":amfid_" + to_string(amf_ue_ngap_id);
+    std::shared_ptr<ue_context> uc;
+
+    uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+    if (uc.get() !=nullptr){
+  	  if (!uc.get()->find_pdu_session_context()) {
+  	  }
+    }
+      //TO check: in which condition we should have PDU Session ID
+  */
+
   if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
     psc = amf_n11_inst->supi_to_pdu_ctx(supi);
   } else {

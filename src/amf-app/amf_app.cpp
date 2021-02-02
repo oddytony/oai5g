@@ -186,6 +186,34 @@ void amf_app::set_ran_amf_id_2_ue_context(
   ue_ctx_key[ue_context_key] = uc;
 }
 
+//------------------------------------------------------------------------------
+bool amf_app::is_supi_2_ue_context(const string& supi) const {
+  std::shared_lock lock(m_supi2ue_ctx);
+  return bool{supi2ue_ctx.count(supi) > 0};
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<ue_context> amf_app::supi_2_ue_context(
+    const string& supi) const {
+  std::shared_lock lock(m_supi2ue_ctx);
+  return supi2ue_ctx.at(supi);
+}
+
+//------------------------------------------------------------------------------
+void amf_app::set_supi_2_ue_context(
+    const string& supi, std::shared_ptr<ue_context>& uc) {
+  std::unique_lock  lock(m_supi2ue_ctx);
+  supi2ue_ctx[supi] = uc;
+}
+
+bool amf_app::find_pdu_session_context(const string& supi, const std::uint8_t pdu_session_id, std::shared_ptr<pdu_session_context>& psc){
+  if (!is_supi_2_ue_context(supi)) return false;
+  std::shared_ptr<ue_context> uc = {};
+  uc = supi_2_ue_context(supi);
+  if (!uc.get()->find_pdu_session_context(pdu_session_id, psc)) return false;
+  return true;
+}
+
 // ITTI handlers
 //------------------------------------------------------------------------------
 void amf_app::handle_itti_message(

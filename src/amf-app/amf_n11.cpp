@@ -33,6 +33,7 @@
 
 #include "3gpp_ts24501.hpp"
 #include "amf.hpp"
+#include "amf_app.hpp"
 #include "amf_config.hpp"
 #include "amf_n1.hpp"
 #include "itti.hpp"
@@ -44,6 +45,7 @@
 #include "SMContextsCollectionApi.h"
 #include "SmContextCreateData.h"
 #include "mime_parser.hpp"
+#include "ue_context.hpp"
 
 extern "C" {
 #include "dynamic_memory_check.h"
@@ -61,6 +63,7 @@ extern itti_mw* itti_inst;
 extern amf_config amf_cfg;
 extern amf_n11* amf_n11_inst;
 extern amf_n1* amf_n1_inst;
+extern amf_app* amf_app_inst;
 
 extern void msg_str_2_msg_hex(std::string msg, bstring& b);
 extern void convert_string_2_hex(std::string& input, std::string& output);
@@ -154,12 +157,29 @@ void amf_n11::handle_itti_message(
 //------------------------------------------------------------------------------
 void amf_n11::handle_itti_message(
     itti_nsmf_pdusession_update_sm_context& itti_msg) {
-  std::string supi = pduid2supi.at(itti_msg.pdu_session_id);
+  string ue_context_key = "app_ue_ranid_" + to_string(itti_msg.ran_ue_ngap_id) +
+                          ":amfid_" + to_string(itti_msg.amf_ue_ngap_id);
+  std::shared_ptr<ue_context> uc;
+
+  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+  std::string supi;
+  if (uc.get() != nullptr) {
+    supi = uc->supi;
+  }
+  // std::string supi = pduid2supi.at(itti_msg.pdu_session_id);
   Logger::amf_n11().debug(
       "Send PDU Session Update SM Context Request to SMF (SUPI %s, PDU Session "
       "ID %d)",
       supi.c_str(), itti_msg.pdu_session_id);
+
   std::shared_ptr<pdu_session_context> psc;
+  if (!uc.get()->find_pdu_session_context(itti_msg.pdu_session_id, psc)) {
+    Logger::amf_n11().error(
+        "Could not find psu_session_context with SUPI %s, Failed",
+        supi.c_str());
+    return;
+  }
+  /*
   if (is_supi_to_pdu_ctx(supi)) {
     psc = supi_to_pdu_ctx(supi);
   } else {
@@ -168,6 +188,8 @@ void amf_n11::handle_itti_message(
         supi.c_str());
     return;
   }
+  */
+
   std::string smf_addr;
   std::string smf_api_version;
   if (!psc.get()->smf_available) {
@@ -219,14 +241,28 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer& smf) {
   nc               = amf_n1_inst->amf_ue_id_2_nas_context(smf.amf_ue_ngap_id);
   std::string supi = "imsi-" + nc.get()->imsi;
 
+  string ue_context_key = "app_ue_ranid_" +
+                          to_string(nc.get()->ran_ue_ngap_id) + ":amfid_" +
+                          to_string(nc.get()->amf_ue_ngap_id);
+  std::shared_ptr<ue_context> uc;
+  Logger::amf_n11().info(
+      "Find ue_context in amf_app using UE Context Key: %s",
+      ue_context_key.c_str());
+  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
   std::shared_ptr<pdu_session_context> psc;
-  if (is_supi_to_pdu_ctx(supi)) {
-    psc = supi_to_pdu_ctx(supi);
-  } else {
+  if (!uc.get()->find_pdu_session_context(smf.pdu_sess_id, psc)) {
     psc = std::shared_ptr<pdu_session_context>(new pdu_session_context());
-    set_supi_to_pdu_ctx(supi, psc);
+    uc.get()->add_pdu_session_context(smf.pdu_sess_id, psc);
   }
 
+  /*  //std::shared_ptr<pdu_session_context> psc;
+    if (is_supi_to_pdu_ctx(supi)) {
+      psc = supi_to_pdu_ctx(supi);
+    } else {
+      psc = std::shared_ptr<pdu_session_context>(new pdu_session_context());
+      set_supi_to_pdu_ctx(supi, psc);
+    }
+  */
   pduid2supi[smf.pdu_sess_id] = supi;
   psc.get()->amf_ue_ngap_id   = nc.get()->amf_ue_ngap_id;
   psc.get()->ran_ue_ngap_id   = nc.get()->ran_ue_ngap_id;
@@ -391,6 +427,8 @@ void amf_n11::handle_pdu_session_initial_request(
 //------------------------------------------------------------------------------
 void amf_n11::handle_itti_message(
     itti_nsmf_pdusession_release_sm_context& itti_msg) {
+	//TTN: Should be replace by new mechanism to support multiple PDU sessions
+	//Need PDU session ID
   std::shared_ptr<pdu_session_context> psc = supi_to_pdu_ctx(itti_msg.supi);
   string smf_addr;
   std::string smf_api_version;
@@ -492,6 +530,13 @@ void amf_n11::curl_http_client(
   std::string body;
   std::shared_ptr<pdu_session_context> psc;
 
+  //TTN: Should be replace by new mechanism to support multiple PDU sessions
+  if (!amf_app_inst->find_pdu_session_context(supi,pdu_session_id, psc)) {
+	  Logger::amf_n11().warn(
+	          "PDU Session context for SUPI %s doesn't exit!", supi.c_str());
+	  //TODO:
+  }
+/*
   if (is_supi_to_pdu_ctx(supi)) {
     psc = supi_to_pdu_ctx(supi);
   } else {
@@ -499,6 +544,7 @@ void amf_n11::curl_http_client(
         "PDU Session context for SUPI %s doesn't exit!", supi.c_str());
     // TODO:
   }
+*/
 
   if ((n1SmMsg.size() > 0) and (n2SmMsg.size() > 0)) {
     // prepare the body content for Curl

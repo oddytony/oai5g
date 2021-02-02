@@ -13,6 +13,7 @@
 #include "N1N2MessageCollectionDocumentApiImpl.h"
 #include "itti.hpp"
 
+#include "amf_app.hpp"
 #include "amf_n11.hpp"
 #include "pdu_session_context.hpp"
 using namespace amf_application;
@@ -22,6 +23,7 @@ extern void msg_str_2_msg_hex(std::string msg, bstring &b);
 extern void convert_string_2_hex(std::string&input, std::string&output);
 extern itti_mw * itti_inst;
 extern amf_n11  * amf_n11_inst;
+extern amf_app  * amf_app_inst;
 extern void print_buffer(const std::string app, const std::string commit, uint8_t *buf, int len);
 
 namespace oai {
@@ -55,12 +57,18 @@ void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(const std::str
   std::string supi = ueContextId;
   Logger::amf_server().debug("Key for PDU Session context: SUPI (%s)", supi.c_str());
   std::shared_ptr<pdu_session_context> psc;
+
+  //TODO: REMOVE supi_to_pdu_ctx
+  if (!amf_app_inst->find_pdu_session_context(supi, (uint8_t)n1N2MessageTransferReqData.getPduSessionId(), psc)){
+	  Logger::amf_server().error("Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
+  }
+/*
   if(amf_n11_inst->is_supi_to_pdu_ctx(supi)){
     psc = amf_n11_inst->supi_to_pdu_ctx(supi);
   }else{
     Logger::amf_server().error("Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
   }
-
+*/
   bstring n1sm;
   msg_str_2_msg_hex(n1sm_str.substr(0, n1sm_str.length()), n1sm); //TODO: verify n1sm_length
   
