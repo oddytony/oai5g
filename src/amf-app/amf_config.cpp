@@ -60,6 +60,9 @@ amf_config::amf_config() {
   nrf_addr.ipv4_addr.s_addr = INADDR_ANY;
   nrf_addr.port             = 80;
   nrf_addr.api_version      = "v1";
+  enable_nf_registration    = false;
+  enable_smf_selection      = false;
+  enable_external_auth      = false;
   // TODO:
 }
 
@@ -300,6 +303,40 @@ int amf_config::load(const std::string& config_file) {
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
     return -1;
   }
+
+  try {
+    const Setting& support_features =
+        amf_cfg[AMF_CONFIG_STRING_SUPPORT_FEATURES];
+    string opt;
+    support_features.lookupValue(
+        AMF_CONFIG_STRING_SUPPORT_FEATURES_NF_REGISTRATION, opt);
+    if (boost::iequals(opt, "yes")) {
+      enable_nf_registration = true;
+    } else {
+      enable_nf_registration = false;
+    }
+
+    support_features.lookupValue(
+        AMF_CONFIG_STRING_SUPPORT_FEATURES_SMF_SELECTION, opt);
+    if (boost::iequals(opt, "yes")) {
+      enable_smf_selection = true;
+    } else {
+      enable_smf_selection = false;
+    }
+
+    support_features.lookupValue(
+        AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_AUTH, opt);
+    if (boost::iequals(opt, "yes")) {
+      enable_external_auth = true;
+    } else {
+      enable_external_auth = false;
+    }
+
+  } catch (const SettingNotFoundException& nfex) {
+    Logger::amf_app().error(
+        "%s : %s, using defaults", nfex.what(), nfex.getPath());
+    return -1;
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -369,14 +406,14 @@ void amf_config::display() {
       auth_para.random.c_str());
 
   Logger::config().info("- N2 Networking:");
-  Logger::config().info("    iface ................: %s", n2.if_name.c_str());
-  Logger::config().info("    ip ...................: %s", inet_ntoa(n2.addr4));
-  Logger::config().info("    port .................: %d", n2.port);
+  Logger::config().info("    iface .................: %s", n2.if_name.c_str());
+  Logger::config().info("    ip ....................: %s", inet_ntoa(n2.addr4));
+  Logger::config().info("    port ..................: %d", n2.port);
 
   Logger::config().info("- SBI Networking:");
-  Logger::config().info("    iface ................: %s", n11.if_name.c_str());
-  Logger::config().info("    ip ...................: %s", inet_ntoa(n11.addr4));
-  Logger::config().info("    port .................: %d", n11.port);
+  Logger::config().info("    iface .................: %s", n11.if_name.c_str());
+  Logger::config().info("    ip ....................: %s", inet_ntoa(n11.addr4));
+  Logger::config().info("    port ..................: %d", n11.port);
 
   Logger::config().info("- NRF:");
   Logger::config().info(
@@ -388,7 +425,7 @@ void amf_config::display() {
   //  Logger::config().info("    HTTP2 port ............: %d", n11_http2_port);
 
   Logger::config().info(
-      "- Remote SMF Pool.....................................: ");
+      "- Remote SMF Pool.........: ");
   for (int i = 0; i < smf_pool.size(); i++) {
     std::string selected;
     if (smf_pool[i].selected)
@@ -400,6 +437,11 @@ void amf_config::display() {
         smf_pool[i].id, smf_pool[i].ipv4.c_str(), smf_pool[i].port.c_str(),
         smf_pool[i].version.c_str(), selected.c_str());
   }
+
+  Logger::config().info("- Supported Features:");
+  Logger::config().info("    NF Registration........: %s", enable_nf_registration?"Yes":"No");
+  Logger::config().info("    SMF Selection..........: %s", enable_smf_selection?"Yes":"No");
+  Logger::config().info("    External Authentication: %s", enable_external_auth?"Yes":"No");
 }
 
 //------------------------------------------------------------------------------
@@ -444,7 +486,6 @@ int amf_config::load_interface(
           0xFFFFFFFF << (32 - std::stoi(util::trim(words.at(1)))));
     }
     if_cfg.lookupValue(AMF_CONFIG_STRING_PORT, cfg.port);
-
   }
   return RETURNok;
 }

@@ -95,6 +95,10 @@
   "ORDERED_SUPPORTED_INTEGRITY_ALGORITHM_LIST"
 #define AMF_CONFIG_STRING_NAS_SUPPORTED_CIPHERING_ALGORITHM_LIST               \
   "ORDERED_SUPPORTED_CIPHERING_ALGORITHM_LIST"
+#define AMF_CONFIG_STRING_SUPPORT_FEATURES "SUPPORT_FEATURES"
+#define AMF_CONFIG_STRING_SUPPORT_FEATURES_NF_REGISTRATION "NF_REGISTRATION"
+#define AMF_CONFIG_STRING_SUPPORT_FEATURES_SMF_SELECTION "SMF_SELECTION"
+#define AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_AUTH "EXTERNAL_AUTH"
 
 using namespace libconfig;
 
@@ -116,7 +120,7 @@ typedef struct interface_cfg_s {
   struct in6_addr addr6;
   unsigned int mtu;
   unsigned int port;
- // util::thread_sched_params thread_rd_sched_params;
+  // util::thread_sched_params thread_rd_sched_params;
 } interface_cfg_t;
 
 typedef struct itti_cfg_s {
@@ -183,6 +187,9 @@ class amf_config {
   auth_conf auth_para;
   nas_conf_t nas_cfg;
   std::vector<smf_inst_t> smf_pool;
+  bool enable_nf_registration;
+  bool enable_smf_selection;
+  bool enable_external_auth;
 
   struct {
     struct in_addr ipv4_addr;
