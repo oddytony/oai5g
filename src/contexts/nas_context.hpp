@@ -101,8 +101,8 @@ class nas_context {
 
   int registration_attempt_counter;  // used to limit the subsequently reject
                                      // registration
-                                     // attempts(clause 5.5.1.2.7/5.5.1.3.7, 3gpp
-                                     // ts24.501)
+                                     // attempts(clause 5.5.1.2.7/5.5.1.3.7,
+                                     // 3gpp ts24.501)
   /**************** parameters present? ****************/
   bool is_imsi_present;
   bool is_5g_guti_present;

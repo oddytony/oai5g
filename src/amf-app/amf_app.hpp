@@ -85,9 +85,12 @@ class amf_app {
 
   bool is_supi_2_ue_context(const string& supi) const;
   std::shared_ptr<ue_context> supi_2_ue_context(const string& supi) const;
-  void set_supi_2_ue_context(const string& ue_context_key, std::shared_ptr<ue_context>& uc);
+  void set_supi_2_ue_context(
+      const string& ue_context_key, std::shared_ptr<ue_context>& uc);
 
-  bool find_pdu_session_context(const string& supi, const std::uint8_t pdu_session_id, std::shared_ptr<pdu_session_context>& psc);
+  bool find_pdu_session_context(
+      const string& supi, const std::uint8_t pdu_session_id,
+      std::shared_ptr<pdu_session_context>& psc);
 
   // SMF Client response handlers
   void handle_post_sm_context_response_error_400();

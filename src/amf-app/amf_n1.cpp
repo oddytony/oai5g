@@ -602,13 +602,13 @@ void amf_n1::service_request_handle(
   }
 
   set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
-  nas_secu_ctx* secu     = nc.get()->security_ctx;
+  nas_secu_ctx* secu = nc.get()->security_ctx;
 
   std::unique_ptr<ServiceRequest> serReq = std::make_unique<ServiceRequest>();
-  //ServiceRequest* serReq = new ServiceRequest();
+  // ServiceRequest* serReq = new ServiceRequest();
   serReq->decodefrombuffer(nullptr, (uint8_t*) bdata(nas), blength(nas));
   bdestroy(nas);
-  //ServiceAccept* serApt = new ServiceAccept();
+  // ServiceAccept* serApt = new ServiceAccept();
   std::unique_ptr<ServiceAccept> serApt = std::make_unique<ServiceAccept>();
   serApt->setHeader(PLAIN_5GS_MSG);
   string supi      = "imsi-" + nc.get()->imsi;
@@ -637,8 +637,8 @@ void amf_n1::service_request_handle(
     psc = amf_n11_inst->supi_to_pdu_ctx(supi);
     if (!psc) {
       Logger::amf_n1().error("Cannot get pdu_session_context");
-      //delete serReq;
-      //delete serApt;
+      // delete serReq;
+      // delete serApt;
       return;
     }
   } else {
@@ -683,8 +683,8 @@ void amf_n1::service_request_handle(
           "Could not send ITTI message %s to task TASK_AMF_N2",
           i->get_msg_name());
     }
-    //delete serApt;
-    //delete serReq;
+    // delete serApt;
+    // delete serReq;
     return;
   }
   serApt->setPDU_session_status(0x2000);
@@ -726,8 +726,8 @@ void amf_n1::service_request_handle(
         "Could not send ITTI message %s to task TASK_AMF_N2",
         i->get_msg_name());
   }
-  //delete serApt;
-  //delete serReq;
+  // delete serApt;
+  // delete serReq;
 }
 
 //------------------------------------------------------------------------------
@@ -735,8 +735,9 @@ void amf_n1::registration_request_handle(
     bool isNasSig, std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id,
     long amf_ue_ngap_id, std::string snn, bstring reg) {
   // Decode registration request message
-  //RegistrationRequest* regReq = new RegistrationRequest();
-  std::unique_ptr<RegistrationRequest> regReq = std::make_unique<RegistrationRequest>();
+  // RegistrationRequest* regReq = new RegistrationRequest();
+  std::unique_ptr<RegistrationRequest> regReq =
+      std::make_unique<RegistrationRequest>();
 
   regReq->decodefrombuffer(nullptr, (uint8_t*) bdata(reg), blength(reg));
   bdestroy(reg);  // free buffer
@@ -882,7 +883,7 @@ void amf_n1::registration_request_handle(
       std::shared_ptr<ue_ngap_context> unc =
           amf_n2_inst->ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
       if (unc.get()) unc.reset();
-      //delete regReq;
+      // delete regReq;
       return;
     }
   } else {
@@ -908,7 +909,7 @@ void amf_n1::registration_request_handle(
     Logger::amf_n1().error("Missing Mandatory IE 5GS Registration type...");
     response_registration_reject_msg(
         _5GMM_CAUSE_INVALID_MANDATORY_INFO, ran_ue_ngap_id, amf_ue_ngap_id);
-    //delete regReq;
+    // delete regReq;
     return;
   }
   nc.get()->registration_type         = reg_type;
@@ -949,7 +950,7 @@ void amf_n1::registration_request_handle(
   if (!regReq->getRequestedNssai(requestedNssai)) {
     Logger::amf_n1().warn("No Optional IE RequestedNssai available");
   }
- // delete regReq;  // free after getting values from message
+  // delete regReq;  // free after getting values from message
   nc.get()->requestedNssai       = requestedNssai;
   nc.get()->ctx_avaliability_ind = true;
 
@@ -987,10 +988,10 @@ void amf_n1::registration_request_handle(
         return;
       }
     } break;
-    default :{
-    	 Logger::amf_n1().error("Unknown registration type ...");
-    	 //TODO:
-    	 return;
+    default: {
+      Logger::amf_n1().error("Unknown registration type ...");
+      // TODO:
+      return;
     }
   }
 }
@@ -1063,8 +1064,9 @@ void amf_n1::itti_send_dl_nas_buffer_to_task_n2(
 // response messages
 void amf_n1::response_registration_reject_msg(
     uint8_t cause_value, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id) {
- // RegistrationReject* registrationRej = new RegistrationReject();
-  std::unique_ptr<RegistrationReject> registrationRej = std::make_unique<RegistrationReject>();
+  // RegistrationReject* registrationRej = new RegistrationReject();
+  std::unique_ptr<RegistrationReject> registrationRej =
+      std::make_unique<RegistrationReject>();
   registrationRej->setHeader(PLAIN_5GS_MSG);
   registrationRej->set_5GMM_Cause(cause_value);
   uint8_t buffer[BUFFER_SIZE_1024] = {0};
@@ -1076,7 +1078,7 @@ void amf_n1::response_registration_reject_msg(
     Logger::nas_mm().error("Encode Registration-Reject message error");
     return;
   } else {
-    //delete registrationRej;
+    // delete registrationRej;
   }
   bstring b = blk2bstr(buffer, encoded_size);
   itti_send_dl_nas_buffer_to_task_n2(b, ran_ue_ngap_id, amf_ue_ngap_id);
@@ -1084,7 +1086,6 @@ void amf_n1::response_registration_reject_msg(
 
 //------------------------------------------------------------------------------
 void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
-
   Logger::amf_n1().debug("Start to run registration procedure");
   if (!nc.get()->ctx_avaliability_ind) {
     Logger::amf_n1().error("NAS context is not available");
@@ -1121,7 +1122,7 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
         // ngksi = (nc.get()->ngKsi + 1) % (NGKSI_MAX_VALUE + 1);
         ngksi = (nc.get()->amf_ue_ngap_id + 1);  // % (NGKSI_MAX_VALUE + 1);
         Logger::amf_n1().debug("New ngKsi(%d)", ngksi);
-        //TODO: How to handle?
+        // TODO: How to handle?
       }
       nc.get()->ngKsi = ngksi;
       handle_auth_vector_successful_result(nc);
@@ -1129,13 +1130,13 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
   } else if (nc.get()->is_5g_guti_present) {
     Logger::amf_n1().debug("Start to run UE Identification Request procedure");
     nc.get()->is_auth_vectors_present = false;
-    //IdentityRequest* ir = new IdentityRequest();
+    // IdentityRequest* ir = new IdentityRequest();
     std::unique_ptr<IdentityRequest> ir = std::make_unique<IdentityRequest>();
     ir->setHeader(PLAIN_5GS_MSG);
     ir->set_5GS_Identity_Type(SUCI);
     uint8_t buffer[100];
     int encoded_size = ir->encode2buffer(buffer, 100);
-    //delete ir;
+    // delete ir;
 
     itti_dl_nas_transport* dnt =
         new itti_dl_nas_transport(TASK_AMF_N1, TASK_AMF_N2);
@@ -1452,8 +1453,9 @@ bool amf_n1::start_authentication_procedure(
   }
 
   nc.get()->is_common_procedure_for_authentication_running = true;
-  //AuthenticationRequest* authReq = new AuthenticationRequest();
-  std::unique_ptr<AuthenticationRequest> authReq = std::make_unique<AuthenticationRequest>();
+  // AuthenticationRequest* authReq = new AuthenticationRequest();
+  std::unique_ptr<AuthenticationRequest> authReq =
+      std::make_unique<AuthenticationRequest>();
   authReq->setHeader(PLAIN_5GS_MSG);
   authReq->setngKSI(NAS_KEY_SET_IDENTIFIER_NATIVE, ngksi);
   uint8_t abba[2];
@@ -1475,7 +1477,7 @@ bool amf_n1::start_authentication_procedure(
     Logger::nas_mm().error("Encode Authentication Request message error");
     return false;
   } else {
-    //delete authReq;
+    // delete authReq;
   }
   bstring b = blk2bstr(buffer, encoded_size);
   print_buffer(
@@ -1758,8 +1760,9 @@ void amf_n1::security_mode_complete_handle(
       ue_context_key.c_str());
 
   // encoding REGISTRATION ACCEPT
-  //RegistrationAccept* regAccept = new RegistrationAccept();
-  std::unique_ptr<RegistrationAccept> regAccept= std::make_unique<RegistrationAccept>();
+  // RegistrationAccept* regAccept = new RegistrationAccept();
+  std::unique_ptr<RegistrationAccept> regAccept =
+      std::make_unique<RegistrationAccept>();
   regAccept->setHeader(PLAIN_5GS_MSG);
   regAccept->set_5GS_Registration_Result(false, false, false, 0x01);
   std::string mcc;
@@ -1811,7 +1814,7 @@ void amf_n1::security_mode_complete_handle(
     Logger::nas_mm().error("Encode Registration-Accept message error");
     return;
   } else {
-    //delete regAccept;
+    // delete regAccept;
   }
 
   if (!uc.get()->isUeContextRequest) {
@@ -2322,8 +2325,9 @@ void amf_n1::sha256(
 void amf_n1::run_mobility_registration_update_procedure(
     std::shared_ptr<nas_context> nc) {
   // encoding REGISTRATION ACCEPT
-  //RegistrationAccept* regAccept = new RegistrationAccept();
-  std::unique_ptr<RegistrationAccept> regAccept= std::make_unique<RegistrationAccept>();
+  // RegistrationAccept* regAccept = new RegistrationAccept();
+  std::unique_ptr<RegistrationAccept> regAccept =
+      std::make_unique<RegistrationAccept>();
   regAccept->setHeader(PLAIN_5GS_MSG);
   regAccept->set_5GS_Registration_Result(false, false, false, 0x01);
   regAccept->set5G_GUTI(
@@ -2366,7 +2370,7 @@ void amf_n1::run_mobility_registration_update_procedure(
     Logger::nas_mm().error("Encode Registration-Accept message error");
     return;
   } else {
-    //delete regAccept;
+    // delete regAccept;
   }
   nas_secu_ctx* secu = nc.get()->security_ctx;
   // protect nas message

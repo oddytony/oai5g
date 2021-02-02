@@ -412,7 +412,8 @@ void amf_config::display() {
 
   Logger::config().info("- SBI Networking:");
   Logger::config().info("    iface .................: %s", n11.if_name.c_str());
-  Logger::config().info("    ip ....................: %s", inet_ntoa(n11.addr4));
+  Logger::config().info(
+      "    ip ....................: %s", inet_ntoa(n11.addr4));
   Logger::config().info("    port ..................: %d", n11.port);
 
   Logger::config().info("- NRF:");
@@ -424,8 +425,7 @@ void amf_config::display() {
 
   //  Logger::config().info("    HTTP2 port ............: %d", n11_http2_port);
 
-  Logger::config().info(
-      "- Remote SMF Pool.........: ");
+  Logger::config().info("- Remote SMF Pool.........: ");
   for (int i = 0; i < smf_pool.size(); i++) {
     std::string selected;
     if (smf_pool[i].selected)
@@ -439,9 +439,12 @@ void amf_config::display() {
   }
 
   Logger::config().info("- Supported Features:");
-  Logger::config().info("    NF Registration........: %s", enable_nf_registration?"Yes":"No");
-  Logger::config().info("    SMF Selection..........: %s", enable_smf_selection?"Yes":"No");
-  Logger::config().info("    External Authentication: %s", enable_external_auth?"Yes":"No");
+  Logger::config().info(
+      "    NF Registration........: %s", enable_nf_registration ? "Yes" : "No");
+  Logger::config().info(
+      "    SMF Selection..........: %s", enable_smf_selection ? "Yes" : "No");
+  Logger::config().info(
+      "    External Authentication: %s", enable_external_auth ? "Yes" : "No");
 }
 
 //------------------------------------------------------------------------------

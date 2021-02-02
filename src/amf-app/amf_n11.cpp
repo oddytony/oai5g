@@ -193,6 +193,7 @@ void amf_n11::handle_itti_message(
   std::string smf_addr;
   std::string smf_api_version;
   if (!psc.get()->smf_available) {
+    // TODO:
     if (!smf_selection_from_configuration(smf_addr, smf_api_version)) {
       // use NRF to find suitable SMF based on snssai, plmn and dnn
       if (!discover_smf(
@@ -202,7 +203,9 @@ void amf_n11::handle_itti_message(
       }
     }
   } else {
-    smf_selection_from_context(smf_addr, smf_api_version);
+    smf_addr        = psc->smf_addr;
+    smf_api_version = psc->smf_api_version;
+    // smf_selection_from_context(smf_addr, smf_api_version);
   }
 
   std::string smf_ip_addr, remote_uri;
@@ -292,7 +295,9 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer& smf) {
       return;
     }
   } else {
-    smf_selection_from_context(smf_addr, smf_api_version);
+    smf_addr        = psc->smf_addr;
+    smf_api_version = psc->smf_api_version;
+    // smf_selection_from_context(smf_addr, smf_api_version);
   }
 
   switch (smf.req_type & 0x07) {
@@ -438,7 +443,9 @@ void amf_n11::handle_itti_message(
       return;
     }
   } else {
-    smf_selection_from_context(smf_addr, smf_api_version);
+    smf_addr        = psc->smf_addr;
+    smf_api_version = psc->smf_api_version;
+    // smf_selection_from_context(smf_addr, smf_api_version);
   }
   string remote_uri = psc.get()->location + "release";
   nlohmann::json pdu_session_release_request;
@@ -489,11 +496,11 @@ bool amf_n11::smf_selection_from_configuration(
 }
 
 //------------------------------------------------------------------------------
-bool amf_n11::smf_selection_from_context(
+/*bool amf_n11::smf_selection_from_context(
     std::string& smf_addr, std::string& smf_api_version) {
   // TODO:
 }
-
+*/
 // handlers for smf client response
 //------------------------------------------------------------------------------
 void amf_n11::handle_post_sm_context_response_error_400() {}
