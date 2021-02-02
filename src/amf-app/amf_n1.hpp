@@ -100,6 +100,7 @@ class amf_n1 {
   database_t* db_desc;
 
   // procedures
+  // specific procedures running logic
   void run_registration_procedure(std::shared_ptr<nas_context>& nc);
   void run_initial_registration_procedure();
   void run_mobility_registration_update_procedure(

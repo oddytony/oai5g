@@ -830,7 +830,8 @@ void amf_n2::handle_itti_message(itti_ue_context_release_command& itti_msg) {
     return;
   }
 
-  UEContextReleaseCommandMsg* ueCtxRelCmd = new UEContextReleaseCommandMsg();
+  //UEContextReleaseCommandMsg* ueCtxRelCmd = new UEContextReleaseCommandMsg();
+  std::unique_ptr<UEContextReleaseCommandMsg> ueCtxRelCmd = std::make_unique<UEContextReleaseCommandMsg>();
   ueCtxRelCmd->setMessageType();
   ueCtxRelCmd->setUeNgapIdPair(
       itti_msg.amf_ue_ngap_id, itti_msg.ran_ue_ngap_id);
@@ -843,7 +844,7 @@ void amf_n2::handle_itti_message(itti_ue_context_release_command& itti_msg) {
   }
   uint8_t buffer[200];
   int encoded_size = ueCtxRelCmd->encode2buffer(buffer, 200);
-  delete ueCtxRelCmd;
+  //delete ueCtxRelCmd;
   bstring b = blk2bstr(buffer, encoded_size);
   sctp_s_38412.sctp_send_msg(
       gc.get()->sctp_assoc_id, unc.get()->sctp_stream_send, &b);
