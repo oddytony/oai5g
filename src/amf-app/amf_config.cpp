@@ -373,7 +373,7 @@ void amf_config::display() {
   Logger::config().info("    ip ...................: %s", inet_ntoa(n2.addr4));
   Logger::config().info("    port .................: %d", n2.port);
 
-  Logger::config().info("- N11 Networking:");
+  Logger::config().info("- SBI Networking:");
   Logger::config().info("    iface ................: %s", n11.if_name.c_str());
   Logger::config().info("    ip ...................: %s", inet_ntoa(n11.addr4));
   Logger::config().info("    port .................: %d", n11.port);
@@ -445,66 +445,6 @@ int amf_config::load_interface(
     }
     if_cfg.lookupValue(AMF_CONFIG_STRING_PORT, cfg.port);
 
-    try {
-      const Setting& sched_params_cfg = if_cfg[AMF_CONFIG_STRING_SCHED_PARAMS];
-      load_thread_sched_params(sched_params_cfg, cfg.thread_rd_sched_params);
-    } catch (const SettingNotFoundException& nfex) {
-      Logger::amf_app().error(
-          "%s : %s, using defaults", nfex.what(), nfex.getPath());
-    }
-  }
-  return RETURNok;
-}
-
-//------------------------------------------------------------------------------
-int amf_config::load_thread_sched_params(
-    const Setting& thread_sched_params_cfg, util::thread_sched_params& cfg) {
-  try {
-    thread_sched_params_cfg.lookupValue(
-        AMF_CONFIG_STRING_THREAD_RD_CPU_ID, cfg.cpu_id);
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::amf_app().info(
-        "%s : %s, using defaults", nfex.what(), nfex.getPath());
-  }
-  try {
-    std::string thread_rd_sched_policy;
-    thread_sched_params_cfg.lookupValue(
-        AMF_CONFIG_STRING_THREAD_RD_SCHED_POLICY, thread_rd_sched_policy);
-    util::trim(thread_rd_sched_policy);
-    if (boost::iequals(thread_rd_sched_policy, "SCHED_OTHER")) {
-      cfg.sched_policy = SCHED_OTHER;
-    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_IDLE")) {
-      cfg.sched_policy = SCHED_IDLE;
-    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_BATCH")) {
-      cfg.sched_policy = SCHED_BATCH;
-    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_FIFO")) {
-      cfg.sched_policy = SCHED_FIFO;
-    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_RR")) {
-      cfg.sched_policy = SCHED_RR;
-    } else {
-      Logger::amf_app().error(
-          "thread_rd_sched_policy: %s, unknown in config file",
-          thread_rd_sched_policy.c_str());
-      return RETURNerror;
-    }
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::amf_app().info(
-        "%s : %s, using defaults", nfex.what(), nfex.getPath());
-  }
-
-  try {
-    thread_sched_params_cfg.lookupValue(
-        AMF_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY, cfg.sched_priority);
-    if ((cfg.sched_priority > 99) || (cfg.sched_priority < 1)) {
-      Logger::amf_app().error(
-          "thread_rd_sched_priority: %d, must be in interval [1..99] in config "
-          "file",
-          cfg.sched_priority);
-      return RETURNerror;
-    }
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::amf_app().info(
-        "%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
   return RETURNok;
 }

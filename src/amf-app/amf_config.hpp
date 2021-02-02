@@ -116,7 +116,7 @@ typedef struct interface_cfg_s {
   struct in6_addr addr6;
   unsigned int mtu;
   unsigned int port;
-  util::thread_sched_params thread_rd_sched_params;
+ // util::thread_sched_params thread_rd_sched_params;
 } interface_cfg_t;
 
 typedef struct itti_cfg_s {
@@ -166,9 +166,7 @@ class amf_config {
   ~amf_config();
   int load(const std::string& config_file);
   int load_interface(const Setting& if_cfg, interface_cfg_t& cfg);
-  int load_thread_sched_params(
-      const libconfig::Setting& thread_sched_params_cfg,
-      util::thread_sched_params& cfg);
+
   void display();
   unsigned int instance;
   std::string pid_dir;
