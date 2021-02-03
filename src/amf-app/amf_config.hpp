@@ -210,7 +210,6 @@ class amf_config {
     std::string api_version;
   } ausf_addr;
 
-  bool is_Nausf;
 };
 
 }  // namespace config

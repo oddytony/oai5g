@@ -934,7 +934,7 @@ bool amf_n11::send_ue_authentication_request(
 
     } else {
       Logger::amf_n11().warn(
-          "NF Instance Registration, could not get response from NRF");
+          "UE Authentication, could not get response from NRF");
       return false;
     }
 
@@ -944,3 +944,126 @@ bool amf_n11::send_ue_authentication_request(
   curl_global_cleanup();
   return true;
 }
+
+//-----------------------------------------------------------------------------------------------------
+//From AMF_N1, need to be reworked
+void amf_n11::curl_http_client(
+    std::string remoteUri, std::string Method, std::string msgBody,
+    std::string& Response) {
+  Logger::amf_n1().info("Send HTTP message with body %s", msgBody.c_str());
+
+
+  uint32_t str_len = msgBody.length();
+  char* body_data  = (char*) malloc(str_len + 1);
+  memset(body_data, 0, str_len + 1);
+  memcpy((void*) body_data, (void*) msgBody.c_str(), str_len);
+
+  curl_global_init(CURL_GLOBAL_ALL);
+  CURL* curl = curl_easy_init();
+
+  if (curl) {
+    CURLcode res               = {};
+    struct curl_slist* headers = nullptr;
+    if (!Method.compare("POST") || !Method.compare("PATCH") ||
+        !Method.compare("PUT")) {
+      std::string content_type = "Content-Type: application/json";
+      headers = curl_slist_append(headers, content_type.c_str());
+      curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    }
+    curl_easy_setopt(curl, CURLOPT_URL, remoteUri.c_str());
+    if (!Method.compare("POST"))
+      curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
+    else if (!Method.compare("PATCH"))
+      curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
+    else if (!Method.compare("PUT")) {
+      curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
+    } else
+      curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1);
+    curl_easy_setopt(curl, CURLOPT_INTERFACE, "ens33");
+    //    Logger::amf_n1().info("[CURL] request sent by interface " +
+    //    udm_cfg.nudr.if_name);
+
+    // Response information.
+    long httpCode = {0};
+    std::unique_ptr<std::string> httpData(new std::string());
+    std::unique_ptr<std::string> httpHeaderData(new std::string());
+
+    // Hook up data handling function.
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
+    curl_easy_setopt(curl, CURLOPT_HEADERDATA, httpHeaderData.get());
+    if (!Method.compare("POST") || !Method.compare("PATCH") ||
+        !Method.compare("PUT")) {
+      curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, msgBody.length());
+      curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body_data);
+    }
+
+    res = curl_easy_perform(curl);
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+
+    // get the response
+    std::string response           = *httpData.get();
+    std::string json_data_response = "";
+    std::string resMsg             = "";
+    bool is_response_ok            = true;
+    Logger::amf_n1().info("Get response with httpcode (%d)", httpCode);
+
+    if (httpCode == 0) {
+      Logger::amf_n1().info(
+          "Cannot get response when calling %s", remoteUri.c_str());
+      // free curl before returning
+      curl_slist_free_all(headers);
+      curl_easy_cleanup(curl);
+      return;
+    }
+
+    nlohmann::json response_data = {};
+
+    if (httpCode != 200 && httpCode != 201 && httpCode != 204) {
+      is_response_ok = false;
+      if (response.size() < 1) {
+        Logger::amf_n1().info("There's no content in the response");
+        // TODO: send context response error
+        return;
+      }
+      Logger::amf_n1().info("Wrong response code");
+
+      return;
+    }
+
+    else {
+      Response = *httpData.get();
+    }
+
+    if (!is_response_ok) {
+      try {
+        response_data = nlohmann::json::parse(json_data_response);
+      } catch (nlohmann::json::exception& e) {
+        Logger::amf_n1().info("Could not get Json content from the response");
+        // Set the default Cause
+        response_data["error"]["cause"] = "504 Gateway Timeout";
+      }
+
+      Logger::amf_n1().info(
+          "Get response with jsonData: %s", json_data_response.c_str());
+
+      std::string cause = response_data["error"]["cause"];
+      Logger::amf_n1().info("Call Network Function services failure");
+      Logger::amf_n1().info("Cause value: %s", cause.c_str());
+    }
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+  }
+
+  curl_global_cleanup();
+
+  if (body_data) {
+    free(body_data);
+    body_data = NULL;
+  }
+  fflush(stdout);
+
+}
+

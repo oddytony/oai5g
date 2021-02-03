@@ -1166,14 +1166,15 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
 }
 
 //------------------------------------------------------------------------------
-// authentication vectors
-// TODO: should be done in UDM/AUSF
+// Get authentication vectors either from AUSF(UDM) or from AMF (generate locally)
 bool amf_n1::auth_vectors_generator(std::shared_ptr<nas_context>& nc) {
   Logger::amf_n1().debug("Start to generate authentication vectors");
   authentication_vectors_generator_in_udm(nc);
-  if (amf_cfg.is_Nausf) {
-    if (!authentication_vectors_from_ausf(nc)) return false;
+  if (amf_cfg.enable_external_ausf) {
+	  //get authentication vectors from AUSF
+    if (!get_authentication_vectors_from_ausf(nc)) return false;
   } else {
+	  //generate authentication vectors locally
     authentication_vectors_generator_in_ausf(nc);
     Logger::amf_n1().debug("Deriving kamf");
     for (int i = 0; i < MAX_5GS_AUTH_VECTORS; i++) {
@@ -1184,137 +1185,11 @@ bool amf_n1::auth_vectors_generator(std::shared_ptr<nas_context>& nc) {
   }
   return true;
 }
+
 //------------------------------------------------------------------------------
-#define CURL_TIMEOUT_MS 100L
-
-std::size_t callback_ausf(
-    const char* in, std::size_t size, std::size_t num, std::string* out) {
-  const std::size_t totalBytes(size * num);
-  out->append(in, totalBytes);
-  return totalBytes;
-}
-
-void amf_n1::curl_http_client(
-    std::string remoteUri, std::string Method, std::string msgBody,
-    std::string& Response) {
-  Logger::amf_n1().info("Send HTTP message with body %s", msgBody.c_str());
-
-  uint32_t str_len = msgBody.length();
-  char* body_data  = (char*) malloc(str_len + 1);
-  memset(body_data, 0, str_len + 1);
-  memcpy((void*) body_data, (void*) msgBody.c_str(), str_len);
-
-  curl_global_init(CURL_GLOBAL_ALL);
-  CURL* curl = curl_easy_init();
-
-  if (curl) {
-    CURLcode res               = {};
-    struct curl_slist* headers = nullptr;
-    if (!Method.compare("POST") || !Method.compare("PATCH") ||
-        !Method.compare("PUT")) {
-      std::string content_type = "Content-Type: application/json";
-      headers = curl_slist_append(headers, content_type.c_str());
-      curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    }
-    curl_easy_setopt(curl, CURLOPT_URL, remoteUri.c_str());
-    if (!Method.compare("POST"))
-      curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
-    else if (!Method.compare("PATCH"))
-      curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
-    else if (!Method.compare("PUT")) {
-      curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
-    } else
-      curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
-    curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1);
-    curl_easy_setopt(curl, CURLOPT_INTERFACE, "ens33");
-    //    Logger::amf_n1().info("[CURL] request sent by interface " +
-    //    udm_cfg.nudr.if_name);
-
-    // Response information.
-    long httpCode = {0};
-    std::unique_ptr<std::string> httpData(new std::string());
-    std::unique_ptr<std::string> httpHeaderData(new std::string());
-
-    // Hook up data handling function.
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback_ausf);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
-    curl_easy_setopt(curl, CURLOPT_HEADERDATA, httpHeaderData.get());
-    if (!Method.compare("POST") || !Method.compare("PATCH") ||
-        !Method.compare("PUT")) {
-      curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, msgBody.length());
-      curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body_data);
-    }
-
-    res = curl_easy_perform(curl);
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
-
-    // get the response
-    std::string response           = *httpData.get();
-    std::string json_data_response = "";
-    std::string resMsg             = "";
-    bool is_response_ok            = true;
-    Logger::amf_n1().info("Get response with httpcode (%d)", httpCode);
-
-    if (httpCode == 0) {
-      Logger::amf_n1().info(
-          "Cannot get response when calling %s", remoteUri.c_str());
-      // free curl before returning
-      curl_slist_free_all(headers);
-      curl_easy_cleanup(curl);
-      return;
-    }
-
-    nlohmann::json response_data = {};
-
-    if (httpCode != 200 && httpCode != 201 && httpCode != 204) {
-      is_response_ok = false;
-      if (response.size() < 1) {
-        Logger::amf_n1().info("There's no content in the response");
-        // TODO: send context response error
-        return;
-      }
-      Logger::amf_n1().info("Wrong response code");
-
-      return;
-    }
-
-    else {
-      Response = *httpData.get();
-    }
-
-    if (!is_response_ok) {
-      try {
-        response_data = nlohmann::json::parse(json_data_response);
-      } catch (nlohmann::json::exception& e) {
-        Logger::amf_n1().info("Could not get Json content from the response");
-        // Set the default Cause
-        response_data["error"]["cause"] = "504 Gateway Timeout";
-      }
-
-      Logger::amf_n1().info(
-          "Get response with jsonData: %s", json_data_response.c_str());
-
-      std::string cause = response_data["error"]["cause"];
-      Logger::amf_n1().info("Call Network Function services failure");
-      Logger::amf_n1().info("Cause value: %s", cause.c_str());
-    }
-    curl_slist_free_all(headers);
-    curl_easy_cleanup(curl);
-  }
-
-  curl_global_cleanup();
-
-  if (body_data) {
-    free(body_data);
-    body_data = NULL;
-  }
-  fflush(stdout);
-}
-
-bool amf_n1::authentication_vectors_from_ausf(
+bool amf_n1::get_authentication_vectors_from_ausf(
     std::shared_ptr<nas_context>& nc) {
-  Logger::amf_n1().debug("authentication_vectors_from_ausf");
+  Logger::amf_n1().debug("Get Authentication Vectors from AUSF");
   /*
   std::string ausf_ip =
       std::string(inet_ntoa(*((struct in_addr*) &amf_cfg.nausf.addr4)));
@@ -1338,6 +1213,7 @@ bool amf_n1::authentication_vectors_from_ausf(
 
   if (amf_n11_inst->send_ue_authentication_request(
           authenticationinfo, ueauthenticationctx, 1)) {
+
     unsigned char* r5gauthdata_rand =
         format_string_as_hex(ueauthenticationctx.getR5gAuthData().getRand());
     memcpy(nc.get()->_5g_av[0].rand, r5gauthdata_rand, 16);
@@ -1358,6 +1234,7 @@ bool amf_n1::authentication_vectors_from_ausf(
 
     std::map<std::string, LinksValueSchema>::iterator iter;
     iter = ueauthenticationctx.getLinks().find("5G_AKA");
+
     if (iter != ueauthenticationctx.getLinks().end()) {
       nc.get()->Href = iter->second.getHref();
       Logger::amf_n1().info("Links is: ", nc.get()->Href);
@@ -1411,6 +1288,7 @@ bool amf_n1::authentication_vectors_from_ausf(
   return true;
 }
 
+//------------------------------------------------------------------------------
 bool amf_n1::_5g_aka_confirmation_from_ausf(
     std::shared_ptr<nas_context>& nc, std::string& resStar) {
   Logger::amf_n1().debug("_5g_aka_confirmation_from_ausf");
@@ -1429,9 +1307,8 @@ bool amf_n1::_5g_aka_confirmation_from_ausf(
   to_json(confirmationdata_j, confirmationdata);
   msgBody = confirmationdata_j.dump();
 
-  // TODO: Move curl to N11(SBI)
-  curl_http_client(remoteUri, "PUT", msgBody, Response);
-  // free(resStar_string.c_str());
+  // TODO: Should be updated
+  amf_n11_inst->curl_http_client(remoteUri, "PUT", msgBody, Response);
 
   try {
     ConfirmationDataResponse confirmationdataresponse;
