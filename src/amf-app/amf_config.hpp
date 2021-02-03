@@ -64,6 +64,8 @@
 #define AMF_CONFIG_STRING_NRF_PORT "PORT"
 #define AMF_CONFIG_STRING_API_VERSION "API_VERSION"
 
+#define AMF_CONFIG_STRING_AUSF "AUSF"
+
 #define AMF_CONFIG_STRING_SCHED_PARAMS "SCHED_PARAMS"
 #define AMF_CONFIG_STRING_THREAD_RD_CPU_ID "CPU_ID"
 #define AMF_CONFIG_STRING_THREAD_RD_SCHED_POLICY "SCHED_POLICY"
@@ -100,7 +102,8 @@
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES "SUPPORT_FEATURES"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_NF_REGISTRATION "NF_REGISTRATION"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_SMF_SELECTION "SMF_SELECTION"
-#define AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_AUTH "EXTERNAL_AUTH"
+#define AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_AUSF "EXTERNAL_AUSF"
+#define AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_UDM "EXTERNAL_UDM"
 
 using namespace libconfig;
 
@@ -192,13 +195,21 @@ class amf_config {
   std::vector<smf_inst_t> smf_pool;
   bool enable_nf_registration;
   bool enable_smf_selection;
-  bool enable_external_auth;
+  bool enable_external_ausf;
+  bool enable_external_udm;
 
   struct {
     struct in_addr ipv4_addr;
     unsigned int port;
     std::string api_version;
   } nrf_addr;
+
+  struct {
+    struct in_addr ipv4_addr;
+    unsigned int port;
+    std::string api_version;
+  } ausf_addr;
+
   bool is_Nausf;
 };
 

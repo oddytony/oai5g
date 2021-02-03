@@ -861,3 +861,86 @@ bool amf_n11::discover_smf(
   curl_global_cleanup();
   return result;
 }
+
+//-----------------------------------------------------------------------------------------------------
+bool amf_n11::send_ue_authentication_request(
+    oai::amf::model::AuthenticationInfo& auth_info,
+    oai::amf::model::UEAuthenticationCtx& ue_auth_ctx, uint8_t http_version) {
+  Logger::amf_n11().debug(
+      "Send UE Authentication Request to AUSF (HTTP version %d)", http_version);
+
+  nlohmann::json json_data = {};
+  to_json(json_data, auth_info);
+  std::string url =
+      std::string(
+          inet_ntoa(*((struct in_addr*) &amf_cfg.ausf_addr.ipv4_addr))) +
+      ":" + std::to_string(amf_cfg.ausf_addr.port) + "/nausf-auth/" +
+      amf_cfg.ausf_addr.api_version + "ue-authentications";
+
+  Logger::amf_n11().debug(
+      "Send UE Authentication Request to AUSF, URL %s", url.c_str());
+
+  std::string body = json_data.dump();
+  Logger::amf_n11().debug(
+      "Send UE Authentication Request to AUSF, msg body: \n %s", body.c_str());
+
+  curl_global_init(CURL_GLOBAL_ALL);
+  CURL* curl = curl = curl_easy_init();
+
+  if (curl) {
+    CURLcode res               = {};
+    struct curl_slist* headers = nullptr;
+    // headers = curl_slist_append(headers, "charsets: utf-8");
+    headers = curl_slist_append(headers, "content-type: application/json");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, AUSF_CURL_TIMEOUT_MS);
+
+    if (http_version == 2) {
+      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+      // we use a self-signed test server, skip verification during debugging
+      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+      curl_easy_setopt(
+          curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE);
+    }
+
+    // Response information.
+    long httpCode = {0};
+    std::unique_ptr<std::string> httpData(new std::string());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
+    res = curl_easy_perform(curl);
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+
+    Logger::amf_n11().debug(
+        "UE Authentication, response from AUSF, HTTP Code: %d", httpCode);
+
+    if ((httpCode == 200) or
+        (httpCode == 201)) {  // TODO: remove hardcoded value
+      try {
+        nlohmann::json::parse(*httpData.get()).get_to(ue_auth_ctx);
+      } catch (nlohmann::json::exception& e) {
+        Logger::amf_n11().warn(
+            "UE Authentication, could not parse json from the AUSF "
+            "response");
+        // TODO: error handling
+        return false;
+      }
+
+    } else {
+      Logger::amf_n11().warn(
+          "NF Instance Registration, could not get response from NRF");
+      return false;
+    }
+
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+  }
+  curl_global_cleanup();
+  return true;
+}

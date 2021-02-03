@@ -1315,6 +1315,7 @@ void amf_n1::curl_http_client(
 bool amf_n1::authentication_vectors_from_ausf(
     std::shared_ptr<nas_context>& nc) {
   Logger::amf_n1().debug("authentication_vectors_from_ausf");
+  /*
   std::string ausf_ip =
       std::string(inet_ntoa(*((struct in_addr*) &amf_cfg.nausf.addr4)));
   std::string ausf_port = std::to_string(amf_cfg.nausf.port);
@@ -1322,21 +1323,21 @@ bool amf_n1::authentication_vectors_from_ausf(
       ausf_ip + ":" + ausf_port + "/nausf-auth/v1/ue-authentications";
   std::string msgBody;
   std::string Response;
-
-  nlohmann::json authenticationinfo_j;
+  */
+  UEAuthenticationCtx ueauthenticationctx;
+  // nlohmann::json authenticationinfo_j;
   AuthenticationInfo authenticationinfo;
   authenticationinfo.setSupiOrSuci(nc.get()->imsi);
   authenticationinfo.setServingNetworkName(nc.get()->serving_network);
-  to_json(authenticationinfo_j, authenticationinfo);
-  msgBody = authenticationinfo_j.dump();
-  curl_http_client(remoteUri, "POST", msgBody, Response);
 
-  Logger::amf_n1().info("POST response : %s", Response.c_str());
+  // to_json(authenticationinfo_j, authenticationinfo);
+  // msgBody = authenticationinfo_j.dump();
 
-  try {
-    UEAuthenticationCtx ueauthenticationctx;
-    nlohmann::json::parse(Response.c_str()).get_to(ueauthenticationctx);
+  // TODO: Move to N11 (SBI)
+  // curl_http_client(remoteUri, "POST", msgBody, Response);
 
+  if (amf_n11_inst->send_ue_authentication_request(
+          authenticationinfo, ueauthenticationctx, 1)) {
     unsigned char* r5gauthdata_rand =
         format_string_as_hex(ueauthenticationctx.getR5gAuthData().getRand());
     memcpy(nc.get()->_5g_av[0].rand, r5gauthdata_rand, 16);
@@ -1363,11 +1364,50 @@ bool amf_n1::authentication_vectors_from_ausf(
     } else {
       Logger::amf_n1().error("Not found 5G_AKA");
     }
-  } catch (nlohmann::json::exception& e) {
-    Logger::amf_n1().info("Could not get Json content from AUSF response");
+  } else {
+    Logger::amf_n1().info("Could not get expected response from AUSF");
     // TODO: error handling
     return false;
   }
+
+  // Logger::amf_n1().info("POST response : %s", Response.c_str());
+  /*
+    try {
+
+      nlohmann::json::parse(Response.c_str()).get_to(ueauthenticationctx);
+
+      unsigned char* r5gauthdata_rand =
+          format_string_as_hex(ueauthenticationctx.getR5gAuthData().getRand());
+      memcpy(nc.get()->_5g_av[0].rand, r5gauthdata_rand, 16);
+      print_buffer("amf_n1", "5G AV: rand", nc.get()->_5g_av[0].rand, 16);
+      free_wrapper((void**) &r5gauthdata_rand);
+
+      unsigned char* r5gauthdata_autn =
+          format_string_as_hex(ueauthenticationctx.getR5gAuthData().getAutn());
+      memcpy(nc.get()->_5g_av[0].autn, r5gauthdata_autn, 16);
+      print_buffer("amf_n1", "5G AV: autn", nc.get()->_5g_av[0].autn, 16);
+      free_wrapper((void**) &r5gauthdata_autn);
+
+      unsigned char* r5gauthdata_hxresstar = format_string_as_hex(
+          ueauthenticationctx.getR5gAuthData().getHxresStar());
+      memcpy(nc.get()->_5g_av[0].hxresStar, r5gauthdata_hxresstar, 16);
+      print_buffer("amf_n1", "5G AV: hxres*", nc.get()->_5g_av[0].hxresStar,
+    16); free_wrapper((void**) &r5gauthdata_hxresstar);
+
+      std::map<std::string, LinksValueSchema>::iterator iter;
+      iter = ueauthenticationctx.getLinks().find("5G_AKA");
+      if (iter != ueauthenticationctx.getLinks().end()) {
+        nc.get()->Href = iter->second.getHref();
+        Logger::amf_n1().info("Links is: ", nc.get()->Href);
+      } else {
+        Logger::amf_n1().error("Not found 5G_AKA");
+      }
+    } catch (nlohmann::json::exception& e) {
+      Logger::amf_n1().info("Could not get Json content from AUSF response");
+      // TODO: error handling
+      return false;
+    }
+    */
   return true;
 }
 
@@ -1388,8 +1428,9 @@ bool amf_n1::_5g_aka_confirmation_from_ausf(
 
   to_json(confirmationdata_j, confirmationdata);
   msgBody = confirmationdata_j.dump();
-  curl_http_client(remoteUri, "PUT", msgBody, Response);
 
+  // TODO: Move curl to N11(SBI)
+  curl_http_client(remoteUri, "PUT", msgBody, Response);
   // free(resStar_string.c_str());
 
   try {

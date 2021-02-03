@@ -100,6 +100,7 @@ enum class http_response_codes_e {
 #define SMF_NUMBER_RETRIES 3
 constexpr auto CURL_MIME_BOUNDARY = "----Boundary";
 #define NRF_CURL_TIMEOUT_MS 100L
+#define AUSF_CURL_TIMEOUT_MS 100L
 
 #define BUFFER_SIZE_1024 1024
 #define BUFFER_SIZE_512 512

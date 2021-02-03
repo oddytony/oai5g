@@ -35,6 +35,8 @@
 
 #include "itti_msg_n11.hpp"
 #include "pdu_session_context.hpp"
+#include "AuthenticationInfo.h"
+#include "UEAuthenticationCtx.h"
 
 namespace amf_application {
 
@@ -81,6 +83,10 @@ class amf_n11 {
   bool discover_smf(
       std::string& smf_addr, std::string& smf_api_version,
       const snssai_t snssai, const plmn_t plmn, const std::string dnn);
+
+  bool send_ue_authentication_request(
+      oai::amf::model::AuthenticationInfo& auth_info,
+      oai::amf::model::UEAuthenticationCtx& ue_auth_ctx, uint8_t http_version);
 };
 
 }  // namespace amf_application

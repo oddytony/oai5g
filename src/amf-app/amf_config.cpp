@@ -62,7 +62,8 @@ amf_config::amf_config() {
   nrf_addr.api_version      = "v1";
   enable_nf_registration    = false;
   enable_smf_selection      = false;
-  enable_external_auth      = false;
+  enable_external_ausf      = false;
+  enable_external_udm      = false;
   // TODO:
   is_Nausf = true;
 }
@@ -241,6 +242,30 @@ int amf_config::load(const std::string& config_file) {
     }
     nrf_addr.api_version = nrf_api_version;
 
+    // AUSF
+    const Setting& ausf_cfg = new_if_cfg[AMF_CONFIG_STRING_AUSF];
+    struct in_addr ausf_ipv4_addr;
+    unsigned int ausf_port = 0;
+    std::string ausf_api_version;
+    //string address;
+    ausf_cfg.lookupValue(AMF_CONFIG_STRING_IPV4_ADDRESS, address);
+    IPV4_STR_ADDR_TO_INADDR(
+        util::trim(address).c_str(), ausf_ipv4_addr,
+        "BAD IPv4 ADDRESS FORMAT FOR AUSF !");
+    ausf_addr.ipv4_addr = ausf_ipv4_addr;
+    if (!(ausf_cfg.lookupValue(AMF_CONFIG_STRING_PORT, ausf_port))) {
+      Logger::amf_app().error(AMF_CONFIG_STRING_PORT "failed");
+      throw(AMF_CONFIG_STRING_PORT "failed");
+    }
+    ausf_addr.port = ausf_port;
+
+    if (!(ausf_cfg.lookupValue(
+            AMF_CONFIG_STRING_API_VERSION, ausf_api_version))) {
+      Logger::amf_app().error(AMF_CONFIG_STRING_API_VERSION "failed");
+      throw(AMF_CONFIG_STRING_API_VERSION "failed");
+    }
+    ausf_addr.api_version = ausf_api_version;
+
   } catch (const SettingNotFoundException& nfex) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
@@ -331,11 +356,19 @@ int amf_config::load(const std::string& config_file) {
     }
 
     support_features.lookupValue(
-        AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_AUTH, opt);
+        AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_AUSF, opt);
     if (boost::iequals(opt, "yes")) {
-      enable_external_auth = true;
+      enable_external_ausf = true;
     } else {
-      enable_external_auth = false;
+      enable_external_ausf = false;
+    }
+
+    support_features.lookupValue(
+        AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_UDM, opt);
+    if (boost::iequals(opt, "yes")) {
+      enable_external_udm = true;
+    } else {
+      enable_external_udm = false;
     }
 
   } catch (const SettingNotFoundException& nfex) {
@@ -422,24 +455,24 @@ void amf_config::display() {
       "    ip ....................: %s", inet_ntoa(n11.addr4));
   Logger::config().info("    port ..................: %d", n11.port);
 
-  if (is_Nausf) {
-    Logger::config().info("- Nausf Networking:");
-    Logger::config().info(
-        "    iface ................: %s", nausf.if_name.c_str());
-    Logger::config().info(
-        "    ip ...................: %s", inet_ntoa(nausf.addr4));
-    Logger::config().info("    port .................: %d", nausf.port);
-  } else {
-    Logger::config().warn(
-        "- Not using ausf: Please remove [--no-ausf] using it.");
+  if (enable_nf_registration or enable_smf_selection) {
+	  Logger::config().info("- NRF:");
+	  Logger::config().info(
+	      "    IP addr ..............: %s", inet_ntoa(nrf_addr.ipv4_addr));
+	  Logger::config().info("    Port .................: %d", nrf_addr.port);
+	  Logger::config().info(
+	      "    Api version ..........: %s", nrf_addr.api_version.c_str());
   }
 
-  Logger::config().info("- NRF:");
-  Logger::config().info(
-      "    IP addr ..............: %s", inet_ntoa(nrf_addr.ipv4_addr));
-  Logger::config().info("    Port .................: %d", nrf_addr.port);
-  Logger::config().info(
-      "    Api version ..........: %s", nrf_addr.api_version.c_str());
+  if (enable_external_ausf) {
+	  Logger::config().info("- AUSF:");
+	  Logger::config().info(
+	      "    IP addr ..............: %s", inet_ntoa(ausf_addr.ipv4_addr));
+	  Logger::config().info("    Port .................: %d", ausf_addr.port);
+	  Logger::config().info(
+	      "    Api version ..........: %s", ausf_addr.api_version.c_str());
+  }
+
 
   //  Logger::config().info("    HTTP2 port ............: %d", n11_http2_port);
 
@@ -462,7 +495,9 @@ void amf_config::display() {
   Logger::config().info(
       "    SMF Selection..........: %s", enable_smf_selection ? "Yes" : "No");
   Logger::config().info(
-      "    External Authentication: %s", enable_external_auth ? "Yes" : "No");
+      "    External AUSF..........: %s", enable_external_ausf ? "Yes" : "No");
+  Logger::config().info(
+      "    External UDM..........: %s", enable_external_udm ? "Yes" : "No");
 }
 
 //------------------------------------------------------------------------------
