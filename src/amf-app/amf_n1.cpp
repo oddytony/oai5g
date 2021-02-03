@@ -55,10 +55,18 @@
 #include "nas_algorithms.hpp"
 #include "sha256.hpp"
 
+#include "AuthenticationInfo.h"
+#include "UEAuthenticationCtx.h"
+#include "ConfirmationData.h"
+#include "ConfirmationDataResponse.h"
+#include <curl/curl.h>
+
 extern "C" {
 #include "bstrlib.h"
 #include "dynamic_memory_check.h"
 }
+
+using namespace oai::amf::model;
 
 using namespace nas;
 using namespace amf_application;
@@ -225,7 +233,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
     else {
       Logger::amf_n1().error(
           "No existing nas_context with GUTI %s", nas_data_ind.guti.c_str());
-      return;
+      // return;
     }
   } else {
     if (is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
@@ -1160,12 +1168,16 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
 bool amf_n1::auth_vectors_generator(std::shared_ptr<nas_context>& nc) {
   Logger::amf_n1().debug("Start to generate authentication vectors");
   authentication_vectors_generator_in_udm(nc);
-  authentication_vectors_generator_in_ausf(nc);
-  Logger::amf_n1().debug("Deriving kamf");
-  for (int i = 0; i < MAX_5GS_AUTH_VECTORS; i++) {
-    Authentication_5gaka::derive_kamf(
-        nc.get()->imsi, nc.get()->_5g_av[i].kseaf, nc.get()->kamf[i],
-        0x0000);  // second parameter: abba
+  if (amf_cfg.is_Nausf) {
+    if (!authentication_vectors_from_ausf(nc)) return false;
+  } else {
+    authentication_vectors_generator_in_ausf(nc);
+    Logger::amf_n1().debug("Deriving kamf");
+    for (int i = 0; i < MAX_5GS_AUTH_VECTORS; i++) {
+      Authentication_5gaka::derive_kamf(
+          nc.get()->imsi, nc.get()->_5g_av[i].kseaf, nc.get()->kamf[i],
+          0x0000);  // second parameter: abba
+    }
   }
   return true;
 }
@@ -1865,6 +1877,7 @@ void amf_n1::security_mode_complete_handle(
     uint8_t kgnb[32];
     uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
     Authentication_5gaka::derive_kgnb(0, 0x01, kamf, kgnb);
+    ncc = 1;
     print_buffer("amf_n1", "kamf", kamf, 32);
     // Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
     bstring kgnb_bs = blk2bstr(kgnb, 32);

@@ -676,7 +676,8 @@ void SmContextCreateData::toMultipart(
   value += n1sm;
   std::string ngsId = ", \"servingNfId\":\"servingNfId\"";
   value += ngsId;
-  std::string sn = ", \"servingNetwork\":{\"mcc\":\"460\", \"mnc\":\"011\"}";
+  // std::string sn = ", \"servingNetwork\":{\"mcc\":\"460\", \"mnc\":\"011\"}";
+  std::string sn = ", \"servingNetwork\":{\"mcc\":\"110\", \"mnc\":\"011\"}";
   value += sn;
   std::string anType = ", \"anType\":\"3GPP_ACCESS\"";
   value += anType;

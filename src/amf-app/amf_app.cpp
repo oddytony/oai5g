@@ -81,7 +81,7 @@ amf_app::amf_app(const amf_config& amf_cfg) {
   }
 
   // Register to NRF
-  register_to_nrf();
+  if (amf_cfg.enable_nf_registration) register_to_nrf();
 
   timer_id_t tid = itti_inst->timer_setup(
       amf_cfg.statistics_interval, 0, TASK_AMF_APP,
@@ -216,7 +216,6 @@ bool amf_app::find_pdu_session_context(
   return true;
 }
 
-// ITTI handlers
 //------------------------------------------------------------------------------
 void amf_app::handle_itti_message(
     itti_n1n2_message_transfer_request& itti_msg) {
@@ -266,7 +265,7 @@ void amf_app::handle_itti_message(
   long amf_ue_ngap_id = 0;
   std::shared_ptr<ue_context> uc;
 
-  // check UE Context with 5g-s-tmsi
+  // Check UE Context with 5g-s-tmsi
   if ((amf_ue_ngap_id = itti_msg.amf_ue_ngap_id) == -1) {
     amf_ue_ngap_id = generate_amf_ue_ngap_id();
   }

@@ -73,6 +73,7 @@ uint32_t ran_id_Global                 = 0;
 uint32_t AMF_TARGET_ran_id_global      = 0;
 sctp_assoc_id_t downlink_sctp_assoc_id = 0;
 sctp_assoc_id_t source_assoc_id        = 0;
+int ncc                                = 0;
 
 void amf_n2_task(void*);
 
@@ -293,6 +294,8 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
       gnbItem.plmn_list.push_back(i);
     }
   }
+
+  set_gnb_id_2_gnb_context(gnb_id, gc);
 
   // store Paging DRX in gNB context
   Logger::amf_n2().debug("Encoding NG_SETUP_RESPONSE ...");
@@ -875,6 +878,7 @@ void amf_n2::handle_itti_message(
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
+  ncc++;
   unsigned long amf_ue_ngap_id = itti_msg.handvoerRequ->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handvoerRequ->getRanUeNgapId();
   ran_id_Global                = ran_ue_ngap_id;
@@ -1006,31 +1010,11 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   Logger::amf_n1().debug("uplink count(%d)", secu->ul_count.seq_num);
   uint8_t knh[32];
   Authentication_5gaka::handover_ncc_derive_knh(
-      ulcount, 0x01, kamf, kgnb, knh, 2);
-
-  /*Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
-  print_buffer("amf_n1", "HO:kgnb", kgnb, 32);
-//NCC = 1
-  uint8_t S[35], knh[32];
-  S[0] = 0x6f;
-  memcpy(S + 1, kgnb, 32);
-  S[33] = 0x00;
-  S[34] = 0x20;
-  print_buffer("amf_n1", "NCC=1: S", S, 35);
-  Authentication_5gaka::kdf(kamf, 32, S, 35, knh, 32);
-//NCC = 2
-  uint8_t S2[35], knh2[32];
-  S2[0] = 0x6f;
-  memcpy(S2 + 1, knh, 32);
-  S2[33] = 0x00;
-  S2[34] = 0x20;
-  print_buffer("amf_n1", "NCC=2: S2", S2, 35);
-  Authentication_5gaka::kdf(kamf, 32, S2, 35, knh2, 32);
-  print_buffer("amf_n1", "Knh2", knh2, 32);
-  bstring knh_bs = blk2bstr(knh2, 32);*/
+      ulcount, 0x01, kamf, kgnb, knh, ncc);
   bstring knh_bs = blk2bstr(knh, 32);
   handoverrequest->setSecurityContext(
-      2 /*NCC count*/, (uint8_t*) bdata(knh_bs));
+      ncc /*NCC count*/, (uint8_t*) bdata(knh_bs));
+
   // handoverrequest->setSourceToTarget_TransparentContainer(sourceTotarget);
   string supi = "imsi-" + nc.get()->imsi;
 
@@ -1060,7 +1044,8 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   handoverrequest->setGUAMI(m_plmnId, m_aMFRegionID, m_aMFSetID, m_aMFPointer);
   uint8_t buffer[20240];
   int encoded_size = handoverrequest->encode2buffer(buffer, 20240);
-  bstring b        = blk2bstr(buffer, encoded_size);
+  delete handoverrequest;
+  bstring b = blk2bstr(buffer, encoded_size);
   std::shared_ptr<gnb_context> gc_target;
   gc_target              = gnb_id_2_gnb_context(gnbid->getValue());
   downlink_sctp_assoc_id = gc_target.get()->sctp_assoc_id;
@@ -1173,7 +1158,8 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   /**************************setPduSessionResourceHandoverList_PDYSessionID_handovercommandtransfer-end**************************/
   uint8_t buffer[10240];
   int encoded_size = handovercommand->encode2buffer(buffer, 10240);
-  bstring b        = blk2bstr(buffer, encoded_size);
+  delete handovercommand;
+  bstring b = blk2bstr(buffer, encoded_size);
   std::shared_ptr<ue_ngap_context> unc;
   if (!is_ran_ue_id_2_ue_ngap_context(ran_id_Global)) {
     Logger::amf_n2().debug(
@@ -1181,6 +1167,9 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
         ran_id_Global);
     unc = std::shared_ptr<ue_ngap_context>(new ue_ngap_context());
     set_ran_ue_ngap_id_2_ue_ngap_context(ran_id_Global, unc);
+    unc.get()->gnb_assoc_id = source_assoc_id;
+  } else {
+    unc                     = ran_ue_id_2_ue_ngap_context(ran_id_Global);
     unc.get()->gnb_assoc_id = source_assoc_id;
   }
   // std::shared_ptr<ue_ngap_context> ngc =
@@ -1217,12 +1206,13 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
       Ngap_CauseRadioNetwork_successful_handover);
   uint8_t buffer[10240];
   int encoded_size = ueContextReleaseCommand->encode2buffer(buffer, 10240);
-  bstring b        = blk2bstr(buffer, encoded_size);
+  delete ueContextReleaseCommand;
+  bstring b = blk2bstr(buffer, encoded_size);
   std::shared_ptr<nas_context> nc =
       amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
   std::shared_ptr<ue_ngap_context> ngc =
       ran_ue_id_2_ue_ngap_context(nc.get()->ran_ue_ngap_id);
-  sctp_s_38412.sctp_send_msg(ngc.get()->gnb_assoc_id, 0, &b);
+  sctp_s_38412.sctp_send_msg(source_assoc_id, 0, &b);
   /*std::shared_ptr<nas_context> nc =
   amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id); string supi = "imsi-" +
   nc.get()->imsi; std::shared_ptr<pdu_session_context> psc =
@@ -1302,7 +1292,8 @@ void amf_n2::handle_itti_message(itti_uplinkranstatsutransfer& itti_msg) {
       amf_drb_id, amf_ul_pdcp, amf_hfn_ul_pdcp, amf_dl_pdcp, amf_hfn_dl_pdcp);
   uint8_t buffer[1024];
   int encode_size = downLinkranstatustransfer->encodetobuffer(buffer, 1024);
-  bstring b       = blk2bstr(buffer, encode_size);
+  delete downLinkranstatustransfer;
+  bstring b = blk2bstr(buffer, encode_size);
   // std::shared_ptr<ue_ngap_context> ngc =
   // ran_ue_id_2_ue_ngap_context(AMF_TARGET_ran_id_global);
   sctp_s_38412.sctp_send_msg(downlink_sctp_assoc_id, 0, &b);
