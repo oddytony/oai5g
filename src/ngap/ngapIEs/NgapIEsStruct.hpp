@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -65,7 +65,7 @@ typedef struct GuamiItem_s {
   std::string regionID;
   std::string AmfSetID;
   std::string AmfPointer;
-  std::string backupAMFName;  //optional
+  std::string backupAMFName;  // optional
 } GuamiItem_t;
 
 typedef struct NrCgi_s {
@@ -77,7 +77,7 @@ typedef struct NrCgi_s {
 typedef struct Tai_s {
   std::string mcc;
   std::string mnc;
-  uint32_t tac :24;
+  uint32_t tac : 24;
 } Tai_t;
 
 typedef struct Guami_s {
@@ -95,19 +95,20 @@ typedef struct {
 
 typedef struct {
   uint8_t pduSessionId;
-  uint8_t *pduSessionNAS_PDU;
+  uint8_t* pduSessionNAS_PDU;
   size_t sizeofpduSessionNAS_PDU;
   S_Nssai s_nssai;
   OCTET_STRING_t pduSessionResourceSetupRequestTransfer;
 } PDUSessionResourceSetupRequestItem_t;
 
-//section 9.2.1.3 PDU Session Resource Release Command (3GPP TS 38.413 V16.0.0 (2019-12))
+// section 9.2.1.3 PDU Session Resource Release Command (3GPP TS 38.413 V16.0.0
+// (2019-12))
 typedef struct {
   uint8_t pduSessionId;
   OCTET_STRING_t pduSessionResourceReleaseCommandTransfer;
 } PDUSessionResourceToReleaseItem_t;
 
-//PDU Session Resource Release Item (3GPP TS 38.413 V16.0.0 (2019-12))
+// PDU Session Resource Release Item (3GPP TS 38.413 V16.0.0 (2019-12))
 typedef struct {
   uint8_t pduSessionId;
   OCTET_STRING_t pduSessionResourceReleaseResponseTransfer;
@@ -120,9 +121,9 @@ typedef struct {
 
 typedef struct {
   long _5QI;
-  long *priorityLevelQos;
-  long *averagingWindow;
-  long *maximumDataBurstVolume;
+  long* priorityLevelQos;
+  long* averagingWindow;
+  long* maximumDataBurstVolume;
 } NonDynamic5QI_t;
 
 typedef struct {
@@ -134,15 +135,15 @@ typedef struct {
   long priorityLevelQos;
   long packetDelayBudget;
   PacketErrorRate_t packetErrorRate;
-  long *_5QI;
-  e_Ngap_DelayCritical *delayCritical;
-  long *averagingWindow;
-  long *maximumDataBurstVolume;
+  long* _5QI;
+  e_Ngap_DelayCritical* delayCritical;
+  long* averagingWindow;
+  long* maximumDataBurstVolume;
 } Dynamic5QI_t;
 
 typedef struct {
-  NonDynamic5QI_t *nonDy;
-  Dynamic5QI_t *dy;
+  NonDynamic5QI_t* nonDy;
+  Dynamic5QI_t* dy;
 } QosCharacteristics_t;
 
 typedef struct {
@@ -156,17 +157,17 @@ typedef struct {
   long maximumFlowBitRateUL;
   long guaranteedFlowBitRateDL;
   long guaranteedFlowBitRateUL;
-  e_Ngap_NotificationControl *notificationControl;
-  long *maximumPacketLossRateDL;
-  long *maximumPacketLossRateUL;
+  e_Ngap_NotificationControl* notificationControl;
+  long* maximumPacketLossRateDL;
+  long* maximumPacketLossRateUL;
 } GBR_QosInformation_t;
 
 typedef struct {
   QosCharacteristics_t qosc;
   AllocationAndRetentionPriority_t arp;
-  GBR_QosInformation_t *gbr_qos_info;
-  e_Ngap_ReflectiveQosAttribute *reflectiveQosAttribute;
-  e_Ngap_AdditionalQosFlowInformation *additionalQosFlowInformation;
+  GBR_QosInformation_t* gbr_qos_info;
+  e_Ngap_ReflectiveQosAttribute* reflectiveQosAttribute;
+  e_Ngap_AdditionalQosFlowInformation* additionalQosFlowInformation;
 } QosFlowLevelQosParameters_t;
 
 typedef struct {
@@ -176,7 +177,8 @@ typedef struct {
 
 typedef struct {
   long qosFlowIdentifier;
-  e_Ngap_AssociatedQosFlowItem__qosFlowMappingIndication *qosFlowMappingIndication;
+  e_Ngap_AssociatedQosFlowItem__qosFlowMappingIndication*
+      qosFlowMappingIndication;
 } AssociatedQosFlow_t;
 
 typedef struct {

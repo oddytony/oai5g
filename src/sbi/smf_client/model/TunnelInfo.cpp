@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,177 +10,160 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "TunnelInfo.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-TunnelInfo::TunnelInfo()
-{
-    m_Ipv4Addr = utility::conversions::to_string_t("");
-    m_Ipv4AddrIsSet = false;
-    m_Ipv6AddrIsSet = false;
-    m_Ipv6Addr = utility::conversions::to_string_t("");
-    m_GtpTeid = utility::conversions::to_string_t("");
+TunnelInfo::TunnelInfo() {
+  m_Ipv4Addr      = utility::conversions::to_string_t("");
+  m_Ipv4AddrIsSet = false;
+  m_Ipv6AddrIsSet = false;
+  m_Ipv6Addr      = utility::conversions::to_string_t("");
+  m_GtpTeid       = utility::conversions::to_string_t("");
 }
 
-TunnelInfo::~TunnelInfo()
-{
+TunnelInfo::~TunnelInfo() {}
+
+void TunnelInfo::validate() {
+  // TODO: implement validation
 }
 
-void TunnelInfo::validate()
-{
-    // TODO: implement validation
+web::json::value TunnelInfo::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  if (m_Ipv4AddrIsSet) {
+    val[utility::conversions::to_string_t("ipv4Addr")] =
+        ModelBase::toJson(m_Ipv4Addr);
+  }
+  if (m_Ipv6AddrIsSet) {
+    val[utility::conversions::to_string_t("ipv6Addr")] =
+        ModelBase::toJson(m_Ipv6Addr);
+  }
+  val[utility::conversions::to_string_t("gtpTeid")] =
+      ModelBase::toJson(m_GtpTeid);
+
+  return val;
 }
 
-web::json::value TunnelInfo::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    if(m_Ipv4AddrIsSet)
-    {
-        val[utility::conversions::to_string_t("ipv4Addr")] = ModelBase::toJson(m_Ipv4Addr);
+void TunnelInfo::fromJson(const web::json::value& val) {
+  if (val.has_field(utility::conversions::to_string_t("ipv4Addr"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("ipv4Addr"));
+    if (!fieldValue.is_null()) {
+      setIpv4Addr(ModelBase::stringFromJson(fieldValue));
     }
-    if(m_Ipv6AddrIsSet)
-    {
-        val[utility::conversions::to_string_t("ipv6Addr")] = ModelBase::toJson(m_Ipv6Addr);
+  }
+  if (val.has_field(utility::conversions::to_string_t("ipv6Addr"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("ipv6Addr"));
+    if (!fieldValue.is_null()) {
+      // std::shared_ptr<utility::string_t> newItem(new Ipv6Addr());
+      // newItem->fromJson(fieldValue);
+      setIpv6Addr(ModelBase::stringFromJson(fieldValue));
     }
-    val[utility::conversions::to_string_t("gtpTeid")] = ModelBase::toJson(m_GtpTeid);
-
-    return val;
+  }
+  setGtpTeid(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("gtpTeid"))));
 }
 
-void TunnelInfo::fromJson(const web::json::value& val)
-{
-    if(val.has_field(utility::conversions::to_string_t("ipv4Addr")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("ipv4Addr"));
-        if(!fieldValue.is_null())
-        {
-            setIpv4Addr(ModelBase::stringFromJson(fieldValue));
-        }
+void TunnelInfo::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  if (m_Ipv4AddrIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("ipv4Addr"),
+        m_Ipv4Addr));
+  }
+  if (m_Ipv6AddrIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("ipv6Addr"),
+        m_Ipv6Addr));
+    // if (m_Ipv6Addr.get())
+    // {
+    // m_Ipv6Addr->toMultipart(multipart,
+    // utility::conversions::to_string_t("ipv6Addr."));
+    // }
+  }
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("gtpTeid"), m_GtpTeid));
+}
+
+void TunnelInfo::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  if (multipart->hasContent(utility::conversions::to_string_t("ipv4Addr"))) {
+    setIpv4Addr(ModelBase::stringFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("ipv4Addr"))));
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("ipv6Addr"))) {
+    if (multipart->hasContent(utility::conversions::to_string_t("ipv6Addr"))) {
+      // std::shared_ptr<utility::string_t> newItem(new Ipv6Addr());
+      // newItem->fromMultiPart(multipart,
+      // utility::conversions::to_string_t("ipv6Addr."));
+      setIpv6Addr(ModelBase::stringFromHttpContent(multipart->getContent(
+          utility::conversions::to_string_t("ipv6Addr"))));
     }
-    if(val.has_field(utility::conversions::to_string_t("ipv6Addr")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("ipv6Addr"));
-        if(!fieldValue.is_null())
-        {
-            //std::shared_ptr<utility::string_t> newItem(new Ipv6Addr());
-            //newItem->fromJson(fieldValue);
-            setIpv6Addr( ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    setGtpTeid(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("gtpTeid"))));
+  }
+  setGtpTeid(ModelBase::stringFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("gtpTeid"))));
 }
 
-void TunnelInfo::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    if(m_Ipv4AddrIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("ipv4Addr"), m_Ipv4Addr));
-    }
-    if(m_Ipv6AddrIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("ipv6Addr"), m_Ipv6Addr));
-       // if (m_Ipv6Addr.get())
-       // {
-           // m_Ipv6Addr->toMultipart(multipart, utility::conversions::to_string_t("ipv6Addr."));
-       // }
-    }
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("gtpTeid"), m_GtpTeid));
+utility::string_t TunnelInfo::getIpv4Addr() const {
+  return m_Ipv4Addr;
 }
 
-void TunnelInfo::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    if(multipart->hasContent(utility::conversions::to_string_t("ipv4Addr")))
-    {
-        setIpv4Addr(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("ipv4Addr"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("ipv6Addr")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("ipv6Addr")))
-        {
-            //std::shared_ptr<utility::string_t> newItem(new Ipv6Addr());
-            //newItem->fromMultiPart(multipart, utility::conversions::to_string_t("ipv6Addr."));
-            setIpv6Addr(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("ipv6Addr"))));
-        }
-    }
-    setGtpTeid(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("gtpTeid"))));
+void TunnelInfo::setIpv4Addr(const utility::string_t& value) {
+  m_Ipv4Addr      = value;
+  m_Ipv4AddrIsSet = true;
 }
 
-utility::string_t TunnelInfo::getIpv4Addr() const
-{
-    return m_Ipv4Addr;
+bool TunnelInfo::ipv4AddrIsSet() const {
+  return m_Ipv4AddrIsSet;
 }
 
-void TunnelInfo::setIpv4Addr(const utility::string_t& value)
-{
-    m_Ipv4Addr = value;
-    m_Ipv4AddrIsSet = true;
+void TunnelInfo::unsetIpv4Addr() {
+  m_Ipv4AddrIsSet = false;
 }
 
-bool TunnelInfo::ipv4AddrIsSet() const
-{
-    return m_Ipv4AddrIsSet;
+utility::string_t TunnelInfo::getIpv6Addr() const {
+  return m_Ipv6Addr;
 }
 
-void TunnelInfo::unsetIpv4Addr()
-{
-    m_Ipv4AddrIsSet = false;
+void TunnelInfo::setIpv6Addr(const utility::string_t& value) {
+  m_Ipv6Addr      = value;
+  m_Ipv6AddrIsSet = true;
 }
 
-utility::string_t TunnelInfo::getIpv6Addr() const
-{
-    return m_Ipv6Addr;
+bool TunnelInfo::ipv6AddrIsSet() const {
+  return m_Ipv6AddrIsSet;
 }
 
-void TunnelInfo::setIpv6Addr(const utility::string_t& value)
-{
-    m_Ipv6Addr = value;
-    m_Ipv6AddrIsSet = true;
+void TunnelInfo::unsetIpv6Addr() {
+  m_Ipv6AddrIsSet = false;
 }
 
-bool TunnelInfo::ipv6AddrIsSet() const
-{
-    return m_Ipv6AddrIsSet;
+utility::string_t TunnelInfo::getGtpTeid() const {
+  return m_GtpTeid;
 }
 
-void TunnelInfo::unsetIpv6Addr()
-{
-    m_Ipv6AddrIsSet = false;
+void TunnelInfo::setGtpTeid(const utility::string_t& value) {
+  m_GtpTeid = value;
 }
 
-utility::string_t TunnelInfo::getGtpTeid() const
-{
-    return m_GtpTeid;
-}
-
-void TunnelInfo::setGtpTeid(const utility::string_t& value)
-{
-    m_GtpTeid = value;
-    
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

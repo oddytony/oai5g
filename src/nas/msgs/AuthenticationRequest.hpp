@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,24 +37,24 @@ class AuthenticationRequest {
  public:
   AuthenticationRequest();
   ~AuthenticationRequest();
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(NasMmPlainHeader* header, uint8_t* buf, int len);
   void setHeader(uint8_t security_header_type);
   void setngKSI(uint8_t tsc, uint8_t key_set_id);
   void setEAP_Message(bstring eap);
-  void setABBA(uint8_t length, uint8_t *value);
-  void setAuthentication_Parameter_RAND(uint8_t *value);
-  void setAuthentication_Parameter_AUTN(uint8_t *value);
+  void setABBA(uint8_t length, uint8_t* value);
+  void setAuthentication_Parameter_RAND(uint8_t* value);
+  void setAuthentication_Parameter_AUTN(uint8_t* value);
+
  public:
-  NasMmPlainHeader *plain_header;
-  NasKeySetIdentifier *ie_ngKSI;
-  ABBA *ie_abba;
-  Authentication_Parameter_RAND *ie_authentication_parameter_rand;
-  Authentication_Parameter_AUTN *ie_authentication_parameter_autn;
-  EAP_Message *ie_eap_message;
+  NasMmPlainHeader* plain_header;
+  NasKeySetIdentifier* ie_ngKSI;
+  ABBA* ie_abba;
+  Authentication_Parameter_RAND* ie_authentication_parameter_rand;
+  Authentication_Parameter_AUTN* ie_authentication_parameter_autn;
+  EAP_Message* ie_eap_message;
 };
 
-}
+}  // namespace nas
 
 #endif
-

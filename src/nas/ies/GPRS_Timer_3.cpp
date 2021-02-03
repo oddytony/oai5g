@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,22 +37,20 @@ GPRS_Timer_3::GPRS_Timer_3(uint8_t iei) {
 
 //------------------------------------------------------------------------------
 GPRS_Timer_3::GPRS_Timer_3(const uint8_t iei, uint8_t unit, uint8_t value) {
-  _iei = iei;
-  UNIT = unit;
+  _iei   = iei;
+  UNIT   = unit;
   _value = value;
 }
 
 //------------------------------------------------------------------------------
-GPRS_Timer_3::GPRS_Timer_3() {
-}
+GPRS_Timer_3::GPRS_Timer_3() {}
 
 //------------------------------------------------------------------------------
-GPRS_Timer_3::~GPRS_Timer_3() {
-}
+GPRS_Timer_3::~GPRS_Timer_3() {}
 
 //------------------------------------------------------------------------------
 void GPRS_Timer_3::setValue(uint8_t unit, uint8_t value) {
-  UNIT = unit;
+  UNIT   = unit;
   _value = value;
 }
 
@@ -67,15 +65,15 @@ uint8_t GPRS_Timer_3::getValue() {
 }
 
 //------------------------------------------------------------------------------
-int GPRS_Timer_3::encode2buffer(uint8_t *buf, int len) {
+int GPRS_Timer_3::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("Encoding GPRS_Timer_3 IEI (0x%x)", _iei);
   if (len < 3) {
     Logger::nas_mm().error("len is less than 3");
     return 0;
   }
-  uint8_t octet = 0;
+  uint8_t octet    = 0;
   int encoded_size = 0;
-  octet = (UNIT << 5) | (_value & 0x1f);
+  octet            = (UNIT << 5) | (_value & 0x1f);
   if (_iei) {
     *(buf + encoded_size) = _iei;
     encoded_size++;
@@ -95,7 +93,7 @@ int GPRS_Timer_3::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int GPRS_Timer_3::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int GPRS_Timer_3::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("Decoding GPRS_Timer_3 IEI (0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
@@ -103,14 +101,13 @@ int GPRS_Timer_3::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
     decoded_size++;
   }
   uint8_t octet = 0;
-//	length = *(buf + decoded_size); 
+  //	length = *(buf + decoded_size);
   decoded_size++;
   octet = *(buf + decoded_size);
   decoded_size++;
-  UNIT = (octet & 0xe0) >> 5;
+  UNIT   = (octet & 0xe0) >> 5;
   _value = octet & 0x1f;
   Logger::nas_mm().debug("Decoded GPRS_Timer_3 content (0x%x)", octet);
   Logger::nas_mm().debug("Decoded GPRS_Timer_3 len (%d)", decoded_size);
   return decoded_size;
 }
-

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,8 +39,7 @@ NRCellIdentity::NRCellIdentity() {
 }
 
 //------------------------------------------------------------------------------
-NRCellIdentity::~NRCellIdentity() {
-}
+NRCellIdentity::~NRCellIdentity() {}
 
 //------------------------------------------------------------------------------
 void NRCellIdentity::setNRCellIdentity(unsigned long m_nrcellidentity) {
@@ -48,12 +47,11 @@ void NRCellIdentity::setNRCellIdentity(unsigned long m_nrcellidentity) {
 }
 
 //------------------------------------------------------------------------------
-bool NRCellIdentity::encode2bitstring(Ngap_NRCellIdentity_t &nRCellIdentity) {
+bool NRCellIdentity::encode2bitstring(Ngap_NRCellIdentity_t& nRCellIdentity) {
   nRCellIdentity.bits_unused = 4;
-  nRCellIdentity.size = 5;
+  nRCellIdentity.size        = 5;
   nRCellIdentity.buf = (uint8_t*) calloc(1, sizeof(uint32_t) + sizeof(uint8_t));
-  if (!nRCellIdentity.buf)
-    return false;
+  if (!nRCellIdentity.buf) return false;
   nRCellIdentity.buf[4] = nrcellidentity & 0x00000000ff;
   nRCellIdentity.buf[3] = (nrcellidentity & 0x000000ff00) >> 8;
   nRCellIdentity.buf[2] = (nrcellidentity & 0x0000ff0000) >> 16;
@@ -65,9 +63,8 @@ bool NRCellIdentity::encode2bitstring(Ngap_NRCellIdentity_t &nRCellIdentity) {
 
 //------------------------------------------------------------------------------
 bool NRCellIdentity::decodefrombitstring(
-    Ngap_NRCellIdentity_t &nRCellIdentity) {
-  if (!nRCellIdentity.buf)
-    return false;
+    Ngap_NRCellIdentity_t& nRCellIdentity) {
+  if (!nRCellIdentity.buf) return false;
 
   nrcellidentity = nRCellIdentity.buf[0];
   nrcellidentity = nrcellidentity << 32;
@@ -83,5 +80,4 @@ bool NRCellIdentity::decodefrombitstring(
 unsigned long NRCellIdentity::getNRCellIdentity() {
   return nrcellidentity;
 }
-}
-
+}  // namespace ngap

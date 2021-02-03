@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,47 +35,47 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 AssociatedQosFlowItem::AssociatedQosFlowItem() {
-  qosFlowIdentifier = NULL;
+  qosFlowIdentifier        = NULL;
   qosFlowMappingIndication = -1;
 }
 
 //------------------------------------------------------------------------------
-AssociatedQosFlowItem::~AssociatedQosFlowItem() {
-}
+AssociatedQosFlowItem::~AssociatedQosFlowItem() {}
 
 //------------------------------------------------------------------------------
 void AssociatedQosFlowItem::setAssociatedQosFlowItem(
-    e_Ngap_AssociatedQosFlowItem__qosFlowMappingIndication m_qosFlowMappingIndication,
-    QosFlowIdentifier *m_qosFlowIdentifier) {
+    e_Ngap_AssociatedQosFlowItem__qosFlowMappingIndication
+        m_qosFlowMappingIndication,
+    QosFlowIdentifier* m_qosFlowIdentifier) {
   qosFlowMappingIndication = m_qosFlowMappingIndication;
-  qosFlowIdentifier = m_qosFlowIdentifier;
+  qosFlowIdentifier        = m_qosFlowIdentifier;
 }
 
 //------------------------------------------------------------------------------
 void AssociatedQosFlowItem::setAssociatedQosFlowItem(
-    QosFlowIdentifier *m_qosFlowIdentifier) {
+    QosFlowIdentifier* m_qosFlowIdentifier) {
   qosFlowIdentifier = m_qosFlowIdentifier;
 }
 
 //------------------------------------------------------------------------------
 bool AssociatedQosFlowItem::getAssociatedQosFlowItem(
-    long &m_qosFlowMappingIndication, QosFlowIdentifier *&m_qosFlowIdentifier) {
+    long& m_qosFlowMappingIndication, QosFlowIdentifier*& m_qosFlowIdentifier) {
   m_qosFlowMappingIndication = qosFlowMappingIndication;
-  m_qosFlowIdentifier = qosFlowIdentifier;
+  m_qosFlowIdentifier        = qosFlowIdentifier;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
 bool AssociatedQosFlowItem::encode2AssociatedQosFlowItem(
-    Ngap_AssociatedQosFlowItem_t *associatedQosFlowItem) {
+    Ngap_AssociatedQosFlowItem_t* associatedQosFlowItem) {
   if (qosFlowMappingIndication >= 0) {
-    associatedQosFlowItem->qosFlowMappingIndication = (long*) calloc(
-        1, sizeof(long));
+    associatedQosFlowItem->qosFlowMappingIndication =
+        (long*) calloc(1, sizeof(long));
     *associatedQosFlowItem->qosFlowMappingIndication = qosFlowMappingIndication;
   }
   if (!qosFlowIdentifier->encode2QosFlowIdentifier(
-      &associatedQosFlowItem->qosFlowIdentifier))
+          &associatedQosFlowItem->qosFlowIdentifier))
     return false;
 
   return true;
@@ -83,10 +83,10 @@ bool AssociatedQosFlowItem::encode2AssociatedQosFlowItem(
 
 //------------------------------------------------------------------------------
 bool AssociatedQosFlowItem::decodefromAssociatedQosFlowItem(
-    Ngap_AssociatedQosFlowItem_t *associatedQosFlowItem) {
+    Ngap_AssociatedQosFlowItem_t* associatedQosFlowItem) {
   qosFlowIdentifier = new QosFlowIdentifier();
   if (!qosFlowIdentifier->decodefromQosFlowIdentifier(
-      &associatedQosFlowItem->qosFlowIdentifier))
+          &associatedQosFlowItem->qosFlowIdentifier))
     return false;
 
   if (associatedQosFlowItem->qosFlowMappingIndication) {
@@ -96,5 +96,4 @@ bool AssociatedQosFlowItem::decodefromAssociatedQosFlowItem(
   return true;
 }
 
-}
-
+}  // namespace ngap

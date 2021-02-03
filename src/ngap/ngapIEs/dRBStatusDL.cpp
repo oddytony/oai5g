@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -29,42 +29,35 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-namespace ngap
-{
-    dRBStatusDL::dRBStatusDL()
-    {
-        dl18 = (DRBStatusDL18 *)calloc(1, sizeof(DRBStatusDL18));
-    }
-    dRBStatusDL::~dRBStatusDL() {}
-    void dRBStatusDL::setDRBStatusDL18(DRBStatusDL18 *dL18)
-    {
-        dl18 = dL18;
-    }
-    void dRBStatusDL::getDRBStatusDL18(DRBStatusDL18 *&dL18)
-    {
-        dL18 = dl18;
-    }
-    bool dRBStatusDL::encodedRBStatusDL(Ngap_DRBStatusDL_t *dL)
-    {
-        dL->present = Ngap_DRBStatusDL_PR_dRBStatusDL18;
-        dL->choice.dRBStatusDL18 = (Ngap_DRBStatusDL18_t *)calloc(1, sizeof(Ngap_DRBStatusDL18_t));
-        if (!dl18->encodeddRBStatusDL18(dL->choice.dRBStatusDL18))
-        {
-            cout << "encodedRBStatusDL error" << endl;
-            return false;
-        }
-        cout << "encodedRBStatusDL successfully" << endl;
-        return true;
-    }
-    bool dRBStatusDL::decodedRBStatusDL(Ngap_DRBStatusDL_t *dL)
-    {
-        dl18 = new DRBStatusDL18();
-        if (!dl18->decodeddRBStatusDL18(dL->choice.dRBStatusDL18))
-        {
-            cout << "decodedRBStatusDL error" << endl;
-            return false;
-        }
-        cout << "decodedRBStatusDL successfully" << endl;
-        return true;
-    }
-} // namespace ngap
+namespace ngap {
+dRBStatusDL::dRBStatusDL() {
+  dl18 = (DRBStatusDL18*) calloc(1, sizeof(DRBStatusDL18));
+}
+dRBStatusDL::~dRBStatusDL() {}
+void dRBStatusDL::setDRBStatusDL18(DRBStatusDL18* dL18) {
+  dl18 = dL18;
+}
+void dRBStatusDL::getDRBStatusDL18(DRBStatusDL18*& dL18) {
+  dL18 = dl18;
+}
+bool dRBStatusDL::encodedRBStatusDL(Ngap_DRBStatusDL_t* dL) {
+  dL->present = Ngap_DRBStatusDL_PR_dRBStatusDL18;
+  dL->choice.dRBStatusDL18 =
+      (Ngap_DRBStatusDL18_t*) calloc(1, sizeof(Ngap_DRBStatusDL18_t));
+  if (!dl18->encodeddRBStatusDL18(dL->choice.dRBStatusDL18)) {
+    cout << "encodedRBStatusDL error" << endl;
+    return false;
+  }
+  cout << "encodedRBStatusDL successfully" << endl;
+  return true;
+}
+bool dRBStatusDL::decodedRBStatusDL(Ngap_DRBStatusDL_t* dL) {
+  dl18 = new DRBStatusDL18();
+  if (!dl18->decodeddRBStatusDL18(dL->choice.dRBStatusDL18)) {
+    cout << "decodedRBStatusDL error" << endl;
+    return false;
+  }
+  cout << "decodedRBStatusDL successfully" << endl;
+  return true;
+}
+}  // namespace ngap

@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,1053 +10,981 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "VsmfUpdatedData.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-VsmfUpdatedData::VsmfUpdatedData()
-{
-    m_QosFlowsAddModListIsSet = false;
-    m_QosFlowsRelListIsSet = false;
-    m_QosFlowsFailedtoAddModListIsSet = false;
-    m_QosFlowsFailedtoRelListIsSet = false;
-    m_N1SmInfoFromUeIsSet = false;
-    m_UnknownN1SmInfoIsSet = false;
-    m_UeLocationIsSet = false;
-    m_UeTimeZone = utility::conversions::to_string_t("");
-    m_UeTimeZoneIsSet = false;
-    m_AddUeLocationIsSet = false;
-    m_AssignedEbiListIsSet = false;
-    m_FailedToAssignEbiListIsSet = false;
-    m_ReleasedEbiListIsSet = false;
-    m_SecondaryRatUsageReportIsSet = false;
-    m_SecondaryRatUsageInfoIsSet = false;
+VsmfUpdatedData::VsmfUpdatedData() {
+  m_QosFlowsAddModListIsSet         = false;
+  m_QosFlowsRelListIsSet            = false;
+  m_QosFlowsFailedtoAddModListIsSet = false;
+  m_QosFlowsFailedtoRelListIsSet    = false;
+  m_N1SmInfoFromUeIsSet             = false;
+  m_UnknownN1SmInfoIsSet            = false;
+  m_UeLocationIsSet                 = false;
+  m_UeTimeZone                      = utility::conversions::to_string_t("");
+  m_UeTimeZoneIsSet                 = false;
+  m_AddUeLocationIsSet              = false;
+  m_AssignedEbiListIsSet            = false;
+  m_FailedToAssignEbiListIsSet      = false;
+  m_ReleasedEbiListIsSet            = false;
+  m_SecondaryRatUsageReportIsSet    = false;
+  m_SecondaryRatUsageInfoIsSet      = false;
 }
 
-VsmfUpdatedData::~VsmfUpdatedData()
-{
+VsmfUpdatedData::~VsmfUpdatedData() {}
+
+void VsmfUpdatedData::validate() {
+  // TODO: implement validation
 }
 
-void VsmfUpdatedData::validate()
-{
-    // TODO: implement validation
+web::json::value VsmfUpdatedData::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_QosFlowsAddModList) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+    if (jsonArray.size() > 0) {
+      val[utility::conversions::to_string_t("qosFlowsAddModList")] =
+          web::json::value::array(jsonArray);
+    }
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_QosFlowsRelList) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+    if (jsonArray.size() > 0) {
+      val[utility::conversions::to_string_t("qosFlowsRelList")] =
+          web::json::value::array(jsonArray);
+    }
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_QosFlowsFailedtoAddModList) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+    if (jsonArray.size() > 0) {
+      val[utility::conversions::to_string_t("qosFlowsFailedtoAddModList")] =
+          web::json::value::array(jsonArray);
+    }
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_QosFlowsFailedtoRelList) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+    if (jsonArray.size() > 0) {
+      val[utility::conversions::to_string_t("qosFlowsFailedtoRelList")] =
+          web::json::value::array(jsonArray);
+    }
+  }
+  if (m_N1SmInfoFromUeIsSet) {
+    val[utility::conversions::to_string_t("n1SmInfoFromUe")] =
+        ModelBase::toJson(m_N1SmInfoFromUe);
+  }
+  if (m_UnknownN1SmInfoIsSet) {
+    val[utility::conversions::to_string_t("unknownN1SmInfo")] =
+        ModelBase::toJson(m_UnknownN1SmInfo);
+  }
+  if (m_UeLocationIsSet) {
+    val[utility::conversions::to_string_t("ueLocation")] =
+        ModelBase::toJson(m_UeLocation);
+  }
+  if (m_UeTimeZoneIsSet) {
+    val[utility::conversions::to_string_t("ueTimeZone")] =
+        ModelBase::toJson(m_UeTimeZone);
+  }
+  if (m_AddUeLocationIsSet) {
+    val[utility::conversions::to_string_t("addUeLocation")] =
+        ModelBase::toJson(m_AddUeLocation);
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_AssignedEbiList) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+    if (jsonArray.size() > 0) {
+      val[utility::conversions::to_string_t("assignedEbiList")] =
+          web::json::value::array(jsonArray);
+    }
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_FailedToAssignEbiList) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+    if (jsonArray.size() > 0) {
+      val[utility::conversions::to_string_t("failedToAssignEbiList")] =
+          web::json::value::array(jsonArray);
+    }
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_ReleasedEbiList) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+    if (jsonArray.size() > 0) {
+      val[utility::conversions::to_string_t("releasedEbiList")] =
+          web::json::value::array(jsonArray);
+    }
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_SecondaryRatUsageReport) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+    if (jsonArray.size() > 0) {
+      val[utility::conversions::to_string_t("secondaryRatUsageReport")] =
+          web::json::value::array(jsonArray);
+    }
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_SecondaryRatUsageInfo) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+    if (jsonArray.size() > 0) {
+      val[utility::conversions::to_string_t("secondaryRatUsageInfo")] =
+          web::json::value::array(jsonArray);
+    }
+  }
+
+  return val;
 }
 
-web::json::value VsmfUpdatedData::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_QosFlowsAddModList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
+void VsmfUpdatedData::fromJson(const web::json::value& val) {
+  {
+    m_QosFlowsAddModList.clear();
+    std::vector<web::json::value> jsonArray;
+    if (val.has_field(
+            utility::conversions::to_string_t("qosFlowsAddModList"))) {
+      for (auto& item :
+           val.at(utility::conversions::to_string_t("qosFlowsAddModList"))
+               .as_array()) {
+        if (item.is_null()) {
+          m_QosFlowsAddModList.push_back(std::shared_ptr<QosFlowItem>(nullptr));
+        } else {
+          std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
+          newItem->fromJson(item);
+          m_QosFlowsAddModList.push_back(newItem);
         }
-        if(jsonArray.size() > 0)
-        {
-            val[utility::conversions::to_string_t("qosFlowsAddModList")] = web::json::value::array(jsonArray);
-        }
+      }
     }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_QosFlowsRelList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
+  }
+  {
+    m_QosFlowsRelList.clear();
+    std::vector<web::json::value> jsonArray;
+    if (val.has_field(utility::conversions::to_string_t("qosFlowsRelList"))) {
+      for (auto& item :
+           val.at(utility::conversions::to_string_t("qosFlowsRelList"))
+               .as_array()) {
+        if (item.is_null()) {
+          m_QosFlowsRelList.push_back(std::shared_ptr<QosFlowItem>(nullptr));
+        } else {
+          std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
+          newItem->fromJson(item);
+          m_QosFlowsRelList.push_back(newItem);
         }
-        if(jsonArray.size() > 0)
-        {
-            val[utility::conversions::to_string_t("qosFlowsRelList")] = web::json::value::array(jsonArray);
-        }
+      }
     }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_QosFlowsFailedtoAddModList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
+  }
+  {
+    m_QosFlowsFailedtoAddModList.clear();
+    std::vector<web::json::value> jsonArray;
+    if (val.has_field(
+            utility::conversions::to_string_t("qosFlowsFailedtoAddModList"))) {
+      for (auto& item : val.at(utility::conversions::to_string_t(
+                                   "qosFlowsFailedtoAddModList"))
+                            .as_array()) {
+        if (item.is_null()) {
+          m_QosFlowsFailedtoAddModList.push_back(
+              std::shared_ptr<QosFlowItem>(nullptr));
+        } else {
+          std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
+          newItem->fromJson(item);
+          m_QosFlowsFailedtoAddModList.push_back(newItem);
         }
-        if(jsonArray.size() > 0)
-        {
-            val[utility::conversions::to_string_t("qosFlowsFailedtoAddModList")] = web::json::value::array(jsonArray);
-        }
+      }
     }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_QosFlowsFailedtoRelList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
+  }
+  {
+    m_QosFlowsFailedtoRelList.clear();
+    std::vector<web::json::value> jsonArray;
+    if (val.has_field(
+            utility::conversions::to_string_t("qosFlowsFailedtoRelList"))) {
+      for (auto& item :
+           val.at(utility::conversions::to_string_t("qosFlowsFailedtoRelList"))
+               .as_array()) {
+        if (item.is_null()) {
+          m_QosFlowsFailedtoRelList.push_back(
+              std::shared_ptr<QosFlowItem>(nullptr));
+        } else {
+          std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
+          newItem->fromJson(item);
+          m_QosFlowsFailedtoRelList.push_back(newItem);
         }
-        if(jsonArray.size() > 0)
-        {
-            val[utility::conversions::to_string_t("qosFlowsFailedtoRelList")] = web::json::value::array(jsonArray);
-        }
+      }
     }
-    if(m_N1SmInfoFromUeIsSet)
-    {
-        val[utility::conversions::to_string_t("n1SmInfoFromUe")] = ModelBase::toJson(m_N1SmInfoFromUe);
+  }
+  if (val.has_field(utility::conversions::to_string_t("n1SmInfoFromUe"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("n1SmInfoFromUe"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
+      newItem->fromJson(fieldValue);
+      setN1SmInfoFromUe(newItem);
     }
-    if(m_UnknownN1SmInfoIsSet)
-    {
-        val[utility::conversions::to_string_t("unknownN1SmInfo")] = ModelBase::toJson(m_UnknownN1SmInfo);
+  }
+  if (val.has_field(utility::conversions::to_string_t("unknownN1SmInfo"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("unknownN1SmInfo"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
+      newItem->fromJson(fieldValue);
+      setUnknownN1SmInfo(newItem);
     }
-    if(m_UeLocationIsSet)
-    {
-        val[utility::conversions::to_string_t("ueLocation")] = ModelBase::toJson(m_UeLocation);
+  }
+  if (val.has_field(utility::conversions::to_string_t("ueLocation"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("ueLocation"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<UserLocation> newItem(new UserLocation());
+      newItem->fromJson(fieldValue);
+      setUeLocation(newItem);
     }
-    if(m_UeTimeZoneIsSet)
-    {
-        val[utility::conversions::to_string_t("ueTimeZone")] = ModelBase::toJson(m_UeTimeZone);
+  }
+  if (val.has_field(utility::conversions::to_string_t("ueTimeZone"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("ueTimeZone"));
+    if (!fieldValue.is_null()) {
+      setUeTimeZone(ModelBase::stringFromJson(fieldValue));
     }
-    if(m_AddUeLocationIsSet)
-    {
-        val[utility::conversions::to_string_t("addUeLocation")] = ModelBase::toJson(m_AddUeLocation);
+  }
+  if (val.has_field(utility::conversions::to_string_t("addUeLocation"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("addUeLocation"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<UserLocation> newItem(new UserLocation());
+      newItem->fromJson(fieldValue);
+      setAddUeLocation(newItem);
     }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_AssignedEbiList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
+  }
+  {
+    m_AssignedEbiList.clear();
+    std::vector<web::json::value> jsonArray;
+    if (val.has_field(utility::conversions::to_string_t("assignedEbiList"))) {
+      for (auto& item :
+           val.at(utility::conversions::to_string_t("assignedEbiList"))
+               .as_array()) {
+        if (item.is_null()) {
+          m_AssignedEbiList.push_back(std::shared_ptr<EbiArpMapping>(nullptr));
+        } else {
+          std::shared_ptr<EbiArpMapping> newItem(new EbiArpMapping());
+          newItem->fromJson(item);
+          m_AssignedEbiList.push_back(newItem);
         }
-        if(jsonArray.size() > 0)
-        {
-            val[utility::conversions::to_string_t("assignedEbiList")] = web::json::value::array(jsonArray);
-        }
+      }
     }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_FailedToAssignEbiList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
-        }
-        if(jsonArray.size() > 0)
-        {
-            val[utility::conversions::to_string_t("failedToAssignEbiList")] = web::json::value::array(jsonArray);
-        }
+  }
+  {
+    m_FailedToAssignEbiList.clear();
+    std::vector<web::json::value> jsonArray;
+    if (val.has_field(
+            utility::conversions::to_string_t("failedToAssignEbiList"))) {
+      for (auto& item :
+           val.at(utility::conversions::to_string_t("failedToAssignEbiList"))
+               .as_array()) {
+        m_FailedToAssignEbiList.push_back(ModelBase::int32_tFromJson(item));
+      }
     }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_ReleasedEbiList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
-        }
-        if(jsonArray.size() > 0)
-        {
-            val[utility::conversions::to_string_t("releasedEbiList")] = web::json::value::array(jsonArray);
-        }
+  }
+  {
+    m_ReleasedEbiList.clear();
+    std::vector<web::json::value> jsonArray;
+    if (val.has_field(utility::conversions::to_string_t("releasedEbiList"))) {
+      for (auto& item :
+           val.at(utility::conversions::to_string_t("releasedEbiList"))
+               .as_array()) {
+        m_ReleasedEbiList.push_back(ModelBase::int32_tFromJson(item));
+      }
     }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_SecondaryRatUsageReport )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
+  }
+  {
+    m_SecondaryRatUsageReport.clear();
+    std::vector<web::json::value> jsonArray;
+    if (val.has_field(
+            utility::conversions::to_string_t("secondaryRatUsageReport"))) {
+      for (auto& item :
+           val.at(utility::conversions::to_string_t("secondaryRatUsageReport"))
+               .as_array()) {
+        if (item.is_null()) {
+          m_SecondaryRatUsageReport.push_back(
+              std::shared_ptr<SecondaryRatUsageReport>(nullptr));
+        } else {
+          std::shared_ptr<SecondaryRatUsageReport> newItem(
+              new SecondaryRatUsageReport());
+          newItem->fromJson(item);
+          m_SecondaryRatUsageReport.push_back(newItem);
         }
-        if(jsonArray.size() > 0)
-        {
-            val[utility::conversions::to_string_t("secondaryRatUsageReport")] = web::json::value::array(jsonArray);
-        }
+      }
     }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_SecondaryRatUsageInfo )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
+  }
+  {
+    m_SecondaryRatUsageInfo.clear();
+    std::vector<web::json::value> jsonArray;
+    if (val.has_field(
+            utility::conversions::to_string_t("secondaryRatUsageInfo"))) {
+      for (auto& item :
+           val.at(utility::conversions::to_string_t("secondaryRatUsageInfo"))
+               .as_array()) {
+        if (item.is_null()) {
+          m_SecondaryRatUsageInfo.push_back(
+              std::shared_ptr<SecondaryRatUsageInfo>(nullptr));
+        } else {
+          std::shared_ptr<SecondaryRatUsageInfo> newItem(
+              new SecondaryRatUsageInfo());
+          newItem->fromJson(item);
+          m_SecondaryRatUsageInfo.push_back(newItem);
         }
-        if(jsonArray.size() > 0)
-        {
-            val[utility::conversions::to_string_t("secondaryRatUsageInfo")] = web::json::value::array(jsonArray);
-        }
+      }
     }
-
-    return val;
+  }
 }
 
-void VsmfUpdatedData::fromJson(const web::json::value& val)
-{
-    {
-        m_QosFlowsAddModList.clear();
-        std::vector<web::json::value> jsonArray;
-        if(val.has_field(utility::conversions::to_string_t("qosFlowsAddModList")))
-        {
-        for( auto& item : val.at(utility::conversions::to_string_t("qosFlowsAddModList")).as_array() )
-        {
-            if(item.is_null())
-            {
-                m_QosFlowsAddModList.push_back( std::shared_ptr<QosFlowItem>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
-                newItem->fromJson(item);
-                m_QosFlowsAddModList.push_back( newItem );
-            }
-        }
-        }
-    }
-    {
-        m_QosFlowsRelList.clear();
-        std::vector<web::json::value> jsonArray;
-        if(val.has_field(utility::conversions::to_string_t("qosFlowsRelList")))
-        {
-        for( auto& item : val.at(utility::conversions::to_string_t("qosFlowsRelList")).as_array() )
-        {
-            if(item.is_null())
-            {
-                m_QosFlowsRelList.push_back( std::shared_ptr<QosFlowItem>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
-                newItem->fromJson(item);
-                m_QosFlowsRelList.push_back( newItem );
-            }
-        }
-        }
-    }
-    {
-        m_QosFlowsFailedtoAddModList.clear();
-        std::vector<web::json::value> jsonArray;
-        if(val.has_field(utility::conversions::to_string_t("qosFlowsFailedtoAddModList")))
-        {
-        for( auto& item : val.at(utility::conversions::to_string_t("qosFlowsFailedtoAddModList")).as_array() )
-        {
-            if(item.is_null())
-            {
-                m_QosFlowsFailedtoAddModList.push_back( std::shared_ptr<QosFlowItem>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
-                newItem->fromJson(item);
-                m_QosFlowsFailedtoAddModList.push_back( newItem );
-            }
-        }
-        }
-    }
-    {
-        m_QosFlowsFailedtoRelList.clear();
-        std::vector<web::json::value> jsonArray;
-        if(val.has_field(utility::conversions::to_string_t("qosFlowsFailedtoRelList")))
-        {
-        for( auto& item : val.at(utility::conversions::to_string_t("qosFlowsFailedtoRelList")).as_array() )
-        {
-            if(item.is_null())
-            {
-                m_QosFlowsFailedtoRelList.push_back( std::shared_ptr<QosFlowItem>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
-                newItem->fromJson(item);
-                m_QosFlowsFailedtoRelList.push_back( newItem );
-            }
-        }
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("n1SmInfoFromUe")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("n1SmInfoFromUe"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
-            newItem->fromJson(fieldValue);
-            setN1SmInfoFromUe( newItem );
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("unknownN1SmInfo")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("unknownN1SmInfo"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
-            newItem->fromJson(fieldValue);
-            setUnknownN1SmInfo( newItem );
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("ueLocation")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("ueLocation"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<UserLocation> newItem(new UserLocation());
-            newItem->fromJson(fieldValue);
-            setUeLocation( newItem );
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("ueTimeZone")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("ueTimeZone"));
-        if(!fieldValue.is_null())
-        {
-            setUeTimeZone(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("addUeLocation")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("addUeLocation"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<UserLocation> newItem(new UserLocation());
-            newItem->fromJson(fieldValue);
-            setAddUeLocation( newItem );
-        }
-    }
-    {
-        m_AssignedEbiList.clear();
-        std::vector<web::json::value> jsonArray;
-        if(val.has_field(utility::conversions::to_string_t("assignedEbiList")))
-        {
-        for( auto& item : val.at(utility::conversions::to_string_t("assignedEbiList")).as_array() )
-        {
-            if(item.is_null())
-            {
-                m_AssignedEbiList.push_back( std::shared_ptr<EbiArpMapping>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<EbiArpMapping> newItem(new EbiArpMapping());
-                newItem->fromJson(item);
-                m_AssignedEbiList.push_back( newItem );
-            }
-        }
-        }
-    }
-    {
-        m_FailedToAssignEbiList.clear();
-        std::vector<web::json::value> jsonArray;
-        if(val.has_field(utility::conversions::to_string_t("failedToAssignEbiList")))
-        {
-        for( auto& item : val.at(utility::conversions::to_string_t("failedToAssignEbiList")).as_array() )
-        {
-            m_FailedToAssignEbiList.push_back(ModelBase::int32_tFromJson(item));
-        }
-        }
-    }
-    {
-        m_ReleasedEbiList.clear();
-        std::vector<web::json::value> jsonArray;
-        if(val.has_field(utility::conversions::to_string_t("releasedEbiList")))
-        {
-        for( auto& item : val.at(utility::conversions::to_string_t("releasedEbiList")).as_array() )
-        {
-            m_ReleasedEbiList.push_back(ModelBase::int32_tFromJson(item));
-        }
-        }
-    }
-    {
-        m_SecondaryRatUsageReport.clear();
-        std::vector<web::json::value> jsonArray;
-        if(val.has_field(utility::conversions::to_string_t("secondaryRatUsageReport")))
-        {
-        for( auto& item : val.at(utility::conversions::to_string_t("secondaryRatUsageReport")).as_array() )
-        {
-            if(item.is_null())
-            {
-                m_SecondaryRatUsageReport.push_back( std::shared_ptr<SecondaryRatUsageReport>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<SecondaryRatUsageReport> newItem(new SecondaryRatUsageReport());
-                newItem->fromJson(item);
-                m_SecondaryRatUsageReport.push_back( newItem );
-            }
-        }
-        }
-    }
-    {
-        m_SecondaryRatUsageInfo.clear();
-        std::vector<web::json::value> jsonArray;
-        if(val.has_field(utility::conversions::to_string_t("secondaryRatUsageInfo")))
-        {
-        for( auto& item : val.at(utility::conversions::to_string_t("secondaryRatUsageInfo")).as_array() )
-        {
-            if(item.is_null())
-            {
-                m_SecondaryRatUsageInfo.push_back( std::shared_ptr<SecondaryRatUsageInfo>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<SecondaryRatUsageInfo> newItem(new SecondaryRatUsageInfo());
-                newItem->fromJson(item);
-                m_SecondaryRatUsageInfo.push_back( newItem );
-            }
-        }
-        }
-    }
-}
+void VsmfUpdatedData::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 
-void VsmfUpdatedData::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_QosFlowsAddModList) {
+      jsonArray.push_back(ModelBase::toJson(item));
     }
 
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_QosFlowsAddModList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
-        }
-        
-        if(jsonArray.size() > 0)
-        {
-            multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("qosFlowsAddModList"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
-        }
+    if (jsonArray.size() > 0) {
+      multipart->add(ModelBase::toHttpContent(
+          namePrefix + utility::conversions::to_string_t("qosFlowsAddModList"),
+          web::json::value::array(jsonArray),
+          utility::conversions::to_string_t("application/json")));
     }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_QosFlowsRelList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
-        }
-        
-        if(jsonArray.size() > 0)
-        {
-            multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("qosFlowsRelList"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
-        }
-    }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_QosFlowsFailedtoAddModList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
-        }
-        
-        if(jsonArray.size() > 0)
-        {
-            multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("qosFlowsFailedtoAddModList"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
-        }
-    }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_QosFlowsFailedtoRelList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
-        }
-        
-        if(jsonArray.size() > 0)
-        {
-            multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("qosFlowsFailedtoRelList"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
-        }
-    }
-    if(m_N1SmInfoFromUeIsSet)
-    {
-        if (m_N1SmInfoFromUe.get())
-        {
-            m_N1SmInfoFromUe->toMultipart(multipart, utility::conversions::to_string_t("n1SmInfoFromUe."));
-        }
-    }
-    if(m_UnknownN1SmInfoIsSet)
-    {
-        if (m_UnknownN1SmInfo.get())
-        {
-            m_UnknownN1SmInfo->toMultipart(multipart, utility::conversions::to_string_t("unknownN1SmInfo."));
-        }
-    }
-    if(m_UeLocationIsSet)
-    {
-        if (m_UeLocation.get())
-        {
-            m_UeLocation->toMultipart(multipart, utility::conversions::to_string_t("ueLocation."));
-        }
-    }
-    if(m_UeTimeZoneIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("ueTimeZone"), m_UeTimeZone));
-    }
-    if(m_AddUeLocationIsSet)
-    {
-        if (m_AddUeLocation.get())
-        {
-            m_AddUeLocation->toMultipart(multipart, utility::conversions::to_string_t("addUeLocation."));
-        }
-    }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_AssignedEbiList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
-        }
-        
-        if(jsonArray.size() > 0)
-        {
-            multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("assignedEbiList"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
-        }
-    }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_FailedToAssignEbiList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
-        }
-        
-        if(jsonArray.size() > 0)
-        {
-            multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("failedToAssignEbiList"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
-        }
-    }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_ReleasedEbiList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
-        }
-        
-        if(jsonArray.size() > 0)
-        {
-            multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("releasedEbiList"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
-        }
-    }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_SecondaryRatUsageReport )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
-        }
-        
-        if(jsonArray.size() > 0)
-        {
-            multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("secondaryRatUsageReport"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
-        }
-    }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_SecondaryRatUsageInfo )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
-        }
-        
-        if(jsonArray.size() > 0)
-        {
-            multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("secondaryRatUsageInfo"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
-        }
-    }
-}
-
-void VsmfUpdatedData::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_QosFlowsRelList) {
+      jsonArray.push_back(ModelBase::toJson(item));
     }
 
-    {
-        m_QosFlowsAddModList.clear();
-        if(multipart->hasContent(utility::conversions::to_string_t("qosFlowsAddModList")))
-        {
-
-        web::json::value jsonArray = web::json::value::parse(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("qosFlowsAddModList"))));
-        for( auto& item : jsonArray.as_array() )
-        {
-            if(item.is_null())
-            {
-                m_QosFlowsAddModList.push_back( std::shared_ptr<QosFlowItem>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
-                newItem->fromJson(item);
-                m_QosFlowsAddModList.push_back( newItem );
-            }
-        }
-        }
+    if (jsonArray.size() > 0) {
+      multipart->add(ModelBase::toHttpContent(
+          namePrefix + utility::conversions::to_string_t("qosFlowsRelList"),
+          web::json::value::array(jsonArray),
+          utility::conversions::to_string_t("application/json")));
     }
-    {
-        m_QosFlowsRelList.clear();
-        if(multipart->hasContent(utility::conversions::to_string_t("qosFlowsRelList")))
-        {
-
-        web::json::value jsonArray = web::json::value::parse(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("qosFlowsRelList"))));
-        for( auto& item : jsonArray.as_array() )
-        {
-            if(item.is_null())
-            {
-                m_QosFlowsRelList.push_back( std::shared_ptr<QosFlowItem>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
-                newItem->fromJson(item);
-                m_QosFlowsRelList.push_back( newItem );
-            }
-        }
-        }
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_QosFlowsFailedtoAddModList) {
+      jsonArray.push_back(ModelBase::toJson(item));
     }
-    {
-        m_QosFlowsFailedtoAddModList.clear();
-        if(multipart->hasContent(utility::conversions::to_string_t("qosFlowsFailedtoAddModList")))
-        {
 
-        web::json::value jsonArray = web::json::value::parse(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("qosFlowsFailedtoAddModList"))));
-        for( auto& item : jsonArray.as_array() )
-        {
-            if(item.is_null())
-            {
-                m_QosFlowsFailedtoAddModList.push_back( std::shared_ptr<QosFlowItem>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
-                newItem->fromJson(item);
-                m_QosFlowsFailedtoAddModList.push_back( newItem );
-            }
-        }
-        }
+    if (jsonArray.size() > 0) {
+      multipart->add(ModelBase::toHttpContent(
+          namePrefix +
+              utility::conversions::to_string_t("qosFlowsFailedtoAddModList"),
+          web::json::value::array(jsonArray),
+          utility::conversions::to_string_t("application/json")));
     }
-    {
-        m_QosFlowsFailedtoRelList.clear();
-        if(multipart->hasContent(utility::conversions::to_string_t("qosFlowsFailedtoRelList")))
-        {
-
-        web::json::value jsonArray = web::json::value::parse(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("qosFlowsFailedtoRelList"))));
-        for( auto& item : jsonArray.as_array() )
-        {
-            if(item.is_null())
-            {
-                m_QosFlowsFailedtoRelList.push_back( std::shared_ptr<QosFlowItem>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
-                newItem->fromJson(item);
-                m_QosFlowsFailedtoRelList.push_back( newItem );
-            }
-        }
-        }
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_QosFlowsFailedtoRelList) {
+      jsonArray.push_back(ModelBase::toJson(item));
     }
-    if(multipart->hasContent(utility::conversions::to_string_t("n1SmInfoFromUe")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("n1SmInfoFromUe")))
-        {
-            std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("n1SmInfoFromUe."));
-            setN1SmInfoFromUe( newItem );
-        }
+
+    if (jsonArray.size() > 0) {
+      multipart->add(ModelBase::toHttpContent(
+          namePrefix +
+              utility::conversions::to_string_t("qosFlowsFailedtoRelList"),
+          web::json::value::array(jsonArray),
+          utility::conversions::to_string_t("application/json")));
     }
-    if(multipart->hasContent(utility::conversions::to_string_t("unknownN1SmInfo")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("unknownN1SmInfo")))
-        {
-            std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("unknownN1SmInfo."));
-            setUnknownN1SmInfo( newItem );
-        }
+  }
+  if (m_N1SmInfoFromUeIsSet) {
+    if (m_N1SmInfoFromUe.get()) {
+      m_N1SmInfoFromUe->toMultipart(
+          multipart, utility::conversions::to_string_t("n1SmInfoFromUe."));
     }
-    if(multipart->hasContent(utility::conversions::to_string_t("ueLocation")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("ueLocation")))
-        {
-            std::shared_ptr<UserLocation> newItem(new UserLocation());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("ueLocation."));
-            setUeLocation( newItem );
-        }
+  }
+  if (m_UnknownN1SmInfoIsSet) {
+    if (m_UnknownN1SmInfo.get()) {
+      m_UnknownN1SmInfo->toMultipart(
+          multipart, utility::conversions::to_string_t("unknownN1SmInfo."));
     }
-    if(multipart->hasContent(utility::conversions::to_string_t("ueTimeZone")))
-    {
-        setUeTimeZone(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("ueTimeZone"))));
+  }
+  if (m_UeLocationIsSet) {
+    if (m_UeLocation.get()) {
+      m_UeLocation->toMultipart(
+          multipart, utility::conversions::to_string_t("ueLocation."));
     }
-    if(multipart->hasContent(utility::conversions::to_string_t("addUeLocation")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("addUeLocation")))
-        {
-            std::shared_ptr<UserLocation> newItem(new UserLocation());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("addUeLocation."));
-            setAddUeLocation( newItem );
-        }
+  }
+  if (m_UeTimeZoneIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("ueTimeZone"),
+        m_UeTimeZone));
+  }
+  if (m_AddUeLocationIsSet) {
+    if (m_AddUeLocation.get()) {
+      m_AddUeLocation->toMultipart(
+          multipart, utility::conversions::to_string_t("addUeLocation."));
     }
-    {
-        m_AssignedEbiList.clear();
-        if(multipart->hasContent(utility::conversions::to_string_t("assignedEbiList")))
-        {
-
-        web::json::value jsonArray = web::json::value::parse(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("assignedEbiList"))));
-        for( auto& item : jsonArray.as_array() )
-        {
-            if(item.is_null())
-            {
-                m_AssignedEbiList.push_back( std::shared_ptr<EbiArpMapping>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<EbiArpMapping> newItem(new EbiArpMapping());
-                newItem->fromJson(item);
-                m_AssignedEbiList.push_back( newItem );
-            }
-        }
-        }
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_AssignedEbiList) {
+      jsonArray.push_back(ModelBase::toJson(item));
     }
-    {
-        m_FailedToAssignEbiList.clear();
-        if(multipart->hasContent(utility::conversions::to_string_t("failedToAssignEbiList")))
-        {
 
-        web::json::value jsonArray = web::json::value::parse(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("failedToAssignEbiList"))));
-        for( auto& item : jsonArray.as_array() )
-        {
-            m_FailedToAssignEbiList.push_back(ModelBase::int32_tFromJson(item));
-        }
-        }
+    if (jsonArray.size() > 0) {
+      multipart->add(ModelBase::toHttpContent(
+          namePrefix + utility::conversions::to_string_t("assignedEbiList"),
+          web::json::value::array(jsonArray),
+          utility::conversions::to_string_t("application/json")));
     }
-    {
-        m_ReleasedEbiList.clear();
-        if(multipart->hasContent(utility::conversions::to_string_t("releasedEbiList")))
-        {
-
-        web::json::value jsonArray = web::json::value::parse(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("releasedEbiList"))));
-        for( auto& item : jsonArray.as_array() )
-        {
-            m_ReleasedEbiList.push_back(ModelBase::int32_tFromJson(item));
-        }
-        }
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_FailedToAssignEbiList) {
+      jsonArray.push_back(ModelBase::toJson(item));
     }
-    {
-        m_SecondaryRatUsageReport.clear();
-        if(multipart->hasContent(utility::conversions::to_string_t("secondaryRatUsageReport")))
-        {
 
-        web::json::value jsonArray = web::json::value::parse(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("secondaryRatUsageReport"))));
-        for( auto& item : jsonArray.as_array() )
-        {
-            if(item.is_null())
-            {
-                m_SecondaryRatUsageReport.push_back( std::shared_ptr<SecondaryRatUsageReport>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<SecondaryRatUsageReport> newItem(new SecondaryRatUsageReport());
-                newItem->fromJson(item);
-                m_SecondaryRatUsageReport.push_back( newItem );
-            }
-        }
-        }
+    if (jsonArray.size() > 0) {
+      multipart->add(ModelBase::toHttpContent(
+          namePrefix +
+              utility::conversions::to_string_t("failedToAssignEbiList"),
+          web::json::value::array(jsonArray),
+          utility::conversions::to_string_t("application/json")));
     }
-    {
-        m_SecondaryRatUsageInfo.clear();
-        if(multipart->hasContent(utility::conversions::to_string_t("secondaryRatUsageInfo")))
-        {
-
-        web::json::value jsonArray = web::json::value::parse(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("secondaryRatUsageInfo"))));
-        for( auto& item : jsonArray.as_array() )
-        {
-            if(item.is_null())
-            {
-                m_SecondaryRatUsageInfo.push_back( std::shared_ptr<SecondaryRatUsageInfo>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<SecondaryRatUsageInfo> newItem(new SecondaryRatUsageInfo());
-                newItem->fromJson(item);
-                m_SecondaryRatUsageInfo.push_back( newItem );
-            }
-        }
-        }
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_ReleasedEbiList) {
+      jsonArray.push_back(ModelBase::toJson(item));
     }
+
+    if (jsonArray.size() > 0) {
+      multipart->add(ModelBase::toHttpContent(
+          namePrefix + utility::conversions::to_string_t("releasedEbiList"),
+          web::json::value::array(jsonArray),
+          utility::conversions::to_string_t("application/json")));
+    }
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_SecondaryRatUsageReport) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+
+    if (jsonArray.size() > 0) {
+      multipart->add(ModelBase::toHttpContent(
+          namePrefix +
+              utility::conversions::to_string_t("secondaryRatUsageReport"),
+          web::json::value::array(jsonArray),
+          utility::conversions::to_string_t("application/json")));
+    }
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_SecondaryRatUsageInfo) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+
+    if (jsonArray.size() > 0) {
+      multipart->add(ModelBase::toHttpContent(
+          namePrefix +
+              utility::conversions::to_string_t("secondaryRatUsageInfo"),
+          web::json::value::array(jsonArray),
+          utility::conversions::to_string_t("application/json")));
+    }
+  }
 }
 
-std::vector<std::shared_ptr<QosFlowItem>>& VsmfUpdatedData::getQosFlowsAddModList()
-{
-    return m_QosFlowsAddModList;
+void VsmfUpdatedData::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  {
+    m_QosFlowsAddModList.clear();
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("qosFlowsAddModList"))) {
+      web::json::value jsonArray = web::json::value::parse(
+          ModelBase::stringFromHttpContent(multipart->getContent(
+              utility::conversions::to_string_t("qosFlowsAddModList"))));
+      for (auto& item : jsonArray.as_array()) {
+        if (item.is_null()) {
+          m_QosFlowsAddModList.push_back(std::shared_ptr<QosFlowItem>(nullptr));
+        } else {
+          std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
+          newItem->fromJson(item);
+          m_QosFlowsAddModList.push_back(newItem);
+        }
+      }
+    }
+  }
+  {
+    m_QosFlowsRelList.clear();
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("qosFlowsRelList"))) {
+      web::json::value jsonArray = web::json::value::parse(
+          ModelBase::stringFromHttpContent(multipart->getContent(
+              utility::conversions::to_string_t("qosFlowsRelList"))));
+      for (auto& item : jsonArray.as_array()) {
+        if (item.is_null()) {
+          m_QosFlowsRelList.push_back(std::shared_ptr<QosFlowItem>(nullptr));
+        } else {
+          std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
+          newItem->fromJson(item);
+          m_QosFlowsRelList.push_back(newItem);
+        }
+      }
+    }
+  }
+  {
+    m_QosFlowsFailedtoAddModList.clear();
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("qosFlowsFailedtoAddModList"))) {
+      web::json::value jsonArray =
+          web::json::value::parse(ModelBase::stringFromHttpContent(
+              multipart->getContent(utility::conversions::to_string_t(
+                  "qosFlowsFailedtoAddModList"))));
+      for (auto& item : jsonArray.as_array()) {
+        if (item.is_null()) {
+          m_QosFlowsFailedtoAddModList.push_back(
+              std::shared_ptr<QosFlowItem>(nullptr));
+        } else {
+          std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
+          newItem->fromJson(item);
+          m_QosFlowsFailedtoAddModList.push_back(newItem);
+        }
+      }
+    }
+  }
+  {
+    m_QosFlowsFailedtoRelList.clear();
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("qosFlowsFailedtoRelList"))) {
+      web::json::value jsonArray = web::json::value::parse(
+          ModelBase::stringFromHttpContent(multipart->getContent(
+              utility::conversions::to_string_t("qosFlowsFailedtoRelList"))));
+      for (auto& item : jsonArray.as_array()) {
+        if (item.is_null()) {
+          m_QosFlowsFailedtoRelList.push_back(
+              std::shared_ptr<QosFlowItem>(nullptr));
+        } else {
+          std::shared_ptr<QosFlowItem> newItem(new QosFlowItem());
+          newItem->fromJson(item);
+          m_QosFlowsFailedtoRelList.push_back(newItem);
+        }
+      }
+    }
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("n1SmInfoFromUe"))) {
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("n1SmInfoFromUe"))) {
+      std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("n1SmInfoFromUe."));
+      setN1SmInfoFromUe(newItem);
+    }
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("unknownN1SmInfo"))) {
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("unknownN1SmInfo"))) {
+      std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("unknownN1SmInfo."));
+      setUnknownN1SmInfo(newItem);
+    }
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("ueLocation"))) {
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("ueLocation"))) {
+      std::shared_ptr<UserLocation> newItem(new UserLocation());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("ueLocation."));
+      setUeLocation(newItem);
+    }
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("ueTimeZone"))) {
+    setUeTimeZone(ModelBase::stringFromHttpContent(multipart->getContent(
+        utility::conversions::to_string_t("ueTimeZone"))));
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("addUeLocation"))) {
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("addUeLocation"))) {
+      std::shared_ptr<UserLocation> newItem(new UserLocation());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("addUeLocation."));
+      setAddUeLocation(newItem);
+    }
+  }
+  {
+    m_AssignedEbiList.clear();
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("assignedEbiList"))) {
+      web::json::value jsonArray = web::json::value::parse(
+          ModelBase::stringFromHttpContent(multipart->getContent(
+              utility::conversions::to_string_t("assignedEbiList"))));
+      for (auto& item : jsonArray.as_array()) {
+        if (item.is_null()) {
+          m_AssignedEbiList.push_back(std::shared_ptr<EbiArpMapping>(nullptr));
+        } else {
+          std::shared_ptr<EbiArpMapping> newItem(new EbiArpMapping());
+          newItem->fromJson(item);
+          m_AssignedEbiList.push_back(newItem);
+        }
+      }
+    }
+  }
+  {
+    m_FailedToAssignEbiList.clear();
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("failedToAssignEbiList"))) {
+      web::json::value jsonArray = web::json::value::parse(
+          ModelBase::stringFromHttpContent(multipart->getContent(
+              utility::conversions::to_string_t("failedToAssignEbiList"))));
+      for (auto& item : jsonArray.as_array()) {
+        m_FailedToAssignEbiList.push_back(ModelBase::int32_tFromJson(item));
+      }
+    }
+  }
+  {
+    m_ReleasedEbiList.clear();
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("releasedEbiList"))) {
+      web::json::value jsonArray = web::json::value::parse(
+          ModelBase::stringFromHttpContent(multipart->getContent(
+              utility::conversions::to_string_t("releasedEbiList"))));
+      for (auto& item : jsonArray.as_array()) {
+        m_ReleasedEbiList.push_back(ModelBase::int32_tFromJson(item));
+      }
+    }
+  }
+  {
+    m_SecondaryRatUsageReport.clear();
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("secondaryRatUsageReport"))) {
+      web::json::value jsonArray = web::json::value::parse(
+          ModelBase::stringFromHttpContent(multipart->getContent(
+              utility::conversions::to_string_t("secondaryRatUsageReport"))));
+      for (auto& item : jsonArray.as_array()) {
+        if (item.is_null()) {
+          m_SecondaryRatUsageReport.push_back(
+              std::shared_ptr<SecondaryRatUsageReport>(nullptr));
+        } else {
+          std::shared_ptr<SecondaryRatUsageReport> newItem(
+              new SecondaryRatUsageReport());
+          newItem->fromJson(item);
+          m_SecondaryRatUsageReport.push_back(newItem);
+        }
+      }
+    }
+  }
+  {
+    m_SecondaryRatUsageInfo.clear();
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("secondaryRatUsageInfo"))) {
+      web::json::value jsonArray = web::json::value::parse(
+          ModelBase::stringFromHttpContent(multipart->getContent(
+              utility::conversions::to_string_t("secondaryRatUsageInfo"))));
+      for (auto& item : jsonArray.as_array()) {
+        if (item.is_null()) {
+          m_SecondaryRatUsageInfo.push_back(
+              std::shared_ptr<SecondaryRatUsageInfo>(nullptr));
+        } else {
+          std::shared_ptr<SecondaryRatUsageInfo> newItem(
+              new SecondaryRatUsageInfo());
+          newItem->fromJson(item);
+          m_SecondaryRatUsageInfo.push_back(newItem);
+        }
+      }
+    }
+  }
 }
 
-void VsmfUpdatedData::setQosFlowsAddModList(const std::vector<std::shared_ptr<QosFlowItem>>& value)
-{
-    m_QosFlowsAddModList = value;
-    m_QosFlowsAddModListIsSet = true;
+std::vector<std::shared_ptr<QosFlowItem>>&
+VsmfUpdatedData::getQosFlowsAddModList() {
+  return m_QosFlowsAddModList;
 }
 
-bool VsmfUpdatedData::qosFlowsAddModListIsSet() const
-{
-    return m_QosFlowsAddModListIsSet;
+void VsmfUpdatedData::setQosFlowsAddModList(
+    const std::vector<std::shared_ptr<QosFlowItem>>& value) {
+  m_QosFlowsAddModList      = value;
+  m_QosFlowsAddModListIsSet = true;
 }
 
-void VsmfUpdatedData::unsetQosFlowsAddModList()
-{
-    m_QosFlowsAddModListIsSet = false;
+bool VsmfUpdatedData::qosFlowsAddModListIsSet() const {
+  return m_QosFlowsAddModListIsSet;
 }
 
-std::vector<std::shared_ptr<QosFlowItem>>& VsmfUpdatedData::getQosFlowsRelList()
-{
-    return m_QosFlowsRelList;
+void VsmfUpdatedData::unsetQosFlowsAddModList() {
+  m_QosFlowsAddModListIsSet = false;
 }
 
-void VsmfUpdatedData::setQosFlowsRelList(const std::vector<std::shared_ptr<QosFlowItem>>& value)
-{
-    m_QosFlowsRelList = value;
-    m_QosFlowsRelListIsSet = true;
+std::vector<std::shared_ptr<QosFlowItem>>&
+VsmfUpdatedData::getQosFlowsRelList() {
+  return m_QosFlowsRelList;
 }
 
-bool VsmfUpdatedData::qosFlowsRelListIsSet() const
-{
-    return m_QosFlowsRelListIsSet;
+void VsmfUpdatedData::setQosFlowsRelList(
+    const std::vector<std::shared_ptr<QosFlowItem>>& value) {
+  m_QosFlowsRelList      = value;
+  m_QosFlowsRelListIsSet = true;
 }
 
-void VsmfUpdatedData::unsetQosFlowsRelList()
-{
-    m_QosFlowsRelListIsSet = false;
+bool VsmfUpdatedData::qosFlowsRelListIsSet() const {
+  return m_QosFlowsRelListIsSet;
 }
 
-std::vector<std::shared_ptr<QosFlowItem>>& VsmfUpdatedData::getQosFlowsFailedtoAddModList()
-{
-    return m_QosFlowsFailedtoAddModList;
+void VsmfUpdatedData::unsetQosFlowsRelList() {
+  m_QosFlowsRelListIsSet = false;
 }
 
-void VsmfUpdatedData::setQosFlowsFailedtoAddModList(const std::vector<std::shared_ptr<QosFlowItem>>& value)
-{
-    m_QosFlowsFailedtoAddModList = value;
-    m_QosFlowsFailedtoAddModListIsSet = true;
+std::vector<std::shared_ptr<QosFlowItem>>&
+VsmfUpdatedData::getQosFlowsFailedtoAddModList() {
+  return m_QosFlowsFailedtoAddModList;
 }
 
-bool VsmfUpdatedData::qosFlowsFailedtoAddModListIsSet() const
-{
-    return m_QosFlowsFailedtoAddModListIsSet;
+void VsmfUpdatedData::setQosFlowsFailedtoAddModList(
+    const std::vector<std::shared_ptr<QosFlowItem>>& value) {
+  m_QosFlowsFailedtoAddModList      = value;
+  m_QosFlowsFailedtoAddModListIsSet = true;
 }
 
-void VsmfUpdatedData::unsetQosFlowsFailedtoAddModList()
-{
-    m_QosFlowsFailedtoAddModListIsSet = false;
+bool VsmfUpdatedData::qosFlowsFailedtoAddModListIsSet() const {
+  return m_QosFlowsFailedtoAddModListIsSet;
 }
 
-std::vector<std::shared_ptr<QosFlowItem>>& VsmfUpdatedData::getQosFlowsFailedtoRelList()
-{
-    return m_QosFlowsFailedtoRelList;
+void VsmfUpdatedData::unsetQosFlowsFailedtoAddModList() {
+  m_QosFlowsFailedtoAddModListIsSet = false;
 }
 
-void VsmfUpdatedData::setQosFlowsFailedtoRelList(const std::vector<std::shared_ptr<QosFlowItem>>& value)
-{
-    m_QosFlowsFailedtoRelList = value;
-    m_QosFlowsFailedtoRelListIsSet = true;
+std::vector<std::shared_ptr<QosFlowItem>>&
+VsmfUpdatedData::getQosFlowsFailedtoRelList() {
+  return m_QosFlowsFailedtoRelList;
 }
 
-bool VsmfUpdatedData::qosFlowsFailedtoRelListIsSet() const
-{
-    return m_QosFlowsFailedtoRelListIsSet;
+void VsmfUpdatedData::setQosFlowsFailedtoRelList(
+    const std::vector<std::shared_ptr<QosFlowItem>>& value) {
+  m_QosFlowsFailedtoRelList      = value;
+  m_QosFlowsFailedtoRelListIsSet = true;
 }
 
-void VsmfUpdatedData::unsetQosFlowsFailedtoRelList()
-{
-    m_QosFlowsFailedtoRelListIsSet = false;
+bool VsmfUpdatedData::qosFlowsFailedtoRelListIsSet() const {
+  return m_QosFlowsFailedtoRelListIsSet;
 }
 
-std::shared_ptr<RefToBinaryData> VsmfUpdatedData::getN1SmInfoFromUe() const
-{
-    return m_N1SmInfoFromUe;
+void VsmfUpdatedData::unsetQosFlowsFailedtoRelList() {
+  m_QosFlowsFailedtoRelListIsSet = false;
 }
 
-void VsmfUpdatedData::setN1SmInfoFromUe(const std::shared_ptr<RefToBinaryData>& value)
-{
-    m_N1SmInfoFromUe = value;
-    m_N1SmInfoFromUeIsSet = true;
+std::shared_ptr<RefToBinaryData> VsmfUpdatedData::getN1SmInfoFromUe() const {
+  return m_N1SmInfoFromUe;
 }
 
-bool VsmfUpdatedData::n1SmInfoFromUeIsSet() const
-{
-    return m_N1SmInfoFromUeIsSet;
+void VsmfUpdatedData::setN1SmInfoFromUe(
+    const std::shared_ptr<RefToBinaryData>& value) {
+  m_N1SmInfoFromUe      = value;
+  m_N1SmInfoFromUeIsSet = true;
 }
 
-void VsmfUpdatedData::unsetN1SmInfoFromUe()
-{
-    m_N1SmInfoFromUeIsSet = false;
+bool VsmfUpdatedData::n1SmInfoFromUeIsSet() const {
+  return m_N1SmInfoFromUeIsSet;
 }
 
-std::shared_ptr<RefToBinaryData> VsmfUpdatedData::getUnknownN1SmInfo() const
-{
-    return m_UnknownN1SmInfo;
+void VsmfUpdatedData::unsetN1SmInfoFromUe() {
+  m_N1SmInfoFromUeIsSet = false;
 }
 
-void VsmfUpdatedData::setUnknownN1SmInfo(const std::shared_ptr<RefToBinaryData>& value)
-{
-    m_UnknownN1SmInfo = value;
-    m_UnknownN1SmInfoIsSet = true;
+std::shared_ptr<RefToBinaryData> VsmfUpdatedData::getUnknownN1SmInfo() const {
+  return m_UnknownN1SmInfo;
 }
 
-bool VsmfUpdatedData::unknownN1SmInfoIsSet() const
-{
-    return m_UnknownN1SmInfoIsSet;
+void VsmfUpdatedData::setUnknownN1SmInfo(
+    const std::shared_ptr<RefToBinaryData>& value) {
+  m_UnknownN1SmInfo      = value;
+  m_UnknownN1SmInfoIsSet = true;
 }
 
-void VsmfUpdatedData::unsetUnknownN1SmInfo()
-{
-    m_UnknownN1SmInfoIsSet = false;
+bool VsmfUpdatedData::unknownN1SmInfoIsSet() const {
+  return m_UnknownN1SmInfoIsSet;
 }
 
-std::shared_ptr<UserLocation> VsmfUpdatedData::getUeLocation() const
-{
-    return m_UeLocation;
+void VsmfUpdatedData::unsetUnknownN1SmInfo() {
+  m_UnknownN1SmInfoIsSet = false;
 }
 
-void VsmfUpdatedData::setUeLocation(const std::shared_ptr<UserLocation>& value)
-{
-    m_UeLocation = value;
-    m_UeLocationIsSet = true;
+std::shared_ptr<UserLocation> VsmfUpdatedData::getUeLocation() const {
+  return m_UeLocation;
 }
 
-bool VsmfUpdatedData::ueLocationIsSet() const
-{
-    return m_UeLocationIsSet;
+void VsmfUpdatedData::setUeLocation(
+    const std::shared_ptr<UserLocation>& value) {
+  m_UeLocation      = value;
+  m_UeLocationIsSet = true;
 }
 
-void VsmfUpdatedData::unsetUeLocation()
-{
-    m_UeLocationIsSet = false;
+bool VsmfUpdatedData::ueLocationIsSet() const {
+  return m_UeLocationIsSet;
 }
 
-utility::string_t VsmfUpdatedData::getUeTimeZone() const
-{
-    return m_UeTimeZone;
+void VsmfUpdatedData::unsetUeLocation() {
+  m_UeLocationIsSet = false;
 }
 
-void VsmfUpdatedData::setUeTimeZone(const utility::string_t& value)
-{
-    m_UeTimeZone = value;
-    m_UeTimeZoneIsSet = true;
+utility::string_t VsmfUpdatedData::getUeTimeZone() const {
+  return m_UeTimeZone;
 }
 
-bool VsmfUpdatedData::ueTimeZoneIsSet() const
-{
-    return m_UeTimeZoneIsSet;
+void VsmfUpdatedData::setUeTimeZone(const utility::string_t& value) {
+  m_UeTimeZone      = value;
+  m_UeTimeZoneIsSet = true;
 }
 
-void VsmfUpdatedData::unsetUeTimeZone()
-{
-    m_UeTimeZoneIsSet = false;
+bool VsmfUpdatedData::ueTimeZoneIsSet() const {
+  return m_UeTimeZoneIsSet;
 }
 
-std::shared_ptr<UserLocation> VsmfUpdatedData::getAddUeLocation() const
-{
-    return m_AddUeLocation;
+void VsmfUpdatedData::unsetUeTimeZone() {
+  m_UeTimeZoneIsSet = false;
 }
 
-void VsmfUpdatedData::setAddUeLocation(const std::shared_ptr<UserLocation>& value)
-{
-    m_AddUeLocation = value;
-    m_AddUeLocationIsSet = true;
+std::shared_ptr<UserLocation> VsmfUpdatedData::getAddUeLocation() const {
+  return m_AddUeLocation;
 }
 
-bool VsmfUpdatedData::addUeLocationIsSet() const
-{
-    return m_AddUeLocationIsSet;
+void VsmfUpdatedData::setAddUeLocation(
+    const std::shared_ptr<UserLocation>& value) {
+  m_AddUeLocation      = value;
+  m_AddUeLocationIsSet = true;
 }
 
-void VsmfUpdatedData::unsetAddUeLocation()
-{
-    m_AddUeLocationIsSet = false;
+bool VsmfUpdatedData::addUeLocationIsSet() const {
+  return m_AddUeLocationIsSet;
 }
 
-std::vector<std::shared_ptr<EbiArpMapping>>& VsmfUpdatedData::getAssignedEbiList()
-{
-    return m_AssignedEbiList;
+void VsmfUpdatedData::unsetAddUeLocation() {
+  m_AddUeLocationIsSet = false;
 }
 
-void VsmfUpdatedData::setAssignedEbiList(const std::vector<std::shared_ptr<EbiArpMapping>>& value)
-{
-    m_AssignedEbiList = value;
-    m_AssignedEbiListIsSet = true;
+std::vector<std::shared_ptr<EbiArpMapping>>&
+VsmfUpdatedData::getAssignedEbiList() {
+  return m_AssignedEbiList;
 }
 
-bool VsmfUpdatedData::assignedEbiListIsSet() const
-{
-    return m_AssignedEbiListIsSet;
+void VsmfUpdatedData::setAssignedEbiList(
+    const std::vector<std::shared_ptr<EbiArpMapping>>& value) {
+  m_AssignedEbiList      = value;
+  m_AssignedEbiListIsSet = true;
 }
 
-void VsmfUpdatedData::unsetAssignedEbiList()
-{
-    m_AssignedEbiListIsSet = false;
+bool VsmfUpdatedData::assignedEbiListIsSet() const {
+  return m_AssignedEbiListIsSet;
 }
 
-std::vector<int32_t>& VsmfUpdatedData::getFailedToAssignEbiList()
-{
-    return m_FailedToAssignEbiList;
+void VsmfUpdatedData::unsetAssignedEbiList() {
+  m_AssignedEbiListIsSet = false;
 }
 
-void VsmfUpdatedData::setFailedToAssignEbiList(std::vector<int32_t> value)
-{
-    m_FailedToAssignEbiList = value;
-    m_FailedToAssignEbiListIsSet = true;
+std::vector<int32_t>& VsmfUpdatedData::getFailedToAssignEbiList() {
+  return m_FailedToAssignEbiList;
 }
 
-bool VsmfUpdatedData::failedToAssignEbiListIsSet() const
-{
-    return m_FailedToAssignEbiListIsSet;
+void VsmfUpdatedData::setFailedToAssignEbiList(std::vector<int32_t> value) {
+  m_FailedToAssignEbiList      = value;
+  m_FailedToAssignEbiListIsSet = true;
 }
 
-void VsmfUpdatedData::unsetFailedToAssignEbiList()
-{
-    m_FailedToAssignEbiListIsSet = false;
+bool VsmfUpdatedData::failedToAssignEbiListIsSet() const {
+  return m_FailedToAssignEbiListIsSet;
 }
 
-std::vector<int32_t>& VsmfUpdatedData::getReleasedEbiList()
-{
-    return m_ReleasedEbiList;
+void VsmfUpdatedData::unsetFailedToAssignEbiList() {
+  m_FailedToAssignEbiListIsSet = false;
 }
 
-void VsmfUpdatedData::setReleasedEbiList(std::vector<int32_t> value)
-{
-    m_ReleasedEbiList = value;
-    m_ReleasedEbiListIsSet = true;
+std::vector<int32_t>& VsmfUpdatedData::getReleasedEbiList() {
+  return m_ReleasedEbiList;
 }
 
-bool VsmfUpdatedData::releasedEbiListIsSet() const
-{
-    return m_ReleasedEbiListIsSet;
+void VsmfUpdatedData::setReleasedEbiList(std::vector<int32_t> value) {
+  m_ReleasedEbiList      = value;
+  m_ReleasedEbiListIsSet = true;
 }
 
-void VsmfUpdatedData::unsetReleasedEbiList()
-{
-    m_ReleasedEbiListIsSet = false;
+bool VsmfUpdatedData::releasedEbiListIsSet() const {
+  return m_ReleasedEbiListIsSet;
 }
 
-std::vector<std::shared_ptr<SecondaryRatUsageReport>>& VsmfUpdatedData::getSecondaryRatUsageReport()
-{
-    return m_SecondaryRatUsageReport;
+void VsmfUpdatedData::unsetReleasedEbiList() {
+  m_ReleasedEbiListIsSet = false;
 }
 
-void VsmfUpdatedData::setSecondaryRatUsageReport(const std::vector<std::shared_ptr<SecondaryRatUsageReport>>& value)
-{
-    m_SecondaryRatUsageReport = value;
-    m_SecondaryRatUsageReportIsSet = true;
+std::vector<std::shared_ptr<SecondaryRatUsageReport>>&
+VsmfUpdatedData::getSecondaryRatUsageReport() {
+  return m_SecondaryRatUsageReport;
 }
 
-bool VsmfUpdatedData::secondaryRatUsageReportIsSet() const
-{
-    return m_SecondaryRatUsageReportIsSet;
+void VsmfUpdatedData::setSecondaryRatUsageReport(
+    const std::vector<std::shared_ptr<SecondaryRatUsageReport>>& value) {
+  m_SecondaryRatUsageReport      = value;
+  m_SecondaryRatUsageReportIsSet = true;
 }
 
-void VsmfUpdatedData::unsetSecondaryRatUsageReport()
-{
-    m_SecondaryRatUsageReportIsSet = false;
+bool VsmfUpdatedData::secondaryRatUsageReportIsSet() const {
+  return m_SecondaryRatUsageReportIsSet;
 }
 
-std::vector<std::shared_ptr<SecondaryRatUsageInfo>>& VsmfUpdatedData::getSecondaryRatUsageInfo()
-{
-    return m_SecondaryRatUsageInfo;
+void VsmfUpdatedData::unsetSecondaryRatUsageReport() {
+  m_SecondaryRatUsageReportIsSet = false;
 }
 
-void VsmfUpdatedData::setSecondaryRatUsageInfo(const std::vector<std::shared_ptr<SecondaryRatUsageInfo>>& value)
-{
-    m_SecondaryRatUsageInfo = value;
-    m_SecondaryRatUsageInfoIsSet = true;
+std::vector<std::shared_ptr<SecondaryRatUsageInfo>>&
+VsmfUpdatedData::getSecondaryRatUsageInfo() {
+  return m_SecondaryRatUsageInfo;
 }
 
-bool VsmfUpdatedData::secondaryRatUsageInfoIsSet() const
-{
-    return m_SecondaryRatUsageInfoIsSet;
+void VsmfUpdatedData::setSecondaryRatUsageInfo(
+    const std::vector<std::shared_ptr<SecondaryRatUsageInfo>>& value) {
+  m_SecondaryRatUsageInfo      = value;
+  m_SecondaryRatUsageInfoIsSet = true;
 }
 
-void VsmfUpdatedData::unsetSecondaryRatUsageInfo()
-{
-    m_SecondaryRatUsageInfoIsSet = false;
+bool VsmfUpdatedData::secondaryRatUsageInfoIsSet() const {
+  return m_SecondaryRatUsageInfoIsSet;
 }
 
-}
-}
+void VsmfUpdatedData::unsetSecondaryRatUsageInfo() {
+  m_SecondaryRatUsageInfoIsSet = false;
 }
 
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

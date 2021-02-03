@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,21 +35,21 @@ PDUSessionResourceReleaseItemCmd::PDUSessionResourceReleaseItemCmd() {
   pDUSessionID = NULL;
 }
 PDUSessionResourceReleaseItemCmd::~PDUSessionResourceReleaseItemCmd() {
-  if (pDUSessionID)
-    delete pDUSessionID;
+  if (pDUSessionID) delete pDUSessionID;
 }
 
 void PDUSessionResourceReleaseItemCmd::setPDUSessionResourceReleaseItemCmd(
-    PDUSessionID *m_pDUSessionID,
+    PDUSessionID* m_pDUSessionID,
     OCTET_STRING_t m_pDUSessionResourceReleaseCommandTransfer) {
   pDUSessionID = m_pDUSessionID;
   pDUSessionResourceReleaseCommandTransfer =
       m_pDUSessionResourceReleaseCommandTransfer;
 }
 bool PDUSessionResourceReleaseItemCmd::encode2PDUSessionResourceReleaseItemCmd(
-    Ngap_PDUSessionResourceToReleaseItemRelCmd_t *pduSessionResourceReleaseCommandTransfer) {
+    Ngap_PDUSessionResourceToReleaseItemRelCmd_t*
+        pduSessionResourceReleaseCommandTransfer) {
   if (!pDUSessionID->encode2PDUSessionID(
-      pduSessionResourceReleaseCommandTransfer->pDUSessionID))
+          pduSessionResourceReleaseCommandTransfer->pDUSessionID))
     return false;
   pduSessionResourceReleaseCommandTransfer
       ->pDUSessionResourceReleaseCommandTransfer =
@@ -57,11 +57,13 @@ bool PDUSessionResourceReleaseItemCmd::encode2PDUSessionResourceReleaseItemCmd(
 
   return true;
 }
-bool PDUSessionResourceReleaseItemCmd::decodefromPDUSessionResourceReleaseItemCmd(
-    Ngap_PDUSessionResourceToReleaseItemRelCmd_t *pduSessionResourceReleaseCommandTransfer) {
+bool PDUSessionResourceReleaseItemCmd::
+    decodefromPDUSessionResourceReleaseItemCmd(
+        Ngap_PDUSessionResourceToReleaseItemRelCmd_t*
+            pduSessionResourceReleaseCommandTransfer) {
   pDUSessionID = new PDUSessionID();
   if (!pDUSessionID->decodefromPDUSessionID(
-      pduSessionResourceReleaseCommandTransfer->pDUSessionID))
+          pduSessionResourceReleaseCommandTransfer->pDUSessionID))
     return false;
   pDUSessionResourceReleaseCommandTransfer =
       pduSessionResourceReleaseCommandTransfer
@@ -70,12 +72,11 @@ bool PDUSessionResourceReleaseItemCmd::decodefromPDUSessionResourceReleaseItemCm
   return true;
 }
 void PDUSessionResourceReleaseItemCmd::getPDUSessionResourceReleaseItemCmd(
-    PDUSessionID *&m_pDUSessionID,
-    OCTET_STRING_t &m_pDUSessionResourceReleaseCommandTransfer) {
+    PDUSessionID*& m_pDUSessionID,
+    OCTET_STRING_t& m_pDUSessionResourceReleaseCommandTransfer) {
   m_pDUSessionID = pDUSessionID;
   m_pDUSessionResourceReleaseCommandTransfer =
       pDUSessionResourceReleaseCommandTransfer;
 }
 
-}
-
+}  // namespace ngap

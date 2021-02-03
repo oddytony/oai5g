@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -19,36 +19,40 @@
  *      contact@openairinterface.org
  */
 
- /*! \file
-  \brief
-  \author  niuxiansheng-niu, BUPT
-  \date 2020
-  \email: contact@openairinterface.org
-  */
+/*! \file
+ \brief
+ \author  niuxiansheng-niu, BUPT
+ \date 2020
+ \email: contact@openairinterface.org
+ */
 #include "QosFlowListWithDataForwarding.hpp"
 
 #include <iostream>
 using namespace std;
 namespace ngap {
-	QosFlowListWithDataForwarding::QosFlowListWithDataForwarding()
-	{
-		qosFlowItemWithDataForwarding = NULL;
-		numofQosFlowItemWithDataForwarding = 0;
-	}
-	QosFlowListWithDataForwarding::~QosFlowListWithDataForwarding(){}
-
-	bool QosFlowListWithDataForwarding::decodeFormQosFlowListWithDataForwarding(Ngap_QosFlowSetupResponseListHOReqAck_t qosFlowSetupResponseList) {
-		numofQosFlowItemWithDataForwarding = qosFlowSetupResponseList.list.count;
-		qosFlowItemWithDataForwarding = new QosFlowItemWithDataForWarding[numofQosFlowItemWithDataForwarding]();
-		for (int i = 0; i < numofQosFlowItemWithDataForwarding; i++) {
-			if (!qosFlowItemWithDataForwarding[i].decodeformQosFlowItemWithDataForWarding(qosFlowSetupResponseList.list.array[i]))
-				return false;
-		}
-		return true;
-	}
-	bool QosFlowListWithDataForwarding::getQosFlowListWithDataForwarding(QosFlowItemWithDataForWarding *&m_QosFlowItemWithDataForwarding, int &num){
-		m_QosFlowItemWithDataForwarding = qosFlowItemWithDataForwarding;
-			num = numofQosFlowItemWithDataForwarding;
-			return true;
-	}
+QosFlowListWithDataForwarding::QosFlowListWithDataForwarding() {
+  qosFlowItemWithDataForwarding      = NULL;
+  numofQosFlowItemWithDataForwarding = 0;
 }
+QosFlowListWithDataForwarding::~QosFlowListWithDataForwarding() {}
+
+bool QosFlowListWithDataForwarding::decodeFormQosFlowListWithDataForwarding(
+    Ngap_QosFlowSetupResponseListHOReqAck_t qosFlowSetupResponseList) {
+  numofQosFlowItemWithDataForwarding = qosFlowSetupResponseList.list.count;
+  qosFlowItemWithDataForwarding =
+      new QosFlowItemWithDataForWarding[numofQosFlowItemWithDataForwarding]();
+  for (int i = 0; i < numofQosFlowItemWithDataForwarding; i++) {
+    if (!qosFlowItemWithDataForwarding[i]
+             .decodeformQosFlowItemWithDataForWarding(
+                 qosFlowSetupResponseList.list.array[i]))
+      return false;
+  }
+  return true;
+}
+bool QosFlowListWithDataForwarding::getQosFlowListWithDataForwarding(
+    QosFlowItemWithDataForWarding*& m_QosFlowItemWithDataForwarding, int& num) {
+  m_QosFlowItemWithDataForwarding = qosFlowItemWithDataForwarding;
+  num                             = numofQosFlowItemWithDataForwarding;
+  return true;
+}
+}  // namespace ngap

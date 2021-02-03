@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -38,15 +38,17 @@ class ServiceType {
   ServiceType();
   ~ServiceType();
   ServiceType(uint8_t iei, uint8_t stp);
+
  public:
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(uint8_t *nuf, int len, bool is_optional, bool is_high);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(uint8_t* nuf, int len, bool is_optional, bool is_high);
   uint8_t getValue();
+
  private:
   uint8_t _iei;
   uint8_t value;
 };
 
-}
+}  // namespace nas
 
 #endif

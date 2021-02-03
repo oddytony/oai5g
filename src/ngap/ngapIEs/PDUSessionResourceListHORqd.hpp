@@ -15,20 +15,20 @@ class PDUSessionResourceListHORqd {
   virtual ~PDUSessionResourceListHORqd();
 
   void setPDUSessionResourceListHORqd(
-      PDUSessionResourceItemHORqd *m_pduSessionResourceItemHORqd, int num);
+      PDUSessionResourceItemHORqd* m_pduSessionResourceItemHORqd, int num);
   void getPDUSessionResourceListHORqd(
-      PDUSessionResourceItemHORqd *&m_pduSessionResourceItemHORqd, int &num);
+      PDUSessionResourceItemHORqd*& m_pduSessionResourceItemHORqd, int& num);
 
   bool encode2PDUSessionResourceListHORqd(
-      Ngap_PDUSessionResourceListHORqd_t *pduSessionResourceListHORQqd);
+      Ngap_PDUSessionResourceListHORqd_t* pduSessionResourceListHORQqd);
   bool decodefromPDUSessionResourceListHORqd(
-      Ngap_PDUSessionResourceListHORqd_t *pduSessionResourceListHORQqd);
+      Ngap_PDUSessionResourceListHORqd_t* pduSessionResourceListHORQqd);
+
  private:
-  PDUSessionResourceItemHORqd *pduSessionResourceItemHORqd;
+  PDUSessionResourceItemHORqd* pduSessionResourceItemHORqd;
   int numofpduSessionResourceItemHORqd;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

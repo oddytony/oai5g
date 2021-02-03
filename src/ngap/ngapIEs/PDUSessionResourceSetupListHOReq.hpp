@@ -5,7 +5,6 @@
 
 extern "C" {
 #include "Ngap_PDUSessionResourceSetupListHOReq.h"
-
 }
 
 namespace ngap {
@@ -16,21 +15,24 @@ class PDUSessionResourceSetupListHOReq {
   virtual ~PDUSessionResourceSetupListHOReq();
 
   void setPDUSessionResourceSetupListHOReq(
-      PDUSessionResourceSetupItemHOReq *m_pduSessionResourceSetupItemHOReq,
+      PDUSessionResourceSetupItemHOReq* m_pduSessionResourceSetupItemHOReq,
       int num);
   void getPDUSessionResourceSetupListHOReq(
-      PDUSessionResourceSetupItemHOReq *&m_pduSessionResourceSetupItemHOReq,
-      int &num);
+      PDUSessionResourceSetupItemHOReq*& m_pduSessionResourceSetupItemHOReq,
+      int& num);
 
   bool encode2PDUSessionResourceSetupListHOReq(
-      Ngap_PDUSessionResourceSetupListHOReq_t *pduSessionResourceSetupListHOReq);
+      Ngap_PDUSessionResourceSetupListHOReq_t*
+          pduSessionResourceSetupListHOReq);
   bool decodefromPDUSessionResourceSetupListHOReq(
-      Ngap_PDUSessionResourceSetupListHOReq_t *pduSessionResourceSetupListHOReq);
+      Ngap_PDUSessionResourceSetupListHOReq_t*
+          pduSessionResourceSetupListHOReq);
+
  private:
-  PDUSessionResourceSetupItemHOReq *pduSessionResourceSetupItemHOReq;
+  PDUSessionResourceSetupItemHOReq* pduSessionResourceSetupItemHOReq;
   int numofpduSessionResourceSetupItemHOReq;
 };
 
-}
+}  // namespace ngap
 
 #endif

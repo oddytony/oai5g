@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -23,7 +23,7 @@
 #include <thread>
 #include <signal.h>
 #include <stdint.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <unistd.h>
 
 #include "AMFApiServer.hpp"
@@ -44,9 +44,9 @@
 #include <cstring>
 #include "normalizer.hh"
 
-extern void hexStr2Byte(const char *src, unsigned char *dest, int len);
-extern void print_buffer(const std::string app, const std::string commit,
-                         uint8_t *buf, int len);
+extern void hexStr2Byte(const char* src, unsigned char* dest, int len);
+extern void print_buffer(
+    const std::string app, const std::string commit, uint8_t* buf, int len);
 extern void ue_gnb_simulator();
 
 using namespace config;
@@ -54,20 +54,20 @@ using namespace amf_application;
 
 amf_config amf_cfg;
 amf_modules modules;
-itti_mw *itti_inst = nullptr;
-amf_app *amf_app_inst = nullptr;
+itti_mw* itti_inst    = nullptr;
+amf_app* amf_app_inst = nullptr;
 statistics stacs;
 
 //------------------------------------------------------------------------------
-int main(int argc, char **argv) {
-  srand (time(NULL));
+int main(int argc, char** argv) {
+  srand(time(NULL));
 
-if  (!Options::parse(argc, argv)) {
-    std::cout<<"Options::parse() failed"<<std::endl;
+  if (!Options::parse(argc, argv)) {
+    std::cout << "Options::parse() failed" << std::endl;
     return 1;
   }
 
-  Logger::init( "AMF" , Options::getlogStdout() , Options::getlogRotFilelog());
+  Logger::init("AMF", Options::getlogStdout(), Options::getlogRotFilelog());
   Logger::amf_app().startup("Options parsed!");
 
   amf_cfg.load(Options::getlibconfigConfig());
@@ -82,7 +82,9 @@ if  (!Options::parse(argc, argv)) {
   amf_app_inst->allRegistredModulesInit(modules);
 
   Logger::amf_app().debug("Initiating AMF server endpoints");
-  Pistache::Address addr(std::string(inet_ntoa (*((struct in_addr *)&amf_cfg.n11.addr4))) , Pistache::Port(amf_cfg.n11.port));
+  Pistache::Address addr(
+      std::string(inet_ntoa(*((struct in_addr*) &amf_cfg.n11.addr4))),
+      Pistache::Port(amf_cfg.n11.port));
   AMFApiServer amfApiServer(addr, amf_app_inst);
   amfApiServer.init(2);
   std::thread amf_api_manager(&AMFApiServer::start, amfApiServer);

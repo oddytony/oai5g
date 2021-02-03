@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,41 +34,44 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-ConfidentialityProtectionIndication::ConfidentialityProtectionIndication() {
-}
+ConfidentialityProtectionIndication::ConfidentialityProtectionIndication() {}
 
 //------------------------------------------------------------------------------
-ConfidentialityProtectionIndication::~ConfidentialityProtectionIndication() {
-}
+ConfidentialityProtectionIndication::~ConfidentialityProtectionIndication() {}
 
 //------------------------------------------------------------------------------
-void ConfidentialityProtectionIndication::setConfidentialityProtectionIndication(
-    e_Ngap_ConfidentialityProtectionIndication m_indication) {
+void ConfidentialityProtectionIndication::
+    setConfidentialityProtectionIndication(
+        e_Ngap_ConfidentialityProtectionIndication m_indication) {
   indication = m_indication;
 }
 
 //------------------------------------------------------------------------------
-bool ConfidentialityProtectionIndication::getConfidentialityProtectionIndication(
-    long &m_indication) {
+bool ConfidentialityProtectionIndication::
+    getConfidentialityProtectionIndication(long& m_indication) {
   m_indication = indication;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool ConfidentialityProtectionIndication::encode2ConfidentialityProtectionIndication(
-    Ngap_ConfidentialityProtectionIndication_t &confidentialityProtectionIndication) {
+bool ConfidentialityProtectionIndication::
+    encode2ConfidentialityProtectionIndication(
+        Ngap_ConfidentialityProtectionIndication_t&
+            confidentialityProtectionIndication) {
   confidentialityProtectionIndication = indication;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool ConfidentialityProtectionIndication::decodefromConfidentialityProtectionIndication(
-    Ngap_ConfidentialityProtectionIndication_t confidentialityProtectionIndication) {
+bool ConfidentialityProtectionIndication::
+    decodefromConfidentialityProtectionIndication(
+        Ngap_ConfidentialityProtectionIndication_t
+            confidentialityProtectionIndication) {
   indication = confidentialityProtectionIndication;
 
   return true;
 }
 
-}
+}  // namespace ngap

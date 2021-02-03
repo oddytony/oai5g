@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -43,21 +43,24 @@ class PDUSessionResourceFailedToSetupItemCxtFail {
   virtual ~PDUSessionResourceFailedToSetupItemCxtFail();
 
   void setPDUSessionResourceFailedToSetupItemCxtFail(
-      PDUSessionID *m_pDUSessionID,
+      PDUSessionID* m_pDUSessionID,
       OCTET_STRING_t m_pDUSessionResourceSetupUnsuccessfulTransfer);
   void getPDUSessionResourceFailedToSetupItemCxtFail(
-      PDUSessionID *&m_pDUSessionID,
-      OCTET_STRING_t &m_pDUSessionResourceSetupUnsuccessfulTransfer);
+      PDUSessionID*& m_pDUSessionID,
+      OCTET_STRING_t& m_pDUSessionResourceSetupUnsuccessfulTransfer);
 
   bool encode2PDUSessionResourceFailedToSetupItemCxtFail(
-      Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t *pduSessionResourceFailedToSetupItemCxtFail);
+      Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t*
+          pduSessionResourceFailedToSetupItemCxtFail);
   bool decodefromPDUSessionResourceFailedToSetupItemCxtFail(
-      Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t *pduSessionResourceFailedToSetupItemCxtFail);
+      Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t*
+          pduSessionResourceFailedToSetupItemCxtFail);
+
  private:
-  PDUSessionID *pDUSessionID;
+  PDUSessionID* pDUSessionID;
   OCTET_STRING_t pDUSessionResourceSetupUnsuccessfulTransfer;
 };
 
-}
+}  // namespace ngap
 
 #endif

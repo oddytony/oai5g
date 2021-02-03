@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -30,25 +30,24 @@
 
 #include "QosFlowLevelQosParameters.hpp"
 #include "QosFlowIdentifier.hpp"
-extern "C"
-{
+extern "C" {
 #include "Ngap_QosFlowSetupResponseItemHOReqAck.h"
 }
-namespace ngap
-{
-	class QosFlowItemWithDataForWarding
-	{
-	public:
-		QosFlowItemWithDataForWarding();
-		virtual ~QosFlowItemWithDataForWarding();
+namespace ngap {
+class QosFlowItemWithDataForWarding {
+ public:
+  QosFlowItemWithDataForWarding();
+  virtual ~QosFlowItemWithDataForWarding();
 
-		void getQosFlowItemWithDataForWarding(Ngap_QosFlowIdentifier_t &m_QosFlowIdentifier);
-		bool decodeformQosFlowItemWithDataForWarding(Ngap_QosFlowSetupResponseItemHOReqAck_t *qosFlowItemWithDataForWarding);
+  void getQosFlowItemWithDataForWarding(
+      Ngap_QosFlowIdentifier_t& m_QosFlowIdentifier);
+  bool decodeformQosFlowItemWithDataForWarding(
+      Ngap_QosFlowSetupResponseItemHOReqAck_t* qosFlowItemWithDataForWarding);
 
-	private:
-		long value;
-		QosFlowIdentifier *qosFlowIdentifier;
-	};
-} // namespace ngap
+ private:
+  long value;
+  QosFlowIdentifier* qosFlowIdentifier;
+};
+}  // namespace ngap
 
-#endif // !_QOSFLOWITEMWITHDATAFORWARDING_H_
+#endif  // !_QOSFLOWITEMWITHDATAFORWARDING_H_

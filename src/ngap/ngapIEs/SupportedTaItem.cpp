@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -42,50 +42,47 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 SupportedTaItem::SupportedTaItem() {
-  tac = NULL;
-  broadcastPLMNItem = NULL;
+  tac                   = NULL;
+  broadcastPLMNItem     = NULL;
   numberOfBroadcastItem = 0;
 }
 
 //------------------------------------------------------------------------------
-SupportedTaItem::~SupportedTaItem() {
-}
+SupportedTaItem::~SupportedTaItem() {}
 
 //------------------------------------------------------------------------------
-void SupportedTaItem::setTac(TAC *m_tac) {
+void SupportedTaItem::setTac(TAC* m_tac) {
   tac = m_tac;
 }
 
 //------------------------------------------------------------------------------
-void SupportedTaItem::getTac(TAC *&m_tac) {
+void SupportedTaItem::getTac(TAC*& m_tac) {
   m_tac = tac;
 }
 
 //------------------------------------------------------------------------------
 void SupportedTaItem::setBroadcastPlmnList(
-    BroadcastPLMNItem *m_broadcastPLMNItem, int numOfItem) {
+    BroadcastPLMNItem* m_broadcastPLMNItem, int numOfItem) {
   numberOfBroadcastItem = numOfItem;
-  broadcastPLMNItem = m_broadcastPLMNItem;
+  broadcastPLMNItem     = m_broadcastPLMNItem;
 }
 
 //------------------------------------------------------------------------------
 void SupportedTaItem::getBroadcastPlmnList(
-    BroadcastPLMNItem *&m_broadcastPLMNItem, int &numOfItem) {
-  numOfItem = numberOfBroadcastItem;
+    BroadcastPLMNItem*& m_broadcastPLMNItem, int& numOfItem) {
+  numOfItem           = numberOfBroadcastItem;
   m_broadcastPLMNItem = broadcastPLMNItem;
 }
 
 //------------------------------------------------------------------------------
-bool SupportedTaItem::encode2SupportedTaItem(Ngap_SupportedTAItem_t *ta) {
-  if (!tac->encode2octetstring(ta->tAC))
-    return false;
-  cout << "SupportedTaItem::numberOfBroadcastItem	" << numberOfBroadcastItem
-      << endl;
+bool SupportedTaItem::encode2SupportedTaItem(Ngap_SupportedTAItem_t* ta) {
+  if (!tac->encode2octetstring(ta->tAC)) return false;
+  cout << "SupportedTaItem::numberOfBroadcastItem	"
+       << numberOfBroadcastItem << endl;
   for (int i = 0; i < numberOfBroadcastItem; i++) {
-    Ngap_BroadcastPLMNItem_t *plmnItem = (Ngap_BroadcastPLMNItem*) calloc(
-        1, sizeof(Ngap_BroadcastPLMNItem));
-    if (!broadcastPLMNItem[i].encode2BroadcastPLMNItem(plmnItem))
-      return false;
+    Ngap_BroadcastPLMNItem_t* plmnItem =
+        (Ngap_BroadcastPLMNItem*) calloc(1, sizeof(Ngap_BroadcastPLMNItem));
+    if (!broadcastPLMNItem[i].encode2BroadcastPLMNItem(plmnItem)) return false;
     if (ASN_SEQUENCE_ADD(&ta->broadcastPLMNList.list, plmnItem) != 0)
       return false;
   }
@@ -93,18 +90,17 @@ bool SupportedTaItem::encode2SupportedTaItem(Ngap_SupportedTAItem_t *ta) {
 }
 
 //------------------------------------------------------------------------------
-bool SupportedTaItem::decodefromSupportedTaItem(Ngap_SupportedTAItem_t *pdu) {
+bool SupportedTaItem::decodefromSupportedTaItem(Ngap_SupportedTAItem_t* pdu) {
   tac = new TAC();
-  if (!tac->decodefromoctetstring(pdu->tAC))
-    return false;
+  if (!tac->decodefromoctetstring(pdu->tAC)) return false;
   numberOfBroadcastItem = pdu->broadcastPLMNList.list.count;
-  broadcastPLMNItem = new BroadcastPLMNItem[numberOfBroadcastItem]();
+  broadcastPLMNItem     = new BroadcastPLMNItem[numberOfBroadcastItem]();
   for (int i = 0; i < numberOfBroadcastItem; i++) {
     if (!broadcastPLMNItem[i].decodefromBroadcastPLMNItem(
-        pdu->broadcastPLMNList.list.array[i]))
+            pdu->broadcastPLMNList.list.array[i]))
       return false;
   }
   return true;
 }
 
-}
+}  // namespace ngap

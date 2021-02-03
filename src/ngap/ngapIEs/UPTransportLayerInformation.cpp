@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -40,42 +40,39 @@ namespace ngap {
 //------------------------------------------------------------------------------
 UpTransportLayerInformation::UpTransportLayerInformation() {
   transportLayerAddress = NULL;
-  gtpTeid = NULL;
+  gtpTeid               = NULL;
 }
 
 //------------------------------------------------------------------------------
-UpTransportLayerInformation::~UpTransportLayerInformation() {
-}
+UpTransportLayerInformation::~UpTransportLayerInformation() {}
 
 //------------------------------------------------------------------------------
 void UpTransportLayerInformation::setUpTransportLayerInformation(
-    TransportLayerAddress *m_transportLayerAddress, GtpTeid *m_gtpTeid) {
+    TransportLayerAddress* m_transportLayerAddress, GtpTeid* m_gtpTeid) {
   transportLayerAddress = m_transportLayerAddress;
-  gtpTeid = m_gtpTeid;
+  gtpTeid               = m_gtpTeid;
 }
 
 //------------------------------------------------------------------------------
 bool UpTransportLayerInformation::getUpTransportLayerInformation(
-    TransportLayerAddress *&m_transportLayerAddress, GtpTeid *&m_gtpTeid) {
+    TransportLayerAddress*& m_transportLayerAddress, GtpTeid*& m_gtpTeid) {
   m_transportLayerAddress = transportLayerAddress;
-  m_gtpTeid = gtpTeid;
+  m_gtpTeid               = gtpTeid;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
 bool UpTransportLayerInformation::encode2UpTransportLayerInformation(
-    Ngap_UPTransportLayerInformation_t &upTransportLayerInfo) {
+    Ngap_UPTransportLayerInformation_t& upTransportLayerInfo) {
   upTransportLayerInfo.present = Ngap_UPTransportLayerInformation_PR_gTPTunnel;
-  Ngap_GTPTunnel_t *gtptunnel = (Ngap_GTPTunnel_t*) calloc(
-      1, sizeof(Ngap_GTPTunnel_t));
-  if (!gtptunnel)
-    return false;
+  Ngap_GTPTunnel_t* gtptunnel =
+      (Ngap_GTPTunnel_t*) calloc(1, sizeof(Ngap_GTPTunnel_t));
+  if (!gtptunnel) return false;
   if (!transportLayerAddress->encode2TransportLayerAddress(
-      gtptunnel->transportLayerAddress))
+          gtptunnel->transportLayerAddress))
     return false;
-  if (!gtpTeid->encode2GtpTeid(gtptunnel->gTP_TEID))
-    return false;
+  if (!gtpTeid->encode2GtpTeid(gtptunnel->gTP_TEID)) return false;
   upTransportLayerInfo.choice.gTPTunnel = gtptunnel;
 
   return true;
@@ -83,24 +80,22 @@ bool UpTransportLayerInformation::encode2UpTransportLayerInformation(
 
 //------------------------------------------------------------------------------
 bool UpTransportLayerInformation::decodefromUpTransportLayerInformation(
-    Ngap_UPTransportLayerInformation_t &upTransportLayerInfo) {
-  if (upTransportLayerInfo.present
-      != Ngap_UPTransportLayerInformation_PR_gTPTunnel)
+    Ngap_UPTransportLayerInformation_t& upTransportLayerInfo) {
+  if (upTransportLayerInfo.present !=
+      Ngap_UPTransportLayerInformation_PR_gTPTunnel)
     return false;
-  if (!upTransportLayerInfo.choice.gTPTunnel)
-    return false;
+  if (!upTransportLayerInfo.choice.gTPTunnel) return false;
   transportLayerAddress = new TransportLayerAddress();
-  gtpTeid = new GtpTeid();
+  gtpTeid               = new GtpTeid();
 
   if (!transportLayerAddress->decodefromTransportLayerAddress(
-      upTransportLayerInfo.choice.gTPTunnel->transportLayerAddress))
+          upTransportLayerInfo.choice.gTPTunnel->transportLayerAddress))
     return false;
   if (!gtpTeid->decodefromGtpTeid(
-      upTransportLayerInfo.choice.gTPTunnel->gTP_TEID))
+          upTransportLayerInfo.choice.gTPTunnel->gTP_TEID))
     return false;
 
   return true;
 }
 
-}
-
+}  // namespace ngap

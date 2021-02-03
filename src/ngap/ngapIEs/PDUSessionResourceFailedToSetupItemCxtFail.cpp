@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,30 +34,33 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PDUSessionResourceFailedToSetupItemCxtFail::PDUSessionResourceFailedToSetupItemCxtFail() {
+PDUSessionResourceFailedToSetupItemCxtFail::
+    PDUSessionResourceFailedToSetupItemCxtFail() {
   pDUSessionID = NULL;
 }
 
 //------------------------------------------------------------------------------
-PDUSessionResourceFailedToSetupItemCxtFail::~PDUSessionResourceFailedToSetupItemCxtFail() {
-}
+PDUSessionResourceFailedToSetupItemCxtFail::
+    ~PDUSessionResourceFailedToSetupItemCxtFail() {}
 
 //------------------------------------------------------------------------------
-void PDUSessionResourceFailedToSetupItemCxtFail::setPDUSessionResourceFailedToSetupItemCxtFail(
-    PDUSessionID *m_pDUSessionID,
-    OCTET_STRING_t m_pDUSessionResourceSetupUnsuccessfulTransfer) {
+void PDUSessionResourceFailedToSetupItemCxtFail::
+    setPDUSessionResourceFailedToSetupItemCxtFail(
+        PDUSessionID* m_pDUSessionID,
+        OCTET_STRING_t m_pDUSessionResourceSetupUnsuccessfulTransfer) {
   pDUSessionID = m_pDUSessionID;
   pDUSessionResourceSetupUnsuccessfulTransfer =
       m_pDUSessionResourceSetupUnsuccessfulTransfer;
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceFailedToSetupItemCxtFail::encode2PDUSessionResourceFailedToSetupItemCxtFail(
-    Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t *pduSessionResourceFailedToSetupItemCxtFail) {
-  if (!pDUSessionID)
-    return false;
+bool PDUSessionResourceFailedToSetupItemCxtFail::
+    encode2PDUSessionResourceFailedToSetupItemCxtFail(
+        Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t*
+            pduSessionResourceFailedToSetupItemCxtFail) {
+  if (!pDUSessionID) return false;
   if (!pDUSessionID->encode2PDUSessionID(
-      pduSessionResourceFailedToSetupItemCxtFail->pDUSessionID))
+          pduSessionResourceFailedToSetupItemCxtFail->pDUSessionID))
     return false;
   pduSessionResourceFailedToSetupItemCxtFail
       ->pDUSessionResourceSetupUnsuccessfulTransfer =
@@ -67,11 +70,13 @@ bool PDUSessionResourceFailedToSetupItemCxtFail::encode2PDUSessionResourceFailed
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceFailedToSetupItemCxtFail::decodefromPDUSessionResourceFailedToSetupItemCxtFail(
-    Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t *pduSessionResourceFailedToSetupItemCxtFail) {
+bool PDUSessionResourceFailedToSetupItemCxtFail::
+    decodefromPDUSessionResourceFailedToSetupItemCxtFail(
+        Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t*
+            pduSessionResourceFailedToSetupItemCxtFail) {
   pDUSessionID = new PDUSessionID();
   if (!pDUSessionID->decodefromPDUSessionID(
-      pduSessionResourceFailedToSetupItemCxtFail->pDUSessionID))
+          pduSessionResourceFailedToSetupItemCxtFail->pDUSessionID))
     return false;
   pDUSessionResourceSetupUnsuccessfulTransfer =
       pduSessionResourceFailedToSetupItemCxtFail
@@ -81,13 +86,13 @@ bool PDUSessionResourceFailedToSetupItemCxtFail::decodefromPDUSessionResourceFai
 }
 
 //------------------------------------------------------------------------------
-void PDUSessionResourceFailedToSetupItemCxtFail::getPDUSessionResourceFailedToSetupItemCxtFail(
-    PDUSessionID *&m_pDUSessionID,
-    OCTET_STRING_t &m_pDUSessionResourceSetupUnsuccessfulTransfer) {
+void PDUSessionResourceFailedToSetupItemCxtFail::
+    getPDUSessionResourceFailedToSetupItemCxtFail(
+        PDUSessionID*& m_pDUSessionID,
+        OCTET_STRING_t& m_pDUSessionResourceSetupUnsuccessfulTransfer) {
   m_pDUSessionID = pDUSessionID;
   pDUSessionResourceSetupUnsuccessfulTransfer =
       pDUSessionResourceSetupUnsuccessfulTransfer;
 }
 
-}
-
+}  // namespace ngap

@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,80 +10,71 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "RefToBinaryData.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-RefToBinaryData::RefToBinaryData()
-{
-    m_ContentId = utility::conversions::to_string_t("");
+RefToBinaryData::RefToBinaryData() {
+  m_ContentId = utility::conversions::to_string_t("");
 }
 
-RefToBinaryData::~RefToBinaryData()
-{
+RefToBinaryData::~RefToBinaryData() {}
+
+void RefToBinaryData::validate() {
+  // TODO: implement validation
 }
 
-void RefToBinaryData::validate()
-{
-    // TODO: implement validation
+web::json::value RefToBinaryData::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  val[utility::conversions::to_string_t("contentId")] =
+      ModelBase::toJson(m_ContentId);
+
+  return val;
 }
 
-web::json::value RefToBinaryData::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    val[utility::conversions::to_string_t("contentId")] = ModelBase::toJson(m_ContentId);
-
-    return val;
+void RefToBinaryData::fromJson(const web::json::value& val) {
+  setContentId(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("contentId"))));
 }
 
-void RefToBinaryData::fromJson(const web::json::value& val)
-{
-    setContentId(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("contentId"))));
+void RefToBinaryData::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("contentId"),
+      m_ContentId));
 }
 
-void RefToBinaryData::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
+void RefToBinaryData::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("contentId"), m_ContentId));
+  setContentId(ModelBase::stringFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("contentId"))));
 }
 
-void RefToBinaryData::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    setContentId(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("contentId"))));
+utility::string_t RefToBinaryData::getContentId() const {
+  return m_ContentId;
 }
 
-utility::string_t RefToBinaryData::getContentId() const
-{
-    return m_ContentId;
+void RefToBinaryData::setContentId(const utility::string_t& value) {
+  m_ContentId = value;
 }
 
-void RefToBinaryData::setContentId(const utility::string_t& value)
-{
-    m_ContentId = value;
-    
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

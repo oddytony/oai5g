@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -45,6 +45,7 @@ class UEContextReleaseCommandMsg {
  public:
   UEContextReleaseCommandMsg();
   ~UEContextReleaseCommandMsg();
+
  public:
   void setMessageType();
   void setAmfUeNgapId(unsigned long id);
@@ -52,18 +53,20 @@ class UEContextReleaseCommandMsg {
   void addCauseIE();
   void setCauseRadioNetwork(e_Ngap_CauseRadioNetwork cause_value);
   void setCauseNas(e_Ngap_CauseNas cause_value);
-  int encode2buffer(uint8_t *buf, int buf_size);
- public:
-  bool decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu);
- private:
-  Ngap_NGAP_PDU_t *pdu;
-  Ngap_UEContextReleaseCommand_t *ies;
+  int encode2buffer(uint8_t* buf, int buf_size);
 
-  AMF_UE_NGAP_ID *amfUeNgapId;
-  RAN_UE_NGAP_ID *ranUeNgapId;
-  Cause *causeValue;
+ public:
+  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
+
+ private:
+  Ngap_NGAP_PDU_t* pdu;
+  Ngap_UEContextReleaseCommand_t* ies;
+
+  AMF_UE_NGAP_ID* amfUeNgapId;
+  RAN_UE_NGAP_ID* ranUeNgapId;
+  Cause* causeValue;
 };
 
-}
+}  // namespace ngap
 
 #endif

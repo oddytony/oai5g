@@ -39,31 +39,31 @@ using namespace sctp;
 
 namespace ngap {
 
-static const char *const ng_gnb_state_str[] = { "NGAP_INIT", "NGAP_RESETTING",
-    "NGAP_READY", "NGAP_SHUTDOWN" };
+static const char* const ng_gnb_state_str[] = {"NGAP_INIT", "NGAP_RESETTING",
+                                               "NGAP_READY", "NGAP_SHUTDOWN"};
 
 class ngap_app : public sctp_application {
  public:
-  ngap_app(const std::string &address, const uint16_t port_num);
+  ngap_app(const std::string& address, const uint16_t port_num);
   ~ngap_app();
   uint32_t getPpid();
 
-  void handle_receive(bstring payload, sctp_assoc_id_t assoc_id,
-                      sctp_stream_id_t stream, sctp_stream_id_t instreams,
-                      sctp_stream_id_t outstreams);
-  void handle_sctp_new_association(sctp_assoc_id_t assoc_id,
-                                   sctp_stream_id_t instreams,
-                                   sctp_stream_id_t outstreams);
+  void handle_receive(
+      bstring payload, sctp_assoc_id_t assoc_id, sctp_stream_id_t stream,
+      sctp_stream_id_t instreams, sctp_stream_id_t outstreams);
+  void handle_sctp_new_association(
+      sctp_assoc_id_t assoc_id, sctp_stream_id_t instreams,
+      sctp_stream_id_t outstreams);
 
-  bool is_assoc_id_2_gnb_context(const sctp_assoc_id_t &assoc_id) const;
-  void set_assoc_id_2_gnb_context(const sctp_assoc_id_t &assoc_id,
-                                  std::shared_ptr<gnb_context> gc);
-  std::shared_ptr<gnb_context>
-  assoc_id_2_gnb_context(const sctp_assoc_id_t &assoc_id) const;
-  bool is_gnb_id_2_gnb_context(const long &gnb_id) const;
-  void set_gnb_id_2_gnb_context(const long &gnb_id,
-                                std::shared_ptr<gnb_context> gc);
-  std::shared_ptr<gnb_context> gnb_id_2_gnb_context(const long &gnb_id) const;
+  bool is_assoc_id_2_gnb_context(const sctp_assoc_id_t& assoc_id) const;
+  void set_assoc_id_2_gnb_context(
+      const sctp_assoc_id_t& assoc_id, std::shared_ptr<gnb_context> gc);
+  std::shared_ptr<gnb_context> assoc_id_2_gnb_context(
+      const sctp_assoc_id_t& assoc_id) const;
+  bool is_gnb_id_2_gnb_context(const long& gnb_id) const;
+  void set_gnb_id_2_gnb_context(
+      const long& gnb_id, std::shared_ptr<gnb_context> gc);
+  std::shared_ptr<gnb_context> gnb_id_2_gnb_context(const long& gnb_id) const;
 
  protected:
   sctp_server sctp_s_38412;

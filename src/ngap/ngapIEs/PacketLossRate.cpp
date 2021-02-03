@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PacketLossRate::PacketLossRate() {
-}
+PacketLossRate::PacketLossRate() {}
 
 //------------------------------------------------------------------------------
-PacketLossRate::~PacketLossRate() {
-}
+PacketLossRate::~PacketLossRate() {}
 
 //------------------------------------------------------------------------------
 void PacketLossRate::setPacketLossRate(long value) {
@@ -47,7 +45,7 @@ void PacketLossRate::setPacketLossRate(long value) {
 }
 
 //------------------------------------------------------------------------------
-bool PacketLossRate::getPacketLossRate(long &value) {
+bool PacketLossRate::getPacketLossRate(long& value) {
   value = packetlossrate;
 
   return true;
@@ -55,7 +53,7 @@ bool PacketLossRate::getPacketLossRate(long &value) {
 
 //------------------------------------------------------------------------------
 bool PacketLossRate::encode2PacketLossRate(
-    Ngap_PacketLossRate_t *packetLossRate) {
+    Ngap_PacketLossRate_t* packetLossRate) {
   *packetLossRate = packetlossrate;
 
   return true;
@@ -63,9 +61,9 @@ bool PacketLossRate::encode2PacketLossRate(
 
 //------------------------------------------------------------------------------
 bool PacketLossRate::decodefromPacketLossRate(
-    Ngap_PacketLossRate_t *packetLossRate) {
+    Ngap_PacketLossRate_t* packetLossRate) {
   packetlossrate = *packetLossRate;
 
   return true;
 }
-}
+}  // namespace ngap

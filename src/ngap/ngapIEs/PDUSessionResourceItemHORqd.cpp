@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,20 +34,18 @@ namespace ngap {
 PDUSessionResourceItemHORqd::PDUSessionResourceItemHORqd() {
   pDUSessionID = NULL;
 }
-PDUSessionResourceItemHORqd::~PDUSessionResourceItemHORqd() {
-}
+PDUSessionResourceItemHORqd::~PDUSessionResourceItemHORqd() {}
 
 void PDUSessionResourceItemHORqd::setPDUSessionResourceItemHORqd(
-    PDUSessionID *m_pDUSessionID, OCTET_STRING_t m_handoverrequiredtransfer) {
-  pDUSessionID = m_pDUSessionID;
+    PDUSessionID* m_pDUSessionID, OCTET_STRING_t m_handoverrequiredtransfer) {
+  pDUSessionID             = m_pDUSessionID;
   handoverrequiredtransfer = m_handoverrequiredtransfer;
 }
 bool PDUSessionResourceItemHORqd::encode2PDUSessionResourceItemHORqd(
-    Ngap_PDUSessionResourceItemHORqd_t *pdUSessionResourceItemHORqd) {
-  if (!pDUSessionID)
-    return false;
+    Ngap_PDUSessionResourceItemHORqd_t* pdUSessionResourceItemHORqd) {
+  if (!pDUSessionID) return false;
   if (!pDUSessionID->encode2PDUSessionID(
-      pdUSessionResourceItemHORqd->pDUSessionID))
+          pdUSessionResourceItemHORqd->pDUSessionID))
     return false;
   pdUSessionResourceItemHORqd->handoverRequiredTransfer =
       handoverrequiredtransfer;
@@ -55,21 +53,20 @@ bool PDUSessionResourceItemHORqd::encode2PDUSessionResourceItemHORqd(
   return true;
 }
 bool PDUSessionResourceItemHORqd::decodefromPDUSessionResourceItemHORqd(
-    Ngap_PDUSessionResourceItemHORqd_t *pdUSessionResourceItemHORqd) {
+    Ngap_PDUSessionResourceItemHORqd_t* pdUSessionResourceItemHORqd) {
   pDUSessionID = new PDUSessionID();
   if (!pDUSessionID->decodefromPDUSessionID(
-      pdUSessionResourceItemHORqd->pDUSessionID))
+          pdUSessionResourceItemHORqd->pDUSessionID))
     return false;
-  handoverrequiredtransfer = pdUSessionResourceItemHORqd
-      ->handoverRequiredTransfer;
+  handoverrequiredtransfer =
+      pdUSessionResourceItemHORqd->handoverRequiredTransfer;
 
   return true;
 }
 void PDUSessionResourceItemHORqd::getPDUSessionResourceItemHORqd(
-    PDUSessionID *&m_pDUSessionID, OCTET_STRING_t &m_handoverrequiredtransfer) {
-  m_pDUSessionID = pDUSessionID;
+    PDUSessionID*& m_pDUSessionID, OCTET_STRING_t& m_handoverrequiredtransfer) {
+  m_pDUSessionID             = pDUSessionID;
   m_handoverrequiredtransfer = handoverrequiredtransfer;
 }
 
-}
-
+}  // namespace ngap

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -44,32 +44,31 @@ _5GSDeregistrationType::_5GSDeregistrationType(uint8_t type) {
 //------------------------------------------------------------------------------
 _5GSDeregistrationType::_5GSDeregistrationType(
     _5gs_deregistration_type_t type) {
-  u1.b = 0;
-  u1.bf.switch_off = type.switch_off;
+  u1.b                 = 0;
+  u1.bf.switch_off     = type.switch_off;
   u1.bf.dereg_required = type.dereg_required;
-  u1.bf.access_type = type.access_type;
-  u1.bf.iei = type.iei;
+  u1.bf.access_type    = type.access_type;
+  u1.bf.iei            = type.iei;
 }
 
 //------------------------------------------------------------------------------
-_5GSDeregistrationType::~_5GSDeregistrationType() {
-}
+_5GSDeregistrationType::~_5GSDeregistrationType() {}
 
 //------------------------------------------------------------------------------
 void _5GSDeregistrationType::set(_5gs_deregistration_type_t type) {
-  u1.b = 0;
-  u1.bf.switch_off = type.switch_off;
+  u1.b                 = 0;
+  u1.bf.switch_off     = type.switch_off;
   u1.bf.dereg_required = type.dereg_required;
-  u1.bf.access_type = type.access_type;
-  u1.bf.iei = type.iei;
+  u1.bf.access_type    = type.access_type;
+  u1.bf.iei            = type.iei;
 }
 
 //------------------------------------------------------------------------------
-void _5GSDeregistrationType::get(_5gs_deregistration_type_t &type) {
-  type.switch_off = u1.bf.switch_off;
+void _5GSDeregistrationType::get(_5gs_deregistration_type_t& type) {
+  type.switch_off     = u1.bf.switch_off;
   type.dereg_required = u1.bf.dereg_required;
-  type.access_type = u1.bf.access_type;
-  type.iei = u1.bf.iei;
+  type.access_type    = u1.bf.access_type;
+  type.iei            = u1.bf.iei;
 }
 
 //------------------------------------------------------------------------------
@@ -78,12 +77,12 @@ void _5GSDeregistrationType::set(uint8_t type) {
 }
 
 //------------------------------------------------------------------------------
-void _5GSDeregistrationType::get(uint8_t &type) {
+void _5GSDeregistrationType::get(uint8_t& type) {
   type = u1.b;
 }
 
 //------------------------------------------------------------------------------
-int _5GSDeregistrationType::encode2buffer(uint8_t *buf, int len) {
+int _5GSDeregistrationType::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().error("Encoding 5GSDeregistrationType IE");
   if (len < 1) {
     Logger::nas_mm().error(
@@ -94,7 +93,7 @@ int _5GSDeregistrationType::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int _5GSDeregistrationType::decodefrombuffer(uint8_t *buf, int len) {
+int _5GSDeregistrationType::decodefrombuffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("Decoding 5GSDeregistrationType");
   u1.b = *buf;
 

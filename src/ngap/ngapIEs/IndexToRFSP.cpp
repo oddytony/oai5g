@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-IndexToRFSP::IndexToRFSP() {
-}
+IndexToRFSP::IndexToRFSP() {}
 
 //------------------------------------------------------------------------------
-IndexToRFSP::~IndexToRFSP() {
-}
+IndexToRFSP::~IndexToRFSP() {}
 
 //------------------------------------------------------------------------------
 void IndexToRFSP::setIndexToRFSP(uint8_t m_indexToRFSP) {
@@ -52,15 +50,14 @@ uint8_t IndexToRFSP::getIndexToRFSP() {
 }
 
 //------------------------------------------------------------------------------
-bool IndexToRFSP::encode2IndexToRFSP(Ngap_IndexToRFSP_t &indextorfsp) {
+bool IndexToRFSP::encode2IndexToRFSP(Ngap_IndexToRFSP_t& indextorfsp) {
   indextorfsp = indexToRFSP;
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool IndexToRFSP::decodefromIndexToRFSP(Ngap_IndexToRFSP_t &indextorfsp) {
+bool IndexToRFSP::decodefromIndexToRFSP(Ngap_IndexToRFSP_t& indextorfsp) {
   indexToRFSP = indextorfsp;
   return true;
 }
-}
-
+}  // namespace ngap

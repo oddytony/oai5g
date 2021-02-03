@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,8 +39,7 @@ GlobalRanNodeId::GlobalRanNodeId() {
 }
 
 //------------------------------------------------------------------------------
-GlobalRanNodeId::~GlobalRanNodeId() {
-}
+GlobalRanNodeId::~GlobalRanNodeId() {}
 
 //------------------------------------------------------------------------------
 void GlobalRanNodeId::setChoiceOfRanNodeId(
@@ -54,37 +53,33 @@ Ngap_GlobalRANNodeID_PR GlobalRanNodeId::getChoiceOfRanNodeId() {
 }
 
 //------------------------------------------------------------------------------
-void GlobalRanNodeId::setGlobalgNBID(GlobalgNBId *m_globalgNBId) {
+void GlobalRanNodeId::setGlobalgNBID(GlobalgNBId* m_globalgNBId) {
   globalgNBId = m_globalgNBId;
 }
 
 //------------------------------------------------------------------------------
-void GlobalRanNodeId::getGlobalgNBID(GlobalgNBId *&ptr) {
+void GlobalRanNodeId::getGlobalgNBID(GlobalgNBId*& ptr) {
   ptr = globalgNBId;
 }
 
 //------------------------------------------------------------------------------
 bool GlobalRanNodeId::encode2GlobalRANNodeID(
-    Ngap_GlobalRANNodeID_t *globalRANNodeID) {
+    Ngap_GlobalRANNodeID_t* globalRANNodeID) {
   globalRANNodeID->present = idPresent;
 
   switch (idPresent) {
     case Ngap_GlobalRANNodeID_PR_globalGNB_ID: {
-      Ngap_GlobalGNB_ID_t *globalGNB_ID = (Ngap_GlobalGNB_ID_t*) calloc(
-          1, sizeof(struct Ngap_GlobalGNB_ID));
-      if (!globalGNB_ID)
-        return false;
-      if (!globalgNBId->encode2GlobalgNBId(globalGNB_ID))
-        return false;
+      Ngap_GlobalGNB_ID_t* globalGNB_ID =
+          (Ngap_GlobalGNB_ID_t*) calloc(1, sizeof(struct Ngap_GlobalGNB_ID));
+      if (!globalGNB_ID) return false;
+      if (!globalgNBId->encode2GlobalgNBId(globalGNB_ID)) return false;
       globalRANNodeID->choice.globalGNB_ID = globalGNB_ID;
       break;
     }
     case Ngap_GlobalRANNodeID_PR_globalNgENB_ID: {
-
       break;
     }
     case Ngap_GlobalRANNodeID_PR_globalN3IWF_ID: {
-
       break;
     }
     default:
@@ -96,13 +91,13 @@ bool GlobalRanNodeId::encode2GlobalRANNodeID(
 
 //------------------------------------------------------------------------------
 bool GlobalRanNodeId::decodefromGlobalRANNodeID(
-    Ngap_GlobalRANNodeID_t *globalRANNodeID) {
+    Ngap_GlobalRANNodeID_t* globalRANNodeID) {
   idPresent = globalRANNodeID->present;
   switch (idPresent) {
     case Ngap_GlobalRANNodeID_PR_globalGNB_ID: {
       globalgNBId = new GlobalgNBId();
       if (!globalgNBId->decodefromGlobalgNBId(
-          globalRANNodeID->choice.globalGNB_ID))
+              globalRANNodeID->choice.globalGNB_ID))
         return false;
       break;
     }
@@ -120,4 +115,4 @@ bool GlobalRanNodeId::decodefromGlobalRANNodeID(
   }
   return true;
 }
-}
+}  // namespace ngap

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -38,24 +38,24 @@ extern "C" {
 #include "Ngap_ProtocolIE-Field.h"
 #include "Ngap_InitiatingMessage.h"
 }
-namespace ngap
-{
-class UplinkRANStatusTransfer
-{
-public:
+namespace ngap {
+class UplinkRANStatusTransfer {
+ public:
   UplinkRANStatusTransfer();
   virtual ~UplinkRANStatusTransfer();
-  unsigned long getAmfUeNgapId();  //return -1;(不存在)
-  uint32_t getRanUeNgapId();//return -1;(不存在)
-  void getRANStatusTransfer_TransparentContainer(RANStatusTransferTransparentContainer *&ranstatustransfer_transparentcontainer);
-  bool defromPDU(Ngap_NGAP_PDU_t *ngap_msg_pdu);
+  unsigned long getAmfUeNgapId();  // return -1;(不存在)
+  uint32_t getRanUeNgapId();       // return -1;(不存在)
+  void getRANStatusTransfer_TransparentContainer(
+      RANStatusTransferTransparentContainer*&
+          ranstatustransfer_transparentcontainer);
+  bool defromPDU(Ngap_NGAP_PDU_t* ngap_msg_pdu);
 
-private:
-  Ngap_NGAP_PDU_t *UplinkRANStatusTransferPDU;
-  Ngap_UplinkRANStatusTransfer_t *UplinkRANStatusTransferIEs;
-  AMF_UE_NGAP_ID *amfUeNgapId;
-  RAN_UE_NGAP_ID *ranUeNgapId;
-  RANStatusTransferTransparentContainer *ranStatusTransfer_TransparentContainer;
+ private:
+  Ngap_NGAP_PDU_t* UplinkRANStatusTransferPDU;
+  Ngap_UplinkRANStatusTransfer_t* UplinkRANStatusTransferIEs;
+  AMF_UE_NGAP_ID* amfUeNgapId;
+  RAN_UE_NGAP_ID* ranUeNgapId;
+  RANStatusTransferTransparentContainer* ranStatusTransfer_TransparentContainer;
 };
 }  // namespace ngap
 

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,15 +39,15 @@ class UE_Radio_Capability_ID {
   UE_Radio_Capability_ID(uint8_t iei);
   UE_Radio_Capability_ID(const uint8_t iei, uint8_t value);
   ~UE_Radio_Capability_ID();
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(uint8_t *buf, int len, bool is_option);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(uint8_t* buf, int len, bool is_option);
   void setValue(uint8_t value);
   uint8_t getValue();
+
  private:
   uint8_t _iei;
   uint8_t _value;
 };
-}
+}  // namespace nas
 
 #endif
-

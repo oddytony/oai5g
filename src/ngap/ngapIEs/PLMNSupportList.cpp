@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,26 +39,24 @@ PLMNSupportList::PLMNSupportList() {
 }
 
 //------------------------------------------------------------------------------
-PLMNSupportList::~PLMNSupportList() {
-}
+PLMNSupportList::~PLMNSupportList() {}
 
 //------------------------------------------------------------------------------
 void PLMNSupportList::addPLMNSupportItems(
-    PLMNSupportItem *m_plmnsupportItemItem, int numOfItem) {
-  plmnsupportItemItem = m_plmnsupportItemItem;
+    PLMNSupportItem* m_plmnsupportItemItem, int numOfItem) {
+  plmnsupportItemItem         = m_plmnsupportItemItem;
   numberOfplmnsupportItemItem = numOfItem;
 }
 
 //------------------------------------------------------------------------------
 bool PLMNSupportList::encode2PLMNSupportList(
-    Ngap_PLMNSupportList_t *plmnsupportList) {
+    Ngap_PLMNSupportList_t* plmnsupportList) {
   cout << "PLMNSupportList::numberOfplmnsupportItemItem	("
-      << numberOfplmnsupportItemItem << ")" << endl;
+       << numberOfplmnsupportItemItem << ")" << endl;
   for (int i = 0; i < numberOfplmnsupportItemItem; i++) {
-    Ngap_PLMNSupportItem_t *supportItem = (Ngap_PLMNSupportItem_t*) calloc(
-        1, sizeof(Ngap_PLMNSupportItem_t));
-    if (!supportItem)
-      return false;
+    Ngap_PLMNSupportItem_t* supportItem =
+        (Ngap_PLMNSupportItem_t*) calloc(1, sizeof(Ngap_PLMNSupportItem_t));
+    if (!supportItem) return false;
     if (!plmnsupportItemItem[i].encode2PLMNSupportItem(supportItem))
       return false;
     if (ASN_SEQUENCE_ADD(&plmnsupportList->list, supportItem) != 0)
@@ -69,12 +67,12 @@ bool PLMNSupportList::encode2PLMNSupportList(
 
 //------------------------------------------------------------------------------
 bool PLMNSupportList::decodefromPLMNSupportList(
-    Ngap_PLMNSupportList_t *plmnsupportList) {
+    Ngap_PLMNSupportList_t* plmnsupportList) {
   numberOfplmnsupportItemItem = plmnsupportList->list.count;
   plmnsupportItemItem = new PLMNSupportItem[numberOfplmnsupportItemItem]();
   for (int i = 0; i < numberOfplmnsupportItemItem; i++) {
     if (!plmnsupportItemItem[i].decodefromPLMNSupportItem(
-        plmnsupportList->list.array[i]))
+            plmnsupportList->list.array[i]))
       return false;
   }
 
@@ -83,10 +81,9 @@ bool PLMNSupportList::decodefromPLMNSupportList(
 
 //------------------------------------------------------------------------------
 void PLMNSupportList::getPLMNSupportItems(
-    PLMNSupportItem *&m_plmnsupportItemItem, int &numOfItem) {
+    PLMNSupportItem*& m_plmnsupportItemItem, int& numOfItem) {
   m_plmnsupportItemItem = plmnsupportItemItem;
-  numOfItem = numberOfplmnsupportItemItem;
+  numOfItem             = numberOfplmnsupportItemItem;
 }
 
-}
-
+}  // namespace ngap

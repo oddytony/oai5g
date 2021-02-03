@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -45,20 +45,23 @@ class GUAMI {
   GUAMI();
   virtual ~GUAMI();
 
-  void setGUAMI(PlmnId *m_plmnId, AMFRegionID *m_aMFRegionID,
-                AMFSetID *m_aMFSetID, AMFPointer *m_aMFPointer);
-  void getGUAMI(PlmnId *&m_plmnId, AMFRegionID *&m_aMFRegionID,
-                AMFSetID *&m_aMFSetID, AMFPointer *&m_aMFPointer);
+  void setGUAMI(
+      PlmnId* m_plmnId, AMFRegionID* m_aMFRegionID, AMFSetID* m_aMFSetID,
+      AMFPointer* m_aMFPointer);
+  void getGUAMI(
+      PlmnId*& m_plmnId, AMFRegionID*& m_aMFRegionID, AMFSetID*& m_aMFSetID,
+      AMFPointer*& m_aMFPointer);
 
-  bool encode2GUAMI(Ngap_GUAMI_t *guami);
-  bool decodefromGUAMI(Ngap_GUAMI_t *pdu);
+  bool encode2GUAMI(Ngap_GUAMI_t* guami);
+  bool decodefromGUAMI(Ngap_GUAMI_t* pdu);
+
  private:
-  PlmnId *plmnId;
-  AMFRegionID *aMFRegionID;
-  AMFSetID *aMFSetID;
-  AMFPointer *aMFPointer;
+  PlmnId* plmnId;
+  AMFRegionID* aMFRegionID;
+  AMFSetID* aMFSetID;
+  AMFPointer* aMFPointer;
 };
 
-}
+}  // namespace ngap
 
 #endif

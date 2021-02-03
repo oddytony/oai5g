@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -29,33 +29,30 @@
 #include <iostream>
 using namespace std;
 
-namespace ngap
-{
-	QosFlowItemWithDataForWarding::QosFlowItemWithDataForWarding()
-	{
-		qosFlowIdentifier = NULL;
-	}
-	QosFlowItemWithDataForWarding::~QosFlowItemWithDataForWarding() {}
-	void QosFlowItemWithDataForWarding::getQosFlowItemWithDataForWarding(Ngap_QosFlowIdentifier_t &m_QosFlowIdentifier)
-	{
-		if (!qosFlowIdentifier)
-			printf("qosFlowIdentifier null\n");
-		else
-			printf("qosFlowIdentifier \n");
-		if (qosFlowIdentifier->getQosFlowIdentifier(value))
-		{
-			m_QosFlowIdentifier = (Ngap_QosFlowIdentifier_t)value;
-		}
-	}
-	bool QosFlowItemWithDataForWarding::decodeformQosFlowItemWithDataForWarding(Ngap_QosFlowSetupResponseItemHOReqAck_t *qosFlowItemWithDataForWarding)
-	{
-		qosFlowIdentifier = new QosFlowIdentifier();
-		if (!qosFlowIdentifier->decodefromQosFlowIdentifier(&(qosFlowItemWithDataForWarding->qosFlowIdentifier)))
-		{
-			printf("false\n");
-			return false;
-		}
-		printf("true\n");
-		return true;
-	}
-} // namespace ngap
+namespace ngap {
+QosFlowItemWithDataForWarding::QosFlowItemWithDataForWarding() {
+  qosFlowIdentifier = NULL;
+}
+QosFlowItemWithDataForWarding::~QosFlowItemWithDataForWarding() {}
+void QosFlowItemWithDataForWarding::getQosFlowItemWithDataForWarding(
+    Ngap_QosFlowIdentifier_t& m_QosFlowIdentifier) {
+  if (!qosFlowIdentifier)
+    printf("qosFlowIdentifier null\n");
+  else
+    printf("qosFlowIdentifier \n");
+  if (qosFlowIdentifier->getQosFlowIdentifier(value)) {
+    m_QosFlowIdentifier = (Ngap_QosFlowIdentifier_t) value;
+  }
+}
+bool QosFlowItemWithDataForWarding::decodeformQosFlowItemWithDataForWarding(
+    Ngap_QosFlowSetupResponseItemHOReqAck_t* qosFlowItemWithDataForWarding) {
+  qosFlowIdentifier = new QosFlowIdentifier();
+  if (!qosFlowIdentifier->decodefromQosFlowIdentifier(
+          &(qosFlowItemWithDataForWarding->qosFlowIdentifier))) {
+    printf("false\n");
+    return false;
+  }
+  printf("true\n");
+  return true;
+}
+}  // namespace ngap

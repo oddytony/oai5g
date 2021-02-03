@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -30,7 +30,6 @@
 #include "logger.hpp"
 using namespace nas;
 
-
 //------------------------------------------------------------------------------
 UE_Status::UE_Status(uint8_t iei) {
   _iei = iei;
@@ -39,17 +38,15 @@ UE_Status::UE_Status(uint8_t iei) {
 //------------------------------------------------------------------------------
 UE_Status::UE_Status(const uint8_t iei, bool n1, bool s1) {
   _iei = iei;
-  S1 = s1;
-  N1 = n1;
+  S1   = s1;
+  N1   = n1;
 }
 
 //------------------------------------------------------------------------------
-UE_Status::UE_Status() {
-}
+UE_Status::UE_Status() {}
 
 //------------------------------------------------------------------------------
-UE_Status::~UE_Status() {
-}
+UE_Status::~UE_Status() {}
 
 //------------------------------------------------------------------------------
 void UE_Status::setS1(bool value) {
@@ -72,7 +69,7 @@ bool UE_Status::getN1() {
 }
 
 //------------------------------------------------------------------------------
-int UE_Status::encode2buffer(uint8_t *buf, int len) {
+int UE_Status::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding UE_Status iei(0x%x)", _iei);
   if (len < 3) {
     //	Logger::nas_mm().error("len is less than %d", length);
@@ -95,7 +92,7 @@ int UE_Status::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int UE_Status::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int UE_Status::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding UE_Status iei(0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
@@ -103,7 +100,7 @@ int UE_Status::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
   }
   S1 = 0;
   N1 = 0;
-  //length = *(buf + decoded_size);
+  // length = *(buf + decoded_size);
   decoded_size++;
   N1 = *(buf + decoded_size) & 0x02;
   S1 = *(buf + decoded_size) & 0x01;
@@ -112,4 +109,3 @@ int UE_Status::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoded UE_Status len(%d)", decoded_size);
   return decoded_size;
 }
-

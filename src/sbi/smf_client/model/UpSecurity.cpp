@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,102 +10,90 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "UpSecurity.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
+UpSecurity::UpSecurity() {}
 
+UpSecurity::~UpSecurity() {}
 
-
-UpSecurity::UpSecurity()
-{
+void UpSecurity::validate() {
+  // TODO: implement validation
 }
 
-UpSecurity::~UpSecurity()
-{
+web::json::value UpSecurity::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  val[utility::conversions::to_string_t("upIntegr")] =
+      ModelBase::toJson(m_UpIntegr);
+  val[utility::conversions::to_string_t("upConfid")] =
+      ModelBase::toJson(m_UpConfid);
+
+  return val;
 }
 
-void UpSecurity::validate()
-{
-    // TODO: implement validation
+void UpSecurity::fromJson(const web::json::value& val) {
+  std::shared_ptr<UpIntegrity> newUpIntegr(new UpIntegrity());
+  newUpIntegr->fromJson(val.at(utility::conversions::to_string_t("upIntegr")));
+  setUpIntegr(newUpIntegr);
+  std::shared_ptr<UpConfidentiality> newUpConfid(new UpConfidentiality());
+  newUpConfid->fromJson(val.at(utility::conversions::to_string_t("upConfid")));
+  setUpConfid(newUpConfid);
 }
 
-web::json::value UpSecurity::toJson() const
-{
-    web::json::value val = web::json::value::object();
+void UpSecurity::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 
-    val[utility::conversions::to_string_t("upIntegr")] = ModelBase::toJson(m_UpIntegr);
-    val[utility::conversions::to_string_t("upConfid")] = ModelBase::toJson(m_UpConfid);
-
-    return val;
+  m_UpIntegr->toMultipart(
+      multipart, utility::conversions::to_string_t("upIntegr."));
+  m_UpConfid->toMultipart(
+      multipart, utility::conversions::to_string_t("upConfid."));
 }
 
-void UpSecurity::fromJson(const web::json::value& val)
-{
-    std::shared_ptr<UpIntegrity> newUpIntegr(new UpIntegrity());
-    newUpIntegr->fromJson(val.at(utility::conversions::to_string_t("upIntegr")));
-    setUpIntegr( newUpIntegr );
-    std::shared_ptr<UpConfidentiality> newUpConfid(new UpConfidentiality());
-    newUpConfid->fromJson(val.at(utility::conversions::to_string_t("upConfid")));
-    setUpConfid( newUpConfid );
+void UpSecurity::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  std::shared_ptr<UpIntegrity> newUpIntegr(new UpIntegrity());
+  newUpIntegr->fromMultiPart(
+      multipart, utility::conversions::to_string_t("upIntegr."));
+  setUpIntegr(newUpIntegr);
+  std::shared_ptr<UpConfidentiality> newUpConfid(new UpConfidentiality());
+  newUpConfid->fromMultiPart(
+      multipart, utility::conversions::to_string_t("upConfid."));
+  setUpConfid(newUpConfid);
 }
 
-void UpSecurity::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    m_UpIntegr->toMultipart(multipart, utility::conversions::to_string_t("upIntegr."));
-    m_UpConfid->toMultipart(multipart, utility::conversions::to_string_t("upConfid."));
+std::shared_ptr<UpIntegrity> UpSecurity::getUpIntegr() const {
+  return m_UpIntegr;
 }
 
-void UpSecurity::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    std::shared_ptr<UpIntegrity> newUpIntegr(new UpIntegrity());
-    newUpIntegr->fromMultiPart(multipart, utility::conversions::to_string_t("upIntegr."));
-    setUpIntegr( newUpIntegr );
-    std::shared_ptr<UpConfidentiality> newUpConfid(new UpConfidentiality());
-    newUpConfid->fromMultiPart(multipart, utility::conversions::to_string_t("upConfid."));
-    setUpConfid( newUpConfid );
+void UpSecurity::setUpIntegr(const std::shared_ptr<UpIntegrity>& value) {
+  m_UpIntegr = value;
 }
 
-std::shared_ptr<UpIntegrity> UpSecurity::getUpIntegr() const
-{
-    return m_UpIntegr;
+std::shared_ptr<UpConfidentiality> UpSecurity::getUpConfid() const {
+  return m_UpConfid;
 }
 
-void UpSecurity::setUpIntegr(const std::shared_ptr<UpIntegrity>& value)
-{
-    m_UpIntegr = value;
-    
+void UpSecurity::setUpConfid(const std::shared_ptr<UpConfidentiality>& value) {
+  m_UpConfid = value;
 }
 
-std::shared_ptr<UpConfidentiality> UpSecurity::getUpConfid() const
-{
-    return m_UpConfid;
-}
-
-void UpSecurity::setUpConfid(const std::shared_ptr<UpConfidentiality>& value)
-{
-    m_UpConfid = value;
-    
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

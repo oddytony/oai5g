@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -43,22 +43,27 @@ class PDUSessionResourceFailedToSetupListCxtRes {
   virtual ~PDUSessionResourceFailedToSetupListCxtRes();
 
   void setPDUSessionResourceFailedToSetupListCxtRes(
-      PDUSessionResourceFailedToSetupItemCxtRes *m_pduSessionResourceFailedToSetupItemCxtRes,
+      PDUSessionResourceFailedToSetupItemCxtRes*
+          m_pduSessionResourceFailedToSetupItemCxtRes,
       int num);
   void getPDUSessionResourceFailedToSetupListCxtRes(
-      PDUSessionResourceFailedToSetupItemCxtRes *&m_pduSessionResourceFailedToSetupItemCxtRes,
-      int &num);
+      PDUSessionResourceFailedToSetupItemCxtRes*&
+          m_pduSessionResourceFailedToSetupItemCxtRes,
+      int& num);
 
   bool encode2PDUSessionResourceFailedToSetupListCxtRes(
-      Ngap_PDUSessionResourceFailedToSetupListCxtRes_t *pduSessionResourceFailedToSetupListCxtRes);
+      Ngap_PDUSessionResourceFailedToSetupListCxtRes_t*
+          pduSessionResourceFailedToSetupListCxtRes);
   bool decodefromPDUSessionResourceFailedToSetupListCxtRes(
-      Ngap_PDUSessionResourceFailedToSetupListCxtRes_t *pduSessionResourceFailedToSetupListCxtRes);
+      Ngap_PDUSessionResourceFailedToSetupListCxtRes_t*
+          pduSessionResourceFailedToSetupListCxtRes);
+
  private:
-  PDUSessionResourceFailedToSetupItemCxtRes *pduSessionResourceFailedToSetupItemCxtRes;
+  PDUSessionResourceFailedToSetupItemCxtRes*
+      pduSessionResourceFailedToSetupItemCxtRes;
   int numofpduSessionResourceFailedToSetupItemCxtRes;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

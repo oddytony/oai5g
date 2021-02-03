@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,107 +10,93 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "MmeCapabilities.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-MmeCapabilities::MmeCapabilities()
-{
-    m_NonIpSupported = false;
-    m_NonIpSupportedIsSet = false;
+MmeCapabilities::MmeCapabilities() {
+  m_NonIpSupported      = false;
+  m_NonIpSupportedIsSet = false;
 }
 
-MmeCapabilities::~MmeCapabilities()
-{
+MmeCapabilities::~MmeCapabilities() {}
+
+void MmeCapabilities::validate() {
+  // TODO: implement validation
 }
 
-void MmeCapabilities::validate()
-{
-    // TODO: implement validation
+web::json::value MmeCapabilities::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  if (m_NonIpSupportedIsSet) {
+    val[utility::conversions::to_string_t("nonIpSupported")] =
+        ModelBase::toJson(m_NonIpSupported);
+  }
+
+  return val;
 }
 
-web::json::value MmeCapabilities::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    if(m_NonIpSupportedIsSet)
-    {
-        val[utility::conversions::to_string_t("nonIpSupported")] = ModelBase::toJson(m_NonIpSupported);
+void MmeCapabilities::fromJson(const web::json::value& val) {
+  if (val.has_field(utility::conversions::to_string_t("nonIpSupported"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("nonIpSupported"));
+    if (!fieldValue.is_null()) {
+      setNonIpSupported(ModelBase::boolFromJson(fieldValue));
     }
-
-    return val;
+  }
 }
 
-void MmeCapabilities::fromJson(const web::json::value& val)
-{
-    if(val.has_field(utility::conversions::to_string_t("nonIpSupported")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("nonIpSupported"));
-        if(!fieldValue.is_null())
-        {
-            setNonIpSupported(ModelBase::boolFromJson(fieldValue));
-        }
-    }
+void MmeCapabilities::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  if (m_NonIpSupportedIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("nonIpSupported"),
+        m_NonIpSupported));
+  }
 }
 
-void MmeCapabilities::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
+void MmeCapabilities::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 
-    if(m_NonIpSupportedIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("nonIpSupported"), m_NonIpSupported));
-    }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("nonIpSupported"))) {
+    setNonIpSupported(ModelBase::boolFromHttpContent(multipart->getContent(
+        utility::conversions::to_string_t("nonIpSupported"))));
+  }
 }
 
-void MmeCapabilities::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    if(multipart->hasContent(utility::conversions::to_string_t("nonIpSupported")))
-    {
-        setNonIpSupported(ModelBase::boolFromHttpContent(multipart->getContent(utility::conversions::to_string_t("nonIpSupported"))));
-    }
+bool MmeCapabilities::isNonIpSupported() const {
+  return m_NonIpSupported;
 }
 
-bool MmeCapabilities::isNonIpSupported() const
-{
-    return m_NonIpSupported;
+void MmeCapabilities::setNonIpSupported(bool value) {
+  m_NonIpSupported      = value;
+  m_NonIpSupportedIsSet = true;
 }
 
-void MmeCapabilities::setNonIpSupported(bool value)
-{
-    m_NonIpSupported = value;
-    m_NonIpSupportedIsSet = true;
+bool MmeCapabilities::nonIpSupportedIsSet() const {
+  return m_NonIpSupportedIsSet;
 }
 
-bool MmeCapabilities::nonIpSupportedIsSet() const
-{
-    return m_NonIpSupportedIsSet;
+void MmeCapabilities::unsetNonIpSupported() {
+  m_NonIpSupportedIsSet = false;
 }
 
-void MmeCapabilities::unsetNonIpSupported()
-{
-    m_NonIpSupportedIsSet = false;
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

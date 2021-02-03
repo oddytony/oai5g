@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -40,18 +40,18 @@ class UEIdentityIndexValue {
   UEIdentityIndexValue();
   virtual ~UEIdentityIndexValue();
 
-  void setUEIdentityIndexValue(uint16_t m_indexLength10/*10bits限制*/);
-  void getUEIdentityIndexValue(uint16_t &m_indexLength10/*10bits限制*/);
+  void setUEIdentityIndexValue(uint16_t m_indexLength10 /*10bits限制*/);
+  void getUEIdentityIndexValue(uint16_t& m_indexLength10 /*10bits限制*/);
 
   bool encode2UEIdentityIndexValue(
-      Ngap_UEIdentityIndexValue_t *ueIdentityIndexValue);
+      Ngap_UEIdentityIndexValue_t* ueIdentityIndexValue);
   bool decodefromUEIdentityIndexValue(
-      Ngap_UEIdentityIndexValue_t *ueIdentityIndexValue);
+      Ngap_UEIdentityIndexValue_t* ueIdentityIndexValue);
+
  private:
   uint16_t indexLength10;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

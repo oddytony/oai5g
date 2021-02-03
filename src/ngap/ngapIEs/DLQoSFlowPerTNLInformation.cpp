@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -36,39 +36,38 @@ namespace ngap {
 //------------------------------------------------------------------------------
 DLQoSFlowPerTNLInformation::DLQoSFlowPerTNLInformation() {
   uPTransportLayerInformation = NULL;
-  associatedQosFlowList = NULL;
+  associatedQosFlowList       = NULL;
 }
 
 //------------------------------------------------------------------------------
-DLQoSFlowPerTNLInformation::~DLQoSFlowPerTNLInformation() {
-}
+DLQoSFlowPerTNLInformation::~DLQoSFlowPerTNLInformation() {}
 
 //------------------------------------------------------------------------------
 void DLQoSFlowPerTNLInformation::setDLQoSFlowPerTNLInformation(
-    UpTransportLayerInformation *m_uPTransportLayerInformation,
-    AssociatedQosFlowList *m_associatedQosFlowList) {
+    UpTransportLayerInformation* m_uPTransportLayerInformation,
+    AssociatedQosFlowList* m_associatedQosFlowList) {
   uPTransportLayerInformation = m_uPTransportLayerInformation;
-  associatedQosFlowList = m_associatedQosFlowList;
+  associatedQosFlowList       = m_associatedQosFlowList;
 }
 
 //------------------------------------------------------------------------------
 bool DLQoSFlowPerTNLInformation::getDLQoSFlowPerTNLInformation(
-    UpTransportLayerInformation *&m_uPTransportLayerInformation,
-    AssociatedQosFlowList *&m_associatedQosFlowList) {
+    UpTransportLayerInformation*& m_uPTransportLayerInformation,
+    AssociatedQosFlowList*& m_associatedQosFlowList) {
   m_uPTransportLayerInformation = uPTransportLayerInformation;
-  m_associatedQosFlowList = associatedQosFlowList;
+  m_associatedQosFlowList       = associatedQosFlowList;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
 bool DLQoSFlowPerTNLInformation::encode2DLQoSFlowPerTNLInformation(
-    Ngap_QosFlowPerTNLInformation_t *qosFlowPerTNLInformation) {
+    Ngap_QosFlowPerTNLInformation_t* qosFlowPerTNLInformation) {
   if (!uPTransportLayerInformation->encode2UpTransportLayerInformation(
-      qosFlowPerTNLInformation->uPTransportLayerInformation))
+          qosFlowPerTNLInformation->uPTransportLayerInformation))
     return false;
   if (!associatedQosFlowList->encode2AssociatedQosFlowList(
-      qosFlowPerTNLInformation->associatedQosFlowList))
+          qosFlowPerTNLInformation->associatedQosFlowList))
     return false;
 
   return true;
@@ -76,18 +75,17 @@ bool DLQoSFlowPerTNLInformation::encode2DLQoSFlowPerTNLInformation(
 
 //------------------------------------------------------------------------------
 bool DLQoSFlowPerTNLInformation::decodefromDLQoSFlowPerTNLInformation(
-    Ngap_QosFlowPerTNLInformation_t *qosFlowPerTNLInformation) {
+    Ngap_QosFlowPerTNLInformation_t* qosFlowPerTNLInformation) {
   uPTransportLayerInformation = new UpTransportLayerInformation();
-  associatedQosFlowList = new AssociatedQosFlowList();
+  associatedQosFlowList       = new AssociatedQosFlowList();
   if (!uPTransportLayerInformation->decodefromUpTransportLayerInformation(
-      qosFlowPerTNLInformation->uPTransportLayerInformation))
+          qosFlowPerTNLInformation->uPTransportLayerInformation))
     return false;
   if (!associatedQosFlowList->decodefromAssociatedQosFlowList(
-      qosFlowPerTNLInformation->associatedQosFlowList))
+          qosFlowPerTNLInformation->associatedQosFlowList))
     return false;
 
   return true;
 }
 
-}
-
+}  // namespace ngap

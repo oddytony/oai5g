@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,307 +10,274 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "HsmfUpdateError.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-HsmfUpdateError::HsmfUpdateError()
-{
-    m_Pti = 0;
-    m_PtiIsSet = false;
-    m_N1smCause = utility::conversions::to_string_t("");
-    m_N1smCauseIsSet = false;
-    m_N1SmInfoToUeIsSet = false;
-    m_BackOffTimer = 0;
-    m_BackOffTimerIsSet = false;
-    m_RecoveryTime = utility::datetime();
-    m_RecoveryTimeIsSet = false;
+HsmfUpdateError::HsmfUpdateError() {
+  m_Pti               = 0;
+  m_PtiIsSet          = false;
+  m_N1smCause         = utility::conversions::to_string_t("");
+  m_N1smCauseIsSet    = false;
+  m_N1SmInfoToUeIsSet = false;
+  m_BackOffTimer      = 0;
+  m_BackOffTimerIsSet = false;
+  m_RecoveryTime      = utility::datetime();
+  m_RecoveryTimeIsSet = false;
 }
 
-HsmfUpdateError::~HsmfUpdateError()
-{
+HsmfUpdateError::~HsmfUpdateError() {}
+
+void HsmfUpdateError::validate() {
+  // TODO: implement validation
 }
 
-void HsmfUpdateError::validate()
-{
-    // TODO: implement validation
+web::json::value HsmfUpdateError::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  val[utility::conversions::to_string_t("error")] = ModelBase::toJson(m_Error);
+  if (m_PtiIsSet) {
+    val[utility::conversions::to_string_t("pti")] = ModelBase::toJson(m_Pti);
+  }
+  if (m_N1smCauseIsSet) {
+    val[utility::conversions::to_string_t("n1smCause")] =
+        ModelBase::toJson(m_N1smCause);
+  }
+  if (m_N1SmInfoToUeIsSet) {
+    val[utility::conversions::to_string_t("n1SmInfoToUe")] =
+        ModelBase::toJson(m_N1SmInfoToUe);
+  }
+  if (m_BackOffTimerIsSet) {
+    val[utility::conversions::to_string_t("backOffTimer")] =
+        ModelBase::toJson(m_BackOffTimer);
+  }
+  if (m_RecoveryTimeIsSet) {
+    val[utility::conversions::to_string_t("recoveryTime")] =
+        ModelBase::toJson(m_RecoveryTime);
+  }
+
+  return val;
 }
 
-web::json::value HsmfUpdateError::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    val[utility::conversions::to_string_t("error")] = ModelBase::toJson(m_Error);
-    if(m_PtiIsSet)
-    {
-        val[utility::conversions::to_string_t("pti")] = ModelBase::toJson(m_Pti);
+void HsmfUpdateError::fromJson(const web::json::value& val) {
+  std::shared_ptr<ProblemDetails_2> newError(new ProblemDetails_2());
+  newError->fromJson(val.at(utility::conversions::to_string_t("error")));
+  setError(newError);
+  if (val.has_field(utility::conversions::to_string_t("pti"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("pti"));
+    if (!fieldValue.is_null()) {
+      setPti(ModelBase::int32_tFromJson(fieldValue));
     }
-    if(m_N1smCauseIsSet)
-    {
-        val[utility::conversions::to_string_t("n1smCause")] = ModelBase::toJson(m_N1smCause);
+  }
+  if (val.has_field(utility::conversions::to_string_t("n1smCause"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("n1smCause"));
+    if (!fieldValue.is_null()) {
+      setN1smCause(ModelBase::stringFromJson(fieldValue));
     }
-    if(m_N1SmInfoToUeIsSet)
-    {
-        val[utility::conversions::to_string_t("n1SmInfoToUe")] = ModelBase::toJson(m_N1SmInfoToUe);
+  }
+  if (val.has_field(utility::conversions::to_string_t("n1SmInfoToUe"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("n1SmInfoToUe"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
+      newItem->fromJson(fieldValue);
+      setN1SmInfoToUe(newItem);
     }
-    if(m_BackOffTimerIsSet)
-    {
-        val[utility::conversions::to_string_t("backOffTimer")] = ModelBase::toJson(m_BackOffTimer);
+  }
+  if (val.has_field(utility::conversions::to_string_t("backOffTimer"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("backOffTimer"));
+    if (!fieldValue.is_null()) {
+      setBackOffTimer(ModelBase::int32_tFromJson(fieldValue));
     }
-    if(m_RecoveryTimeIsSet)
-    {
-        val[utility::conversions::to_string_t("recoveryTime")] = ModelBase::toJson(m_RecoveryTime);
+  }
+  if (val.has_field(utility::conversions::to_string_t("recoveryTime"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("recoveryTime"));
+    if (!fieldValue.is_null()) {
+      setRecoveryTime(ModelBase::dateFromJson(fieldValue));
     }
-
-    return val;
+  }
 }
 
-void HsmfUpdateError::fromJson(const web::json::value& val)
-{
-    std::shared_ptr<ProblemDetails_2> newError(new ProblemDetails_2());
-    newError->fromJson(val.at(utility::conversions::to_string_t("error")));
-    setError( newError );
-    if(val.has_field(utility::conversions::to_string_t("pti")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("pti"));
-        if(!fieldValue.is_null())
-        {
-            setPti(ModelBase::int32_tFromJson(fieldValue));
-        }
+void HsmfUpdateError::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  m_Error->toMultipart(multipart, utility::conversions::to_string_t("error."));
+  if (m_PtiIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("pti"), m_Pti));
+  }
+  if (m_N1smCauseIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("n1smCause"),
+        m_N1smCause));
+  }
+  if (m_N1SmInfoToUeIsSet) {
+    if (m_N1SmInfoToUe.get()) {
+      m_N1SmInfoToUe->toMultipart(
+          multipart, utility::conversions::to_string_t("n1SmInfoToUe."));
     }
-    if(val.has_field(utility::conversions::to_string_t("n1smCause")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("n1smCause"));
-        if(!fieldValue.is_null())
-        {
-            setN1smCause(ModelBase::stringFromJson(fieldValue));
-        }
+  }
+  if (m_BackOffTimerIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("backOffTimer"),
+        m_BackOffTimer));
+  }
+  if (m_RecoveryTimeIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("recoveryTime"),
+        m_RecoveryTime));
+  }
+}
+
+void HsmfUpdateError::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  std::shared_ptr<ProblemDetails_2> newError(new ProblemDetails_2());
+  newError->fromMultiPart(
+      multipart, utility::conversions::to_string_t("error."));
+  setError(newError);
+  if (multipart->hasContent(utility::conversions::to_string_t("pti"))) {
+    setPti(ModelBase::int32_tFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("pti"))));
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("n1smCause"))) {
+    setN1smCause(ModelBase::stringFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("n1smCause"))));
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("n1SmInfoToUe"))) {
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("n1SmInfoToUe"))) {
+      std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("n1SmInfoToUe."));
+      setN1SmInfoToUe(newItem);
     }
-    if(val.has_field(utility::conversions::to_string_t("n1SmInfoToUe")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("n1SmInfoToUe"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
-            newItem->fromJson(fieldValue);
-            setN1SmInfoToUe( newItem );
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("backOffTimer")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("backOffTimer"));
-        if(!fieldValue.is_null())
-        {
-            setBackOffTimer(ModelBase::int32_tFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("recoveryTime")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("recoveryTime"));
-        if(!fieldValue.is_null())
-        {
-            setRecoveryTime(ModelBase::dateFromJson(fieldValue));
-        }
-    }
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("backOffTimer"))) {
+    setBackOffTimer(ModelBase::int32_tFromHttpContent(multipart->getContent(
+        utility::conversions::to_string_t("backOffTimer"))));
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("recoveryTime"))) {
+    setRecoveryTime(ModelBase::dateFromHttpContent(multipart->getContent(
+        utility::conversions::to_string_t("recoveryTime"))));
+  }
 }
 
-void HsmfUpdateError::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    m_Error->toMultipart(multipart, utility::conversions::to_string_t("error."));
-    if(m_PtiIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("pti"), m_Pti));
-    }
-    if(m_N1smCauseIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("n1smCause"), m_N1smCause));
-    }
-    if(m_N1SmInfoToUeIsSet)
-    {
-        if (m_N1SmInfoToUe.get())
-        {
-            m_N1SmInfoToUe->toMultipart(multipart, utility::conversions::to_string_t("n1SmInfoToUe."));
-        }
-    }
-    if(m_BackOffTimerIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("backOffTimer"), m_BackOffTimer));
-    }
-    if(m_RecoveryTimeIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("recoveryTime"), m_RecoveryTime));
-    }
+std::shared_ptr<ProblemDetails_2> HsmfUpdateError::getError() const {
+  return m_Error;
 }
 
-void HsmfUpdateError::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    std::shared_ptr<ProblemDetails_2> newError(new ProblemDetails_2());
-    newError->fromMultiPart(multipart, utility::conversions::to_string_t("error."));
-    setError( newError );
-    if(multipart->hasContent(utility::conversions::to_string_t("pti")))
-    {
-        setPti(ModelBase::int32_tFromHttpContent(multipart->getContent(utility::conversions::to_string_t("pti"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("n1smCause")))
-    {
-        setN1smCause(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("n1smCause"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("n1SmInfoToUe")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("n1SmInfoToUe")))
-        {
-            std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("n1SmInfoToUe."));
-            setN1SmInfoToUe( newItem );
-        }
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("backOffTimer")))
-    {
-        setBackOffTimer(ModelBase::int32_tFromHttpContent(multipart->getContent(utility::conversions::to_string_t("backOffTimer"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("recoveryTime")))
-    {
-        setRecoveryTime(ModelBase::dateFromHttpContent(multipart->getContent(utility::conversions::to_string_t("recoveryTime"))));
-    }
+void HsmfUpdateError::setError(const std::shared_ptr<ProblemDetails_2>& value) {
+  m_Error = value;
 }
 
-std::shared_ptr<ProblemDetails_2> HsmfUpdateError::getError() const
-{
-    return m_Error;
+int32_t HsmfUpdateError::getPti() const {
+  return m_Pti;
 }
 
-void HsmfUpdateError::setError(const std::shared_ptr<ProblemDetails_2>& value)
-{
-    m_Error = value;
-    
+void HsmfUpdateError::setPti(int32_t value) {
+  m_Pti      = value;
+  m_PtiIsSet = true;
 }
 
-int32_t HsmfUpdateError::getPti() const
-{
-    return m_Pti;
+bool HsmfUpdateError::ptiIsSet() const {
+  return m_PtiIsSet;
 }
 
-void HsmfUpdateError::setPti(int32_t value)
-{
-    m_Pti = value;
-    m_PtiIsSet = true;
+void HsmfUpdateError::unsetPti() {
+  m_PtiIsSet = false;
 }
 
-bool HsmfUpdateError::ptiIsSet() const
-{
-    return m_PtiIsSet;
+utility::string_t HsmfUpdateError::getN1smCause() const {
+  return m_N1smCause;
 }
 
-void HsmfUpdateError::unsetPti()
-{
-    m_PtiIsSet = false;
+void HsmfUpdateError::setN1smCause(const utility::string_t& value) {
+  m_N1smCause      = value;
+  m_N1smCauseIsSet = true;
 }
 
-utility::string_t HsmfUpdateError::getN1smCause() const
-{
-    return m_N1smCause;
+bool HsmfUpdateError::n1smCauseIsSet() const {
+  return m_N1smCauseIsSet;
 }
 
-void HsmfUpdateError::setN1smCause(const utility::string_t& value)
-{
-    m_N1smCause = value;
-    m_N1smCauseIsSet = true;
+void HsmfUpdateError::unsetN1smCause() {
+  m_N1smCauseIsSet = false;
 }
 
-bool HsmfUpdateError::n1smCauseIsSet() const
-{
-    return m_N1smCauseIsSet;
+std::shared_ptr<RefToBinaryData> HsmfUpdateError::getN1SmInfoToUe() const {
+  return m_N1SmInfoToUe;
 }
 
-void HsmfUpdateError::unsetN1smCause()
-{
-    m_N1smCauseIsSet = false;
+void HsmfUpdateError::setN1SmInfoToUe(
+    const std::shared_ptr<RefToBinaryData>& value) {
+  m_N1SmInfoToUe      = value;
+  m_N1SmInfoToUeIsSet = true;
 }
 
-std::shared_ptr<RefToBinaryData> HsmfUpdateError::getN1SmInfoToUe() const
-{
-    return m_N1SmInfoToUe;
+bool HsmfUpdateError::n1SmInfoToUeIsSet() const {
+  return m_N1SmInfoToUeIsSet;
 }
 
-void HsmfUpdateError::setN1SmInfoToUe(const std::shared_ptr<RefToBinaryData>& value)
-{
-    m_N1SmInfoToUe = value;
-    m_N1SmInfoToUeIsSet = true;
+void HsmfUpdateError::unsetN1SmInfoToUe() {
+  m_N1SmInfoToUeIsSet = false;
 }
 
-bool HsmfUpdateError::n1SmInfoToUeIsSet() const
-{
-    return m_N1SmInfoToUeIsSet;
+int32_t HsmfUpdateError::getBackOffTimer() const {
+  return m_BackOffTimer;
 }
 
-void HsmfUpdateError::unsetN1SmInfoToUe()
-{
-    m_N1SmInfoToUeIsSet = false;
+void HsmfUpdateError::setBackOffTimer(int32_t value) {
+  m_BackOffTimer      = value;
+  m_BackOffTimerIsSet = true;
 }
 
-int32_t HsmfUpdateError::getBackOffTimer() const
-{
-    return m_BackOffTimer;
+bool HsmfUpdateError::backOffTimerIsSet() const {
+  return m_BackOffTimerIsSet;
 }
 
-void HsmfUpdateError::setBackOffTimer(int32_t value)
-{
-    m_BackOffTimer = value;
-    m_BackOffTimerIsSet = true;
+void HsmfUpdateError::unsetBackOffTimer() {
+  m_BackOffTimerIsSet = false;
 }
 
-bool HsmfUpdateError::backOffTimerIsSet() const
-{
-    return m_BackOffTimerIsSet;
+utility::datetime HsmfUpdateError::getRecoveryTime() const {
+  return m_RecoveryTime;
 }
 
-void HsmfUpdateError::unsetBackOffTimer()
-{
-    m_BackOffTimerIsSet = false;
+void HsmfUpdateError::setRecoveryTime(const utility::datetime& value) {
+  m_RecoveryTime      = value;
+  m_RecoveryTimeIsSet = true;
 }
 
-utility::datetime HsmfUpdateError::getRecoveryTime() const
-{
-    return m_RecoveryTime;
+bool HsmfUpdateError::recoveryTimeIsSet() const {
+  return m_RecoveryTimeIsSet;
 }
 
-void HsmfUpdateError::setRecoveryTime(const utility::datetime& value)
-{
-    m_RecoveryTime = value;
-    m_RecoveryTimeIsSet = true;
+void HsmfUpdateError::unsetRecoveryTime() {
+  m_RecoveryTimeIsSet = false;
 }
 
-bool HsmfUpdateError::recoveryTimeIsSet() const
-{
-    return m_RecoveryTimeIsSet;
-}
-
-void HsmfUpdateError::unsetRecoveryTime()
-{
-    m_RecoveryTimeIsSet = false;
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

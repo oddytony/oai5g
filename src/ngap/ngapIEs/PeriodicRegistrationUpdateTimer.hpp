@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -41,17 +41,17 @@ class PeriodicRegistrationUpdateTimer {
   virtual ~PeriodicRegistrationUpdateTimer();
 
   void setPeriodicRegistrationUpdateTimer(uint8_t m_updatetimer);
-  void getPeriodicRegistrationUpdateTimer(uint8_t &m_updatetimer);
+  void getPeriodicRegistrationUpdateTimer(uint8_t& m_updatetimer);
 
   bool encode2PeriodicRegistrationUpdateTimer(
-      Ngap_PeriodicRegistrationUpdateTimer_t *periodicRegistrationUpdateTimer);
+      Ngap_PeriodicRegistrationUpdateTimer_t* periodicRegistrationUpdateTimer);
   bool decodefromPeriodicRegistrationUpdateTimer(
-      Ngap_PeriodicRegistrationUpdateTimer_t *periodicRegistrationUpdateTimer);
+      Ngap_PeriodicRegistrationUpdateTimer_t* periodicRegistrationUpdateTimer);
+
  private:
   uint8_t updatetimer;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -50,28 +50,28 @@ class InitialContextSetupFailureMsg {
   virtual ~InitialContextSetupFailureMsg();
 
   void setMessageType();
-  void setAmfUeNgapId(unsigned long id);  //40 bits
-  void setRanUeNgapId(uint32_t id);  // 32 bits
+  void setAmfUeNgapId(unsigned long id);  // 40 bits
+  void setRanUeNgapId(uint32_t id);       // 32 bits
   void setPduSessionResourceFailedToSetupList(
       std::vector<PDUSessionResourceFailedToSetupItem_t> list);
 
-  int encode2buffer(uint8_t *buf, int buf_size);
-  //Decapsulation
-  bool decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu);
+  int encode2buffer(uint8_t* buf, int buf_size);
+  // Decapsulation
+  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
   unsigned long getAmfUeNgapId();
   uint32_t getRanUeNgapId();
   bool getPduSessionResourceFailedToSetupList(
-      std::vector<PDUSessionResourceFailedToSetupItem_t> &list);
+      std::vector<PDUSessionResourceFailedToSetupItem_t>& list);
 
  private:
-  Ngap_NGAP_PDU_t *initialContextSetupFailurePdu;
-  Ngap_InitialContextSetupFailure_t *initialContextSetupFailureIEs;
+  Ngap_NGAP_PDU_t* initialContextSetupFailurePdu;
+  Ngap_InitialContextSetupFailure_t* initialContextSetupFailureIEs;
 
-  AMF_UE_NGAP_ID *amfUeNgapId;
-  RAN_UE_NGAP_ID *ranUeNgapId;
-  PDUSessionResourceFailedToSetupListCxtFail *pduSessionResourceFailedToSetupFailureList;
+  AMF_UE_NGAP_ID* amfUeNgapId;
+  RAN_UE_NGAP_ID* ranUeNgapId;
+  PDUSessionResourceFailedToSetupListCxtFail*
+      pduSessionResourceFailedToSetupFailureList;
 };
 
-}
+}  // namespace ngap
 #endif
-

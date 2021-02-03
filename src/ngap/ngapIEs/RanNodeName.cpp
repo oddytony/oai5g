@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,8 +39,7 @@ RanNodeName::RanNodeName() {
 }
 
 //------------------------------------------------------------------------------
-RanNodeName::~RanNodeName() {
-}
+RanNodeName::~RanNodeName() {}
 
 //------------------------------------------------------------------------------
 void RanNodeName::setValue(const std::string ranName) {
@@ -48,15 +47,14 @@ void RanNodeName::setValue(const std::string ranName) {
 }
 
 //------------------------------------------------------------------------------
-bool RanNodeName::getValue(std::string &ranName) {
-  if (!ranNodeName)
-    return false;
+bool RanNodeName::getValue(std::string& ranName) {
+  if (!ranNodeName) return false;
   ranName = ranNodeName;
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool RanNodeName::encode2RanNodeName(Ngap_RANNodeName_t *rannodename) {
+bool RanNodeName::encode2RanNodeName(Ngap_RANNodeName_t* rannodename) {
   int ret = OCTET_STRING_fromBuf(rannodename, ranNodeName, strlen(ranNodeName));
 
   if (ret == 0)
@@ -66,11 +64,10 @@ bool RanNodeName::encode2RanNodeName(Ngap_RANNodeName_t *rannodename) {
 }
 
 //------------------------------------------------------------------------------
-bool RanNodeName::decodefromRanNodeName(Ngap_RANNodeName_t *rannodename) {
-  if (!rannodename->buf)
-    return false;
+bool RanNodeName::decodefromRanNodeName(Ngap_RANNodeName_t* rannodename) {
+  if (!rannodename->buf) return false;
   ranNodeName = (char*) rannodename->buf;
   return true;
 }
 
-}
+}  // namespace ngap

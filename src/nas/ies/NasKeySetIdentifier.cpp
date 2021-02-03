@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -31,32 +31,30 @@
 using namespace nas;
 
 //------------------------------------------------------------------------------
-NasKeySetIdentifier::NasKeySetIdentifier(const uint8_t m_iei, uint8_t m_tsc, uint8_t m_key_id) {
-  iei = m_iei;
-  tsc = 0x01 & m_tsc;
+NasKeySetIdentifier::NasKeySetIdentifier(
+    const uint8_t m_iei, uint8_t m_tsc, uint8_t m_key_id) {
+  iei    = m_iei;
+  tsc    = 0x01 & m_tsc;
   key_id = 0x07 & m_key_id;
   Logger::nas_mm().debug("Encoding NasKeySetIdentifier ...");
 }
 
 //------------------------------------------------------------------------------
 NasKeySetIdentifier::NasKeySetIdentifier(uint8_t tsc, uint8_t key_id) {
-  this->iei = 0;
-  this->tsc = 0x01 & tsc;
+  this->iei    = 0;
+  this->tsc    = 0x01 & tsc;
   this->key_id = 0x07 & key_id;
   Logger::nas_mm().debug("Encoding NasKeySetIdentifier???");
 }
 
 //------------------------------------------------------------------------------
-NasKeySetIdentifier::NasKeySetIdentifier() {
-}
+NasKeySetIdentifier::NasKeySetIdentifier() {}
 
 //------------------------------------------------------------------------------
-NasKeySetIdentifier::~NasKeySetIdentifier() {
-}
-;
+NasKeySetIdentifier::~NasKeySetIdentifier(){};
 
 //------------------------------------------------------------------------------
-int NasKeySetIdentifier::encode2buffer(uint8_t *buf, int len) {
+int NasKeySetIdentifier::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("Encoding NasKeySetIdentifier IE IEI 0x%x", iei);
   if (len < 1) {
     Logger::nas_mm().error("len is less than one");
@@ -65,21 +63,25 @@ int NasKeySetIdentifier::encode2buffer(uint8_t *buf, int len) {
     uint8_t octet = 0;
     if (!(iei & 0x0f)) {
       octet = (0x0f) & ((tsc << 3) | key_id);
-      *buf = octet;
-      Logger::nas_mm().debug("Encoded NasKeySetIdentifier IE (TSC 0x%x,Key_id 0x%x)", tsc, key_id);
+      *buf  = octet;
+      Logger::nas_mm().debug(
+          "Encoded NasKeySetIdentifier IE (TSC 0x%x,Key_id 0x%x)", tsc, key_id);
       return 1;
     } else {
       octet = (iei << 4) | (tsc << 3) | key_id;
-      *buf = octet;
+      *buf  = octet;
       Logger::nas_mm().debug("Encoded NasKeySetIdentifier IE (len 1 octet)");
-      Logger::nas_mm().debug("Encoded NasKeySetIdentifier IE (TSC 0x%x, Key_id 0x%x)", tsc, key_id);
+      Logger::nas_mm().debug(
+          "Encoded NasKeySetIdentifier IE (TSC 0x%x, Key_id 0x%x)", tsc,
+          key_id);
       return 1;
     }
   }
 }
 
 //------------------------------------------------------------------------------
-int NasKeySetIdentifier::decodefrombuffer(uint8_t *buf, int len, bool is_option, bool is_high) {
+int NasKeySetIdentifier::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option, bool is_high) {
   Logger::nas_mm().debug("Decoding NasKeySetIdentifier IE");
   if (len < 1) {
     Logger::nas_mm().error("len is less than one");
@@ -92,13 +94,14 @@ int NasKeySetIdentifier::decodefrombuffer(uint8_t *buf, int len, bool is_option,
       iei = 0;
     }
     if (!is_high) {
-      tsc = octet & 0x08;
+      tsc    = octet & 0x08;
       key_id = octet & 0x07;
     } else {
-      tsc = (octet & 0x80) >> 4;
+      tsc    = (octet & 0x80) >> 4;
       key_id = (octet & 0x70) >> 4;
     }
-    Logger::nas_mm().debug("Decoded NasKeySetIdentifier IE (TSC 0x%x, Key_id 0x%x)", tsc, key_id);
+    Logger::nas_mm().debug(
+        "Decoded NasKeySetIdentifier IE (TSC 0x%x, Key_id 0x%x)", tsc, key_id);
     if (iei)
       return 1;
     else

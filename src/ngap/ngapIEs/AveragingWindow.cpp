@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-AveragingWindow::AveragingWindow() {
-}
+AveragingWindow::AveragingWindow() {}
 
 //------------------------------------------------------------------------------
-AveragingWindow::~AveragingWindow() {
-}
+AveragingWindow::~AveragingWindow() {}
 
 //------------------------------------------------------------------------------
 void AveragingWindow::setAveragingWindow(long value) {
@@ -47,7 +45,7 @@ void AveragingWindow::setAveragingWindow(long value) {
 }
 
 //------------------------------------------------------------------------------
-bool AveragingWindow::getAveragingWindow(long &value) {
+bool AveragingWindow::getAveragingWindow(long& value) {
   value = averagingwindow;
 
   return true;
@@ -55,7 +53,7 @@ bool AveragingWindow::getAveragingWindow(long &value) {
 
 //------------------------------------------------------------------------------
 bool AveragingWindow::encode2AveragingWindow(
-    Ngap_AveragingWindow_t *averagingWindow) {
+    Ngap_AveragingWindow_t* averagingWindow) {
   *averagingWindow = averagingwindow;
 
   return true;
@@ -63,9 +61,9 @@ bool AveragingWindow::encode2AveragingWindow(
 
 //------------------------------------------------------------------------------
 bool AveragingWindow::decodefromAveragingWindow(
-    Ngap_AveragingWindow_t *averagingWindow) {
+    Ngap_AveragingWindow_t* averagingWindow) {
   averagingwindow = *averagingWindow;
 
   return true;
 }
-}
+}  // namespace ngap

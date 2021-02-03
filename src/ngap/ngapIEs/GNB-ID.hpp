@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -44,13 +44,14 @@ class GNB_ID {
   bool decodefrombitstring(Ngap_GNB_ID_t&);
   void setValue(uint32_t gnbId);
   long getValue();
+
  private:
   struct gNBId_s {
     uint32_t id;
     uint8_t biteslen;
-  } gNBId;  //22bits to 32bits
+  } gNBId;  // 22bits to 32bits
 };
 
-}
+}  // namespace ngap
 
 #endif

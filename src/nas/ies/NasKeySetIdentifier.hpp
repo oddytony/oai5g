@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -40,19 +40,20 @@ class NasKeySetIdentifier {
   NasKeySetIdentifier(uint8_t tsc, uint8_t key_id);
   ~NasKeySetIdentifier();
 
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(uint8_t *buf, int len, bool is_option, bool is_high);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(uint8_t* buf, int len, bool is_option, bool is_high);
 
   void setTypeOfSecurityContext(uint8_t type);
   void setNasKeyIdentifier(uint8_t id);
   uint8_t getTypeOfSecurityContext();
   uint8_t getasKeyIdentifier();
+
  private:
   uint8_t iei;
   uint8_t tsc;
   uint8_t key_id;
 };
 
-}
+}  // namespace nas
 
 #endif

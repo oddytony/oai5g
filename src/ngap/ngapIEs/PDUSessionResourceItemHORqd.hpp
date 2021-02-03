@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -42,21 +42,21 @@ class PDUSessionResourceItemHORqd {
   virtual ~PDUSessionResourceItemHORqd();
 
   void setPDUSessionResourceItemHORqd(
-      PDUSessionID *m_pDUSessionID, OCTET_STRING_t m_handoverrequiredtransfer);
+      PDUSessionID* m_pDUSessionID, OCTET_STRING_t m_handoverrequiredtransfer);
   void getPDUSessionResourceItemHORqd(
-      PDUSessionID *&m_pDUSessionID,
-      OCTET_STRING_t &m_handoverrequiredtransfer);
+      PDUSessionID*& m_pDUSessionID,
+      OCTET_STRING_t& m_handoverrequiredtransfer);
 
   bool encode2PDUSessionResourceItemHORqd(
-      Ngap_PDUSessionResourceItemHORqd_t *pdUSessionResourceItemHORqd);
+      Ngap_PDUSessionResourceItemHORqd_t* pdUSessionResourceItemHORqd);
   bool decodefromPDUSessionResourceItemHORqd(
-      Ngap_PDUSessionResourceItemHORqd_t *pdUSessionResourceItemHORqd);
+      Ngap_PDUSessionResourceItemHORqd_t* pdUSessionResourceItemHORqd);
+
  private:
-  PDUSessionID *pDUSessionID;
+  PDUSessionID* pDUSessionID;
   OCTET_STRING_t handoverrequiredtransfer;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

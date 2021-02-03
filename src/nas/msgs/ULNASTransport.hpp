@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,8 +37,8 @@ class ULNASTransport {
  public:
   ULNASTransport();
   ~ULNASTransport();
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(NasMmPlainHeader* header, uint8_t* buf, int len);
   void setHeader(uint8_t security_header_type);
   void setPayload_Container_Type(uint8_t value);
   void setPayload_Container(std::vector<PayloadContainerEntry> content);
@@ -52,28 +52,28 @@ class ULNASTransport {
   void setRelease_Assistance_Indication(uint8_t value);
 
   uint8_t getPayloadContainerType();
-  bool getPayloadContainer(std::vector<PayloadContainerEntry> &content);
-  bool getPayloadContainer(bstring &content);
+  bool getPayloadContainer(std::vector<PayloadContainerEntry>& content);
+  bool getPayloadContainer(bstring& content);
   uint8_t getPduSessionId();
   uint8_t getOldPduSessionId();
   uint8_t getRequestType();
-  bool getSnssai(SNSSAI_s &snssai);
-  bool getDnn(bstring &dnn);
+  bool getSnssai(SNSSAI_s& snssai);
+  bool getDnn(bstring& dnn);
+
  public:
-  NasMmPlainHeader *plain_header;
-  Payload_Container_Type *ie_payload_container_type;
-  Payload_Container *ie_payload_container;
-  PDU_Session_Identity_2 *ie_pdu_session_identity_2;
-  PDU_Session_Identity_2 *ie_old_pdu_session_identity_2;
-  Request_Type *ie_request_type;
-  S_NSSAI *ie_s_nssai;
-  DNN *ie_dnn;
-  Additional_Information *ie_additional_information;
-  MA_PDU_Session_Information *ie_ma_pdu_session_information;
-  Release_Assistance_Indication *ie_release_assistance_indication;
+  NasMmPlainHeader* plain_header;
+  Payload_Container_Type* ie_payload_container_type;
+  Payload_Container* ie_payload_container;
+  PDU_Session_Identity_2* ie_pdu_session_identity_2;
+  PDU_Session_Identity_2* ie_old_pdu_session_identity_2;
+  Request_Type* ie_request_type;
+  S_NSSAI* ie_s_nssai;
+  DNN* ie_dnn;
+  Additional_Information* ie_additional_information;
+  MA_PDU_Session_Information* ie_ma_pdu_session_information;
+  Release_Assistance_Indication* ie_release_assistance_indication;
 };
 
-}
+}  // namespace nas
 
 #endif
-

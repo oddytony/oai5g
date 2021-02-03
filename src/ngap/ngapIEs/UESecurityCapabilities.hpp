@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -40,17 +40,18 @@ class UESecurityCapabilities {
   UESecurityCapabilities();
   virtual ~UESecurityCapabilities();
 
-  void setUESecurityCapabilities(uint16_t m_NR_EncryptionAlgs,
-                                 uint16_t m_NR_IntegrityProtectionAlgs,
-                                 uint16_t m_E_UTRA_EncryptionAlgs,
-                                 uint16_t m_E_UTRA_IntegrityProtectionAlgs);
-  bool getUESecurityCapabilities(uint16_t &m_NR_EncryptionAlgs,
-                                 uint16_t &m_NR_IntegrityProtectionAlgs,
-                                 uint16_t &m_E_UTRA_EncryptionAlgs,
-                                 uint16_t &m_E_UTRA_IntegrityProtectionAlgs);
+  void setUESecurityCapabilities(
+      uint16_t m_NR_EncryptionAlgs, uint16_t m_NR_IntegrityProtectionAlgs,
+      uint16_t m_E_UTRA_EncryptionAlgs,
+      uint16_t m_E_UTRA_IntegrityProtectionAlgs);
+  bool getUESecurityCapabilities(
+      uint16_t& m_NR_EncryptionAlgs, uint16_t& m_NR_IntegrityProtectionAlgs,
+      uint16_t& m_E_UTRA_EncryptionAlgs,
+      uint16_t& m_E_UTRA_IntegrityProtectionAlgs);
 
   bool encode2UESecurityCapabilities(Ngap_UESecurityCapabilities_t&);
   bool decodefromUESecurityCapabilities(Ngap_UESecurityCapabilities_t&);
+
  private:
   uint16_t NR_EncryptionAlgs;
   uint16_t NR_IntegrityProtectionAlgs;
@@ -58,7 +59,6 @@ class UESecurityCapabilities {
   uint16_t E_UTRA_IntegrityProtectionAlgs;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

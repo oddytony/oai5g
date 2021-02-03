@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -36,24 +36,24 @@ namespace ngap {
 //------------------------------------------------------------------------------
 UserLocationInformationEUTRA::UserLocationInformationEUTRA() {
   eUTRA_CGI = NULL;
-  tAI = NULL;
+  tAI       = NULL;
   /*istimeStampSet = false;
    timeStamp = NULL;*/
 }
 
 //------------------------------------------------------------------------------
-UserLocationInformationEUTRA::~UserLocationInformationEUTRA() {
-}
+UserLocationInformationEUTRA::~UserLocationInformationEUTRA() {}
 
 //------------------------------------------------------------------------------
-void UserLocationInformationEUTRA::setInformationEUTRA(EUTRA_CGI *m_eUTRA_CGI,
-                                                       TAI *m_tAI) {
+void UserLocationInformationEUTRA::setInformationEUTRA(
+    EUTRA_CGI* m_eUTRA_CGI, TAI* m_tAI) {
   eUTRA_CGI = m_eUTRA_CGI;
-  tAI = m_tAI;
+  tAI       = m_tAI;
 }
 
 //------------------------------------------------------------------------------
-/*void UserLocationInformationEUTRA::setInformationEUTRA(EUTRA_CGI* m_eUTRA_CGI,TAI* m_tAI,TimeStamp* m_timeStamp)
+/*void UserLocationInformationEUTRA::setInformationEUTRA(EUTRA_CGI*
+ m_eUTRA_CGI,TAI* m_tAI,TimeStamp* m_timeStamp)
  {
  eUTRA_CGI = m_eUTRA_CGI;
  tAI = m_tAI;
@@ -63,7 +63,7 @@ void UserLocationInformationEUTRA::setInformationEUTRA(EUTRA_CGI *m_eUTRA_CGI,
 
 //------------------------------------------------------------------------------
 bool UserLocationInformationEUTRA::encode2UserLocationInformationEUTRA(
-    Ngap_UserLocationInformationEUTRA_t *userLocationInformationEUTRA) {
+    Ngap_UserLocationInformationEUTRA_t* userLocationInformationEUTRA) {
   if (!eUTRA_CGI->encode2EUTRA_CGI(&userLocationInformationEUTRA->eUTRA_CGI)) {
     cout << "[Warning] eUTRA_CGI->encode2EUTRA_CGI() error!" << endl;
     return false;
@@ -84,16 +84,16 @@ bool UserLocationInformationEUTRA::encode2UserLocationInformationEUTRA(
 			}
 			userLocationInformationEUTRA->timeStamp = ieTimeStamp;
 		}
-		#endif
+#endif
   return true;
 }
 
 //------------------------------------------------------------------------------
 bool UserLocationInformationEUTRA::decodefromUserLocationInformationEUTRA(
-    Ngap_UserLocationInformationEUTRA_t *userLocationInformationEUTRA) {
+    Ngap_UserLocationInformationEUTRA_t* userLocationInformationEUTRA) {
   eUTRA_CGI = new EUTRA_CGI();
   if (!eUTRA_CGI->decodefromEUTRA_CGI(
-      &userLocationInformationEUTRA->eUTRA_CGI)) {
+          &userLocationInformationEUTRA->eUTRA_CGI)) {
     cout << "[Warning] eUTRA_CGI->decodefromEUTRA_CGI() error!" << endl;
     return false;
   }
@@ -113,7 +113,7 @@ bool UserLocationInformationEUTRA::decodefromUserLocationInformationEUTRA(
 				return false;
 			}
 		}
-		#endif
+#endif
   return true;
 }
 
@@ -122,7 +122,8 @@ bool UserLocationInformationEUTRA::decodefromUserLocationInformationEUTRA(
  {
  return istimeStampSet;
  }*/
-/*void UserLocationInformationEUTRA::getInformationEUTRA(EUTRA_CGI* &m_eUTRA_CGI,TAI* &m_tAI,TimeStamp* &m_timeStamp)
+/*void UserLocationInformationEUTRA::getInformationEUTRA(EUTRA_CGI*
+ &m_eUTRA_CGI,TAI* &m_tAI,TimeStamp* &m_timeStamp)
  {
  m_eUTRA_CGI = eUTRA_CGI;
  m_tAI = tAI;
@@ -130,9 +131,9 @@ bool UserLocationInformationEUTRA::decodefromUserLocationInformationEUTRA(
  }*/
 
 //------------------------------------------------------------------------------
-void UserLocationInformationEUTRA::getInformationEUTRA(EUTRA_CGI *&m_eUTRA_CGI,
-                                                       TAI *&m_tAI) {
+void UserLocationInformationEUTRA::getInformationEUTRA(
+    EUTRA_CGI*& m_eUTRA_CGI, TAI*& m_tAI) {
   m_eUTRA_CGI = eUTRA_CGI;
-  m_tAI = tAI;
+  m_tAI       = tAI;
 }
-}
+}  // namespace ngap

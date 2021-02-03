@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,15 +37,13 @@ _5GS_DRX_arameters::_5GS_DRX_arameters(uint8_t iei) {
 
 //------------------------------------------------------------------------------
 _5GS_DRX_arameters::_5GS_DRX_arameters(const uint8_t iei, uint8_t value) {
-  _iei = iei;
+  _iei   = iei;
   _value = value & 0x0F;
 }
 
 //------------------------------------------------------------------------------
-_5GS_DRX_arameters::_5GS_DRX_arameters() {
-}
-_5GS_DRX_arameters::~_5GS_DRX_arameters() {
-}
+_5GS_DRX_arameters::_5GS_DRX_arameters() {}
+_5GS_DRX_arameters::~_5GS_DRX_arameters() {}
 
 //------------------------------------------------------------------------------
 void _5GS_DRX_arameters::setValue(uint8_t value) {
@@ -58,7 +56,7 @@ uint8_t _5GS_DRX_arameters::getValue() {
 }
 
 //------------------------------------------------------------------------------
-int _5GS_DRX_arameters::encode2buffer(uint8_t *buf, int len) {
+int _5GS_DRX_arameters::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding _5GS_DRX_arameters iei(0x%x)", _iei);
   if (len < 3) {
     return 0;
@@ -80,14 +78,15 @@ int _5GS_DRX_arameters::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int _5GS_DRX_arameters::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int _5GS_DRX_arameters::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding _5GS_DRX_arameters iei(0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
     decoded_size++;
   }
   _value = 0x00;
-//	length = *(buf + decoded_size); 
+  //	length = *(buf + decoded_size);
   decoded_size++;
   _value = *(buf + decoded_size) & 0x0f;
   decoded_size++;
@@ -95,4 +94,3 @@ int _5GS_DRX_arameters::decodefrombuffer(uint8_t *buf, int len, bool is_option) 
   Logger::nas_mm().debug("decoded UE_Status len(%d)", decoded_size);
   return decoded_size;
 }
-

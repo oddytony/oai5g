@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -45,23 +45,26 @@ class SecurityIndication {
   virtual ~SecurityIndication();
 
   void setSecurityIndication(
-      IntegrityProtectionIndication *m_integrityProtectionIndication,
-      ConfidentialityProtectionIndication *m_confidentialityProtectionIndication,
-      MaximumIntegrityProtectedDataRate *m_maximumIntegrityProtectedDataRate);
+      IntegrityProtectionIndication* m_integrityProtectionIndication,
+      ConfidentialityProtectionIndication*
+          m_confidentialityProtectionIndication,
+      MaximumIntegrityProtectedDataRate* m_maximumIntegrityProtectedDataRate);
   void getSecurityIndication(
-      IntegrityProtectionIndication *&m_integrityProtectionIndication,
-      ConfidentialityProtectionIndication *&m_confidentialityProtectionIndication,
-      MaximumIntegrityProtectedDataRate *&m_maximumIntegrityProtectedDataRate);
+      IntegrityProtectionIndication*& m_integrityProtectionIndication,
+      ConfidentialityProtectionIndication*&
+          m_confidentialityProtectionIndication,
+      MaximumIntegrityProtectedDataRate*& m_maximumIntegrityProtectedDataRate);
 
-  bool encode2SecurityIndication(Ngap_SecurityIndication_t *securityIndication);
+  bool encode2SecurityIndication(Ngap_SecurityIndication_t* securityIndication);
   bool decodefromSecurityIndication(
-      Ngap_SecurityIndication_t *securityIndication);
+      Ngap_SecurityIndication_t* securityIndication);
+
  private:
-  IntegrityProtectionIndication *integrityProtectionIndication;
-  ConfidentialityProtectionIndication *confidentialityProtectionIndication;
-  MaximumIntegrityProtectedDataRate *maximumIntegrityProtectedDataRate;
+  IntegrityProtectionIndication* integrityProtectionIndication;
+  ConfidentialityProtectionIndication* confidentialityProtectionIndication;
+  MaximumIntegrityProtectedDataRate* maximumIntegrityProtectedDataRate;
 };
 
-}
+}  // namespace ngap
 
 #endif

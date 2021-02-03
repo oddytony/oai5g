@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-AdditionalQosFlowInformation::AdditionalQosFlowInformation() {
-}
+AdditionalQosFlowInformation::AdditionalQosFlowInformation() {}
 
 //------------------------------------------------------------------------------
-AdditionalQosFlowInformation::~AdditionalQosFlowInformation() {
-}
+AdditionalQosFlowInformation::~AdditionalQosFlowInformation() {}
 
 //------------------------------------------------------------------------------
 void AdditionalQosFlowInformation::setAdditionalQosFlowInformation(
@@ -49,7 +47,7 @@ void AdditionalQosFlowInformation::setAdditionalQosFlowInformation(
 
 //------------------------------------------------------------------------------
 bool AdditionalQosFlowInformation::getAdditionalQosFlowInformation(
-    e_Ngap_AdditionalQosFlowInformation &value) {
+    e_Ngap_AdditionalQosFlowInformation& value) {
   if (additional == Ngap_AdditionalQosFlowInformation_more_likely)
     value = (e_Ngap_AdditionalQosFlowInformation) additional;
   else
@@ -60,7 +58,7 @@ bool AdditionalQosFlowInformation::getAdditionalQosFlowInformation(
 
 //------------------------------------------------------------------------------
 bool AdditionalQosFlowInformation::encode2AdditionalQosFlowInformation(
-    Ngap_AdditionalQosFlowInformation_t *additionalQosFlowInfo) {
+    Ngap_AdditionalQosFlowInformation_t* additionalQosFlowInfo) {
   *additionalQosFlowInfo = additional;
 
   return true;
@@ -68,9 +66,9 @@ bool AdditionalQosFlowInformation::encode2AdditionalQosFlowInformation(
 
 //------------------------------------------------------------------------------
 bool AdditionalQosFlowInformation::decodefromAdditionalQosFlowInformation(
-    Ngap_AdditionalQosFlowInformation_t *additionalQosFlowInfo) {
+    Ngap_AdditionalQosFlowInformation_t* additionalQosFlowInfo) {
   additional = *additionalQosFlowInfo;
 
   return true;
 }
-}
+}  // namespace ngap

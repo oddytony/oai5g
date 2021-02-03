@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -38,20 +38,21 @@ S1_UE_Security_Capability::S1_UE_Security_Capability(uint8_t iei) {
 }
 
 //------------------------------------------------------------------------------
-S1_UE_Security_Capability::S1_UE_Security_Capability() {
-}
+S1_UE_Security_Capability::S1_UE_Security_Capability() {}
 
 //------------------------------------------------------------------------------
-S1_UE_Security_Capability::~S1_UE_Security_Capability() {
-}
+S1_UE_Security_Capability::~S1_UE_Security_Capability() {}
 
 //------------------------------------------------------------------------------
-S1_UE_Security_Capability::S1_UE_Security_Capability(const uint8_t iei, uint8_t _5gg_EEASel, uint8_t _5gg_EIASel) {
-  _iei = iei;
+S1_UE_Security_Capability::S1_UE_Security_Capability(
+    const uint8_t iei, uint8_t _5gg_EEASel, uint8_t _5gg_EIASel) {
+  _iei       = iei;
   _5g_EEASel = _5gg_EEASel;
   _5g_EIASel = _5gg_EIASel;
-  length = 4;
-  Logger::nas_mm().debug("decoded S1_UE_Security_Capability EA(0x%d),IA(0x%d)", _5g_EEASel, _5g_EIASel);
+  length     = 4;
+  Logger::nas_mm().debug(
+      "decoded S1_UE_Security_Capability EA(0x%d),IA(0x%d)", _5g_EEASel,
+      _5g_EIASel);
 }
 
 //------------------------------------------------------------------------------
@@ -75,7 +76,7 @@ uint8_t S1_UE_Security_Capability::getEIASel() {
 }
 
 //------------------------------------------------------------------------------
-int S1_UE_Security_Capability::encode2buffer(uint8_t *buf, int len) {
+int S1_UE_Security_Capability::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding S1_UE_Security_Capability iei(0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
@@ -95,12 +96,14 @@ int S1_UE_Security_Capability::encode2buffer(uint8_t *buf, int len) {
     //*(buf + encoded_size) = length - 1; encoded_size++;
     //*(buf + encoded_size) = _value; encoded_size++; encoded_size++;
   }
-  Logger::nas_mm().debug("encoded S1_UE_Security_Capability len(%d)", encoded_size);
+  Logger::nas_mm().debug(
+      "encoded S1_UE_Security_Capability len(%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
-int S1_UE_Security_Capability::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int S1_UE_Security_Capability::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding S1_UE_Security_Capability iei(0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
@@ -112,8 +115,10 @@ int S1_UE_Security_Capability::decodefrombuffer(uint8_t *buf, int len, bool is_o
   decoded_size++;
   _5g_EIASel = *(buf + decoded_size);
   decoded_size++;
-  Logger::nas_mm().debug("decoded S1_UE_Security_Capability EA(0x%d),IA(0x%d)", _5g_EEASel, _5g_EIASel);
-  Logger::nas_mm().debug("decoded S1_UE_Security_Capability len(%d)", decoded_size);
+  Logger::nas_mm().debug(
+      "decoded S1_UE_Security_Capability EA(0x%d),IA(0x%d)", _5g_EEASel,
+      _5g_EIASel);
+  Logger::nas_mm().debug(
+      "decoded S1_UE_Security_Capability len(%d)", decoded_size);
   return decoded_size;
 }
-

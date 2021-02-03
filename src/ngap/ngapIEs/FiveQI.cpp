@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-FiveQI::FiveQI() {
-}
+FiveQI::FiveQI() {}
 
 //------------------------------------------------------------------------------
-FiveQI::~FiveQI() {
-}
+FiveQI::~FiveQI() {}
 
 //------------------------------------------------------------------------------
 void FiveQI::setFiveQI(long value) {
@@ -47,24 +45,23 @@ void FiveQI::setFiveQI(long value) {
 }
 
 //------------------------------------------------------------------------------
-bool FiveQI::getFiveQI(long &value) {
+bool FiveQI::getFiveQI(long& value) {
   value = fiveqi;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool FiveQI::encode2FiveQI(Ngap_FiveQI_t *fiveQI) {
+bool FiveQI::encode2FiveQI(Ngap_FiveQI_t* fiveQI) {
   *fiveQI = fiveqi;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool FiveQI::decodefromFiveQI(Ngap_FiveQI_t *fiveQI) {
+bool FiveQI::decodefromFiveQI(Ngap_FiveQI_t* fiveQI) {
   fiveqi = *fiveQI;
 
   return true;
 }
-}
-
+}  // namespace ngap

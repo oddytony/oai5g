@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -50,8 +50,7 @@ UEContextReleaseRequestMsg::~UEContextReleaseRequestMsg() {
 
 //------------------------------------------------------------------------------
 void UEContextReleaseRequestMsg::setMessageType() {
-  if (!pdu)
-    pdu = (Ngap_NGAP_PDU_t*) calloc(1, sizeof(Ngap_NGAP_PDU_t));
+  if (!pdu) pdu = (Ngap_NGAP_PDU_t*) calloc(1, sizeof(Ngap_NGAP_PDU_t));
   MessageType msgType;
   msgType.setProcedureCode(Ngap_ProcedureCode_id_UEContextReleaseRequest);
   msgType.setTypeOfMessage(Ngap_NGAP_PDU_PR_initiatingMessage);
@@ -64,14 +63,13 @@ void UEContextReleaseRequestMsg::setMessageType() {
 
 //------------------------------------------------------------------------------
 void UEContextReleaseRequestMsg::setAmfUeNgapId(unsigned long id) {
-  if (!amfUeNgapId)
-    amfUeNgapId = new AMF_UE_NGAP_ID();
+  if (!amfUeNgapId) amfUeNgapId = new AMF_UE_NGAP_ID();
   amfUeNgapId->setAMF_UE_NGAP_ID(id);
-  Ngap_UEContextReleaseRequest_IEs *ie =
+  Ngap_UEContextReleaseRequest_IEs* ie =
       (Ngap_UEContextReleaseRequest_IEs*) calloc(
           1, sizeof(Ngap_UEContextReleaseRequest_IEs));
-  ie->id = Ngap_ProtocolIE_ID_id_AMF_UE_NGAP_ID;
-  ie->criticality = Ngap_Criticality_reject;
+  ie->id            = Ngap_ProtocolIE_ID_id_AMF_UE_NGAP_ID;
+  ie->criticality   = Ngap_Criticality_reject;
   ie->value.present = Ngap_UEContextReleaseRequest_IEs__value_PR_AMF_UE_NGAP_ID;
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
@@ -79,20 +77,18 @@ void UEContextReleaseRequestMsg::setAmfUeNgapId(unsigned long id) {
     return;
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
-  if (ret != 0)
-    cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
 }
 
 //------------------------------------------------------------------------------
 void UEContextReleaseRequestMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
-  if (!ranUeNgapId)
-    ranUeNgapId = new RAN_UE_NGAP_ID();
+  if (!ranUeNgapId) ranUeNgapId = new RAN_UE_NGAP_ID();
   ranUeNgapId->setRanUeNgapId(ran_ue_ngap_id);
-  Ngap_UEContextReleaseRequest_IEs *ie =
+  Ngap_UEContextReleaseRequest_IEs* ie =
       (Ngap_UEContextReleaseRequest_IEs*) calloc(
           1, sizeof(Ngap_UEContextReleaseRequest_IEs));
-  ie->id = Ngap_ProtocolIE_ID_id_RAN_UE_NGAP_ID;
-  ie->criticality = Ngap_Criticality_reject;
+  ie->id            = Ngap_ProtocolIE_ID_id_RAN_UE_NGAP_ID;
+  ie->criticality   = Ngap_Criticality_reject;
   ie->value.present = Ngap_UEContextReleaseRequest_IEs__value_PR_RAN_UE_NGAP_ID;
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
@@ -100,15 +96,13 @@ void UEContextReleaseRequestMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
     return;
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
-  if (ret != 0)
-    cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
 }
 
 //------------------------------------------------------------------------------
 void UEContextReleaseRequestMsg::setCauseRadioNetwork(
     e_Ngap_CauseRadioNetwork cause_value) {
-  if (!causeValue)
-    causeValue = new Cause();
+  if (!causeValue) causeValue = new Cause();
   causeValue->setChoiceOfCause(Ngap_Cause_PR_radioNetwork);
   causeValue->setValue(cause_value);
   addCauseIE();
@@ -116,37 +110,36 @@ void UEContextReleaseRequestMsg::setCauseRadioNetwork(
 
 //------------------------------------------------------------------------------
 void UEContextReleaseRequestMsg::addCauseIE() {
-  Ngap_UEContextReleaseRequest_IEs *ie =
+  Ngap_UEContextReleaseRequest_IEs* ie =
       (Ngap_UEContextReleaseRequest_IEs*) calloc(
           1, sizeof(Ngap_UEContextReleaseRequest_IEs));
-  ie->id = Ngap_ProtocolIE_ID_id_Cause;
-  ie->criticality = Ngap_Criticality_ignore;
+  ie->id            = Ngap_ProtocolIE_ID_id_Cause;
+  ie->criticality   = Ngap_Criticality_ignore;
   ie->value.present = Ngap_UEContextReleaseRequest_IEs__value_PR_Cause;
   causeValue->encode2Cause(&ie->value.choice.Cause);
   int ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
-  if (ret != 0)
-    cout << "encode Cause IE error" << endl;
+  if (ret != 0) cout << "encode Cause IE error" << endl;
 }
 
 //------------------------------------------------------------------------------
-int UEContextReleaseRequestMsg::encode2buffer(uint8_t *buf, int buf_size) {
+int UEContextReleaseRequestMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, pdu);
-  asn_enc_rval_t er = aper_encode_to_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL, pdu,
-                                            buf, buf_size);
+  asn_enc_rval_t er =
+      aper_encode_to_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL, pdu, buf, buf_size);
   cout << "er.encoded(" << er.encoded << ")" << endl;
   return er.encoded;
 }
 
 //------------------------------------------------------------------------------
-bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
+bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   pdu = ngap_msg_pdu;
   if (pdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
-    if (pdu->choice.initiatingMessage
-        && pdu->choice.initiatingMessage->procedureCode
-            == Ngap_ProcedureCode_id_UEContextReleaseRequest
-        && pdu->choice.initiatingMessage->criticality == Ngap_Criticality_ignore
-        && pdu->choice.initiatingMessage->value.present
-            == Ngap_InitiatingMessage__value_PR_UEContextReleaseRequest) {
+    if (pdu->choice.initiatingMessage &&
+        pdu->choice.initiatingMessage->procedureCode ==
+            Ngap_ProcedureCode_id_UEContextReleaseRequest &&
+        pdu->choice.initiatingMessage->criticality == Ngap_Criticality_ignore &&
+        pdu->choice.initiatingMessage->value.present ==
+            Ngap_InitiatingMessage__value_PR_UEContextReleaseRequest) {
       ies =
           &pdu->choice.initiatingMessage->value.choice.UEContextReleaseRequest;
     } else {
@@ -155,19 +148,20 @@ bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
     }
   } else {
     cout << "typeOfMessage of UEContextReleaseRequest is not initiatingMessage"
-        << endl;
+         << endl;
     return false;
   }
   for (int i = 0; i < ies->protocolIEs.list.count; i++) {
     switch (ies->protocolIEs.list.array[i]->id) {
       case Ngap_ProtocolIE_ID_id_AMF_UE_NGAP_ID: {
-        if (ies->protocolIEs.list.array[i]->criticality
-            == Ngap_Criticality_reject
-            && ies->protocolIEs.list.array[i]->value.present
-                == Ngap_UEContextReleaseRequest_IEs__value_PR_AMF_UE_NGAP_ID) {
+        if (ies->protocolIEs.list.array[i]->criticality ==
+                Ngap_Criticality_reject &&
+            ies->protocolIEs.list.array[i]->value.present ==
+                Ngap_UEContextReleaseRequest_IEs__value_PR_AMF_UE_NGAP_ID) {
           amfUeNgapId = new AMF_UE_NGAP_ID();
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
-              ies->protocolIEs.list.array[i]->value.choice.AMF_UE_NGAP_ID)) {
+                  ies->protocolIEs.list.array[i]
+                      ->value.choice.AMF_UE_NGAP_ID)) {
             cout << "decode AMF_UE_NGAP_ID error" << endl;
             return false;
           }
@@ -175,16 +169,16 @@ bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
           cout << "IE AMF_UE_NGAP_ID is not correct" << endl;
           return false;
         }
-      }
-        break;
+      } break;
       case Ngap_ProtocolIE_ID_id_RAN_UE_NGAP_ID: {
-        if (ies->protocolIEs.list.array[i]->criticality
-            == Ngap_Criticality_reject
-            && ies->protocolIEs.list.array[i]->value.present
-                == Ngap_UEContextReleaseRequest_IEs__value_PR_RAN_UE_NGAP_ID) {
+        if (ies->protocolIEs.list.array[i]->criticality ==
+                Ngap_Criticality_reject &&
+            ies->protocolIEs.list.array[i]->value.present ==
+                Ngap_UEContextReleaseRequest_IEs__value_PR_RAN_UE_NGAP_ID) {
           ranUeNgapId = new RAN_UE_NGAP_ID();
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
-              ies->protocolIEs.list.array[i]->value.choice.RAN_UE_NGAP_ID)) {
+                  ies->protocolIEs.list.array[i]
+                      ->value.choice.RAN_UE_NGAP_ID)) {
             cout << "decode RAN_UE_NGAP_ID error" << endl;
             return false;
           }
@@ -192,16 +186,15 @@ bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
           cout << "IE RAN_UE_NGAP_ID is not correct" << endl;
           return false;
         }
-      }
-        break;
+      } break;
       case Ngap_ProtocolIE_ID_id_Cause: {
-        if (ies->protocolIEs.list.array[i]->criticality
-            == Ngap_Criticality_ignore
-            && ies->protocolIEs.list.array[i]->value.present
-                == Ngap_UEContextReleaseRequest_IEs__value_PR_Cause) {
+        if (ies->protocolIEs.list.array[i]->criticality ==
+                Ngap_Criticality_ignore &&
+            ies->protocolIEs.list.array[i]->value.present ==
+                Ngap_UEContextReleaseRequest_IEs__value_PR_Cause) {
           causeValue = new Cause();
           if (!causeValue->decodefromCause(
-              &ies->protocolIEs.list.array[i]->value.choice.Cause)) {
+                  &ies->protocolIEs.list.array[i]->value.choice.Cause)) {
             cout << "decode Cause error" << endl;
             return false;
           }
@@ -209,8 +202,7 @@ bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
           cout << "IE Cause is not correct" << endl;
           return false;
         }
-      }
-        break;
+      } break;
     }
   }
   return true;
@@ -218,7 +210,7 @@ bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu) {
 
 //------------------------------------------------------------------------------
 bool UEContextReleaseRequestMsg::getCauseRadioNetwork(
-    e_Ngap_CauseRadioNetwork &causeRadioNetwork) {
+    e_Ngap_CauseRadioNetwork& causeRadioNetwork) {
   if (causeValue->getValue() < 0) {
     cout << "Get Cause value from UEContextReleaseRequest Error!!!" << endl;
     return false;
@@ -236,4 +228,3 @@ unsigned long UEContextReleaseRequestMsg::getAmfUeNgapId() {
 uint32_t UEContextReleaseRequestMsg::getRanUeNgapId() {
   return ranUeNgapId->getRanUeNgapId();
 }
-

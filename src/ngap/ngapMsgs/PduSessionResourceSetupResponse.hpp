@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -51,33 +51,33 @@ class PduSessionResourceSetupResponseMsg {
   virtual ~PduSessionResourceSetupResponseMsg();
 
   void setMessageType();
-  void setAmfUeNgapId(unsigned long id);  //40 bits
-  void setRanUeNgapId(uint32_t id);  // 32 bits
+  void setAmfUeNgapId(unsigned long id);  // 40 bits
+  void setRanUeNgapId(uint32_t id);       // 32 bits
   void setPduSessionResourceSetupResponseList(
       std::vector<PDUSessionResourceSetupResponseItem_t> list);
   void setPduSessionResourceFailedToSetupList(
       std::vector<PDUSessionResourceFailedToSetupItem_t> list);
 
-  int encode2buffer(uint8_t *buf, int buf_size);
-  //Decapsulation
-  bool decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu);
+  int encode2buffer(uint8_t* buf, int buf_size);
+  // Decapsulation
+  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
   unsigned long getAmfUeNgapId();
   uint32_t getRanUeNgapId();
   bool getPduSessionResourceSetupResponseList(
-      std::vector<PDUSessionResourceSetupResponseItem_t> &list);
+      std::vector<PDUSessionResourceSetupResponseItem_t>& list);
   bool getPduSessionResourceFailedToSetupList(
-      std::vector<PDUSessionResourceFailedToSetupItem_t> &list);
+      std::vector<PDUSessionResourceFailedToSetupItem_t>& list);
 
  private:
-  Ngap_NGAP_PDU_t *pduSessionResourceSetupResponsePdu;
-  Ngap_PDUSessionResourceSetupResponse_t *pduSessionResourceSetupResponseIEs;
+  Ngap_NGAP_PDU_t* pduSessionResourceSetupResponsePdu;
+  Ngap_PDUSessionResourceSetupResponse_t* pduSessionResourceSetupResponseIEs;
 
-  AMF_UE_NGAP_ID *amfUeNgapId;
-  RAN_UE_NGAP_ID *ranUeNgapId;
-  PDUSessionResourceSetupListSURes *pduSessionResourceSetupResponseList;
-  PDUSessionResourceFailedToSetupListSURes *pduSessionResourceFailedToSetupResponseList;
+  AMF_UE_NGAP_ID* amfUeNgapId;
+  RAN_UE_NGAP_ID* ranUeNgapId;
+  PDUSessionResourceSetupListSURes* pduSessionResourceSetupResponseList;
+  PDUSessionResourceFailedToSetupListSURes*
+      pduSessionResourceFailedToSetupResponseList;
 };
 
-}
+}  // namespace ngap
 #endif
-

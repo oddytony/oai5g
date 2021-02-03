@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -32,23 +32,22 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 UERadioCapabilityForPaging::UERadioCapabilityForPaging() {
-  ueRadioCapabilityForPagingOfNR = NULL;
+  ueRadioCapabilityForPagingOfNR    = NULL;
   ueRadioCapabilityForPagingOfEUTRA = NULL;
 }
 
 //------------------------------------------------------------------------------
-UERadioCapabilityForPaging::~UERadioCapabilityForPaging() {
-}
+UERadioCapabilityForPaging::~UERadioCapabilityForPaging() {}
 
 //------------------------------------------------------------------------------
 bool UERadioCapabilityForPaging::encode2UERadioCapabilityForPaging(
-    Ngap_UERadioCapabilityForPaging_t *ueRadioCapabilityForPaging) {
+    Ngap_UERadioCapabilityForPaging_t* ueRadioCapabilityForPaging) {
   if (ueRadioCapabilityForPagingOfNR) {
     ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfNR =
         (Ngap_UERadioCapabilityForPagingOfNR_t*) calloc(
             1, sizeof(Ngap_UERadioCapabilityForPagingOfNR_t));
     if (!ueRadioCapabilityForPagingOfNR->encode2UERadioCapabilityForPagingOfNR(
-        ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfNR))
+            ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfNR))
       return false;
   }
   if (ueRadioCapabilityForPagingOfEUTRA) {
@@ -56,8 +55,8 @@ bool UERadioCapabilityForPaging::encode2UERadioCapabilityForPaging(
         (Ngap_UERadioCapabilityForPagingOfEUTRA_t*) calloc(
             1, sizeof(Ngap_UERadioCapabilityForPagingOfEUTRA_t));
     if (!ueRadioCapabilityForPagingOfEUTRA
-        ->encode2UERadioCapabilityForPagingOfEUTRA(
-        ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfEUTRA))
+             ->encode2UERadioCapabilityForPagingOfEUTRA(
+                 ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfEUTRA))
       return false;
   }
 
@@ -66,19 +65,19 @@ bool UERadioCapabilityForPaging::encode2UERadioCapabilityForPaging(
 
 //------------------------------------------------------------------------------
 bool UERadioCapabilityForPaging::decodefromUERadioCapabilityForPaging(
-    Ngap_UERadioCapabilityForPaging_t *ueRadioCapabilityForPaging) {
+    Ngap_UERadioCapabilityForPaging_t* ueRadioCapabilityForPaging) {
   if (ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfNR) {
     ueRadioCapabilityForPagingOfNR = new UERadioCapabilityForPagingOfNR();
     if (!ueRadioCapabilityForPagingOfNR
-        ->decodefromUERadioCapabilityForPagingOfNR(
-        ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfNR))
+             ->decodefromUERadioCapabilityForPagingOfNR(
+                 ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfNR))
       return false;
   }
   if (ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfEUTRA) {
     ueRadioCapabilityForPagingOfEUTRA = new UERadioCapabilityForPagingOfEUTRA();
     if (!ueRadioCapabilityForPagingOfEUTRA
-        ->decodefromUERadioCapabilityForPagingOfEUTRA(
-        ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfEUTRA))
+             ->decodefromUERadioCapabilityForPagingOfEUTRA(
+                 ueRadioCapabilityForPaging->uERadioCapabilityForPagingOfEUTRA))
       return false;
   }
 
@@ -87,9 +86,9 @@ bool UERadioCapabilityForPaging::decodefromUERadioCapabilityForPaging(
 
 //------------------------------------------------------------------------------
 bool UERadioCapabilityForPaging::getUERadioCapabilityForPaging(
-    UERadioCapabilityForPagingOfNR *&m_ueRadioCapabilityForPagingOfNR,
-    UERadioCapabilityForPagingOfEUTRA *&m_ueRadioCapabilityForPagingOfEUTRA) {
-  m_ueRadioCapabilityForPagingOfNR = ueRadioCapabilityForPagingOfNR;
+    UERadioCapabilityForPagingOfNR*& m_ueRadioCapabilityForPagingOfNR,
+    UERadioCapabilityForPagingOfEUTRA*& m_ueRadioCapabilityForPagingOfEUTRA) {
+  m_ueRadioCapabilityForPagingOfNR    = ueRadioCapabilityForPagingOfNR;
   m_ueRadioCapabilityForPagingOfEUTRA = ueRadioCapabilityForPagingOfEUTRA;
 
   return true;
@@ -97,9 +96,9 @@ bool UERadioCapabilityForPaging::getUERadioCapabilityForPaging(
 
 //------------------------------------------------------------------------------
 void UERadioCapabilityForPaging::setUERadioCapabilityForPaging(
-    UERadioCapabilityForPagingOfNR *m_ueRadioCapabilityForPagingOfNR,
-    UERadioCapabilityForPagingOfEUTRA *m_ueRadioCapabilityForPagingOfEUTRA) {
-  ueRadioCapabilityForPagingOfNR = m_ueRadioCapabilityForPagingOfNR;
+    UERadioCapabilityForPagingOfNR* m_ueRadioCapabilityForPagingOfNR,
+    UERadioCapabilityForPagingOfEUTRA* m_ueRadioCapabilityForPagingOfEUTRA) {
+  ueRadioCapabilityForPagingOfNR    = m_ueRadioCapabilityForPagingOfNR;
   ueRadioCapabilityForPagingOfEUTRA = m_ueRadioCapabilityForPagingOfEUTRA;
 }
-}
+}  // namespace ngap

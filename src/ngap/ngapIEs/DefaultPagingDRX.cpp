@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-DefaultPagingDRX::DefaultPagingDRX() {
-}
+DefaultPagingDRX::DefaultPagingDRX() {}
 
 //------------------------------------------------------------------------------
-DefaultPagingDRX::~DefaultPagingDRX() {
-}
+DefaultPagingDRX::~DefaultPagingDRX() {}
 
 //------------------------------------------------------------------------------
 void DefaultPagingDRX::setValue(e_Ngap_PagingDRX m_pagingDrx) {
@@ -47,13 +45,13 @@ void DefaultPagingDRX::setValue(e_Ngap_PagingDRX m_pagingDrx) {
 }
 
 //------------------------------------------------------------------------------
-bool DefaultPagingDRX::encode2DefaultPagingDRX(Ngap_PagingDRX_t &pagingdrx) {
+bool DefaultPagingDRX::encode2DefaultPagingDRX(Ngap_PagingDRX_t& pagingdrx) {
   pagingdrx = pagingDrx;
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool DefaultPagingDRX::decodefromDefaultPagingDRX(Ngap_PagingDRX_t &pagingdrx) {
+bool DefaultPagingDRX::decodefromDefaultPagingDRX(Ngap_PagingDRX_t& pagingdrx) {
   pagingDrx = pagingdrx;
   return true;
 }
@@ -63,4 +61,4 @@ int DefaultPagingDRX::getValue() {
   return pagingDrx;
 }
 
-}
+}  // namespace ngap

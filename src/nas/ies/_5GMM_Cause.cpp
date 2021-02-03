@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -32,7 +32,7 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 _5GMM_Cause::_5GMM_Cause(uint8_t iei, uint8_t value) {
-  _iei = iei;
+  _iei   = iei;
   _value = value;
 }
 
@@ -47,16 +47,13 @@ uint8_t _5GMM_Cause::getValue() {
 }
 
 //------------------------------------------------------------------------------
-_5GMM_Cause::_5GMM_Cause() {
-}
+_5GMM_Cause::_5GMM_Cause() {}
 
 //------------------------------------------------------------------------------
-_5GMM_Cause::~_5GMM_Cause() {
-}
-;
+_5GMM_Cause::~_5GMM_Cause(){};
 
 //------------------------------------------------------------------------------
-int _5GMM_Cause::encode2buffer(uint8_t *buf, int len) {
+int _5GMM_Cause::encode2buffer(uint8_t* buf, int len) {
   int encoded_size = 0;
   Logger::nas_mm().debug("encoding _5GMM_Cause IE ");
   if (_iei) {
@@ -78,11 +75,10 @@ int _5GMM_Cause::encode2buffer(uint8_t *buf, int len) {
     Logger::nas_mm().debug("encoded _5GMM_Cause IE 0x%x", *buf);
     return 1;
   }
-
 }
 
 //------------------------------------------------------------------------------
-int _5GMM_Cause::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int _5GMM_Cause::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding _5GMM_Cause IE");
   int decoded_size = 0;
   if (is_option) {
@@ -98,7 +94,7 @@ int _5GMM_Cause::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
   }
   _value = *(buf + decoded_size);
   decoded_size++;
-  Logger::nas_mm().debug("decoded _5GMM_Cause len 1 octet,5G_Couse=0x%x", _value);
+  Logger::nas_mm().debug(
+      "decoded _5GMM_Cause len 1 octet,5G_Couse=0x%x", _value);
   return decoded_size;
 }
-

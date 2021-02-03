@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PDUSessionType::PDUSessionType() {
-}
+PDUSessionType::PDUSessionType() {}
 
 //------------------------------------------------------------------------------
-PDUSessionType::~PDUSessionType() {
-}
+PDUSessionType::~PDUSessionType() {}
 
 //------------------------------------------------------------------------------
 void PDUSessionType::setPDUSessionType(e_Ngap_PDUSessionType m_pdusessiontype) {
@@ -47,14 +45,14 @@ void PDUSessionType::setPDUSessionType(e_Ngap_PDUSessionType m_pdusessiontype) {
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionType::getPDUSessionType(long &m_pdusessiontype) {
+bool PDUSessionType::getPDUSessionType(long& m_pdusessiontype) {
   m_pdusessiontype = pdusessiontype;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionType::encode2PDUSessionType(Ngap_PDUSessionType_t &Type) {
+bool PDUSessionType::encode2PDUSessionType(Ngap_PDUSessionType_t& Type) {
   Type = pdusessiontype;
 
   return true;
@@ -67,5 +65,4 @@ bool PDUSessionType::decodefromPDUSessionType(Ngap_PDUSessionType_t type) {
   return true;
 }
 
-}
-
+}  // namespace ngap

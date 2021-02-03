@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -44,19 +44,19 @@ class QosCharacteristics {
   virtual ~QosCharacteristics();
 
   void setQosCharacteristics(
-      NonDynamic5QIDescriptor *m_nonDynamic5QIDescriptor);
-  void setQosCharacteristics(Dynamic5QIDescriptor *m_dynamic5QIDescriptor);
+      NonDynamic5QIDescriptor* m_nonDynamic5QIDescriptor);
+  void setQosCharacteristics(Dynamic5QIDescriptor* m_dynamic5QIDescriptor);
   int QosCharacteristicsPresent();
   bool getQosCharacteristics(
-      NonDynamic5QIDescriptor *&m_nonDynamic5QIDescriptor);
-  bool getQosCharacteristics(Dynamic5QIDescriptor *&m_dynamic5QIDescriptor);
+      NonDynamic5QIDescriptor*& m_nonDynamic5QIDescriptor);
+  bool getQosCharacteristics(Dynamic5QIDescriptor*& m_dynamic5QIDescriptor);
   bool encode2QosCharacteristics(Ngap_QosCharacteristics_t*);
   bool decodefromQosCharacteristics(Ngap_QosCharacteristics_t*);
+
  private:
-  NonDynamic5QIDescriptor *nonDynamic5QIDescriptor;
-  Dynamic5QIDescriptor *dynamic5QIDescriptor;
+  NonDynamic5QIDescriptor* nonDynamic5QIDescriptor;
+  Dynamic5QIDescriptor* dynamic5QIDescriptor;
 };
-}
+}  // namespace ngap
 
 #endif
-

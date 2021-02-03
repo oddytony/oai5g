@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -43,20 +43,20 @@ class PLMNSupportItem {
   PLMNSupportItem();
   virtual ~PLMNSupportItem();
 
-  void setPlmnSliceSupportList(PlmnId *m_plmn, S_NSSAI *m_snssai, int num);
+  void setPlmnSliceSupportList(PlmnId* m_plmn, S_NSSAI* m_snssai, int num);
 
   bool encode2PLMNSupportItem(Ngap_PLMNSupportItem_t*);
   bool decodefromPLMNSupportItem(Ngap_PLMNSupportItem_t*);
 
-  void getPlmnSliceSupportList(PlmnId *&m_plmn, S_NSSAI *&m_snssai,
-                               int &snssainum);
+  void getPlmnSliceSupportList(
+      PlmnId*& m_plmn, S_NSSAI*& m_snssai, int& snssainum);
+
  private:
-  PlmnId *plmn;
-  S_NSSAI *snssai;
+  PlmnId* plmn;
+  S_NSSAI* snssai;
   int numOfSnssai;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

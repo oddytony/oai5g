@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,20 +37,19 @@ class SOR_Transparent_Container {
  public:
   SOR_Transparent_Container();
   SOR_Transparent_Container(uint8_t iei);
-  SOR_Transparent_Container(const uint8_t iei, uint8_t header, uint8_t *value);
+  SOR_Transparent_Container(const uint8_t iei, uint8_t header, uint8_t* value);
   ~SOR_Transparent_Container();
-  //void setValue(uint8_t iei, uint8_t value);
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(uint8_t *buf, int len, bool is_option);
+  // void setValue(uint8_t iei, uint8_t value);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(uint8_t* buf, int len, bool is_option);
   uint8_t getValue();
+
  private:
   uint8_t _iei;
   uint8_t HEADER;
   uint8_t _value[16];
-
 };
 
-}
+}  // namespace nas
 
 #endif
-

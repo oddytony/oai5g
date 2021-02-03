@@ -9,15 +9,12 @@ using namespace ngap;
 
 class itti_msg_amf_app : public itti_msg {
  public:
-  itti_msg_amf_app(const itti_msg_type_t msg_type, const task_id_t origin,
-                   const task_id_t destination)
-      :
-      itti_msg(msg_type, origin, destination) {
-  }
+  itti_msg_amf_app(
+      const itti_msg_type_t msg_type, const task_id_t origin,
+      const task_id_t destination)
+      : itti_msg(msg_type, origin, destination) {}
 
-  itti_msg_amf_app(const itti_msg_amf_app &i)
-      :
-      itti_msg(i) {
+  itti_msg_amf_app(const itti_msg_amf_app& i) : itti_msg(i) {
     ran_ue_ngap_id = i.ran_ue_ngap_id;
     amf_ue_ngap_id = i.amf_ue_ngap_id;
   }
@@ -28,16 +25,12 @@ class itti_msg_amf_app : public itti_msg {
 
 class itti_nas_signalling_establishment_request : public itti_msg_amf_app {
  public:
-  itti_nas_signalling_establishment_request(const task_id_t origin,
-                                            const task_id_t destination)
-      :
-      itti_msg_amf_app(NAS_SIG_ESTAB_REQ, origin, destination) {
-  }
   itti_nas_signalling_establishment_request(
-      const itti_nas_signalling_establishment_request &i)
-      :
-      itti_msg_amf_app(i) {
-  }
+      const task_id_t origin, const task_id_t destination)
+      : itti_msg_amf_app(NAS_SIG_ESTAB_REQ, origin, destination) {}
+  itti_nas_signalling_establishment_request(
+      const itti_nas_signalling_establishment_request& i)
+      : itti_msg_amf_app(i) {}
   int rrc_cause;
   int ueCtxReq;
   NrCgi_t cgi;
@@ -49,16 +42,12 @@ class itti_nas_signalling_establishment_request : public itti_msg_amf_app {
 
 class itti_n1n2_message_transfer_request : public itti_msg_amf_app {
  public:
-  itti_n1n2_message_transfer_request(const task_id_t origin,
-                                     const task_id_t destination)
-      :
-      itti_msg_amf_app(N1N2_MESSAGE_TRANSFER_REQ, origin, destination) {
-  }
   itti_n1n2_message_transfer_request(
-      const itti_n1n2_message_transfer_request &i)
-      :
-      itti_msg_amf_app(i) {
-  }
+      const task_id_t origin, const task_id_t destination)
+      : itti_msg_amf_app(N1N2_MESSAGE_TRANSFER_REQ, origin, destination) {}
+  itti_n1n2_message_transfer_request(
+      const itti_n1n2_message_transfer_request& i)
+      : itti_msg_amf_app(i) {}
 
   std::string supi;
   bstring n1sm;
@@ -67,8 +56,7 @@ class itti_n1n2_message_transfer_request : public itti_msg_amf_app {
   bool is_n1sm_set;
   uint8_t pdu_session_id;
   std::string n2sm_info_type;
-  //other parameters
-
+  // other parameters
 };
 
 #endif

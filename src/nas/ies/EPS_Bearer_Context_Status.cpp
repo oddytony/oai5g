@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -36,23 +36,22 @@ EPS_Bearer_Context_Status::EPS_Bearer_Context_Status(uint8_t iei) {
 }
 
 //------------------------------------------------------------------------------
-EPS_Bearer_Context_Status::EPS_Bearer_Context_Status(const uint8_t iei, uint16_t value) {
-  _iei = iei;
+EPS_Bearer_Context_Status::EPS_Bearer_Context_Status(
+    const uint8_t iei, uint16_t value) {
+  _iei   = iei;
   _value = value;
   length = 4;
 }
 
 //------------------------------------------------------------------------------
-EPS_Bearer_Context_Status::EPS_Bearer_Context_Status() {
-}
+EPS_Bearer_Context_Status::EPS_Bearer_Context_Status() {}
 
 //------------------------------------------------------------------------------
-EPS_Bearer_Context_Status::~EPS_Bearer_Context_Status() {
-}
+EPS_Bearer_Context_Status::~EPS_Bearer_Context_Status() {}
 
 //------------------------------------------------------------------------------
 void EPS_Bearer_Context_Status::setValue(uint8_t iei, uint16_t value) {
-  _iei = iei;
+  _iei   = iei;
   _value = value;
 }
 
@@ -62,7 +61,7 @@ uint16_t EPS_Bearer_Context_Status::getValue() {
 }
 
 //------------------------------------------------------------------------------
-int EPS_Bearer_Context_Status::encode2buffer(uint8_t *buf, int len) {
+int EPS_Bearer_Context_Status::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding EPS_Bearer_Context_Status iei(0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
@@ -82,12 +81,14 @@ int EPS_Bearer_Context_Status::encode2buffer(uint8_t *buf, int len) {
     //*(buf + encoded_size) = length - 1; encoded_size++;
     //*(buf + encoded_size) = _value; encoded_size++; encoded_size++;
   }
-  Logger::nas_mm().debug("encoded EPS_Bearer_Context_Status len(%d)", encoded_size);
+  Logger::nas_mm().debug(
+      "encoded EPS_Bearer_Context_Status len(%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
-int EPS_Bearer_Context_Status::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int EPS_Bearer_Context_Status::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding EPS_Bearer_Context_Status iei(0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
@@ -100,8 +101,9 @@ int EPS_Bearer_Context_Status::decodefrombuffer(uint8_t *buf, int len, bool is_o
   decoded_size++;
   _value |= (*(buf + decoded_size)) << 8;
   decoded_size++;
-  Logger::nas_mm().debug("decoded EPS_Bearer_Context_Status value(0x%4x)", _value);
-  Logger::nas_mm().debug("decoded EPS_Bearer_Context_Status len(%d)", decoded_size);
+  Logger::nas_mm().debug(
+      "decoded EPS_Bearer_Context_Status value(0x%4x)", _value);
+  Logger::nas_mm().debug(
+      "decoded EPS_Bearer_Context_Status len(%d)", decoded_size);
   return decoded_size;
 }
-

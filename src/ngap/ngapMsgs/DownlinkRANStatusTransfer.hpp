@@ -5,8 +5,7 @@
 #include "MessageType.hpp"
 #include "RANStatusTransferTransparentContainer.hpp"
 #include "dRBStatusDL18.hpp"
-extern "C"
-{
+extern "C" {
 #include "Ngap_UplinkRANStatusTransfer.h"
 #include "Ngap_RANStatusTransfer-TransparentContainer.h"
 #include "Ngap_NGAP-PDU.h"
@@ -14,25 +13,25 @@ extern "C"
 #include "Ngap_InitiatingMessage.h"
 #include "Ngap_DRB-ID.h"
 }
-namespace ngap
-{
-    class DownlinkRANStatusTransfer
-    {
-    public:
-        DownlinkRANStatusTransfer();
-        virtual ~DownlinkRANStatusTransfer();
-        void setmessagetype();
-        void setAmfUeNgapId(unsigned long id); //40 bits
-        void setRanUeNgapId(uint32_t id);      // 32 bits
-        void setRANStatusTransfer_TransparentContainer(long drb_id, long ul_pcdp, long ul_hfn_pdcp, long dl_pcdp, long dl_hfn_pdcp);
-        int encodetobuffer(uint8_t *buf, int buf_size);
+namespace ngap {
+class DownlinkRANStatusTransfer {
+ public:
+  DownlinkRANStatusTransfer();
+  virtual ~DownlinkRANStatusTransfer();
+  void setmessagetype();
+  void setAmfUeNgapId(unsigned long id);  // 40 bits
+  void setRanUeNgapId(uint32_t id);       // 32 bits
+  void setRANStatusTransfer_TransparentContainer(
+      long drb_id, long ul_pcdp, long ul_hfn_pdcp, long dl_pcdp,
+      long dl_hfn_pdcp);
+  int encodetobuffer(uint8_t* buf, int buf_size);
 
-    private:
-        Ngap_NGAP_PDU_t *DownlinkranstatustransferPDU;
-        Ngap_DownlinkRANStatusTransfer_t *DownlinkranstatustransferIEs;
-        AMF_UE_NGAP_ID *amfUeNgapId;
-        RAN_UE_NGAP_ID *ranUeNgapId;
-        RANStatusTransferTransparentContainer *ranStatusTransfer_TransparentContainer;
-    };
-} // namespace ngap
+ private:
+  Ngap_NGAP_PDU_t* DownlinkranstatustransferPDU;
+  Ngap_DownlinkRANStatusTransfer_t* DownlinkranstatustransferIEs;
+  AMF_UE_NGAP_ID* amfUeNgapId;
+  RAN_UE_NGAP_ID* ranUeNgapId;
+  RANStatusTransferTransparentContainer* ranStatusTransfer_TransparentContainer;
+};
+}  // namespace ngap
 #endif

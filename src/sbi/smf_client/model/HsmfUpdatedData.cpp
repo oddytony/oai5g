@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,116 +10,101 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "HsmfUpdatedData.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-HsmfUpdatedData::HsmfUpdatedData()
-{
-    m_N1SmInfoToUeIsSet = false;
+HsmfUpdatedData::HsmfUpdatedData() {
+  m_N1SmInfoToUeIsSet = false;
 }
 
-HsmfUpdatedData::~HsmfUpdatedData()
-{
+HsmfUpdatedData::~HsmfUpdatedData() {}
+
+void HsmfUpdatedData::validate() {
+  // TODO: implement validation
 }
 
-void HsmfUpdatedData::validate()
-{
-    // TODO: implement validation
+web::json::value HsmfUpdatedData::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  if (m_N1SmInfoToUeIsSet) {
+    val[utility::conversions::to_string_t("n1SmInfoToUe")] =
+        ModelBase::toJson(m_N1SmInfoToUe);
+  }
+
+  return val;
 }
 
-web::json::value HsmfUpdatedData::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    if(m_N1SmInfoToUeIsSet)
-    {
-        val[utility::conversions::to_string_t("n1SmInfoToUe")] = ModelBase::toJson(m_N1SmInfoToUe);
+void HsmfUpdatedData::fromJson(const web::json::value& val) {
+  if (val.has_field(utility::conversions::to_string_t("n1SmInfoToUe"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("n1SmInfoToUe"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
+      newItem->fromJson(fieldValue);
+      setN1SmInfoToUe(newItem);
     }
-
-    return val;
+  }
 }
 
-void HsmfUpdatedData::fromJson(const web::json::value& val)
-{
-    if(val.has_field(utility::conversions::to_string_t("n1SmInfoToUe")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("n1SmInfoToUe"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
-            newItem->fromJson(fieldValue);
-            setN1SmInfoToUe( newItem );
-        }
+void HsmfUpdatedData::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  if (m_N1SmInfoToUeIsSet) {
+    if (m_N1SmInfoToUe.get()) {
+      m_N1SmInfoToUe->toMultipart(
+          multipart, utility::conversions::to_string_t("n1SmInfoToUe."));
     }
+  }
 }
 
-void HsmfUpdatedData::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
+void HsmfUpdatedData::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("n1SmInfoToUe"))) {
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("n1SmInfoToUe"))) {
+      std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("n1SmInfoToUe."));
+      setN1SmInfoToUe(newItem);
     }
-
-    if(m_N1SmInfoToUeIsSet)
-    {
-        if (m_N1SmInfoToUe.get())
-        {
-            m_N1SmInfoToUe->toMultipart(multipart, utility::conversions::to_string_t("n1SmInfoToUe."));
-        }
-    }
+  }
 }
 
-void HsmfUpdatedData::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    if(multipart->hasContent(utility::conversions::to_string_t("n1SmInfoToUe")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("n1SmInfoToUe")))
-        {
-            std::shared_ptr<RefToBinaryData> newItem(new RefToBinaryData());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("n1SmInfoToUe."));
-            setN1SmInfoToUe( newItem );
-        }
-    }
+std::shared_ptr<RefToBinaryData> HsmfUpdatedData::getN1SmInfoToUe() const {
+  return m_N1SmInfoToUe;
 }
 
-std::shared_ptr<RefToBinaryData> HsmfUpdatedData::getN1SmInfoToUe() const
-{
-    return m_N1SmInfoToUe;
+void HsmfUpdatedData::setN1SmInfoToUe(
+    const std::shared_ptr<RefToBinaryData>& value) {
+  m_N1SmInfoToUe      = value;
+  m_N1SmInfoToUeIsSet = true;
 }
 
-void HsmfUpdatedData::setN1SmInfoToUe(const std::shared_ptr<RefToBinaryData>& value)
-{
-    m_N1SmInfoToUe = value;
-    m_N1SmInfoToUeIsSet = true;
+bool HsmfUpdatedData::n1SmInfoToUeIsSet() const {
+  return m_N1SmInfoToUeIsSet;
 }
 
-bool HsmfUpdatedData::n1SmInfoToUeIsSet() const
-{
-    return m_N1SmInfoToUeIsSet;
+void HsmfUpdatedData::unsetN1SmInfoToUe() {
+  m_N1SmInfoToUeIsSet = false;
 }
 
-void HsmfUpdatedData::unsetN1SmInfoToUe()
-{
-    m_N1SmInfoToUeIsSet = false;
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

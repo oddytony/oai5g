@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -36,18 +36,17 @@ Release_Assistance_Indication::Release_Assistance_Indication(uint8_t iei) {
 }
 
 //------------------------------------------------------------------------------
-Release_Assistance_Indication::Release_Assistance_Indication(const uint8_t iei, uint8_t value) {
-  _iei = iei;
+Release_Assistance_Indication::Release_Assistance_Indication(
+    const uint8_t iei, uint8_t value) {
+  _iei   = iei;
   _value = value;
 }
 
 //------------------------------------------------------------------------------
-Release_Assistance_Indication::Release_Assistance_Indication() {
-}
+Release_Assistance_Indication::Release_Assistance_Indication() {}
 
 //------------------------------------------------------------------------------
-Release_Assistance_Indication::~Release_Assistance_Indication() {
-}
+Release_Assistance_Indication::~Release_Assistance_Indication() {}
 
 //------------------------------------------------------------------------------
 void Release_Assistance_Indication::setValue(uint8_t value) {
@@ -60,8 +59,9 @@ uint8_t Release_Assistance_Indication::getValue() {
 }
 
 //------------------------------------------------------------------------------
-int Release_Assistance_Indication::encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding Release_Assistance_Indication iei(0x%x)", _iei);
+int Release_Assistance_Indication::encode2buffer(uint8_t* buf, int len) {
+  Logger::nas_mm().debug(
+      "encoding Release_Assistance_Indication iei(0x%x)", _iei);
   if (len < 1) {
     Logger::nas_mm().error("len is less than 1");
     return 0;
@@ -74,23 +74,27 @@ int Release_Assistance_Indication::encode2buffer(uint8_t *buf, int len) {
     *(buf + encoded_size) = _value & 0x07;
     encoded_size++;
   }
-  Logger::nas_mm().debug("encoded Release_Assistance_Indication len(%d)", encoded_size);
+  Logger::nas_mm().debug(
+      "encoded Release_Assistance_Indication len(%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
-int Release_Assistance_Indication::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
-  Logger::nas_mm().debug("decoding Release_Assistance_Indication iei(0x%x)", *buf);
+int Release_Assistance_Indication::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option) {
+  Logger::nas_mm().debug(
+      "decoding Release_Assistance_Indication iei(0x%x)", *buf);
   int decoded_size = 0;
-  uint8_t octet = 0;
+  uint8_t octet    = 0;
   if (is_option) {
     octet = *buf;
     decoded_size++;
   }
   _value = 0x00;
   _value = octet & 0x07;
-  Logger::nas_mm().debug("decoded Release_Assistance_Indication _value(0x%x)", _value);
-  Logger::nas_mm().debug("decoded Release_Assistance_Indication len(%d)", decoded_size);
+  Logger::nas_mm().debug(
+      "decoded Release_Assistance_Indication _value(0x%x)", _value);
+  Logger::nas_mm().debug(
+      "decoded Release_Assistance_Indication len(%d)", decoded_size);
   return decoded_size;
 }
-

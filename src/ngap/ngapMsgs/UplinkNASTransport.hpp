@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -52,27 +52,27 @@ class UplinkNASTransportMsg {
 
   void setMessageType();
 
-  void setAmfUeNgapId(unsigned long id);  //40 bits
-  void setRanUeNgapId(uint32_t id);  // 32 bits
-  void setNasPdu(uint8_t *nas, size_t sizeofnas);
+  void setAmfUeNgapId(unsigned long id);  // 40 bits
+  void setRanUeNgapId(uint32_t id);       // 32 bits
+  void setNasPdu(uint8_t* nas, size_t sizeofnas);
   void setUserLocationInfoNR(struct NrCgi_s cig, struct Tai_s tai);
-  int encode2buffer(uint8_t *buf, int buf_size);
-  //Decapsulation
-  bool decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu);
+  int encode2buffer(uint8_t* buf, int buf_size);
+  // Decapsulation
+  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
   unsigned long getAmfUeNgapId();
   uint32_t getRanUeNgapId();
-  bool getNasPdu(uint8_t *&nas, size_t &sizeofnas);
-  bool getUserLocationInfoNR(struct NrCgi_s &cig, struct Tai_s &tai);
+  bool getNasPdu(uint8_t*& nas, size_t& sizeofnas);
+  bool getUserLocationInfoNR(struct NrCgi_s& cig, struct Tai_s& tai);
 
  private:
-  Ngap_NGAP_PDU_t *uplinkNASTransportPdu;
-  Ngap_UplinkNASTransport_t *uplinkNASTransportIEs;
+  Ngap_NGAP_PDU_t* uplinkNASTransportPdu;
+  Ngap_UplinkNASTransport_t* uplinkNASTransportIEs;
 
-  AMF_UE_NGAP_ID *amfUeNgapId;
-  RAN_UE_NGAP_ID *ranUeNgapId;
-  NAS_PDU *nasPdu;
-  UserLocationInformation *userLocationInformation;
+  AMF_UE_NGAP_ID* amfUeNgapId;
+  RAN_UE_NGAP_ID* ranUeNgapId;
+  NAS_PDU* nasPdu;
+  UserLocationInformation* userLocationInformation;
 };
 
-}
+}  // namespace ngap
 #endif

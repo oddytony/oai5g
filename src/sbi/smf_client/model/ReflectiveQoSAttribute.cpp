@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,64 +10,48 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "ReflectiveQoSAttribute.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
+ReflectiveQoSAttribute::ReflectiveQoSAttribute() {}
 
+ReflectiveQoSAttribute::~ReflectiveQoSAttribute() {}
 
-
-ReflectiveQoSAttribute::ReflectiveQoSAttribute()
-{
+void ReflectiveQoSAttribute::validate() {
+  // TODO: implement validation
 }
 
-ReflectiveQoSAttribute::~ReflectiveQoSAttribute()
-{
+web::json::value ReflectiveQoSAttribute::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  return val;
 }
 
-void ReflectiveQoSAttribute::validate()
-{
-    // TODO: implement validation
+void ReflectiveQoSAttribute::fromJson(const web::json::value& val) {}
+
+void ReflectiveQoSAttribute::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 }
 
-web::json::value ReflectiveQoSAttribute::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-
-    return val;
+void ReflectiveQoSAttribute::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 }
 
-void ReflectiveQoSAttribute::fromJson(const web::json::value& val)
-{
-}
-
-void ReflectiveQoSAttribute::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-}
-
-void ReflectiveQoSAttribute::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

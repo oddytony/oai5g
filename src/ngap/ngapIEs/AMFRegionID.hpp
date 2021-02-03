@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -47,10 +47,11 @@ class AMFRegionID {
 
   bool encode2bitstring(Ngap_AMFRegionID_t&);
   bool decodefrombitstring(Ngap_AMFRegionID_t&);
+
  private:
   uint8_t regionid;
 };
 
-}
+}  // namespace ngap
 
 #endif

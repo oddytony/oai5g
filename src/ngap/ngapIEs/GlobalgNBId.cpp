@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -40,40 +40,35 @@ GlobalgNBId::GlobalgNBId() {
 }
 
 //------------------------------------------------------------------------------
-GlobalgNBId::~GlobalgNBId() {
-}
+GlobalgNBId::~GlobalgNBId() {}
 
 //------------------------------------------------------------------------------
-void GlobalgNBId::setGlobalgNBId(PlmnId *plmn, GNB_ID *gnbid) {
+void GlobalgNBId::setGlobalgNBId(PlmnId* plmn, GNB_ID* gnbid) {
   plmnId = plmn;
   gNB_ID = gnbid;
 }
 
 //------------------------------------------------------------------------------
-bool GlobalgNBId::encode2GlobalgNBId(Ngap_GlobalGNB_ID_t *globalgnbid) {
-  if (!plmnId->encode2octetstring(globalgnbid->pLMNIdentity))
-    return false;
-  if (!gNB_ID->encode2bitstring(globalgnbid->gNB_ID))
-    return false;
+bool GlobalgNBId::encode2GlobalgNBId(Ngap_GlobalGNB_ID_t* globalgnbid) {
+  if (!plmnId->encode2octetstring(globalgnbid->pLMNIdentity)) return false;
+  if (!gNB_ID->encode2bitstring(globalgnbid->gNB_ID)) return false;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool GlobalgNBId::decodefromGlobalgNBId(Ngap_GlobalGNB_ID_t *globalgnbid) {
+bool GlobalgNBId::decodefromGlobalgNBId(Ngap_GlobalGNB_ID_t* globalgnbid) {
   plmnId = new PlmnId();
   gNB_ID = new GNB_ID();
-  if (!plmnId->decodefromoctetstring(globalgnbid->pLMNIdentity))
-    return false;
-  if (!gNB_ID->decodefrombitstring(globalgnbid->gNB_ID))
-    return false;
+  if (!plmnId->decodefromoctetstring(globalgnbid->pLMNIdentity)) return false;
+  if (!gNB_ID->decodefrombitstring(globalgnbid->gNB_ID)) return false;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-void GlobalgNBId::getGlobalgNBId(PlmnId *&plmn, GNB_ID *&gnbid) {
-  plmn = plmnId;
+void GlobalgNBId::getGlobalgNBId(PlmnId*& plmn, GNB_ID*& gnbid) {
+  plmn  = plmnId;
   gnbid = gNB_ID;
 }
-}
+}  // namespace ngap

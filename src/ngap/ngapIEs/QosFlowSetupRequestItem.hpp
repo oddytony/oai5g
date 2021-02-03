@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -44,19 +44,20 @@ class QosFlowSetupRequestItem {
   virtual ~QosFlowSetupRequestItem();
 
   void setQosFlowSetupRequestItem(
-      QosFlowIdentifier *m_qosFlowIdentifier,
-      QosFlowLevelQosParameters *m_qosFlowLevelQosParameters);
+      QosFlowIdentifier* m_qosFlowIdentifier,
+      QosFlowLevelQosParameters* m_qosFlowLevelQosParameters);
   bool getQosFlowSetupRequestItem(
-      QosFlowIdentifier *&m_qosFlowIdentifier,
-      QosFlowLevelQosParameters *&m_qosFlowLevelQosParameters);
+      QosFlowIdentifier*& m_qosFlowIdentifier,
+      QosFlowLevelQosParameters*& m_qosFlowLevelQosParameters);
 
   bool encode2QosFlowSetupRequestItem(Ngap_QosFlowSetupRequestItem_t*);
   bool decodefromQosFlowSetupRequestItem(Ngap_QosFlowSetupRequestItem_t*);
+
  private:
-  QosFlowIdentifier *qosFlowIdentifier;
-  QosFlowLevelQosParameters *qosFlowLevelQosParameters;
+  QosFlowIdentifier* qosFlowIdentifier;
+  QosFlowLevelQosParameters* qosFlowLevelQosParameters;
 };
 
-}
+}  // namespace ngap
 
 #endif

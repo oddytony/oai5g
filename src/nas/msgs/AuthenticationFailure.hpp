@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,21 +37,21 @@ class AuthenticationFailure {
  public:
   AuthenticationFailure();
   ~AuthenticationFailure();
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(NasMmPlainHeader* header, uint8_t* buf, int len);
   void setHeader(uint8_t security_header_type);
   void set_5GMM_Cause(uint8_t value);
   void setAuthentication_Failure_Parameter(bstring auts);
 
   uint8_t get5GMmCause();
-  bool getAutsInAuthFailPara(bstring &auts);
+  bool getAutsInAuthFailPara(bstring& auts);
+
  public:
-  NasMmPlainHeader *plain_header;
-  _5GMM_Cause *ie_5gmm_cause;
-  Authentication_Failure_Parameter *ie_authentication_failure_parameter;
+  NasMmPlainHeader* plain_header;
+  _5GMM_Cause* ie_5gmm_cause;
+  Authentication_Failure_Parameter* ie_authentication_failure_parameter;
 };
 
-}
+}  // namespace nas
 
 #endif
-

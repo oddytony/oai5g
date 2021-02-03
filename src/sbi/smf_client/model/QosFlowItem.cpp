@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,132 +10,114 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "QosFlowItem.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-QosFlowItem::QosFlowItem()
-{
-    m_Qfi = 0;
-    m_CauseIsSet = false;
+QosFlowItem::QosFlowItem() {
+  m_Qfi        = 0;
+  m_CauseIsSet = false;
 }
 
-QosFlowItem::~QosFlowItem()
-{
+QosFlowItem::~QosFlowItem() {}
+
+void QosFlowItem::validate() {
+  // TODO: implement validation
 }
 
-void QosFlowItem::validate()
-{
-    // TODO: implement validation
+web::json::value QosFlowItem::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  val[utility::conversions::to_string_t("qfi")] = ModelBase::toJson(m_Qfi);
+  if (m_CauseIsSet) {
+    val[utility::conversions::to_string_t("cause")] =
+        ModelBase::toJson(m_Cause);
+  }
+
+  return val;
 }
 
-web::json::value QosFlowItem::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    val[utility::conversions::to_string_t("qfi")] = ModelBase::toJson(m_Qfi);
-    if(m_CauseIsSet)
-    {
-        val[utility::conversions::to_string_t("cause")] = ModelBase::toJson(m_Cause);
+void QosFlowItem::fromJson(const web::json::value& val) {
+  setQfi(ModelBase::int32_tFromJson(
+      val.at(utility::conversions::to_string_t("qfi"))));
+  if (val.has_field(utility::conversions::to_string_t("cause"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("cause"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<Cause> newItem(new Cause());
+      newItem->fromJson(fieldValue);
+      setCause(newItem);
     }
-
-    return val;
+  }
 }
 
-void QosFlowItem::fromJson(const web::json::value& val)
-{
-    setQfi(ModelBase::int32_tFromJson(val.at(utility::conversions::to_string_t("qfi"))));
-    if(val.has_field(utility::conversions::to_string_t("cause")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("cause"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<Cause> newItem(new Cause());
-            newItem->fromJson(fieldValue);
-            setCause( newItem );
-        }
+void QosFlowItem::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("qfi"), m_Qfi));
+  if (m_CauseIsSet) {
+    if (m_Cause.get()) {
+      m_Cause->toMultipart(
+          multipart, utility::conversions::to_string_t("cause."));
     }
+  }
 }
 
-void QosFlowItem::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
+void QosFlowItem::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  setQfi(ModelBase::int32_tFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("qfi"))));
+  if (multipart->hasContent(utility::conversions::to_string_t("cause"))) {
+    if (multipart->hasContent(utility::conversions::to_string_t("cause"))) {
+      std::shared_ptr<Cause> newItem(new Cause());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("cause."));
+      setCause(newItem);
     }
-
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("qfi"), m_Qfi));
-    if(m_CauseIsSet)
-    {
-        if (m_Cause.get())
-        {
-            m_Cause->toMultipart(multipart, utility::conversions::to_string_t("cause."));
-        }
-    }
+  }
 }
 
-void QosFlowItem::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    setQfi(ModelBase::int32_tFromHttpContent(multipart->getContent(utility::conversions::to_string_t("qfi"))));
-    if(multipart->hasContent(utility::conversions::to_string_t("cause")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("cause")))
-        {
-            std::shared_ptr<Cause> newItem(new Cause());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("cause."));
-            setCause( newItem );
-        }
-    }
+int32_t QosFlowItem::getQfi() const {
+  return m_Qfi;
 }
 
-int32_t QosFlowItem::getQfi() const
-{
-    return m_Qfi;
+void QosFlowItem::setQfi(int32_t value) {
+  m_Qfi = value;
 }
 
-void QosFlowItem::setQfi(int32_t value)
-{
-    m_Qfi = value;
-    
+std::shared_ptr<Cause> QosFlowItem::getCause() const {
+  return m_Cause;
 }
 
-std::shared_ptr<Cause> QosFlowItem::getCause() const
-{
-    return m_Cause;
+void QosFlowItem::setCause(const std::shared_ptr<Cause>& value) {
+  m_Cause      = value;
+  m_CauseIsSet = true;
 }
 
-void QosFlowItem::setCause(const std::shared_ptr<Cause>& value)
-{
-    m_Cause = value;
-    m_CauseIsSet = true;
+bool QosFlowItem::causeIsSet() const {
+  return m_CauseIsSet;
 }
 
-bool QosFlowItem::causeIsSet() const
-{
-    return m_CauseIsSet;
+void QosFlowItem::unsetCause() {
+  m_CauseIsSet = false;
 }
 
-void QosFlowItem::unsetCause()
-{
-    m_CauseIsSet = false;
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

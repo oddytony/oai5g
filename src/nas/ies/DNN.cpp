@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,18 +37,16 @@ DNN::DNN(uint8_t iei) {
 
 //------------------------------------------------------------------------------
 DNN::DNN(const uint8_t iei, bstring dnn) {
-  _iei = iei;
-  _DNN = bstrcpy(dnn);
+  _iei   = iei;
+  _DNN   = bstrcpy(dnn);
   length = blength(dnn) + 2;
 }
 
 //------------------------------------------------------------------------------
-DNN::DNN() {
-}
+DNN::DNN() {}
 
 //------------------------------------------------------------------------------
-DNN::~DNN() {
-}
+DNN::~DNN() {}
 
 //------------------------------------------------------------------------------
 /*void DNN::setValue(uint8_t iei, uint8_t value) {
@@ -57,14 +55,14 @@ DNN::~DNN() {
  }*/
 
 //------------------------------------------------------------------------------
-void DNN::getValue(bstring &dnn) {
-  //dnn = _DNN;
-  //dnn = bstrcpy(_DNN);
+void DNN::getValue(bstring& dnn) {
+  // dnn = _DNN;
+  // dnn = bstrcpy(_DNN);
   dnn = blk2bstr((uint8_t*) bdata(_DNN) + 1, blength(_DNN) - 1);
 }
 
 //------------------------------------------------------------------------------
-int DNN::encode2buffer(uint8_t *buf, int len) {
+int DNN::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("Encoding DNN IEI (0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
@@ -90,7 +88,7 @@ int DNN::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int DNN::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int DNN::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("Decoding DNN IEI (0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
@@ -101,9 +99,9 @@ int DNN::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
   decode_bstring(&_DNN, length, (buf + decoded_size), len - decoded_size);
   decoded_size += length;
   for (int i = 0; i < blength(_DNN); i++) {
-    Logger::nas_mm().debug("Decoded DNN value: 0x%x", (uint8_t*) bdata(_DNN)[i]);
+    Logger::nas_mm().debug(
+        "Decoded DNN value: 0x%x", (uint8_t*) bdata(_DNN)[i]);
   }
   Logger::nas_mm().debug("Decoded DNN len: %d", decoded_size);
   return decoded_size;
 }
-

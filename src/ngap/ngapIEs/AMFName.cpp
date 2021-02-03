@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -60,12 +60,12 @@ void AmfName::setValue(const std::string m_amfName) {
 }
 
 //------------------------------------------------------------------------------
-void AmfName::getValue(std::string &m_amfName) {
+void AmfName::getValue(std::string& m_amfName) {
   m_amfName = amfname;
 }
 
 //------------------------------------------------------------------------------
-bool AmfName::encode2AmfName(Ngap_AMFName_t *amfNameIe) {
+bool AmfName::encode2AmfName(Ngap_AMFName_t* amfNameIe) {
   if (OCTET_STRING_fromBuf(amfNameIe, amfname, strlen(amfname)) < 0)
     return false;
 
@@ -73,12 +73,10 @@ bool AmfName::encode2AmfName(Ngap_AMFName_t *amfNameIe) {
 }
 
 //------------------------------------------------------------------------------
-bool AmfName::decodefromAmfName(Ngap_AMFName_t *pdu) {
-  if (!pdu->buf)
-    return false;
+bool AmfName::decodefromAmfName(Ngap_AMFName_t* pdu) {
+  if (!pdu->buf) return false;
   amfname = (char*) pdu->buf;
   return true;
 }
 
-}
-
+}  // namespace ngap

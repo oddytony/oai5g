@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,34 +35,31 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 SupportedTAList::SupportedTAList() {
-  supportedTaItem = NULL;
+  supportedTaItem         = NULL;
   numberOfSupportedTaItem = 0;
 }
 
 //------------------------------------------------------------------------------
-SupportedTAList::~SupportedTAList() {
-}
+SupportedTAList::~SupportedTAList() {}
 
 //------------------------------------------------------------------------------
 bool SupportedTAList::encode2SupportedTAList(
-    Ngap_SupportedTAList_t *supportedTAList) {
-  cout << "SupportedTAList::numberOfSupportedTaItem	" << numberOfSupportedTaItem
-      << endl;
+    Ngap_SupportedTAList_t* supportedTAList) {
+  cout << "SupportedTAList::numberOfSupportedTaItem	"
+       << numberOfSupportedTaItem << endl;
   for (int i = 0; i < numberOfSupportedTaItem; i++) {
-    Ngap_SupportedTAItem_t *ta = (Ngap_SupportedTAItem_t*) calloc(
-        1, sizeof(Ngap_SupportedTAItem_t));
-    if (!supportedTaItem[i].encode2SupportedTaItem(ta))
-      return false;
-    if (ASN_SEQUENCE_ADD(&supportedTAList->list, ta) != 0)
-      return false;
+    Ngap_SupportedTAItem_t* ta =
+        (Ngap_SupportedTAItem_t*) calloc(1, sizeof(Ngap_SupportedTAItem_t));
+    if (!supportedTaItem[i].encode2SupportedTaItem(ta)) return false;
+    if (ASN_SEQUENCE_ADD(&supportedTAList->list, ta) != 0) return false;
   }
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool SupportedTAList::decodefromSupportedTAList(Ngap_SupportedTAList_t *pdu) {
+bool SupportedTAList::decodefromSupportedTAList(Ngap_SupportedTAList_t* pdu) {
   numberOfSupportedTaItem = pdu->list.count;
-  supportedTaItem = new SupportedTaItem[numberOfSupportedTaItem]();
+  supportedTaItem         = new SupportedTaItem[numberOfSupportedTaItem]();
   for (int i = 0; i < numberOfSupportedTaItem; i++) {
     if (!supportedTaItem[i].decodefromSupportedTaItem(pdu->list.array[i]))
       return false;
@@ -72,17 +69,17 @@ bool SupportedTAList::decodefromSupportedTAList(Ngap_SupportedTAList_t *pdu) {
 }
 
 //------------------------------------------------------------------------------
-void SupportedTAList::setSupportedTaItems(SupportedTaItem *m_supportedTaItem,
-                                          int numOfItem) {
-  supportedTaItem = m_supportedTaItem;
+void SupportedTAList::setSupportedTaItems(
+    SupportedTaItem* m_supportedTaItem, int numOfItem) {
+  supportedTaItem         = m_supportedTaItem;
   numberOfSupportedTaItem = numOfItem;
 }
 
 //------------------------------------------------------------------------------
-void SupportedTAList::getSupportedTaItems(SupportedTaItem *&m_supportedTaItem,
-                                          int &numOfItem) {
+void SupportedTAList::getSupportedTaItems(
+    SupportedTaItem*& m_supportedTaItem, int& numOfItem) {
   m_supportedTaItem = supportedTaItem;
-  numOfItem = numberOfSupportedTaItem;
+  numOfItem         = numberOfSupportedTaItem;
 }
 
-}
+}  // namespace ngap

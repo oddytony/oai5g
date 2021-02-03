@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -29,11 +29,11 @@
 #ifndef _QOSFLOWLEVELQOSPARAMETERS_H_
 #define _QOSFLOWLEVELQOSPARAMETERS_H_
 
-#include"QosCharacteristics.hpp"
-#include"AllocationAndRetentionPriority.hpp"
-#include"GBR-QosInformation.hpp"
-#include"ReflectiveQosAttribute.hpp"
-#include"AdditionalQosFlowInformation.hpp"
+#include "QosCharacteristics.hpp"
+#include "AllocationAndRetentionPriority.hpp"
+#include "GBR-QosInformation.hpp"
+#include "ReflectiveQosAttribute.hpp"
+#include "AdditionalQosFlowInformation.hpp"
 
 extern "C" {
 #include "Ngap_QosFlowLevelQosParameters.h"
@@ -47,29 +47,29 @@ class QosFlowLevelQosParameters {
   virtual ~QosFlowLevelQosParameters();
 
   void setQosFlowLevelQosParameters(
-      QosCharacteristics *m_qosCharacteristics,
-      AllocationAndRetentionPriority *m_allocationAndRetentionPriority,
-      GBR_QosInformation *m_gBR_QosInformation,
-      ReflectiveQosAttribute *m_reflectiveQosAttribute,
-      AdditionalQosFlowInformation *m_additionalQosFlowInformation);
+      QosCharacteristics* m_qosCharacteristics,
+      AllocationAndRetentionPriority* m_allocationAndRetentionPriority,
+      GBR_QosInformation* m_gBR_QosInformation,
+      ReflectiveQosAttribute* m_reflectiveQosAttribute,
+      AdditionalQosFlowInformation* m_additionalQosFlowInformation);
   bool getQosFlowLevelQosParameters(
-      QosCharacteristics *&m_qosCharacteristics,
-      AllocationAndRetentionPriority *&m_allocationAndRetentionPriority,
-      GBR_QosInformation *&m_gBR_QosInformation,
-      ReflectiveQosAttribute *&m_reflectiveQosAttribute,
-      AdditionalQosFlowInformation *&m_additionalQosFlowInformation);
+      QosCharacteristics*& m_qosCharacteristics,
+      AllocationAndRetentionPriority*& m_allocationAndRetentionPriority,
+      GBR_QosInformation*& m_gBR_QosInformation,
+      ReflectiveQosAttribute*& m_reflectiveQosAttribute,
+      AdditionalQosFlowInformation*& m_additionalQosFlowInformation);
 
   bool encode2QosFlowLevelQosParameters(Ngap_QosFlowLevelQosParameters_t*);
   bool decodefromQosFlowLevelQosParameters(Ngap_QosFlowLevelQosParameters_t*);
+
  private:
-  QosCharacteristics *qosCharacteristics;
-  AllocationAndRetentionPriority *allocationAndRetentionPriority;
-  GBR_QosInformation *gBR_QosInformation; /* OPTIONAL */
-  ReflectiveQosAttribute *reflectiveQosAttribute; /* OPTIONAL */
-  AdditionalQosFlowInformation *additionalQosFlowInformation; /* OPTIONAL */
+  QosCharacteristics* qosCharacteristics;
+  AllocationAndRetentionPriority* allocationAndRetentionPriority;
+  GBR_QosInformation* gBR_QosInformation;                     /* OPTIONAL */
+  ReflectiveQosAttribute* reflectiveQosAttribute;             /* OPTIONAL */
+  AdditionalQosFlowInformation* additionalQosFlowInformation; /* OPTIONAL */
 };
 
-}
+}  // namespace ngap
 
 #endif
-

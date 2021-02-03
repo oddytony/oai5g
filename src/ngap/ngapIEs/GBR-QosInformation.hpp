@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -43,32 +43,31 @@ class GBR_QosInformation {
   GBR_QosInformation();
   virtual ~GBR_QosInformation();
 
-  void setGBR_QosInformation(long m_maximumFlowBitRateDL,
-                             long m_maximumFlowBitRateUL,
-                             long m_guaranteedFlowBitRateDL,
-                             long m_guaranteedFlowBitRateUL,
-                             NotificationControl *m_notificationControl,
-                             PacketLossRate *m_maximumPacketLossRateDL,
-                             PacketLossRate *m_maximumPacketLossRateUL);
-  bool getGBR_QosInformation(long &m_maximumFlowBitRateDL,
-                             long &m_maximumFlowBitRateUL,
-                             long &m_guaranteedFlowBitRateDL,
-                             long &m_guaranteedFlowBitRateUL,
-                             NotificationControl *&m_notificationControl,
-                             PacketLossRate *&m_maximumPacketLossRateDL,
-                             PacketLossRate *&m_maximumPacketLossRateUL);
+  void setGBR_QosInformation(
+      long m_maximumFlowBitRateDL, long m_maximumFlowBitRateUL,
+      long m_guaranteedFlowBitRateDL, long m_guaranteedFlowBitRateUL,
+      NotificationControl* m_notificationControl,
+      PacketLossRate* m_maximumPacketLossRateDL,
+      PacketLossRate* m_maximumPacketLossRateUL);
+  bool getGBR_QosInformation(
+      long& m_maximumFlowBitRateDL, long& m_maximumFlowBitRateUL,
+      long& m_guaranteedFlowBitRateDL, long& m_guaranteedFlowBitRateUL,
+      NotificationControl*& m_notificationControl,
+      PacketLossRate*& m_maximumPacketLossRateDL,
+      PacketLossRate*& m_maximumPacketLossRateUL);
 
   bool encode2GBR_QosInformation(Ngap_GBR_QosInformation_t*);
   bool decodefromGBR_QosInformation(Ngap_GBR_QosInformation_t*);
+
  private:
   long maximumFlowBitRateDL;
   long maximumFlowBitRateUL;
   long guaranteedFlowBitRateDL;
   long guaranteedFlowBitRateUL;
-  NotificationControl *notificationControl; /* OPTIONAL */
-  PacketLossRate *maximumPacketLossRateDL; /* OPTIONAL */
-  PacketLossRate *maximumPacketLossRateUL; /* OPTIONAL */
+  NotificationControl* notificationControl; /* OPTIONAL */
+  PacketLossRate* maximumPacketLossRateDL;  /* OPTIONAL */
+  PacketLossRate* maximumPacketLossRateUL;  /* OPTIONAL */
 };
-}
+}  // namespace ngap
 
 #endif

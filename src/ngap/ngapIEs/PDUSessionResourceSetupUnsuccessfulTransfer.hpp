@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -41,7 +41,6 @@ extern "C" {
 namespace ngap {
 
 class PduSessionResourceSetupUnSuccessfulTransferIE {
-
  public:
   PduSessionResourceSetupUnSuccessfulTransferIE();
   virtual ~PduSessionResourceSetupUnSuccessfulTransferIE();
@@ -51,17 +50,18 @@ class PduSessionResourceSetupUnSuccessfulTransferIE {
   void setCauseNas(e_Ngap_CauseNas cause_value);
   void setCauseProtocol(e_Ngap_CauseProtocol cause_value);
   void setCauseMisc(e_Ngap_CauseMisc cause_value);
-  int encode2buffer(uint8_t *buf, int buf_size);
-  //Decapsulation
-  bool decodefromIE(uint8_t *buf, int buf_size);
+  int encode2buffer(uint8_t* buf, int buf_size);
+  // Decapsulation
+  bool decodefromIE(uint8_t* buf, int buf_size);
   long getChoiceOfCause();
   long getCause();
 
  private:
-  Ngap_PDUSessionResourceSetupUnsuccessfulTransfer_t *pduSessionResourceSetupUnsuccessfulTransferIEs;
+  Ngap_PDUSessionResourceSetupUnsuccessfulTransfer_t*
+      pduSessionResourceSetupUnsuccessfulTransferIEs;
 
-  Cause *causeValue;
+  Cause* causeValue;
 };
 
-}
+}  // namespace ngap
 #endif

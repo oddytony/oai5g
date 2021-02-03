@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,17 +37,15 @@ IMEISV_Request::IMEISV_Request(uint8_t iei) {
 
 //------------------------------------------------------------------------------
 IMEISV_Request::IMEISV_Request(const uint8_t iei, uint8_t value) {
-  _iei = iei;
+  _iei   = iei;
   _value = value;
 }
 
 //------------------------------------------------------------------------------
-IMEISV_Request::IMEISV_Request() {
-}
+IMEISV_Request::IMEISV_Request() {}
 
 //------------------------------------------------------------------------------
-IMEISV_Request::~IMEISV_Request() {
-}
+IMEISV_Request::~IMEISV_Request() {}
 
 //------------------------------------------------------------------------------
 void IMEISV_Request::setValue(uint8_t value) {
@@ -60,7 +58,7 @@ uint8_t IMEISV_Request::getValue() {
 }
 
 //------------------------------------------------------------------------------
-int IMEISV_Request::encode2buffer(uint8_t *buf, int len) {
+int IMEISV_Request::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding IMEISV_Request iei(0x%x)", _iei);
   if (len < 1) {
     Logger::nas_mm().error("len is less than 1");
@@ -68,20 +66,20 @@ int IMEISV_Request::encode2buffer(uint8_t *buf, int len) {
   }
   uint8_t octet = 0;
   if (!(_iei & 0x0f)) {
-    //octet = (0x0f) & ((tsc << 3) | key_id);
+    // octet = (0x0f) & ((tsc << 3) | key_id);
     //*buf = octet;
-    //Logger::nas_mm().debug("encoded Payload_Container_Type IE(len(1/2 octet))");
-    //return 0;
+    // Logger::nas_mm().debug("encoded Payload_Container_Type IE(len(1/2
+    // octet))"); return 0;
   } else {
     octet = (_iei << 4) | (_value & 0x07);
-    *buf = octet;
+    *buf  = octet;
     Logger::nas_mm().debug("encoded IMEISV_Request IE(len(1 octet))");
     return 1;
   }
 }
 
 //------------------------------------------------------------------------------
-int IMEISV_Request::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int IMEISV_Request::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   if (len < 1) {
     Logger::nas_mm().error("len is less than one");
     return 0;
@@ -97,4 +95,3 @@ int IMEISV_Request::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
     return 1;
   }
 }
-

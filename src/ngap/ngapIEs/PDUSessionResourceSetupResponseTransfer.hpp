@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -42,39 +42,38 @@ extern "C" {
 namespace ngap {
 
 class PduSessionResourceSetupResponseTransferIE {
-
  public:
   PduSessionResourceSetupResponseTransferIE();
   virtual ~PduSessionResourceSetupResponseTransferIE();
 
-  void setDLQoSFlowPerTNLInformation(GtpTunnel_t uptlinfo,
-                                     std::vector<AssociatedQosFlow_t> list);
+  void setDLQoSFlowPerTNLInformation(
+      GtpTunnel_t uptlinfo, std::vector<AssociatedQosFlow_t> list);
   void setAdditionalDLQoSFlowPerTNLInformation(
       GtpTunnel_t uptlinfo, std::vector<AssociatedQosFlow_t> list);
   void setSecurityResult(
       e_Ngap_IntegrityProtectionResult integrityProtectionResult,
       e_Ngap_ConfidentialityProtectionResult confidentialityProtectionResult);
-  //caus待续
+  // caus待续
 
-  int encode2buffer(uint8_t *buf, int buf_size);
-  //Decapsulation
-  bool decodefromIE(uint8_t *buf, int buf_size);
-  bool getDLQoSFlowPerTNLInformation(GtpTunnel_t &uptlinfo,
-                                     std::vector<AssociatedQosFlow_t> &list);
+  int encode2buffer(uint8_t* buf, int buf_size);
+  // Decapsulation
+  bool decodefromIE(uint8_t* buf, int buf_size);
+  bool getDLQoSFlowPerTNLInformation(
+      GtpTunnel_t& uptlinfo, std::vector<AssociatedQosFlow_t>& list);
   bool getAdditionalDLQoSFlowPerTNLInformation(
-      GtpTunnel_t &uptlinfo, std::vector<AssociatedQosFlow_t> &list);
-  bool getSecurityResult(long &integrityProtectionResult,
-                         long &confidentialityProtectionResult);
-  //caus待续
+      GtpTunnel_t& uptlinfo, std::vector<AssociatedQosFlow_t>& list);
+  bool getSecurityResult(
+      long& integrityProtectionResult, long& confidentialityProtectionResult);
+  // caus待续
 
  private:
-  Ngap_PDUSessionResourceSetupResponseTransfer_t *pduSessionResourceSetupResponseTransferIEs;
+  Ngap_PDUSessionResourceSetupResponseTransfer_t*
+      pduSessionResourceSetupResponseTransferIEs;
 
-  DLQoSFlowPerTNLInformation *dlQoSFlowPerTNLInformation;
-  DLQoSFlowPerTNLInformation *additionalDLQoSFlowPerTNLInformation;
-  SecurityResult *securityResult;
+  DLQoSFlowPerTNLInformation* dlQoSFlowPerTNLInformation;
+  DLQoSFlowPerTNLInformation* additionalDLQoSFlowPerTNLInformation;
+  SecurityResult* securityResult;
 };
 
-}
+}  // namespace ngap
 #endif
-

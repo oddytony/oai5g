@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -45,23 +45,24 @@ class AllocationAndRetentionPriority {
   virtual ~AllocationAndRetentionPriority();
 
   void setAllocationAndRetentionPriority(
-      PriorityLevelARP *m_priorityLevelARP,
-      Pre_emptionCapability *m_pre_emptionCapability,
-      Pre_emptionVulnerability *m_pre_emptionVulnerability);
+      PriorityLevelARP* m_priorityLevelARP,
+      Pre_emptionCapability* m_pre_emptionCapability,
+      Pre_emptionVulnerability* m_pre_emptionVulnerability);
   bool getAllocationAndRetentionPriority(
-      PriorityLevelARP *&m_priorityLevelARP,
-      Pre_emptionCapability *&m_pre_emptionCapability,
-      Pre_emptionVulnerability *&m_pre_emptionVulnerability);
+      PriorityLevelARP*& m_priorityLevelARP,
+      Pre_emptionCapability*& m_pre_emptionCapability,
+      Pre_emptionVulnerability*& m_pre_emptionVulnerability);
 
   bool encode2AllocationAndRetentionPriority(
       Ngap_AllocationAndRetentionPriority_t*);
   bool decodefromAllocationAndRetentionPriority(
       Ngap_AllocationAndRetentionPriority_t*);
+
  private:
-  PriorityLevelARP *priorityLevelARP;
-  Pre_emptionCapability *pre_emptionCapability;
-  Pre_emptionVulnerability *pre_emptionVulnerability;
+  PriorityLevelARP* priorityLevelARP;
+  Pre_emptionCapability* pre_emptionCapability;
+  Pre_emptionVulnerability* pre_emptionVulnerability;
 };
-}
+}  // namespace ngap
 
 #endif

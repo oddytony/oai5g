@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -47,26 +47,26 @@ class NGSetupFailureMsg {
   NGSetupFailureMsg();
   virtual ~NGSetupFailureMsg();
 
-  //External interfaces
-  //Encapsulation
+  // External interfaces
+  // Encapsulation
   void setMessageType();
-  void setCauseRadioNetwork(e_Ngap_CauseRadioNetwork cause_value,
-                            e_Ngap_TimeToWait time_to_wait);
+  void setCauseRadioNetwork(
+      e_Ngap_CauseRadioNetwork cause_value, e_Ngap_TimeToWait time_to_wait);
   void setCauseRadioNetwork(e_Ngap_CauseRadioNetwork cause_value);
-  void setCauseTransport(e_Ngap_CauseTransport cause_value,
-                         e_Ngap_TimeToWait time_to_wait);
+  void setCauseTransport(
+      e_Ngap_CauseTransport cause_value, e_Ngap_TimeToWait time_to_wait);
   void setCauseTransport(e_Ngap_CauseTransport cause_value);
   void setCauseNas(e_Ngap_CauseNas cause_value, e_Ngap_TimeToWait time_to_wait);
   void setCauseNas(e_Ngap_CauseNas cause_value);
-  void setCauseProtocol(e_Ngap_CauseProtocol cause_value,
-                        e_Ngap_TimeToWait time_to_wait);
+  void setCauseProtocol(
+      e_Ngap_CauseProtocol cause_value, e_Ngap_TimeToWait time_to_wait);
   void setCauseProtocol(e_Ngap_CauseProtocol cause_value);
-  void setCauseMisc(e_Ngap_CauseMisc cause_value,
-                    e_Ngap_TimeToWait time_to_wait);
+  void setCauseMisc(
+      e_Ngap_CauseMisc cause_value, e_Ngap_TimeToWait time_to_wait);
   void setCauseMisc(e_Ngap_CauseMisc cause_value);
-  int encode2buffer(uint8_t *buf, int buf_size);
-  //Decapsulation
-  bool decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu);
+  int encode2buffer(uint8_t* buf, int buf_size);
+  // Decapsulation
+  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
   bool getCauseType(Ngap_Cause_PR&);
   bool getCauseRadioNetwork(e_Ngap_CauseRadioNetwork&);
   bool getCauseTransport(e_Ngap_CauseTransport&);
@@ -76,16 +76,16 @@ class NGSetupFailureMsg {
   bool getTime2Wait(e_Ngap_TimeToWait&);
 
  private:
-  Ngap_NGAP_PDU_t *ngSetupFailurePdu;
-  Ngap_NGSetupFailure_t *ngSetupFailureIEs;
+  Ngap_NGAP_PDU_t* ngSetupFailurePdu;
+  Ngap_NGSetupFailure_t* ngSetupFailureIEs;
 
-  Cause *cause;
-  TimeToWait *timeToWait;
-  //CriticalityDiagnostics *criticalityDiagnostics;
+  Cause* cause;
+  TimeToWait* timeToWait;
+  // CriticalityDiagnostics *criticalityDiagnostics;
 
   void addCauseIE();
   void addTimeToWaitIE();
 };
 
-}
+}  // namespace ngap
 #endif

@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -15,20 +16,14 @@ namespace oai {
 namespace smf {
 namespace model {
 
-JsonBody::JsonBody( const web::json::value& json)
-    : m_Json(json)
-{
+JsonBody::JsonBody(const web::json::value& json) : m_Json(json) {}
+
+JsonBody::~JsonBody() {}
+
+void JsonBody::writeTo(std::ostream& target) {
+  m_Json.serialize(target);
 }
 
-JsonBody::~JsonBody()
-{
-}
-
-void JsonBody::writeTo( std::ostream& target )
-{
-    m_Json.serialize(target);
-}
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

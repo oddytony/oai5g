@@ -2,23 +2,23 @@
 #include <string>
 #include <iostream>
 
-uint8_t multipart_parser(std::string input, std::string &jsonData,
-                      std::string &n1sm, std::string &n2sm) {
-
-  //simple parser
-  mime_parser sp = { };
+uint8_t multipart_parser(
+    std::string input, std::string& jsonData, std::string& n1sm,
+    std::string& n2sm) {
+  // simple parser
+  mime_parser sp = {};
   sp.parse(input);
 
-  std::vector<mime_part> parts = { };
+  std::vector<mime_part> parts = {};
   sp.get_mime_parts(parts);
   uint8_t size = parts.size();
-  //at least 2 parts for Json data and N1 (+ N2)
+  // at least 2 parts for Json data and N1 (+ N2)
   if (size < 2) {
     return size;
   }
 
-  jsonData = parts[0].body;
-  n1sm = parts[1].body;
+  jsonData     = parts[0].body;
+  n1sm         = parts[1].body;
   bool is_ngap = false;
   if (size > 2) {
     n2sm = parts[2].body;
@@ -28,4 +28,3 @@ uint8_t multipart_parser(std::string input, std::string &jsonData,
 
   return size;
 }
-

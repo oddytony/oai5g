@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -19,12 +19,12 @@
  *      contact@openairinterface.org
  */
 
- /*! \file HandoverNotifyMsg.hpp
-  \brief
-  \author  niuxiansheng-niu, BUPT
-  \date 2020
-  \email: contact@openairinterface.org
-  */
+/*! \file HandoverNotifyMsg.hpp
+ \brief
+ \author  niuxiansheng-niu, BUPT
+ \date 2020
+ \email: contact@openairinterface.org
+ */
 #ifndef _HANDOVERNOTIFYMSG_H_
 #define _HANDOVERNOTIFYMSG_H_
 
@@ -42,24 +42,24 @@ extern "C" {
 }
 
 namespace ngap {
-	class HandoverNotifyMsg{
-	public:
-		HandoverNotifyMsg();
-		virtual ~HandoverNotifyMsg();
-		int  encode2buffer(uint8_t* buf, int buf_size);
-		bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
-		void setUserLocationInfoNR(struct NrCgi_s cig, struct Tai_s tai);
-		unsigned long getAmfUeNgapId();//return -1;(不存在)
-		uint32_t getRanUeNgapId();//return -1;(不存在)
-		bool getUserLocationInfoNR(struct NrCgi_s& cig, struct Tai_s& tai);
+class HandoverNotifyMsg {
+ public:
+  HandoverNotifyMsg();
+  virtual ~HandoverNotifyMsg();
+  int encode2buffer(uint8_t* buf, int buf_size);
+  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
+  void setUserLocationInfoNR(struct NrCgi_s cig, struct Tai_s tai);
+  unsigned long getAmfUeNgapId();  // return -1;(不存在)
+  uint32_t getRanUeNgapId();       // return -1;(不存在)
+  bool getUserLocationInfoNR(struct NrCgi_s& cig, struct Tai_s& tai);
 
-	private:
-		Ngap_NGAP_PDU_t* handoverNotifyPdu;
-		Ngap_HandoverNotify_t* handoverNotifyIEs;
-		AMF_UE_NGAP_ID* amfUeNgapId;
-		RAN_UE_NGAP_ID* ranUeNgapId;
-		UserLocationInformation* userLocationInformation;
-	};
+ private:
+  Ngap_NGAP_PDU_t* handoverNotifyPdu;
+  Ngap_HandoverNotify_t* handoverNotifyIEs;
+  AMF_UE_NGAP_ID* amfUeNgapId;
+  RAN_UE_NGAP_ID* ranUeNgapId;
+  UserLocationInformation* userLocationInformation;
+};
 
-}
+}  // namespace ngap
 #endif

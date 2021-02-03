@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,451 +10,398 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "ProblemDetails.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-ProblemDetails::ProblemDetails()
-{
-    m_Type = utility::conversions::to_string_t("");
-    m_TypeIsSet = false;
-    m_Title = utility::conversions::to_string_t("");
-    m_TitleIsSet = false;
-    m_Status = 0;
-    m_StatusIsSet = false;
-    m_Detail = utility::conversions::to_string_t("");
-    m_DetailIsSet = false;
-    m_Instance = utility::conversions::to_string_t("");
-    m_InstanceIsSet = false;
-    m_Cause = utility::conversions::to_string_t("");
-    m_CauseIsSet = false;
-    m_InvalidParamsIsSet = false;
-    m_SupportedFeatures = utility::conversions::to_string_t("");
-    m_SupportedFeaturesIsSet = false;
+ProblemDetails::ProblemDetails() {
+  m_Type                   = utility::conversions::to_string_t("");
+  m_TypeIsSet              = false;
+  m_Title                  = utility::conversions::to_string_t("");
+  m_TitleIsSet             = false;
+  m_Status                 = 0;
+  m_StatusIsSet            = false;
+  m_Detail                 = utility::conversions::to_string_t("");
+  m_DetailIsSet            = false;
+  m_Instance               = utility::conversions::to_string_t("");
+  m_InstanceIsSet          = false;
+  m_Cause                  = utility::conversions::to_string_t("");
+  m_CauseIsSet             = false;
+  m_InvalidParamsIsSet     = false;
+  m_SupportedFeatures      = utility::conversions::to_string_t("");
+  m_SupportedFeaturesIsSet = false;
 }
 
-ProblemDetails::~ProblemDetails()
-{
+ProblemDetails::~ProblemDetails() {}
+
+void ProblemDetails::validate() {
+  // TODO: implement validation
 }
 
-void ProblemDetails::validate()
-{
-    // TODO: implement validation
+web::json::value ProblemDetails::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  if (m_TypeIsSet) {
+    val[utility::conversions::to_string_t("type")] = ModelBase::toJson(m_Type);
+  }
+  if (m_TitleIsSet) {
+    val[utility::conversions::to_string_t("title")] =
+        ModelBase::toJson(m_Title);
+  }
+  if (m_StatusIsSet) {
+    val[utility::conversions::to_string_t("status")] =
+        ModelBase::toJson(m_Status);
+  }
+  if (m_DetailIsSet) {
+    val[utility::conversions::to_string_t("detail")] =
+        ModelBase::toJson(m_Detail);
+  }
+  if (m_InstanceIsSet) {
+    val[utility::conversions::to_string_t("instance")] =
+        ModelBase::toJson(m_Instance);
+  }
+  if (m_CauseIsSet) {
+    val[utility::conversions::to_string_t("cause")] =
+        ModelBase::toJson(m_Cause);
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_InvalidParams) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+    if (jsonArray.size() > 0) {
+      val[utility::conversions::to_string_t("invalidParams")] =
+          web::json::value::array(jsonArray);
+    }
+  }
+  if (m_SupportedFeaturesIsSet) {
+    val[utility::conversions::to_string_t("supportedFeatures")] =
+        ModelBase::toJson(m_SupportedFeatures);
+  }
+
+  return val;
 }
 
-web::json::value ProblemDetails::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    if(m_TypeIsSet)
-    {
-        val[utility::conversions::to_string_t("type")] = ModelBase::toJson(m_Type);
+void ProblemDetails::fromJson(const web::json::value& val) {
+  if (val.has_field(utility::conversions::to_string_t("type"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("type"));
+    if (!fieldValue.is_null()) {
+      setType(ModelBase::stringFromJson(fieldValue));
     }
-    if(m_TitleIsSet)
-    {
-        val[utility::conversions::to_string_t("title")] = ModelBase::toJson(m_Title);
+  }
+  if (val.has_field(utility::conversions::to_string_t("title"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("title"));
+    if (!fieldValue.is_null()) {
+      setTitle(ModelBase::stringFromJson(fieldValue));
     }
-    if(m_StatusIsSet)
-    {
-        val[utility::conversions::to_string_t("status")] = ModelBase::toJson(m_Status);
+  }
+  if (val.has_field(utility::conversions::to_string_t("status"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("status"));
+    if (!fieldValue.is_null()) {
+      setStatus(ModelBase::int32_tFromJson(fieldValue));
     }
-    if(m_DetailIsSet)
-    {
-        val[utility::conversions::to_string_t("detail")] = ModelBase::toJson(m_Detail);
+  }
+  if (val.has_field(utility::conversions::to_string_t("detail"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("detail"));
+    if (!fieldValue.is_null()) {
+      setDetail(ModelBase::stringFromJson(fieldValue));
     }
-    if(m_InstanceIsSet)
-    {
-        val[utility::conversions::to_string_t("instance")] = ModelBase::toJson(m_Instance);
+  }
+  if (val.has_field(utility::conversions::to_string_t("instance"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("instance"));
+    if (!fieldValue.is_null()) {
+      setInstance(ModelBase::stringFromJson(fieldValue));
     }
-    if(m_CauseIsSet)
-    {
-        val[utility::conversions::to_string_t("cause")] = ModelBase::toJson(m_Cause);
+  }
+  if (val.has_field(utility::conversions::to_string_t("cause"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("cause"));
+    if (!fieldValue.is_null()) {
+      setCause(ModelBase::stringFromJson(fieldValue));
     }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_InvalidParams )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
+  }
+  {
+    m_InvalidParams.clear();
+    std::vector<web::json::value> jsonArray;
+    if (val.has_field(utility::conversions::to_string_t("invalidParams"))) {
+      for (auto& item :
+           val.at(utility::conversions::to_string_t("invalidParams"))
+               .as_array()) {
+        if (item.is_null()) {
+          m_InvalidParams.push_back(std::shared_ptr<InvalidParam>(nullptr));
+        } else {
+          std::shared_ptr<InvalidParam> newItem(new InvalidParam());
+          newItem->fromJson(item);
+          m_InvalidParams.push_back(newItem);
         }
-        if(jsonArray.size() > 0)
-        {
-            val[utility::conversions::to_string_t("invalidParams")] = web::json::value::array(jsonArray);
+      }
+    }
+  }
+  if (val.has_field(utility::conversions::to_string_t("supportedFeatures"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("supportedFeatures"));
+    if (!fieldValue.is_null()) {
+      setSupportedFeatures(ModelBase::stringFromJson(fieldValue));
+    }
+  }
+}
+
+void ProblemDetails::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  if (m_TypeIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("type"), m_Type));
+  }
+  if (m_TitleIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("title"), m_Title));
+  }
+  if (m_StatusIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("status"), m_Status));
+  }
+  if (m_DetailIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("detail"), m_Detail));
+  }
+  if (m_InstanceIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("instance"),
+        m_Instance));
+  }
+  if (m_CauseIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("cause"), m_Cause));
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_InvalidParams) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+
+    if (jsonArray.size() > 0) {
+      multipart->add(ModelBase::toHttpContent(
+          namePrefix + utility::conversions::to_string_t("invalidParams"),
+          web::json::value::array(jsonArray),
+          utility::conversions::to_string_t("application/json")));
+    }
+  }
+  if (m_SupportedFeaturesIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("supportedFeatures"),
+        m_SupportedFeatures));
+  }
+}
+
+void ProblemDetails::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  if (multipart->hasContent(utility::conversions::to_string_t("type"))) {
+    setType(ModelBase::stringFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("type"))));
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("title"))) {
+    setTitle(ModelBase::stringFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("title"))));
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("status"))) {
+    setStatus(ModelBase::int32_tFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("status"))));
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("detail"))) {
+    setDetail(ModelBase::stringFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("detail"))));
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("instance"))) {
+    setInstance(ModelBase::stringFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("instance"))));
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("cause"))) {
+    setCause(ModelBase::stringFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("cause"))));
+  }
+  {
+    m_InvalidParams.clear();
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("invalidParams"))) {
+      web::json::value jsonArray = web::json::value::parse(
+          ModelBase::stringFromHttpContent(multipart->getContent(
+              utility::conversions::to_string_t("invalidParams"))));
+      for (auto& item : jsonArray.as_array()) {
+        if (item.is_null()) {
+          m_InvalidParams.push_back(std::shared_ptr<InvalidParam>(nullptr));
+        } else {
+          std::shared_ptr<InvalidParam> newItem(new InvalidParam());
+          newItem->fromJson(item);
+          m_InvalidParams.push_back(newItem);
         }
+      }
     }
-    if(m_SupportedFeaturesIsSet)
-    {
-        val[utility::conversions::to_string_t("supportedFeatures")] = ModelBase::toJson(m_SupportedFeatures);
-    }
-
-    return val;
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("supportedFeatures"))) {
+    setSupportedFeatures(ModelBase::stringFromHttpContent(multipart->getContent(
+        utility::conversions::to_string_t("supportedFeatures"))));
+  }
 }
 
-void ProblemDetails::fromJson(const web::json::value& val)
-{
-    if(val.has_field(utility::conversions::to_string_t("type")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("type"));
-        if(!fieldValue.is_null())
-        {
-            setType(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("title")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("title"));
-        if(!fieldValue.is_null())
-        {
-            setTitle(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("status")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("status"));
-        if(!fieldValue.is_null())
-        {
-            setStatus(ModelBase::int32_tFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("detail")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("detail"));
-        if(!fieldValue.is_null())
-        {
-            setDetail(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("instance")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("instance"));
-        if(!fieldValue.is_null())
-        {
-            setInstance(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("cause")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("cause"));
-        if(!fieldValue.is_null())
-        {
-            setCause(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    {
-        m_InvalidParams.clear();
-        std::vector<web::json::value> jsonArray;
-        if(val.has_field(utility::conversions::to_string_t("invalidParams")))
-        {
-        for( auto& item : val.at(utility::conversions::to_string_t("invalidParams")).as_array() )
-        {
-            if(item.is_null())
-            {
-                m_InvalidParams.push_back( std::shared_ptr<InvalidParam>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<InvalidParam> newItem(new InvalidParam());
-                newItem->fromJson(item);
-                m_InvalidParams.push_back( newItem );
-            }
-        }
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("supportedFeatures")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("supportedFeatures"));
-        if(!fieldValue.is_null())
-        {
-            setSupportedFeatures(ModelBase::stringFromJson(fieldValue));
-        }
-    }
+utility::string_t ProblemDetails::getType() const {
+  return m_Type;
 }
 
-void ProblemDetails::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    if(m_TypeIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("type"), m_Type));
-    }
-    if(m_TitleIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("title"), m_Title));
-    }
-    if(m_StatusIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("status"), m_Status));
-    }
-    if(m_DetailIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("detail"), m_Detail));
-    }
-    if(m_InstanceIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("instance"), m_Instance));
-    }
-    if(m_CauseIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("cause"), m_Cause));
-    }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_InvalidParams )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
-        }
-        
-        if(jsonArray.size() > 0)
-        {
-            multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("invalidParams"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
-        }
-    }
-    if(m_SupportedFeaturesIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("supportedFeatures"), m_SupportedFeatures));
-    }
+void ProblemDetails::setType(const utility::string_t& value) {
+  m_Type      = value;
+  m_TypeIsSet = true;
 }
 
-void ProblemDetails::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    if(multipart->hasContent(utility::conversions::to_string_t("type")))
-    {
-        setType(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("type"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("title")))
-    {
-        setTitle(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("title"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("status")))
-    {
-        setStatus(ModelBase::int32_tFromHttpContent(multipart->getContent(utility::conversions::to_string_t("status"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("detail")))
-    {
-        setDetail(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("detail"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("instance")))
-    {
-        setInstance(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("instance"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("cause")))
-    {
-        setCause(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("cause"))));
-    }
-    {
-        m_InvalidParams.clear();
-        if(multipart->hasContent(utility::conversions::to_string_t("invalidParams")))
-        {
-
-        web::json::value jsonArray = web::json::value::parse(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("invalidParams"))));
-        for( auto& item : jsonArray.as_array() )
-        {
-            if(item.is_null())
-            {
-                m_InvalidParams.push_back( std::shared_ptr<InvalidParam>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<InvalidParam> newItem(new InvalidParam());
-                newItem->fromJson(item);
-                m_InvalidParams.push_back( newItem );
-            }
-        }
-        }
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("supportedFeatures")))
-    {
-        setSupportedFeatures(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("supportedFeatures"))));
-    }
+bool ProblemDetails::typeIsSet() const {
+  return m_TypeIsSet;
 }
 
-utility::string_t ProblemDetails::getType() const
-{
-    return m_Type;
+void ProblemDetails::unsetType() {
+  m_TypeIsSet = false;
 }
 
-void ProblemDetails::setType(const utility::string_t& value)
-{
-    m_Type = value;
-    m_TypeIsSet = true;
+utility::string_t ProblemDetails::getTitle() const {
+  return m_Title;
 }
 
-bool ProblemDetails::typeIsSet() const
-{
-    return m_TypeIsSet;
+void ProblemDetails::setTitle(const utility::string_t& value) {
+  m_Title      = value;
+  m_TitleIsSet = true;
 }
 
-void ProblemDetails::unsetType()
-{
-    m_TypeIsSet = false;
+bool ProblemDetails::titleIsSet() const {
+  return m_TitleIsSet;
 }
 
-utility::string_t ProblemDetails::getTitle() const
-{
-    return m_Title;
+void ProblemDetails::unsetTitle() {
+  m_TitleIsSet = false;
 }
 
-void ProblemDetails::setTitle(const utility::string_t& value)
-{
-    m_Title = value;
-    m_TitleIsSet = true;
+int32_t ProblemDetails::getStatus() const {
+  return m_Status;
 }
 
-bool ProblemDetails::titleIsSet() const
-{
-    return m_TitleIsSet;
+void ProblemDetails::setStatus(int32_t value) {
+  m_Status      = value;
+  m_StatusIsSet = true;
 }
 
-void ProblemDetails::unsetTitle()
-{
-    m_TitleIsSet = false;
+bool ProblemDetails::statusIsSet() const {
+  return m_StatusIsSet;
 }
 
-int32_t ProblemDetails::getStatus() const
-{
-    return m_Status;
+void ProblemDetails::unsetStatus() {
+  m_StatusIsSet = false;
 }
 
-void ProblemDetails::setStatus(int32_t value)
-{
-    m_Status = value;
-    m_StatusIsSet = true;
+utility::string_t ProblemDetails::getDetail() const {
+  return m_Detail;
 }
 
-bool ProblemDetails::statusIsSet() const
-{
-    return m_StatusIsSet;
+void ProblemDetails::setDetail(const utility::string_t& value) {
+  m_Detail      = value;
+  m_DetailIsSet = true;
 }
 
-void ProblemDetails::unsetStatus()
-{
-    m_StatusIsSet = false;
+bool ProblemDetails::detailIsSet() const {
+  return m_DetailIsSet;
 }
 
-utility::string_t ProblemDetails::getDetail() const
-{
-    return m_Detail;
+void ProblemDetails::unsetDetail() {
+  m_DetailIsSet = false;
 }
 
-void ProblemDetails::setDetail(const utility::string_t& value)
-{
-    m_Detail = value;
-    m_DetailIsSet = true;
+utility::string_t ProblemDetails::getInstance() const {
+  return m_Instance;
 }
 
-bool ProblemDetails::detailIsSet() const
-{
-    return m_DetailIsSet;
+void ProblemDetails::setInstance(const utility::string_t& value) {
+  m_Instance      = value;
+  m_InstanceIsSet = true;
 }
 
-void ProblemDetails::unsetDetail()
-{
-    m_DetailIsSet = false;
+bool ProblemDetails::instanceIsSet() const {
+  return m_InstanceIsSet;
 }
 
-utility::string_t ProblemDetails::getInstance() const
-{
-    return m_Instance;
+void ProblemDetails::unsetInstance() {
+  m_InstanceIsSet = false;
 }
 
-void ProblemDetails::setInstance(const utility::string_t& value)
-{
-    m_Instance = value;
-    m_InstanceIsSet = true;
+utility::string_t ProblemDetails::getCause() const {
+  return m_Cause;
 }
 
-bool ProblemDetails::instanceIsSet() const
-{
-    return m_InstanceIsSet;
+void ProblemDetails::setCause(const utility::string_t& value) {
+  m_Cause      = value;
+  m_CauseIsSet = true;
 }
 
-void ProblemDetails::unsetInstance()
-{
-    m_InstanceIsSet = false;
+bool ProblemDetails::causeIsSet() const {
+  return m_CauseIsSet;
 }
 
-utility::string_t ProblemDetails::getCause() const
-{
-    return m_Cause;
+void ProblemDetails::unsetCause() {
+  m_CauseIsSet = false;
 }
 
-void ProblemDetails::setCause(const utility::string_t& value)
-{
-    m_Cause = value;
-    m_CauseIsSet = true;
+std::vector<std::shared_ptr<InvalidParam>>& ProblemDetails::getInvalidParams() {
+  return m_InvalidParams;
 }
 
-bool ProblemDetails::causeIsSet() const
-{
-    return m_CauseIsSet;
+void ProblemDetails::setInvalidParams(
+    const std::vector<std::shared_ptr<InvalidParam>>& value) {
+  m_InvalidParams      = value;
+  m_InvalidParamsIsSet = true;
 }
 
-void ProblemDetails::unsetCause()
-{
-    m_CauseIsSet = false;
+bool ProblemDetails::invalidParamsIsSet() const {
+  return m_InvalidParamsIsSet;
 }
 
-std::vector<std::shared_ptr<InvalidParam>>& ProblemDetails::getInvalidParams()
-{
-    return m_InvalidParams;
+void ProblemDetails::unsetInvalidParams() {
+  m_InvalidParamsIsSet = false;
 }
 
-void ProblemDetails::setInvalidParams(const std::vector<std::shared_ptr<InvalidParam>>& value)
-{
-    m_InvalidParams = value;
-    m_InvalidParamsIsSet = true;
+utility::string_t ProblemDetails::getSupportedFeatures() const {
+  return m_SupportedFeatures;
 }
 
-bool ProblemDetails::invalidParamsIsSet() const
-{
-    return m_InvalidParamsIsSet;
+void ProblemDetails::setSupportedFeatures(const utility::string_t& value) {
+  m_SupportedFeatures      = value;
+  m_SupportedFeaturesIsSet = true;
 }
 
-void ProblemDetails::unsetInvalidParams()
-{
-    m_InvalidParamsIsSet = false;
+bool ProblemDetails::supportedFeaturesIsSet() const {
+  return m_SupportedFeaturesIsSet;
 }
 
-utility::string_t ProblemDetails::getSupportedFeatures() const
-{
-    return m_SupportedFeatures;
+void ProblemDetails::unsetSupportedFeatures() {
+  m_SupportedFeaturesIsSet = false;
 }
 
-void ProblemDetails::setSupportedFeatures(const utility::string_t& value)
-{
-    m_SupportedFeatures = value;
-    m_SupportedFeaturesIsSet = true;
-}
-
-bool ProblemDetails::supportedFeaturesIsSet() const
-{
-    return m_SupportedFeaturesIsSet;
-}
-
-void ProblemDetails::unsetSupportedFeatures()
-{
-    m_SupportedFeaturesIsSet = false;
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

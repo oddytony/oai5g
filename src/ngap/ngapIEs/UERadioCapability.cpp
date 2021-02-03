@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -32,48 +32,45 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 UERadioCapability::UERadioCapability() {
-  ueRadioCapabilitybuffer = NULL;
+  ueRadioCapabilitybuffer       = NULL;
   sizeofueRadioCapabilitybuffer = -1;
 }
 
 //------------------------------------------------------------------------------
-UERadioCapability::~UERadioCapability() {
-}
+UERadioCapability::~UERadioCapability() {}
 
 //------------------------------------------------------------------------------
 bool UERadioCapability::encode2UERadioCapability(
-    Ngap_UERadioCapability_t &ueRadioCapability) {
+    Ngap_UERadioCapability_t& ueRadioCapability) {
   int ret;
-  ret = OCTET_STRING_fromBuf(&ueRadioCapability, ueRadioCapabilitybuffer,
-                             sizeofueRadioCapabilitybuffer);
-  if (ret != 0)
-    return false;
+  ret = OCTET_STRING_fromBuf(
+      &ueRadioCapability, ueRadioCapabilitybuffer,
+      sizeofueRadioCapabilitybuffer);
+  if (ret != 0) return false;
   return true;
 }
 
 //------------------------------------------------------------------------------
 bool UERadioCapability::decodefromUERadioCapability(
-    Ngap_UERadioCapability_t &ueRadioCapability) {
-  ueRadioCapabilitybuffer = (char*) ueRadioCapability.buf;
+    Ngap_UERadioCapability_t& ueRadioCapability) {
+  ueRadioCapabilitybuffer       = (char*) ueRadioCapability.buf;
   sizeofueRadioCapabilitybuffer = ueRadioCapability.size;
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool UERadioCapability::getUERadioCapability(uint8_t *&buffer, size_t &size) {
+bool UERadioCapability::getUERadioCapability(uint8_t*& buffer, size_t& size) {
   buffer = (uint8_t*) ueRadioCapabilitybuffer;
-  size = sizeofueRadioCapabilitybuffer;
-  if (!ueRadioCapabilitybuffer)
-    return false;
-  if (sizeofueRadioCapabilitybuffer < 0)
-    return false;
+  size   = sizeofueRadioCapabilitybuffer;
+  if (!ueRadioCapabilitybuffer) return false;
+  if (sizeofueRadioCapabilitybuffer < 0) return false;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-void UERadioCapability::setUERadioCapability(uint8_t *buffer, size_t size) {
-  ueRadioCapabilitybuffer = (char*) buffer;
+void UERadioCapability::setUERadioCapability(uint8_t* buffer, size_t size) {
+  ueRadioCapabilitybuffer       = (char*) buffer;
   sizeofueRadioCapabilitybuffer = size;
 }
-}
+}  // namespace ngap

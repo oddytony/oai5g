@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-DataForwardingNotPossible::DataForwardingNotPossible() {
-}
+DataForwardingNotPossible::DataForwardingNotPossible() {}
 
 //------------------------------------------------------------------------------
-DataForwardingNotPossible::~DataForwardingNotPossible() {
-}
+DataForwardingNotPossible::~DataForwardingNotPossible() {}
 
 //------------------------------------------------------------------------------
 #if 0
@@ -53,11 +51,11 @@ DataForwardingNotPossible::~DataForwardingNotPossible() {
 		
 		return true;
 	}
-	#endif
+#endif
 
 //------------------------------------------------------------------------------
 bool DataForwardingNotPossible::encode2DataForwardingNotPossible(
-    Ngap_DataForwardingNotPossible_t &dataForwardingNotPossible) {
+    Ngap_DataForwardingNotPossible_t& dataForwardingNotPossible) {
   dataForwardingNotPossible =
       Ngap_DataForwardingNotPossible_data_forwarding_not_possible;
 
@@ -66,13 +64,12 @@ bool DataForwardingNotPossible::encode2DataForwardingNotPossible(
 
 //------------------------------------------------------------------------------
 bool DataForwardingNotPossible::decodefromDataForwardingNotPossible(
-    Ngap_DataForwardingNotPossible_t &dataForwardingNotPossible) {
-  if (dataForwardingNotPossible
-      != Ngap_DataForwardingNotPossible_data_forwarding_not_possible)
+    Ngap_DataForwardingNotPossible_t& dataForwardingNotPossible) {
+  if (dataForwardingNotPossible !=
+      Ngap_DataForwardingNotPossible_data_forwarding_not_possible)
     return false;
 
   return true;
 }
 
-}
-
+}  // namespace ngap

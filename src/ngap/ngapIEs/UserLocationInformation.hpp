@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -45,23 +45,23 @@ class UserLocationInformation {
 
   void setInformation(UserLocationInformationEUTRA*);
   void setInformation(UserLocationInformationNR*);
-  //void setInformation(UserLocationInformationN3IWF*);
+  // void setInformation(UserLocationInformationN3IWF*);
   bool encodefromUserLocationInformation(
-      Ngap_UserLocationInformation_t *userLocationInformation);
+      Ngap_UserLocationInformation_t* userLocationInformation);
   bool decodefromUserLocationInformation(
-      Ngap_UserLocationInformation_t *userLocationInformation);
+      Ngap_UserLocationInformation_t* userLocationInformation);
   Ngap_UserLocationInformation_PR getChoiceOfUserLocationInformation();
   void getInformation(UserLocationInformationEUTRA*&);
   void getInformation(UserLocationInformationNR*&);
-  //void getInformation(UserLocationInformationN3IWF*&);
+  // void getInformation(UserLocationInformationN3IWF*&);
 
  private:
   Ngap_UserLocationInformation_PR informationPresent;
-  UserLocationInformationEUTRA *userLocationInformationEUTRA;
-  UserLocationInformationNR *userLocationInformationNR;
-  //UserLocationInformationN3IWF *userLocationInformationN3IWF;
+  UserLocationInformationEUTRA* userLocationInformationEUTRA;
+  UserLocationInformationNR* userLocationInformationNR;
+  // UserLocationInformationN3IWF *userLocationInformationN3IWF;
 };
 
-}
+}  // namespace ngap
 
 #endif

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,19 +35,18 @@ Extended_DRX_Parameters::Extended_DRX_Parameters(uint8_t iei) {
 }
 
 //------------------------------------------------------------------------------
-Extended_DRX_Parameters::Extended_DRX_Parameters(const uint8_t iei, uint8_t paging_time, uint8_t value) {
-  _iei = iei;
+Extended_DRX_Parameters::Extended_DRX_Parameters(
+    const uint8_t iei, uint8_t paging_time, uint8_t value) {
+  _iei         = iei;
   _paging_time = paging_time & 0x0F;
-  _value = value & 0x0F;
+  _value       = value & 0x0F;
 }
 
 //------------------------------------------------------------------------------
-Extended_DRX_Parameters::Extended_DRX_Parameters() {
-}
+Extended_DRX_Parameters::Extended_DRX_Parameters() {}
 
 //------------------------------------------------------------------------------
-Extended_DRX_Parameters::~Extended_DRX_Parameters() {
-}
+Extended_DRX_Parameters::~Extended_DRX_Parameters() {}
 
 //------------------------------------------------------------------------------
 void Extended_DRX_Parameters::setValue(uint8_t value) {
@@ -70,7 +69,7 @@ uint8_t Extended_DRX_Parameters::getPaging_time() {
 }
 
 //------------------------------------------------------------------------------
-int Extended_DRX_Parameters::encode2buffer(uint8_t *buf, int len) {
+int Extended_DRX_Parameters::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding Extended_DRX_Parameters iei(0x%x)", _iei);
   if (len < 3) {
     Logger::nas_mm().error("len is less than 3");
@@ -88,25 +87,29 @@ int Extended_DRX_Parameters::encode2buffer(uint8_t *buf, int len) {
     //	*(buf + encoded_size) = length - 1; encoded_size++;
     //	*(buf + encoded_size) = _value; encoded_size++; encoded_size++;
   }
-  Logger::nas_mm().debug("encoded Extended_DRX_Parameters len(%d)", encoded_size);
+  Logger::nas_mm().debug(
+      "encoded Extended_DRX_Parameters len(%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
-int Extended_DRX_Parameters::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int Extended_DRX_Parameters::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding Extended_DRX_Parameters iei(0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
     decoded_size++;
   }
   _value = 0x00;
-//	length = *(buf + decoded_size); 
+  //	length = *(buf + decoded_size);
   decoded_size++;
-  _value = *(buf + decoded_size) & 0x0f;
+  _value       = *(buf + decoded_size) & 0x0f;
   _paging_time = *(buf + decoded_size) & 0xf0;
   decoded_size++;
-  Logger::nas_mm().debug("decoded Extended_DRX_Parameters paging_time(0x%x) value(0x%x) ", _paging_time, _value);
-  Logger::nas_mm().debug("decoded Extended_DRX_Parameters len(%d)", decoded_size);
+  Logger::nas_mm().debug(
+      "decoded Extended_DRX_Parameters paging_time(0x%x) value(0x%x) ",
+      _paging_time, _value);
+  Logger::nas_mm().debug(
+      "decoded Extended_DRX_Parameters len(%d)", decoded_size);
   return decoded_size;
 }
-

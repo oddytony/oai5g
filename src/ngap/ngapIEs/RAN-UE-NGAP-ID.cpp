@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,12 +35,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-RAN_UE_NGAP_ID::RAN_UE_NGAP_ID() {
-}
+RAN_UE_NGAP_ID::RAN_UE_NGAP_ID() {}
 
 //------------------------------------------------------------------------------
-RAN_UE_NGAP_ID::~RAN_UE_NGAP_ID() {
-}
+RAN_UE_NGAP_ID::~RAN_UE_NGAP_ID() {}
 
 //------------------------------------------------------------------------------
 void RAN_UE_NGAP_ID::setRanUeNgapId(uint32_t m_ranuengapid) {
@@ -53,17 +51,16 @@ uint32_t RAN_UE_NGAP_ID::getRanUeNgapId() {
 }
 
 //------------------------------------------------------------------------------
-bool RAN_UE_NGAP_ID::encode2RAN_UE_NGAP_ID(Ngap_RAN_UE_NGAP_ID_t &ranuengapid) {
+bool RAN_UE_NGAP_ID::encode2RAN_UE_NGAP_ID(Ngap_RAN_UE_NGAP_ID_t& ranuengapid) {
   ranuengapid = ranUeNgapId;
   return true;
 }
 
 //------------------------------------------------------------------------------
 bool RAN_UE_NGAP_ID::decodefromRAN_UE_NGAP_ID(
-    Ngap_RAN_UE_NGAP_ID_t &ranuengapid) {
+    Ngap_RAN_UE_NGAP_ID_t& ranuengapid) {
   ranUeNgapId = ranuengapid;
   cout << "[LibNGAP]Received RanUeNgapId " << ranUeNgapId << endl;
   return true;
 }
-}
-
+}  // namespace ngap

@@ -13,7 +13,6 @@ extern "C" {
 namespace ngap {
 
 class PDUSessionResourceReleaseCommandTransfer {
-
  public:
   PDUSessionResourceReleaseCommandTransfer();
   virtual ~PDUSessionResourceReleaseCommandTransfer();
@@ -23,19 +22,18 @@ class PDUSessionResourceReleaseCommandTransfer {
   void setCauseNas(e_Ngap_CauseNas cause_value);
   void setCauseProtocol(e_Ngap_CauseProtocol cause_value);
   void setCauseMisc(e_Ngap_CauseMisc cause_value);
-  int encode2buffer(uint8_t *buf, int buf_size);
-  //Decapsulation
-  bool decodefromIE(uint8_t *buf, int buf_size);
+  int encode2buffer(uint8_t* buf, int buf_size);
+  // Decapsulation
+  bool decodefromIE(uint8_t* buf, int buf_size);
   long getChoiceOfCause();
   long getCause();
 
  private:
-  Ngap_PDUSessionResourceReleaseCommandTransfer_t *pduSessionResourceReleaseCommandTransferIEs;
+  Ngap_PDUSessionResourceReleaseCommandTransfer_t*
+      pduSessionResourceReleaseCommandTransferIEs;
 
-  Cause *causeValue;
-
+  Cause* causeValue;
 };
 
-}
+}  // namespace ngap
 #endif
-

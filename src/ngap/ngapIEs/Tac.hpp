@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -40,13 +40,14 @@ class TAC {
   TAC();
   virtual ~TAC();
   bool encode2octetstring(Ngap_TAC_t&);
-  bool decodefromoctetstring(Ngap_TAC_t &m_tac);
+  bool decodefromoctetstring(Ngap_TAC_t& m_tac);
   uint32_t getTac();
   void setTac(uint32_t m_tac);
+
  private:
-  uint32_t tac :24;
+  uint32_t tac : 24;
 };
 
-}
+}  // namespace ngap
 
 #endif

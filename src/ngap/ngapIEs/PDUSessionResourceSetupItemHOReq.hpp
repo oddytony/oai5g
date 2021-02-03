@@ -18,23 +18,25 @@ class PDUSessionResourceSetupItemHOReq {
   virtual ~PDUSessionResourceSetupItemHOReq();
 
   void setPDUSessionResourceSetupItemHOReq(
-      PDUSessionID *m_pDUSessionID, S_NSSAI *m_s_NSSAI,
+      PDUSessionID* m_pDUSessionID, S_NSSAI* m_s_NSSAI,
       OCTET_STRING_t m_pDUSessionResourceSetupRequestTransfer);
   void getPDUSessionResourceSetupItemHOReq(
-      PDUSessionID *&m_pDUSessionID, S_NSSAI *&m_s_NSSAI,
-      OCTET_STRING_t &m_pDUSessionResourceSetupRequestTransfer);
+      PDUSessionID*& m_pDUSessionID, S_NSSAI*& m_s_NSSAI,
+      OCTET_STRING_t& m_pDUSessionResourceSetupRequestTransfer);
 
   bool encode2PDUSessionResourceSetupItemHOReq(
-      Ngap_PDUSessionResourceSetupItemHOReq_t *pduSessionResourceSetupItemHOReq);
+      Ngap_PDUSessionResourceSetupItemHOReq_t*
+          pduSessionResourceSetupItemHOReq);
   bool decodefromPDUSessionResourceSetupItemHOReq(
-      Ngap_PDUSessionResourceSetupItemHOReq_t *pduSessionResourceSetupItemHOReq);
+      Ngap_PDUSessionResourceSetupItemHOReq_t*
+          pduSessionResourceSetupItemHOReq);
+
  private:
-  PDUSessionID *pDUSessionID;
-  S_NSSAI *s_NSSAI;
+  PDUSessionID* pDUSessionID;
+  S_NSSAI* s_NSSAI;
   OCTET_STRING_t pDUSessionResourceSetupRequestTransfer;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

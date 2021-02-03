@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -38,20 +38,20 @@ UENetworkCapability::UENetworkCapability(uint8_t iei) {
 }
 
 //------------------------------------------------------------------------------
-UENetworkCapability::UENetworkCapability() {
-}
+UENetworkCapability::UENetworkCapability() {}
 
 //------------------------------------------------------------------------------
-UENetworkCapability::~UENetworkCapability() {
-}
+UENetworkCapability::~UENetworkCapability() {}
 
 //------------------------------------------------------------------------------
-UENetworkCapability::UENetworkCapability(const uint8_t iei, uint8_t _5gg_EEASel, uint8_t _5gg_EIASel) {
-  _iei = iei;
+UENetworkCapability::UENetworkCapability(
+    const uint8_t iei, uint8_t _5gg_EEASel, uint8_t _5gg_EIASel) {
+  _iei       = iei;
   _5g_EEASel = _5gg_EEASel;
   _5g_EIASel = _5gg_EIASel;
-  length = 4;
-  Logger::nas_mm().debug("decoded UENetworkCapability EA(0x%d),IA(0x%d)", _5g_EEASel, _5g_EIASel);
+  length     = 4;
+  Logger::nas_mm().debug(
+      "decoded UENetworkCapability EA(0x%d),IA(0x%d)", _5g_EEASel, _5g_EIASel);
 }
 
 //------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ uint8_t UENetworkCapability::getEIASel() {
 }
 
 //------------------------------------------------------------------------------
-int UENetworkCapability::encode2buffer(uint8_t *buf, int len) {
+int UENetworkCapability::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding UENetworkCapability iei(0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
@@ -100,7 +100,8 @@ int UENetworkCapability::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int UENetworkCapability::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int UENetworkCapability::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding UENetworkCapability iei(0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
@@ -112,8 +113,8 @@ int UENetworkCapability::decodefrombuffer(uint8_t *buf, int len, bool is_option)
   decoded_size++;
   _5g_EIASel = *(buf + decoded_size);
   decoded_size++;
-  Logger::nas_mm().debug("decoded UENetworkCapability EA(0x%d),IA(0x%d)", _5g_EEASel, _5g_EIASel);
+  Logger::nas_mm().debug(
+      "decoded UENetworkCapability EA(0x%d),IA(0x%d)", _5g_EEASel, _5g_EIASel);
   Logger::nas_mm().debug("decoded UENetworkCapability len(%d)", decoded_size);
   return decoded_size;
 }
-

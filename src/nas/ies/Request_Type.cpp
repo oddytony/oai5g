@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,17 +37,15 @@ Request_Type::Request_Type(uint8_t iei) {
 
 //------------------------------------------------------------------------------
 Request_Type::Request_Type(const uint8_t iei, uint8_t value) {
-  _iei = iei;
+  _iei   = iei;
   _value = value;
 }
 
 //------------------------------------------------------------------------------
-Request_Type::Request_Type() {
-}
+Request_Type::Request_Type() {}
 
 //------------------------------------------------------------------------------
-Request_Type::~Request_Type() {
-}
+Request_Type::~Request_Type() {}
 
 //------------------------------------------------------------------------------
 void Request_Type::setValue(uint8_t value) {
@@ -60,7 +58,7 @@ uint8_t Request_Type::getValue() {
 }
 
 //------------------------------------------------------------------------------
-int Request_Type::encode2buffer(uint8_t *buf, int len) {
+int Request_Type::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding Request_Type iei(0x%x)", _iei);
   if (len < 1) {
     Logger::nas_mm().error("len is less than 1");
@@ -79,10 +77,10 @@ int Request_Type::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int Request_Type::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int Request_Type::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding Request_Type iei(0x%x)", *buf);
   int decoded_size = 0;
-  uint8_t octet = 0;
+  uint8_t octet    = 0;
   if (is_option) {
     octet = *buf;
     decoded_size++;
@@ -93,4 +91,3 @@ int Request_Type::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoded Request_Type len(%d)", decoded_size);
   return decoded_size;
 }
-

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-QosFlowIdentifier::QosFlowIdentifier() {
-}
+QosFlowIdentifier::QosFlowIdentifier() {}
 
 //------------------------------------------------------------------------------
-QosFlowIdentifier::~QosFlowIdentifier() {
-}
+QosFlowIdentifier::~QosFlowIdentifier() {}
 
 //------------------------------------------------------------------------------
 void QosFlowIdentifier::setQosFlowIdentifier(long value) {
@@ -47,7 +45,7 @@ void QosFlowIdentifier::setQosFlowIdentifier(long value) {
 }
 
 //------------------------------------------------------------------------------
-bool QosFlowIdentifier::getQosFlowIdentifier(long &value) {
+bool QosFlowIdentifier::getQosFlowIdentifier(long& value) {
   value = identifier;
 
   return true;
@@ -55,7 +53,7 @@ bool QosFlowIdentifier::getQosFlowIdentifier(long &value) {
 
 //------------------------------------------------------------------------------
 bool QosFlowIdentifier::encode2QosFlowIdentifier(
-    Ngap_QosFlowIdentifier_t *qosFlowIdentifier) {
+    Ngap_QosFlowIdentifier_t* qosFlowIdentifier) {
   *qosFlowIdentifier = identifier;
 
   return true;
@@ -63,10 +61,9 @@ bool QosFlowIdentifier::encode2QosFlowIdentifier(
 
 //------------------------------------------------------------------------------
 bool QosFlowIdentifier::decodefromQosFlowIdentifier(
-    Ngap_QosFlowIdentifier_t *qosFlowIdentifier) {
+    Ngap_QosFlowIdentifier_t* qosFlowIdentifier) {
   identifier = *qosFlowIdentifier;
 
   return true;
 }
-}
-
+}  // namespace ngap

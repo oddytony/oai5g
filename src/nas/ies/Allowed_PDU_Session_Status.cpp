@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -36,23 +36,22 @@ Allowed_PDU_Session_Status::Allowed_PDU_Session_Status(uint8_t iei) {
 }
 
 //------------------------------------------------------------------------------
-Allowed_PDU_Session_Status::Allowed_PDU_Session_Status(const uint8_t iei, uint16_t value) {
-  _iei = iei;
+Allowed_PDU_Session_Status::Allowed_PDU_Session_Status(
+    const uint8_t iei, uint16_t value) {
+  _iei   = iei;
   _value = value;
   length = 4;
 }
 
 //------------------------------------------------------------------------------
-Allowed_PDU_Session_Status::Allowed_PDU_Session_Status() {
-}
+Allowed_PDU_Session_Status::Allowed_PDU_Session_Status() {}
 
 //------------------------------------------------------------------------------
-Allowed_PDU_Session_Status::~Allowed_PDU_Session_Status() {
-}
+Allowed_PDU_Session_Status::~Allowed_PDU_Session_Status() {}
 
 //------------------------------------------------------------------------------
 void Allowed_PDU_Session_Status::setValue(uint8_t iei, uint16_t value) {
-  _iei = iei;
+  _iei   = iei;
   _value = value;
 }
 uint16_t Allowed_PDU_Session_Status::getValue() {
@@ -60,7 +59,7 @@ uint16_t Allowed_PDU_Session_Status::getValue() {
 }
 
 //------------------------------------------------------------------------------
-int Allowed_PDU_Session_Status::encode2buffer(uint8_t *buf, int len) {
+int Allowed_PDU_Session_Status::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding Allowed_PDU_Session_Status iei(0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
@@ -78,15 +77,17 @@ int Allowed_PDU_Session_Status::encode2buffer(uint8_t *buf, int len) {
     encoded_size++;
 
   } else {
-//		*(buf + encoded_size) = length - 1; encoded_size++;
-//		*(buf + encoded_size) = _value; encoded_size++; encoded_size++;
+    //		*(buf + encoded_size) = length - 1; encoded_size++;
+    //		*(buf + encoded_size) = _value; encoded_size++; encoded_size++;
   }
-  Logger::nas_mm().debug("encoded Allowed_PDU_Session_Status len(%d)", encoded_size);
+  Logger::nas_mm().debug(
+      "encoded Allowed_PDU_Session_Status len(%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
-int Allowed_PDU_Session_Status::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int Allowed_PDU_Session_Status::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding Allowed_PDU_Session_Status iei(0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
@@ -99,8 +100,9 @@ int Allowed_PDU_Session_Status::decodefrombuffer(uint8_t *buf, int len, bool is_
   decoded_size++;
   _value |= (*(buf + decoded_size)) << 8;
   decoded_size++;
-  Logger::nas_mm().debug("decoded Allowed_PDU_Session_Status value(0x%4x)", _value);
-  Logger::nas_mm().debug("decoded Allowed_PDU_Session_Status len(%d)", decoded_size);
+  Logger::nas_mm().debug(
+      "decoded Allowed_PDU_Session_Status value(0x%4x)", _value);
+  Logger::nas_mm().debug(
+      "decoded Allowed_PDU_Session_Status len(%d)", decoded_size);
   return decoded_size;
 }
-

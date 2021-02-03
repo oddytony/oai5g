@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -29,22 +29,20 @@
 #define _MOBILITYRESTRICETIONLIST_H_
 #include "PlmnId.hpp"
 
-extern "C"
-{
+extern "C" {
 #include "Ngap_MobilityRestrictionList.h"
 }
-namespace ngap
-{
-    class MobilityRestrictionList
-    {
-    public:
-        MobilityRestrictionList();
-        virtual ~MobilityRestrictionList();
-        void setMobilityRestrictionList(PlmnId *servingplmn);
-        bool encodeMobilityRestrictionList(Ngap_MobilityRestrictionList_t *mobilityrestrictionlist);
+namespace ngap {
+class MobilityRestrictionList {
+ public:
+  MobilityRestrictionList();
+  virtual ~MobilityRestrictionList();
+  void setMobilityRestrictionList(PlmnId* servingplmn);
+  bool encodeMobilityRestrictionList(
+      Ngap_MobilityRestrictionList_t* mobilityrestrictionlist);
 
-    private:
-        PlmnId *Servingplmn;
-    };
-} // namespace ngap
+ private:
+  PlmnId* Servingplmn;
+};
+}  // namespace ngap
 #endif

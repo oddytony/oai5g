@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -28,18 +28,16 @@
 
 #include "IEsCriticalityDiagnostics.hpp"
 
-#include<iostream>
+#include <iostream>
 using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
-IEsCriticalityDiagnostics::IEsCriticalityDiagnostics() {
-}
+IEsCriticalityDiagnostics::IEsCriticalityDiagnostics() {}
 
 //------------------------------------------------------------------------------
-IEsCriticalityDiagnostics::~IEsCriticalityDiagnostics() {
-}
+IEsCriticalityDiagnostics::~IEsCriticalityDiagnostics() {}
 
 //------------------------------------------------------------------------------
 void IEsCriticalityDiagnostics::setIeCriticality(
@@ -60,18 +58,18 @@ void IEsCriticalityDiagnostics::setTypeOfError(
 
 //------------------------------------------------------------------------------
 void IEsCriticalityDiagnostics::encode2pdu(
-    Ngap_CriticalityDiagnostics_IE_Item_t *IE_Item) {
+    Ngap_CriticalityDiagnostics_IE_Item_t* IE_Item) {
   IE_Item->iECriticality = criticality;
-  IE_Item->iE_ID = protocolIE_ID;
-  IE_Item->typeOfError = typeOfError;
+  IE_Item->iE_ID         = protocolIE_ID;
+  IE_Item->typeOfError   = typeOfError;
 }
 
 //------------------------------------------------------------------------------
 void IEsCriticalityDiagnostics::decodefrompdu(
-    Ngap_CriticalityDiagnostics_IE_Item_t *pdu) {
-  criticality = pdu->iECriticality;
+    Ngap_CriticalityDiagnostics_IE_Item_t* pdu) {
+  criticality   = pdu->iECriticality;
   protocolIE_ID = pdu->iE_ID;
-  typeOfError = pdu->typeOfError;
+  typeOfError   = pdu->typeOfError;
 }
 
 //------------------------------------------------------------------------------
@@ -88,5 +86,4 @@ Ngap_ProtocolIE_ID_t IEsCriticalityDiagnostics::getIeId() {
 Ngap_TypeOfError_t IEsCriticalityDiagnostics::getTypeOfError() {
   return typeOfError;
 }
-}
-
+}  // namespace ngap

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,12 +37,14 @@ class _5GS_Registration_Result {
  public:
   _5GS_Registration_Result();
   _5GS_Registration_Result(uint8_t iei);
-  _5GS_Registration_Result(const uint8_t iei, bool emergency, bool nssaa, bool sms, uint8_t value);
+  _5GS_Registration_Result(
+      const uint8_t iei, bool emergency, bool nssaa, bool sms, uint8_t value);
   ~_5GS_Registration_Result();
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(uint8_t *buf, int len, bool is_option);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(uint8_t* buf, int len, bool is_option);
   void setValue(uint8_t value);
   uint8_t getValue();
+
  private:
   uint8_t _iei;
   bool Emergency;
@@ -50,7 +52,6 @@ class _5GS_Registration_Result {
   bool SMS;
   uint8_t _value;
 };
-}
+}  // namespace nas
 
 #endif
-

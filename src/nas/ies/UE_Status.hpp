@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,18 +39,18 @@ class UE_Status {
   UE_Status(uint8_t iei);
   UE_Status(const uint8_t iei, bool n1, bool s1);
   ~UE_Status();
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(uint8_t *buf, int len, bool is_option);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(uint8_t* buf, int len, bool is_option);
   void setN1(bool value);
   void setS1(bool value);
   bool getN1();
   bool getS1();
+
  private:
   uint8_t _iei;
   bool N1;
   bool S1;
 };
-}
+}  // namespace nas
 
 #endif
-

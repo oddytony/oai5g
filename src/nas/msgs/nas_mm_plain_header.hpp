@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -38,14 +38,15 @@ namespace nas {
 class NasMmPlainHeader {
  public:
   void setHeader(uint8_t epd_, uint8_t security_header_type, uint8_t msg_type_);
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(uint8_t *buf, int len);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(uint8_t* buf, int len);
   void setEpdIE(const uint8_t epd);
   void setSecurityHeaderTypeIE(const uint8_t type);
   void setMessageTypeIE(const uint8_t type);
   uint8_t getEpdIE();
   uint8_t getSecurityHeaderTypeIE();
   uint8_t getMessageType();
+
  private:
   ExtendedProtocolDiscriminator ie_epd;
   SecurityHeaderType ie_secu_header_type;
@@ -55,6 +56,6 @@ class NasMmPlainHeader {
   uint8_t msg_type;
 };
 
-}
+}  // namespace nas
 
 #endif

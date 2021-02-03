@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -46,22 +46,23 @@ class NonDynamic5QIDescriptor {
   virtual ~NonDynamic5QIDescriptor();
 
   void setNonDynamic5QIDescriptor(
-      FiveQI *m_fiveQI, PriorityLevelQos *m_priorityLevelQos,
-      AveragingWindow *m_averagingWindow,
-      MaximumDataBurstVolume *m_maximumDataBurstVolume);
+      FiveQI* m_fiveQI, PriorityLevelQos* m_priorityLevelQos,
+      AveragingWindow* m_averagingWindow,
+      MaximumDataBurstVolume* m_maximumDataBurstVolume);
   bool getNonDynamic5QIDescriptor(
-      FiveQI *&m_fiveQI, PriorityLevelQos *&m_priorityLevelQos,
-      AveragingWindow *&m_averagingWindow,
-      MaximumDataBurstVolume *&m_maximumDataBurstVolume);
+      FiveQI*& m_fiveQI, PriorityLevelQos*& m_priorityLevelQos,
+      AveragingWindow*& m_averagingWindow,
+      MaximumDataBurstVolume*& m_maximumDataBurstVolume);
 
   bool encode2NonDynamic5QIDescriptor(Ngap_NonDynamic5QIDescriptor_t*);
   bool decodefromNonDynamic5QIDescriptor(Ngap_NonDynamic5QIDescriptor_t*);
+
  private:
-  FiveQI *fiveQI;
-  PriorityLevelQos *priorityLevelQos; /* OPTIONAL */
-  AveragingWindow *averagingWindow; /* OPTIONAL */
-  MaximumDataBurstVolume *maximumDataBurstVolume; /* OPTIONAL */
+  FiveQI* fiveQI;
+  PriorityLevelQos* priorityLevelQos;             /* OPTIONAL */
+  AveragingWindow* averagingWindow;               /* OPTIONAL */
+  MaximumDataBurstVolume* maximumDataBurstVolume; /* OPTIONAL */
 };
-}
+}  // namespace ngap
 
 #endif

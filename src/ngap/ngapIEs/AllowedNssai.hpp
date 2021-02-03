@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -42,14 +42,14 @@ class AllowedNSSAI {
   AllowedNSSAI();
   virtual ~AllowedNSSAI();
 
-  void setAllowedNSSAI(S_NSSAI *m_snssai, int m_numofsnssai);
-  bool getAllowedNSSAI(S_NSSAI *&m_snssai, int &m_numofsnssai);
-  bool encode2AllowedNSSAI(Ngap_AllowedNSSAI_t *allowedNssaiList);
-  bool decodefromAllowedNSSAI(Ngap_AllowedNSSAI_t *allowedNssaiList);
+  void setAllowedNSSAI(S_NSSAI* m_snssai, int m_numofsnssai);
+  bool getAllowedNSSAI(S_NSSAI*& m_snssai, int& m_numofsnssai);
+  bool encode2AllowedNSSAI(Ngap_AllowedNSSAI_t* allowedNssaiList);
+  bool decodefromAllowedNSSAI(Ngap_AllowedNSSAI_t* allowedNssaiList);
+
  private:
-  S_NSSAI *snssai;
+  S_NSSAI* snssai;
   int numofSnssai;
 };
-}
+}  // namespace ngap
 #endif
-

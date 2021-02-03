@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -31,7 +31,7 @@
 
 #include <stdint.h>
 #include "nas_ie_header.hpp"
-#include<string>
+#include <string>
 
 namespace nas {
 
@@ -39,17 +39,19 @@ class ServiceAccept {
  public:
   ServiceAccept();
   ~ServiceAccept();
+
  public:
   void setHeader(uint8_t security_header_type);
   void setPDU_session_status(uint16_t value);
   void setPDU_session_reactivation_result(uint16_t);
-  int encode2buffer(uint8_t *buf, int len);
+  int encode2buffer(uint8_t* buf, int len);
+
  private:
-  NasMmPlainHeader *plain_header;
-  PDU_Session_Status *ie_PDU_session_status;
-  PDU_Session_Reactivation_Result *ie_session_reactivation_result;
+  NasMmPlainHeader* plain_header;
+  PDU_Session_Status* ie_PDU_session_status;
+  PDU_Session_Reactivation_Result* ie_session_reactivation_result;
 };
 
-}
+}  // namespace nas
 
 #endif

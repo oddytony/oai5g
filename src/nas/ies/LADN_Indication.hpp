@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -46,17 +46,16 @@ class LADN_Indication {
   LADN_Indication(const uint8_t iei, std::vector<bstring> ladn);
   ~LADN_Indication();
   void setValue(uint8_t iei, uint8_t value);
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(uint8_t *buf, int len, bool is_option);
-  bool getValue(std::vector<bstring> &ladn);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(uint8_t* buf, int len, bool is_option);
+  bool getValue(std::vector<bstring>& ladn);
+
  private:
   uint8_t _iei;
   uint16_t length;
   std::vector<bstring> LADN;
-
 };
 
-}
+}  // namespace nas
 
 #endif
-

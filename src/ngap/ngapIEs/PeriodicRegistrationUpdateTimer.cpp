@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PeriodicRegistrationUpdateTimer::PeriodicRegistrationUpdateTimer() {
-}
+PeriodicRegistrationUpdateTimer::PeriodicRegistrationUpdateTimer() {}
 
 //------------------------------------------------------------------------------
-PeriodicRegistrationUpdateTimer::~PeriodicRegistrationUpdateTimer() {
-}
+PeriodicRegistrationUpdateTimer::~PeriodicRegistrationUpdateTimer() {}
 
 //------------------------------------------------------------------------------
 void PeriodicRegistrationUpdateTimer::setPeriodicRegistrationUpdateTimer(
@@ -49,13 +47,12 @@ void PeriodicRegistrationUpdateTimer::setPeriodicRegistrationUpdateTimer(
 
 //------------------------------------------------------------------------------
 bool PeriodicRegistrationUpdateTimer::encode2PeriodicRegistrationUpdateTimer(
-    Ngap_PeriodicRegistrationUpdateTimer_t *periodicRegistrationUpdateTimer) {
-  periodicRegistrationUpdateTimer->size = sizeof(uint8_t);
+    Ngap_PeriodicRegistrationUpdateTimer_t* periodicRegistrationUpdateTimer) {
+  periodicRegistrationUpdateTimer->size        = sizeof(uint8_t);
   periodicRegistrationUpdateTimer->bits_unused = 0;
-  periodicRegistrationUpdateTimer->buf = (uint8_t*) calloc(
-      1, periodicRegistrationUpdateTimer->size);
-  if (!periodicRegistrationUpdateTimer->buf)
-    return false;
+  periodicRegistrationUpdateTimer->buf =
+      (uint8_t*) calloc(1, periodicRegistrationUpdateTimer->size);
+  if (!periodicRegistrationUpdateTimer->buf) return false;
   periodicRegistrationUpdateTimer->buf[0] = updatetimer;
 
   return true;
@@ -63,9 +60,8 @@ bool PeriodicRegistrationUpdateTimer::encode2PeriodicRegistrationUpdateTimer(
 
 //------------------------------------------------------------------------------
 bool PeriodicRegistrationUpdateTimer::decodefromPeriodicRegistrationUpdateTimer(
-    Ngap_PeriodicRegistrationUpdateTimer_t *periodicRegistrationUpdateTimer) {
-  if (!periodicRegistrationUpdateTimer->buf)
-    return false;
+    Ngap_PeriodicRegistrationUpdateTimer_t* periodicRegistrationUpdateTimer) {
+  if (!periodicRegistrationUpdateTimer->buf) return false;
   updatetimer = periodicRegistrationUpdateTimer->buf[0];
 
   return true;
@@ -73,9 +69,8 @@ bool PeriodicRegistrationUpdateTimer::decodefromPeriodicRegistrationUpdateTimer(
 
 //------------------------------------------------------------------------------
 void PeriodicRegistrationUpdateTimer::getPeriodicRegistrationUpdateTimer(
-    uint8_t &m_updatetimer) {
+    uint8_t& m_updatetimer) {
   m_updatetimer = updatetimer;
 }
 
-}
-
+}  // namespace ngap

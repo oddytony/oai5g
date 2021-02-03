@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,132 +10,118 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "SmContextRetrievedData.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-SmContextRetrievedData::SmContextRetrievedData()
-{
-    m_UeEpsPdnConnection = utility::conversions::to_string_t("");
-    m_SmContextIsSet = false;
+SmContextRetrievedData::SmContextRetrievedData() {
+  m_UeEpsPdnConnection = utility::conversions::to_string_t("");
+  m_SmContextIsSet     = false;
 }
 
-SmContextRetrievedData::~SmContextRetrievedData()
-{
+SmContextRetrievedData::~SmContextRetrievedData() {}
+
+void SmContextRetrievedData::validate() {
+  // TODO: implement validation
 }
 
-void SmContextRetrievedData::validate()
-{
-    // TODO: implement validation
+web::json::value SmContextRetrievedData::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  val[utility::conversions::to_string_t("ueEpsPdnConnection")] =
+      ModelBase::toJson(m_UeEpsPdnConnection);
+  if (m_SmContextIsSet) {
+    val[utility::conversions::to_string_t("smContext")] =
+        ModelBase::toJson(m_SmContext);
+  }
+
+  return val;
 }
 
-web::json::value SmContextRetrievedData::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    val[utility::conversions::to_string_t("ueEpsPdnConnection")] = ModelBase::toJson(m_UeEpsPdnConnection);
-    if(m_SmContextIsSet)
-    {
-        val[utility::conversions::to_string_t("smContext")] = ModelBase::toJson(m_SmContext);
+void SmContextRetrievedData::fromJson(const web::json::value& val) {
+  setUeEpsPdnConnection(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("ueEpsPdnConnection"))));
+  if (val.has_field(utility::conversions::to_string_t("smContext"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("smContext"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<SmContext> newItem(new SmContext());
+      newItem->fromJson(fieldValue);
+      setSmContext(newItem);
     }
-
-    return val;
+  }
 }
 
-void SmContextRetrievedData::fromJson(const web::json::value& val)
-{
-    setUeEpsPdnConnection(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("ueEpsPdnConnection"))));
-    if(val.has_field(utility::conversions::to_string_t("smContext")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("smContext"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<SmContext> newItem(new SmContext());
-            newItem->fromJson(fieldValue);
-            setSmContext( newItem );
-        }
+void SmContextRetrievedData::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("ueEpsPdnConnection"),
+      m_UeEpsPdnConnection));
+  if (m_SmContextIsSet) {
+    if (m_SmContext.get()) {
+      m_SmContext->toMultipart(
+          multipart, utility::conversions::to_string_t("smContext."));
     }
+  }
 }
 
-void SmContextRetrievedData::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
+void SmContextRetrievedData::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  setUeEpsPdnConnection(ModelBase::stringFromHttpContent(multipart->getContent(
+      utility::conversions::to_string_t("ueEpsPdnConnection"))));
+  if (multipart->hasContent(utility::conversions::to_string_t("smContext"))) {
+    if (multipart->hasContent(utility::conversions::to_string_t("smContext"))) {
+      std::shared_ptr<SmContext> newItem(new SmContext());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("smContext."));
+      setSmContext(newItem);
     }
-
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("ueEpsPdnConnection"), m_UeEpsPdnConnection));
-    if(m_SmContextIsSet)
-    {
-        if (m_SmContext.get())
-        {
-            m_SmContext->toMultipart(multipart, utility::conversions::to_string_t("smContext."));
-        }
-    }
+  }
 }
 
-void SmContextRetrievedData::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    setUeEpsPdnConnection(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("ueEpsPdnConnection"))));
-    if(multipart->hasContent(utility::conversions::to_string_t("smContext")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("smContext")))
-        {
-            std::shared_ptr<SmContext> newItem(new SmContext());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("smContext."));
-            setSmContext( newItem );
-        }
-    }
+utility::string_t SmContextRetrievedData::getUeEpsPdnConnection() const {
+  return m_UeEpsPdnConnection;
 }
 
-utility::string_t SmContextRetrievedData::getUeEpsPdnConnection() const
-{
-    return m_UeEpsPdnConnection;
+void SmContextRetrievedData::setUeEpsPdnConnection(
+    const utility::string_t& value) {
+  m_UeEpsPdnConnection = value;
 }
 
-void SmContextRetrievedData::setUeEpsPdnConnection(const utility::string_t& value)
-{
-    m_UeEpsPdnConnection = value;
-    
+std::shared_ptr<SmContext> SmContextRetrievedData::getSmContext() const {
+  return m_SmContext;
 }
 
-std::shared_ptr<SmContext> SmContextRetrievedData::getSmContext() const
-{
-    return m_SmContext;
+void SmContextRetrievedData::setSmContext(
+    const std::shared_ptr<SmContext>& value) {
+  m_SmContext      = value;
+  m_SmContextIsSet = true;
 }
 
-void SmContextRetrievedData::setSmContext(const std::shared_ptr<SmContext>& value)
-{
-    m_SmContext = value;
-    m_SmContextIsSet = true;
+bool SmContextRetrievedData::smContextIsSet() const {
+  return m_SmContextIsSet;
 }
 
-bool SmContextRetrievedData::smContextIsSet() const
-{
-    return m_SmContextIsSet;
+void SmContextRetrievedData::unsetSmContext() {
+  m_SmContextIsSet = false;
 }
 
-void SmContextRetrievedData::unsetSmContext()
-{
-    m_SmContextIsSet = false;
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -40,17 +40,16 @@ class MICOModeIndication {
   MICOModeIndication();
   virtual ~MICOModeIndication();
 
-  //void setMICOModeIndication();
-  //bool getMICOModeIndication();
+  // void setMICOModeIndication();
+  // bool getMICOModeIndication();
 
-  bool encode2MICOModeIndication(Ngap_MICOModeIndication_t *micoModeIndication);
+  bool encode2MICOModeIndication(Ngap_MICOModeIndication_t* micoModeIndication);
   bool decodefromMICOModeIndication(
-      Ngap_MICOModeIndication_t *micoModeIndication);
-  //private:
+      Ngap_MICOModeIndication_t* micoModeIndication);
+  // private:
   //	uint16_t indexLength10;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

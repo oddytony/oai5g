@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -36,18 +36,17 @@ MA_PDU_Session_Information::MA_PDU_Session_Information(uint8_t iei) {
 }
 
 //------------------------------------------------------------------------------
-MA_PDU_Session_Information::MA_PDU_Session_Information(const uint8_t iei, uint8_t value) {
-  _iei = iei;
+MA_PDU_Session_Information::MA_PDU_Session_Information(
+    const uint8_t iei, uint8_t value) {
+  _iei   = iei;
   _value = value;
 }
 
 //------------------------------------------------------------------------------
-MA_PDU_Session_Information::MA_PDU_Session_Information() {
-}
+MA_PDU_Session_Information::MA_PDU_Session_Information() {}
 
 //------------------------------------------------------------------------------
-MA_PDU_Session_Information::~MA_PDU_Session_Information() {
-}
+MA_PDU_Session_Information::~MA_PDU_Session_Information() {}
 
 //------------------------------------------------------------------------------
 void MA_PDU_Session_Information::setValue(uint8_t value) {
@@ -60,7 +59,7 @@ uint8_t MA_PDU_Session_Information::getValue() {
 }
 
 //------------------------------------------------------------------------------
-int MA_PDU_Session_Information::encode2buffer(uint8_t *buf, int len) {
+int MA_PDU_Session_Information::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding MA_PDU_Session_Information iei(0x%x)", _iei);
   if (len < 1) {
     Logger::nas_mm().error("len is less than 1");
@@ -74,23 +73,26 @@ int MA_PDU_Session_Information::encode2buffer(uint8_t *buf, int len) {
     *(buf + encoded_size) = _value & 0x0f;
     encoded_size++;
   }
-  Logger::nas_mm().debug("encoded MA_PDU_Session_Information len(%d)", encoded_size);
+  Logger::nas_mm().debug(
+      "encoded MA_PDU_Session_Information len(%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
-int MA_PDU_Session_Information::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int MA_PDU_Session_Information::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding MA_PDU_Session_Information iei(0x%x)", *buf);
   int decoded_size = 0;
-  uint8_t octet = 0;
+  uint8_t octet    = 0;
   if (is_option) {
     octet = *buf;
     decoded_size++;
   }
   _value = 0x00;
   _value = octet & 0x0f;
-  Logger::nas_mm().debug("decoded MA_PDU_Session_Information _value(0x%x)", _value);
-  Logger::nas_mm().debug("decoded MA_PDU_Session_Information len(%d)", decoded_size);
+  Logger::nas_mm().debug(
+      "decoded MA_PDU_Session_Information _value(0x%x)", _value);
+  Logger::nas_mm().debug(
+      "decoded MA_PDU_Session_Information len(%d)", decoded_size);
   return decoded_size;
 }
-

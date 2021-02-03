@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -51,24 +51,26 @@ class CriticalityDiagnostics {
   void setTriggeringMessageValue(Ngap_TriggeringMessage_t);
   void setCriticalityValue(Ngap_Criticality_t);
   void setIEsCriticalityDiagnosticsList(
-      IEsCriticalityDiagnostics *m_iEsCriticalityDiagnostics, int num);
+      IEsCriticalityDiagnostics* m_iEsCriticalityDiagnostics, int num);
   bool getProcedureCodeValue(Ngap_ProcedureCode_t&);
   bool getTriggeringMessageValue(Ngap_TriggeringMessage_t&);
   bool getCriticalityValue(Ngap_Criticality_t&);
   bool getIEsCriticalityDiagnosticsList(
-      IEsCriticalityDiagnostics *&m_iEsCriticalityDiagnostics, int &num);
+      IEsCriticalityDiagnostics*& m_iEsCriticalityDiagnostics, int& num);
+
  private:
-  Ngap_ProcedureCode_t procedureCode; /* OPTIONAL */
+  Ngap_ProcedureCode_t procedureCode;         /* OPTIONAL */
   Ngap_TriggeringMessage_t triggeringMessage; /* OPTIONAL */
-  Ngap_Criticality_t procedureCriticality; /* OPTIONAL */
-  //Ngap_CriticalityDiagnostics_IE_List_t iEsCriticalityDiagnostics;	/* OPTIONAL */
-  IEsCriticalityDiagnostics *iEsCriticalityDiagnostics;
+  Ngap_Criticality_t procedureCriticality;    /* OPTIONAL */
+  // Ngap_CriticalityDiagnostics_IE_List_t iEsCriticalityDiagnostics;	/*
+  // OPTIONAL */
+  IEsCriticalityDiagnostics* iEsCriticalityDiagnostics;
 
   bool procedureCodeIsSet;
   bool triggeringMessageIsSet;
   bool procedureCriticalityIsSet;
   int numberOfIEsCriticalityDiagnostics;
 };
-}
+}  // namespace ngap
 
 #endif

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,23 +39,25 @@ extern "C" {
 using namespace std;
 
 namespace ngap {
-PDUSessionResourceReleaseCommandTransfer::PDUSessionResourceReleaseCommandTransfer() {
+PDUSessionResourceReleaseCommandTransfer::
+    PDUSessionResourceReleaseCommandTransfer() {
   pduSessionResourceReleaseCommandTransferIEs =
       (Ngap_PDUSessionResourceReleaseCommandTransfer_t*) calloc(
           1, sizeof(Ngap_PDUSessionResourceReleaseCommandTransfer_t));
   causeValue = NULL;
 }
-PDUSessionResourceReleaseCommandTransfer::~PDUSessionResourceReleaseCommandTransfer() {
-  //if(pduSessionResourceReleaseCommandTransferIEs) ASN_STRUCT_FREE(asn_DEF_Ngap_PDUSessionResourceReleaseCommandTransfer,pduSessionResourceReleaseCommandTransferIEs);
-  if (causeValue)
-    delete causeValue;
-  //if (pduSessionResourceReleaseCommandTransferIEs) free(pduSessionResourceReleaseCommandTransferIEs);
+PDUSessionResourceReleaseCommandTransfer::
+    ~PDUSessionResourceReleaseCommandTransfer() {
+  // if(pduSessionResourceReleaseCommandTransferIEs)
+  // ASN_STRUCT_FREE(asn_DEF_Ngap_PDUSessionResourceReleaseCommandTransfer,pduSessionResourceReleaseCommandTransferIEs);
+  if (causeValue) delete causeValue;
+  // if (pduSessionResourceReleaseCommandTransferIEs)
+  // free(pduSessionResourceReleaseCommandTransferIEs);
 }
 
 void PDUSessionResourceReleaseCommandTransfer::setCauseRadioNetwork(
     e_Ngap_CauseRadioNetwork cause_value) {
-  if (!causeValue)
-    causeValue = new Cause();
+  if (!causeValue) causeValue = new Cause();
 
   causeValue->setChoiceOfCause(Ngap_Cause_PR_radioNetwork);
   causeValue->setValue(cause_value);
@@ -69,8 +71,7 @@ void PDUSessionResourceReleaseCommandTransfer::setCauseRadioNetwork(
 }
 void PDUSessionResourceReleaseCommandTransfer::setCauseTransport(
     e_Ngap_CauseTransport cause_value) {
-  if (!causeValue)
-    causeValue = new Cause();
+  if (!causeValue) causeValue = new Cause();
 
   causeValue->setChoiceOfCause(Ngap_Cause_PR_transport);
   causeValue->setValue(cause_value);
@@ -84,8 +85,7 @@ void PDUSessionResourceReleaseCommandTransfer::setCauseTransport(
 }
 void PDUSessionResourceReleaseCommandTransfer::setCauseNas(
     e_Ngap_CauseNas cause_value) {
-  if (!causeValue)
-    causeValue = new Cause();
+  if (!causeValue) causeValue = new Cause();
 
   causeValue->setChoiceOfCause(Ngap_Cause_PR_nas);
   causeValue->setValue(cause_value);
@@ -99,8 +99,7 @@ void PDUSessionResourceReleaseCommandTransfer::setCauseNas(
 }
 void PDUSessionResourceReleaseCommandTransfer::setCauseProtocol(
     e_Ngap_CauseProtocol cause_value) {
-  if (!causeValue)
-    causeValue = new Cause();
+  if (!causeValue) causeValue = new Cause();
 
   causeValue->setChoiceOfCause(Ngap_Cause_PR_protocol);
   causeValue->setValue(cause_value);
@@ -114,8 +113,7 @@ void PDUSessionResourceReleaseCommandTransfer::setCauseProtocol(
 }
 void PDUSessionResourceReleaseCommandTransfer::setCauseMisc(
     e_Ngap_CauseMisc cause_value) {
-  if (!causeValue)
-    causeValue = new Cause();
+  if (!causeValue) causeValue = new Cause();
 
   causeValue->setChoiceOfCause(Ngap_Cause_PR_misc);
   causeValue->setValue(cause_value);
@@ -128,19 +126,20 @@ void PDUSessionResourceReleaseCommandTransfer::setCauseMisc(
   }
 }
 
-int PDUSessionResourceReleaseCommandTransfer::encode2buffer(uint8_t *buf,
-                                                            int buf_size) {
-  asn_fprint(stderr, &asn_DEF_Ngap_PDUSessionResourceReleaseCommandTransfer,
-             pduSessionResourceReleaseCommandTransferIEs);
+int PDUSessionResourceReleaseCommandTransfer::encode2buffer(
+    uint8_t* buf, int buf_size) {
+  asn_fprint(
+      stderr, &asn_DEF_Ngap_PDUSessionResourceReleaseCommandTransfer,
+      pduSessionResourceReleaseCommandTransferIEs);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_PDUSessionResourceReleaseCommandTransfer, NULL,
       pduSessionResourceReleaseCommandTransferIEs, buf, buf_size);
   cout << "er.encoded(" << er.encoded << ")" << endl;
   return er.encoded;
 }
-//Decapsulation
-bool PDUSessionResourceReleaseCommandTransfer::decodefromIE(uint8_t *buf,
-                                                            int buf_size) {
+// Decapsulation
+bool PDUSessionResourceReleaseCommandTransfer::decodefromIE(
+    uint8_t* buf, int buf_size) {
   asn_dec_rval_t rc = asn_decode(
       NULL, ATS_ALIGNED_CANONICAL_PER,
       &asn_DEF_Ngap_PDUSessionResourceReleaseCommandTransfer,
@@ -157,11 +156,13 @@ bool PDUSessionResourceReleaseCommandTransfer::decodefromIE(uint8_t *buf,
   }
   cout << "rc.consumed to decode = " << rc.consumed << endl;
   cout << endl;
-  //asn_fprint(stderr, &asn_DEF_Ngap_PDUSessionResourceSetupUnsuccessfulTransfer, pduSessionResourceSetupUnsuccessfulTransferIEs);
+  // asn_fprint(stderr,
+  // &asn_DEF_Ngap_PDUSessionResourceSetupUnsuccessfulTransfer,
+  // pduSessionResourceSetupUnsuccessfulTransferIEs);
 
   causeValue = new Cause();
   if (!causeValue->decodefromCause(
-      &pduSessionResourceReleaseCommandTransferIEs->cause)) {
+          &pduSessionResourceReleaseCommandTransferIEs->cause)) {
     cout << "decoded ngap Cause IE error" << endl;
     return false;
   }
@@ -170,15 +171,13 @@ bool PDUSessionResourceReleaseCommandTransfer::decodefromIE(uint8_t *buf,
 }
 
 long PDUSessionResourceReleaseCommandTransfer::getChoiceOfCause() {
-  if (!causeValue)
-    return -1;
+  if (!causeValue) return -1;
 
   return causeValue->getChoiceOfCause();
 }
 long PDUSessionResourceReleaseCommandTransfer::getCause() {
-  if (!causeValue)
-    return -1;
+  if (!causeValue) return -1;
 
   return causeValue->getValue();
 }
-}
+}  // namespace ngap

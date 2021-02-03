@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,27 +35,26 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 QosFlowSetupRequestItem::QosFlowSetupRequestItem() {
-  qosFlowIdentifier = NULL;
+  qosFlowIdentifier         = NULL;
   qosFlowLevelQosParameters = NULL;
 }
 
 //------------------------------------------------------------------------------
-QosFlowSetupRequestItem::~QosFlowSetupRequestItem() {
-}
+QosFlowSetupRequestItem::~QosFlowSetupRequestItem() {}
 
 //------------------------------------------------------------------------------
 void QosFlowSetupRequestItem::setQosFlowSetupRequestItem(
-    QosFlowIdentifier *m_qosFlowIdentifier,
-    QosFlowLevelQosParameters *m_qosFlowLevelQosParameters) {
-  qosFlowIdentifier = m_qosFlowIdentifier;
+    QosFlowIdentifier* m_qosFlowIdentifier,
+    QosFlowLevelQosParameters* m_qosFlowLevelQosParameters) {
+  qosFlowIdentifier         = m_qosFlowIdentifier;
   qosFlowLevelQosParameters = m_qosFlowLevelQosParameters;
 }
 
 //------------------------------------------------------------------------------
 bool QosFlowSetupRequestItem::getQosFlowSetupRequestItem(
-    QosFlowIdentifier *&m_qosFlowIdentifier,
-    QosFlowLevelQosParameters *&m_qosFlowLevelQosParameters) {
-  m_qosFlowIdentifier = qosFlowIdentifier;
+    QosFlowIdentifier*& m_qosFlowIdentifier,
+    QosFlowLevelQosParameters*& m_qosFlowLevelQosParameters) {
+  m_qosFlowIdentifier         = qosFlowIdentifier;
   m_qosFlowLevelQosParameters = qosFlowLevelQosParameters;
 
   return true;
@@ -63,12 +62,12 @@ bool QosFlowSetupRequestItem::getQosFlowSetupRequestItem(
 
 //------------------------------------------------------------------------------
 bool QosFlowSetupRequestItem::encode2QosFlowSetupRequestItem(
-    Ngap_QosFlowSetupRequestItem_t *qosFlowSetupRequestItem) {
+    Ngap_QosFlowSetupRequestItem_t* qosFlowSetupRequestItem) {
   if (!qosFlowIdentifier->encode2QosFlowIdentifier(
-      &qosFlowSetupRequestItem->qosFlowIdentifier))
+          &qosFlowSetupRequestItem->qosFlowIdentifier))
     return false;
   if (!qosFlowLevelQosParameters->encode2QosFlowLevelQosParameters(
-      &qosFlowSetupRequestItem->qosFlowLevelQosParameters))
+          &qosFlowSetupRequestItem->qosFlowLevelQosParameters))
     return false;
 
   return true;
@@ -76,18 +75,17 @@ bool QosFlowSetupRequestItem::encode2QosFlowSetupRequestItem(
 
 //------------------------------------------------------------------------------
 bool QosFlowSetupRequestItem::decodefromQosFlowSetupRequestItem(
-    Ngap_QosFlowSetupRequestItem_t *qosFlowSetupRequestItem) {
-  qosFlowIdentifier = new QosFlowIdentifier();
+    Ngap_QosFlowSetupRequestItem_t* qosFlowSetupRequestItem) {
+  qosFlowIdentifier         = new QosFlowIdentifier();
   qosFlowLevelQosParameters = new QosFlowLevelQosParameters();
 
   if (!qosFlowIdentifier->decodefromQosFlowIdentifier(
-      &qosFlowSetupRequestItem->qosFlowIdentifier))
+          &qosFlowSetupRequestItem->qosFlowIdentifier))
     return false;
   if (!qosFlowLevelQosParameters->decodefromQosFlowLevelQosParameters(
-      &qosFlowSetupRequestItem->qosFlowLevelQosParameters))
+          &qosFlowSetupRequestItem->qosFlowLevelQosParameters))
     return false;
 
   return true;
 }
-}
-
+}  // namespace ngap

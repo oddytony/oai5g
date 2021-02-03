@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -41,15 +41,15 @@ class NotificationControl {
   virtual ~NotificationControl();
 
   void setNotificationControl(e_Ngap_NotificationControl value);
-  bool getNotificationControl(e_Ngap_NotificationControl &value);
+  bool getNotificationControl(e_Ngap_NotificationControl& value);
 
   bool encode2NotificationControl(Ngap_NotificationControl_t*);
   bool decodefromNotificationControl(Ngap_NotificationControl_t*);
+
  private:
   long notificationcontrol;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

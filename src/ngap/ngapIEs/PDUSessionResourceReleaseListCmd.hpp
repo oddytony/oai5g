@@ -15,22 +15,24 @@ class PDUSessionResourceReleaseListCmd {
   virtual ~PDUSessionResourceReleaseListCmd();
 
   void setPDUSessionResourceReleaseListCmd(
-      PDUSessionResourceReleaseItemCmd *m_pduSessionResourceReleaseItemCmd,
+      PDUSessionResourceReleaseItemCmd* m_pduSessionResourceReleaseItemCmd,
       int num);
   void getPDUSessionResourceReleaseListCmd(
-      PDUSessionResourceReleaseItemCmd *&m_pduSessionResourceReleaseItemCmd,
-      int &num);
+      PDUSessionResourceReleaseItemCmd*& m_pduSessionResourceReleaseItemCmd,
+      int& num);
 
   bool encode2PDUSessionResourceReleaseListCmd(
-      Ngap_PDUSessionResourceToReleaseListRelCmd_t *pduSessionResourceReleaseListCmd);
+      Ngap_PDUSessionResourceToReleaseListRelCmd_t*
+          pduSessionResourceReleaseListCmd);
   bool decodefromPDUSessionResourceReleaseListCmd(
-      Ngap_PDUSessionResourceToReleaseListRelCmd_t *pduSessionResourceReleaseListCmd);
+      Ngap_PDUSessionResourceToReleaseListRelCmd_t*
+          pduSessionResourceReleaseListCmd);
+
  private:
-  PDUSessionResourceReleaseItemCmd *pduSessionResourceReleaseItemCmd;
+  PDUSessionResourceReleaseItemCmd* pduSessionResourceReleaseItemCmd;
   int numofpduSessionResourceReleaseItemCmd;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

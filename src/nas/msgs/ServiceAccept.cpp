@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -33,18 +33,15 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 ServiceAccept::ServiceAccept() {
-  plain_header = NULL;
-  ie_PDU_session_status = NULL;
+  plain_header                   = NULL;
+  ie_PDU_session_status          = NULL;
   ie_session_reactivation_result = NULL;
 }
 
 ServiceAccept::~ServiceAccept() {
-  if (plain_header)
-    delete plain_header;
-  if (ie_PDU_session_status)
-    delete ie_PDU_session_status;
-  if (ie_session_reactivation_result)
-    delete ie_session_reactivation_result;
+  if (plain_header) delete plain_header;
+  if (ie_PDU_session_status) delete ie_PDU_session_status;
+  if (ie_session_reactivation_result) delete ie_session_reactivation_result;
 }
 //------------------------------------------------------------------------------
 void ServiceAccept::setHeader(uint8_t security_header_type) {
@@ -59,23 +56,22 @@ void ServiceAccept::setPDU_session_status(uint16_t value) {
 
 //------------------------------------------------------------------------------
 void ServiceAccept::setPDU_session_reactivation_result(uint16_t value) {
-  ie_session_reactivation_result = new PDU_Session_Reactivation_Result(0x26,
-                                                                       value);
+  ie_session_reactivation_result =
+      new PDU_Session_Reactivation_Result(0x26, value);
 }
 
 //------------------------------------------------------------------------------
-int ServiceAccept::encode2buffer(uint8_t *buf, int len) {
+int ServiceAccept::encode2buffer(uint8_t* buf, int len) {
   if (!plain_header) {
     Logger::nas_mm().error("Missing message header");
     return -1;
   }
   int encoded_size = 0;
-  if (!(plain_header->encode2buffer(buf, len)))
-    return -1;
+  if (!(plain_header->encode2buffer(buf, len))) return -1;
   encoded_size += 3;
   if (ie_PDU_session_status)
-    encoded_size += ie_PDU_session_status->encode2buffer(buf + encoded_size,
-                                                         len - encoded_size);
+    encoded_size += ie_PDU_session_status->encode2buffer(
+        buf + encoded_size, len - encoded_size);
   if (ie_session_reactivation_result)
     encoded_size += ie_session_reactivation_result->encode2buffer(
         buf + encoded_size, len - encoded_size);

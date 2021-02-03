@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,17 +37,15 @@ _5GS_Identity_Type::_5GS_Identity_Type(uint8_t iei) {
 
 //------------------------------------------------------------------------------
 _5GS_Identity_Type::_5GS_Identity_Type(const uint8_t iei, uint8_t value) {
-  _iei = iei;
+  _iei   = iei;
   _value = value;
 }
 
 //------------------------------------------------------------------------------
-_5GS_Identity_Type::_5GS_Identity_Type() {
-}
+_5GS_Identity_Type::_5GS_Identity_Type() {}
 
 //------------------------------------------------------------------------------
-_5GS_Identity_Type::~_5GS_Identity_Type() {
-}
+_5GS_Identity_Type::~_5GS_Identity_Type() {}
 
 //------------------------------------------------------------------------------
 void _5GS_Identity_Type::setValue(uint8_t value) {
@@ -60,7 +58,7 @@ uint8_t _5GS_Identity_Type::getValue() {
 }
 
 //------------------------------------------------------------------------------
-int _5GS_Identity_Type::encode2buffer(uint8_t *buf, int len) {
+int _5GS_Identity_Type::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding _5GS_Identity_Type iei(0x%x)", _iei);
   if (len < 1) {
     Logger::nas_mm().error("len is less than 1");
@@ -79,7 +77,8 @@ int _5GS_Identity_Type::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int _5GS_Identity_Type::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int _5GS_Identity_Type::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding _5GS_Identity_Type iei(0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
@@ -87,11 +86,11 @@ int _5GS_Identity_Type::decodefrombuffer(uint8_t *buf, int len, bool is_option) 
     decoded_size++;
   }
   _value = 0x00;
-//	length = *(buf + decoded_size); 
+  //	length = *(buf + decoded_size);
   _value = *(buf + decoded_size) & 0x07;
   decoded_size++;
-  Logger::nas_mm().debug("decoded _5GS_Identity_Type _value(0x%x),iei(0x%x)", _value, _iei);
+  Logger::nas_mm().debug(
+      "decoded _5GS_Identity_Type _value(0x%x),iei(0x%x)", _value, _iei);
   Logger::nas_mm().debug("decoded _5GS_Identity_Type len(%d)", decoded_size);
   return decoded_size;
 }
-

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,26 +37,24 @@ class IdentityResponse {
  public:
   IdentityResponse();
   ~IdentityResponse();
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(NasMmPlainHeader* header, uint8_t* buf, int len);
   void setHeader(uint8_t security_header_type);
-  void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc,
-                                const string routingInd,
-                                uint8_t protection_sch_id, const string msin);
-  void setSUCI_SUPI_format_IMSI(const string mcc, const string mnc,
-                                const string routingInd,
-                                uint8_t protection_sch_id, uint8_t hnpki,
-                                const string msin);
+  void setSUCI_SUPI_format_IMSI(
+      const string mcc, const string mnc, const string routingInd,
+      uint8_t protection_sch_id, const string msin);
+  void setSUCI_SUPI_format_IMSI(
+      const string mcc, const string mnc, const string routingInd,
+      uint8_t protection_sch_id, uint8_t hnpki, const string msin);
   void set5G_GUTI();
   void setIMEI_IMEISV();
   void set5G_S_TMSI();
   /*** belongs to _5GSMobilityIdentity**/
  public:
-  NasMmPlainHeader *plain_header;
-  _5GSMobilityIdentity *ie_mobility_id;
+  NasMmPlainHeader* plain_header;
+  _5GSMobilityIdentity* ie_mobility_id;
 };
 
-}
+}  // namespace nas
 
 #endif
-
