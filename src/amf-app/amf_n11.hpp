@@ -69,8 +69,6 @@ class amf_n11 {
 
   bool smf_selection_from_configuration(
       std::string& smf_addr, std::string& smf_api_version);
-  // bool smf_selection_from_context(
-  //    std::string& smf_addr, std::string& smf_api_version);
   void handle_post_sm_context_response_error_400();
   void handle_post_sm_context_response_error(
       long code, std::string cause, bstring n1sm, std::string supi,

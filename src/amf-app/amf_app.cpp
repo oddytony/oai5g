@@ -335,6 +335,7 @@ void amf_app::handle_post_sm_context_response_error_400() {
   Logger::amf_app().error("Post SM context response error 400");
 }
 
+//------------------------------------------------------------------------------
 bool amf_app::generate_5g_guti(
     uint32_t ranid, long amfid, string& mcc, string& mnc, uint32_t& tmsi) {
   string ue_context_key =

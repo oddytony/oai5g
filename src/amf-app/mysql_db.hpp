@@ -36,6 +36,7 @@
 #define KEY_LENGTH (16)
 #define SQN_LENGTH (6)
 #define RAND_LENGTH (16)
+
 typedef struct {
   uint8_t key[KEY_LENGTH];
   uint8_t sqn[SQN_LENGTH];

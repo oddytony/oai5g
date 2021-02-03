@@ -467,8 +467,6 @@ void amf_config::display() {
         "    Api version ..........: %s", ausf_addr.api_version.c_str());
   }
 
-  //  Logger::config().info("    HTTP2 port ............: %d", n11_http2_port);
-
   Logger::config().info("- Remote SMF Pool.........: ");
   for (int i = 0; i < smf_pool.size(); i++) {
     std::string selected;
