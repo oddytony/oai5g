@@ -63,7 +63,7 @@ amf_config::amf_config() {
   enable_nf_registration    = false;
   enable_smf_selection      = false;
   enable_external_ausf      = false;
-  enable_external_udm      = false;
+  enable_external_udm       = false;
   // TODO:
 }
 
@@ -241,7 +241,7 @@ int amf_config::load(const std::string& config_file) {
     struct in_addr ausf_ipv4_addr;
     unsigned int ausf_port = 0;
     std::string ausf_api_version;
-    //string address;
+    // string address;
     ausf_cfg.lookupValue(AMF_CONFIG_STRING_IPV4_ADDRESS, address);
     IPV4_STR_ADDR_TO_INADDR(
         util::trim(address).c_str(), ausf_ipv4_addr,
@@ -450,23 +450,22 @@ void amf_config::display() {
   Logger::config().info("    port ..................: %d", n11.port);
 
   if (enable_nf_registration or enable_smf_selection) {
-	  Logger::config().info("- NRF:");
-	  Logger::config().info(
-	      "    IP addr ..............: %s", inet_ntoa(nrf_addr.ipv4_addr));
-	  Logger::config().info("    Port .................: %d", nrf_addr.port);
-	  Logger::config().info(
-	      "    Api version ..........: %s", nrf_addr.api_version.c_str());
+    Logger::config().info("- NRF:");
+    Logger::config().info(
+        "    IP addr ..............: %s", inet_ntoa(nrf_addr.ipv4_addr));
+    Logger::config().info("    Port .................: %d", nrf_addr.port);
+    Logger::config().info(
+        "    Api version ..........: %s", nrf_addr.api_version.c_str());
   }
 
   if (enable_external_ausf) {
-	  Logger::config().info("- AUSF:");
-	  Logger::config().info(
-	      "    IP addr ..............: %s", inet_ntoa(ausf_addr.ipv4_addr));
-	  Logger::config().info("    Port .................: %d", ausf_addr.port);
-	  Logger::config().info(
-	      "    Api version ..........: %s", ausf_addr.api_version.c_str());
+    Logger::config().info("- AUSF:");
+    Logger::config().info(
+        "    IP addr ..............: %s", inet_ntoa(ausf_addr.ipv4_addr));
+    Logger::config().info("    Port .................: %d", ausf_addr.port);
+    Logger::config().info(
+        "    Api version ..........: %s", ausf_addr.api_version.c_str());
   }
-
 
   //  Logger::config().info("    HTTP2 port ............: %d", n11_http2_port);
 

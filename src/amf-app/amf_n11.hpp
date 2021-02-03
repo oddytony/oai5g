@@ -91,8 +91,6 @@ class amf_n11 {
   bool send_ue_authentication_request(
       oai::amf::model::AuthenticationInfo& auth_info,
       oai::amf::model::UEAuthenticationCtx& ue_auth_ctx, uint8_t http_version);
-
-
 };
 
 }  // namespace amf_application

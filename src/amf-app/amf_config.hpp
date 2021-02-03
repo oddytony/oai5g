@@ -209,7 +209,6 @@ class amf_config {
     unsigned int port;
     std::string api_version;
   } ausf_addr;
-
 };
 
 }  // namespace config

@@ -1166,15 +1166,16 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
 }
 
 //------------------------------------------------------------------------------
-// Get authentication vectors either from AUSF(UDM) or from AMF (generate locally)
+// Get authentication vectors either from AUSF(UDM) or from AMF (generate
+// locally)
 bool amf_n1::auth_vectors_generator(std::shared_ptr<nas_context>& nc) {
   Logger::amf_n1().debug("Start to generate authentication vectors");
   authentication_vectors_generator_in_udm(nc);
   if (amf_cfg.enable_external_ausf) {
-	  //get authentication vectors from AUSF
+    // get authentication vectors from AUSF
     if (!get_authentication_vectors_from_ausf(nc)) return false;
   } else {
-	  //generate authentication vectors locally
+    // generate authentication vectors locally
     authentication_vectors_generator_in_ausf(nc);
     Logger::amf_n1().debug("Deriving kamf");
     for (int i = 0; i < MAX_5GS_AUTH_VECTORS; i++) {
@@ -1213,7 +1214,6 @@ bool amf_n1::get_authentication_vectors_from_ausf(
 
   if (amf_n11_inst->send_ue_authentication_request(
           authenticationinfo, ueauthenticationctx, 1)) {
-
     unsigned char* r5gauthdata_rand =
         format_string_as_hex(ueauthenticationctx.getR5gAuthData().getRand());
     memcpy(nc.get()->_5g_av[0].rand, r5gauthdata_rand, 16);

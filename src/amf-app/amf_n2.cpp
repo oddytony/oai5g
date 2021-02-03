@@ -968,7 +968,9 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
 
   /**********************send handover request to target
    * gnb*******************************/
-  HandoverRequest* handoverrequest = new HandoverRequest();
+  // HandoverRequest* handoverrequest = new HandoverRequest();
+  std::unique_ptr<HandoverRequest> handoverrequest =
+      std::make_unique<HandoverRequest>();
   handoverrequest->setMessageType();
   handoverrequest->setAmfUeNgapId(amf_ue_ngap_id);
   handoverrequest->setHandoverType(0);
@@ -1044,7 +1046,7 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   handoverrequest->setGUAMI(m_plmnId, m_aMFRegionID, m_aMFSetID, m_aMFPointer);
   uint8_t buffer[20240];
   int encoded_size = handoverrequest->encode2buffer(buffer, 20240);
-  delete handoverrequest;
+  // delete handoverrequest;
   bstring b = blk2bstr(buffer, encoded_size);
   std::shared_ptr<gnb_context> gc_target;
   gc_target              = gnb_id_2_gnb_context(gnbid->getValue());
@@ -1113,7 +1115,9 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
 
   /**************************send HandoverCommandMsg to Source
    * gnb**************************/
-  HandoverCommandMsg* handovercommand = new HandoverCommandMsg();
+  // HandoverCommandMsg* handovercommand = new HandoverCommandMsg();
+  std::unique_ptr<HandoverCommandMsg> handovercommand =
+      std::make_unique<HandoverCommandMsg>();
   handovercommand->setMessageType();
   handovercommand->setAmfUeNgapId(amf_ue_ngap_id);
   handovercommand->setRanUeNgapId(ran_id_Global);
@@ -1158,7 +1162,7 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   /**************************setPduSessionResourceHandoverList_PDYSessionID_handovercommandtransfer-end**************************/
   uint8_t buffer[10240];
   int encoded_size = handovercommand->encode2buffer(buffer, 10240);
-  delete handovercommand;
+  // delete handovercommand;
   bstring b = blk2bstr(buffer, encoded_size);
   std::shared_ptr<ue_ngap_context> unc;
   if (!is_ran_ue_id_2_ue_ngap_context(ran_id_Global)) {
@@ -1198,15 +1202,17 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
     Logger::amf_n2().debug("Missing IE UserLocationInformationNR");
     return;
   }
-  UEContextReleaseCommandMsg* ueContextReleaseCommand =
-      new UEContextReleaseCommandMsg();
+  // UEContextReleaseCommandMsg* ueContextReleaseCommand =
+  //    new UEContextReleaseCommandMsg();
+  std::unique_ptr<UEContextReleaseCommandMsg> ueContextReleaseCommand =
+      std::make_unique<UEContextReleaseCommandMsg>();
   ueContextReleaseCommand->setMessageType();
   ueContextReleaseCommand->setUeNgapIdPair(amf_ue_ngap_id, ran_id_Global);
   ueContextReleaseCommand->setCauseRadioNetwork(
       Ngap_CauseRadioNetwork_successful_handover);
   uint8_t buffer[10240];
   int encoded_size = ueContextReleaseCommand->encode2buffer(buffer, 10240);
-  delete ueContextReleaseCommand;
+  // delete ueContextReleaseCommand;
   bstring b = blk2bstr(buffer, encoded_size);
   std::shared_ptr<nas_context> nc =
       amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
@@ -1283,8 +1289,10 @@ void amf_n2::handle_itti_message(itti_uplinkranstatsutransfer& itti_msg) {
   amf_DL_value->getvalue(amf_dl_pdcp, amf_hfn_dl_pdcp);
   long amf_drb_id;
   amf_drb_id = *amf_dRB_id;
-  DownlinkRANStatusTransfer* downLinkranstatustransfer =
-      new DownlinkRANStatusTransfer();
+  // DownlinkRANStatusTransfer* downLinkranstatustransfer =
+  //    new DownlinkRANStatusTransfer();
+  std::unique_ptr<DownlinkRANStatusTransfer> downLinkranstatustransfer =
+      std::make_unique<DownlinkRANStatusTransfer>();
   downLinkranstatustransfer->setmessagetype();
   downLinkranstatustransfer->setAmfUeNgapId(amf_ue_ngap_id);
   downLinkranstatustransfer->setRanUeNgapId(AMF_TARGET_ran_id_global);
@@ -1292,7 +1300,7 @@ void amf_n2::handle_itti_message(itti_uplinkranstatsutransfer& itti_msg) {
       amf_drb_id, amf_ul_pdcp, amf_hfn_ul_pdcp, amf_dl_pdcp, amf_hfn_dl_pdcp);
   uint8_t buffer[1024];
   int encode_size = downLinkranstatustransfer->encodetobuffer(buffer, 1024);
-  delete downLinkranstatustransfer;
+  // delete downLinkranstatustransfer;
   bstring b = blk2bstr(buffer, encode_size);
   // std::shared_ptr<ue_ngap_context> ngc =
   // ran_ue_id_2_ue_ngap_context(AMF_TARGET_ran_id_global);

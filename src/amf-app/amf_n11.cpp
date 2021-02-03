@@ -946,12 +946,11 @@ bool amf_n11::send_ue_authentication_request(
 }
 
 //-----------------------------------------------------------------------------------------------------
-//From AMF_N1, need to be reworked
+// From AMF_N1, need to be reworked
 void amf_n11::curl_http_client(
     std::string remoteUri, std::string Method, std::string msgBody,
     std::string& Response) {
   Logger::amf_n1().info("Send HTTP message with body %s", msgBody.c_str());
-
 
   uint32_t str_len = msgBody.length();
   char* body_data  = (char*) malloc(str_len + 1);
@@ -1064,6 +1063,4 @@ void amf_n11::curl_http_client(
     body_data = NULL;
   }
   fflush(stdout);
-
 }
-
