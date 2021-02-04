@@ -13,6 +13,9 @@
 
 #include "NonUEN2MessageNotificationIndividualSubscriptionDocumentApi.h"
 #include "Helpers.h"
+#include "amf_config.hpp"
+
+extern config::amf_config amf_cfg;
 
 namespace oai {
 namespace amf {
@@ -36,7 +39,7 @@ void NonUEN2MessageNotificationIndividualSubscriptionDocumentApi::
 
   Routes::Delete(
       *router,
-      base + "/non-ue-n2-messages/subscriptions/:n2NotifySubscriptionId",
+      base + amf_cfg.sbi_api_version + "/non-ue-n2-messages/subscriptions/:n2NotifySubscriptionId",
       Routes::bind(
           &NonUEN2MessageNotificationIndividualSubscriptionDocumentApi::
               non_ue_n2_info_un_subscribe_handler,

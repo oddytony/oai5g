@@ -13,6 +13,9 @@
 
 #include "IndividualSubscriptionDocumentApi.h"
 #include "Helpers.h"
+#include "amf_config.hpp"
+
+extern config::amf_config amf_cfg;
 
 namespace oai {
 namespace amf {
@@ -34,13 +37,13 @@ void IndividualSubscriptionDocumentApi::setupRoutes() {
   using namespace Pistache::Rest;
 
   Routes::Put(
-      *router, base + "/subscriptions/:subscriptionId",
+      *router, base + amf_cfg.sbi_api_version + "/subscriptions/:subscriptionId",
       Routes::bind(
           &IndividualSubscriptionDocumentApi::
               a_mf_status_change_subscribe_modfy_handler,
           this));
   Routes::Delete(
-      *router, base + "/subscriptions/:subscriptionId",
+      *router, base + amf_cfg.sbi_api_version + "/subscriptions/:subscriptionId",
       Routes::bind(
           &IndividualSubscriptionDocumentApi::
               a_mf_status_change_un_subscribe_handler,

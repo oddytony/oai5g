@@ -42,7 +42,7 @@ public:
     virtual ~N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApi() {}
     void init();
 
-    const std::string base = "/namf-comm/v1";
+    const std::string base = "/namf-comm/";
 
 private:
     void setupRoutes();

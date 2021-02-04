@@ -13,6 +13,9 @@
 
 #include "N1N2IndividualSubscriptionDocumentApi.h"
 #include "Helpers.h"
+#include "amf_config.hpp"
+
+extern config::amf_config amf_cfg;
 
 namespace oai {
 namespace amf {
@@ -34,7 +37,7 @@ void N1N2IndividualSubscriptionDocumentApi::setupRoutes() {
 
   Routes::Delete(
       *router,
-      base +
+      base + amf_cfg.sbi_api_version +
           "/ue-contexts/:ueContextId/n1-n2-messages/subscriptions/"
           ":subscriptionId",
       Routes::bind(

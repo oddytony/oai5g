@@ -190,6 +190,13 @@ int amf_config::load(const std::string& config_file) {
     load_interface(n2_amf_cfg, n2);
     const Setting& n11_cfg = new_if_cfg[AMF_CONFIG_STRING_INTERFACE_N11];
     load_interface(n11_cfg, n11);
+    // SBI API VERSION
+    if (!(n11_cfg.lookupValue(
+            AMF_CONFIG_STRING_API_VERSION, sbi_api_version))) {
+      Logger::amf_app().error(AMF_CONFIG_STRING_API_VERSION "failed");
+      throw(AMF_CONFIG_STRING_API_VERSION "failed");
+    }
+
     const Setting& smf_addr_pool =
         n11_cfg[AMF_CONFIG_STRING_SMF_INSTANCES_POOL];
     int count = smf_addr_pool.getLength();
@@ -448,6 +455,7 @@ void amf_config::display() {
   Logger::config().info(
       "    ip ....................: %s", inet_ntoa(n11.addr4));
   Logger::config().info("    port ..................: %d", n11.port);
+  Logger::config().info("    API version............: %s", sbi_api_version.c_str());
 
   if (enable_nf_registration or enable_smf_selection) {
     Logger::config().info("- NRF:");

@@ -80,12 +80,13 @@ void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(
       "Key for PDU Session context: SUPI (%s)", supi.c_str());
   std::shared_ptr<pdu_session_context> psc;
 
-  // TODO: REMOVE supi_to_pdu_ctx
   if (!amf_app_inst->find_pdu_session_context(
           supi, (uint8_t) n1N2MessageTransferReqData.getPduSessionId(), psc)) {
     Logger::amf_server().error(
         "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
   }
+
+  // TODO: REMOVE supi_to_pdu_ctx
   /*
     if(amf_n11_inst->is_supi_to_pdu_ctx(supi)){
       psc = amf_n11_inst->supi_to_pdu_ctx(supi);

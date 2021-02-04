@@ -13,6 +13,9 @@
 
 #include "SubscriptionsCollectionDocumentApi.h"
 #include "Helpers.h"
+#include "amf_config.hpp"
+
+extern config::amf_config amf_cfg;
 
 namespace oai {
 namespace amf {
@@ -34,7 +37,7 @@ void SubscriptionsCollectionDocumentApi::setupRoutes() {
   using namespace Pistache::Rest;
 
   Routes::Post(
-      *router, base + "/subscriptions",
+      *router, base + amf_cfg.sbi_api_version + "/subscriptions",
       Routes::bind(
           &SubscriptionsCollectionDocumentApi::
               a_mf_status_change_subscribe_handler,

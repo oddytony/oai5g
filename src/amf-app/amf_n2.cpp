@@ -698,12 +698,13 @@ void amf_n2::handle_itti_message(
   Logger::amf_n2().debug("SUPI (%s)", supi.c_str());
   std::shared_ptr<pdu_session_context> psc;
 
-  // TODO: REMOVE supi_to_pdu_ctx
   if (!amf_app_inst->find_pdu_session_context(
           supi, itti_msg.pdu_session_id, psc)) {
     Logger::amf_n2().warn(
         "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
   }
+
+  // TODO: REMOVE supi_to_pdu_ctx
   /*
     if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
       psc = amf_n11_inst->supi_to_pdu_ctx(supi);

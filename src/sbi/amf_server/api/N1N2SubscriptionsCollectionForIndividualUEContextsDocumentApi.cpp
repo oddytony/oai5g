@@ -13,6 +13,9 @@
 
 #include "N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApi.h"
 #include "Helpers.h"
+#include "amf_config.hpp"
+
+extern config::amf_config amf_cfg;
 
 namespace oai {
 namespace amf {
@@ -36,7 +39,7 @@ void N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApi::
   using namespace Pistache::Rest;
 
   Routes::Post(
-      *router, base + "/ue-contexts/:ueContextId/n1-n2-messages/subscriptions",
+      *router, base + amf_cfg.sbi_api_version + "/ue-contexts/:ueContextId/n1-n2-messages/subscriptions",
       Routes::bind(
           &N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApi::
               n1_n2_message_subscribe_handler,

@@ -182,6 +182,7 @@ class amf_config {
   interface_cfg_t n11;
   interface_cfg_t nausf;
   itti_cfg_t itti;
+  std::string sbi_api_version;
   unsigned int statistics_interval;
   std::string AMF_Name;
   guami_t guami;
