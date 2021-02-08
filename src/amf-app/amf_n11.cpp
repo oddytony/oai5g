@@ -721,17 +721,13 @@ void amf_n11::curl_http_client(
   free_wrapper((void**) &body_data);
 }
 
+//-----------------------------------------------------------------------------------------------------
 bool amf_n11::discover_smf(
     std::string& smf_addr, std::string& smf_api_version, const snssai_t snssai,
     const plmn_t plmn, const std::string dnn) {
   Logger::amf_n11().debug(
-      "Send NFDiscovery to NRF to discover the available SMF");
+      "Send NFDiscovery to NRF to discover the available SMFs");
   bool result = true;
-
-  // curl -X GET
-  // "http://192.168.1.23/nnrf-disc/v1/nf-instances?target-nf-type=SMF&requester-nf-type=AMF"
-
-  // ADD NRF to AMF conf
 
   nlohmann::json json_data = {};
   // TODO: remove hardcoded values
@@ -782,8 +778,8 @@ bool amf_n11::discover_smf(
       Logger::amf_n11().debug(
           "NFDiscovery, response from NRF, json data: \n %s",
           response_data.dump().c_str());
-      // Process data to obtain SMF info
 
+      // Process data to obtain SMF info
       if (response_data.find("nfInstances") != response_data.end()) {
         for (auto& it : response_data["nfInstances"].items()) {
           nlohmann::json instance_json = it.value();
@@ -817,6 +813,10 @@ bool amf_n11::discover_smf(
       Logger::amf_n11().warn("NFDiscovery, could not get response from NRF");
       result = false;
     }
+
+    Logger::amf_n11().debug(
+        "NFDiscovery, SMF Addr: %s, SMF Api Version: %s", smf_addr.c_str(),
+        smf_api_version.c_str());
 
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
