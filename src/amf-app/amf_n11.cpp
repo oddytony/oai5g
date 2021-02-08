@@ -238,7 +238,8 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer& smf) {
   if (!uc.get()->find_pdu_session_context(smf.pdu_sess_id, psc)) {
     psc = std::shared_ptr<pdu_session_context>(new pdu_session_context());
     uc.get()->add_pdu_session_context(smf.pdu_sess_id, psc);
-    set_supi_to_pdu_ctx(supi, psc);  //TODO: should be removed
+    set_supi_to_pdu_ctx(supi, psc);  // TODO: should be removed
+    Logger::amf_n11().debug("Create a PDU Session Context");
   }
 
   pduid2supi[smf.pdu_sess_id] = supi;
@@ -402,7 +403,10 @@ void amf_n11::handle_pdu_session_initial_request(
       psc.get()->plmn.mnc;
   pdu_session_establishment_request["anType"] = "3GPP_ACCESS";  // TODO
   pdu_session_establishment_request["smContextStatusUri"] =
-      "smContextStatusUri";
+      "http://" +
+      std::string(inet_ntoa(*((struct in_addr*) &amf_cfg.n11.addr4))) +
+      "/nsmf-pdusession/callback/" + supi + "/" +
+      std::to_string(psc.get()->pdu_session_id);
 
   pdu_session_establishment_request["n1MessageContainer"]["n1MessageClass"] =
       "SM";

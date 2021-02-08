@@ -599,7 +599,7 @@ void amf_n1::service_request_handle(
   //TODO: is_supi_to_pdu_ctx should be removed
   if (!amf_n11_inst->is_supi_to_pdu_ctx(supi) || !psc.get()->isn2sm_avaliable) {
     Logger::amf_n1().error(
-        "Cannot get pdu session information with supi(%s)", supi.c_str());
+        "Cannot get pdu session information with supi (%s)", supi.c_str());
     if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
       psc.get()->isn2sm_avaliable = true;
     }
@@ -839,12 +839,13 @@ void amf_n1::registration_request_handle(
   nc.get()->amf_ue_ngap_id  = amf_ue_ngap_id;
   nc.get()->serving_network = snn;
 
-  // Update UE conext
+  // Update UE context
   if (uc.get() != nullptr) {
     std::string supi = "imsi-" + nc.get()->imsi;
     uc.get()->supi   = supi;
     // associate SUPI with UC
     amf_app_inst->set_supi_2_ue_context(supi, uc);
+    Logger::amf_n1().debug("Update UC context, SUPI %s", supi.c_str());
   }
 
   // Check 5GS_Registration_type IE (Mandatory IE)
