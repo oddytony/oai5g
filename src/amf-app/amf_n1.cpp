@@ -596,6 +596,7 @@ void amf_n1::service_request_handle(
         "Cannot get pdu_session_context with SUPI %s", supi.c_str());
   }
 
+  //TODO: is_supi_to_pdu_ctx should be removed
   if (!amf_n11_inst->is_supi_to_pdu_ctx(supi) || !psc.get()->isn2sm_avaliable) {
     Logger::amf_n1().error(
         "Cannot get pdu session information with supi(%s)", supi.c_str());

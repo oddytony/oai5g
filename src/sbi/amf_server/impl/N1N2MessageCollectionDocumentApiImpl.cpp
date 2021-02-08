@@ -86,15 +86,6 @@ void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(
         "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
   }
 
-  // TODO: REMOVE supi_to_pdu_ctx
-  /*
-    if(amf_n11_inst->is_supi_to_pdu_ctx(supi)){
-      psc = amf_n11_inst->supi_to_pdu_ctx(supi);
-    }else{
-      Logger::amf_server().error("Cannot get pdu_session_context with SUPI
-    (%s)", supi.c_str());
-    }
-  */
   bstring n1sm;
   msg_str_2_msg_hex(
       n1sm_str.substr(0, n1sm_str.length()), n1sm);  // TODO: verify n1sm_length

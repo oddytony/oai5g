@@ -704,16 +704,6 @@ void amf_n2::handle_itti_message(
         "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
   }
 
-  // TODO: REMOVE supi_to_pdu_ctx
-  /*
-    if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
-      psc = amf_n11_inst->supi_to_pdu_ctx(supi);
-    } else {
-      Logger::amf_n2().warn(
-          "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
-    }
-    */
-
   // item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
   // item.s_nssai.sd = psc.get()->snssai.sD;
 

@@ -179,16 +179,6 @@ void amf_n11::handle_itti_message(
         supi.c_str());
     return;
   }
-  /*
-  if (is_supi_to_pdu_ctx(supi)) {
-    psc = supi_to_pdu_ctx(supi);
-  } else {
-    Logger::amf_n11().error(
-        "Could not find psu_session_context with SUPI %s, Failed",
-        supi.c_str());
-    return;
-  }
-  */
 
   std::string smf_addr;
   std::string smf_api_version;
@@ -248,16 +238,9 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer& smf) {
   if (!uc.get()->find_pdu_session_context(smf.pdu_sess_id, psc)) {
     psc = std::shared_ptr<pdu_session_context>(new pdu_session_context());
     uc.get()->add_pdu_session_context(smf.pdu_sess_id, psc);
+    set_supi_to_pdu_ctx(supi, psc);  //TODO: should be removed
   }
 
-  /*  //std::shared_ptr<pdu_session_context> psc;
-    if (is_supi_to_pdu_ctx(supi)) {
-      psc = supi_to_pdu_ctx(supi);
-    } else {
-      psc = std::shared_ptr<pdu_session_context>(new pdu_session_context());
-      set_supi_to_pdu_ctx(supi, psc);
-    }
-  */
   pduid2supi[smf.pdu_sess_id] = supi;
   psc.get()->amf_ue_ngap_id   = nc.get()->amf_ue_ngap_id;
   psc.get()->ran_ue_ngap_id   = nc.get()->ran_ue_ngap_id;
@@ -278,20 +261,6 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer& smf) {
 
   Logger::amf_n11().debug("Requested DNN: %s", dnn.c_str());
   psc.get()->dnn = dnn;
-
-  /* std::string smf_addr;
-   std::string smf_api_version;
-   if (!psc.get()->smf_available) {
-     if (!smf_selection_from_configuration(smf_addr, smf_api_version)) {
-       Logger::amf_n11().error("No candidate for SMF is available");
-       return;
-     }
-   } else {
-     smf_addr        = psc->smf_addr;
-     smf_api_version = psc->smf_api_version;
-     // smf_selection_from_context(smf_addr, smf_api_version);
-   }
- */
 
   std::string smf_addr;
   std::string smf_api_version;
@@ -553,21 +522,11 @@ void amf_n11::curl_http_client(
   std::string body;
   std::shared_ptr<pdu_session_context> psc;
 
-  // TTN: Should be replace by new mechanism to support multiple PDU sessions
   if (!amf_app_inst->find_pdu_session_context(supi, pdu_session_id, psc)) {
     Logger::amf_n11().warn(
         "PDU Session context for SUPI %s doesn't exit!", supi.c_str());
     // TODO:
   }
-  /*
-    if (is_supi_to_pdu_ctx(supi)) {
-      psc = supi_to_pdu_ctx(supi);
-    } else {
-      Logger::amf_n11().warn(
-          "PDU Session context for SUPI %s doesn't exit!", supi.c_str());
-      // TODO:
-    }
-  */
 
   if ((n1SmMsg.size() > 0) and (n2SmMsg.size() > 0)) {
     // prepare the body content for Curl
