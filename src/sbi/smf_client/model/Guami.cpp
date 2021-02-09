@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,99 +10,88 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "Guami.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-Guami::Guami()
-{
-    m_AmfId = utility::conversions::to_string_t("");
+Guami::Guami() {
+  m_AmfId = utility::conversions::to_string_t("");
 }
 
-Guami::~Guami()
-{
+Guami::~Guami() {}
+
+void Guami::validate() {
+  // TODO: implement validation
 }
 
-void Guami::validate()
-{
-    // TODO: implement validation
+web::json::value Guami::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  val[utility::conversions::to_string_t("plmnId")] =
+      ModelBase::toJson(m_PlmnId);
+  val[utility::conversions::to_string_t("amfId")] = ModelBase::toJson(m_AmfId);
+
+  return val;
 }
 
-web::json::value Guami::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    val[utility::conversions::to_string_t("plmnId")] = ModelBase::toJson(m_PlmnId);
-    val[utility::conversions::to_string_t("amfId")] = ModelBase::toJson(m_AmfId);
-
-    return val;
+void Guami::fromJson(const web::json::value& val) {
+  std::shared_ptr<PlmnId> newPlmnId(new PlmnId());
+  newPlmnId->fromJson(val.at(utility::conversions::to_string_t("plmnId")));
+  setPlmnId(newPlmnId);
+  setAmfId(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("amfId"))));
 }
 
-void Guami::fromJson(const web::json::value& val)
-{
-    std::shared_ptr<PlmnId> newPlmnId(new PlmnId());
-    newPlmnId->fromJson(val.at(utility::conversions::to_string_t("plmnId")));
-    setPlmnId( newPlmnId );
-    setAmfId(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("amfId"))));
+void Guami::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  m_PlmnId->toMultipart(
+      multipart, utility::conversions::to_string_t("plmnId."));
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("amfId"), m_AmfId));
 }
 
-void Guami::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
+void Guami::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 
-    m_PlmnId->toMultipart(multipart, utility::conversions::to_string_t("plmnId."));
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("amfId"), m_AmfId));
+  std::shared_ptr<PlmnId> newPlmnId(new PlmnId());
+  newPlmnId->fromMultiPart(
+      multipart, utility::conversions::to_string_t("plmnId."));
+  setPlmnId(newPlmnId);
+  setAmfId(ModelBase::stringFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("amfId"))));
 }
 
-void Guami::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    std::shared_ptr<PlmnId> newPlmnId(new PlmnId());
-    newPlmnId->fromMultiPart(multipart, utility::conversions::to_string_t("plmnId."));
-    setPlmnId( newPlmnId );
-    setAmfId(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("amfId"))));
+std::shared_ptr<PlmnId> Guami::getPlmnId() const {
+  return m_PlmnId;
 }
 
-std::shared_ptr<PlmnId> Guami::getPlmnId() const
-{
-    return m_PlmnId;
+void Guami::setPlmnId(const std::shared_ptr<PlmnId>& value) {
+  m_PlmnId = value;
 }
 
-void Guami::setPlmnId(const std::shared_ptr<PlmnId>& value)
-{
-    m_PlmnId = value;
-    
+utility::string_t Guami::getAmfId() const {
+  return m_AmfId;
 }
 
-utility::string_t Guami::getAmfId() const
-{
-    return m_AmfId;
+void Guami::setAmfId(const utility::string_t& value) {
+  m_AmfId = value;
 }
 
-void Guami::setAmfId(const utility::string_t& value)
-{
-    m_AmfId = value;
-    
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

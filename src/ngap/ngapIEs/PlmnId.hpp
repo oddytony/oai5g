@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -45,8 +45,9 @@ class PlmnId {
   bool encode2octetstring(Ngap_PLMNIdentity_t&);
   bool decodefromoctetstring(Ngap_PLMNIdentity_t&);
   void setMccMnc(const std::string mcc, const std::string mnc);
-  void getMcc(std::string &mcc);
-  void getMnc(std::string &mnc);
+  void getMcc(std::string& mcc);
+  void getMnc(std::string& mnc);
+
  private:
   uint8_t mcc_digit1;
   uint8_t mcc_digit2;
@@ -56,7 +57,6 @@ class PlmnId {
   uint8_t mnc_digit3;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

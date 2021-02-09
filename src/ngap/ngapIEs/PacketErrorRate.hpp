@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -41,16 +41,16 @@ class PacketErrorRate {
   virtual ~PacketErrorRate();
 
   void setPacketErrorRate(long m_pERScalar, long m_pERExponent);
-  bool getPacketErrorRate(long &m_pERScalar, long &m_pERExponent);
+  bool getPacketErrorRate(long& m_pERScalar, long& m_pERExponent);
 
   bool encode2PacketErrorRate(Ngap_PacketErrorRate_t*);
   bool decodefromPacketErrorRate(Ngap_PacketErrorRate_t*);
+
  private:
   long pERScalar;
   long pERExponent;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -43,22 +43,24 @@ class PDUSessionResourceSetupListSURes {
   virtual ~PDUSessionResourceSetupListSURes();
 
   void setPDUSessionResourceSetupListSURes(
-      PDUSessionResourceSetupItemSURes *m_pduSessionResourceSetupItemSURes,
+      PDUSessionResourceSetupItemSURes* m_pduSessionResourceSetupItemSURes,
       int num);
   void getPDUSessionResourceSetupListSURes(
-      PDUSessionResourceSetupItemSURes *&m_pduSessionResourceSetupItemSURes,
-      int &num);
+      PDUSessionResourceSetupItemSURes*& m_pduSessionResourceSetupItemSURes,
+      int& num);
 
   bool encode2PDUSessionResourceSetupListSURes(
-      Ngap_PDUSessionResourceSetupListSURes_t *pduSessionResourceSetupListSURes);
+      Ngap_PDUSessionResourceSetupListSURes_t*
+          pduSessionResourceSetupListSURes);
   bool decodefromPDUSessionResourceSetupListSURes(
-      Ngap_PDUSessionResourceSetupListSURes_t *pduSessionResourceSetupListSURes);
+      Ngap_PDUSessionResourceSetupListSURes_t*
+          pduSessionResourceSetupListSURes);
+
  private:
-  PDUSessionResourceSetupItemSURes *pduSessionResourceSetupItemSURes;
+  PDUSessionResourceSetupItemSURes* pduSessionResourceSetupItemSURes;
   int numofpduSessionResourceSetupItemSURes;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

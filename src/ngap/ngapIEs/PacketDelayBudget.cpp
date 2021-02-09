@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PacketDelayBudget::PacketDelayBudget() {
-}
+PacketDelayBudget::PacketDelayBudget() {}
 
 //------------------------------------------------------------------------------
-PacketDelayBudget::~PacketDelayBudget() {
-}
+PacketDelayBudget::~PacketDelayBudget() {}
 
 //------------------------------------------------------------------------------
 void PacketDelayBudget::setPacketDelayBudget(long value) {
@@ -47,7 +45,7 @@ void PacketDelayBudget::setPacketDelayBudget(long value) {
 }
 
 //------------------------------------------------------------------------------
-bool PacketDelayBudget::getPacketDelayBudget(long &value) {
+bool PacketDelayBudget::getPacketDelayBudget(long& value) {
   value = packetdelaybudget;
 
   return true;
@@ -55,7 +53,7 @@ bool PacketDelayBudget::getPacketDelayBudget(long &value) {
 
 //------------------------------------------------------------------------------
 bool PacketDelayBudget::encode2PacketDelayBudget(
-    Ngap_PacketDelayBudget_t *packetDelayBudget) {
+    Ngap_PacketDelayBudget_t* packetDelayBudget) {
   *packetDelayBudget = packetdelaybudget;
 
   return true;
@@ -63,9 +61,9 @@ bool PacketDelayBudget::encode2PacketDelayBudget(
 
 //------------------------------------------------------------------------------
 bool PacketDelayBudget::decodefromPacketDelayBudget(
-    Ngap_PacketDelayBudget_t *packetDelayBudget) {
+    Ngap_PacketDelayBudget_t* packetDelayBudget) {
   packetdelaybudget = *packetDelayBudget;
 
   return true;
 }
-}
+}  // namespace ngap

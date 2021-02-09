@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -44,23 +44,28 @@ class PDUSessionResourceReleasedListRelRes {
   virtual ~PDUSessionResourceReleasedListRelRes();
 
   void setPDUSessionResourceReleasedListRelRes(
-      PDUSessionResourceReleasedItemRelRes *m_pduSessionResourceReleasedItemRelRes,
+      PDUSessionResourceReleasedItemRelRes*
+          m_pduSessionResourceReleasedItemRelRes,
       int num);
 
   void getPDUSessionResourceReleasedListRelRes(
-      PDUSessionResourceReleasedItemRelRes *&m_pduSessionResourceReleasedItemRelRes,
-      int &num);
+      PDUSessionResourceReleasedItemRelRes*&
+          m_pduSessionResourceReleasedItemRelRes,
+      int& num);
 
   bool encode2PDUSessionResourceReleasedListRelRes(
-      Ngap_PDUSessionResourceReleasedListRelRes_t *pduSessionResourceReleasedListRelRes);
+      Ngap_PDUSessionResourceReleasedListRelRes_t*
+          pduSessionResourceReleasedListRelRes);
 
   bool decodefromPDUSessionResourceReleasedListRelRes(
-      Ngap_PDUSessionResourceReleasedListRelRes_t *pduSessionResourceReleasedListRelRes);
+      Ngap_PDUSessionResourceReleasedListRelRes_t*
+          pduSessionResourceReleasedListRelRes);
+
  private:
-  PDUSessionResourceReleasedItemRelRes *pduSessionResourceReleasedItemRelRes;
+  PDUSessionResourceReleasedItemRelRes* pduSessionResourceReleasedItemRelRes;
   int maxnoofPDUSessions;
 };
 
-}
+}  // namespace ngap
 
 #endif

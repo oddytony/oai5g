@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -42,17 +42,18 @@ class QosFlowSetupRequestList {
   QosFlowSetupRequestList();
   virtual ~QosFlowSetupRequestList();
 
-  void setQosFlowSetupRequestList(QosFlowSetupRequestItem *m_items,
-                                  int m_numofitems);
-  bool getQosFlowSetupRequestList(QosFlowSetupRequestItem *&m_items,
-                                  int &m_numofitems);
+  void setQosFlowSetupRequestList(
+      QosFlowSetupRequestItem* m_items, int m_numofitems);
+  bool getQosFlowSetupRequestList(
+      QosFlowSetupRequestItem*& m_items, int& m_numofitems);
   bool encode2QosFlowSetupRequestList(
-      Ngap_QosFlowSetupRequestList_t *qosFlowSetupRequestList);
+      Ngap_QosFlowSetupRequestList_t* qosFlowSetupRequestList);
   bool decodefromQosFlowSetupRequestList(
-      Ngap_QosFlowSetupRequestList_t *qosFlowSetupRequestList);
+      Ngap_QosFlowSetupRequestList_t* qosFlowSetupRequestList);
+
  private:
-  QosFlowSetupRequestItem *items;
+  QosFlowSetupRequestItem* items;
   int numofitems;
 };
-}
+}  // namespace ngap
 #endif

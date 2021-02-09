@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -53,18 +53,22 @@ class MessageType {
   void setValuePresent(Ngap_SuccessfulOutcome__value_PR m_valuePresent);
   void setValuePresent(Ngap_UnsuccessfulOutcome__value_PR m_valuePresent);
 
-  //void decodefrompdu(Ngap_NGAP_PDU_t*);
+  // void decodefrompdu(Ngap_NGAP_PDU_t*);
   Ngap_ProcedureCode_t getProcedureCode();
   Ngap_NGAP_PDU_PR getTypeOfMessage();
   Ngap_Criticality getCriticality();
+
  private:
-  Ngap_ProcedureCode_t procedureCode;  //Ngap_ProcedureCode.h
-  Ngap_NGAP_PDU_PR typeOfMessage;  //Ngap_NGAP-PDU.h
-  Ngap_Criticality criticality;  //Ngap_Criticality.h
-  Ngap_InitiatingMessage__value_PR initiatingMsgValuePresent;  //Ngap_InitiatingMessage.h
-  Ngap_SuccessfulOutcome__value_PR successfulOutcomeValuePresent;  //Ngap_SuccessfulOutcome.h
-  Ngap_UnsuccessfulOutcome__value_PR unsuccessfulOutcomeValuePresent;  //Ngap_UnsuccessfulOutcome.h
+  Ngap_ProcedureCode_t procedureCode;  // Ngap_ProcedureCode.h
+  Ngap_NGAP_PDU_PR typeOfMessage;      // Ngap_NGAP-PDU.h
+  Ngap_Criticality criticality;        // Ngap_Criticality.h
+  Ngap_InitiatingMessage__value_PR
+      initiatingMsgValuePresent;  // Ngap_InitiatingMessage.h
+  Ngap_SuccessfulOutcome__value_PR
+      successfulOutcomeValuePresent;  // Ngap_SuccessfulOutcome.h
+  Ngap_UnsuccessfulOutcome__value_PR
+      unsuccessfulOutcomeValuePresent;  // Ngap_UnsuccessfulOutcome.h
 };
-}
+}  // namespace ngap
 
 #endif

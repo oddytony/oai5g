@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -40,20 +40,19 @@ class Rejected_NSSAI {
   ~Rejected_NSSAI();
   void setSST(uint8_t SST);
   void setCause(uint8_t SST);
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(uint8_t *buf, int len, bool is_option);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(uint8_t* buf, int len, bool is_option);
   uint8_t getSST();
   uint8_t getCause();
+
  private:
   uint8_t _iei;
   uint8_t length;
   uint8_t _s_nssai_length;
   uint8_t _cause;
   uint8_t _s_nssai_SST;
-
 };
 
-}
+}  // namespace nas
 
 #endif
-

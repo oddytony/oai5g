@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,15 +37,14 @@ class DeregistrationAccept {
  public:
   DeregistrationAccept();
   ~DeregistrationAccept();
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(NasMmPlainHeader* header, uint8_t* buf, int len);
   void setHeader(uint8_t security_header_type);
 
  public:
-  NasMmPlainHeader *plain_header;
+  NasMmPlainHeader* plain_header;
 };
 
-}
+}  // namespace nas
 
 #endif
-

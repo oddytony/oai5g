@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -42,17 +42,17 @@ class MaximumIntegrityProtectedDataRate {
 
   void setMaximumIntegrityProtectedDataRate(
       e_Ngap_MaximumIntegrityProtectedDataRate m_maxintprotdatarate);
-  bool getMaximumIntegrityProtectedDataRate(long &m_maxintprotdatarate);
+  bool getMaximumIntegrityProtectedDataRate(long& m_maxintprotdatarate);
 
   bool encode2MaximumIntegrityProtectedDataRate(
       Ngap_MaximumIntegrityProtectedDataRate_t&);
   bool decodefromMaximumIntegrityProtectedDataRate(
       Ngap_MaximumIntegrityProtectedDataRate_t);
+
  private:
   long maxintprotdatarate;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

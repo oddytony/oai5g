@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,12 +35,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-AMFPointer::AMFPointer() {
-}
+AMFPointer::AMFPointer() {}
 
 //------------------------------------------------------------------------------
-AMFPointer::~AMFPointer() {
-}
+AMFPointer::~AMFPointer() {}
 
 //------------------------------------------------------------------------------
 void AMFPointer::setAMFPointer(const std::string charPointer) {
@@ -48,30 +46,27 @@ void AMFPointer::setAMFPointer(const std::string charPointer) {
 }
 
 //------------------------------------------------------------------------------
-void AMFPointer::getAMFPointer(std::string &charPointer) {
+void AMFPointer::getAMFPointer(std::string& charPointer) {
   charPointer = to_string(pointer);
 }
 
 //------------------------------------------------------------------------------
-bool AMFPointer::encode2bitstring(Ngap_AMFPointer_t &amfpointer) {
+bool AMFPointer::encode2bitstring(Ngap_AMFPointer_t& amfpointer) {
   amfpointer.size = 1;
-  uint8_t *buffer = (uint8_t*) calloc(1, sizeof(uint8_t));
-  if (!buffer)
-    return false;
-  *buffer = ((pointer & 0x3f) << 2);
-  amfpointer.buf = buffer;
+  uint8_t* buffer = (uint8_t*) calloc(1, sizeof(uint8_t));
+  if (!buffer) return false;
+  *buffer                = ((pointer & 0x3f) << 2);
+  amfpointer.buf         = buffer;
   amfpointer.bits_unused = 2;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool AMFPointer::decodefrombitstring(Ngap_AMFPointer_t &amfpointer) {
-  if (!amfpointer.buf)
-    return false;
-  pointer = (amfpointer.buf[0] & 0xfc) >> 2;  //1111 1100
+bool AMFPointer::decodefrombitstring(Ngap_AMFPointer_t& amfpointer) {
+  if (!amfpointer.buf) return false;
+  pointer = (amfpointer.buf[0] & 0xfc) >> 2;  // 1111 1100
 
   return true;
 }
-}
-
+}  // namespace ngap

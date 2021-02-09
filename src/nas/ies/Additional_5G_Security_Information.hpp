@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,18 +39,18 @@ class Additional_5G_Security_Information {
   Additional_5G_Security_Information(uint8_t iei);
   Additional_5G_Security_Information(const uint8_t iei, bool RINMR, bool HDP);
   ~Additional_5G_Security_Information();
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(uint8_t *buf, int len, bool is_option);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(uint8_t* buf, int len, bool is_option);
   void setRINMR(bool value);
   void setHDP(bool value);
   bool getRINMR();
   bool getHDP();
+
  private:
   uint8_t _iei;
   bool RINMR;
   bool HDP;
 };
-}
+}  // namespace nas
 
 #endif
-

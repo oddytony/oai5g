@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -28,7 +28,7 @@
 
 #include "Cause.hpp"
 
-#include<iostream>
+#include <iostream>
 using namespace std;
 
 namespace ngap {
@@ -39,8 +39,7 @@ Cause::Cause() {
 }
 
 //------------------------------------------------------------------------------
-Cause::~Cause() {
-}
+Cause::~Cause() {}
 
 //------------------------------------------------------------------------------
 void Cause::setChoiceOfCause(Ngap_Cause_PR m_causePresent) {
@@ -53,7 +52,7 @@ void Cause::setValue(long m_causeValue) {
 }
 
 //------------------------------------------------------------------------------
-bool Cause::encode2Cause(Ngap_Cause_t *cause) {
+bool Cause::encode2Cause(Ngap_Cause_t* cause) {
   cause->present = causePresent;
   switch (causePresent) {
     case Ngap_Cause_PR_radioNetwork: {
@@ -86,29 +85,24 @@ bool Cause::encode2Cause(Ngap_Cause_t *cause) {
 }
 
 //------------------------------------------------------------------------------
-bool Cause::decodefromCause(Ngap_Cause_t *pdu) {
+bool Cause::decodefromCause(Ngap_Cause_t* pdu) {
   causePresent = pdu->present;
   switch (causePresent) {
     case Ngap_Cause_PR_radioNetwork: {
       causeValue = pdu->choice.radioNetwork;
-    }
-      break;
+    } break;
     case Ngap_Cause_PR_transport: {
       causeValue = pdu->choice.transport;
-    }
-      break;
+    } break;
     case Ngap_Cause_PR_nas: {
       causeValue = pdu->choice.nas;
-    }
-      break;
+    } break;
     case Ngap_Cause_PR_protocol: {
       causeValue = pdu->choice.protocol;
-    }
-      break;
+    } break;
     case Ngap_Cause_PR_misc: {
       causeValue = pdu->choice.misc;
-    }
-      break;
+    } break;
     default: {
       cout << "[Warning] Cause Present error!" << endl;
       return false;
@@ -126,4 +120,4 @@ Ngap_Cause_PR Cause::getChoiceOfCause() {
 long Cause::getValue() {
   return causeValue;
 }
-}
+}  // namespace ngap

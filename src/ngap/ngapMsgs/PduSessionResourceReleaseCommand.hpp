@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -51,36 +51,37 @@ class PduSessionResourceReleaseCommandMsg {
   virtual ~PduSessionResourceReleaseCommandMsg();
 
   void setMessageType();
-  void setAmfUeNgapId(unsigned long id);  //40 bits
-  void setRanUeNgapId(uint32_t id);  // 32 bits
+  void setAmfUeNgapId(unsigned long id);  // 40 bits
+  void setRanUeNgapId(uint32_t id);       // 32 bits
   void setRanPagingPriority(uint8_t priority);
-  void setNasPdu(uint8_t *nas, size_t sizeofnas);
+  void setNasPdu(uint8_t* nas, size_t sizeofnas);
   void setPduSessionResourceToReleaseList(
       std::vector<PDUSessionResourceToReleaseItem_t> list);
 
   unsigned long getAmfUeNgapId();
   uint32_t getRanUeNgapId();
   int getRanPagingPriority();
-  bool getNasPdu(uint8_t *&nas, size_t &sizeofnas);
+  bool getNasPdu(uint8_t*& nas, size_t& sizeofnas);
   bool getPduSessionResourceToReleaseList(
-      std::vector<PDUSessionResourceToReleaseItem_t> &list);
+      std::vector<PDUSessionResourceToReleaseItem_t>& list);
 
-  int encode2buffer(uint8_t *buf, int buf_size);
-  void encode2buffer_new(char *buf, int &encoded_size);
-  bool decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu);
+  int encode2buffer(uint8_t* buf, int buf_size);
+  void encode2buffer_new(char* buf, int& encoded_size);
+  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
 
  private:
-  Ngap_NGAP_PDU_t *pduSessionResourceReleaseCommandPdu;
-  Ngap_PDUSessionResourceReleaseCommand_t *pduSessionResourceReleaseCommandIEs; //store list of IEs
+  Ngap_NGAP_PDU_t* pduSessionResourceReleaseCommandPdu;
+  Ngap_PDUSessionResourceReleaseCommand_t*
+      pduSessionResourceReleaseCommandIEs;  // store list of IEs
 
-  //section 9.2.1.3 PDU Session Resource Release Command (3GPP TS 38.413 V16.0.0 (2019-12))
-  AMF_UE_NGAP_ID *amfUeNgapId;
-  RAN_UE_NGAP_ID *ranUeNgapId;
-  RANPagingPriority *ranPagingPriority;
-  NAS_PDU *nasPdu;
-  PDUSessionResourceToReleaseListRelCmd *pduSessionResourceToReleaseList;
+  // section 9.2.1.3 PDU Session Resource Release Command (3GPP TS 38.413
+  // V16.0.0 (2019-12))
+  AMF_UE_NGAP_ID* amfUeNgapId;
+  RAN_UE_NGAP_ID* ranUeNgapId;
+  RANPagingPriority* ranPagingPriority;
+  NAS_PDU* nasPdu;
+  PDUSessionResourceToReleaseListRelCmd* pduSessionResourceToReleaseList;
 };
 
-}
+}  // namespace ngap
 #endif
-

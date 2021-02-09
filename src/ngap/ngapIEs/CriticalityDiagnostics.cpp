@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -28,85 +28,84 @@
 
 #include "CriticalityDiagnostics.hpp"
 
-#include<iostream>
+#include <iostream>
 using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
 CriticalityDiagnostics::CriticalityDiagnostics() {
-  procedureCodeIsSet = false;
-  triggeringMessageIsSet = false;
-  procedureCriticalityIsSet = false;
+  procedureCodeIsSet                = false;
+  triggeringMessageIsSet            = false;
+  procedureCriticalityIsSet         = false;
   numberOfIEsCriticalityDiagnostics = 0;
 }
 
 //------------------------------------------------------------------------------
-CriticalityDiagnostics::~CriticalityDiagnostics() {
-}
+CriticalityDiagnostics::~CriticalityDiagnostics() {}
 
 //------------------------------------------------------------------------------
 void CriticalityDiagnostics::setProcedureCodeValue(
     Ngap_ProcedureCode_t m_procedureCode) {
   procedureCodeIsSet = true;
-  procedureCode = m_procedureCode;
+  procedureCode      = m_procedureCode;
 }
 
 //------------------------------------------------------------------------------
 void CriticalityDiagnostics::setTriggeringMessageValue(
     Ngap_TriggeringMessage_t m_triggeringMessage) {
   triggeringMessageIsSet = true;
-  triggeringMessage = m_triggeringMessage;
+  triggeringMessage      = m_triggeringMessage;
 }
 
 //------------------------------------------------------------------------------
 void CriticalityDiagnostics::setCriticalityValue(
     Ngap_Criticality_t m_procedureCriticality) {
   procedureCriticalityIsSet = true;
-  procedureCriticality = m_procedureCriticality;
+  procedureCriticality      = m_procedureCriticality;
 }
 
 //------------------------------------------------------------------------------
 void CriticalityDiagnostics::setIEsCriticalityDiagnosticsList(
-    IEsCriticalityDiagnostics *m_iEsCriticalityDiagnostics, int num) {
-  iEsCriticalityDiagnostics = m_iEsCriticalityDiagnostics;
+    IEsCriticalityDiagnostics* m_iEsCriticalityDiagnostics, int num) {
+  iEsCriticalityDiagnostics         = m_iEsCriticalityDiagnostics;
   numberOfIEsCriticalityDiagnostics = num;
 }
 
 //------------------------------------------------------------------------------
-int CriticalityDiagnostics::encode2pdu(Ngap_NGSetupFailure_t *ngSetupFailure) {
-  Ngap_NGSetupFailureIEs_t *ie = (Ngap_NGSetupFailureIEs_t*) calloc(
-      1, sizeof(Ngap_NGSetupFailureIEs_t));
-  ie->id = Ngap_ProtocolIE_ID_id_CriticalityDiagnostics;
-  ie->criticality = Ngap_Criticality_ignore;
+int CriticalityDiagnostics::encode2pdu(Ngap_NGSetupFailure_t* ngSetupFailure) {
+  Ngap_NGSetupFailureIEs_t* ie =
+      (Ngap_NGSetupFailureIEs_t*) calloc(1, sizeof(Ngap_NGSetupFailureIEs_t));
+  ie->id            = Ngap_ProtocolIE_ID_id_CriticalityDiagnostics;
+  ie->criticality   = Ngap_Criticality_ignore;
   ie->value.present = Ngap_NGSetupFailureIEs__value_PR_CriticalityDiagnostics;
 
   if (procedureCodeIsSet) {
-    Ngap_ProcedureCode_t *procedureCodeIE = (Ngap_ProcedureCode_t*) calloc(
-        1, sizeof(Ngap_ProcedureCode_t));
-    *procedureCodeIE = procedureCode;
+    Ngap_ProcedureCode_t* procedureCodeIE =
+        (Ngap_ProcedureCode_t*) calloc(1, sizeof(Ngap_ProcedureCode_t));
+    *procedureCodeIE                                      = procedureCode;
     ie->value.choice.CriticalityDiagnostics.procedureCode = procedureCodeIE;
   }
   if (triggeringMessageIsSet) {
-    Ngap_TriggeringMessage_t *triggeringMessageIE =
+    Ngap_TriggeringMessage_t* triggeringMessageIE =
         (Ngap_TriggeringMessage_t*) calloc(1, sizeof(Ngap_TriggeringMessage_t));
     *triggeringMessageIE = triggeringMessage;
     ie->value.choice.CriticalityDiagnostics.triggeringMessage =
         triggeringMessageIE;
   }
   if (procedureCriticalityIsSet) {
-    Ngap_Criticality_t *procedureCriticalityIE = (Ngap_Criticality_t*) calloc(
-        1, sizeof(Ngap_Criticality_t));
+    Ngap_Criticality_t* procedureCriticalityIE =
+        (Ngap_Criticality_t*) calloc(1, sizeof(Ngap_Criticality_t));
     *procedureCriticalityIE = procedureCriticality;
     ie->value.choice.CriticalityDiagnostics.procedureCriticality =
         procedureCriticalityIE;
   }
   if (numberOfIEsCriticalityDiagnostics) {
-    Ngap_CriticalityDiagnostics_IE_List_t *ieList =
+    Ngap_CriticalityDiagnostics_IE_List_t* ieList =
         (Ngap_CriticalityDiagnostics_IE_List_t*) calloc(
             1, sizeof(Ngap_CriticalityDiagnostics_IE_List_t));
     for (int i = 0; i < numberOfIEsCriticalityDiagnostics; i++) {
-      Ngap_CriticalityDiagnostics_IE_Item_t *ieItem =
+      Ngap_CriticalityDiagnostics_IE_Item_t* ieItem =
           (Ngap_CriticalityDiagnostics_IE_Item_t*) calloc(
               1, sizeof(Ngap_CriticalityDiagnostics_IE_Item_t));
       iEsCriticalityDiagnostics[i].encode2pdu(ieItem);
@@ -114,35 +113,34 @@ int CriticalityDiagnostics::encode2pdu(Ngap_NGSetupFailure_t *ngSetupFailure) {
     }
     ie->value.choice.CriticalityDiagnostics.iEsCriticalityDiagnostics = ieList;
   }
-  if (!procedureCodeIsSet && !triggeringMessageIsSet
-      && !procedureCriticalityIsSet && !numberOfIEsCriticalityDiagnostics) {
+  if (!procedureCodeIsSet && !triggeringMessageIsSet &&
+      !procedureCriticalityIsSet && !numberOfIEsCriticalityDiagnostics) {
     free(ie);
     return 1;
   }
   int ret = ASN_SEQUENCE_ADD(&ngSetupFailure->protocolIEs.list, ie);
-  if (ret != 0)
-    cout << "encode CriticalityDiagnostics IE error" << endl;
+  if (ret != 0) cout << "encode CriticalityDiagnostics IE error" << endl;
   return ret;
 }
 
 //------------------------------------------------------------------------------
-bool CriticalityDiagnostics::decodefrompdu(Ngap_CriticalityDiagnostics_t *pdu) {
-  //timeValue = *pdu;
+bool CriticalityDiagnostics::decodefrompdu(Ngap_CriticalityDiagnostics_t* pdu) {
+  // timeValue = *pdu;
   if (pdu->procedureCode) {
     procedureCodeIsSet = true;
-    procedureCode = *pdu->procedureCode;
+    procedureCode      = *pdu->procedureCode;
   }
   if (pdu->triggeringMessage) {
     triggeringMessageIsSet = true;
-    triggeringMessage = *pdu->triggeringMessage;
+    triggeringMessage      = *pdu->triggeringMessage;
   }
   if (pdu->procedureCriticality) {
     procedureCriticalityIsSet = true;
-    procedureCriticality = *pdu->procedureCriticality;
+    procedureCriticality      = *pdu->procedureCriticality;
   }
   if (pdu->iEsCriticalityDiagnostics) {
-    numberOfIEsCriticalityDiagnostics = pdu->iEsCriticalityDiagnostics->list
-        .count;
+    numberOfIEsCriticalityDiagnostics =
+        pdu->iEsCriticalityDiagnostics->list.count;
     iEsCriticalityDiagnostics =
         new IEsCriticalityDiagnostics[numberOfIEsCriticalityDiagnostics]();
     for (int i = 0; i < numberOfIEsCriticalityDiagnostics; i++) {
@@ -150,8 +148,8 @@ bool CriticalityDiagnostics::decodefrompdu(Ngap_CriticalityDiagnostics_t *pdu) {
           pdu->iEsCriticalityDiagnostics->list.array[i]);
     }
   }
-  if (!procedureCodeIsSet && !triggeringMessageIsSet
-      && !procedureCriticalityIsSet && !numberOfIEsCriticalityDiagnostics) {
+  if (!procedureCodeIsSet && !triggeringMessageIsSet &&
+      !procedureCriticalityIsSet && !numberOfIEsCriticalityDiagnostics) {
     return false;
   }
   return true;
@@ -159,35 +157,34 @@ bool CriticalityDiagnostics::decodefrompdu(Ngap_CriticalityDiagnostics_t *pdu) {
 
 //------------------------------------------------------------------------------
 bool CriticalityDiagnostics::getProcedureCodeValue(
-    Ngap_ProcedureCode_t &m_procedureCode) {
+    Ngap_ProcedureCode_t& m_procedureCode) {
   m_procedureCode = procedureCode;
   return procedureCodeIsSet;
 }
 
 //------------------------------------------------------------------------------
 bool CriticalityDiagnostics::getTriggeringMessageValue(
-    Ngap_TriggeringMessage_t &m_triggeringMessage) {
+    Ngap_TriggeringMessage_t& m_triggeringMessage) {
   m_triggeringMessage = triggeringMessage;
   return triggeringMessageIsSet;
 }
 
 //------------------------------------------------------------------------------
 bool CriticalityDiagnostics::getCriticalityValue(
-    Ngap_Criticality_t &m_procedureCriticality) {
+    Ngap_Criticality_t& m_procedureCriticality) {
   m_procedureCriticality = procedureCriticality;
   return procedureCriticalityIsSet;
 }
 
 //------------------------------------------------------------------------------
 bool CriticalityDiagnostics::getIEsCriticalityDiagnosticsList(
-    IEsCriticalityDiagnostics *&m_iEsCriticalityDiagnostics, int &num) {
+    IEsCriticalityDiagnostics*& m_iEsCriticalityDiagnostics, int& num) {
   m_iEsCriticalityDiagnostics = iEsCriticalityDiagnostics;
-  num = numberOfIEsCriticalityDiagnostics;
+  num                         = numberOfIEsCriticalityDiagnostics;
 
   if (numberOfIEsCriticalityDiagnostics)
     return true;
   else
     return false;
 }
-}
-
+}  // namespace ngap

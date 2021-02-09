@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,25 +37,25 @@ class SecurityModeComplete {
  public:
   SecurityModeComplete();
   ~SecurityModeComplete();
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(NasMmPlainHeader* header, uint8_t* buf, int len);
   void setHeader(uint8_t security_header_type);
 
   void setIMEISV(IMEISV_t imeisv);
   void setNAS_Message_Container(bstring value);
   void setNON_IMEISV(IMEISV_t imeisv);
 
-  bool getIMEISV(IMEISV_t &imeisv);
-  bool getNasMessageContainer(bstring &nas);
-  bool getNON_IMEISV(IMEISV_t &imeisv);
+  bool getIMEISV(IMEISV_t& imeisv);
+  bool getNasMessageContainer(bstring& nas);
+  bool getNON_IMEISV(IMEISV_t& imeisv);
+
  public:
-  NasMmPlainHeader *plain_header;
-  _5GSMobilityIdentity *ie_imeisv;
-  NAS_Message_Container *ie_nas_message_container;
-  _5GSMobilityIdentity *ie_non_imeisvpei;
+  NasMmPlainHeader* plain_header;
+  _5GSMobilityIdentity* ie_imeisv;
+  NAS_Message_Container* ie_nas_message_container;
+  _5GSMobilityIdentity* ie_non_imeisvpei;
 };
 
-}
+}  // namespace nas
 
 #endif
-

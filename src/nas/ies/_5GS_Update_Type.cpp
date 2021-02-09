@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -38,21 +38,21 @@ _5GS_Update_Type::_5GS_Update_Type(uint8_t iei) {
 }
 
 //------------------------------------------------------------------------------
-_5GS_Update_Type::_5GS_Update_Type() {
-}
+_5GS_Update_Type::_5GS_Update_Type() {}
 
 //------------------------------------------------------------------------------
-_5GS_Update_Type::~_5GS_Update_Type() {
-}
+_5GS_Update_Type::~_5GS_Update_Type() {}
 
 //------------------------------------------------------------------------------
-_5GS_Update_Type::_5GS_Update_Type(const uint8_t iei, uint8_t eps_PNB_CIoT, uint8_t _5gs_PNB_CIoT, bool ng_RAN, bool sms) {
-  _iei = iei;
-  EPS_PNB_CIoT = eps_PNB_CIoT;
+_5GS_Update_Type::_5GS_Update_Type(
+    const uint8_t iei, uint8_t eps_PNB_CIoT, uint8_t _5gs_PNB_CIoT, bool ng_RAN,
+    bool sms) {
+  _iei          = iei;
+  EPS_PNB_CIoT  = eps_PNB_CIoT;
   _5GS_PNB_CIoT = _5gs_PNB_CIoT;
-  NG_RAN = ng_RAN;
-  SMS = sms;
-  length = 3;
+  NG_RAN        = ng_RAN;
+  SMS           = sms;
+  length        = 3;
 }
 
 //------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ bool _5GS_Update_Type::getSMS() {
 }
 
 //------------------------------------------------------------------------------
-int _5GS_Update_Type::encode2buffer(uint8_t *buf, int len) {
+int _5GS_Update_Type::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding _5GS_Update_Type iei(0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
@@ -121,27 +121,29 @@ int _5GS_Update_Type::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int _5GS_Update_Type::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int _5GS_Update_Type::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding _5GS_Update_Type iei(0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
     decoded_size++;
   }
   uint8_t octet = 0;
-  EPS_PNB_CIoT = 0x00;
+  EPS_PNB_CIoT  = 0x00;
   _5GS_PNB_CIoT = 0x00;
-  NG_RAN = 0;
-  SMS = 0;
-  length = *(buf + decoded_size);
+  NG_RAN        = 0;
+  SMS           = 0;
+  length        = *(buf + decoded_size);
   decoded_size++;
   octet = *(buf + decoded_size);
   decoded_size++;
-  EPS_PNB_CIoT = (octet & 0x30) >> 4;
+  EPS_PNB_CIoT  = (octet & 0x30) >> 4;
   _5GS_PNB_CIoT = (octet & 0x0c) >> 2;
-  NG_RAN = (octet & 0x02) >> 1;
-  SMS = (octet & 0x01);
-  Logger::nas_mm().debug("decoded _5GS_Update_Type EPS_PNB_CIoT(0x%x),_5GS_PNB_CIoT(0x%x),NG_RAN(0x%x),SMS(0x%x)", EPS_PNB_CIoT, _5GS_PNB_CIoT, NG_RAN, SMS);
+  NG_RAN        = (octet & 0x02) >> 1;
+  SMS           = (octet & 0x01);
+  Logger::nas_mm().debug(
+      "decoded _5GS_Update_Type "
+      "EPS_PNB_CIoT(0x%x),_5GS_PNB_CIoT(0x%x),NG_RAN(0x%x),SMS(0x%x)",
+      EPS_PNB_CIoT, _5GS_PNB_CIoT, NG_RAN, SMS);
   Logger::nas_mm().debug("decoded _5GS_Update_Type len(%d)", decoded_size);
   return decoded_size;
 }
-

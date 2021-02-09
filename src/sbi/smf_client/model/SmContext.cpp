@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,1561 +10,1445 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "SmContext.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-SmContext::SmContext()
-{
-    m_Supi = utility::conversions::to_string_t("");
-    m_SupiIsSet = false;
-    m_UnauthenticatedSupi = false;
-    m_UnauthenticatedSupiIsSet = false;
-    m_Pei = utility::conversions::to_string_t("");
-    m_PeiIsSet = false;
-    m_Gpsi = utility::conversions::to_string_t("");
-    m_GpsiIsSet = false;
-    m_PduSessionId = 0;
-    m_Dnn = utility::conversions::to_string_t("");
-    m_HplmnSnssaiIsSet = false;
-    m_ServingNfId = utility::conversions::to_string_t("");
-    m_GuamiIsSet = false;
-    m_ServiceNameIsSet = false;
-    m_RatTypeIsSet = false;
-    m_SmContextStatusUri = utility::conversions::to_string_t("");
-    m_HSmfUri = utility::conversions::to_string_t("");
-    m_HSmfUriIsSet = false;
-    m_PcfId = utility::conversions::to_string_t("");
-    m_PcfIdIsSet = false;
-    m_SelModeIsSet = false;
-    m_TraceDataIsSet = false;
-    m_UdmGroupId = utility::conversions::to_string_t("");
-    m_UdmGroupIdIsSet = false;
-    m_RoutingIndicator = utility::conversions::to_string_t("");
-    m_RoutingIndicatorIsSet = false;
-    m_EpsInterworkingIndIsSet = false;
-    m_SscMode = utility::conversions::to_string_t("");
-    m_HSmfInstanceId = utility::conversions::to_string_t("");
-    m_HSmfInstanceIdIsSet = false;
-    m_EnablePauseCharging = false;
-    m_EnablePauseChargingIsSet = false;
-    m_UeIpv4Address = utility::conversions::to_string_t("");
-    m_UeIpv4AddressIsSet = false;
-    m_UeIpv6PrefixIsSet = false;
-    m_EpsPdnCnxInfoIsSet = false;
-    m_EpsBearerInfoIsSet = false;
-    m_MaxIntegrityProtectedDataRateIsSet = false;
-    m_AlwaysOnGranted = false;
-    m_AlwaysOnGrantedIsSet = false;
-    m_UpSecurityIsSet = false;
-    m_HSmfServiceInstanceId = utility::conversions::to_string_t("");
-    m_HSmfServiceInstanceIdIsSet = false;
-    m_RecoveryTime = utility::datetime();
-    m_RecoveryTimeIsSet = false;
+SmContext::SmContext() {
+  m_Supi                               = utility::conversions::to_string_t("");
+  m_SupiIsSet                          = false;
+  m_UnauthenticatedSupi                = false;
+  m_UnauthenticatedSupiIsSet           = false;
+  m_Pei                                = utility::conversions::to_string_t("");
+  m_PeiIsSet                           = false;
+  m_Gpsi                               = utility::conversions::to_string_t("");
+  m_GpsiIsSet                          = false;
+  m_PduSessionId                       = 0;
+  m_Dnn                                = utility::conversions::to_string_t("");
+  m_HplmnSnssaiIsSet                   = false;
+  m_ServingNfId                        = utility::conversions::to_string_t("");
+  m_GuamiIsSet                         = false;
+  m_ServiceNameIsSet                   = false;
+  m_RatTypeIsSet                       = false;
+  m_SmContextStatusUri                 = utility::conversions::to_string_t("");
+  m_HSmfUri                            = utility::conversions::to_string_t("");
+  m_HSmfUriIsSet                       = false;
+  m_PcfId                              = utility::conversions::to_string_t("");
+  m_PcfIdIsSet                         = false;
+  m_SelModeIsSet                       = false;
+  m_TraceDataIsSet                     = false;
+  m_UdmGroupId                         = utility::conversions::to_string_t("");
+  m_UdmGroupIdIsSet                    = false;
+  m_RoutingIndicator                   = utility::conversions::to_string_t("");
+  m_RoutingIndicatorIsSet              = false;
+  m_EpsInterworkingIndIsSet            = false;
+  m_SscMode                            = utility::conversions::to_string_t("");
+  m_HSmfInstanceId                     = utility::conversions::to_string_t("");
+  m_HSmfInstanceIdIsSet                = false;
+  m_EnablePauseCharging                = false;
+  m_EnablePauseChargingIsSet           = false;
+  m_UeIpv4Address                      = utility::conversions::to_string_t("");
+  m_UeIpv4AddressIsSet                 = false;
+  m_UeIpv6PrefixIsSet                  = false;
+  m_EpsPdnCnxInfoIsSet                 = false;
+  m_EpsBearerInfoIsSet                 = false;
+  m_MaxIntegrityProtectedDataRateIsSet = false;
+  m_AlwaysOnGranted                    = false;
+  m_AlwaysOnGrantedIsSet               = false;
+  m_UpSecurityIsSet                    = false;
+  m_HSmfServiceInstanceId              = utility::conversions::to_string_t("");
+  m_HSmfServiceInstanceIdIsSet         = false;
+  m_RecoveryTime                       = utility::datetime();
+  m_RecoveryTimeIsSet                  = false;
 }
 
-SmContext::~SmContext()
-{
+SmContext::~SmContext() {}
+
+void SmContext::validate() {
+  // TODO: implement validation
 }
 
-void SmContext::validate()
-{
-    // TODO: implement validation
+web::json::value SmContext::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  if (m_SupiIsSet) {
+    val[utility::conversions::to_string_t("supi")] = ModelBase::toJson(m_Supi);
+  }
+  if (m_UnauthenticatedSupiIsSet) {
+    val[utility::conversions::to_string_t("unauthenticatedSupi")] =
+        ModelBase::toJson(m_UnauthenticatedSupi);
+  }
+  if (m_PeiIsSet) {
+    val[utility::conversions::to_string_t("pei")] = ModelBase::toJson(m_Pei);
+  }
+  if (m_GpsiIsSet) {
+    val[utility::conversions::to_string_t("gpsi")] = ModelBase::toJson(m_Gpsi);
+  }
+  val[utility::conversions::to_string_t("pduSessionId")] =
+      ModelBase::toJson(m_PduSessionId);
+  val[utility::conversions::to_string_t("dnn")] = ModelBase::toJson(m_Dnn);
+  val[utility::conversions::to_string_t("sNssai")] =
+      ModelBase::toJson(m_SNssai);
+  if (m_HplmnSnssaiIsSet) {
+    val[utility::conversions::to_string_t("hplmnSnssai")] =
+        ModelBase::toJson(m_HplmnSnssai);
+  }
+  val[utility::conversions::to_string_t("servingNfId")] =
+      ModelBase::toJson(m_ServingNfId);
+  if (m_GuamiIsSet) {
+    val[utility::conversions::to_string_t("guami")] =
+        ModelBase::toJson(m_Guami);
+  }
+  if (m_ServiceNameIsSet) {
+    val[utility::conversions::to_string_t("serviceName")] =
+        ModelBase::toJson(m_ServiceName);
+  }
+  val[utility::conversions::to_string_t("servingNetwork")] =
+      ModelBase::toJson(m_ServingNetwork);
+  val[utility::conversions::to_string_t("anType")] =
+      ModelBase::toJson(m_AnType);
+  if (m_RatTypeIsSet) {
+    val[utility::conversions::to_string_t("ratType")] =
+        ModelBase::toJson(m_RatType);
+  }
+  val[utility::conversions::to_string_t("smContextStatusUri")] =
+      ModelBase::toJson(m_SmContextStatusUri);
+  if (m_HSmfUriIsSet) {
+    val[utility::conversions::to_string_t("hSmfUri")] =
+        ModelBase::toJson(m_HSmfUri);
+  }
+  if (m_PcfIdIsSet) {
+    val[utility::conversions::to_string_t("pcfId")] =
+        ModelBase::toJson(m_PcfId);
+  }
+  if (m_SelModeIsSet) {
+    val[utility::conversions::to_string_t("selMode")] =
+        ModelBase::toJson(m_SelMode);
+  }
+  if (m_TraceDataIsSet) {
+    val[utility::conversions::to_string_t("traceData")] =
+        ModelBase::toJson(m_TraceData);
+  }
+  if (m_UdmGroupIdIsSet) {
+    val[utility::conversions::to_string_t("udmGroupId")] =
+        ModelBase::toJson(m_UdmGroupId);
+  }
+  if (m_RoutingIndicatorIsSet) {
+    val[utility::conversions::to_string_t("routingIndicator")] =
+        ModelBase::toJson(m_RoutingIndicator);
+  }
+  if (m_EpsInterworkingIndIsSet) {
+    val[utility::conversions::to_string_t("epsInterworkingInd")] =
+        ModelBase::toJson(m_EpsInterworkingInd);
+  }
+  val[utility::conversions::to_string_t("pduSessionType")] =
+      ModelBase::toJson(m_PduSessionType);
+  val[utility::conversions::to_string_t("sscMode")] =
+      ModelBase::toJson(m_SscMode);
+  val[utility::conversions::to_string_t("sessionAmbr")] =
+      ModelBase::toJson(m_SessionAmbr);
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_QosFlowsSetupList) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+    val[utility::conversions::to_string_t("qosFlowsSetupList")] =
+        web::json::value::array(jsonArray);
+  }
+  if (m_HSmfInstanceIdIsSet) {
+    val[utility::conversions::to_string_t("hSmfInstanceId")] =
+        ModelBase::toJson(m_HSmfInstanceId);
+  }
+  if (m_EnablePauseChargingIsSet) {
+    val[utility::conversions::to_string_t("enablePauseCharging")] =
+        ModelBase::toJson(m_EnablePauseCharging);
+  }
+  if (m_UeIpv4AddressIsSet) {
+    val[utility::conversions::to_string_t("ueIpv4Address")] =
+        ModelBase::toJson(m_UeIpv4Address);
+  }
+  if (m_UeIpv6PrefixIsSet) {
+    val[utility::conversions::to_string_t("ueIpv6Prefix")] =
+        ModelBase::toJson(m_UeIpv6Prefix);
+  }
+  if (m_EpsPdnCnxInfoIsSet) {
+    val[utility::conversions::to_string_t("epsPdnCnxInfo")] =
+        ModelBase::toJson(m_EpsPdnCnxInfo);
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_EpsBearerInfo) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+    if (jsonArray.size() > 0) {
+      val[utility::conversions::to_string_t("epsBearerInfo")] =
+          web::json::value::array(jsonArray);
+    }
+  }
+  if (m_MaxIntegrityProtectedDataRateIsSet) {
+    val[utility::conversions::to_string_t("maxIntegrityProtectedDataRate")] =
+        ModelBase::toJson(m_MaxIntegrityProtectedDataRate);
+  }
+  if (m_AlwaysOnGrantedIsSet) {
+    val[utility::conversions::to_string_t("alwaysOnGranted")] =
+        ModelBase::toJson(m_AlwaysOnGranted);
+  }
+  if (m_UpSecurityIsSet) {
+    val[utility::conversions::to_string_t("upSecurity")] =
+        ModelBase::toJson(m_UpSecurity);
+  }
+  if (m_HSmfServiceInstanceIdIsSet) {
+    val[utility::conversions::to_string_t("hSmfServiceInstanceId")] =
+        ModelBase::toJson(m_HSmfServiceInstanceId);
+  }
+  if (m_RecoveryTimeIsSet) {
+    val[utility::conversions::to_string_t("recoveryTime")] =
+        ModelBase::toJson(m_RecoveryTime);
+  }
+
+  return val;
 }
 
-web::json::value SmContext::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    if(m_SupiIsSet)
-    {
-        val[utility::conversions::to_string_t("supi")] = ModelBase::toJson(m_Supi);
+void SmContext::fromJson(const web::json::value& val) {
+  if (val.has_field(utility::conversions::to_string_t("supi"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("supi"));
+    if (!fieldValue.is_null()) {
+      setSupi(ModelBase::stringFromJson(fieldValue));
     }
-    if(m_UnauthenticatedSupiIsSet)
-    {
-        val[utility::conversions::to_string_t("unauthenticatedSupi")] = ModelBase::toJson(m_UnauthenticatedSupi);
+  }
+  if (val.has_field(utility::conversions::to_string_t("unauthenticatedSupi"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("unauthenticatedSupi"));
+    if (!fieldValue.is_null()) {
+      setUnauthenticatedSupi(ModelBase::boolFromJson(fieldValue));
     }
-    if(m_PeiIsSet)
-    {
-        val[utility::conversions::to_string_t("pei")] = ModelBase::toJson(m_Pei);
+  }
+  if (val.has_field(utility::conversions::to_string_t("pei"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("pei"));
+    if (!fieldValue.is_null()) {
+      setPei(ModelBase::stringFromJson(fieldValue));
     }
-    if(m_GpsiIsSet)
-    {
-        val[utility::conversions::to_string_t("gpsi")] = ModelBase::toJson(m_Gpsi);
+  }
+  if (val.has_field(utility::conversions::to_string_t("gpsi"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("gpsi"));
+    if (!fieldValue.is_null()) {
+      setGpsi(ModelBase::stringFromJson(fieldValue));
     }
-    val[utility::conversions::to_string_t("pduSessionId")] = ModelBase::toJson(m_PduSessionId);
-    val[utility::conversions::to_string_t("dnn")] = ModelBase::toJson(m_Dnn);
-    val[utility::conversions::to_string_t("sNssai")] = ModelBase::toJson(m_SNssai);
-    if(m_HplmnSnssaiIsSet)
-    {
-        val[utility::conversions::to_string_t("hplmnSnssai")] = ModelBase::toJson(m_HplmnSnssai);
+  }
+  setPduSessionId(ModelBase::int32_tFromJson(
+      val.at(utility::conversions::to_string_t("pduSessionId"))));
+  setDnn(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("dnn"))));
+  std::shared_ptr<Snssai> newSNssai(new Snssai());
+  newSNssai->fromJson(val.at(utility::conversions::to_string_t("sNssai")));
+  setSNssai(newSNssai);
+  if (val.has_field(utility::conversions::to_string_t("hplmnSnssai"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("hplmnSnssai"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<Snssai> newItem(new Snssai());
+      newItem->fromJson(fieldValue);
+      setHplmnSnssai(newItem);
     }
-    val[utility::conversions::to_string_t("servingNfId")] = ModelBase::toJson(m_ServingNfId);
-    if(m_GuamiIsSet)
-    {
-        val[utility::conversions::to_string_t("guami")] = ModelBase::toJson(m_Guami);
+  }
+  setServingNfId(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("servingNfId"))));
+  if (val.has_field(utility::conversions::to_string_t("guami"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("guami"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<Guami> newItem(new Guami());
+      newItem->fromJson(fieldValue);
+      setGuami(newItem);
     }
-    if(m_ServiceNameIsSet)
-    {
-        val[utility::conversions::to_string_t("serviceName")] = ModelBase::toJson(m_ServiceName);
+  }
+  if (val.has_field(utility::conversions::to_string_t("serviceName"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("serviceName"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<ServiceName> newItem(new ServiceName());
+      newItem->fromJson(fieldValue);
+      setServiceName(newItem);
     }
-    val[utility::conversions::to_string_t("servingNetwork")] = ModelBase::toJson(m_ServingNetwork);
-    val[utility::conversions::to_string_t("anType")] = ModelBase::toJson(m_AnType);
-    if(m_RatTypeIsSet)
-    {
-        val[utility::conversions::to_string_t("ratType")] = ModelBase::toJson(m_RatType);
+  }
+  std::shared_ptr<PlmnId> newServingNetwork(new PlmnId());
+  newServingNetwork->fromJson(
+      val.at(utility::conversions::to_string_t("servingNetwork")));
+  setServingNetwork(newServingNetwork);
+  std::shared_ptr<AccessType> newAnType(new AccessType());
+  newAnType->fromJson(val.at(utility::conversions::to_string_t("anType")));
+  setAnType(newAnType);
+  if (val.has_field(utility::conversions::to_string_t("ratType"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("ratType"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<RatType> newItem(new RatType());
+      newItem->fromJson(fieldValue);
+      setRatType(newItem);
     }
-    val[utility::conversions::to_string_t("smContextStatusUri")] = ModelBase::toJson(m_SmContextStatusUri);
-    if(m_HSmfUriIsSet)
-    {
-        val[utility::conversions::to_string_t("hSmfUri")] = ModelBase::toJson(m_HSmfUri);
+  }
+  setSmContextStatusUri(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("smContextStatusUri"))));
+  if (val.has_field(utility::conversions::to_string_t("hSmfUri"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("hSmfUri"));
+    if (!fieldValue.is_null()) {
+      setHSmfUri(ModelBase::stringFromJson(fieldValue));
     }
-    if(m_PcfIdIsSet)
-    {
-        val[utility::conversions::to_string_t("pcfId")] = ModelBase::toJson(m_PcfId);
+  }
+  if (val.has_field(utility::conversions::to_string_t("pcfId"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("pcfId"));
+    if (!fieldValue.is_null()) {
+      setPcfId(ModelBase::stringFromJson(fieldValue));
     }
-    if(m_SelModeIsSet)
-    {
-        val[utility::conversions::to_string_t("selMode")] = ModelBase::toJson(m_SelMode);
+  }
+  if (val.has_field(utility::conversions::to_string_t("selMode"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("selMode"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<DnnSelectionMode> newItem(new DnnSelectionMode());
+      newItem->fromJson(fieldValue);
+      setSelMode(newItem);
     }
-    if(m_TraceDataIsSet)
-    {
-        val[utility::conversions::to_string_t("traceData")] = ModelBase::toJson(m_TraceData);
+  }
+  if (val.has_field(utility::conversions::to_string_t("traceData"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("traceData"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<TraceData> newItem(new TraceData());
+      newItem->fromJson(fieldValue);
+      setTraceData(newItem);
     }
-    if(m_UdmGroupIdIsSet)
-    {
-        val[utility::conversions::to_string_t("udmGroupId")] = ModelBase::toJson(m_UdmGroupId);
+  }
+  if (val.has_field(utility::conversions::to_string_t("udmGroupId"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("udmGroupId"));
+    if (!fieldValue.is_null()) {
+      setUdmGroupId(ModelBase::stringFromJson(fieldValue));
     }
-    if(m_RoutingIndicatorIsSet)
-    {
-        val[utility::conversions::to_string_t("routingIndicator")] = ModelBase::toJson(m_RoutingIndicator);
+  }
+  if (val.has_field(utility::conversions::to_string_t("routingIndicator"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("routingIndicator"));
+    if (!fieldValue.is_null()) {
+      setRoutingIndicator(ModelBase::stringFromJson(fieldValue));
     }
-    if(m_EpsInterworkingIndIsSet)
-    {
-        val[utility::conversions::to_string_t("epsInterworkingInd")] = ModelBase::toJson(m_EpsInterworkingInd);
+  }
+  if (val.has_field(utility::conversions::to_string_t("epsInterworkingInd"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("epsInterworkingInd"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<EpsInterworkingIndication> newItem(
+          new EpsInterworkingIndication());
+      newItem->fromJson(fieldValue);
+      setEpsInterworkingInd(newItem);
     }
-    val[utility::conversions::to_string_t("pduSessionType")] = ModelBase::toJson(m_PduSessionType);
-    val[utility::conversions::to_string_t("sscMode")] = ModelBase::toJson(m_SscMode);
-    val[utility::conversions::to_string_t("sessionAmbr")] = ModelBase::toJson(m_SessionAmbr);
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_QosFlowsSetupList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
+  }
+  std::shared_ptr<PduSessionType> newPduSessionType(new PduSessionType());
+  newPduSessionType->fromJson(
+      val.at(utility::conversions::to_string_t("pduSessionType")));
+  setPduSessionType(newPduSessionType);
+  setSscMode(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("sscMode"))));
+  std::shared_ptr<Ambr> newSessionAmbr(new Ambr());
+  newSessionAmbr->fromJson(
+      val.at(utility::conversions::to_string_t("sessionAmbr")));
+  setSessionAmbr(newSessionAmbr);
+  {
+    m_QosFlowsSetupList.clear();
+    std::vector<web::json::value> jsonArray;
+    for (auto& item :
+         val.at(utility::conversions::to_string_t("qosFlowsSetupList"))
+             .as_array()) {
+      if (item.is_null()) {
+        m_QosFlowsSetupList.push_back(
+            std::shared_ptr<QosFlowSetupItem>(nullptr));
+      } else {
+        std::shared_ptr<QosFlowSetupItem> newItem(new QosFlowSetupItem());
+        newItem->fromJson(item);
+        m_QosFlowsSetupList.push_back(newItem);
+      }
+    }
+  }
+  if (val.has_field(utility::conversions::to_string_t("hSmfInstanceId"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("hSmfInstanceId"));
+    if (!fieldValue.is_null()) {
+      setHSmfInstanceId(ModelBase::stringFromJson(fieldValue));
+    }
+  }
+  if (val.has_field(utility::conversions::to_string_t("enablePauseCharging"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("enablePauseCharging"));
+    if (!fieldValue.is_null()) {
+      setEnablePauseCharging(ModelBase::boolFromJson(fieldValue));
+    }
+  }
+  if (val.has_field(utility::conversions::to_string_t("ueIpv4Address"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("ueIpv4Address"));
+    if (!fieldValue.is_null()) {
+      setUeIpv4Address(ModelBase::stringFromJson(fieldValue));
+    }
+  }
+  if (val.has_field(utility::conversions::to_string_t("ueIpv6Prefix"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("ueIpv6Prefix"));
+    if (!fieldValue.is_null()) {
+      // std::shared_ptr<utility::string_t> newItem(new Ipv6Prefix());
+      // newItem->fromJson(fieldValue);
+      setUeIpv6Prefix(ModelBase::stringFromJson(fieldValue));
+    }
+  }
+  if (val.has_field(utility::conversions::to_string_t("epsPdnCnxInfo"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("epsPdnCnxInfo"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<EpsPdnCnxInfo> newItem(new EpsPdnCnxInfo());
+      newItem->fromJson(fieldValue);
+      setEpsPdnCnxInfo(newItem);
+    }
+  }
+  {
+    m_EpsBearerInfo.clear();
+    std::vector<web::json::value> jsonArray;
+    if (val.has_field(utility::conversions::to_string_t("epsBearerInfo"))) {
+      for (auto& item :
+           val.at(utility::conversions::to_string_t("epsBearerInfo"))
+               .as_array()) {
+        if (item.is_null()) {
+          m_EpsBearerInfo.push_back(std::shared_ptr<EpsBearerInfo>(nullptr));
+        } else {
+          std::shared_ptr<EpsBearerInfo> newItem(new EpsBearerInfo());
+          newItem->fromJson(item);
+          m_EpsBearerInfo.push_back(newItem);
         }
-        val[utility::conversions::to_string_t("qosFlowsSetupList")] = web::json::value::array(jsonArray);
+      }
     }
-    if(m_HSmfInstanceIdIsSet)
-    {
-        val[utility::conversions::to_string_t("hSmfInstanceId")] = ModelBase::toJson(m_HSmfInstanceId);
+  }
+  if (val.has_field(
+          utility::conversions::to_string_t("maxIntegrityProtectedDataRate"))) {
+    const web::json::value& fieldValue = val.at(
+        utility::conversions::to_string_t("maxIntegrityProtectedDataRate"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<MaxIntegrityProtectedDataRate> newItem(
+          new MaxIntegrityProtectedDataRate());
+      newItem->fromJson(fieldValue);
+      setMaxIntegrityProtectedDataRate(newItem);
     }
-    if(m_EnablePauseChargingIsSet)
-    {
-        val[utility::conversions::to_string_t("enablePauseCharging")] = ModelBase::toJson(m_EnablePauseCharging);
+  }
+  if (val.has_field(utility::conversions::to_string_t("alwaysOnGranted"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("alwaysOnGranted"));
+    if (!fieldValue.is_null()) {
+      setAlwaysOnGranted(ModelBase::boolFromJson(fieldValue));
     }
-    if(m_UeIpv4AddressIsSet)
-    {
-        val[utility::conversions::to_string_t("ueIpv4Address")] = ModelBase::toJson(m_UeIpv4Address);
+  }
+  if (val.has_field(utility::conversions::to_string_t("upSecurity"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("upSecurity"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<UpSecurity> newItem(new UpSecurity());
+      newItem->fromJson(fieldValue);
+      setUpSecurity(newItem);
     }
-    if(m_UeIpv6PrefixIsSet)
-    {
-        val[utility::conversions::to_string_t("ueIpv6Prefix")] = ModelBase::toJson(m_UeIpv6Prefix);
+  }
+  if (val.has_field(
+          utility::conversions::to_string_t("hSmfServiceInstanceId"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("hSmfServiceInstanceId"));
+    if (!fieldValue.is_null()) {
+      setHSmfServiceInstanceId(ModelBase::stringFromJson(fieldValue));
     }
-    if(m_EpsPdnCnxInfoIsSet)
-    {
-        val[utility::conversions::to_string_t("epsPdnCnxInfo")] = ModelBase::toJson(m_EpsPdnCnxInfo);
+  }
+  if (val.has_field(utility::conversions::to_string_t("recoveryTime"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("recoveryTime"));
+    if (!fieldValue.is_null()) {
+      setRecoveryTime(ModelBase::dateFromJson(fieldValue));
     }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_EpsBearerInfo )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
+  }
+}
+
+void SmContext::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  if (m_SupiIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("supi"), m_Supi));
+  }
+  if (m_UnauthenticatedSupiIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("unauthenticatedSupi"),
+        m_UnauthenticatedSupi));
+  }
+  if (m_PeiIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("pei"), m_Pei));
+  }
+  if (m_GpsiIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("gpsi"), m_Gpsi));
+  }
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("pduSessionId"),
+      m_PduSessionId));
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("dnn"), m_Dnn));
+  m_SNssai->toMultipart(
+      multipart, utility::conversions::to_string_t("sNssai."));
+  if (m_HplmnSnssaiIsSet) {
+    if (m_HplmnSnssai.get()) {
+      m_HplmnSnssai->toMultipart(
+          multipart, utility::conversions::to_string_t("hplmnSnssai."));
+    }
+  }
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("servingNfId"),
+      m_ServingNfId));
+  if (m_GuamiIsSet) {
+    if (m_Guami.get()) {
+      m_Guami->toMultipart(
+          multipart, utility::conversions::to_string_t("guami."));
+    }
+  }
+  if (m_ServiceNameIsSet) {
+    if (m_ServiceName.get()) {
+      m_ServiceName->toMultipart(
+          multipart, utility::conversions::to_string_t("serviceName."));
+    }
+  }
+  m_ServingNetwork->toMultipart(
+      multipart, utility::conversions::to_string_t("servingNetwork."));
+  m_AnType->toMultipart(
+      multipart, utility::conversions::to_string_t("anType."));
+  if (m_RatTypeIsSet) {
+    if (m_RatType.get()) {
+      m_RatType->toMultipart(
+          multipart, utility::conversions::to_string_t("ratType."));
+    }
+  }
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("smContextStatusUri"),
+      m_SmContextStatusUri));
+  if (m_HSmfUriIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("hSmfUri"), m_HSmfUri));
+  }
+  if (m_PcfIdIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("pcfId"), m_PcfId));
+  }
+  if (m_SelModeIsSet) {
+    if (m_SelMode.get()) {
+      m_SelMode->toMultipart(
+          multipart, utility::conversions::to_string_t("selMode."));
+    }
+  }
+  if (m_TraceDataIsSet) {
+    if (m_TraceData.get()) {
+      m_TraceData->toMultipart(
+          multipart, utility::conversions::to_string_t("traceData."));
+    }
+  }
+  if (m_UdmGroupIdIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("udmGroupId"),
+        m_UdmGroupId));
+  }
+  if (m_RoutingIndicatorIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("routingIndicator"),
+        m_RoutingIndicator));
+  }
+  if (m_EpsInterworkingIndIsSet) {
+    if (m_EpsInterworkingInd.get()) {
+      m_EpsInterworkingInd->toMultipart(
+          multipart, utility::conversions::to_string_t("epsInterworkingInd."));
+    }
+  }
+  m_PduSessionType->toMultipart(
+      multipart, utility::conversions::to_string_t("pduSessionType."));
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("sscMode"), m_SscMode));
+  m_SessionAmbr->toMultipart(
+      multipart, utility::conversions::to_string_t("sessionAmbr."));
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_QosFlowsSetupList) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("qosFlowsSetupList"),
+        web::json::value::array(jsonArray),
+        utility::conversions::to_string_t("application/json")));
+  }
+  if (m_HSmfInstanceIdIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("hSmfInstanceId"),
+        m_HSmfInstanceId));
+  }
+  if (m_EnablePauseChargingIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("enablePauseCharging"),
+        m_EnablePauseCharging));
+  }
+  if (m_UeIpv4AddressIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("ueIpv4Address"),
+        m_UeIpv4Address));
+  }
+  if (m_UeIpv6PrefixIsSet) {
+    // if (m_UeIpv6Prefix.get())
+    // {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("ueIpv6Prefix"),
+        m_UeIpv6Prefix));
+    // }
+  }
+  if (m_EpsPdnCnxInfoIsSet) {
+    if (m_EpsPdnCnxInfo.get()) {
+      m_EpsPdnCnxInfo->toMultipart(
+          multipart, utility::conversions::to_string_t("epsPdnCnxInfo."));
+    }
+  }
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_EpsBearerInfo) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+
+    if (jsonArray.size() > 0) {
+      multipart->add(ModelBase::toHttpContent(
+          namePrefix + utility::conversions::to_string_t("epsBearerInfo"),
+          web::json::value::array(jsonArray),
+          utility::conversions::to_string_t("application/json")));
+    }
+  }
+  if (m_MaxIntegrityProtectedDataRateIsSet) {
+    if (m_MaxIntegrityProtectedDataRate.get()) {
+      m_MaxIntegrityProtectedDataRate->toMultipart(
+          multipart,
+          utility::conversions::to_string_t("maxIntegrityProtectedDataRate."));
+    }
+  }
+  if (m_AlwaysOnGrantedIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("alwaysOnGranted"),
+        m_AlwaysOnGranted));
+  }
+  if (m_UpSecurityIsSet) {
+    if (m_UpSecurity.get()) {
+      m_UpSecurity->toMultipart(
+          multipart, utility::conversions::to_string_t("upSecurity."));
+    }
+  }
+  if (m_HSmfServiceInstanceIdIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("hSmfServiceInstanceId"),
+        m_HSmfServiceInstanceId));
+  }
+  if (m_RecoveryTimeIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("recoveryTime"),
+        m_RecoveryTime));
+  }
+}
+
+void SmContext::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  if (multipart->hasContent(utility::conversions::to_string_t("supi"))) {
+    setSupi(ModelBase::stringFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("supi"))));
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("unauthenticatedSupi"))) {
+    setUnauthenticatedSupi(ModelBase::boolFromHttpContent(multipart->getContent(
+        utility::conversions::to_string_t("unauthenticatedSupi"))));
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("pei"))) {
+    setPei(ModelBase::stringFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("pei"))));
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("gpsi"))) {
+    setGpsi(ModelBase::stringFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("gpsi"))));
+  }
+  setPduSessionId(ModelBase::int32_tFromHttpContent(multipart->getContent(
+      utility::conversions::to_string_t("pduSessionId"))));
+  setDnn(ModelBase::stringFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("dnn"))));
+  std::shared_ptr<Snssai> newSNssai(new Snssai());
+  newSNssai->fromMultiPart(
+      multipart, utility::conversions::to_string_t("sNssai."));
+  setSNssai(newSNssai);
+  if (multipart->hasContent(utility::conversions::to_string_t("hplmnSnssai"))) {
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("hplmnSnssai"))) {
+      std::shared_ptr<Snssai> newItem(new Snssai());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("hplmnSnssai."));
+      setHplmnSnssai(newItem);
+    }
+  }
+  setServingNfId(ModelBase::stringFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("servingNfId"))));
+  if (multipart->hasContent(utility::conversions::to_string_t("guami"))) {
+    if (multipart->hasContent(utility::conversions::to_string_t("guami"))) {
+      std::shared_ptr<Guami> newItem(new Guami());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("guami."));
+      setGuami(newItem);
+    }
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("serviceName"))) {
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("serviceName"))) {
+      std::shared_ptr<ServiceName> newItem(new ServiceName());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("serviceName."));
+      setServiceName(newItem);
+    }
+  }
+  std::shared_ptr<PlmnId> newServingNetwork(new PlmnId());
+  newServingNetwork->fromMultiPart(
+      multipart, utility::conversions::to_string_t("servingNetwork."));
+  setServingNetwork(newServingNetwork);
+  std::shared_ptr<AccessType> newAnType(new AccessType());
+  newAnType->fromMultiPart(
+      multipart, utility::conversions::to_string_t("anType."));
+  setAnType(newAnType);
+  if (multipart->hasContent(utility::conversions::to_string_t("ratType"))) {
+    if (multipart->hasContent(utility::conversions::to_string_t("ratType"))) {
+      std::shared_ptr<RatType> newItem(new RatType());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("ratType."));
+      setRatType(newItem);
+    }
+  }
+  setSmContextStatusUri(ModelBase::stringFromHttpContent(multipart->getContent(
+      utility::conversions::to_string_t("smContextStatusUri"))));
+  if (multipart->hasContent(utility::conversions::to_string_t("hSmfUri"))) {
+    setHSmfUri(ModelBase::stringFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("hSmfUri"))));
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("pcfId"))) {
+    setPcfId(ModelBase::stringFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("pcfId"))));
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("selMode"))) {
+    if (multipart->hasContent(utility::conversions::to_string_t("selMode"))) {
+      std::shared_ptr<DnnSelectionMode> newItem(new DnnSelectionMode());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("selMode."));
+      setSelMode(newItem);
+    }
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("traceData"))) {
+    if (multipart->hasContent(utility::conversions::to_string_t("traceData"))) {
+      std::shared_ptr<TraceData> newItem(new TraceData());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("traceData."));
+      setTraceData(newItem);
+    }
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("udmGroupId"))) {
+    setUdmGroupId(ModelBase::stringFromHttpContent(multipart->getContent(
+        utility::conversions::to_string_t("udmGroupId"))));
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("routingIndicator"))) {
+    setRoutingIndicator(ModelBase::stringFromHttpContent(multipart->getContent(
+        utility::conversions::to_string_t("routingIndicator"))));
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("epsInterworkingInd"))) {
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("epsInterworkingInd"))) {
+      std::shared_ptr<EpsInterworkingIndication> newItem(
+          new EpsInterworkingIndication());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("epsInterworkingInd."));
+      setEpsInterworkingInd(newItem);
+    }
+  }
+  std::shared_ptr<PduSessionType> newPduSessionType(new PduSessionType());
+  newPduSessionType->fromMultiPart(
+      multipart, utility::conversions::to_string_t("pduSessionType."));
+  setPduSessionType(newPduSessionType);
+  setSscMode(ModelBase::stringFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("sscMode"))));
+  std::shared_ptr<Ambr> newSessionAmbr(new Ambr());
+  newSessionAmbr->fromMultiPart(
+      multipart, utility::conversions::to_string_t("sessionAmbr."));
+  setSessionAmbr(newSessionAmbr);
+  {
+    m_QosFlowsSetupList.clear();
+
+    web::json::value jsonArray = web::json::value::parse(
+        ModelBase::stringFromHttpContent(multipart->getContent(
+            utility::conversions::to_string_t("qosFlowsSetupList"))));
+    for (auto& item : jsonArray.as_array()) {
+      if (item.is_null()) {
+        m_QosFlowsSetupList.push_back(
+            std::shared_ptr<QosFlowSetupItem>(nullptr));
+      } else {
+        std::shared_ptr<QosFlowSetupItem> newItem(new QosFlowSetupItem());
+        newItem->fromJson(item);
+        m_QosFlowsSetupList.push_back(newItem);
+      }
+    }
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("hSmfInstanceId"))) {
+    setHSmfInstanceId(ModelBase::stringFromHttpContent(multipart->getContent(
+        utility::conversions::to_string_t("hSmfInstanceId"))));
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("enablePauseCharging"))) {
+    setEnablePauseCharging(ModelBase::boolFromHttpContent(multipart->getContent(
+        utility::conversions::to_string_t("enablePauseCharging"))));
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("ueIpv4Address"))) {
+    setUeIpv4Address(ModelBase::stringFromHttpContent(multipart->getContent(
+        utility::conversions::to_string_t("ueIpv4Address"))));
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("ueIpv6Prefix"))) {
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("ueIpv6Prefix"))) {
+      // std::shared_ptr<utility::string_t> newItem(new Ipv6Prefix());
+      // newItem->fromMultiPart(multipart,
+      // utility::conversions::to_string_t("ueIpv6Prefix."));
+      setUeIpv6Prefix(ModelBase::stringFromHttpContent(multipart->getContent(
+          utility::conversions::to_string_t("ueIpv6Prefix"))));
+    }
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("epsPdnCnxInfo"))) {
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("epsPdnCnxInfo"))) {
+      std::shared_ptr<EpsPdnCnxInfo> newItem(new EpsPdnCnxInfo());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("epsPdnCnxInfo."));
+      setEpsPdnCnxInfo(newItem);
+    }
+  }
+  {
+    m_EpsBearerInfo.clear();
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("epsBearerInfo"))) {
+      web::json::value jsonArray = web::json::value::parse(
+          ModelBase::stringFromHttpContent(multipart->getContent(
+              utility::conversions::to_string_t("epsBearerInfo"))));
+      for (auto& item : jsonArray.as_array()) {
+        if (item.is_null()) {
+          m_EpsBearerInfo.push_back(std::shared_ptr<EpsBearerInfo>(nullptr));
+        } else {
+          std::shared_ptr<EpsBearerInfo> newItem(new EpsBearerInfo());
+          newItem->fromJson(item);
+          m_EpsBearerInfo.push_back(newItem);
         }
-        if(jsonArray.size() > 0)
-        {
-            val[utility::conversions::to_string_t("epsBearerInfo")] = web::json::value::array(jsonArray);
-        }
+      }
     }
-    if(m_MaxIntegrityProtectedDataRateIsSet)
-    {
-        val[utility::conversions::to_string_t("maxIntegrityProtectedDataRate")] = ModelBase::toJson(m_MaxIntegrityProtectedDataRate);
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("maxIntegrityProtectedDataRate"))) {
+    if (multipart->hasContent(utility::conversions::to_string_t(
+            "maxIntegrityProtectedDataRate"))) {
+      std::shared_ptr<MaxIntegrityProtectedDataRate> newItem(
+          new MaxIntegrityProtectedDataRate());
+      newItem->fromMultiPart(
+          multipart,
+          utility::conversions::to_string_t("maxIntegrityProtectedDataRate."));
+      setMaxIntegrityProtectedDataRate(newItem);
     }
-    if(m_AlwaysOnGrantedIsSet)
-    {
-        val[utility::conversions::to_string_t("alwaysOnGranted")] = ModelBase::toJson(m_AlwaysOnGranted);
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("alwaysOnGranted"))) {
+    setAlwaysOnGranted(ModelBase::boolFromHttpContent(multipart->getContent(
+        utility::conversions::to_string_t("alwaysOnGranted"))));
+  }
+  if (multipart->hasContent(utility::conversions::to_string_t("upSecurity"))) {
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("upSecurity"))) {
+      std::shared_ptr<UpSecurity> newItem(new UpSecurity());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("upSecurity."));
+      setUpSecurity(newItem);
     }
-    if(m_UpSecurityIsSet)
-    {
-        val[utility::conversions::to_string_t("upSecurity")] = ModelBase::toJson(m_UpSecurity);
-    }
-    if(m_HSmfServiceInstanceIdIsSet)
-    {
-        val[utility::conversions::to_string_t("hSmfServiceInstanceId")] = ModelBase::toJson(m_HSmfServiceInstanceId);
-    }
-    if(m_RecoveryTimeIsSet)
-    {
-        val[utility::conversions::to_string_t("recoveryTime")] = ModelBase::toJson(m_RecoveryTime);
-    }
-
-    return val;
-}
-
-void SmContext::fromJson(const web::json::value& val)
-{
-    if(val.has_field(utility::conversions::to_string_t("supi")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("supi"));
-        if(!fieldValue.is_null())
-        {
-            setSupi(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("unauthenticatedSupi")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("unauthenticatedSupi"));
-        if(!fieldValue.is_null())
-        {
-            setUnauthenticatedSupi(ModelBase::boolFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("pei")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("pei"));
-        if(!fieldValue.is_null())
-        {
-            setPei(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("gpsi")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("gpsi"));
-        if(!fieldValue.is_null())
-        {
-            setGpsi(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    setPduSessionId(ModelBase::int32_tFromJson(val.at(utility::conversions::to_string_t("pduSessionId"))));
-    setDnn(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("dnn"))));
-    std::shared_ptr<Snssai> newSNssai(new Snssai());
-    newSNssai->fromJson(val.at(utility::conversions::to_string_t("sNssai")));
-    setSNssai( newSNssai );
-    if(val.has_field(utility::conversions::to_string_t("hplmnSnssai")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("hplmnSnssai"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<Snssai> newItem(new Snssai());
-            newItem->fromJson(fieldValue);
-            setHplmnSnssai( newItem );
-        }
-    }
-    setServingNfId(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("servingNfId"))));
-    if(val.has_field(utility::conversions::to_string_t("guami")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("guami"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<Guami> newItem(new Guami());
-            newItem->fromJson(fieldValue);
-            setGuami( newItem );
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("serviceName")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("serviceName"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<ServiceName> newItem(new ServiceName());
-            newItem->fromJson(fieldValue);
-            setServiceName( newItem );
-        }
-    }
-    std::shared_ptr<PlmnId> newServingNetwork(new PlmnId());
-    newServingNetwork->fromJson(val.at(utility::conversions::to_string_t("servingNetwork")));
-    setServingNetwork( newServingNetwork );
-    std::shared_ptr<AccessType> newAnType(new AccessType());
-    newAnType->fromJson(val.at(utility::conversions::to_string_t("anType")));
-    setAnType( newAnType );
-    if(val.has_field(utility::conversions::to_string_t("ratType")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("ratType"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<RatType> newItem(new RatType());
-            newItem->fromJson(fieldValue);
-            setRatType( newItem );
-        }
-    }
-    setSmContextStatusUri(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("smContextStatusUri"))));
-    if(val.has_field(utility::conversions::to_string_t("hSmfUri")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("hSmfUri"));
-        if(!fieldValue.is_null())
-        {
-            setHSmfUri(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("pcfId")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("pcfId"));
-        if(!fieldValue.is_null())
-        {
-            setPcfId(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("selMode")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("selMode"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<DnnSelectionMode> newItem(new DnnSelectionMode());
-            newItem->fromJson(fieldValue);
-            setSelMode( newItem );
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("traceData")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("traceData"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<TraceData> newItem(new TraceData());
-            newItem->fromJson(fieldValue);
-            setTraceData( newItem );
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("udmGroupId")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("udmGroupId"));
-        if(!fieldValue.is_null())
-        {
-            setUdmGroupId(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("routingIndicator")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("routingIndicator"));
-        if(!fieldValue.is_null())
-        {
-            setRoutingIndicator(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("epsInterworkingInd")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("epsInterworkingInd"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<EpsInterworkingIndication> newItem(new EpsInterworkingIndication());
-            newItem->fromJson(fieldValue);
-            setEpsInterworkingInd( newItem );
-        }
-    }
-    std::shared_ptr<PduSessionType> newPduSessionType(new PduSessionType());
-    newPduSessionType->fromJson(val.at(utility::conversions::to_string_t("pduSessionType")));
-    setPduSessionType( newPduSessionType );
-    setSscMode(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("sscMode"))));
-    std::shared_ptr<Ambr> newSessionAmbr(new Ambr());
-    newSessionAmbr->fromJson(val.at(utility::conversions::to_string_t("sessionAmbr")));
-    setSessionAmbr( newSessionAmbr );
-    {
-        m_QosFlowsSetupList.clear();
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : val.at(utility::conversions::to_string_t("qosFlowsSetupList")).as_array() )
-        {
-            if(item.is_null())
-            {
-                m_QosFlowsSetupList.push_back( std::shared_ptr<QosFlowSetupItem>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<QosFlowSetupItem> newItem(new QosFlowSetupItem());
-                newItem->fromJson(item);
-                m_QosFlowsSetupList.push_back( newItem );
-            }
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("hSmfInstanceId")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("hSmfInstanceId"));
-        if(!fieldValue.is_null())
-        {
-            setHSmfInstanceId(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("enablePauseCharging")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("enablePauseCharging"));
-        if(!fieldValue.is_null())
-        {
-            setEnablePauseCharging(ModelBase::boolFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("ueIpv4Address")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("ueIpv4Address"));
-        if(!fieldValue.is_null())
-        {
-            setUeIpv4Address(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("ueIpv6Prefix")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("ueIpv6Prefix"));
-        if(!fieldValue.is_null())
-        {
-            //std::shared_ptr<utility::string_t> newItem(new Ipv6Prefix());
-            //newItem->fromJson(fieldValue);
-            setUeIpv6Prefix(ModelBase::stringFromJson(fieldValue) );
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("epsPdnCnxInfo")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("epsPdnCnxInfo"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<EpsPdnCnxInfo> newItem(new EpsPdnCnxInfo());
-            newItem->fromJson(fieldValue);
-            setEpsPdnCnxInfo( newItem );
-        }
-    }
-    {
-        m_EpsBearerInfo.clear();
-        std::vector<web::json::value> jsonArray;
-        if(val.has_field(utility::conversions::to_string_t("epsBearerInfo")))
-        {
-        for( auto& item : val.at(utility::conversions::to_string_t("epsBearerInfo")).as_array() )
-        {
-            if(item.is_null())
-            {
-                m_EpsBearerInfo.push_back( std::shared_ptr<EpsBearerInfo>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<EpsBearerInfo> newItem(new EpsBearerInfo());
-                newItem->fromJson(item);
-                m_EpsBearerInfo.push_back( newItem );
-            }
-        }
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("maxIntegrityProtectedDataRate")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("maxIntegrityProtectedDataRate"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<MaxIntegrityProtectedDataRate> newItem(new MaxIntegrityProtectedDataRate());
-            newItem->fromJson(fieldValue);
-            setMaxIntegrityProtectedDataRate( newItem );
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("alwaysOnGranted")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("alwaysOnGranted"));
-        if(!fieldValue.is_null())
-        {
-            setAlwaysOnGranted(ModelBase::boolFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("upSecurity")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("upSecurity"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<UpSecurity> newItem(new UpSecurity());
-            newItem->fromJson(fieldValue);
-            setUpSecurity( newItem );
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("hSmfServiceInstanceId")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("hSmfServiceInstanceId"));
-        if(!fieldValue.is_null())
-        {
-            setHSmfServiceInstanceId(ModelBase::stringFromJson(fieldValue));
-        }
-    }
-    if(val.has_field(utility::conversions::to_string_t("recoveryTime")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("recoveryTime"));
-        if(!fieldValue.is_null())
-        {
-            setRecoveryTime(ModelBase::dateFromJson(fieldValue));
-        }
-    }
-}
-
-void SmContext::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    if(m_SupiIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("supi"), m_Supi));
-    }
-    if(m_UnauthenticatedSupiIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("unauthenticatedSupi"), m_UnauthenticatedSupi));
-    }
-    if(m_PeiIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("pei"), m_Pei));
-    }
-    if(m_GpsiIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("gpsi"), m_Gpsi));
-    }
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("pduSessionId"), m_PduSessionId));
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("dnn"), m_Dnn));
-    m_SNssai->toMultipart(multipart, utility::conversions::to_string_t("sNssai."));
-    if(m_HplmnSnssaiIsSet)
-    {
-        if (m_HplmnSnssai.get())
-        {
-            m_HplmnSnssai->toMultipart(multipart, utility::conversions::to_string_t("hplmnSnssai."));
-        }
-    }
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("servingNfId"), m_ServingNfId));
-    if(m_GuamiIsSet)
-    {
-        if (m_Guami.get())
-        {
-            m_Guami->toMultipart(multipart, utility::conversions::to_string_t("guami."));
-        }
-    }
-    if(m_ServiceNameIsSet)
-    {
-        if (m_ServiceName.get())
-        {
-            m_ServiceName->toMultipart(multipart, utility::conversions::to_string_t("serviceName."));
-        }
-    }
-    m_ServingNetwork->toMultipart(multipart, utility::conversions::to_string_t("servingNetwork."));
-    m_AnType->toMultipart(multipart, utility::conversions::to_string_t("anType."));
-    if(m_RatTypeIsSet)
-    {
-        if (m_RatType.get())
-        {
-            m_RatType->toMultipart(multipart, utility::conversions::to_string_t("ratType."));
-        }
-    }
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("smContextStatusUri"), m_SmContextStatusUri));
-    if(m_HSmfUriIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("hSmfUri"), m_HSmfUri));
-    }
-    if(m_PcfIdIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("pcfId"), m_PcfId));
-    }
-    if(m_SelModeIsSet)
-    {
-        if (m_SelMode.get())
-        {
-            m_SelMode->toMultipart(multipart, utility::conversions::to_string_t("selMode."));
-        }
-    }
-    if(m_TraceDataIsSet)
-    {
-        if (m_TraceData.get())
-        {
-            m_TraceData->toMultipart(multipart, utility::conversions::to_string_t("traceData."));
-        }
-    }
-    if(m_UdmGroupIdIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("udmGroupId"), m_UdmGroupId));
-    }
-    if(m_RoutingIndicatorIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("routingIndicator"), m_RoutingIndicator));
-    }
-    if(m_EpsInterworkingIndIsSet)
-    {
-        if (m_EpsInterworkingInd.get())
-        {
-            m_EpsInterworkingInd->toMultipart(multipart, utility::conversions::to_string_t("epsInterworkingInd."));
-        }
-    }
-    m_PduSessionType->toMultipart(multipart, utility::conversions::to_string_t("pduSessionType."));
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("sscMode"), m_SscMode));
-    m_SessionAmbr->toMultipart(multipart, utility::conversions::to_string_t("sessionAmbr."));
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_QosFlowsSetupList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
-        }
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("qosFlowsSetupList"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
-            }
-    if(m_HSmfInstanceIdIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("hSmfInstanceId"), m_HSmfInstanceId));
-    }
-    if(m_EnablePauseChargingIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("enablePauseCharging"), m_EnablePauseCharging));
-    }
-    if(m_UeIpv4AddressIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("ueIpv4Address"), m_UeIpv4Address));
-    }
-    if(m_UeIpv6PrefixIsSet)
-    {
-       // if (m_UeIpv6Prefix.get())
-       // {
-           multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("ueIpv6Prefix"), m_UeIpv6Prefix));
-       // }
-    }
-    if(m_EpsPdnCnxInfoIsSet)
-    {
-        if (m_EpsPdnCnxInfo.get())
-        {
-            m_EpsPdnCnxInfo->toMultipart(multipart, utility::conversions::to_string_t("epsPdnCnxInfo."));
-        }
-    }
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_EpsBearerInfo )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
-        }
-        
-        if(jsonArray.size() > 0)
-        {
-            multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("epsBearerInfo"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
-        }
-    }
-    if(m_MaxIntegrityProtectedDataRateIsSet)
-    {
-        if (m_MaxIntegrityProtectedDataRate.get())
-        {
-            m_MaxIntegrityProtectedDataRate->toMultipart(multipart, utility::conversions::to_string_t("maxIntegrityProtectedDataRate."));
-        }
-    }
-    if(m_AlwaysOnGrantedIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("alwaysOnGranted"), m_AlwaysOnGranted));
-    }
-    if(m_UpSecurityIsSet)
-    {
-        if (m_UpSecurity.get())
-        {
-            m_UpSecurity->toMultipart(multipart, utility::conversions::to_string_t("upSecurity."));
-        }
-    }
-    if(m_HSmfServiceInstanceIdIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("hSmfServiceInstanceId"), m_HSmfServiceInstanceId));
-    }
-    if(m_RecoveryTimeIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("recoveryTime"), m_RecoveryTime));
-    }
-}
-
-void SmContext::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    if(multipart->hasContent(utility::conversions::to_string_t("supi")))
-    {
-        setSupi(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("supi"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("unauthenticatedSupi")))
-    {
-        setUnauthenticatedSupi(ModelBase::boolFromHttpContent(multipart->getContent(utility::conversions::to_string_t("unauthenticatedSupi"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("pei")))
-    {
-        setPei(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("pei"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("gpsi")))
-    {
-        setGpsi(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("gpsi"))));
-    }
-    setPduSessionId(ModelBase::int32_tFromHttpContent(multipart->getContent(utility::conversions::to_string_t("pduSessionId"))));
-    setDnn(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("dnn"))));
-    std::shared_ptr<Snssai> newSNssai(new Snssai());
-    newSNssai->fromMultiPart(multipart, utility::conversions::to_string_t("sNssai."));
-    setSNssai( newSNssai );
-    if(multipart->hasContent(utility::conversions::to_string_t("hplmnSnssai")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("hplmnSnssai")))
-        {
-            std::shared_ptr<Snssai> newItem(new Snssai());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("hplmnSnssai."));
-            setHplmnSnssai( newItem );
-        }
-    }
-    setServingNfId(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("servingNfId"))));
-    if(multipart->hasContent(utility::conversions::to_string_t("guami")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("guami")))
-        {
-            std::shared_ptr<Guami> newItem(new Guami());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("guami."));
-            setGuami( newItem );
-        }
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("serviceName")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("serviceName")))
-        {
-            std::shared_ptr<ServiceName> newItem(new ServiceName());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("serviceName."));
-            setServiceName( newItem );
-        }
-    }
-    std::shared_ptr<PlmnId> newServingNetwork(new PlmnId());
-    newServingNetwork->fromMultiPart(multipart, utility::conversions::to_string_t("servingNetwork."));
-    setServingNetwork( newServingNetwork );
-    std::shared_ptr<AccessType> newAnType(new AccessType());
-    newAnType->fromMultiPart(multipart, utility::conversions::to_string_t("anType."));
-    setAnType( newAnType );
-    if(multipart->hasContent(utility::conversions::to_string_t("ratType")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("ratType")))
-        {
-            std::shared_ptr<RatType> newItem(new RatType());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("ratType."));
-            setRatType( newItem );
-        }
-    }
-    setSmContextStatusUri(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("smContextStatusUri"))));
-    if(multipart->hasContent(utility::conversions::to_string_t("hSmfUri")))
-    {
-        setHSmfUri(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("hSmfUri"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("pcfId")))
-    {
-        setPcfId(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("pcfId"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("selMode")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("selMode")))
-        {
-            std::shared_ptr<DnnSelectionMode> newItem(new DnnSelectionMode());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("selMode."));
-            setSelMode( newItem );
-        }
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("traceData")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("traceData")))
-        {
-            std::shared_ptr<TraceData> newItem(new TraceData());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("traceData."));
-            setTraceData( newItem );
-        }
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("udmGroupId")))
-    {
-        setUdmGroupId(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("udmGroupId"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("routingIndicator")))
-    {
-        setRoutingIndicator(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("routingIndicator"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("epsInterworkingInd")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("epsInterworkingInd")))
-        {
-            std::shared_ptr<EpsInterworkingIndication> newItem(new EpsInterworkingIndication());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("epsInterworkingInd."));
-            setEpsInterworkingInd( newItem );
-        }
-    }
-    std::shared_ptr<PduSessionType> newPduSessionType(new PduSessionType());
-    newPduSessionType->fromMultiPart(multipart, utility::conversions::to_string_t("pduSessionType."));
-    setPduSessionType( newPduSessionType );
-    setSscMode(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("sscMode"))));
-    std::shared_ptr<Ambr> newSessionAmbr(new Ambr());
-    newSessionAmbr->fromMultiPart(multipart, utility::conversions::to_string_t("sessionAmbr."));
-    setSessionAmbr( newSessionAmbr );
-    {
-        m_QosFlowsSetupList.clear();
-
-        web::json::value jsonArray = web::json::value::parse(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("qosFlowsSetupList"))));
-        for( auto& item : jsonArray.as_array() )
-        {
-            if(item.is_null())
-            {
-                m_QosFlowsSetupList.push_back( std::shared_ptr<QosFlowSetupItem>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<QosFlowSetupItem> newItem(new QosFlowSetupItem());
-                newItem->fromJson(item);
-                m_QosFlowsSetupList.push_back( newItem );
-            }
-        }
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("hSmfInstanceId")))
-    {
-        setHSmfInstanceId(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("hSmfInstanceId"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("enablePauseCharging")))
-    {
-        setEnablePauseCharging(ModelBase::boolFromHttpContent(multipart->getContent(utility::conversions::to_string_t("enablePauseCharging"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("ueIpv4Address")))
-    {
-        setUeIpv4Address(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("ueIpv4Address"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("ueIpv6Prefix")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("ueIpv6Prefix")))
-        {
-            //std::shared_ptr<utility::string_t> newItem(new Ipv6Prefix());
-            //newItem->fromMultiPart(multipart, utility::conversions::to_string_t("ueIpv6Prefix."));
-            setUeIpv6Prefix( ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("ueIpv6Prefix"))) );
-        }
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("epsPdnCnxInfo")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("epsPdnCnxInfo")))
-        {
-            std::shared_ptr<EpsPdnCnxInfo> newItem(new EpsPdnCnxInfo());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("epsPdnCnxInfo."));
-            setEpsPdnCnxInfo( newItem );
-        }
-    }
-    {
-        m_EpsBearerInfo.clear();
-        if(multipart->hasContent(utility::conversions::to_string_t("epsBearerInfo")))
-        {
-
-        web::json::value jsonArray = web::json::value::parse(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("epsBearerInfo"))));
-        for( auto& item : jsonArray.as_array() )
-        {
-            if(item.is_null())
-            {
-                m_EpsBearerInfo.push_back( std::shared_ptr<EpsBearerInfo>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<EpsBearerInfo> newItem(new EpsBearerInfo());
-                newItem->fromJson(item);
-                m_EpsBearerInfo.push_back( newItem );
-            }
-        }
-        }
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("maxIntegrityProtectedDataRate")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("maxIntegrityProtectedDataRate")))
-        {
-            std::shared_ptr<MaxIntegrityProtectedDataRate> newItem(new MaxIntegrityProtectedDataRate());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("maxIntegrityProtectedDataRate."));
-            setMaxIntegrityProtectedDataRate( newItem );
-        }
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("alwaysOnGranted")))
-    {
-        setAlwaysOnGranted(ModelBase::boolFromHttpContent(multipart->getContent(utility::conversions::to_string_t("alwaysOnGranted"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("upSecurity")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("upSecurity")))
-        {
-            std::shared_ptr<UpSecurity> newItem(new UpSecurity());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("upSecurity."));
-            setUpSecurity( newItem );
-        }
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("hSmfServiceInstanceId")))
-    {
-        setHSmfServiceInstanceId(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("hSmfServiceInstanceId"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("recoveryTime")))
-    {
-        setRecoveryTime(ModelBase::dateFromHttpContent(multipart->getContent(utility::conversions::to_string_t("recoveryTime"))));
-    }
-}
-
-utility::string_t SmContext::getSupi() const
-{
-    return m_Supi;
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("hSmfServiceInstanceId"))) {
+    setHSmfServiceInstanceId(
+        ModelBase::stringFromHttpContent(multipart->getContent(
+            utility::conversions::to_string_t("hSmfServiceInstanceId"))));
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("recoveryTime"))) {
+    setRecoveryTime(ModelBase::dateFromHttpContent(multipart->getContent(
+        utility::conversions::to_string_t("recoveryTime"))));
+  }
 }
 
-void SmContext::setSupi(const utility::string_t& value)
-{
-    m_Supi = value;
-    m_SupiIsSet = true;
+utility::string_t SmContext::getSupi() const {
+  return m_Supi;
 }
 
-bool SmContext::supiIsSet() const
-{
-    return m_SupiIsSet;
+void SmContext::setSupi(const utility::string_t& value) {
+  m_Supi      = value;
+  m_SupiIsSet = true;
 }
 
-void SmContext::unsetSupi()
-{
-    m_SupiIsSet = false;
+bool SmContext::supiIsSet() const {
+  return m_SupiIsSet;
 }
 
-bool SmContext::isUnauthenticatedSupi() const
-{
-    return m_UnauthenticatedSupi;
+void SmContext::unsetSupi() {
+  m_SupiIsSet = false;
 }
 
-void SmContext::setUnauthenticatedSupi(bool value)
-{
-    m_UnauthenticatedSupi = value;
-    m_UnauthenticatedSupiIsSet = true;
+bool SmContext::isUnauthenticatedSupi() const {
+  return m_UnauthenticatedSupi;
 }
 
-bool SmContext::unauthenticatedSupiIsSet() const
-{
-    return m_UnauthenticatedSupiIsSet;
+void SmContext::setUnauthenticatedSupi(bool value) {
+  m_UnauthenticatedSupi      = value;
+  m_UnauthenticatedSupiIsSet = true;
 }
 
-void SmContext::unsetUnauthenticatedSupi()
-{
-    m_UnauthenticatedSupiIsSet = false;
+bool SmContext::unauthenticatedSupiIsSet() const {
+  return m_UnauthenticatedSupiIsSet;
 }
 
-utility::string_t SmContext::getPei() const
-{
-    return m_Pei;
+void SmContext::unsetUnauthenticatedSupi() {
+  m_UnauthenticatedSupiIsSet = false;
 }
 
-void SmContext::setPei(const utility::string_t& value)
-{
-    m_Pei = value;
-    m_PeiIsSet = true;
+utility::string_t SmContext::getPei() const {
+  return m_Pei;
 }
 
-bool SmContext::peiIsSet() const
-{
-    return m_PeiIsSet;
+void SmContext::setPei(const utility::string_t& value) {
+  m_Pei      = value;
+  m_PeiIsSet = true;
 }
 
-void SmContext::unsetPei()
-{
-    m_PeiIsSet = false;
+bool SmContext::peiIsSet() const {
+  return m_PeiIsSet;
 }
 
-utility::string_t SmContext::getGpsi() const
-{
-    return m_Gpsi;
+void SmContext::unsetPei() {
+  m_PeiIsSet = false;
 }
 
-void SmContext::setGpsi(const utility::string_t& value)
-{
-    m_Gpsi = value;
-    m_GpsiIsSet = true;
+utility::string_t SmContext::getGpsi() const {
+  return m_Gpsi;
 }
 
-bool SmContext::gpsiIsSet() const
-{
-    return m_GpsiIsSet;
+void SmContext::setGpsi(const utility::string_t& value) {
+  m_Gpsi      = value;
+  m_GpsiIsSet = true;
 }
 
-void SmContext::unsetGpsi()
-{
-    m_GpsiIsSet = false;
+bool SmContext::gpsiIsSet() const {
+  return m_GpsiIsSet;
 }
 
-int32_t SmContext::getPduSessionId() const
-{
-    return m_PduSessionId;
+void SmContext::unsetGpsi() {
+  m_GpsiIsSet = false;
 }
 
-void SmContext::setPduSessionId(int32_t value)
-{
-    m_PduSessionId = value;
-    
+int32_t SmContext::getPduSessionId() const {
+  return m_PduSessionId;
 }
 
-utility::string_t SmContext::getDnn() const
-{
-    return m_Dnn;
+void SmContext::setPduSessionId(int32_t value) {
+  m_PduSessionId = value;
 }
 
-void SmContext::setDnn(const utility::string_t& value)
-{
-    m_Dnn = value;
-    
+utility::string_t SmContext::getDnn() const {
+  return m_Dnn;
 }
 
-std::shared_ptr<Snssai> SmContext::getSNssai() const
-{
-    return m_SNssai;
+void SmContext::setDnn(const utility::string_t& value) {
+  m_Dnn = value;
 }
 
-void SmContext::setSNssai(const std::shared_ptr<Snssai>& value)
-{
-    m_SNssai = value;
-    
+std::shared_ptr<Snssai> SmContext::getSNssai() const {
+  return m_SNssai;
 }
 
-std::shared_ptr<Snssai> SmContext::getHplmnSnssai() const
-{
-    return m_HplmnSnssai;
+void SmContext::setSNssai(const std::shared_ptr<Snssai>& value) {
+  m_SNssai = value;
 }
 
-void SmContext::setHplmnSnssai(const std::shared_ptr<Snssai>& value)
-{
-    m_HplmnSnssai = value;
-    m_HplmnSnssaiIsSet = true;
+std::shared_ptr<Snssai> SmContext::getHplmnSnssai() const {
+  return m_HplmnSnssai;
 }
 
-bool SmContext::hplmnSnssaiIsSet() const
-{
-    return m_HplmnSnssaiIsSet;
+void SmContext::setHplmnSnssai(const std::shared_ptr<Snssai>& value) {
+  m_HplmnSnssai      = value;
+  m_HplmnSnssaiIsSet = true;
 }
 
-void SmContext::unsetHplmnSnssai()
-{
-    m_HplmnSnssaiIsSet = false;
+bool SmContext::hplmnSnssaiIsSet() const {
+  return m_HplmnSnssaiIsSet;
 }
 
-utility::string_t SmContext::getServingNfId() const
-{
-    return m_ServingNfId;
+void SmContext::unsetHplmnSnssai() {
+  m_HplmnSnssaiIsSet = false;
 }
 
-void SmContext::setServingNfId(const utility::string_t& value)
-{
-    m_ServingNfId = value;
-    
+utility::string_t SmContext::getServingNfId() const {
+  return m_ServingNfId;
 }
 
-std::shared_ptr<Guami> SmContext::getGuami() const
-{
-    return m_Guami;
+void SmContext::setServingNfId(const utility::string_t& value) {
+  m_ServingNfId = value;
 }
 
-void SmContext::setGuami(const std::shared_ptr<Guami>& value)
-{
-    m_Guami = value;
-    m_GuamiIsSet = true;
+std::shared_ptr<Guami> SmContext::getGuami() const {
+  return m_Guami;
 }
 
-bool SmContext::guamiIsSet() const
-{
-    return m_GuamiIsSet;
+void SmContext::setGuami(const std::shared_ptr<Guami>& value) {
+  m_Guami      = value;
+  m_GuamiIsSet = true;
 }
 
-void SmContext::unsetGuami()
-{
-    m_GuamiIsSet = false;
+bool SmContext::guamiIsSet() const {
+  return m_GuamiIsSet;
 }
 
-std::shared_ptr<ServiceName> SmContext::getServiceName() const
-{
-    return m_ServiceName;
+void SmContext::unsetGuami() {
+  m_GuamiIsSet = false;
 }
 
-void SmContext::setServiceName(const std::shared_ptr<ServiceName>& value)
-{
-    m_ServiceName = value;
-    m_ServiceNameIsSet = true;
+std::shared_ptr<ServiceName> SmContext::getServiceName() const {
+  return m_ServiceName;
 }
 
-bool SmContext::serviceNameIsSet() const
-{
-    return m_ServiceNameIsSet;
+void SmContext::setServiceName(const std::shared_ptr<ServiceName>& value) {
+  m_ServiceName      = value;
+  m_ServiceNameIsSet = true;
 }
 
-void SmContext::unsetServiceName()
-{
-    m_ServiceNameIsSet = false;
+bool SmContext::serviceNameIsSet() const {
+  return m_ServiceNameIsSet;
 }
 
-std::shared_ptr<PlmnId> SmContext::getServingNetwork() const
-{
-    return m_ServingNetwork;
+void SmContext::unsetServiceName() {
+  m_ServiceNameIsSet = false;
 }
 
-void SmContext::setServingNetwork(const std::shared_ptr<PlmnId>& value)
-{
-    m_ServingNetwork = value;
-    
+std::shared_ptr<PlmnId> SmContext::getServingNetwork() const {
+  return m_ServingNetwork;
 }
 
-std::shared_ptr<AccessType> SmContext::getAnType() const
-{
-    return m_AnType;
+void SmContext::setServingNetwork(const std::shared_ptr<PlmnId>& value) {
+  m_ServingNetwork = value;
 }
 
-void SmContext::setAnType(const std::shared_ptr<AccessType>& value)
-{
-    m_AnType = value;
-    
+std::shared_ptr<AccessType> SmContext::getAnType() const {
+  return m_AnType;
 }
 
-std::shared_ptr<RatType> SmContext::getRatType() const
-{
-    return m_RatType;
+void SmContext::setAnType(const std::shared_ptr<AccessType>& value) {
+  m_AnType = value;
 }
 
-void SmContext::setRatType(const std::shared_ptr<RatType>& value)
-{
-    m_RatType = value;
-    m_RatTypeIsSet = true;
+std::shared_ptr<RatType> SmContext::getRatType() const {
+  return m_RatType;
 }
 
-bool SmContext::ratTypeIsSet() const
-{
-    return m_RatTypeIsSet;
+void SmContext::setRatType(const std::shared_ptr<RatType>& value) {
+  m_RatType      = value;
+  m_RatTypeIsSet = true;
 }
 
-void SmContext::unsetRatType()
-{
-    m_RatTypeIsSet = false;
+bool SmContext::ratTypeIsSet() const {
+  return m_RatTypeIsSet;
 }
 
-utility::string_t SmContext::getSmContextStatusUri() const
-{
-    return m_SmContextStatusUri;
+void SmContext::unsetRatType() {
+  m_RatTypeIsSet = false;
 }
 
-void SmContext::setSmContextStatusUri(const utility::string_t& value)
-{
-    m_SmContextStatusUri = value;
-    
+utility::string_t SmContext::getSmContextStatusUri() const {
+  return m_SmContextStatusUri;
 }
 
-utility::string_t SmContext::getHSmfUri() const
-{
-    return m_HSmfUri;
+void SmContext::setSmContextStatusUri(const utility::string_t& value) {
+  m_SmContextStatusUri = value;
 }
 
-void SmContext::setHSmfUri(const utility::string_t& value)
-{
-    m_HSmfUri = value;
-    m_HSmfUriIsSet = true;
+utility::string_t SmContext::getHSmfUri() const {
+  return m_HSmfUri;
 }
 
-bool SmContext::hSmfUriIsSet() const
-{
-    return m_HSmfUriIsSet;
+void SmContext::setHSmfUri(const utility::string_t& value) {
+  m_HSmfUri      = value;
+  m_HSmfUriIsSet = true;
 }
 
-void SmContext::unsetHSmfUri()
-{
-    m_HSmfUriIsSet = false;
+bool SmContext::hSmfUriIsSet() const {
+  return m_HSmfUriIsSet;
 }
 
-utility::string_t SmContext::getPcfId() const
-{
-    return m_PcfId;
+void SmContext::unsetHSmfUri() {
+  m_HSmfUriIsSet = false;
 }
 
-void SmContext::setPcfId(const utility::string_t& value)
-{
-    m_PcfId = value;
-    m_PcfIdIsSet = true;
+utility::string_t SmContext::getPcfId() const {
+  return m_PcfId;
 }
 
-bool SmContext::pcfIdIsSet() const
-{
-    return m_PcfIdIsSet;
+void SmContext::setPcfId(const utility::string_t& value) {
+  m_PcfId      = value;
+  m_PcfIdIsSet = true;
 }
 
-void SmContext::unsetPcfId()
-{
-    m_PcfIdIsSet = false;
+bool SmContext::pcfIdIsSet() const {
+  return m_PcfIdIsSet;
 }
 
-std::shared_ptr<DnnSelectionMode> SmContext::getSelMode() const
-{
-    return m_SelMode;
+void SmContext::unsetPcfId() {
+  m_PcfIdIsSet = false;
 }
 
-void SmContext::setSelMode(const std::shared_ptr<DnnSelectionMode>& value)
-{
-    m_SelMode = value;
-    m_SelModeIsSet = true;
+std::shared_ptr<DnnSelectionMode> SmContext::getSelMode() const {
+  return m_SelMode;
 }
 
-bool SmContext::selModeIsSet() const
-{
-    return m_SelModeIsSet;
+void SmContext::setSelMode(const std::shared_ptr<DnnSelectionMode>& value) {
+  m_SelMode      = value;
+  m_SelModeIsSet = true;
 }
 
-void SmContext::unsetSelMode()
-{
-    m_SelModeIsSet = false;
+bool SmContext::selModeIsSet() const {
+  return m_SelModeIsSet;
 }
 
-std::shared_ptr<TraceData> SmContext::getTraceData() const
-{
-    return m_TraceData;
+void SmContext::unsetSelMode() {
+  m_SelModeIsSet = false;
 }
 
-void SmContext::setTraceData(const std::shared_ptr<TraceData>& value)
-{
-    m_TraceData = value;
-    m_TraceDataIsSet = true;
+std::shared_ptr<TraceData> SmContext::getTraceData() const {
+  return m_TraceData;
 }
 
-bool SmContext::traceDataIsSet() const
-{
-    return m_TraceDataIsSet;
+void SmContext::setTraceData(const std::shared_ptr<TraceData>& value) {
+  m_TraceData      = value;
+  m_TraceDataIsSet = true;
 }
 
-void SmContext::unsetTraceData()
-{
-    m_TraceDataIsSet = false;
+bool SmContext::traceDataIsSet() const {
+  return m_TraceDataIsSet;
 }
 
-utility::string_t SmContext::getUdmGroupId() const
-{
-    return m_UdmGroupId;
+void SmContext::unsetTraceData() {
+  m_TraceDataIsSet = false;
 }
 
-void SmContext::setUdmGroupId(const utility::string_t& value)
-{
-    m_UdmGroupId = value;
-    m_UdmGroupIdIsSet = true;
+utility::string_t SmContext::getUdmGroupId() const {
+  return m_UdmGroupId;
 }
 
-bool SmContext::udmGroupIdIsSet() const
-{
-    return m_UdmGroupIdIsSet;
+void SmContext::setUdmGroupId(const utility::string_t& value) {
+  m_UdmGroupId      = value;
+  m_UdmGroupIdIsSet = true;
 }
 
-void SmContext::unsetUdmGroupId()
-{
-    m_UdmGroupIdIsSet = false;
+bool SmContext::udmGroupIdIsSet() const {
+  return m_UdmGroupIdIsSet;
 }
 
-utility::string_t SmContext::getRoutingIndicator() const
-{
-    return m_RoutingIndicator;
+void SmContext::unsetUdmGroupId() {
+  m_UdmGroupIdIsSet = false;
 }
 
-void SmContext::setRoutingIndicator(const utility::string_t& value)
-{
-    m_RoutingIndicator = value;
-    m_RoutingIndicatorIsSet = true;
+utility::string_t SmContext::getRoutingIndicator() const {
+  return m_RoutingIndicator;
 }
 
-bool SmContext::routingIndicatorIsSet() const
-{
-    return m_RoutingIndicatorIsSet;
+void SmContext::setRoutingIndicator(const utility::string_t& value) {
+  m_RoutingIndicator      = value;
+  m_RoutingIndicatorIsSet = true;
 }
 
-void SmContext::unsetRoutingIndicator()
-{
-    m_RoutingIndicatorIsSet = false;
+bool SmContext::routingIndicatorIsSet() const {
+  return m_RoutingIndicatorIsSet;
 }
 
-std::shared_ptr<EpsInterworkingIndication> SmContext::getEpsInterworkingInd() const
-{
-    return m_EpsInterworkingInd;
+void SmContext::unsetRoutingIndicator() {
+  m_RoutingIndicatorIsSet = false;
 }
 
-void SmContext::setEpsInterworkingInd(const std::shared_ptr<EpsInterworkingIndication>& value)
-{
-    m_EpsInterworkingInd = value;
-    m_EpsInterworkingIndIsSet = true;
+std::shared_ptr<EpsInterworkingIndication> SmContext::getEpsInterworkingInd()
+    const {
+  return m_EpsInterworkingInd;
 }
 
-bool SmContext::epsInterworkingIndIsSet() const
-{
-    return m_EpsInterworkingIndIsSet;
+void SmContext::setEpsInterworkingInd(
+    const std::shared_ptr<EpsInterworkingIndication>& value) {
+  m_EpsInterworkingInd      = value;
+  m_EpsInterworkingIndIsSet = true;
 }
 
-void SmContext::unsetEpsInterworkingInd()
-{
-    m_EpsInterworkingIndIsSet = false;
+bool SmContext::epsInterworkingIndIsSet() const {
+  return m_EpsInterworkingIndIsSet;
 }
 
-std::shared_ptr<PduSessionType> SmContext::getPduSessionType() const
-{
-    return m_PduSessionType;
+void SmContext::unsetEpsInterworkingInd() {
+  m_EpsInterworkingIndIsSet = false;
 }
 
-void SmContext::setPduSessionType(const std::shared_ptr<PduSessionType>& value)
-{
-    m_PduSessionType = value;
-    
+std::shared_ptr<PduSessionType> SmContext::getPduSessionType() const {
+  return m_PduSessionType;
 }
 
-utility::string_t SmContext::getSscMode() const
-{
-    return m_SscMode;
+void SmContext::setPduSessionType(
+    const std::shared_ptr<PduSessionType>& value) {
+  m_PduSessionType = value;
 }
 
-void SmContext::setSscMode(const utility::string_t& value)
-{
-    m_SscMode = value;
-    
+utility::string_t SmContext::getSscMode() const {
+  return m_SscMode;
 }
 
-std::shared_ptr<Ambr> SmContext::getSessionAmbr() const
-{
-    return m_SessionAmbr;
+void SmContext::setSscMode(const utility::string_t& value) {
+  m_SscMode = value;
 }
 
-void SmContext::setSessionAmbr(const std::shared_ptr<Ambr>& value)
-{
-    m_SessionAmbr = value;
-    
+std::shared_ptr<Ambr> SmContext::getSessionAmbr() const {
+  return m_SessionAmbr;
 }
 
-std::vector<std::shared_ptr<QosFlowSetupItem>>& SmContext::getQosFlowsSetupList()
-{
-    return m_QosFlowsSetupList;
+void SmContext::setSessionAmbr(const std::shared_ptr<Ambr>& value) {
+  m_SessionAmbr = value;
 }
 
-void SmContext::setQosFlowsSetupList(const std::vector<std::shared_ptr<QosFlowSetupItem>>& value)
-{
-    m_QosFlowsSetupList = value;
-    
+std::vector<std::shared_ptr<QosFlowSetupItem>>&
+SmContext::getQosFlowsSetupList() {
+  return m_QosFlowsSetupList;
 }
 
-utility::string_t SmContext::getHSmfInstanceId() const
-{
-    return m_HSmfInstanceId;
+void SmContext::setQosFlowsSetupList(
+    const std::vector<std::shared_ptr<QosFlowSetupItem>>& value) {
+  m_QosFlowsSetupList = value;
 }
 
-void SmContext::setHSmfInstanceId(const utility::string_t& value)
-{
-    m_HSmfInstanceId = value;
-    m_HSmfInstanceIdIsSet = true;
+utility::string_t SmContext::getHSmfInstanceId() const {
+  return m_HSmfInstanceId;
 }
 
-bool SmContext::hSmfInstanceIdIsSet() const
-{
-    return m_HSmfInstanceIdIsSet;
+void SmContext::setHSmfInstanceId(const utility::string_t& value) {
+  m_HSmfInstanceId      = value;
+  m_HSmfInstanceIdIsSet = true;
 }
 
-void SmContext::unsetHSmfInstanceId()
-{
-    m_HSmfInstanceIdIsSet = false;
+bool SmContext::hSmfInstanceIdIsSet() const {
+  return m_HSmfInstanceIdIsSet;
 }
 
-bool SmContext::isEnablePauseCharging() const
-{
-    return m_EnablePauseCharging;
+void SmContext::unsetHSmfInstanceId() {
+  m_HSmfInstanceIdIsSet = false;
 }
 
-void SmContext::setEnablePauseCharging(bool value)
-{
-    m_EnablePauseCharging = value;
-    m_EnablePauseChargingIsSet = true;
+bool SmContext::isEnablePauseCharging() const {
+  return m_EnablePauseCharging;
 }
 
-bool SmContext::enablePauseChargingIsSet() const
-{
-    return m_EnablePauseChargingIsSet;
+void SmContext::setEnablePauseCharging(bool value) {
+  m_EnablePauseCharging      = value;
+  m_EnablePauseChargingIsSet = true;
 }
 
-void SmContext::unsetEnablePauseCharging()
-{
-    m_EnablePauseChargingIsSet = false;
+bool SmContext::enablePauseChargingIsSet() const {
+  return m_EnablePauseChargingIsSet;
 }
 
-utility::string_t SmContext::getUeIpv4Address() const
-{
-    return m_UeIpv4Address;
+void SmContext::unsetEnablePauseCharging() {
+  m_EnablePauseChargingIsSet = false;
 }
 
-void SmContext::setUeIpv4Address(const utility::string_t& value)
-{
-    m_UeIpv4Address = value;
-    m_UeIpv4AddressIsSet = true;
+utility::string_t SmContext::getUeIpv4Address() const {
+  return m_UeIpv4Address;
 }
 
-bool SmContext::ueIpv4AddressIsSet() const
-{
-    return m_UeIpv4AddressIsSet;
+void SmContext::setUeIpv4Address(const utility::string_t& value) {
+  m_UeIpv4Address      = value;
+  m_UeIpv4AddressIsSet = true;
 }
 
-void SmContext::unsetUeIpv4Address()
-{
-    m_UeIpv4AddressIsSet = false;
+bool SmContext::ueIpv4AddressIsSet() const {
+  return m_UeIpv4AddressIsSet;
 }
 
-utility::string_t SmContext::getUeIpv6Prefix() const
-{
-    return m_UeIpv6Prefix;
+void SmContext::unsetUeIpv4Address() {
+  m_UeIpv4AddressIsSet = false;
 }
 
-void SmContext::setUeIpv6Prefix(const utility::string_t& value)
-{
-    m_UeIpv6Prefix = value;
-    m_UeIpv6PrefixIsSet = true;
+utility::string_t SmContext::getUeIpv6Prefix() const {
+  return m_UeIpv6Prefix;
 }
 
-bool SmContext::ueIpv6PrefixIsSet() const
-{
-    return m_UeIpv6PrefixIsSet;
+void SmContext::setUeIpv6Prefix(const utility::string_t& value) {
+  m_UeIpv6Prefix      = value;
+  m_UeIpv6PrefixIsSet = true;
 }
 
-void SmContext::unsetUeIpv6Prefix()
-{
-    m_UeIpv6PrefixIsSet = false;
+bool SmContext::ueIpv6PrefixIsSet() const {
+  return m_UeIpv6PrefixIsSet;
 }
 
-std::shared_ptr<EpsPdnCnxInfo> SmContext::getEpsPdnCnxInfo() const
-{
-    return m_EpsPdnCnxInfo;
+void SmContext::unsetUeIpv6Prefix() {
+  m_UeIpv6PrefixIsSet = false;
 }
 
-void SmContext::setEpsPdnCnxInfo(const std::shared_ptr<EpsPdnCnxInfo>& value)
-{
-    m_EpsPdnCnxInfo = value;
-    m_EpsPdnCnxInfoIsSet = true;
+std::shared_ptr<EpsPdnCnxInfo> SmContext::getEpsPdnCnxInfo() const {
+  return m_EpsPdnCnxInfo;
 }
 
-bool SmContext::epsPdnCnxInfoIsSet() const
-{
-    return m_EpsPdnCnxInfoIsSet;
+void SmContext::setEpsPdnCnxInfo(const std::shared_ptr<EpsPdnCnxInfo>& value) {
+  m_EpsPdnCnxInfo      = value;
+  m_EpsPdnCnxInfoIsSet = true;
 }
 
-void SmContext::unsetEpsPdnCnxInfo()
-{
-    m_EpsPdnCnxInfoIsSet = false;
+bool SmContext::epsPdnCnxInfoIsSet() const {
+  return m_EpsPdnCnxInfoIsSet;
 }
 
-std::vector<std::shared_ptr<EpsBearerInfo>>& SmContext::getEpsBearerInfo()
-{
-    return m_EpsBearerInfo;
+void SmContext::unsetEpsPdnCnxInfo() {
+  m_EpsPdnCnxInfoIsSet = false;
 }
 
-void SmContext::setEpsBearerInfo(const std::vector<std::shared_ptr<EpsBearerInfo>>& value)
-{
-    m_EpsBearerInfo = value;
-    m_EpsBearerInfoIsSet = true;
+std::vector<std::shared_ptr<EpsBearerInfo>>& SmContext::getEpsBearerInfo() {
+  return m_EpsBearerInfo;
 }
 
-bool SmContext::epsBearerInfoIsSet() const
-{
-    return m_EpsBearerInfoIsSet;
+void SmContext::setEpsBearerInfo(
+    const std::vector<std::shared_ptr<EpsBearerInfo>>& value) {
+  m_EpsBearerInfo      = value;
+  m_EpsBearerInfoIsSet = true;
 }
 
-void SmContext::unsetEpsBearerInfo()
-{
-    m_EpsBearerInfoIsSet = false;
+bool SmContext::epsBearerInfoIsSet() const {
+  return m_EpsBearerInfoIsSet;
 }
 
-std::shared_ptr<MaxIntegrityProtectedDataRate> SmContext::getMaxIntegrityProtectedDataRate() const
-{
-    return m_MaxIntegrityProtectedDataRate;
+void SmContext::unsetEpsBearerInfo() {
+  m_EpsBearerInfoIsSet = false;
 }
 
-void SmContext::setMaxIntegrityProtectedDataRate(const std::shared_ptr<MaxIntegrityProtectedDataRate>& value)
-{
-    m_MaxIntegrityProtectedDataRate = value;
-    m_MaxIntegrityProtectedDataRateIsSet = true;
+std::shared_ptr<MaxIntegrityProtectedDataRate>
+SmContext::getMaxIntegrityProtectedDataRate() const {
+  return m_MaxIntegrityProtectedDataRate;
 }
 
-bool SmContext::maxIntegrityProtectedDataRateIsSet() const
-{
-    return m_MaxIntegrityProtectedDataRateIsSet;
+void SmContext::setMaxIntegrityProtectedDataRate(
+    const std::shared_ptr<MaxIntegrityProtectedDataRate>& value) {
+  m_MaxIntegrityProtectedDataRate      = value;
+  m_MaxIntegrityProtectedDataRateIsSet = true;
 }
 
-void SmContext::unsetMaxIntegrityProtectedDataRate()
-{
-    m_MaxIntegrityProtectedDataRateIsSet = false;
+bool SmContext::maxIntegrityProtectedDataRateIsSet() const {
+  return m_MaxIntegrityProtectedDataRateIsSet;
 }
 
-bool SmContext::isAlwaysOnGranted() const
-{
-    return m_AlwaysOnGranted;
+void SmContext::unsetMaxIntegrityProtectedDataRate() {
+  m_MaxIntegrityProtectedDataRateIsSet = false;
 }
 
-void SmContext::setAlwaysOnGranted(bool value)
-{
-    m_AlwaysOnGranted = value;
-    m_AlwaysOnGrantedIsSet = true;
+bool SmContext::isAlwaysOnGranted() const {
+  return m_AlwaysOnGranted;
 }
 
-bool SmContext::alwaysOnGrantedIsSet() const
-{
-    return m_AlwaysOnGrantedIsSet;
+void SmContext::setAlwaysOnGranted(bool value) {
+  m_AlwaysOnGranted      = value;
+  m_AlwaysOnGrantedIsSet = true;
 }
 
-void SmContext::unsetAlwaysOnGranted()
-{
-    m_AlwaysOnGrantedIsSet = false;
+bool SmContext::alwaysOnGrantedIsSet() const {
+  return m_AlwaysOnGrantedIsSet;
 }
 
-std::shared_ptr<UpSecurity> SmContext::getUpSecurity() const
-{
-    return m_UpSecurity;
+void SmContext::unsetAlwaysOnGranted() {
+  m_AlwaysOnGrantedIsSet = false;
 }
 
-void SmContext::setUpSecurity(const std::shared_ptr<UpSecurity>& value)
-{
-    m_UpSecurity = value;
-    m_UpSecurityIsSet = true;
+std::shared_ptr<UpSecurity> SmContext::getUpSecurity() const {
+  return m_UpSecurity;
 }
 
-bool SmContext::upSecurityIsSet() const
-{
-    return m_UpSecurityIsSet;
+void SmContext::setUpSecurity(const std::shared_ptr<UpSecurity>& value) {
+  m_UpSecurity      = value;
+  m_UpSecurityIsSet = true;
 }
 
-void SmContext::unsetUpSecurity()
-{
-    m_UpSecurityIsSet = false;
+bool SmContext::upSecurityIsSet() const {
+  return m_UpSecurityIsSet;
 }
 
-utility::string_t SmContext::getHSmfServiceInstanceId() const
-{
-    return m_HSmfServiceInstanceId;
+void SmContext::unsetUpSecurity() {
+  m_UpSecurityIsSet = false;
 }
 
-void SmContext::setHSmfServiceInstanceId(const utility::string_t& value)
-{
-    m_HSmfServiceInstanceId = value;
-    m_HSmfServiceInstanceIdIsSet = true;
+utility::string_t SmContext::getHSmfServiceInstanceId() const {
+  return m_HSmfServiceInstanceId;
 }
 
-bool SmContext::hSmfServiceInstanceIdIsSet() const
-{
-    return m_HSmfServiceInstanceIdIsSet;
+void SmContext::setHSmfServiceInstanceId(const utility::string_t& value) {
+  m_HSmfServiceInstanceId      = value;
+  m_HSmfServiceInstanceIdIsSet = true;
 }
 
-void SmContext::unsetHSmfServiceInstanceId()
-{
-    m_HSmfServiceInstanceIdIsSet = false;
+bool SmContext::hSmfServiceInstanceIdIsSet() const {
+  return m_HSmfServiceInstanceIdIsSet;
 }
 
-utility::datetime SmContext::getRecoveryTime() const
-{
-    return m_RecoveryTime;
+void SmContext::unsetHSmfServiceInstanceId() {
+  m_HSmfServiceInstanceIdIsSet = false;
 }
 
-void SmContext::setRecoveryTime(const utility::datetime& value)
-{
-    m_RecoveryTime = value;
-    m_RecoveryTimeIsSet = true;
+utility::datetime SmContext::getRecoveryTime() const {
+  return m_RecoveryTime;
 }
 
-bool SmContext::recoveryTimeIsSet() const
-{
-    return m_RecoveryTimeIsSet;
+void SmContext::setRecoveryTime(const utility::datetime& value) {
+  m_RecoveryTime      = value;
+  m_RecoveryTimeIsSet = true;
 }
 
-void SmContext::unsetRecoveryTime()
-{
-    m_RecoveryTimeIsSet = false;
+bool SmContext::recoveryTimeIsSet() const {
+  return m_RecoveryTimeIsSet;
 }
 
-}
+void SmContext::unsetRecoveryTime() {
+  m_RecoveryTimeIsSet = false;
 }
-}
-
 
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

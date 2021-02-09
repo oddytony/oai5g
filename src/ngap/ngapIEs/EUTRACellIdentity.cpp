@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,8 +39,7 @@ EUTRACellIdentity::EUTRACellIdentity() {
 }
 
 //------------------------------------------------------------------------------
-EUTRACellIdentity::~EUTRACellIdentity() {
-}
+EUTRACellIdentity::~EUTRACellIdentity() {}
 
 //------------------------------------------------------------------------------
 void EUTRACellIdentity::setEUTRACellIdentity(uint32_t m_eutracellidentity) {
@@ -49,12 +48,11 @@ void EUTRACellIdentity::setEUTRACellIdentity(uint32_t m_eutracellidentity) {
 
 //------------------------------------------------------------------------------
 bool EUTRACellIdentity::encode2bitstring(
-    Ngap_EUTRACellIdentity_t &eUTRACellIdentity) {
+    Ngap_EUTRACellIdentity_t& eUTRACellIdentity) {
   eUTRACellIdentity.bits_unused = 4;
-  eUTRACellIdentity.size = 4;
-  eUTRACellIdentity.buf = (uint8_t*) calloc(1, sizeof(uint32_t));
-  if (!eUTRACellIdentity.buf)
-    return false;
+  eUTRACellIdentity.size        = 4;
+  eUTRACellIdentity.buf         = (uint8_t*) calloc(1, sizeof(uint32_t));
+  if (!eUTRACellIdentity.buf) return false;
   eUTRACellIdentity.buf[3] = eutracellidentity & 0x000000ff;
   eUTRACellIdentity.buf[2] = (eutracellidentity & 0x0000ff00) >> 8;
   eUTRACellIdentity.buf[1] = (eutracellidentity & 0x00ff0000) >> 16;
@@ -65,9 +63,8 @@ bool EUTRACellIdentity::encode2bitstring(
 
 //------------------------------------------------------------------------------
 bool EUTRACellIdentity::decodefrombitstring(
-    Ngap_EUTRACellIdentity_t &eUTRACellIdentity) {
-  if (!eUTRACellIdentity.buf)
-    return false;
+    Ngap_EUTRACellIdentity_t& eUTRACellIdentity) {
+  if (!eUTRACellIdentity.buf) return false;
 
   eutracellidentity = eUTRACellIdentity.buf[0] << 24;
   eutracellidentity |= eUTRACellIdentity.buf[1] << 16;
@@ -81,4 +78,4 @@ bool EUTRACellIdentity::decodefrombitstring(
 uint32_t EUTRACellIdentity::getEUTRACellIdentity() {
   return eutracellidentity;
 }
-}
+}  // namespace ngap

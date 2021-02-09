@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -15,70 +16,55 @@ namespace oai {
 namespace smf {
 namespace model {
 
-HttpContent::HttpContent()
-{
+HttpContent::HttpContent() {}
+
+HttpContent::~HttpContent() {}
+
+utility::string_t HttpContent::getContentDisposition() {
+  return m_ContentDisposition;
 }
 
-HttpContent::~HttpContent()
-{
+void HttpContent::setContentDisposition(const utility::string_t& value) {
+  m_ContentDisposition = value;
 }
 
-utility::string_t HttpContent::getContentDisposition()
-{
-    return m_ContentDisposition;
+utility::string_t HttpContent::getName() {
+  return m_Name;
 }
 
-void HttpContent::setContentDisposition( const utility::string_t & value )
-{
-    m_ContentDisposition = value;
+void HttpContent::setName(const utility::string_t& value) {
+  m_Name = value;
 }
 
-utility::string_t HttpContent::getName()
-{
-    return m_Name;
+utility::string_t HttpContent::getFileName() {
+  return m_FileName;
 }
 
-void HttpContent::setName( const utility::string_t & value )
-{
-    m_Name = value;
+void HttpContent::setFileName(const utility::string_t& value) {
+  m_FileName = value;
 }
 
-utility::string_t HttpContent::getFileName()
-{
-    return m_FileName;
+utility::string_t HttpContent::getContentType() {
+  return m_ContentType;
 }
 
-void HttpContent::setFileName( const utility::string_t & value )
-{
-    m_FileName = value;
+void HttpContent::setContentType(const utility::string_t& value) {
+  m_ContentType = value;
 }
 
-utility::string_t HttpContent::getContentType()
-{
-    return m_ContentType;
+std::shared_ptr<std::istream> HttpContent::getData() {
+  return m_Data;
 }
 
-void HttpContent::setContentType( const utility::string_t & value )
-{
-    m_ContentType = value;
+void HttpContent::setData(std::shared_ptr<std::istream> value) {
+  m_Data = value;
 }
 
-std::shared_ptr<std::istream> HttpContent::getData()
-{
-    return m_Data;
+void HttpContent::writeTo(std::ostream& stream) {
+  m_Data->seekg(0, m_Data->beg);
+  stream << m_Data->rdbuf();
 }
 
-void HttpContent::setData( std::shared_ptr<std::istream> value )
-{
-    m_Data = value;
-}
-
-void HttpContent::writeTo( std::ostream& stream )
-{
-    m_Data->seekg( 0, m_Data->beg );
-    stream << m_Data->rdbuf();
-}
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

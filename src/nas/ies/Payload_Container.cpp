@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,12 +37,13 @@ Payload_Container::Payload_Container(uint8_t iei) {
 
 //------------------------------------------------------------------------------
 Payload_Container::Payload_Container(uint8_t iei, bstring b) {
-  _iei = iei;
+  _iei    = iei;
   content = b;
 }
 
 //------------------------------------------------------------------------------
-Payload_Container::Payload_Container(const uint8_t iei, std::vector<PayloadContainerEntry> content) {
+Payload_Container::Payload_Container(
+    const uint8_t iei, std::vector<PayloadContainerEntry> content) {
   _iei = iei;
   if (_iei) {
     length = 4 + content.size() * 2;
@@ -59,12 +60,10 @@ Payload_Container::Payload_Container(const uint8_t iei, std::vector<PayloadConta
 }
 
 //------------------------------------------------------------------------------
-Payload_Container::Payload_Container() {
-}
+Payload_Container::Payload_Container() {}
 
 //------------------------------------------------------------------------------
-Payload_Container::~Payload_Container() {
-}
+Payload_Container::~Payload_Container() {}
 
 //------------------------------------------------------------------------------
 void Payload_Container::setValue(uint8_t iei, uint8_t value) {
@@ -73,21 +72,21 @@ void Payload_Container::setValue(uint8_t iei, uint8_t value) {
 }
 
 //------------------------------------------------------------------------------
-void Payload_Container::getValue(std::vector<PayloadContainerEntry> &content) {
+void Payload_Container::getValue(std::vector<PayloadContainerEntry>& content) {
   content.assign(CONTENT.begin(), CONTENT.end());
 }
 
 //------------------------------------------------------------------------------
-void Payload_Container::getValue(bstring &cnt) {
+void Payload_Container::getValue(bstring& cnt) {
   cnt = content;
 }
 
 //------------------------------------------------------------------------------
-int Payload_Container::encode2buffer(uint8_t *buf, int len) {
+int Payload_Container::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding Payload_Container iei(0x%x)", _iei);
   if (len < length) {
-    //Logger::nas_mm().error("len is less than %d", length);
-    //return 0;
+    // Logger::nas_mm().error("len is less than %d", length);
+    // return 0;
   }
   int encoded_size = 0;
   if (_iei) {
@@ -154,18 +153,19 @@ int Payload_Container::encode2buffer(uint8_t *buf, int len) {
 
 //------------------------------------------------------------------------------
 
-int Payload_Container::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int Payload_Container::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
 }
 
 //------------------------------------------------------------------------------
-int Payload_Container::decodefrombuffer(uint8_t *buf, int len, bool is_option, uint8_t type) {
+int Payload_Container::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option, uint8_t type) {
   Logger::nas_mm().debug("decoding Payload_Container iei(0x%x)", _iei);
   int decoded_size = 0;
   if (is_option) {
     decoded_size++;
   }
 
-  if (type != 0x0f) {		//not multiple payload
+  if (type != 0x0f) {  // not multiple payload
     uint8_t octet = *(buf + decoded_size);
     decoded_size++;
     length = 0;
@@ -200,16 +200,18 @@ int Payload_Container::decodefrombuffer(uint8_t *buf, int len, bool is_option, u
       decoded_size++;
       value.ie_len = *(buf + decoded_size);
       decoded_size++;
-      decode_bstring(&value.ie_value, value.ie_len, (buf + decoded_size), len - decoded_size);
+      decode_bstring(
+          &value.ie_value, value.ie_len, (buf + decoded_size),
+          len - decoded_size);
       decoded_size += value.ie_len;
-      payloadcontainerentry.optionalIE.insert(payloadcontainerentry.optionalIE.end(), value);
+      payloadcontainerentry.optionalIE.insert(
+          payloadcontainerentry.optionalIE.end(), value);
       num_optional--;
     }
     CONTENT.insert(CONTENT.end(), payloadcontainerentry);
     num_entries--;
   }
-  //Logger::nas_mm().debug("decoded Payload_Container value(0x%x)", _value);
+  // Logger::nas_mm().debug("decoded Payload_Container value(0x%x)", _value);
   Logger::nas_mm().debug("decoded Payload_Container len(%d)", decoded_size);
   return decoded_size;
 }
-

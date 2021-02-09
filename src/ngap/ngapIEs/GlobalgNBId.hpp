@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -45,13 +45,14 @@ class GlobalgNBId {
 
   bool encode2GlobalgNBId(Ngap_GlobalGNB_ID_t*);
   bool decodefromGlobalgNBId(Ngap_GlobalGNB_ID_t*);
-  void setGlobalgNBId(PlmnId *plmn, GNB_ID *gnbid);
-  void getGlobalgNBId(PlmnId *&plmn, GNB_ID *&gnbid);
+  void setGlobalgNBId(PlmnId* plmn, GNB_ID* gnbid);
+  void getGlobalgNBId(PlmnId*& plmn, GNB_ID*& gnbid);
+
  private:
-  PlmnId *plmnId;
-  GNB_ID *gNB_ID;
+  PlmnId* plmnId;
+  GNB_ID* gNB_ID;
 };
 
-}
+}  // namespace ngap
 
 #endif

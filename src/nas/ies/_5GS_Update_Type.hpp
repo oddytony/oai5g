@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -38,7 +38,9 @@ class _5GS_Update_Type {
   _5GS_Update_Type();
   _5GS_Update_Type(uint8_t iei);
   ~_5GS_Update_Type();
-  _5GS_Update_Type(const uint8_t iei, uint8_t eps_PNB_CIoT, uint8_t _5gs_PNB_CIoT, bool ng_RAN, bool sms);
+  _5GS_Update_Type(
+      const uint8_t iei, uint8_t eps_PNB_CIoT, uint8_t _5gs_PNB_CIoT,
+      bool ng_RAN, bool sms);
   void setEPS_PNB_CIoT(uint8_t value);
   void set_5GS_PNB_CIoT(uint8_t value);
   void setNG_RAN(uint8_t value);
@@ -47,8 +49,9 @@ class _5GS_Update_Type {
   uint8_t get_5GS_PNB_CIoT();
   bool getNG_RAN();
   bool getSMS();
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(uint8_t *buf, int len, bool is_option);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(uint8_t* buf, int len, bool is_option);
+
  private:
   uint8_t _iei;
   uint8_t length;
@@ -56,10 +59,8 @@ class _5GS_Update_Type {
   uint8_t _5GS_PNB_CIoT;
   bool NG_RAN;
   bool SMS;
-
 };
 
-}
+}  // namespace nas
 
 #endif
-

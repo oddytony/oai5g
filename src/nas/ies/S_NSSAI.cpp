@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -30,7 +30,6 @@
 #include "logger.hpp"
 using namespace nas;
 
-
 //------------------------------------------------------------------------------
 S_NSSAI::S_NSSAI(uint8_t iei) {
   _iei = iei;
@@ -38,7 +37,7 @@ S_NSSAI::S_NSSAI(uint8_t iei) {
 
 //------------------------------------------------------------------------------
 S_NSSAI::S_NSSAI(const uint8_t iei, SNSSAI_s snssai) {
-  _iei = iei;
+  _iei   = iei;
   length = 3;
   SNSSAI = snssai;
   if (SNSSAI.sd != -1) {
@@ -53,12 +52,10 @@ S_NSSAI::S_NSSAI(const uint8_t iei, SNSSAI_s snssai) {
 }
 
 //------------------------------------------------------------------------------
-S_NSSAI::S_NSSAI() {
-}
+S_NSSAI::S_NSSAI() {}
 
 //------------------------------------------------------------------------------
-S_NSSAI::~S_NSSAI() {
-}
+S_NSSAI::~S_NSSAI() {}
 
 //------------------------------------------------------------------------------
 void S_NSSAI::setS_NSSAI(SNSSAI_s snssai) {
@@ -66,12 +63,12 @@ void S_NSSAI::setS_NSSAI(SNSSAI_s snssai) {
 }
 
 //------------------------------------------------------------------------------
-void S_NSSAI::getValue(SNSSAI_s &snssai) {
+void S_NSSAI::getValue(SNSSAI_s& snssai) {
   snssai = SNSSAI;
 }
 
 //------------------------------------------------------------------------------
-int S_NSSAI::encode2buffer(uint8_t *buf, int len) {
+int S_NSSAI::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("Encoding S_NSSAI IEI (0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
@@ -114,10 +111,10 @@ int S_NSSAI::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int S_NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int S_NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding S_NSSAI IEI (0x%x)", *buf);
   int decoded_size = 0;
-  SNSSAI_s a = { 0, 0, 0, 0 };
+  SNSSAI_s a       = {0, 0, 0, 0};
   if (is_option) {
     decoded_size++;
   }
@@ -127,11 +124,10 @@ int S_NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
     case 1: {
       a.sst = *(buf + decoded_size);
       decoded_size++;
-      a.sd = -1;
+      a.sd        = -1;
       a.mHplmnSst = -1;
-      a.mHplmnSd = -1;
-    }
-      break;
+      a.mHplmnSd  = -1;
+    } break;
     case 4: {
       a.sst = *(buf + decoded_size);
       decoded_size++;
@@ -144,9 +140,8 @@ int S_NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
       a.sd |= *(buf + decoded_size);
       decoded_size++;
       a.mHplmnSst = -1;
-      a.mHplmnSd = -1;
-    }
-      break;
+      a.mHplmnSd  = -1;
+    } break;
     case 5: {
       a.sst = *(buf + decoded_size);
       decoded_size++;
@@ -161,8 +156,7 @@ int S_NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
       a.mHplmnSst = *(buf + decoded_size);
       decoded_size++;
       a.mHplmnSd = -1;
-    }
-      break;
+    } break;
     case 8: {
       a.sst = *(buf + decoded_size);
       decoded_size++;
@@ -184,12 +178,12 @@ int S_NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
       a.mHplmnSd << 8;
       a.mHplmnSd |= *(buf + decoded_size);
       decoded_size++;
-    }
-      break;
+    } break;
   }
   SNSSAI = a;
-  Logger::nas_mm().debug("Decoded S_NSSAI SST (0x%x) SD (0x%x) hplmnSST (0x%x) hplmnSD (0x%x)", a.sst, a.sd, a.mHplmnSst, a.mHplmnSd);
+  Logger::nas_mm().debug(
+      "Decoded S_NSSAI SST (0x%x) SD (0x%x) hplmnSST (0x%x) hplmnSD (0x%x)",
+      a.sst, a.sd, a.mHplmnSst, a.mHplmnSd);
   Logger::nas_mm().debug("Decoded S_NSSAI len (%d)", decoded_size);
   return decoded_size;
 }
-

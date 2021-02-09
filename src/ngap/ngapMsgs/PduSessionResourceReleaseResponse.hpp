@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -51,8 +51,8 @@ class PduSessionResourceReleaseResponseMsg {
   virtual ~PduSessionResourceReleaseResponseMsg();
 
   void setMessageType();
-  void setAmfUeNgapId(unsigned long id);  //40 bits
-  void setRanUeNgapId(uint32_t id);  // 32 bits
+  void setAmfUeNgapId(unsigned long id);  // 40 bits
+  void setRanUeNgapId(uint32_t id);       // 32 bits
   void setPduSessionResourceReleasedList(
       std::vector<PDUSessionResourceReleasedItem_t> list);
   void setUserLocationInfoNR(struct NrCgi_s cig, struct Tai_s tai);
@@ -60,25 +60,26 @@ class PduSessionResourceReleaseResponseMsg {
   unsigned long getAmfUeNgapId();
   uint32_t getRanUeNgapId();
   bool getPduSessionResourceReleasedList(
-      std::vector<PDUSessionResourceReleasedItem_t> &list);
-  bool getUserLocationInfoNR(struct NrCgi_s &cig, struct Tai_s &tai);
+      std::vector<PDUSessionResourceReleasedItem_t>& list);
+  bool getUserLocationInfoNR(struct NrCgi_s& cig, struct Tai_s& tai);
 
-  int encode2buffer(uint8_t *buf, int buf_size);
-  void encode2buffer_new(char *buf, int &encoded_size);
-  bool decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu);
+  int encode2buffer(uint8_t* buf, int buf_size);
+  void encode2buffer_new(char* buf, int& encoded_size);
+  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
 
  private:
-  Ngap_NGAP_PDU_t *pduSessionResourceReleaseResponsePdu;
-  Ngap_PDUSessionResourceReleaseResponse_t *pduSessionResourceReleaseResponseIEs; //store list of IEs
+  Ngap_NGAP_PDU_t* pduSessionResourceReleaseResponsePdu;
+  Ngap_PDUSessionResourceReleaseResponse_t*
+      pduSessionResourceReleaseResponseIEs;  // store list of IEs
 
-  //section 9.2.1.4 PDU Session Resource Release Response (3GPP TS 38.413 V16.0.0 (2019-12))
-  AMF_UE_NGAP_ID *amfUeNgapId;
-  RAN_UE_NGAP_ID *ranUeNgapId;
-  PDUSessionResourceReleasedListRelRes *pduSessionResourceReleasedList;
-  UserLocationInformation *userLocationInformation;
-  //CriticalityDiagnostics *criticalityDiagnostics;
+  // section 9.2.1.4 PDU Session Resource Release Response (3GPP TS 38.413
+  // V16.0.0 (2019-12))
+  AMF_UE_NGAP_ID* amfUeNgapId;
+  RAN_UE_NGAP_ID* ranUeNgapId;
+  PDUSessionResourceReleasedListRelRes* pduSessionResourceReleasedList;
+  UserLocationInformation* userLocationInformation;
+  // CriticalityDiagnostics *criticalityDiagnostics;
 };
 
-}
+}  // namespace ngap
 #endif
-

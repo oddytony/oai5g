@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,121 +10,108 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "EpsPdnCnxInfo.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-EpsPdnCnxInfo::EpsPdnCnxInfo()
-{
-    m_PgwNodeNameIsSet = false;
+EpsPdnCnxInfo::EpsPdnCnxInfo() {
+  m_PgwNodeNameIsSet = false;
 }
 
-EpsPdnCnxInfo::~EpsPdnCnxInfo()
-{
+EpsPdnCnxInfo::~EpsPdnCnxInfo() {}
+
+void EpsPdnCnxInfo::validate() {
+  // TODO: implement validation
 }
 
-void EpsPdnCnxInfo::validate()
-{
-    // TODO: implement validation
+web::json::value EpsPdnCnxInfo::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  val[utility::conversions::to_string_t("pgwS8cFteid")] =
+      ModelBase::toJson(m_PgwS8cFteid);
+  if (m_PgwNodeNameIsSet) {
+    val[utility::conversions::to_string_t("pgwNodeName")] =
+        ModelBase::toJson(m_PgwNodeName);
+  }
+
+  return val;
 }
 
-web::json::value EpsPdnCnxInfo::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    val[utility::conversions::to_string_t("pgwS8cFteid")] = ModelBase::toJson(m_PgwS8cFteid);
-    if(m_PgwNodeNameIsSet)
-    {
-        val[utility::conversions::to_string_t("pgwNodeName")] = ModelBase::toJson(m_PgwNodeName);
+void EpsPdnCnxInfo::fromJson(const web::json::value& val) {
+  setPgwS8cFteid(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("pgwS8cFteid"))));
+  if (val.has_field(utility::conversions::to_string_t("pgwNodeName"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("pgwNodeName"));
+    if (!fieldValue.is_null()) {
+      setPgwNodeName(ModelBase::stringFromJson(fieldValue));
     }
-
-    return val;
+  }
 }
 
-void EpsPdnCnxInfo::fromJson(const web::json::value& val)
-{
-    setPgwS8cFteid(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("pgwS8cFteid"))));
-    if(val.has_field(utility::conversions::to_string_t("pgwNodeName")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("pgwNodeName"));
-        if(!fieldValue.is_null())
-        {
-            setPgwNodeName(ModelBase::stringFromJson(fieldValue));
-        }
-    }
+void EpsPdnCnxInfo::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("pgwS8cFteid"),
+      m_PgwS8cFteid));
+  if (m_PgwNodeNameIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("pgwNodeName"),
+        m_PgwNodeName));
+  }
 }
 
-void EpsPdnCnxInfo::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
+void EpsPdnCnxInfo::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("pgwS8cFteid"), m_PgwS8cFteid));
-    if(m_PgwNodeNameIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("pgwNodeName"), m_PgwNodeName));
-            }
+  setPgwS8cFteid(ModelBase::stringFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("pgwS8cFteid"))));
+  if (multipart->hasContent(utility::conversions::to_string_t("pgwNodeName"))) {
+    setPgwNodeName(ModelBase::stringFromHttpContent(multipart->getContent(
+        utility::conversions::to_string_t("pgwNodeName"))));
+  }
 }
 
-void EpsPdnCnxInfo::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    setPgwS8cFteid(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("pgwS8cFteid"))));
-    if(multipart->hasContent(utility::conversions::to_string_t("pgwNodeName")))
-    {
-        setPgwNodeName(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("pgwNodeName"))));
-    }
+utility::string_t EpsPdnCnxInfo::getPgwS8cFteid() const {
+  return m_PgwS8cFteid;
 }
 
-utility::string_t EpsPdnCnxInfo::getPgwS8cFteid() const
-{
-    return m_PgwS8cFteid;
+void EpsPdnCnxInfo::setPgwS8cFteid(const utility::string_t& value) {
+  m_PgwS8cFteid = value;
 }
 
-void EpsPdnCnxInfo::setPgwS8cFteid(const utility::string_t& value)
-{
-    m_PgwS8cFteid = value;
-    
+utility::string_t EpsPdnCnxInfo::getPgwNodeName() const {
+  return m_PgwNodeName;
 }
 
-utility::string_t EpsPdnCnxInfo::getPgwNodeName() const
-{
-    return m_PgwNodeName;
+void EpsPdnCnxInfo::setPgwNodeName(const utility::string_t& value) {
+  m_PgwNodeName      = value;
+  m_PgwNodeNameIsSet = true;
 }
 
-void EpsPdnCnxInfo::setPgwNodeName(const utility::string_t& value)
-{
-    m_PgwNodeName = value;
-    m_PgwNodeNameIsSet = true;
+bool EpsPdnCnxInfo::pgwNodeNameIsSet() const {
+  return m_PgwNodeNameIsSet;
 }
 
-bool EpsPdnCnxInfo::pgwNodeNameIsSet() const
-{
-    return m_PgwNodeNameIsSet;
+void EpsPdnCnxInfo::unsetPgwNodeName() {
+  m_PgwNodeNameIsSet = false;
 }
 
-void EpsPdnCnxInfo::unsetPgwNodeName()
-{
-    m_PgwNodeNameIsSet = false;
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

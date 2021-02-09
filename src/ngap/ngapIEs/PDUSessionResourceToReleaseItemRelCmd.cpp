@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -36,31 +36,36 @@ PDUSessionResourceToReleaseItemRelCmd::PDUSessionResourceToReleaseItemRelCmd() {
 }
 
 //------------------------------------------------------------------------------
-PDUSessionResourceToReleaseItemRelCmd::~PDUSessionResourceToReleaseItemRelCmd() {
-}
+PDUSessionResourceToReleaseItemRelCmd::
+    ~PDUSessionResourceToReleaseItemRelCmd() {}
 
 //------------------------------------------------------------------------------
-void PDUSessionResourceToReleaseItemRelCmd::setPDUSessionResourceToReleaseItemRelCmd(
-    PDUSessionID *m_pDUSessionID,
-    OCTET_STRING_t m_pDUSessionResourceReleaseCommandTransfer) {
+void PDUSessionResourceToReleaseItemRelCmd::
+    setPDUSessionResourceToReleaseItemRelCmd(
+        PDUSessionID* m_pDUSessionID,
+        OCTET_STRING_t m_pDUSessionResourceReleaseCommandTransfer) {
   pDUSessionID = m_pDUSessionID;
   pDUSessionResourceReleaseCommandTransfer =
       m_pDUSessionResourceReleaseCommandTransfer;
 }
 
 //------------------------------------------------------------------------------
-void PDUSessionResourceToReleaseItemRelCmd::getPDUSessionResourceToReleaseItemRelCmd(
-    PDUSessionID *&m_pDUSessionID,
-    OCTET_STRING_t &m_pDUSessionResourceReleaseCommandTransfer) {
+void PDUSessionResourceToReleaseItemRelCmd::
+    getPDUSessionResourceToReleaseItemRelCmd(
+        PDUSessionID*& m_pDUSessionID,
+        OCTET_STRING_t& m_pDUSessionResourceReleaseCommandTransfer) {
   m_pDUSessionID = pDUSessionID;
-  m_pDUSessionResourceReleaseCommandTransfer = pDUSessionResourceReleaseCommandTransfer;
+  m_pDUSessionResourceReleaseCommandTransfer =
+      pDUSessionResourceReleaseCommandTransfer;
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceToReleaseItemRelCmd::encode2PDUSessionResourceToReleaseItemRelCmd(
-    Ngap_PDUSessionResourceToReleaseItemRelCmd_t *pduSessionResourceToReleaseItemRelCmd) {
+bool PDUSessionResourceToReleaseItemRelCmd::
+    encode2PDUSessionResourceToReleaseItemRelCmd(
+        Ngap_PDUSessionResourceToReleaseItemRelCmd_t*
+            pduSessionResourceToReleaseItemRelCmd) {
   if (!pDUSessionID->encode2PDUSessionID(
-      pduSessionResourceToReleaseItemRelCmd->pDUSessionID))
+          pduSessionResourceToReleaseItemRelCmd->pDUSessionID))
     return false;
 
   pduSessionResourceToReleaseItemRelCmd
@@ -71,8 +76,10 @@ bool PDUSessionResourceToReleaseItemRelCmd::encode2PDUSessionResourceToReleaseIt
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceToReleaseItemRelCmd::decodefromPDUSessionResourceToReleaseItemRelCmd(
-    Ngap_PDUSessionResourceToReleaseItemRelCmd_t *pduSessionResourceToReleaseItemRelCmd) {
+bool PDUSessionResourceToReleaseItemRelCmd::
+    decodefromPDUSessionResourceToReleaseItemRelCmd(
+        Ngap_PDUSessionResourceToReleaseItemRelCmd_t*
+            pduSessionResourceToReleaseItemRelCmd) {
   pDUSessionID = new PDUSessionID();
 
   pDUSessionResourceReleaseCommandTransfer =
@@ -82,5 +89,4 @@ bool PDUSessionResourceToReleaseItemRelCmd::decodefromPDUSessionResourceToReleas
   return true;
 }
 
-}
-
+}  // namespace ngap

@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,99 +10,93 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "QosFlowNotifyItem.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-QosFlowNotifyItem::QosFlowNotifyItem()
-{
-    m_Qfi = 0;
+QosFlowNotifyItem::QosFlowNotifyItem() {
+  m_Qfi = 0;
 }
 
-QosFlowNotifyItem::~QosFlowNotifyItem()
-{
+QosFlowNotifyItem::~QosFlowNotifyItem() {}
+
+void QosFlowNotifyItem::validate() {
+  // TODO: implement validation
 }
 
-void QosFlowNotifyItem::validate()
-{
-    // TODO: implement validation
+web::json::value QosFlowNotifyItem::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  val[utility::conversions::to_string_t("qfi")] = ModelBase::toJson(m_Qfi);
+  val[utility::conversions::to_string_t("notificationCause")] =
+      ModelBase::toJson(m_NotificationCause);
+
+  return val;
 }
 
-web::json::value QosFlowNotifyItem::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    val[utility::conversions::to_string_t("qfi")] = ModelBase::toJson(m_Qfi);
-    val[utility::conversions::to_string_t("notificationCause")] = ModelBase::toJson(m_NotificationCause);
-
-    return val;
+void QosFlowNotifyItem::fromJson(const web::json::value& val) {
+  setQfi(ModelBase::int32_tFromJson(
+      val.at(utility::conversions::to_string_t("qfi"))));
+  std::shared_ptr<NotificationCause> newNotificationCause(
+      new NotificationCause());
+  newNotificationCause->fromJson(
+      val.at(utility::conversions::to_string_t("notificationCause")));
+  setNotificationCause(newNotificationCause);
 }
 
-void QosFlowNotifyItem::fromJson(const web::json::value& val)
-{
-    setQfi(ModelBase::int32_tFromJson(val.at(utility::conversions::to_string_t("qfi"))));
-    std::shared_ptr<NotificationCause> newNotificationCause(new NotificationCause());
-    newNotificationCause->fromJson(val.at(utility::conversions::to_string_t("notificationCause")));
-    setNotificationCause( newNotificationCause );
+void QosFlowNotifyItem::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("qfi"), m_Qfi));
+  m_NotificationCause->toMultipart(
+      multipart, utility::conversions::to_string_t("notificationCause."));
 }
 
-void QosFlowNotifyItem::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
+void QosFlowNotifyItem::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("qfi"), m_Qfi));
-    m_NotificationCause->toMultipart(multipart, utility::conversions::to_string_t("notificationCause."));
+  setQfi(ModelBase::int32_tFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("qfi"))));
+  std::shared_ptr<NotificationCause> newNotificationCause(
+      new NotificationCause());
+  newNotificationCause->fromMultiPart(
+      multipart, utility::conversions::to_string_t("notificationCause."));
+  setNotificationCause(newNotificationCause);
 }
 
-void QosFlowNotifyItem::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    setQfi(ModelBase::int32_tFromHttpContent(multipart->getContent(utility::conversions::to_string_t("qfi"))));
-    std::shared_ptr<NotificationCause> newNotificationCause(new NotificationCause());
-    newNotificationCause->fromMultiPart(multipart, utility::conversions::to_string_t("notificationCause."));
-    setNotificationCause( newNotificationCause );
+int32_t QosFlowNotifyItem::getQfi() const {
+  return m_Qfi;
 }
 
-int32_t QosFlowNotifyItem::getQfi() const
-{
-    return m_Qfi;
+void QosFlowNotifyItem::setQfi(int32_t value) {
+  m_Qfi = value;
 }
 
-void QosFlowNotifyItem::setQfi(int32_t value)
-{
-    m_Qfi = value;
-    
+std::shared_ptr<NotificationCause> QosFlowNotifyItem::getNotificationCause()
+    const {
+  return m_NotificationCause;
 }
 
-std::shared_ptr<NotificationCause> QosFlowNotifyItem::getNotificationCause() const
-{
-    return m_NotificationCause;
+void QosFlowNotifyItem::setNotificationCause(
+    const std::shared_ptr<NotificationCause>& value) {
+  m_NotificationCause = value;
 }
 
-void QosFlowNotifyItem::setNotificationCause(const std::shared_ptr<NotificationCause>& value)
-{
-    m_NotificationCause = value;
-    
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -46,25 +46,28 @@ class PDUSessionResourceSetupItemCxtReq {
   virtual ~PDUSessionResourceSetupItemCxtReq();
 
   void setPDUSessionResourceSetupItemCxtReq(
-      PDUSessionID *m_pDUSessionID, NAS_PDU *m_nAS_PDU, S_NSSAI *m_s_NSSAI,
+      PDUSessionID* m_pDUSessionID, NAS_PDU* m_nAS_PDU, S_NSSAI* m_s_NSSAI,
       OCTET_STRING_t m_pDUSessionResourceSetupRequestTransfer);
   void getPDUSessionResourceSetupItemCxtReq(
-      PDUSessionID *&m_pDUSessionID, NAS_PDU *&m_nAS_PDU, S_NSSAI *&m_s_NSSAI,
-      OCTET_STRING_t &m_pDUSessionResourceSetupRequestTransfer);
+      PDUSessionID*& m_pDUSessionID, NAS_PDU*& m_nAS_PDU, S_NSSAI*& m_s_NSSAI,
+      OCTET_STRING_t& m_pDUSessionResourceSetupRequestTransfer);
 
   bool encode2PDUSessionResourceSetupItemCxtReq(
-      Ngap_PDUSessionResourceSetupItemCxtReq_t *pduSessionResourceSetupItemCxtReq);
+      Ngap_PDUSessionResourceSetupItemCxtReq_t*
+          pduSessionResourceSetupItemCxtReq);
   bool decodefromPDUSessionResourceSetupItemCxtReq(
-      Ngap_PDUSessionResourceSetupItemCxtReq_t *pduSessionResourceSetupItemCxtReq);
+      Ngap_PDUSessionResourceSetupItemCxtReq_t*
+          pduSessionResourceSetupItemCxtReq);
+
  private:
-  PDUSessionID *pDUSessionID;
-  NAS_PDU *nAS_PDU; /* OPTIONAL */
-  S_NSSAI *s_NSSAI;
-  //PduSessionResourceSetupRequestTransferIE *pduSessionResourceSetupRequestTransfer;
+  PDUSessionID* pDUSessionID;
+  NAS_PDU* nAS_PDU; /* OPTIONAL */
+  S_NSSAI* s_NSSAI;
+  // PduSessionResourceSetupRequestTransferIE
+  // *pduSessionResourceSetupRequestTransfer;
   OCTET_STRING_t pDUSessionResourceSetupRequestTransfer;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -32,17 +32,16 @@ using namespace nas;
 using namespace std;
 
 //------------------------------------------------------------------------------
-EPS_NAS_Security_Algorithms::EPS_NAS_Security_Algorithms() {
-}
+EPS_NAS_Security_Algorithms::EPS_NAS_Security_Algorithms() {}
 
 //------------------------------------------------------------------------------
-EPS_NAS_Security_Algorithms::~EPS_NAS_Security_Algorithms() {
-}
+EPS_NAS_Security_Algorithms::~EPS_NAS_Security_Algorithms() {}
 
 //------------------------------------------------------------------------------
-EPS_NAS_Security_Algorithms::EPS_NAS_Security_Algorithms(uint8_t iei, uint8_t ciphering, uint8_t integrity_protection) {
-  _iei = iei;
-  CIPHERING = ciphering;
+EPS_NAS_Security_Algorithms::EPS_NAS_Security_Algorithms(
+    uint8_t iei, uint8_t ciphering, uint8_t integrity_protection) {
+  _iei                 = iei;
+  CIPHERING            = ciphering;
   INTEGRITY_PROTECTION = integrity_protection;
 }
 
@@ -67,8 +66,9 @@ uint8_t EPS_NAS_Security_Algorithms::getINTEGRITY_PROTECTION() {
 }
 
 //------------------------------------------------------------------------------
-int EPS_NAS_Security_Algorithms::encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding EPS_NAS_Security_Algorithms iei(0x%x)", _iei);
+int EPS_NAS_Security_Algorithms::encode2buffer(uint8_t* buf, int len) {
+  Logger::nas_mm().debug(
+      "encoding EPS_NAS_Security_Algorithms iei(0x%x)", _iei);
   int encoded_size = 0;
   if (len < 2) {
     Logger::nas_mm().error("len is less than 2");
@@ -78,7 +78,8 @@ int EPS_NAS_Security_Algorithms::encode2buffer(uint8_t *buf, int len) {
   else {
     *(buf + encoded_size) = _iei;
     encoded_size++;
-    *(buf + encoded_size) = ((CIPHERING & 0x07) << 4) | (INTEGRITY_PROTECTION & 0x07);
+    *(buf + encoded_size) =
+        ((CIPHERING & 0x07) << 4) | (INTEGRITY_PROTECTION & 0x07);
     encoded_size++;
     Logger::nas_mm().debug("encoded EPS_NAS_Security_Algorithms IE 0x%x", *buf);
   }
@@ -86,7 +87,8 @@ int EPS_NAS_Security_Algorithms::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int EPS_NAS_Security_Algorithms::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int EPS_NAS_Security_Algorithms::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding EPS_NAS_Security_Algorithms IE");
   if (len < 2) {
     Logger::nas_mm().error("len is less than 2");
@@ -94,11 +96,13 @@ int EPS_NAS_Security_Algorithms::decodefrombuffer(uint8_t *buf, int len, bool is
   } else {
     int decoded_size = 0;
     decoded_size++;
-    CIPHERING = (*(buf + decoded_size) & 0x70) >> 4;
+    CIPHERING            = (*(buf + decoded_size) & 0x70) >> 4;
     INTEGRITY_PROTECTION = *(buf + decoded_size) & 0x07;
     decoded_size++;
-    Logger::nas_mm().debug("decoded NAS_Security_Algorithms len 1 octet,CIPHERING=0x%x,INTEGRITY_PROTECTION=0x%x", CIPHERING, INTEGRITY_PROTECTION);
+    Logger::nas_mm().debug(
+        "decoded NAS_Security_Algorithms len 1 "
+        "octet,CIPHERING=0x%x,INTEGRITY_PROTECTION=0x%x",
+        CIPHERING, INTEGRITY_PROTECTION);
     return decoded_size;
   }
 }
-

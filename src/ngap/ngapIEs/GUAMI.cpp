@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -28,71 +28,63 @@
 
 #include "GUAMI.hpp"
 
-#include<iostream>
+#include <iostream>
 using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
 GUAMI::GUAMI() {
-  plmnId = NULL;
+  plmnId      = NULL;
   aMFRegionID = NULL;
-  aMFSetID = NULL;
-  aMFPointer = NULL;
+  aMFSetID    = NULL;
+  aMFPointer  = NULL;
 }
 
 //------------------------------------------------------------------------------
-GUAMI::~GUAMI() {
-}
+GUAMI::~GUAMI() {}
 
 //------------------------------------------------------------------------------
-void GUAMI::setGUAMI(PlmnId *m_plmnId, AMFRegionID *m_aMFRegionID,
-                     AMFSetID *m_aMFSetID, AMFPointer *m_aMFPointer) {
-  plmnId = m_plmnId;
+void GUAMI::setGUAMI(
+    PlmnId* m_plmnId, AMFRegionID* m_aMFRegionID, AMFSetID* m_aMFSetID,
+    AMFPointer* m_aMFPointer) {
+  plmnId      = m_plmnId;
   aMFRegionID = m_aMFRegionID;
-  aMFSetID = m_aMFSetID;
-  aMFPointer = m_aMFPointer;
+  aMFSetID    = m_aMFSetID;
+  aMFPointer  = m_aMFPointer;
 }
 
 //------------------------------------------------------------------------------
-bool GUAMI::encode2GUAMI(Ngap_GUAMI_t *guami) {
-  if (!plmnId->encode2octetstring(guami->pLMNIdentity))
-    return false;
-  if (!aMFRegionID->encode2bitstring(guami->aMFRegionID))
-    return false;
-  if (!aMFSetID->encode2bitstring(guami->aMFSetID))
-    return false;
-  if (!aMFPointer->encode2bitstring(guami->aMFPointer))
-    return false;
+bool GUAMI::encode2GUAMI(Ngap_GUAMI_t* guami) {
+  if (!plmnId->encode2octetstring(guami->pLMNIdentity)) return false;
+  if (!aMFRegionID->encode2bitstring(guami->aMFRegionID)) return false;
+  if (!aMFSetID->encode2bitstring(guami->aMFSetID)) return false;
+  if (!aMFPointer->encode2bitstring(guami->aMFPointer)) return false;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool GUAMI::decodefromGUAMI(Ngap_GUAMI_t *pdu) {
-  plmnId = new PlmnId();
+bool GUAMI::decodefromGUAMI(Ngap_GUAMI_t* pdu) {
+  plmnId      = new PlmnId();
   aMFRegionID = new AMFRegionID();
-  aMFSetID = new AMFSetID();
-  aMFPointer = new AMFPointer();
-  if (!plmnId->decodefromoctetstring(pdu->pLMNIdentity))
-    return false;
-  if (!aMFRegionID->decodefrombitstring(pdu->aMFRegionID))
-    return false;
-  if (!aMFSetID->decodefrombitstring(pdu->aMFSetID))
-    return false;
-  if (!aMFPointer->decodefrombitstring(pdu->aMFPointer))
-    return false;
+  aMFSetID    = new AMFSetID();
+  aMFPointer  = new AMFPointer();
+  if (!plmnId->decodefromoctetstring(pdu->pLMNIdentity)) return false;
+  if (!aMFRegionID->decodefrombitstring(pdu->aMFRegionID)) return false;
+  if (!aMFSetID->decodefrombitstring(pdu->aMFSetID)) return false;
+  if (!aMFPointer->decodefrombitstring(pdu->aMFPointer)) return false;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-void GUAMI::getGUAMI(PlmnId *&m_plmnId, AMFRegionID *&m_aMFRegionID,
-                     AMFSetID *&m_aMFSetID, AMFPointer *&m_aMFPointer) {
-  m_plmnId = plmnId;
+void GUAMI::getGUAMI(
+    PlmnId*& m_plmnId, AMFRegionID*& m_aMFRegionID, AMFSetID*& m_aMFSetID,
+    AMFPointer*& m_aMFPointer) {
+  m_plmnId      = plmnId;
   m_aMFRegionID = aMFRegionID;
-  m_aMFSetID = aMFSetID;
-  m_aMFPointer = aMFPointer;
+  m_aMFSetID    = aMFSetID;
+  m_aMFPointer  = aMFPointer;
 }
-}
-
+}  // namespace ngap

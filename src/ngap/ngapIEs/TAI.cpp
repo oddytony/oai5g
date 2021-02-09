@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -36,44 +36,39 @@ namespace ngap {
 //------------------------------------------------------------------------------
 TAI::TAI() {
   plmnId = NULL;
-  tac = NULL;
+  tac    = NULL;
 }
 
 //------------------------------------------------------------------------------
-TAI::~TAI() {
-}
+TAI::~TAI() {}
 
 //------------------------------------------------------------------------------
-void TAI::setTAI(PlmnId *m_plmnId, TAC *m_tac) {
+void TAI::setTAI(PlmnId* m_plmnId, TAC* m_tac) {
   plmnId = m_plmnId;
-  tac = m_tac;
+  tac    = m_tac;
 }
 
 //------------------------------------------------------------------------------
-bool TAI::encode2TAI(Ngap_TAI_t *tai) {
-  if (!plmnId->encode2octetstring(tai->pLMNIdentity))
-    return false;
-  if (!tac->encode2octetstring(tai->tAC))
-    return false;
+bool TAI::encode2TAI(Ngap_TAI_t* tai) {
+  if (!plmnId->encode2octetstring(tai->pLMNIdentity)) return false;
+  if (!tac->encode2octetstring(tai->tAC)) return false;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool TAI::decodefromTAI(Ngap_TAI_t *tai) {
+bool TAI::decodefromTAI(Ngap_TAI_t* tai) {
   plmnId = new PlmnId();
-  tac = new TAC();
-  if (!plmnId->decodefromoctetstring(tai->pLMNIdentity))
-    return false;
-  if (!tac->decodefromoctetstring(tai->tAC))
-    return false;
+  tac    = new TAC();
+  if (!plmnId->decodefromoctetstring(tai->pLMNIdentity)) return false;
+  if (!tac->decodefromoctetstring(tai->tAC)) return false;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-void TAI::getTAI(PlmnId *&m_plmnId, TAC *&m_tac) {
+void TAI::getTAI(PlmnId*& m_plmnId, TAC*& m_tac) {
   m_plmnId = plmnId;
-  m_tac = tac;
+  m_tac    = tac;
 }
-}
+}  // namespace ngap

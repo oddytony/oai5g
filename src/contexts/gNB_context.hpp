@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -44,19 +44,14 @@ extern "C" {
 using namespace sctp;
 using namespace ngap;
 
-enum amf_ng_gnb_state_s {
-  NGAP_INIT,
-  NGAP_RESETING,
-  NGAP_READY,
-  NGAP_SHUTDOWN
-};
+enum amf_ng_gnb_state_s { NGAP_INIT, NGAP_RESETING, NGAP_READY, NGAP_SHUTDOWN };
 class gnb_context {
  public:
   enum amf_ng_gnb_state_s ng_state;
 
   std::string gnb_name;
   long globalRanNodeId;
-  e_Ngap_PagingDRX default_paging_drx;  //v32, v64, v128, v256
+  e_Ngap_PagingDRX default_paging_drx;  // v32, v64, v128, v256
   std::vector<SupportedItem_t> s_ta_list;
   bstring ue_radio_cap_ind;
 
@@ -64,7 +59,6 @@ class gnb_context {
   sctp_stream_id_t next_sctp_stream;
   sctp_stream_id_t instreams;
   sctp_stream_id_t outstreams;
-
 };
 
 #endif

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -33,22 +33,20 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 _5GMMCapability::_5GMMCapability(const uint8_t iei, uint8_t value) {
-  m_iei = iei;
+  m_iei   = iei;
   m_value = value;
-  length = 3;
+  length  = 3;
 }
 
 //------------------------------------------------------------------------------
-_5GMMCapability::_5GMMCapability() {
-}
+_5GMMCapability::_5GMMCapability() {}
 
 //------------------------------------------------------------------------------
-_5GMMCapability::~_5GMMCapability() {
-}
+_5GMMCapability::~_5GMMCapability() {}
 
 //------------------------------------------------------------------------------
 void _5GMMCapability::setValue(uint8_t iei, uint8_t value) {
-  m_iei = iei;
+  m_iei   = iei;
   m_value = value;
 }
 
@@ -58,7 +56,7 @@ uint8_t _5GMMCapability::getValue() {
 }
 
 //------------------------------------------------------------------------------
-int _5GMMCapability::encode2buffer(uint8_t *buf, int len) {
+int _5GMMCapability::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding _5GMMCapability iei(0x%x)", m_iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
@@ -83,7 +81,7 @@ int _5GMMCapability::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int _5GMMCapability::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int _5GMMCapability::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding _5GMMCapability iei(0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {

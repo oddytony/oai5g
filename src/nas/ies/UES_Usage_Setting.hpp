@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,15 +39,15 @@ class UES_Usage_Setting {
   UES_Usage_Setting(uint8_t iei);
   UES_Usage_Setting(const uint8_t iei, bool ues_usage_setting);
   ~UES_Usage_Setting();
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(uint8_t *buf, int len, bool is_option);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(uint8_t* buf, int len, bool is_option);
   void setValue(bool value);
   bool getValue();
+
  private:
   uint8_t _iei;
   bool _ues_usage_setting;
 };
-}
+}  // namespace nas
 
 #endif
-

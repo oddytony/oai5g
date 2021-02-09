@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,64 +10,48 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "UpConfidentiality.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
+UpConfidentiality::UpConfidentiality() {}
 
+UpConfidentiality::~UpConfidentiality() {}
 
-
-UpConfidentiality::UpConfidentiality()
-{
+void UpConfidentiality::validate() {
+  // TODO: implement validation
 }
 
-UpConfidentiality::~UpConfidentiality()
-{
+web::json::value UpConfidentiality::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  return val;
 }
 
-void UpConfidentiality::validate()
-{
-    // TODO: implement validation
+void UpConfidentiality::fromJson(const web::json::value& val) {}
+
+void UpConfidentiality::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 }
 
-web::json::value UpConfidentiality::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-
-    return val;
+void UpConfidentiality::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 }
 
-void UpConfidentiality::fromJson(const web::json::value& val)
-{
-}
-
-void UpConfidentiality::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-}
-
-void UpConfidentiality::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

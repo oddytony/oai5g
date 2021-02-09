@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,12 +39,11 @@ PDUSessionResourceSetupItemCxtRes::PDUSessionResourceSetupItemCxtRes() {
 }
 
 //------------------------------------------------------------------------------
-PDUSessionResourceSetupItemCxtRes::~PDUSessionResourceSetupItemCxtRes() {
-}
+PDUSessionResourceSetupItemCxtRes::~PDUSessionResourceSetupItemCxtRes() {}
 
 //------------------------------------------------------------------------------
 void PDUSessionResourceSetupItemCxtRes::setPDUSessionResourceSetupItemCxtRes(
-    PDUSessionID *m_pDUSessionID,
+    PDUSessionID* m_pDUSessionID,
     OCTET_STRING_t m_pDUSessionResourceSetupResponseTransfer) {
   pDUSessionID = m_pDUSessionID;
   pDUSessionResourceSetupResponseTransfer =
@@ -52,12 +51,13 @@ void PDUSessionResourceSetupItemCxtRes::setPDUSessionResourceSetupItemCxtRes(
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceSetupItemCxtRes::encode2PDUSessionResourceSetupItemCxtRes(
-    Ngap_PDUSessionResourceSetupItemCxtRes_t *pduSessionResourceSetupItemCxtRes) {
-  if (!pDUSessionID)
-    return false;
+bool PDUSessionResourceSetupItemCxtRes::
+    encode2PDUSessionResourceSetupItemCxtRes(
+        Ngap_PDUSessionResourceSetupItemCxtRes_t*
+            pduSessionResourceSetupItemCxtRes) {
+  if (!pDUSessionID) return false;
   if (!pDUSessionID->encode2PDUSessionID(
-      pduSessionResourceSetupItemCxtRes->pDUSessionID))
+          pduSessionResourceSetupItemCxtRes->pDUSessionID))
     return false;
   pduSessionResourceSetupItemCxtRes->pDUSessionResourceSetupResponseTransfer =
       pDUSessionResourceSetupResponseTransfer;
@@ -66,26 +66,28 @@ bool PDUSessionResourceSetupItemCxtRes::encode2PDUSessionResourceSetupItemCxtRes
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceSetupItemCxtRes::decodefromPDUSessionResourceSetupItemCxtRes(
-    Ngap_PDUSessionResourceSetupItemCxtRes_t *pduSessionResourceSetupItemCxtRes) {
+bool PDUSessionResourceSetupItemCxtRes::
+    decodefromPDUSessionResourceSetupItemCxtRes(
+        Ngap_PDUSessionResourceSetupItemCxtRes_t*
+            pduSessionResourceSetupItemCxtRes) {
   pDUSessionID = new PDUSessionID();
   if (!pDUSessionID->decodefromPDUSessionID(
-      pduSessionResourceSetupItemCxtRes->pDUSessionID))
+          pduSessionResourceSetupItemCxtRes->pDUSessionID))
     return false;
-  pDUSessionResourceSetupResponseTransfer = pduSessionResourceSetupItemCxtRes
-      ->pDUSessionResourceSetupResponseTransfer;
+  pDUSessionResourceSetupResponseTransfer =
+      pduSessionResourceSetupItemCxtRes
+          ->pDUSessionResourceSetupResponseTransfer;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
 void PDUSessionResourceSetupItemCxtRes::getPDUSessionResourceSetupItemCxtRes(
-    PDUSessionID *&m_pDUSessionID,
-    OCTET_STRING_t &m_pDUSessionResourceSetupResponseTransfer) {
+    PDUSessionID*& m_pDUSessionID,
+    OCTET_STRING_t& m_pDUSessionResourceSetupResponseTransfer) {
   m_pDUSessionID = pDUSessionID;
   m_pDUSessionResourceSetupResponseTransfer =
       pDUSessionResourceSetupResponseTransfer;
 }
 
-}
-
+}  // namespace ngap

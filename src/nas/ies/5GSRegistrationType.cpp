@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,39 +34,39 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 _5GSRegistrationType::_5GSRegistrationType() {
-  iei = 0;
-  is_for = false;
+  iei      = 0;
+  is_for   = false;
   reg_type = 0;
 }
 
 //------------------------------------------------------------------------------
 _5GSRegistrationType::_5GSRegistrationType(bool is_for, uint8_t type) {
-  this->is_for = is_for;
+  this->is_for   = is_for;
   this->reg_type = 0x07 & type;
-  this->iei = 0;
+  this->iei      = 0;
 }
 
 //------------------------------------------------------------------------------
-_5GSRegistrationType::_5GSRegistrationType(uint8_t iei, bool is_for, uint8_t type) {
-  this->is_for = is_for;
+_5GSRegistrationType::_5GSRegistrationType(
+    uint8_t iei, bool is_for, uint8_t type) {
+  this->is_for   = is_for;
   this->reg_type = 0x07 & type;
-  this->iei = 0x0f & iei;
+  this->iei      = 0x0f & iei;
 }
 
 //------------------------------------------------------------------------------
-_5GSRegistrationType::~_5GSRegistrationType() {
-}
+_5GSRegistrationType::~_5GSRegistrationType() {}
 
 //------------------------------------------------------------------------------
-int _5GSRegistrationType::encode2buffer(uint8_t *buf, int len) {
+int _5GSRegistrationType::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().error("encoding 5gsregistrationtype IE");
   if (len < 1) {
-    Logger::nas_mm().error("encoding 5gsregistrationtype error(len is less than one)");
+    Logger::nas_mm().error(
+        "encoding 5gsregistrationtype error(len is less than one)");
     return -1;
   }
   uint8_t octet = 0;
-  if (is_for)
-    octet = 0x08;
+  if (is_for) octet = 0x08;
   octet |= reg_type;
   if (!(iei & 0x0f)) {
     *buf = 0x0f & octet;
@@ -80,7 +80,8 @@ int _5GSRegistrationType::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int _5GSRegistrationType::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int _5GSRegistrationType::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option) {
   if (is_option) {
     return -1;
   }

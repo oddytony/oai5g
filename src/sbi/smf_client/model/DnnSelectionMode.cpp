@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,64 +10,48 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "DnnSelectionMode.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
+DnnSelectionMode::DnnSelectionMode() {}
 
+DnnSelectionMode::~DnnSelectionMode() {}
 
-
-DnnSelectionMode::DnnSelectionMode()
-{
+void DnnSelectionMode::validate() {
+  // TODO: implement validation
 }
 
-DnnSelectionMode::~DnnSelectionMode()
-{
+web::json::value DnnSelectionMode::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  return val;
 }
 
-void DnnSelectionMode::validate()
-{
-    // TODO: implement validation
+void DnnSelectionMode::fromJson(const web::json::value& val) {}
+
+void DnnSelectionMode::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 }
 
-web::json::value DnnSelectionMode::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-
-    return val;
+void DnnSelectionMode::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 }
 
-void DnnSelectionMode::fromJson(const web::json::value& val)
-{
-}
-
-void DnnSelectionMode::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-}
-
-void DnnSelectionMode::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

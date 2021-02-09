@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,232 +10,210 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "QosFlowSetupItem.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-QosFlowSetupItem::QosFlowSetupItem()
-{
-    m_Qfi = 0;
-    m_Ebi = 0;
-    m_EbiIsSet = false;
-    m_QosFlowDescriptionIsSet = false;
-    m_QosFlowProfileIsSet = false;
+QosFlowSetupItem::QosFlowSetupItem() {
+  m_Qfi                     = 0;
+  m_Ebi                     = 0;
+  m_EbiIsSet                = false;
+  m_QosFlowDescriptionIsSet = false;
+  m_QosFlowProfileIsSet     = false;
 }
 
-QosFlowSetupItem::~QosFlowSetupItem()
-{
+QosFlowSetupItem::~QosFlowSetupItem() {}
+
+void QosFlowSetupItem::validate() {
+  // TODO: implement validation
 }
 
-void QosFlowSetupItem::validate()
-{
-    // TODO: implement validation
+web::json::value QosFlowSetupItem::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  val[utility::conversions::to_string_t("qfi")] = ModelBase::toJson(m_Qfi);
+  val[utility::conversions::to_string_t("qosRules")] =
+      ModelBase::toJson(m_QosRules);
+  if (m_EbiIsSet) {
+    val[utility::conversions::to_string_t("ebi")] = ModelBase::toJson(m_Ebi);
+  }
+  if (m_QosFlowDescriptionIsSet) {
+    val[utility::conversions::to_string_t("qosFlowDescription")] =
+        ModelBase::toJson(m_QosFlowDescription);
+  }
+  if (m_QosFlowProfileIsSet) {
+    val[utility::conversions::to_string_t("qosFlowProfile")] =
+        ModelBase::toJson(m_QosFlowProfile);
+  }
+
+  return val;
 }
 
-web::json::value QosFlowSetupItem::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    val[utility::conversions::to_string_t("qfi")] = ModelBase::toJson(m_Qfi);
-    val[utility::conversions::to_string_t("qosRules")] = ModelBase::toJson(m_QosRules);
-    if(m_EbiIsSet)
-    {
-        val[utility::conversions::to_string_t("ebi")] = ModelBase::toJson(m_Ebi);
+void QosFlowSetupItem::fromJson(const web::json::value& val) {
+  setQfi(ModelBase::int32_tFromJson(
+      val.at(utility::conversions::to_string_t("qfi"))));
+  setQosRules(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("qosRules"))));
+  if (val.has_field(utility::conversions::to_string_t("ebi"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("ebi"));
+    if (!fieldValue.is_null()) {
+      setEbi(ModelBase::int32_tFromJson(fieldValue));
     }
-    if(m_QosFlowDescriptionIsSet)
-    {
-        val[utility::conversions::to_string_t("qosFlowDescription")] = ModelBase::toJson(m_QosFlowDescription);
+  }
+  if (val.has_field(utility::conversions::to_string_t("qosFlowDescription"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("qosFlowDescription"));
+    if (!fieldValue.is_null()) {
+      setQosFlowDescription(ModelBase::stringFromJson(fieldValue));
     }
-    if(m_QosFlowProfileIsSet)
-    {
-        val[utility::conversions::to_string_t("qosFlowProfile")] = ModelBase::toJson(m_QosFlowProfile);
+  }
+  if (val.has_field(utility::conversions::to_string_t("qosFlowProfile"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("qosFlowProfile"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<QosFlowProfile> newItem(new QosFlowProfile());
+      newItem->fromJson(fieldValue);
+      setQosFlowProfile(newItem);
     }
-
-    return val;
+  }
 }
 
-void QosFlowSetupItem::fromJson(const web::json::value& val)
-{
-    setQfi(ModelBase::int32_tFromJson(val.at(utility::conversions::to_string_t("qfi"))));
-    setQosRules(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("qosRules"))));
-    if(val.has_field(utility::conversions::to_string_t("ebi")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("ebi"));
-        if(!fieldValue.is_null())
-        {
-            setEbi(ModelBase::int32_tFromJson(fieldValue));
-        }
+void QosFlowSetupItem::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("qfi"), m_Qfi));
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("qosRules"), m_QosRules));
+  if (m_EbiIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("ebi"), m_Ebi));
+  }
+  if (m_QosFlowDescriptionIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("qosFlowDescription"),
+        m_QosFlowDescription));
+  }
+  if (m_QosFlowProfileIsSet) {
+    if (m_QosFlowProfile.get()) {
+      m_QosFlowProfile->toMultipart(
+          multipart, utility::conversions::to_string_t("qosFlowProfile."));
     }
-    if(val.has_field(utility::conversions::to_string_t("qosFlowDescription")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("qosFlowDescription"));
-        if(!fieldValue.is_null())
-        {
-            setQosFlowDescription(ModelBase::stringFromJson(fieldValue));
-        }
+  }
+}
+
+void QosFlowSetupItem::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  setQfi(ModelBase::int32_tFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("qfi"))));
+  setQosRules(ModelBase::stringFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("qosRules"))));
+  if (multipart->hasContent(utility::conversions::to_string_t("ebi"))) {
+    setEbi(ModelBase::int32_tFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("ebi"))));
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("qosFlowDescription"))) {
+    setQosFlowDescription(
+        ModelBase::stringFromHttpContent(multipart->getContent(
+            utility::conversions::to_string_t("qosFlowDescription"))));
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("qosFlowProfile"))) {
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("qosFlowProfile"))) {
+      std::shared_ptr<QosFlowProfile> newItem(new QosFlowProfile());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("qosFlowProfile."));
+      setQosFlowProfile(newItem);
     }
-    if(val.has_field(utility::conversions::to_string_t("qosFlowProfile")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("qosFlowProfile"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<QosFlowProfile> newItem(new QosFlowProfile());
-            newItem->fromJson(fieldValue);
-            setQosFlowProfile( newItem );
-        }
-    }
+  }
 }
 
-void QosFlowSetupItem::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("qfi"), m_Qfi));
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("qosRules"), m_QosRules));
-    if(m_EbiIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("ebi"), m_Ebi));
-    }
-    if(m_QosFlowDescriptionIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("qosFlowDescription"), m_QosFlowDescription));
-            }
-    if(m_QosFlowProfileIsSet)
-    {
-        if (m_QosFlowProfile.get())
-        {
-            m_QosFlowProfile->toMultipart(multipart, utility::conversions::to_string_t("qosFlowProfile."));
-        }
-    }
+int32_t QosFlowSetupItem::getQfi() const {
+  return m_Qfi;
 }
 
-void QosFlowSetupItem::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    setQfi(ModelBase::int32_tFromHttpContent(multipart->getContent(utility::conversions::to_string_t("qfi"))));
-    setQosRules(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("qosRules"))));
-    if(multipart->hasContent(utility::conversions::to_string_t("ebi")))
-    {
-        setEbi(ModelBase::int32_tFromHttpContent(multipart->getContent(utility::conversions::to_string_t("ebi"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("qosFlowDescription")))
-    {
-        setQosFlowDescription(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("qosFlowDescription"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("qosFlowProfile")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("qosFlowProfile")))
-        {
-            std::shared_ptr<QosFlowProfile> newItem(new QosFlowProfile());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("qosFlowProfile."));
-            setQosFlowProfile( newItem );
-        }
-    }
+void QosFlowSetupItem::setQfi(int32_t value) {
+  m_Qfi = value;
 }
 
-int32_t QosFlowSetupItem::getQfi() const
-{
-    return m_Qfi;
+utility::string_t QosFlowSetupItem::getQosRules() const {
+  return m_QosRules;
 }
 
-void QosFlowSetupItem::setQfi(int32_t value)
-{
-    m_Qfi = value;
-    
+void QosFlowSetupItem::setQosRules(const utility::string_t& value) {
+  m_QosRules = value;
 }
 
-utility::string_t QosFlowSetupItem::getQosRules() const
-{
-    return m_QosRules;
+int32_t QosFlowSetupItem::getEbi() const {
+  return m_Ebi;
 }
 
-void QosFlowSetupItem::setQosRules(const utility::string_t& value)
-{
-    m_QosRules = value;
-    
+void QosFlowSetupItem::setEbi(int32_t value) {
+  m_Ebi      = value;
+  m_EbiIsSet = true;
 }
 
-int32_t QosFlowSetupItem::getEbi() const
-{
-    return m_Ebi;
+bool QosFlowSetupItem::ebiIsSet() const {
+  return m_EbiIsSet;
 }
 
-void QosFlowSetupItem::setEbi(int32_t value)
-{
-    m_Ebi = value;
-    m_EbiIsSet = true;
+void QosFlowSetupItem::unsetEbi() {
+  m_EbiIsSet = false;
 }
 
-bool QosFlowSetupItem::ebiIsSet() const
-{
-    return m_EbiIsSet;
+utility::string_t QosFlowSetupItem::getQosFlowDescription() const {
+  return m_QosFlowDescription;
 }
 
-void QosFlowSetupItem::unsetEbi()
-{
-    m_EbiIsSet = false;
+void QosFlowSetupItem::setQosFlowDescription(const utility::string_t& value) {
+  m_QosFlowDescription      = value;
+  m_QosFlowDescriptionIsSet = true;
 }
 
-utility::string_t QosFlowSetupItem::getQosFlowDescription() const
-{
-    return m_QosFlowDescription;
+bool QosFlowSetupItem::qosFlowDescriptionIsSet() const {
+  return m_QosFlowDescriptionIsSet;
 }
 
-void QosFlowSetupItem::setQosFlowDescription(const utility::string_t& value)
-{
-    m_QosFlowDescription = value;
-    m_QosFlowDescriptionIsSet = true;
+void QosFlowSetupItem::unsetQosFlowDescription() {
+  m_QosFlowDescriptionIsSet = false;
 }
 
-bool QosFlowSetupItem::qosFlowDescriptionIsSet() const
-{
-    return m_QosFlowDescriptionIsSet;
+std::shared_ptr<QosFlowProfile> QosFlowSetupItem::getQosFlowProfile() const {
+  return m_QosFlowProfile;
 }
 
-void QosFlowSetupItem::unsetQosFlowDescription()
-{
-    m_QosFlowDescriptionIsSet = false;
+void QosFlowSetupItem::setQosFlowProfile(
+    const std::shared_ptr<QosFlowProfile>& value) {
+  m_QosFlowProfile      = value;
+  m_QosFlowProfileIsSet = true;
 }
 
-std::shared_ptr<QosFlowProfile> QosFlowSetupItem::getQosFlowProfile() const
-{
-    return m_QosFlowProfile;
+bool QosFlowSetupItem::qosFlowProfileIsSet() const {
+  return m_QosFlowProfileIsSet;
 }
 
-void QosFlowSetupItem::setQosFlowProfile(const std::shared_ptr<QosFlowProfile>& value)
-{
-    m_QosFlowProfile = value;
-    m_QosFlowProfileIsSet = true;
+void QosFlowSetupItem::unsetQosFlowProfile() {
+  m_QosFlowProfileIsSet = false;
 }
 
-bool QosFlowSetupItem::qosFlowProfileIsSet() const
-{
-    return m_QosFlowProfileIsSet;
-}
-
-void QosFlowSetupItem::unsetQosFlowProfile()
-{
-    m_QosFlowProfileIsSet = false;
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

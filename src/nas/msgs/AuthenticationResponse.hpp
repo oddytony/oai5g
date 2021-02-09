@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,21 +37,20 @@ class AuthenticationResponse {
  public:
   AuthenticationResponse();
   ~AuthenticationResponse();
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(NasMmPlainHeader* header, uint8_t* buf, int len);
   void setHeader(uint8_t security_header_type);
   void setAuthentication_Response_Parameter(bstring para);
   void setEAP_Message(bstring eap);
-  bool getAuthenticationResponseParameter(bstring &para);
-  bool getEapMessage(bstring &eap);
+  bool getAuthenticationResponseParameter(bstring& para);
+  bool getEapMessage(bstring& eap);
 
  public:
-  NasMmPlainHeader *plain_header;
-  Authentication_Response_Parameter *ie_authentication_response_parameter;
-  EAP_Message *ie_eap_message;
+  NasMmPlainHeader* plain_header;
+  Authentication_Response_Parameter* ie_authentication_response_parameter;
+  EAP_Message* ie_eap_message;
 };
 
-}
+}  // namespace nas
 
 #endif
-

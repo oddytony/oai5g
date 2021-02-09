@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,166 +10,146 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "BackupAmfInfo.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-BackupAmfInfo::BackupAmfInfo()
-{
-    m_BackupAmf = utility::conversions::to_string_t("");
-    m_GuamiListIsSet = false;
+BackupAmfInfo::BackupAmfInfo() {
+  m_BackupAmf      = utility::conversions::to_string_t("");
+  m_GuamiListIsSet = false;
 }
 
-BackupAmfInfo::~BackupAmfInfo()
-{
+BackupAmfInfo::~BackupAmfInfo() {}
+
+void BackupAmfInfo::validate() {
+  // TODO: implement validation
 }
 
-void BackupAmfInfo::validate()
-{
-    // TODO: implement validation
+web::json::value BackupAmfInfo::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  val[utility::conversions::to_string_t("backupAmf")] =
+      ModelBase::toJson(m_BackupAmf);
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_GuamiList) {
+      jsonArray.push_back(ModelBase::toJson(item));
+    }
+    if (jsonArray.size() > 0) {
+      val[utility::conversions::to_string_t("guamiList")] =
+          web::json::value::array(jsonArray);
+    }
+  }
+
+  return val;
 }
 
-web::json::value BackupAmfInfo::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    val[utility::conversions::to_string_t("backupAmf")] = ModelBase::toJson(m_BackupAmf);
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_GuamiList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
+void BackupAmfInfo::fromJson(const web::json::value& val) {
+  setBackupAmf(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("backupAmf"))));
+  {
+    m_GuamiList.clear();
+    std::vector<web::json::value> jsonArray;
+    if (val.has_field(utility::conversions::to_string_t("guamiList"))) {
+      for (auto& item :
+           val.at(utility::conversions::to_string_t("guamiList")).as_array()) {
+        if (item.is_null()) {
+          m_GuamiList.push_back(std::shared_ptr<Guami>(nullptr));
+        } else {
+          std::shared_ptr<Guami> newItem(new Guami());
+          newItem->fromJson(item);
+          m_GuamiList.push_back(newItem);
         }
-        if(jsonArray.size() > 0)
-        {
-            val[utility::conversions::to_string_t("guamiList")] = web::json::value::array(jsonArray);
-        }
+      }
+    }
+  }
+}
+
+void BackupAmfInfo::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("backupAmf"),
+      m_BackupAmf));
+  {
+    std::vector<web::json::value> jsonArray;
+    for (auto& item : m_GuamiList) {
+      jsonArray.push_back(ModelBase::toJson(item));
     }
 
-    return val;
-}
-
-void BackupAmfInfo::fromJson(const web::json::value& val)
-{
-    setBackupAmf(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("backupAmf"))));
-    {
-        m_GuamiList.clear();
-        std::vector<web::json::value> jsonArray;
-        if(val.has_field(utility::conversions::to_string_t("guamiList")))
-        {
-        for( auto& item : val.at(utility::conversions::to_string_t("guamiList")).as_array() )
-        {
-            if(item.is_null())
-            {
-                m_GuamiList.push_back( std::shared_ptr<Guami>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<Guami> newItem(new Guami());
-                newItem->fromJson(item);
-                m_GuamiList.push_back( newItem );
-            }
-        }
-        }
+    if (jsonArray.size() > 0) {
+      multipart->add(ModelBase::toHttpContent(
+          namePrefix + utility::conversions::to_string_t("guamiList"),
+          web::json::value::array(jsonArray),
+          utility::conversions::to_string_t("application/json")));
     }
+  }
 }
 
-void BackupAmfInfo::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
+void BackupAmfInfo::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("backupAmf"), m_BackupAmf));
-    {
-        std::vector<web::json::value> jsonArray;
-        for( auto& item : m_GuamiList )
-        {
-            jsonArray.push_back(ModelBase::toJson(item));
+  setBackupAmf(ModelBase::stringFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("backupAmf"))));
+  {
+    m_GuamiList.clear();
+    if (multipart->hasContent(utility::conversions::to_string_t("guamiList"))) {
+      web::json::value jsonArray = web::json::value::parse(
+          ModelBase::stringFromHttpContent(multipart->getContent(
+              utility::conversions::to_string_t("guamiList"))));
+      for (auto& item : jsonArray.as_array()) {
+        if (item.is_null()) {
+          m_GuamiList.push_back(std::shared_ptr<Guami>(nullptr));
+        } else {
+          std::shared_ptr<Guami> newItem(new Guami());
+          newItem->fromJson(item);
+          m_GuamiList.push_back(newItem);
         }
-        
-        if(jsonArray.size() > 0)
-        {
-            multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("guamiList"), web::json::value::array(jsonArray), utility::conversions::to_string_t("application/json")));
-        }
+      }
     }
+  }
 }
 
-void BackupAmfInfo::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    setBackupAmf(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("backupAmf"))));
-    {
-        m_GuamiList.clear();
-        if(multipart->hasContent(utility::conversions::to_string_t("guamiList")))
-        {
-
-        web::json::value jsonArray = web::json::value::parse(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("guamiList"))));
-        for( auto& item : jsonArray.as_array() )
-        {
-            if(item.is_null())
-            {
-                m_GuamiList.push_back( std::shared_ptr<Guami>(nullptr) );
-            }
-            else
-            {
-                std::shared_ptr<Guami> newItem(new Guami());
-                newItem->fromJson(item);
-                m_GuamiList.push_back( newItem );
-            }
-        }
-        }
-    }
+utility::string_t BackupAmfInfo::getBackupAmf() const {
+  return m_BackupAmf;
 }
 
-utility::string_t BackupAmfInfo::getBackupAmf() const
-{
-    return m_BackupAmf;
+void BackupAmfInfo::setBackupAmf(const utility::string_t& value) {
+  m_BackupAmf = value;
 }
 
-void BackupAmfInfo::setBackupAmf(const utility::string_t& value)
-{
-    m_BackupAmf = value;
-    
+std::vector<std::shared_ptr<Guami>>& BackupAmfInfo::getGuamiList() {
+  return m_GuamiList;
 }
 
-std::vector<std::shared_ptr<Guami>>& BackupAmfInfo::getGuamiList()
-{
-    return m_GuamiList;
+void BackupAmfInfo::setGuamiList(
+    const std::vector<std::shared_ptr<Guami>>& value) {
+  m_GuamiList      = value;
+  m_GuamiListIsSet = true;
 }
 
-void BackupAmfInfo::setGuamiList(const std::vector<std::shared_ptr<Guami>>& value)
-{
-    m_GuamiList = value;
-    m_GuamiListIsSet = true;
+bool BackupAmfInfo::guamiListIsSet() const {
+  return m_GuamiListIsSet;
 }
 
-bool BackupAmfInfo::guamiListIsSet() const
-{
-    return m_GuamiListIsSet;
+void BackupAmfInfo::unsetGuamiList() {
+  m_GuamiListIsSet = false;
 }
 
-void BackupAmfInfo::unsetGuamiList()
-{
-    m_GuamiListIsSet = false;
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

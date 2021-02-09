@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -36,23 +36,22 @@ Additional_Information::Additional_Information(uint8_t iei) {
 }
 
 //------------------------------------------------------------------------------
-Additional_Information::Additional_Information(const uint8_t iei, uint8_t _length, uint8_t value) {
-  _iei = iei;
+Additional_Information::Additional_Information(
+    const uint8_t iei, uint8_t _length, uint8_t value) {
+  _iei   = iei;
   _value = value;
   length = _length;
 }
 
 //------------------------------------------------------------------------------
-Additional_Information::Additional_Information() {
-}
+Additional_Information::Additional_Information() {}
 
 //------------------------------------------------------------------------------
-Additional_Information::~Additional_Information() {
-}
+Additional_Information::~Additional_Information() {}
 
 //------------------------------------------------------------------------------
 void Additional_Information::setValue(uint8_t iei, uint8_t value) {
-  _iei = iei;
+  _iei   = iei;
   _value = value;
 }
 
@@ -62,7 +61,7 @@ uint8_t Additional_Information::getValue() {
 }
 
 //------------------------------------------------------------------------------
-int Additional_Information::encode2buffer(uint8_t *buf, int len) {
+int Additional_Information::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding Additional_Information iei(0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
@@ -83,12 +82,14 @@ int Additional_Information::encode2buffer(uint8_t *buf, int len) {
     *(buf + encoded_size) = _value;
     encoded_size++;
   }
-  Logger::nas_mm().debug("encoded Additional_Information len(%d)", encoded_size);
+  Logger::nas_mm().debug(
+      "encoded Additional_Information len(%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
-int Additional_Information::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int Additional_Information::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding Additional_Information iei(0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
@@ -100,7 +101,7 @@ int Additional_Information::decodefrombuffer(uint8_t *buf, int len, bool is_opti
   _value = *(buf + decoded_size);
   decoded_size++;
   Logger::nas_mm().debug("decoded Additional_Information value(0x%x)", _value);
-  Logger::nas_mm().debug("decoded Additional_Information len(%d)", decoded_size);
+  Logger::nas_mm().debug(
+      "decoded Additional_Information len(%d)", decoded_size);
   return decoded_size;
 }
-

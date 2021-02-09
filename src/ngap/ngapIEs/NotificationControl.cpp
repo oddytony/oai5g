@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-NotificationControl::NotificationControl() {
-}
+NotificationControl::NotificationControl() {}
 
 //------------------------------------------------------------------------------
-NotificationControl::~NotificationControl() {
-}
+NotificationControl::~NotificationControl() {}
 
 //------------------------------------------------------------------------------
 void NotificationControl::setNotificationControl(
@@ -49,7 +47,7 @@ void NotificationControl::setNotificationControl(
 
 //------------------------------------------------------------------------------
 bool NotificationControl::getNotificationControl(
-    e_Ngap_NotificationControl &value) {
+    e_Ngap_NotificationControl& value) {
   if (notificationcontrol == Ngap_NotificationControl_notification_requested)
     value = Ngap_NotificationControl_notification_requested;
   else
@@ -60,7 +58,7 @@ bool NotificationControl::getNotificationControl(
 
 //------------------------------------------------------------------------------
 bool NotificationControl::encode2NotificationControl(
-    Ngap_NotificationControl_t *notificationControl) {
+    Ngap_NotificationControl_t* notificationControl) {
   *notificationControl = notificationcontrol;
 
   return true;
@@ -68,9 +66,9 @@ bool NotificationControl::encode2NotificationControl(
 
 //------------------------------------------------------------------------------
 bool NotificationControl::decodefromNotificationControl(
-    Ngap_NotificationControl_t *notificationControl) {
+    Ngap_NotificationControl_t* notificationControl) {
   notificationcontrol = *notificationControl;
 
   return true;
 }
-}
+}  // namespace ngap

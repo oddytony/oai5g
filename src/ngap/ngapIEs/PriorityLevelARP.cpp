@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PriorityLevelARP::PriorityLevelARP() {
-}
+PriorityLevelARP::PriorityLevelARP() {}
 
 //------------------------------------------------------------------------------
-PriorityLevelARP::~PriorityLevelARP() {
-}
+PriorityLevelARP::~PriorityLevelARP() {}
 
 //------------------------------------------------------------------------------
 void PriorityLevelARP::setPriorityLevelARP(long value) {
@@ -47,7 +45,7 @@ void PriorityLevelARP::setPriorityLevelARP(long value) {
 }
 
 //------------------------------------------------------------------------------
-bool PriorityLevelARP::getPriorityLevelARP(long &value) {
+bool PriorityLevelARP::getPriorityLevelARP(long& value) {
   value = prioritylevelarp;
 
   return true;
@@ -55,7 +53,7 @@ bool PriorityLevelARP::getPriorityLevelARP(long &value) {
 
 //------------------------------------------------------------------------------
 bool PriorityLevelARP::encode2PriorityLevelARP(
-    Ngap_PriorityLevelARP_t *priorityLevelARP) {
+    Ngap_PriorityLevelARP_t* priorityLevelARP) {
   *priorityLevelARP = prioritylevelarp;
 
   return true;
@@ -63,9 +61,9 @@ bool PriorityLevelARP::encode2PriorityLevelARP(
 
 //------------------------------------------------------------------------------
 bool PriorityLevelARP::decodefromPriorityLevelARP(
-    Ngap_PriorityLevelARP_t *priorityLevelARP) {
+    Ngap_PriorityLevelARP_t* priorityLevelARP) {
   prioritylevelarp = *priorityLevelARP;
 
   return true;
 }
-}
+}  // namespace ngap

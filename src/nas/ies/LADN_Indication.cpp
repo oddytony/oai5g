@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,7 +37,7 @@ LADN_Indication::LADN_Indication(uint8_t iei) {
 
 //------------------------------------------------------------------------------
 LADN_Indication::LADN_Indication(const uint8_t iei, std::vector<bstring> ladn) {
-  _iei = iei;
+  _iei   = iei;
   length = 3;
   LADN.assign(ladn.begin(), ladn.end());
   for (int i = 0; i < ladn.size(); i++) {
@@ -46,12 +46,10 @@ LADN_Indication::LADN_Indication(const uint8_t iei, std::vector<bstring> ladn) {
 }
 
 //------------------------------------------------------------------------------
-LADN_Indication::LADN_Indication() {
-}
+LADN_Indication::LADN_Indication() {}
 
 //------------------------------------------------------------------------------
-LADN_Indication::~LADN_Indication() {
-}
+LADN_Indication::~LADN_Indication() {}
 
 //------------------------------------------------------------------------------
 void LADN_Indication::setValue(uint8_t iei, uint8_t value) {
@@ -60,13 +58,13 @@ void LADN_Indication::setValue(uint8_t iei, uint8_t value) {
 }
 
 //------------------------------------------------------------------------------
-bool LADN_Indication::getValue(std::vector<bstring> &ladn) {
+bool LADN_Indication::getValue(std::vector<bstring>& ladn) {
   ladn.assign(LADN.begin(), LADN.end());
   return 0;
 }
 
 //------------------------------------------------------------------------------
-int LADN_Indication::encode2buffer(uint8_t *buf, int len) {
+int LADN_Indication::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding LADN_Indication iei(0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
@@ -83,18 +81,19 @@ int LADN_Indication::encode2buffer(uint8_t *buf, int len) {
     for (int i = 0; i < LADN.size(); i++) {
       *(buf + encoded_size) = blength(LADN.at(i));
       encoded_size++;
-      encoded_size += encode_bstring(LADN.at(i), (buf + encoded_size), len - encoded_size);
+      encoded_size +=
+          encode_bstring(LADN.at(i), (buf + encoded_size), len - encoded_size);
     }
   } else {
-//		*(buf + encoded_size) = length - 1; encoded_size++;
-//		*(buf + encoded_size) = _value; encoded_size++; encoded_size++;
+    //		*(buf + encoded_size) = length - 1; encoded_size++;
+    //		*(buf + encoded_size) = _value; encoded_size++; encoded_size++;
   }
   Logger::nas_mm().debug("encoded LADN_Indication len(%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
-int LADN_Indication::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int LADN_Indication::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding LADN_Indication iei(0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
@@ -120,10 +119,11 @@ int LADN_Indication::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
   }
   for (int i = 0; i < LADN.size(); i++) {
     for (int j = 0; j < blength(LADN.at(i)); j++) {
-      Logger::nas_mm().debug("decoded LADN_Indication value(0x%x)", (uint8_t*) LADN.at(i)->data[j]);
+      Logger::nas_mm().debug(
+          "decoded LADN_Indication value(0x%x)",
+          (uint8_t*) LADN.at(i)->data[j]);
     }
   }
   Logger::nas_mm().debug("decoded LADN_Indication len(%d)", decoded_size);
   return decoded_size;
 }
-

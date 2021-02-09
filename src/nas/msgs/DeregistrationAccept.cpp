@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,17 +39,18 @@ DeregistrationAccept::DeregistrationAccept() {
 }
 
 //------------------------------------------------------------------------------
-DeregistrationAccept::~DeregistrationAccept() {
-}
+DeregistrationAccept::~DeregistrationAccept() {}
 
 //------------------------------------------------------------------------------
 void DeregistrationAccept::setHeader(uint8_t security_header_type) {
   plain_header = new NasMmPlainHeader();
-  plain_header->setHeader(EPD_5GS_MM_MSG, security_header_type, DEREGISTRATION_ACCEPT_UE_ORIGINATING);
+  plain_header->setHeader(
+      EPD_5GS_MM_MSG, security_header_type,
+      DEREGISTRATION_ACCEPT_UE_ORIGINATING);
 }
 
 //------------------------------------------------------------------------------
-int DeregistrationAccept::encode2buffer(uint8_t *buf, int len) {
+int DeregistrationAccept::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("Encoding De-registration Accept message");
   int encoded_size = 0;
   if (!plain_header) {
@@ -57,14 +58,17 @@ int DeregistrationAccept::encode2buffer(uint8_t *buf, int len) {
     return 0;
   }
   encoded_size = plain_header->encode2buffer(buf, len);
-  Logger::nas_mm().debug("Encoded De-registration Accept message len (%d)", encoded_size);
+  Logger::nas_mm().debug(
+      "Encoded De-registration Accept message len (%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
-int DeregistrationAccept::decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len) {
+int DeregistrationAccept::decodefrombuffer(
+    NasMmPlainHeader* header, uint8_t* buf, int len) {
   Logger::nas_mm().debug("Decoding De-registrationReject message");
   int decoded_size = 3;
-  plain_header = header;
-  Logger::nas_mm().debug("decoded De-registrationReject message len (%d)", decoded_size);
+  plain_header     = header;
+  Logger::nas_mm().debug(
+      "decoded De-registrationReject message len (%d)", decoded_size);
 }

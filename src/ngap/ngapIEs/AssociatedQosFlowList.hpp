@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -42,20 +42,21 @@ class AssociatedQosFlowList {
   AssociatedQosFlowList();
   virtual ~AssociatedQosFlowList();
 
-  void setAssociatedQosFlowList(AssociatedQosFlowItem *m_associatedQosFlowItem,
-                                int numofitem);
-  bool getAssociatedQosFlowList(AssociatedQosFlowItem *&m_associatedQosFlowItem,
-                                int &numofitem);
+  void setAssociatedQosFlowList(
+      AssociatedQosFlowItem* m_associatedQosFlowItem, int numofitem);
+  bool getAssociatedQosFlowList(
+      AssociatedQosFlowItem*& m_associatedQosFlowItem, int& numofitem);
 
   bool encode2AssociatedQosFlowList(
-      Ngap_AssociatedQosFlowList_t &associatedQosFlowList);
+      Ngap_AssociatedQosFlowList_t& associatedQosFlowList);
   bool decodefromAssociatedQosFlowList(
-      Ngap_AssociatedQosFlowList_t &associatedQosFlowList);
+      Ngap_AssociatedQosFlowList_t& associatedQosFlowList);
+
  private:
-  AssociatedQosFlowItem *associatedQosFlowItem;
+  AssociatedQosFlowItem* associatedQosFlowItem;
   int numofassociatedQosFlowItem;
 };
 
-}
+}  // namespace ngap
 
 #endif

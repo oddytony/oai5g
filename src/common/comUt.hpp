@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -33,25 +33,20 @@
 #include <string>
 
 //------------------------------------------------------------------------------
-void print_buffer(const std::string app, const std::string commit, uint8_t *buf,
-                  int len) {
-  if (!app.compare("amf_app"))
-    Logger::amf_app().debug(commit.c_str());
-  if (!app.compare("amf_n1"))
-    Logger::amf_n1().debug(commit.c_str());
-  if (!app.compare("amf_server"))
-    Logger::amf_server().debug(commit.c_str());
-  if (!app.compare("amf_n11"))
-    Logger::amf_n11().debug(commit.c_str());
+void print_buffer(
+    const std::string app, const std::string commit, uint8_t* buf, int len) {
+  if (!app.compare("amf_app")) Logger::amf_app().debug(commit.c_str());
+  if (!app.compare("amf_n1")) Logger::amf_n1().debug(commit.c_str());
+  if (!app.compare("amf_server")) Logger::amf_server().debug(commit.c_str());
+  if (!app.compare("amf_n11")) Logger::amf_n11().debug(commit.c_str());
 #if DEBUG_IS_ON
-  for (int i = 0; i < len; i++)
-    printf("%x ", buf[i]);
+  for (int i = 0; i < len; i++) printf("%x ", buf[i]);
   printf("\n");
 #endif
 }
 
 //------------------------------------------------------------------------------
-void hexStr2Byte(const char *src, unsigned char *dest, int len) {
+void hexStr2Byte(const char* src, unsigned char* dest, int len) {
   short i;
   unsigned char hBy, lBy;
   for (i = 0; i < len; i += 2) {

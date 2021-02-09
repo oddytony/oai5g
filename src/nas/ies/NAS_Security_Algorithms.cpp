@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -33,16 +33,15 @@ using namespace nas;
 using namespace std;
 
 //------------------------------------------------------------------------------
-NAS_Security_Algorithms::NAS_Security_Algorithms() {
-}
+NAS_Security_Algorithms::NAS_Security_Algorithms() {}
 
 //------------------------------------------------------------------------------
-NAS_Security_Algorithms::~NAS_Security_Algorithms() {
-}
+NAS_Security_Algorithms::~NAS_Security_Algorithms() {}
 
 //------------------------------------------------------------------------------
-NAS_Security_Algorithms::NAS_Security_Algorithms(uint8_t ciphering, uint8_t integrity_protection) {
-  CIPHERING = ciphering;
+NAS_Security_Algorithms::NAS_Security_Algorithms(
+    uint8_t ciphering, uint8_t integrity_protection) {
+  CIPHERING            = ciphering;
   INTEGRITY_PROTECTION = integrity_protection;
 }
 
@@ -67,7 +66,7 @@ uint8_t NAS_Security_Algorithms::getINTEGRITY_PROTECTION() {
 }
 
 //------------------------------------------------------------------------------
-int NAS_Security_Algorithms::encode2buffer(uint8_t *buf, int len) {
+int NAS_Security_Algorithms::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding NAS_Security_Algorithms ");
   if (len < 1) {
     Logger::nas_mm().error("len is less than one");
@@ -80,16 +79,19 @@ int NAS_Security_Algorithms::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int NAS_Security_Algorithms::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int NAS_Security_Algorithms::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding NAS_Security_Algorithms IE");
   if (len < 1) {
     Logger::nas_mm().error("len is less than one");
     return 0;
   } else {
-    CIPHERING = (*buf & 0xf0) >> 4;
+    CIPHERING            = (*buf & 0xf0) >> 4;
     INTEGRITY_PROTECTION = *buf & 0x0f;
-    Logger::nas_mm().debug("decoded NAS_Security_Algorithms len 1 octet,CIPHERING=0x%x,INTEGRITY_PROTECTION=0x%x", CIPHERING, INTEGRITY_PROTECTION);
+    Logger::nas_mm().debug(
+        "decoded NAS_Security_Algorithms len 1 "
+        "octet,CIPHERING=0x%x,INTEGRITY_PROTECTION=0x%x",
+        CIPHERING, INTEGRITY_PROTECTION);
     return 1;
   }
 }
-

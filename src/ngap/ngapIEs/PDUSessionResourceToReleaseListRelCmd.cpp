@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -33,64 +33,70 @@ namespace ngap {
 //------------------------------------------------------------------------------
 PDUSessionResourceToReleaseListRelCmd::PDUSessionResourceToReleaseListRelCmd() {
   pduSessionResourceToReleaseItemRelCmd = NULL;
-  maxnoofPDUSessions = 0;
+  maxnoofPDUSessions                    = 0;
 }
 
 //------------------------------------------------------------------------------
-PDUSessionResourceToReleaseListRelCmd::~PDUSessionResourceToReleaseListRelCmd() {
-}
+PDUSessionResourceToReleaseListRelCmd::
+    ~PDUSessionResourceToReleaseListRelCmd() {}
 
 //------------------------------------------------------------------------------
-void PDUSessionResourceToReleaseListRelCmd::setPDUSessionResourceToReleaseListRelCmd(
-    PDUSessionResourceToReleaseItemRelCmd *m_pduSessionResourceToReleaseItemRelCmd,
-    int num) {
+void PDUSessionResourceToReleaseListRelCmd::
+    setPDUSessionResourceToReleaseListRelCmd(
+        PDUSessionResourceToReleaseItemRelCmd*
+            m_pduSessionResourceToReleaseItemRelCmd,
+        int num) {
   pduSessionResourceToReleaseItemRelCmd =
       m_pduSessionResourceToReleaseItemRelCmd;
   maxnoofPDUSessions = num;
 }
 
 //------------------------------------------------------------------------------
-void PDUSessionResourceToReleaseListRelCmd::getPDUSessionResourceToReleaseListRelCmd(
-    PDUSessionResourceToReleaseItemRelCmd *&m_pduSessionResourceToReleaseItemRelCmd,
-    int &num) {
+void PDUSessionResourceToReleaseListRelCmd::
+    getPDUSessionResourceToReleaseListRelCmd(
+        PDUSessionResourceToReleaseItemRelCmd*&
+            m_pduSessionResourceToReleaseItemRelCmd,
+        int& num) {
   m_pduSessionResourceToReleaseItemRelCmd =
       pduSessionResourceToReleaseItemRelCmd;
   num = maxnoofPDUSessions;
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceToReleaseListRelCmd::encode2PDUSessionResourceToReleaseListRelCmd(
-    Ngap_PDUSessionResourceToReleaseListRelCmd_t *pduSessionResourceToReleaseListRelCmd) {
+bool PDUSessionResourceToReleaseListRelCmd::
+    encode2PDUSessionResourceToReleaseListRelCmd(
+        Ngap_PDUSessionResourceToReleaseListRelCmd_t*
+            pduSessionResourceToReleaseListRelCmd) {
   for (int i = 0; i < maxnoofPDUSessions; i++) {
-    Ngap_PDUSessionResourceToReleaseItemRelCmd_t *rel =
+    Ngap_PDUSessionResourceToReleaseItemRelCmd_t* rel =
         (Ngap_PDUSessionResourceToReleaseItemRelCmd_t*) calloc(
             1, sizeof(Ngap_PDUSessionResourceToReleaseItemRelCmd_t));
-    if (!rel)
-      return false;
+    if (!rel) return false;
     if (!pduSessionResourceToReleaseItemRelCmd[i]
-        .encode2PDUSessionResourceToReleaseItemRelCmd(rel))
+             .encode2PDUSessionResourceToReleaseItemRelCmd(rel))
       return false;
-    if (ASN_SEQUENCE_ADD(&pduSessionResourceToReleaseListRelCmd->list, rel)
-        != 0)
+    if (ASN_SEQUENCE_ADD(&pduSessionResourceToReleaseListRelCmd->list, rel) !=
+        0)
       return false;
   }
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceToReleaseListRelCmd::decodefromPDUSessionResourceToReleaseListRelCmd(
-    Ngap_PDUSessionResourceToReleaseListRelCmd_t *pduSessionResourceToReleaseListRelCmd) {
+bool PDUSessionResourceToReleaseListRelCmd::
+    decodefromPDUSessionResourceToReleaseListRelCmd(
+        Ngap_PDUSessionResourceToReleaseListRelCmd_t*
+            pduSessionResourceToReleaseListRelCmd) {
   maxnoofPDUSessions = pduSessionResourceToReleaseListRelCmd->list.count;
   pduSessionResourceToReleaseItemRelCmd =
       new PDUSessionResourceToReleaseItemRelCmd[maxnoofPDUSessions]();
   for (int i = 0; i < maxnoofPDUSessions; i++) {
     if (!pduSessionResourceToReleaseItemRelCmd[i]
-        .decodefromPDUSessionResourceToReleaseItemRelCmd(
-        pduSessionResourceToReleaseListRelCmd->list.array[i]))
+             .decodefromPDUSessionResourceToReleaseItemRelCmd(
+                 pduSessionResourceToReleaseListRelCmd->list.array[i]))
       return false;
   }
   return true;
 }
 
-}
-
+}  // namespace ngap

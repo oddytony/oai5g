@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,64 +10,48 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "NotificationControl.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
+NotificationControl::NotificationControl() {}
 
+NotificationControl::~NotificationControl() {}
 
-
-NotificationControl::NotificationControl()
-{
+void NotificationControl::validate() {
+  // TODO: implement validation
 }
 
-NotificationControl::~NotificationControl()
-{
+web::json::value NotificationControl::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  return val;
 }
 
-void NotificationControl::validate()
-{
-    // TODO: implement validation
+void NotificationControl::fromJson(const web::json::value& val) {}
+
+void NotificationControl::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 }
 
-web::json::value NotificationControl::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-
-    return val;
+void NotificationControl::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 }
 
-void NotificationControl::fromJson(const web::json::value& val)
-{
-}
-
-void NotificationControl::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-}
-
-void NotificationControl::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

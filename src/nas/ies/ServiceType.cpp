@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -29,25 +29,21 @@
 #include "ServiceType.hpp"
 using namespace nas;
 
+//------------------------------------------------------------------------------
+ServiceType::ServiceType() {}
 
 //------------------------------------------------------------------------------
-ServiceType::ServiceType() {
-}
-
-//------------------------------------------------------------------------------
-ServiceType::~ServiceType() {
-}
+ServiceType::~ServiceType() {}
 
 //------------------------------------------------------------------------------
 ServiceType::ServiceType(uint8_t iei, uint8_t stp) {
-  _iei = iei;
+  _iei  = iei;
   value = stp;
 }
 
 //------------------------------------------------------------------------------
-int ServiceType::encode2buffer(uint8_t *buf, int len) {
-  if (len < 1)
-    return -1;
+int ServiceType::encode2buffer(uint8_t* buf, int len) {
+  if (len < 1) return -1;
   int encoded_size = 0;
   if (_iei) {
     *buf = _iei;
@@ -62,9 +58,9 @@ int ServiceType::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int ServiceType::decodefrombuffer(uint8_t *buf, int len, bool is_optional, bool is_high) {
-  if (len < 1)
-    return -1;
+int ServiceType::decodefrombuffer(
+    uint8_t* buf, int len, bool is_optional, bool is_high) {
+  if (len < 1) return -1;
   if (is_optional) {
     _iei = *buf;
   } else {

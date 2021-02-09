@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -40,14 +40,14 @@ class NRCellIdentity {
   NRCellIdentity();
   virtual ~NRCellIdentity();
 
-  bool encode2bitstring(Ngap_NRCellIdentity_t &nRCellIdentity);
-  bool decodefrombitstring(Ngap_NRCellIdentity_t &nRCellIdentity);
+  bool encode2bitstring(Ngap_NRCellIdentity_t& nRCellIdentity);
+  bool decodefrombitstring(Ngap_NRCellIdentity_t& nRCellIdentity);
   unsigned long getNRCellIdentity();
   void setNRCellIdentity(unsigned long m_nrcellidentity);
+
  private:
   unsigned long nrcellidentity;
 };
-}
+}  // namespace ngap
 
 #endif
-

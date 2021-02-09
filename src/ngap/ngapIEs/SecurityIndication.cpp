@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,43 +35,41 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 SecurityIndication::SecurityIndication() {
-  integrityProtectionIndication = NULL;
+  integrityProtectionIndication       = NULL;
   confidentialityProtectionIndication = NULL;
-  maximumIntegrityProtectedDataRate = NULL;
+  maximumIntegrityProtectedDataRate   = NULL;
 }
 
 //------------------------------------------------------------------------------
-SecurityIndication::~SecurityIndication() {
-}
+SecurityIndication::~SecurityIndication() {}
 
 //------------------------------------------------------------------------------
 void SecurityIndication::setSecurityIndication(
-    IntegrityProtectionIndication *m_integrityProtectionIndication,
-    ConfidentialityProtectionIndication *m_confidentialityProtectionIndication,
-    MaximumIntegrityProtectedDataRate *m_maximumIntegrityProtectedDataRate) {
-  integrityProtectionIndication = m_integrityProtectionIndication;
+    IntegrityProtectionIndication* m_integrityProtectionIndication,
+    ConfidentialityProtectionIndication* m_confidentialityProtectionIndication,
+    MaximumIntegrityProtectedDataRate* m_maximumIntegrityProtectedDataRate) {
+  integrityProtectionIndication       = m_integrityProtectionIndication;
   confidentialityProtectionIndication = m_confidentialityProtectionIndication;
-  maximumIntegrityProtectedDataRate = m_maximumIntegrityProtectedDataRate;
+  maximumIntegrityProtectedDataRate   = m_maximumIntegrityProtectedDataRate;
 }
 
 //------------------------------------------------------------------------------
 bool SecurityIndication::encode2SecurityIndication(
-    Ngap_SecurityIndication_t *securityIndication) {
+    Ngap_SecurityIndication_t* securityIndication) {
   if (!integrityProtectionIndication->encode2IntegrityProtectionIndication(
-      securityIndication->integrityProtectionIndication))
+          securityIndication->integrityProtectionIndication))
     return false;
   if (!confidentialityProtectionIndication
-      ->encode2ConfidentialityProtectionIndication(
-      securityIndication->confidentialityProtectionIndication))
+           ->encode2ConfidentialityProtectionIndication(
+               securityIndication->confidentialityProtectionIndication))
     return false;
   if (maximumIntegrityProtectedDataRate) {
-    Ngap_MaximumIntegrityProtectedDataRate_t *maxIPDataRate =
+    Ngap_MaximumIntegrityProtectedDataRate_t* maxIPDataRate =
         (Ngap_MaximumIntegrityProtectedDataRate_t*) calloc(
             1, sizeof(Ngap_MaximumIntegrityProtectedDataRate_t));
-    if (!maxIPDataRate)
-      return false;
+    if (!maxIPDataRate) return false;
     if (!maximumIntegrityProtectedDataRate
-        ->encode2MaximumIntegrityProtectedDataRate(*maxIPDataRate))
+             ->encode2MaximumIntegrityProtectedDataRate(*maxIPDataRate))
       return false;
     securityIndication->maximumIntegrityProtectedDataRate = maxIPDataRate;
   }
@@ -81,23 +79,23 @@ bool SecurityIndication::encode2SecurityIndication(
 
 //------------------------------------------------------------------------------
 bool SecurityIndication::decodefromSecurityIndication(
-    Ngap_SecurityIndication_t *securityIndication) {
+    Ngap_SecurityIndication_t* securityIndication) {
   integrityProtectionIndication = new IntegrityProtectionIndication();
   confidentialityProtectionIndication =
       new ConfidentialityProtectionIndication();
 
   if (!integrityProtectionIndication->decodefromIntegrityProtectionIndication(
-      securityIndication->integrityProtectionIndication))
+          securityIndication->integrityProtectionIndication))
     return false;
   if (!confidentialityProtectionIndication
-      ->decodefromConfidentialityProtectionIndication(
-      securityIndication->confidentialityProtectionIndication))
+           ->decodefromConfidentialityProtectionIndication(
+               securityIndication->confidentialityProtectionIndication))
     return false;
   if (securityIndication->maximumIntegrityProtectedDataRate) {
     maximumIntegrityProtectedDataRate = new MaximumIntegrityProtectedDataRate();
     if (!maximumIntegrityProtectedDataRate
-        ->decodefromMaximumIntegrityProtectedDataRate(
-        *securityIndication->maximumIntegrityProtectedDataRate))
+             ->decodefromMaximumIntegrityProtectedDataRate(
+                 *securityIndication->maximumIntegrityProtectedDataRate))
       return false;
   }
 
@@ -106,13 +104,12 @@ bool SecurityIndication::decodefromSecurityIndication(
 
 //------------------------------------------------------------------------------
 void SecurityIndication::getSecurityIndication(
-    IntegrityProtectionIndication *&m_integrityProtectionIndication,
-    ConfidentialityProtectionIndication *&m_confidentialityProtectionIndication,
-    MaximumIntegrityProtectedDataRate *&m_maximumIntegrityProtectedDataRate) {
-  m_integrityProtectionIndication = integrityProtectionIndication;
+    IntegrityProtectionIndication*& m_integrityProtectionIndication,
+    ConfidentialityProtectionIndication*& m_confidentialityProtectionIndication,
+    MaximumIntegrityProtectedDataRate*& m_maximumIntegrityProtectedDataRate) {
+  m_integrityProtectionIndication       = integrityProtectionIndication;
   m_confidentialityProtectionIndication = confidentialityProtectionIndication;
-  m_maximumIntegrityProtectedDataRate = maximumIntegrityProtectedDataRate;
+  m_maximumIntegrityProtectedDataRate   = maximumIntegrityProtectedDataRate;
 }
 
-}
-
+}  // namespace ngap

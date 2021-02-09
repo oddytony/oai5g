@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-IntegrityProtectionIndication::IntegrityProtectionIndication() {
-}
+IntegrityProtectionIndication::IntegrityProtectionIndication() {}
 
 //------------------------------------------------------------------------------
-IntegrityProtectionIndication::~IntegrityProtectionIndication() {
-}
+IntegrityProtectionIndication::~IntegrityProtectionIndication() {}
 
 //------------------------------------------------------------------------------
 void IntegrityProtectionIndication::setIntegrityProtectionIndication(
@@ -49,7 +47,7 @@ void IntegrityProtectionIndication::setIntegrityProtectionIndication(
 
 //------------------------------------------------------------------------------
 bool IntegrityProtectionIndication::getIntegrityProtectionIndication(
-    long &m_indication) {
+    long& m_indication) {
   m_indication = indication;
 
   return true;
@@ -57,7 +55,7 @@ bool IntegrityProtectionIndication::getIntegrityProtectionIndication(
 
 //------------------------------------------------------------------------------
 bool IntegrityProtectionIndication::encode2IntegrityProtectionIndication(
-    Ngap_IntegrityProtectionIndication_t &integrityProtectionIndication) {
+    Ngap_IntegrityProtectionIndication_t& integrityProtectionIndication) {
   integrityProtectionIndication = indication;
 
   return true;
@@ -71,4 +69,4 @@ bool IntegrityProtectionIndication::decodefromIntegrityProtectionIndication(
   return true;
 }
 
-}
+}  // namespace ngap

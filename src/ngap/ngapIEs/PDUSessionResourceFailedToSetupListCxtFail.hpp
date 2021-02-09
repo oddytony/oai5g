@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -43,22 +43,27 @@ class PDUSessionResourceFailedToSetupListCxtFail {
   virtual ~PDUSessionResourceFailedToSetupListCxtFail();
 
   void setPDUSessionResourceFailedToSetupListCxtFail(
-      PDUSessionResourceFailedToSetupItemCxtFail *m_pduSessionResourceFailedToSetupItemCxtFail,
+      PDUSessionResourceFailedToSetupItemCxtFail*
+          m_pduSessionResourceFailedToSetupItemCxtFail,
       int num);
   void getPDUSessionResourceFailedToSetupListCxtFail(
-      PDUSessionResourceFailedToSetupItemCxtFail *&m_pduSessionResourceFailedToSetupItemCxtFail,
-      int &num);
+      PDUSessionResourceFailedToSetupItemCxtFail*&
+          m_pduSessionResourceFailedToSetupItemCxtFail,
+      int& num);
 
   bool encode2PDUSessionResourceFailedToSetupListCxtFail(
-      Ngap_PDUSessionResourceFailedToSetupListCxtFail_t *pduSessionResourceFailedToSetupListCxtFail);
+      Ngap_PDUSessionResourceFailedToSetupListCxtFail_t*
+          pduSessionResourceFailedToSetupListCxtFail);
   bool decodefromPDUSessionResourceFailedToSetupListCxtFail(
-      Ngap_PDUSessionResourceFailedToSetupListCxtFail_t *pduSessionResourceFailedToSetupListCxtFail);
+      Ngap_PDUSessionResourceFailedToSetupListCxtFail_t*
+          pduSessionResourceFailedToSetupListCxtFail);
+
  private:
-  PDUSessionResourceFailedToSetupItemCxtFail *pduSessionResourceFailedToSetupItemCxtFail;
+  PDUSessionResourceFailedToSetupItemCxtFail*
+      pduSessionResourceFailedToSetupItemCxtFail;
   int numofpduSessionResourceFailedToSetupItemCxtFail;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,19 +39,20 @@ class _5GSRegistrationType {
   _5GSRegistrationType(bool is_for, uint8_t type);
   _5GSRegistrationType(uint8_t iei, bool is_for, uint8_t type);
   ~_5GSRegistrationType();
-  int decodefrombuffer(uint8_t *buf, int len, bool is_option);
-  int encode2buffer(uint8_t *buf, int len);
+  int decodefrombuffer(uint8_t* buf, int len, bool is_option);
+  int encode2buffer(uint8_t* buf, int len);
 
   void setFollowOnReq(const bool is);
   void setRegType(const uint8_t type);
   bool isFollowOnReq();
   uint8_t getRegType();
+
  private:
-  uint8_t iei :4;
+  uint8_t iei : 4;
   bool is_for;
-  uint8_t reg_type :3;
+  uint8_t reg_type : 3;
 };
 
-}
+}  // namespace nas
 
 #endif

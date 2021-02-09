@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -33,44 +33,40 @@ namespace ngap {
 //------------------------------------------------------------------------------
 NAS_PDU::NAS_PDU() {
   naspdubuffer = NULL;
-  buffersize = -1;
+  buffersize   = -1;
 }
 
 //------------------------------------------------------------------------------
-NAS_PDU::~NAS_PDU() {
-}
+NAS_PDU::~NAS_PDU() {}
 
 //------------------------------------------------------------------------------
-bool NAS_PDU::encode2octetstring(Ngap_NAS_PDU_t &m_naspdu) {
+bool NAS_PDU::encode2octetstring(Ngap_NAS_PDU_t& m_naspdu) {
   int ret;
   ret = OCTET_STRING_fromBuf(&m_naspdu, naspdubuffer, buffersize);
-  if (ret != 0)
-    return false;
+  if (ret != 0) return false;
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool NAS_PDU::decodefromoctetstring(Ngap_NAS_PDU_t &m_naspdu) {
+bool NAS_PDU::decodefromoctetstring(Ngap_NAS_PDU_t& m_naspdu) {
   naspdubuffer = (char*) m_naspdu.buf;
-  buffersize = m_naspdu.size;
+  buffersize   = m_naspdu.size;
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool NAS_PDU::getNasPdu(uint8_t *&buffer, size_t &size) {
+bool NAS_PDU::getNasPdu(uint8_t*& buffer, size_t& size) {
   buffer = (uint8_t*) naspdubuffer;
-  size = buffersize;
-  if (!naspdubuffer)
-    return false;
-  if (buffersize < 0)
-    return false;
+  size   = buffersize;
+  if (!naspdubuffer) return false;
+  if (buffersize < 0) return false;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-void NAS_PDU::setNasPdu(uint8_t *buffer, size_t size) {
+void NAS_PDU::setNasPdu(uint8_t* buffer, size_t size) {
   naspdubuffer = (char*) buffer;
-  buffersize = size;
+  buffersize   = size;
 }
-}
+}  // namespace ngap

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -36,17 +36,16 @@ namespace ngap {
 //------------------------------------------------------------------------------
 UserLocationInformation::UserLocationInformation() {
   userLocationInformationEUTRA = NULL;
-  userLocationInformationNR = NULL;
-  //userLocationInformationN3IWF = NULL;
+  userLocationInformationNR    = NULL;
+  // userLocationInformationN3IWF = NULL;
 }
 
 //------------------------------------------------------------------------------
-UserLocationInformation::~UserLocationInformation() {
-}
+UserLocationInformation::~UserLocationInformation() {}
 
 //------------------------------------------------------------------------------
 void UserLocationInformation::setInformation(
-    UserLocationInformationEUTRA *informationEUTRA) {
+    UserLocationInformationEUTRA* informationEUTRA) {
   informationPresent =
       Ngap_UserLocationInformation_PR_userLocationInformationEUTRA;
   userLocationInformationEUTRA = informationEUTRA;
@@ -54,7 +53,7 @@ void UserLocationInformation::setInformation(
 
 //------------------------------------------------------------------------------
 void UserLocationInformation::setInformation(
-    UserLocationInformationNR *informationNR) {
+    UserLocationInformationNR* informationNR) {
   informationPresent =
       Ngap_UserLocationInformation_PR_userLocationInformationNR;
   userLocationInformationNR = informationNR;
@@ -67,15 +66,15 @@ void UserLocationInformation::setInformation(
 		informationPresent = Ngap_UserLocationInformation_PR_userLocationInformationN3IWF;
 		userLocationInformationN3IWF = informationN3IWF;
 	}
-	#endif
+#endif
 
 //------------------------------------------------------------------------------
 bool UserLocationInformation::encodefromUserLocationInformation(
-    Ngap_UserLocationInformation_t *userLocationInformation) {
+    Ngap_UserLocationInformation_t* userLocationInformation) {
   userLocationInformation->present = informationPresent;
   switch (informationPresent) {
     case Ngap_UserLocationInformation_PR_userLocationInformationEUTRA: {
-      Ngap_UserLocationInformationEUTRA *ieEUTRA =
+      Ngap_UserLocationInformationEUTRA* ieEUTRA =
           (Ngap_UserLocationInformationEUTRA*) calloc(
               1, sizeof(Ngap_UserLocationInformationEUTRA));
       userLocationInformationEUTRA->encode2UserLocationInformationEUTRA(
@@ -84,7 +83,7 @@ bool UserLocationInformation::encodefromUserLocationInformation(
       break;
     }
     case Ngap_UserLocationInformation_PR_userLocationInformationNR: {
-      Ngap_UserLocationInformationNR *ieNR =
+      Ngap_UserLocationInformationNR* ieNR =
           (Ngap_UserLocationInformationNR*) calloc(
               1, sizeof(Ngap_UserLocationInformationNR));
       userLocationInformationNR->encode2UserLocationInformationNR(ieNR);
@@ -97,7 +96,7 @@ bool UserLocationInformation::encodefromUserLocationInformation(
 				userLocationInformationN3IWF->encode2UserLocationInformationN3IWF(ieN3IWF);
 				userLocationInformation->choice.userLocationInformationN3IWF = ieN3IWF;
 			break;}
-			#endif
+#endif
     default:
       cout << "[Warning] UserLocationInformation encode error!" << endl;
       return false;
@@ -107,7 +106,7 @@ bool UserLocationInformation::encodefromUserLocationInformation(
 
 //------------------------------------------------------------------------------
 bool UserLocationInformation::decodefromUserLocationInformation(
-    Ngap_UserLocationInformation_t *userLocationInformation) {
+    Ngap_UserLocationInformation_t* userLocationInformation) {
   informationPresent = userLocationInformation->present;
   switch (informationPresent) {
     case Ngap_UserLocationInformation_PR_userLocationInformationEUTRA: {
@@ -127,7 +126,7 @@ bool UserLocationInformation::decodefromUserLocationInformation(
 				userLocationInformationN3IWF  = new UserLocationInformationN3IWF();
 				userLocationInformationN3IWF->decodefromUserLocationInformationN3IWF(userLocationInformation->choice.userLocationInformationN3IWF);
 			break;}
-			#endif
+#endif
     default:
       cout << "[Warning] UserLocationInformation decode error!" << endl;
       return false;
@@ -136,19 +135,20 @@ bool UserLocationInformation::decodefromUserLocationInformation(
 }
 
 //------------------------------------------------------------------------------
-Ngap_UserLocationInformation_PR UserLocationInformation::getChoiceOfUserLocationInformation() {
+Ngap_UserLocationInformation_PR
+UserLocationInformation::getChoiceOfUserLocationInformation() {
   return informationPresent;
 }
 
 //------------------------------------------------------------------------------
 void UserLocationInformation::getInformation(
-    UserLocationInformationEUTRA *&informationEUTRA) {
+    UserLocationInformationEUTRA*& informationEUTRA) {
   informationEUTRA = userLocationInformationEUTRA;
 }
 
 //------------------------------------------------------------------------------
 void UserLocationInformation::getInformation(
-    UserLocationInformationNR *&informationNR) {
+    UserLocationInformationNR*& informationNR) {
   informationNR = userLocationInformationNR;
 }
 #if 0
@@ -156,5 +156,5 @@ void UserLocationInformation::getInformation(
 	{
 		informationN3IWF = userLocationInformationN3IWF;
 	}
-	#endif
-}
+#endif
+}  // namespace ngap

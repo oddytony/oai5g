@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,25 +34,23 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 EUTRA_CGI::EUTRA_CGI() {
-  plmnId = NULL;
+  plmnId            = NULL;
   eUTRACellIdentity = NULL;
 }
 
 //------------------------------------------------------------------------------
-EUTRA_CGI::~EUTRA_CGI() {
-}
+EUTRA_CGI::~EUTRA_CGI() {}
 
 //------------------------------------------------------------------------------
-void EUTRA_CGI::setEUTRA_CGI(PlmnId *m_plmnId,
-                             EUTRACellIdentity *m_eUTRACellIdentity) {
-  plmnId = m_plmnId;
+void EUTRA_CGI::setEUTRA_CGI(
+    PlmnId* m_plmnId, EUTRACellIdentity* m_eUTRACellIdentity) {
+  plmnId            = m_plmnId;
   eUTRACellIdentity = m_eUTRACellIdentity;
 }
 
 //------------------------------------------------------------------------------
-bool EUTRA_CGI::encode2EUTRA_CGI(Ngap_EUTRA_CGI_t *eutra_cgi) {
-  if (!plmnId->encode2octetstring(eutra_cgi->pLMNIdentity))
-    return false;
+bool EUTRA_CGI::encode2EUTRA_CGI(Ngap_EUTRA_CGI_t* eutra_cgi) {
+  if (!plmnId->encode2octetstring(eutra_cgi->pLMNIdentity)) return false;
   if (!eUTRACellIdentity->encode2bitstring(eutra_cgi->eUTRACellIdentity))
     return false;
 
@@ -60,11 +58,10 @@ bool EUTRA_CGI::encode2EUTRA_CGI(Ngap_EUTRA_CGI_t *eutra_cgi) {
 }
 
 //------------------------------------------------------------------------------
-bool EUTRA_CGI::decodefromEUTRA_CGI(Ngap_EUTRA_CGI_t *eutra_cgi) {
-  plmnId = new PlmnId();
+bool EUTRA_CGI::decodefromEUTRA_CGI(Ngap_EUTRA_CGI_t* eutra_cgi) {
+  plmnId            = new PlmnId();
   eUTRACellIdentity = new EUTRACellIdentity();
-  if (!plmnId->decodefromoctetstring(eutra_cgi->pLMNIdentity))
-    return false;
+  if (!plmnId->decodefromoctetstring(eutra_cgi->pLMNIdentity)) return false;
   if (!eUTRACellIdentity->decodefrombitstring(eutra_cgi->eUTRACellIdentity))
     return false;
 
@@ -72,9 +69,9 @@ bool EUTRA_CGI::decodefromEUTRA_CGI(Ngap_EUTRA_CGI_t *eutra_cgi) {
 }
 
 //------------------------------------------------------------------------------
-void EUTRA_CGI::getEUTRA_CGI(PlmnId *&m_plmnId,
-                             EUTRACellIdentity *&m_eUTRACellIdentity) {
-  m_plmnId = plmnId;
+void EUTRA_CGI::getEUTRA_CGI(
+    PlmnId*& m_plmnId, EUTRACellIdentity*& m_eUTRACellIdentity) {
+  m_plmnId            = plmnId;
   m_eUTRACellIdentity = eUTRACellIdentity;
 }
-}
+}  // namespace ngap

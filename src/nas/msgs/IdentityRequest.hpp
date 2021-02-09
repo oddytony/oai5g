@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,16 +37,16 @@ class IdentityRequest {
  public:
   IdentityRequest();
   ~IdentityRequest();
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(NasMmPlainHeader *header, uint8_t *buf, int len);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(NasMmPlainHeader* header, uint8_t* buf, int len);
   void setHeader(uint8_t security_header_type);
   void set_5GS_Identity_Type(uint8_t value);
+
  public:
-  NasMmPlainHeader *plain_header;
-  _5GS_Identity_Type *_5gs_identity_type;
+  NasMmPlainHeader* plain_header;
+  _5GS_Identity_Type* _5gs_identity_type;
 };
 
-}
+}  // namespace nas
 
 #endif
-

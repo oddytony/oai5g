@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -42,13 +42,14 @@ class SecurityKey {
 
   bool encode2bitstring(Ngap_SecurityKey_t&);
   bool decodefrombitstring(Ngap_SecurityKey_t&);
-  bool getSecurityKey(uint8_t *&buffer);
-  void setSecurityKey(uint8_t *buffer);
+  bool getSecurityKey(uint8_t*& buffer);
+  void setSecurityKey(uint8_t* buffer);
+
  private:
-  uint8_t *securitykeybuffer;
+  uint8_t* securitykeybuffer;
   size_t buffersize;
 };
 
-}
+}  // namespace ngap
 
 #endif

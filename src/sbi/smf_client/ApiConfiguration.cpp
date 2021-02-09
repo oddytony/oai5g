@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -15,64 +16,54 @@ namespace oai {
 namespace smf {
 namespace api {
 
-ApiConfiguration::ApiConfiguration()
-{
+ApiConfiguration::ApiConfiguration() {}
+
+ApiConfiguration::~ApiConfiguration() {}
+
+web::http::client::http_client_config& ApiConfiguration::getHttpConfig() {
+  return m_HttpConfig;
 }
 
-ApiConfiguration::~ApiConfiguration()
-{
+void ApiConfiguration::setHttpConfig(
+    web::http::client::http_client_config& value) {
+  m_HttpConfig = value;
 }
 
-web::http::client::http_client_config& ApiConfiguration::getHttpConfig()
-{
-    return m_HttpConfig;
+utility::string_t ApiConfiguration::getBaseUrl() const {
+  return m_BaseUrl;
 }
 
-void ApiConfiguration::setHttpConfig( web::http::client::http_client_config& value )
-{
-    m_HttpConfig = value;
+void ApiConfiguration::setBaseUrl(const utility::string_t value) {
+  m_BaseUrl = value;
 }
 
-utility::string_t ApiConfiguration::getBaseUrl() const
-{
-    return m_BaseUrl;
+utility::string_t ApiConfiguration::getUserAgent() const {
+  return m_UserAgent;
 }
 
-void ApiConfiguration::setBaseUrl( const utility::string_t value )
-{
-    m_BaseUrl = value;
+void ApiConfiguration::setUserAgent(const utility::string_t value) {
+  m_UserAgent = value;
 }
 
-utility::string_t ApiConfiguration::getUserAgent() const
-{
-    return m_UserAgent;
+std::map<utility::string_t, utility::string_t>&
+ApiConfiguration::getDefaultHeaders() {
+  return m_DefaultHeaders;
 }
 
-void ApiConfiguration::setUserAgent( const utility::string_t value )
-{
-    m_UserAgent = value;
+utility::string_t ApiConfiguration::getApiKey(
+    const utility::string_t& prefix) const {
+  auto result = m_ApiKeys.find(prefix);
+  if (result != m_ApiKeys.end()) {
+    return result->second;
+  }
+  return utility::conversions::to_string_t("");
 }
 
-std::map<utility::string_t, utility::string_t>& ApiConfiguration::getDefaultHeaders()
-{
-    return m_DefaultHeaders;
+void ApiConfiguration::setApiKey(
+    const utility::string_t& prefix, const utility::string_t& apiKey) {
+  m_ApiKeys[prefix] = apiKey;
 }
 
-utility::string_t ApiConfiguration::getApiKey( const utility::string_t& prefix) const
-{
-    auto result = m_ApiKeys.find(prefix);
-    if( result != m_ApiKeys.end() )
-    {
-        return result->second;
-    }
-    return utility::conversions::to_string_t("");
-}
-
-void ApiConfiguration::setApiKey( const utility::string_t& prefix, const utility::string_t& apiKey )
-{
-    m_ApiKeys[prefix] = apiKey;
-}
-
-}
-}
-}
+}  // namespace api
+}  // namespace smf
+}  // namespace oai

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -28,7 +28,7 @@
 
 #include "TimeToWait.hpp"
 
-#include<iostream>
+#include <iostream>
 using namespace std;
 
 namespace ngap {
@@ -39,8 +39,7 @@ TimeToWait::TimeToWait() {
 }
 
 //------------------------------------------------------------------------------
-TimeToWait::~TimeToWait() {
-}
+TimeToWait::~TimeToWait() {}
 
 //------------------------------------------------------------------------------
 void TimeToWait::setValue(e_Ngap_TimeToWait m_timeToWait) {
@@ -48,13 +47,13 @@ void TimeToWait::setValue(e_Ngap_TimeToWait m_timeToWait) {
 }
 
 //------------------------------------------------------------------------------
-bool TimeToWait::encode2TimeToWait(Ngap_TimeToWait_t *timeToWait) {
+bool TimeToWait::encode2TimeToWait(Ngap_TimeToWait_t* timeToWait) {
   *timeToWait = timeValue;
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool TimeToWait::decodefromTimeToWait(Ngap_TimeToWait_t *pdu) {
+bool TimeToWait::decodefromTimeToWait(Ngap_TimeToWait_t* pdu) {
   timeValue = *pdu;
   return true;
 }
@@ -63,5 +62,4 @@ bool TimeToWait::decodefromTimeToWait(Ngap_TimeToWait_t *pdu) {
 long TimeToWait::getValue() {
   return timeValue;
 }
-}
-
+}  // namespace ngap

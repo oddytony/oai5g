@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -29,21 +29,21 @@
 #ifndef _STATISTICS_H_
 #define _STATISTICS_H_
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "amf.hpp"
 #include "ngap_app.hpp"
 
 typedef struct {
   uint32_t gnb_id;
-  //TODO: list of PLMNs
+  // TODO: list of PLMNs
   std::vector<SupportedItem_t> plmn_list;
   std::string mcc;
   std::string mnc;
   std::string gnb_name;
   uint32_t tac;
-  //long nrCellId;
+  // long nrCellId;
 } gnb_infos;
 
 typedef struct ue_info_s {
@@ -63,16 +63,16 @@ class statistics {
   void display();
   statistics();
   ~statistics();
-  void update_ue_info(const ue_info_t &ue_info);
-  void update_5gmm_state(const std::string &imsi, const std::string &state);
+  void update_ue_info(const ue_info_t& ue_info);
+  void update_5gmm_state(const std::string& imsi, const std::string& state);
+
  public:
   uint32_t gNB_connected;
   uint32_t UE_connected;
   uint32_t UE_registred;
-  //uint32_t        system_pdu_sessions;
+  // uint32_t        system_pdu_sessions;
   std::vector<gnb_infos> gnbs;
   std::map<std::string, ue_info_t> ue_infos;
-
 };
 
 #endif

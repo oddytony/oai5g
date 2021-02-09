@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -38,13 +38,15 @@ class UENetworkCapability {
   UENetworkCapability();
   UENetworkCapability(uint8_t iei);
   ~UENetworkCapability();
-  UENetworkCapability(const uint8_t iei, uint8_t _5gg_EEASel, uint8_t _5gg_EIASel);
+  UENetworkCapability(
+      const uint8_t iei, uint8_t _5gg_EEASel, uint8_t _5gg_EIASel);
   void setEEASel(uint8_t sel);
   void setEIASel(uint8_t sel);
   uint8_t getEEASel();
   uint8_t getEIASel();
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(uint8_t *buf, int len, bool is_option);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(uint8_t* buf, int len, bool is_option);
+
  private:
   uint8_t _iei;
   uint8_t length;
@@ -52,7 +54,6 @@ class UENetworkCapability {
   uint8_t _5g_EIASel;
 };
 
-}
+}  // namespace nas
 
 #endif
-

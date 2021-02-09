@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,37 +35,37 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 PDUSessionResourceSetupListCxtReq::PDUSessionResourceSetupListCxtReq() {
-  pduSessionResourceSetupItemCxtReq = NULL;
+  pduSessionResourceSetupItemCxtReq      = NULL;
   numofpduSessionResourceSetupItemCxtReq = 0;
 }
 
 //------------------------------------------------------------------------------
-PDUSessionResourceSetupListCxtReq::~PDUSessionResourceSetupListCxtReq() {
-}
+PDUSessionResourceSetupListCxtReq::~PDUSessionResourceSetupListCxtReq() {}
 
 //------------------------------------------------------------------------------
 void PDUSessionResourceSetupListCxtReq::setPDUSessionResourceSetupListCxtReq(
-    PDUSessionResourceSetupItemCxtReq *m_pduSessionResourceSetupItemCxtReq,
+    PDUSessionResourceSetupItemCxtReq* m_pduSessionResourceSetupItemCxtReq,
     int num) {
-  pduSessionResourceSetupItemCxtReq = m_pduSessionResourceSetupItemCxtReq;
+  pduSessionResourceSetupItemCxtReq      = m_pduSessionResourceSetupItemCxtReq;
   numofpduSessionResourceSetupItemCxtReq = num;
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceSetupListCxtReq::encode2PDUSessionResourceSetupListCxtReq(
-    Ngap_PDUSessionResourceSetupListCxtReq_t *pduSessionResourceSetupListCxtReq) {
+bool PDUSessionResourceSetupListCxtReq::
+    encode2PDUSessionResourceSetupListCxtReq(
+        Ngap_PDUSessionResourceSetupListCxtReq_t*
+            pduSessionResourceSetupListCxtReq) {
   for (int i = 0; i < numofpduSessionResourceSetupItemCxtReq; i++) {
     cout << "encoding items" << endl;
-    Ngap_PDUSessionResourceSetupItemCxtReq_t *request =
+    Ngap_PDUSessionResourceSetupItemCxtReq_t* request =
         (Ngap_PDUSessionResourceSetupItemCxtReq_t*) calloc(
             1, sizeof(Ngap_PDUSessionResourceSetupItemCxtReq_t));
-    if (!request)
-      return false;
+    if (!request) return false;
     if (!pduSessionResourceSetupItemCxtReq[i]
-        .encode2PDUSessionResourceSetupItemCxtReq(request))
+             .encode2PDUSessionResourceSetupItemCxtReq(request))
       return false;
-    if (ASN_SEQUENCE_ADD(&pduSessionResourceSetupListCxtReq->list, request)
-        != 0)
+    if (ASN_SEQUENCE_ADD(&pduSessionResourceSetupListCxtReq->list, request) !=
+        0)
       return false;
   }
 
@@ -73,16 +73,18 @@ bool PDUSessionResourceSetupListCxtReq::encode2PDUSessionResourceSetupListCxtReq
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceSetupListCxtReq::decodefromPDUSessionResourceSetupListCxtReq(
-    Ngap_PDUSessionResourceSetupListCxtReq_t *pduSessionResourceSetupListCxtReq) {
-  numofpduSessionResourceSetupItemCxtReq = pduSessionResourceSetupListCxtReq
-      ->list.count;
-  pduSessionResourceSetupItemCxtReq =
-      new PDUSessionResourceSetupItemCxtReq[numofpduSessionResourceSetupItemCxtReq]();
+bool PDUSessionResourceSetupListCxtReq::
+    decodefromPDUSessionResourceSetupListCxtReq(
+        Ngap_PDUSessionResourceSetupListCxtReq_t*
+            pduSessionResourceSetupListCxtReq) {
+  numofpduSessionResourceSetupItemCxtReq =
+      pduSessionResourceSetupListCxtReq->list.count;
+  pduSessionResourceSetupItemCxtReq = new PDUSessionResourceSetupItemCxtReq
+      [numofpduSessionResourceSetupItemCxtReq]();
   for (int i = 0; i < numofpduSessionResourceSetupItemCxtReq; i++) {
     if (!pduSessionResourceSetupItemCxtReq[i]
-        .decodefromPDUSessionResourceSetupItemCxtReq(
-        pduSessionResourceSetupListCxtReq->list.array[i]))
+             .decodefromPDUSessionResourceSetupItemCxtReq(
+                 pduSessionResourceSetupListCxtReq->list.array[i]))
       return false;
   }
 
@@ -91,11 +93,10 @@ bool PDUSessionResourceSetupListCxtReq::decodefromPDUSessionResourceSetupListCxt
 
 //------------------------------------------------------------------------------
 void PDUSessionResourceSetupListCxtReq::getPDUSessionResourceSetupListCxtReq(
-    PDUSessionResourceSetupItemCxtReq *&m_pduSessionResourceSetupItemCxtReq,
-    int &num) {
+    PDUSessionResourceSetupItemCxtReq*& m_pduSessionResourceSetupItemCxtReq,
+    int& num) {
   m_pduSessionResourceSetupItemCxtReq = pduSessionResourceSetupItemCxtReq;
-  num = numofpduSessionResourceSetupItemCxtReq;
+  num                                 = numofpduSessionResourceSetupItemCxtReq;
 }
 
-}
-
+}  // namespace ngap

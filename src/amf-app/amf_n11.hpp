@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,6 +35,8 @@
 
 #include "itti_msg_n11.hpp"
 #include "pdu_session_context.hpp"
+#include "AuthenticationInfo.h"
+#include "UEAuthenticationCtx.h"
 
 namespace amf_application {
 
@@ -46,33 +48,49 @@ class amf_n11 {
   void handle_itti_message(itti_smf_services_consumer&);
   void handle_pdu_session_initial_request(
       std::string supi, std::shared_ptr<pdu_session_context> psc,
-      std::string smf_addr, bstring sm_msg, std::string dnn);
-  void handle_itti_message(itti_nsmf_pdusession_update_sm_context &itti_msg);
+      std::string smf_addr, std::string smf_api_version, bstring sm_msg,
+      std::string dnn);
+  void handle_itti_message(itti_nsmf_pdusession_update_sm_context& itti_msg);
+  void handle_itti_message(itti_nsmf_pdusession_release_sm_context& itti_msg);
+  void handle_itti_message(itti_pdu_session_resource_setup_response& itti_msg);
   void send_pdu_session_update_sm_context_request(
       std::string supi, std::shared_ptr<pdu_session_context> psc,
       std::string smf_addr, bstring sm_msg, std::string dnn);
 
-  std::map<std::string, std::shared_ptr<pdu_session_context>> supi2pdu;  // amf ue ngap id
+  std::map<std::string, std::shared_ptr<pdu_session_context>>
+      supi2pdu;  // amf ue ngap id
   mutable std::shared_mutex m_supi2pdu;
-  bool is_supi_to_pdu_ctx(const std::string &supi) const;
+  bool is_supi_to_pdu_ctx(const std::string& supi) const;
   std::shared_ptr<pdu_session_context> supi_to_pdu_ctx(
-      const std::string &supi) const;
-  void set_supi_to_pdu_ctx(const std::string &supi,
-                           std::shared_ptr<pdu_session_context> psc);
+      const std::string& supi) const;
+  void set_supi_to_pdu_ctx(
+      const std::string& supi, std::shared_ptr<pdu_session_context> psc);
   std::map<uint8_t, std::string> pduid2supi;
 
-  bool smf_selection_from_configuration(std::string &smf_addr);
-  bool smf_selection_from_context(std::string &smf_addr);
+  bool smf_selection_from_configuration(
+      std::string& smf_addr, std::string& smf_api_version);
   void handle_post_sm_context_response_error_400();
-  void handle_post_sm_context_response_error(long code, std::string cause,
-                                             bstring n1sm, std::string supi,
-                                             uint8_t pdu_session_id);
+  void handle_post_sm_context_response_error(
+      long code, std::string cause, bstring n1sm, std::string supi,
+      uint8_t pdu_session_id);
 
-  void curl_http_client(std::string remoteUri, std::string jsonData,
-                        std::string n1SmMsg, std::string n2SmMsg,
-                        std::string supi, uint8_t pdu_session_id);
+  void curl_http_client(
+      std::string remoteUri, std::string jsonData, std::string n1SmMsg,
+      std::string n2SmMsg, std::string supi, uint8_t pdu_session_id);
+
+  void curl_http_client(
+      std::string remoteUri, std::string Method, std::string msgBody,
+      std::string& Response);
+
+  bool discover_smf(
+      std::string& smf_addr, std::string& smf_api_version,
+      const snssai_t snssai, const plmn_t plmn, const std::string dnn);
+
+  bool send_ue_authentication_request(
+      oai::amf::model::AuthenticationInfo& auth_info,
+      oai::amf::model::UEAuthenticationCtx& ue_auth_ctx, uint8_t http_version);
 };
 
-}
+}  // namespace amf_application
 
 #endif

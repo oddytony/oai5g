@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,36 +35,34 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 PDUSessionResourceSetupListSURes::PDUSessionResourceSetupListSURes() {
-  pduSessionResourceSetupItemSURes = NULL;
+  pduSessionResourceSetupItemSURes      = NULL;
   numofpduSessionResourceSetupItemSURes = 0;
 }
 
 //------------------------------------------------------------------------------
-PDUSessionResourceSetupListSURes::~PDUSessionResourceSetupListSURes() {
-}
+PDUSessionResourceSetupListSURes::~PDUSessionResourceSetupListSURes() {}
 
 //------------------------------------------------------------------------------
 void PDUSessionResourceSetupListSURes::setPDUSessionResourceSetupListSURes(
-    PDUSessionResourceSetupItemSURes *m_pduSessionResourceSetupItemSURes,
+    PDUSessionResourceSetupItemSURes* m_pduSessionResourceSetupItemSURes,
     int num) {
-  pduSessionResourceSetupItemSURes = m_pduSessionResourceSetupItemSURes;
+  pduSessionResourceSetupItemSURes      = m_pduSessionResourceSetupItemSURes;
   numofpduSessionResourceSetupItemSURes = num;
 }
 
 //------------------------------------------------------------------------------
 bool PDUSessionResourceSetupListSURes::encode2PDUSessionResourceSetupListSURes(
-    Ngap_PDUSessionResourceSetupListSURes_t *pduSessionResourceSetupListSURes) {
+    Ngap_PDUSessionResourceSetupListSURes_t* pduSessionResourceSetupListSURes) {
   for (int i = 0; i < numofpduSessionResourceSetupItemSURes; i++) {
-    Ngap_PDUSessionResourceSetupItemSURes_t *response =
+    Ngap_PDUSessionResourceSetupItemSURes_t* response =
         (Ngap_PDUSessionResourceSetupItemSURes_t*) calloc(
             1, sizeof(Ngap_PDUSessionResourceSetupItemSURes_t));
-    if (!response)
-      return false;
+    if (!response) return false;
     if (!pduSessionResourceSetupItemSURes[i]
-        .encode2PDUSessionResourceSetupItemSURes(response))
+             .encode2PDUSessionResourceSetupItemSURes(response))
       return false;
-    if (ASN_SEQUENCE_ADD(&pduSessionResourceSetupListSURes->list, response)
-        != 0)
+    if (ASN_SEQUENCE_ADD(&pduSessionResourceSetupListSURes->list, response) !=
+        0)
       return false;
   }
 
@@ -72,16 +70,18 @@ bool PDUSessionResourceSetupListSURes::encode2PDUSessionResourceSetupListSURes(
 }
 
 //------------------------------------------------------------------------------
-bool PDUSessionResourceSetupListSURes::decodefromPDUSessionResourceSetupListSURes(
-    Ngap_PDUSessionResourceSetupListSURes_t *pduSessionResourceSetupListSURes) {
-  numofpduSessionResourceSetupItemSURes = pduSessionResourceSetupListSURes->list
-      .count;
-  pduSessionResourceSetupItemSURes =
-      new PDUSessionResourceSetupItemSURes[numofpduSessionResourceSetupItemSURes]();
+bool PDUSessionResourceSetupListSURes::
+    decodefromPDUSessionResourceSetupListSURes(
+        Ngap_PDUSessionResourceSetupListSURes_t*
+            pduSessionResourceSetupListSURes) {
+  numofpduSessionResourceSetupItemSURes =
+      pduSessionResourceSetupListSURes->list.count;
+  pduSessionResourceSetupItemSURes = new PDUSessionResourceSetupItemSURes
+      [numofpduSessionResourceSetupItemSURes]();
   for (int i = 0; i < numofpduSessionResourceSetupItemSURes; i++) {
     if (!pduSessionResourceSetupItemSURes[i]
-        .decodefromPDUSessionResourceSetupItemSURes(
-        pduSessionResourceSetupListSURes->list.array[i]))
+             .decodefromPDUSessionResourceSetupItemSURes(
+                 pduSessionResourceSetupListSURes->list.array[i]))
       return false;
   }
 
@@ -90,11 +90,10 @@ bool PDUSessionResourceSetupListSURes::decodefromPDUSessionResourceSetupListSURe
 
 //------------------------------------------------------------------------------
 void PDUSessionResourceSetupListSURes::getPDUSessionResourceSetupListSURes(
-    PDUSessionResourceSetupItemSURes *&m_pduSessionResourceSetupItemSURes,
-    int &num) {
+    PDUSessionResourceSetupItemSURes*& m_pduSessionResourceSetupItemSURes,
+    int& num) {
   m_pduSessionResourceSetupItemSURes = pduSessionResourceSetupItemSURes;
-  num = numofpduSessionResourceSetupItemSURes;
+  num                                = numofpduSessionResourceSetupItemSURes;
 }
 
-}
-
+}  // namespace ngap

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -47,10 +47,11 @@ class EUTRA_CGI {
   bool encode2EUTRA_CGI(Ngap_EUTRA_CGI_t*);
   bool decodefromEUTRA_CGI(Ngap_EUTRA_CGI_t*);
   void getEUTRA_CGI(PlmnId*&, EUTRACellIdentity*&);
+
  private:
-  PlmnId *plmnId;
-  EUTRACellIdentity *eUTRACellIdentity;
+  PlmnId* plmnId;
+  EUTRACellIdentity* eUTRACellIdentity;
 };
-}
+}  // namespace ngap
 
 #endif

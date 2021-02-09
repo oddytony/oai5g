@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -43,22 +43,24 @@ class AssociatedQosFlowItem {
   virtual ~AssociatedQosFlowItem();
 
   void setAssociatedQosFlowItem(
-      e_Ngap_AssociatedQosFlowItem__qosFlowMappingIndication m_qosFlowMappingIndication,
-      QosFlowIdentifier *m_qosFlowIdentifier);
-  void setAssociatedQosFlowItem(QosFlowIdentifier *m_qosFlowIdentifier);
-  bool getAssociatedQosFlowItem(long &m_qosFlowMappingIndication,
-                                QosFlowIdentifier *&m_qosFlowIdentifier);
+      e_Ngap_AssociatedQosFlowItem__qosFlowMappingIndication
+          m_qosFlowMappingIndication,
+      QosFlowIdentifier* m_qosFlowIdentifier);
+  void setAssociatedQosFlowItem(QosFlowIdentifier* m_qosFlowIdentifier);
+  bool getAssociatedQosFlowItem(
+      long& m_qosFlowMappingIndication,
+      QosFlowIdentifier*& m_qosFlowIdentifier);
 
   bool encode2AssociatedQosFlowItem(
-      Ngap_AssociatedQosFlowItem_t *associatedQosFlowItem);
+      Ngap_AssociatedQosFlowItem_t* associatedQosFlowItem);
   bool decodefromAssociatedQosFlowItem(
-      Ngap_AssociatedQosFlowItem_t *associatedQosFlowItem);
+      Ngap_AssociatedQosFlowItem_t* associatedQosFlowItem);
+
  private:
-  QosFlowIdentifier *qosFlowIdentifier;
+  QosFlowIdentifier* qosFlowIdentifier;
   long qosFlowMappingIndication;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

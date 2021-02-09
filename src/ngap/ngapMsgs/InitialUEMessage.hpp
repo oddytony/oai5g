@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -54,32 +54,32 @@ class InitialUEMessageMsg {
 
   void setMessageType();
   void setRanUENgapID(uint32_t ran_ue_ngap_id);
-  void setNasPdu(uint8_t *nas, size_t sizeofnas);
+  void setNasPdu(uint8_t* nas, size_t sizeofnas);
   void setUserLocationInfoNR(struct NrCgi_s cig, struct Tai_s tai);
   void setRRCEstablishmentCause(e_Ngap_RRCEstablishmentCause cause_value);
-  //void set5GS_TMSI(string amfSetId, string amfPointer, string _5g_tmsi);
+  // void set5GS_TMSI(string amfSetId, string amfPointer, string _5g_tmsi);
   void setUeContextRequest(e_Ngap_UEContextRequest ueCtxReq);
-  int encode2buffer(uint8_t *buf, int buf_size);
-  //Decapsulation
-  bool decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu);
+  int encode2buffer(uint8_t* buf, int buf_size);
+  // Decapsulation
+  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
   uint32_t getRanUENgapID();
-  bool getNasPdu(uint8_t *&nas, size_t &sizeofnas);
-  bool getUserLocationInfoNR(struct NrCgi_s &cig, struct Tai_s &tai);
+  bool getNasPdu(uint8_t*& nas, size_t& sizeofnas);
+  bool getUserLocationInfoNR(struct NrCgi_s& cig, struct Tai_s& tai);
   int getRRCEstablishmentCause();
   int getUeContextRequest();
-  bool get5GS_TMSI(std::string &_5g_s_tmsi);
+  bool get5GS_TMSI(std::string& _5g_s_tmsi);
 
  private:
-  Ngap_NGAP_PDU_t *initialUEMessagePdu;
-  Ngap_InitialUEMessage_t *initialUEMessageIEs;
+  Ngap_NGAP_PDU_t* initialUEMessagePdu;
+  Ngap_InitialUEMessage_t* initialUEMessageIEs;
 
-  RAN_UE_NGAP_ID *ranUeNgapId;
-  NAS_PDU *nasPdu;
-  UserLocationInformation *userLocationInformation;
-  RRCEstablishmentCause *rRCEstablishmentCause;
-  UEContextRequest *uEContextRequest;
-  FiveGSTmsi *fivegSTmsi;
+  RAN_UE_NGAP_ID* ranUeNgapId;
+  NAS_PDU* nasPdu;
+  UserLocationInformation* userLocationInformation;
+  RRCEstablishmentCause* rRCEstablishmentCause;
+  UEContextRequest* uEContextRequest;
+  FiveGSTmsi* fivegSTmsi;
 };
 
-}
+}  // namespace ngap
 #endif

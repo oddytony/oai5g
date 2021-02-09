@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,123 +10,107 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "InvalidParam.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-InvalidParam::InvalidParam()
-{
-    m_Param = utility::conversions::to_string_t("");
-    m_Reason = utility::conversions::to_string_t("");
-    m_ReasonIsSet = false;
+InvalidParam::InvalidParam() {
+  m_Param       = utility::conversions::to_string_t("");
+  m_Reason      = utility::conversions::to_string_t("");
+  m_ReasonIsSet = false;
 }
 
-InvalidParam::~InvalidParam()
-{
+InvalidParam::~InvalidParam() {}
+
+void InvalidParam::validate() {
+  // TODO: implement validation
 }
 
-void InvalidParam::validate()
-{
-    // TODO: implement validation
+web::json::value InvalidParam::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  val[utility::conversions::to_string_t("param")] = ModelBase::toJson(m_Param);
+  if (m_ReasonIsSet) {
+    val[utility::conversions::to_string_t("reason")] =
+        ModelBase::toJson(m_Reason);
+  }
+
+  return val;
 }
 
-web::json::value InvalidParam::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    val[utility::conversions::to_string_t("param")] = ModelBase::toJson(m_Param);
-    if(m_ReasonIsSet)
-    {
-        val[utility::conversions::to_string_t("reason")] = ModelBase::toJson(m_Reason);
+void InvalidParam::fromJson(const web::json::value& val) {
+  setParam(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("param"))));
+  if (val.has_field(utility::conversions::to_string_t("reason"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("reason"));
+    if (!fieldValue.is_null()) {
+      setReason(ModelBase::stringFromJson(fieldValue));
     }
-
-    return val;
+  }
 }
 
-void InvalidParam::fromJson(const web::json::value& val)
-{
-    setParam(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("param"))));
-    if(val.has_field(utility::conversions::to_string_t("reason")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("reason"));
-        if(!fieldValue.is_null())
-        {
-            setReason(ModelBase::stringFromJson(fieldValue));
-        }
-    }
+void InvalidParam::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("param"), m_Param));
+  if (m_ReasonIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("reason"), m_Reason));
+  }
 }
 
-void InvalidParam::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
+void InvalidParam::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("param"), m_Param));
-    if(m_ReasonIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("reason"), m_Reason));
-    }
+  setParam(ModelBase::stringFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("param"))));
+  if (multipart->hasContent(utility::conversions::to_string_t("reason"))) {
+    setReason(ModelBase::stringFromHttpContent(
+        multipart->getContent(utility::conversions::to_string_t("reason"))));
+  }
 }
 
-void InvalidParam::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    setParam(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("param"))));
-    if(multipart->hasContent(utility::conversions::to_string_t("reason")))
-    {
-        setReason(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("reason"))));
-    }
+utility::string_t InvalidParam::getParam() const {
+  return m_Param;
 }
 
-utility::string_t InvalidParam::getParam() const
-{
-    return m_Param;
+void InvalidParam::setParam(const utility::string_t& value) {
+  m_Param = value;
 }
 
-void InvalidParam::setParam(const utility::string_t& value)
-{
-    m_Param = value;
-    
+utility::string_t InvalidParam::getReason() const {
+  return m_Reason;
 }
 
-utility::string_t InvalidParam::getReason() const
-{
-    return m_Reason;
+void InvalidParam::setReason(const utility::string_t& value) {
+  m_Reason      = value;
+  m_ReasonIsSet = true;
 }
 
-void InvalidParam::setReason(const utility::string_t& value)
-{
-    m_Reason = value;
-    m_ReasonIsSet = true;
+bool InvalidParam::reasonIsSet() const {
+  return m_ReasonIsSet;
 }
 
-bool InvalidParam::reasonIsSet() const
-{
-    return m_ReasonIsSet;
+void InvalidParam::unsetReason() {
+  m_ReasonIsSet = false;
 }
 
-void InvalidParam::unsetReason()
-{
-    m_ReasonIsSet = false;
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

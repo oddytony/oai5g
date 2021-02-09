@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,33 +39,30 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 PLMNSupportItem::PLMNSupportItem() {
-  plmn = NULL;
+  plmn   = NULL;
   snssai = NULL;
 }
 
 //------------------------------------------------------------------------------
-PLMNSupportItem::~PLMNSupportItem() {
-}
+PLMNSupportItem::~PLMNSupportItem() {}
 
 //------------------------------------------------------------------------------
-void PLMNSupportItem::setPlmnSliceSupportList(PlmnId *m_plmn, S_NSSAI *m_snssai,
-                                              int num) {
-  plmn = m_plmn;
-  snssai = m_snssai;
+void PLMNSupportItem::setPlmnSliceSupportList(
+    PlmnId* m_plmn, S_NSSAI* m_snssai, int num) {
+  plmn        = m_plmn;
+  snssai      = m_snssai;
   numOfSnssai = num;
 }
 
 //------------------------------------------------------------------------------
 bool PLMNSupportItem::encode2PLMNSupportItem(
-    Ngap_PLMNSupportItem_t *plmnsupportItem) {
-  if (!plmn->encode2octetstring(plmnsupportItem->pLMNIdentity))
-    return false;
+    Ngap_PLMNSupportItem_t* plmnsupportItem) {
+  if (!plmn->encode2octetstring(plmnsupportItem->pLMNIdentity)) return false;
   cout << "PLMNSupportItem::numOfSnssai	" << numOfSnssai << endl;
   for (int i = 0; i < numOfSnssai; i++) {
-    Ngap_SliceSupportItem_t *slice = (Ngap_SliceSupportItem_t*) calloc(
-        1, sizeof(Ngap_SliceSupportItem_t));
-    if (!snssai[i].encode2S_NSSAI(&slice->s_NSSAI))
-      return false;
+    Ngap_SliceSupportItem_t* slice =
+        (Ngap_SliceSupportItem_t*) calloc(1, sizeof(Ngap_SliceSupportItem_t));
+    if (!snssai[i].encode2S_NSSAI(&slice->s_NSSAI)) return false;
     ASN_SEQUENCE_ADD(&plmnsupportItem->sliceSupportList.list, slice);
   }
   return true;
@@ -73,26 +70,24 @@ bool PLMNSupportItem::encode2PLMNSupportItem(
 
 //------------------------------------------------------------------------------
 bool PLMNSupportItem::decodefromPLMNSupportItem(
-    Ngap_PLMNSupportItem_t *plmnsupportItem) {
+    Ngap_PLMNSupportItem_t* plmnsupportItem) {
   plmn = new PlmnId();
-  if (!plmn->decodefromoctetstring(plmnsupportItem->pLMNIdentity))
-    return false;
+  if (!plmn->decodefromoctetstring(plmnsupportItem->pLMNIdentity)) return false;
   numOfSnssai = plmnsupportItem->sliceSupportList.list.count;
-  snssai = new S_NSSAI[numOfSnssai]();
+  snssai      = new S_NSSAI[numOfSnssai]();
   for (int i = 0; i < numOfSnssai; i++) {
     if (!snssai[i].decodefromS_NSSAI(
-        &plmnsupportItem->sliceSupportList.list.array[i]->s_NSSAI))
+            &plmnsupportItem->sliceSupportList.list.array[i]->s_NSSAI))
       return false;
   }
   return true;
 }
 
 //------------------------------------------------------------------------------
-void PLMNSupportItem::getPlmnSliceSupportList(PlmnId *&m_plmn,
-                                              S_NSSAI *&m_snssai,
-                                              int &snssainum) {
-  m_plmn = plmn;
-  m_snssai = snssai;
+void PLMNSupportItem::getPlmnSliceSupportList(
+    PlmnId*& m_plmn, S_NSSAI*& m_snssai, int& snssainum) {
+  m_plmn    = plmn;
+  m_snssai  = snssai;
   snssainum = numOfSnssai;
 }
-}
+}  // namespace ngap

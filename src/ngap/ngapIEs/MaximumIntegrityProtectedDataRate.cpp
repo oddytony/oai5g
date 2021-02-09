@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-MaximumIntegrityProtectedDataRate::MaximumIntegrityProtectedDataRate() {
-}
+MaximumIntegrityProtectedDataRate::MaximumIntegrityProtectedDataRate() {}
 
 //------------------------------------------------------------------------------
-MaximumIntegrityProtectedDataRate::~MaximumIntegrityProtectedDataRate() {
-}
+MaximumIntegrityProtectedDataRate::~MaximumIntegrityProtectedDataRate() {}
 
 //------------------------------------------------------------------------------
 void MaximumIntegrityProtectedDataRate::setMaximumIntegrityProtectedDataRate(
@@ -49,26 +47,30 @@ void MaximumIntegrityProtectedDataRate::setMaximumIntegrityProtectedDataRate(
 
 //------------------------------------------------------------------------------
 bool MaximumIntegrityProtectedDataRate::getMaximumIntegrityProtectedDataRate(
-    long &m_maxintprotdatarate) {
+    long& m_maxintprotdatarate) {
   m_maxintprotdatarate = maxintprotdatarate;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool MaximumIntegrityProtectedDataRate::encode2MaximumIntegrityProtectedDataRate(
-    Ngap_MaximumIntegrityProtectedDataRate_t &maximumIntegrityProtectedDataRate) {
+bool MaximumIntegrityProtectedDataRate::
+    encode2MaximumIntegrityProtectedDataRate(
+        Ngap_MaximumIntegrityProtectedDataRate_t&
+            maximumIntegrityProtectedDataRate) {
   maximumIntegrityProtectedDataRate = maxintprotdatarate;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool MaximumIntegrityProtectedDataRate::decodefromMaximumIntegrityProtectedDataRate(
-    Ngap_MaximumIntegrityProtectedDataRate_t maximumIntegrityProtectedDataRate) {
+bool MaximumIntegrityProtectedDataRate::
+    decodefromMaximumIntegrityProtectedDataRate(
+        Ngap_MaximumIntegrityProtectedDataRate_t
+            maximumIntegrityProtectedDataRate) {
   maxintprotdatarate = maximumIntegrityProtectedDataRate;
 
   return true;
 }
 
-}
+}  // namespace ngap

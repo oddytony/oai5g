@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,8 +39,7 @@ ConfidentialityProtectionResult::ConfidentialityProtectionResult() {
 }
 
 //------------------------------------------------------------------------------
-ConfidentialityProtectionResult::~ConfidentialityProtectionResult() {
-}
+ConfidentialityProtectionResult::~ConfidentialityProtectionResult() {}
 
 //------------------------------------------------------------------------------
 void ConfidentialityProtectionResult::setConfidentialityProtectionResult(
@@ -50,7 +49,7 @@ void ConfidentialityProtectionResult::setConfidentialityProtectionResult(
 
 //------------------------------------------------------------------------------
 bool ConfidentialityProtectionResult::getConfidentialityProtectionResult(
-    long &m_confidentialityProtectionResult) {
+    long& m_confidentialityProtectionResult) {
   m_confidentialityProtectionResult = confidentialityProtectionResult;
 
   return true;
@@ -58,7 +57,8 @@ bool ConfidentialityProtectionResult::getConfidentialityProtectionResult(
 
 //------------------------------------------------------------------------------
 bool ConfidentialityProtectionResult::encode2ConfidentialityProtectionResult(
-    Ngap_ConfidentialityProtectionResult_t &confidentialityProtectionResultValue) {
+    Ngap_ConfidentialityProtectionResult_t&
+        confidentialityProtectionResultValue) {
   confidentialityProtectionResultValue = confidentialityProtectionResult;
 
   return true;
@@ -66,10 +66,10 @@ bool ConfidentialityProtectionResult::encode2ConfidentialityProtectionResult(
 
 //------------------------------------------------------------------------------
 bool ConfidentialityProtectionResult::decodefromConfidentialityProtectionResult(
-    Ngap_ConfidentialityProtectionResult_t confidentialityProtectionResultValue) {
+    Ngap_ConfidentialityProtectionResult_t
+        confidentialityProtectionResultValue) {
   confidentialityProtectionResult = confidentialityProtectionResultValue;
 
   return true;
 }
-}
-
+}  // namespace ngap

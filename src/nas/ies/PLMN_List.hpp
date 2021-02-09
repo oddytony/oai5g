@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,23 +37,24 @@ class PLMN_List {
  public:
   PLMN_List();
   PLMN_List(uint8_t iei);
-  PLMN_List(const uint8_t iei, uint8_t MNC_MCC1, uint8_t MNC_MCC2, uint8_t MNC_MCC3);
+  PLMN_List(
+      const uint8_t iei, uint8_t MNC_MCC1, uint8_t MNC_MCC2, uint8_t MNC_MCC3);
   ~PLMN_List();
   void setMNC_MCC1(uint8_t iei, uint8_t value);
   void setMNC_MCC2(uint8_t iei, uint8_t value);
   void setMNC_MCC3(uint8_t iei, uint8_t value);
-  int encode2buffer(uint8_t *buf, int len);
-  int decodefrombuffer(uint8_t *buf, int len, bool is_option);
+  int encode2buffer(uint8_t* buf, int len);
+  int decodefrombuffer(uint8_t* buf, int len, bool is_option);
   uint8_t getMNC_MCC1();
   uint8_t getMNC_MCC2();
   uint8_t getMNC_MCC3();
+
  private:
   uint8_t _iei;
   uint8_t _MNC_MCC1;
   uint8_t _MNC_MCC2;
   uint8_t _MNC_MCC3;
 };
-}
+}  // namespace nas
 
 #endif
-

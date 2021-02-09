@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,36 +35,32 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 NR_CGI::NR_CGI() {
-  plmnId = NULL;
+  plmnId         = NULL;
   nRCellIdentity = NULL;
 }
 
 //------------------------------------------------------------------------------
-NR_CGI::~NR_CGI() {
-}
+NR_CGI::~NR_CGI() {}
 
 //------------------------------------------------------------------------------
-void NR_CGI::setNR_CGI(PlmnId *m_plmnId, NRCellIdentity *m_nRCellIdentity) {
-  plmnId = m_plmnId;
+void NR_CGI::setNR_CGI(PlmnId* m_plmnId, NRCellIdentity* m_nRCellIdentity) {
+  plmnId         = m_plmnId;
   nRCellIdentity = m_nRCellIdentity;
 }
 
 //------------------------------------------------------------------------------
-bool NR_CGI::encode2NR_CGI(Ngap_NR_CGI_t *nr_cgi) {
-  if (!plmnId->encode2octetstring(nr_cgi->pLMNIdentity))
-    return false;
-  if (!nRCellIdentity->encode2bitstring(nr_cgi->nRCellIdentity))
-    return false;
+bool NR_CGI::encode2NR_CGI(Ngap_NR_CGI_t* nr_cgi) {
+  if (!plmnId->encode2octetstring(nr_cgi->pLMNIdentity)) return false;
+  if (!nRCellIdentity->encode2bitstring(nr_cgi->nRCellIdentity)) return false;
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool NR_CGI::decodefromNR_CGI(Ngap_NR_CGI_t *nr_cgi) {
-  plmnId = new PlmnId();
+bool NR_CGI::decodefromNR_CGI(Ngap_NR_CGI_t* nr_cgi) {
+  plmnId         = new PlmnId();
   nRCellIdentity = new NRCellIdentity();
-  if (!plmnId->decodefromoctetstring(nr_cgi->pLMNIdentity))
-    return false;
+  if (!plmnId->decodefromoctetstring(nr_cgi->pLMNIdentity)) return false;
   if (!nRCellIdentity->decodefrombitstring(nr_cgi->nRCellIdentity))
     return false;
 
@@ -72,9 +68,8 @@ bool NR_CGI::decodefromNR_CGI(Ngap_NR_CGI_t *nr_cgi) {
 }
 
 //------------------------------------------------------------------------------
-void NR_CGI::getNR_CGI(PlmnId *&m_plmnId, NRCellIdentity *&m_nRCellIdentity) {
-  m_plmnId = plmnId;
+void NR_CGI::getNR_CGI(PlmnId*& m_plmnId, NRCellIdentity*& m_nRCellIdentity) {
+  m_plmnId         = plmnId;
   m_nRCellIdentity = nRCellIdentity;
 }
-}
-
+}  // namespace ngap

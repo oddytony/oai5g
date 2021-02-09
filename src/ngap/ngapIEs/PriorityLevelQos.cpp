@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PriorityLevelQos::PriorityLevelQos() {
-}
+PriorityLevelQos::PriorityLevelQos() {}
 
 //------------------------------------------------------------------------------
-PriorityLevelQos::~PriorityLevelQos() {
-}
+PriorityLevelQos::~PriorityLevelQos() {}
 
 //------------------------------------------------------------------------------
 void PriorityLevelQos::setPriorityLevelQos(long value) {
@@ -47,7 +45,7 @@ void PriorityLevelQos::setPriorityLevelQos(long value) {
 }
 
 //------------------------------------------------------------------------------
-bool PriorityLevelQos::getPriorityLevelQos(long &value) {
+bool PriorityLevelQos::getPriorityLevelQos(long& value) {
   value = prioritylevelqos;
 
   return true;
@@ -55,7 +53,7 @@ bool PriorityLevelQos::getPriorityLevelQos(long &value) {
 
 //------------------------------------------------------------------------------
 bool PriorityLevelQos::encode2PriorityLevelQos(
-    Ngap_PriorityLevelQos_t *priorityLevelQos) {
+    Ngap_PriorityLevelQos_t* priorityLevelQos) {
   *priorityLevelQos = prioritylevelqos;
 
   return true;
@@ -63,10 +61,9 @@ bool PriorityLevelQos::encode2PriorityLevelQos(
 
 //------------------------------------------------------------------------------
 bool PriorityLevelQos::decodefromPriorityLevelQos(
-    Ngap_PriorityLevelQos_t *priorityLevelQos) {
+    Ngap_PriorityLevelQos_t* priorityLevelQos) {
   prioritylevelqos = *priorityLevelQos;
 
   return true;
 }
-}
-
+}  // namespace ngap

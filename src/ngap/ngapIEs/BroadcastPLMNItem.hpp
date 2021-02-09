@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -43,15 +43,16 @@ class BroadcastPLMNItem {
   BroadcastPLMNItem();
   virtual ~BroadcastPLMNItem();
 
-  void setPlmnSliceSupportList(PlmnId *m_plmn, S_NSSAI *snssai, int num);
-  void getPlmnSliceSupportList(PlmnId *&m_plmn, S_NSSAI *&m_snssai,
-                               int &snssainum);
+  void setPlmnSliceSupportList(PlmnId* m_plmn, S_NSSAI* snssai, int num);
+  void getPlmnSliceSupportList(
+      PlmnId*& m_plmn, S_NSSAI*& m_snssai, int& snssainum);
   bool encode2BroadcastPLMNItem(Ngap_BroadcastPLMNItem_t*);
-  bool decodefromBroadcastPLMNItem(Ngap_BroadcastPLMNItem_t *pdu);
+  bool decodefromBroadcastPLMNItem(Ngap_BroadcastPLMNItem_t* pdu);
+
  private:
-  PlmnId *plmn;
-  S_NSSAI *snssai;
+  PlmnId* plmn;
+  S_NSSAI* snssai;
   int numOfSnssai;
 };
-}
+}  // namespace ngap
 #endif

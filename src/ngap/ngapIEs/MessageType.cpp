@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -28,7 +28,7 @@
 
 #include "MessageType.hpp"
 
-#include<iostream>
+#include <iostream>
 
 extern "C" {
 #include "Ngap_Criticality.h"
@@ -50,8 +50,7 @@ MessageType::MessageType() {
 }
 
 //------------------------------------------------------------------------------
-MessageType::~MessageType() {
-}
+MessageType::~MessageType() {}
 
 //------------------------------------------------------------------------------
 void MessageType::setProcedureCode(Ngap_ProcedureCode_t m_procedureCode) {
@@ -102,14 +101,14 @@ Ngap_Criticality MessageType::getCriticality() {
 }
 
 //------------------------------------------------------------------------------
-int MessageType::encode2pdu(Ngap_NGAP_PDU_t *&pdu) {
+int MessageType::encode2pdu(Ngap_NGAP_PDU_t*& pdu) {
   pdu->present = typeOfMessage;
   switch (typeOfMessage) {
     case Ngap_NGAP_PDU_PR_initiatingMessage: {
       pdu->choice.initiatingMessage = (Ngap_InitiatingMessage_t*) calloc(
           1, sizeof(Ngap_InitiatingMessage_t));
       pdu->choice.initiatingMessage->procedureCode = procedureCode;
-      pdu->choice.initiatingMessage->criticality = criticality;
+      pdu->choice.initiatingMessage->criticality   = criticality;
       pdu->choice.initiatingMessage->value.present = initiatingMsgValuePresent;
       break;
     }
@@ -117,7 +116,7 @@ int MessageType::encode2pdu(Ngap_NGAP_PDU_t *&pdu) {
       pdu->choice.successfulOutcome = (Ngap_SuccessfulOutcome_t*) calloc(
           1, sizeof(Ngap_SuccessfulOutcome_t));
       pdu->choice.successfulOutcome->procedureCode = procedureCode;
-      pdu->choice.successfulOutcome->criticality = criticality;
+      pdu->choice.successfulOutcome->criticality   = criticality;
       pdu->choice.successfulOutcome->value.present =
           successfulOutcomeValuePresent;
       break;
@@ -126,18 +125,18 @@ int MessageType::encode2pdu(Ngap_NGAP_PDU_t *&pdu) {
       pdu->choice.unsuccessfulOutcome = (Ngap_UnsuccessfulOutcome_t*) calloc(
           1, sizeof(Ngap_UnsuccessfulOutcome_t));
       pdu->choice.unsuccessfulOutcome->procedureCode = procedureCode;
-      pdu->choice.unsuccessfulOutcome->criticality = criticality;
+      pdu->choice.unsuccessfulOutcome->criticality   = criticality;
       pdu->choice.unsuccessfulOutcome->value.present =
           unsuccessfulOutcomeValuePresent;
       break;
     }
     case Ngap_NGAP_PDU_PR_NOTHING: {
-      cout << "Ngap_NGAP_PDU_PR_NOTHING" << "(messageType encode error)"
-          << endl;
+      cout << "Ngap_NGAP_PDU_PR_NOTHING"
+           << "(messageType encode error)" << endl;
       return 0;
     }
   }
   return 1;
 }
 
-}
+}  // namespace ngap

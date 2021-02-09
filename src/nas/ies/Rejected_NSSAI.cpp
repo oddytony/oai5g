@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -30,7 +30,6 @@
 #include "logger.hpp"
 using namespace nas;
 
-
 //------------------------------------------------------------------------------
 Rejected_NSSAI::Rejected_NSSAI(uint8_t iei) {
   _iei = iei;
@@ -38,20 +37,18 @@ Rejected_NSSAI::Rejected_NSSAI(uint8_t iei) {
 
 //------------------------------------------------------------------------------
 Rejected_NSSAI::Rejected_NSSAI(const uint8_t iei, uint8_t cause, uint8_t SST) {
-  _iei = iei;
-  length = 4;
-  _s_nssai_SST = SST;
+  _iei            = iei;
+  length          = 4;
+  _s_nssai_SST    = SST;
   _s_nssai_length = 2;
-  _cause = cause;
+  _cause          = cause;
 }
 
 //------------------------------------------------------------------------------
-Rejected_NSSAI::Rejected_NSSAI() {
-}
+Rejected_NSSAI::Rejected_NSSAI() {}
 
 //------------------------------------------------------------------------------
-Rejected_NSSAI::~Rejected_NSSAI() {
-}
+Rejected_NSSAI::~Rejected_NSSAI() {}
 
 //------------------------------------------------------------------------------
 void Rejected_NSSAI::setSST(uint8_t SST) {
@@ -74,7 +71,7 @@ uint8_t Rejected_NSSAI::getSST() {
 }
 
 //------------------------------------------------------------------------------
-int Rejected_NSSAI::encode2buffer(uint8_t *buf, int len) {
+int Rejected_NSSAI::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding Rejected_NSSAI iei(0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
@@ -99,7 +96,7 @@ int Rejected_NSSAI::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int Rejected_NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int Rejected_NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding Rejected_NSSAI iei(0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
@@ -108,12 +105,13 @@ int Rejected_NSSAI::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
   length = *(buf + decoded_size);
   decoded_size++;
   _s_nssai_length = (*(buf + decoded_size) & 0xf0) >> 4;
-  _cause = *(buf + decoded_size) & 0x0f;
+  _cause          = *(buf + decoded_size) & 0x0f;
   decoded_size++;
   _s_nssai_SST = *(buf + decoded_size);
   decoded_size++;
-  Logger::nas_mm().debug("decoded Rejected_NSSAI value_length(0x%x),cause(0x%x),value_SST(0x%x)", _s_nssai_length, _cause, _s_nssai_SST);
+  Logger::nas_mm().debug(
+      "decoded Rejected_NSSAI value_length(0x%x),cause(0x%x),value_SST(0x%x)",
+      _s_nssai_length, _cause, _s_nssai_SST);
   Logger::nas_mm().debug("decoded Rejected_NSSAI len(%d)", decoded_size);
   return decoded_size;
 }
-

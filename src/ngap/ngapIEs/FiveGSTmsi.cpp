@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -31,19 +31,17 @@
 using namespace ngap;
 
 //------------------------------------------------------------------------------
-FiveGSTmsi::FiveGSTmsi() {
-}
+FiveGSTmsi::FiveGSTmsi() {}
 
 //------------------------------------------------------------------------------
-FiveGSTmsi::~FiveGSTmsi() {
-}
+FiveGSTmsi::~FiveGSTmsi() {}
 
 //------------------------------------------------------------------------------
 bool FiveGSTmsi::decodefrompdu(Ngap_FiveG_S_TMSI_t pdu) {
   amfSetid.decodefrombitstring(pdu.aMFSetID);
   amfPointer.decodefrombitstring(pdu.aMFPointer);
   uint32_t tmsi = ntohl(*(uint32_t*) pdu.fiveG_TMSI.buf);
-  int size = pdu.fiveG_TMSI.size;
+  int size      = pdu.fiveG_TMSI.size;
   std::string setId, pointer;
   amfSetid.getAMFSetID(setId);
   amfPointer.getAMFPointer(pointer);
@@ -52,6 +50,6 @@ bool FiveGSTmsi::decodefrompdu(Ngap_FiveG_S_TMSI_t pdu) {
 }
 
 //------------------------------------------------------------------------------
-void FiveGSTmsi::getValue(std::string &tmsi) {
+void FiveGSTmsi::getValue(std::string& tmsi) {
   tmsi = _5g_s_tmsi;
 }

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -42,38 +42,39 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PduSessionResourceSetupResponseTransferIE::PduSessionResourceSetupResponseTransferIE() {
+PduSessionResourceSetupResponseTransferIE::
+    PduSessionResourceSetupResponseTransferIE() {
   pduSessionResourceSetupResponseTransferIEs =
       (Ngap_PDUSessionResourceSetupResponseTransfer_t*) calloc(
           1, sizeof(Ngap_PDUSessionResourceSetupResponseTransfer_t));
-  dlQoSFlowPerTNLInformation = NULL;
+  dlQoSFlowPerTNLInformation           = NULL;
   additionalDLQoSFlowPerTNLInformation = NULL;
-  securityResult = NULL;
+  securityResult                       = NULL;
 }
 
 //------------------------------------------------------------------------------
-PduSessionResourceSetupResponseTransferIE::~PduSessionResourceSetupResponseTransferIE() {
-}
+PduSessionResourceSetupResponseTransferIE::
+    ~PduSessionResourceSetupResponseTransferIE() {}
 
 //------------------------------------------------------------------------------
 void PduSessionResourceSetupResponseTransferIE::setDLQoSFlowPerTNLInformation(
     GtpTunnel_t uptlinfo, std::vector<AssociatedQosFlow_t> list) {
   if (!dlQoSFlowPerTNLInformation)
     dlQoSFlowPerTNLInformation = new DLQoSFlowPerTNLInformation();
-  UpTransportLayerInformation *m_uPTransportLayerInformation =
+  UpTransportLayerInformation* m_uPTransportLayerInformation =
       new UpTransportLayerInformation();
-  TransportLayerAddress *m_transportLayerAddress = new TransportLayerAddress();
-  GtpTeid *m_gtpTeid = new GtpTeid();
+  TransportLayerAddress* m_transportLayerAddress = new TransportLayerAddress();
+  GtpTeid* m_gtpTeid                             = new GtpTeid();
   m_transportLayerAddress->setTransportLayerAddress(uptlinfo.ip_address);
   m_gtpTeid->setGtpTeid(uptlinfo.gtp_teid);
   m_uPTransportLayerInformation->setUpTransportLayerInformation(
       m_transportLayerAddress, m_gtpTeid);
 
-  AssociatedQosFlowList *m_associatedQosFlowList = new AssociatedQosFlowList();
-  AssociatedQosFlowItem *m_associatedQosFlowItem =
+  AssociatedQosFlowList* m_associatedQosFlowList = new AssociatedQosFlowList();
+  AssociatedQosFlowItem* m_associatedQosFlowItem =
       new AssociatedQosFlowItem[list.size()]();
   for (int i = 0; i < list.size(); i++) {
-    QosFlowIdentifier *m_qosFlowIdentifier = new QosFlowIdentifier();
+    QosFlowIdentifier* m_qosFlowIdentifier = new QosFlowIdentifier();
     m_qosFlowIdentifier->setQosFlowIdentifier(list[i].qosFlowIdentifier);
     if (list[i].qosFlowMappingIndication) {
       m_associatedQosFlowItem[i].setAssociatedQosFlowItem(
@@ -82,8 +83,8 @@ void PduSessionResourceSetupResponseTransferIE::setDLQoSFlowPerTNLInformation(
       m_associatedQosFlowItem[i].setAssociatedQosFlowItem(m_qosFlowIdentifier);
     }
   }
-  m_associatedQosFlowList->setAssociatedQosFlowList(m_associatedQosFlowItem,
-                                                    list.size());
+  m_associatedQosFlowList->setAssociatedQosFlowList(
+      m_associatedQosFlowItem, list.size());
 
   dlQoSFlowPerTNLInformation->setDLQoSFlowPerTNLInformation(
       m_uPTransportLayerInformation, m_associatedQosFlowList);
@@ -97,24 +98,25 @@ void PduSessionResourceSetupResponseTransferIE::setDLQoSFlowPerTNLInformation(
 }
 
 //------------------------------------------------------------------------------
-void PduSessionResourceSetupResponseTransferIE::setAdditionalDLQoSFlowPerTNLInformation(
-    GtpTunnel_t uptlinfo, std::vector<AssociatedQosFlow_t> list) {
+void PduSessionResourceSetupResponseTransferIE::
+    setAdditionalDLQoSFlowPerTNLInformation(
+        GtpTunnel_t uptlinfo, std::vector<AssociatedQosFlow_t> list) {
   if (!additionalDLQoSFlowPerTNLInformation)
     additionalDLQoSFlowPerTNLInformation = new DLQoSFlowPerTNLInformation();
-  UpTransportLayerInformation *m_uPTransportLayerInformation =
+  UpTransportLayerInformation* m_uPTransportLayerInformation =
       new UpTransportLayerInformation();
-  TransportLayerAddress *m_transportLayerAddress = new TransportLayerAddress();
-  GtpTeid *m_gtpTeid = new GtpTeid();
+  TransportLayerAddress* m_transportLayerAddress = new TransportLayerAddress();
+  GtpTeid* m_gtpTeid                             = new GtpTeid();
   m_transportLayerAddress->setTransportLayerAddress(uptlinfo.ip_address);
   m_gtpTeid->setGtpTeid(uptlinfo.gtp_teid);
   m_uPTransportLayerInformation->setUpTransportLayerInformation(
       m_transportLayerAddress, m_gtpTeid);
 
-  AssociatedQosFlowList *m_associatedQosFlowList = new AssociatedQosFlowList();
-  AssociatedQosFlowItem *m_associatedQosFlowItem =
+  AssociatedQosFlowList* m_associatedQosFlowList = new AssociatedQosFlowList();
+  AssociatedQosFlowItem* m_associatedQosFlowItem =
       new AssociatedQosFlowItem[list.size()]();
   for (int i = 0; i < list.size(); i++) {
-    QosFlowIdentifier *m_qosFlowIdentifier = new QosFlowIdentifier();
+    QosFlowIdentifier* m_qosFlowIdentifier = new QosFlowIdentifier();
     m_qosFlowIdentifier->setQosFlowIdentifier(list[i].qosFlowIdentifier);
     if (list[i].qosFlowMappingIndication) {
       m_associatedQosFlowItem[i].setAssociatedQosFlowItem(
@@ -123,45 +125,45 @@ void PduSessionResourceSetupResponseTransferIE::setAdditionalDLQoSFlowPerTNLInfo
       m_associatedQosFlowItem[i].setAssociatedQosFlowItem(m_qosFlowIdentifier);
     }
   }
-  m_associatedQosFlowList->setAssociatedQosFlowList(m_associatedQosFlowItem,
-                                                    list.size());
+  m_associatedQosFlowList->setAssociatedQosFlowList(
+      m_associatedQosFlowItem, list.size());
 
   additionalDLQoSFlowPerTNLInformation->setDLQoSFlowPerTNLInformation(
       m_uPTransportLayerInformation, m_associatedQosFlowList);
 
-  Ngap_QosFlowPerTNLInformation_t *ie =
+  Ngap_QosFlowPerTNLInformation_t* ie =
       (Ngap_QosFlowPerTNLInformation_t*) calloc(
           1, sizeof(Ngap_QosFlowPerTNLInformation_t));
-  int ret = additionalDLQoSFlowPerTNLInformation
-      ->encode2DLQoSFlowPerTNLInformation(ie);
+  int ret =
+      additionalDLQoSFlowPerTNLInformation->encode2DLQoSFlowPerTNLInformation(
+          ie);
   if (!ret) {
     cout << "encode AdditionalDLQoSFlowPerTNLInformation IE error" << endl;
     return;
   }
-  pduSessionResourceSetupResponseTransferIEs->additionalQosFlowPerTNLInformation =
-      ie;
+  pduSessionResourceSetupResponseTransferIEs
+      ->additionalQosFlowPerTNLInformation = ie;
 }
 
 //------------------------------------------------------------------------------
 void PduSessionResourceSetupResponseTransferIE::setSecurityResult(
     e_Ngap_IntegrityProtectionResult integrityProtectionResult,
     e_Ngap_ConfidentialityProtectionResult confidentialityProtectionResult) {
-  if (!securityResult)
-    securityResult = new SecurityResult();
+  if (!securityResult) securityResult = new SecurityResult();
 
-  IntegrityProtectionResult *m_integrityProtectionResult =
+  IntegrityProtectionResult* m_integrityProtectionResult =
       new IntegrityProtectionResult();
   m_integrityProtectionResult->setIntegrityProtectionResult(
       integrityProtectionResult);
-  ConfidentialityProtectionResult *m_confidentialityProtectionResult =
+  ConfidentialityProtectionResult* m_confidentialityProtectionResult =
       new ConfidentialityProtectionResult();
   m_confidentialityProtectionResult->setConfidentialityProtectionResult(
       confidentialityProtectionResult);
-  securityResult->setSecurityResult(m_integrityProtectionResult,
-                                    m_confidentialityProtectionResult);
+  securityResult->setSecurityResult(
+      m_integrityProtectionResult, m_confidentialityProtectionResult);
 
-  Ngap_SecurityResult_t *ie = (Ngap_SecurityResult_t*) calloc(
-      1, sizeof(Ngap_SecurityResult_t));
+  Ngap_SecurityResult_t* ie =
+      (Ngap_SecurityResult_t*) calloc(1, sizeof(Ngap_SecurityResult_t));
   int ret = securityResult->encode2SecurityResult(ie);
   if (!ret) {
     cout << "encode SecurityResult IE error" << endl;
@@ -171,10 +173,11 @@ void PduSessionResourceSetupResponseTransferIE::setSecurityResult(
 }
 
 //------------------------------------------------------------------------------
-int PduSessionResourceSetupResponseTransferIE::encode2buffer(uint8_t *buf,
-                                                             int buf_size) {
-  asn_fprint(stderr, &asn_DEF_Ngap_PDUSessionResourceSetupResponseTransfer,
-             pduSessionResourceSetupResponseTransferIEs);
+int PduSessionResourceSetupResponseTransferIE::encode2buffer(
+    uint8_t* buf, int buf_size) {
+  asn_fprint(
+      stderr, &asn_DEF_Ngap_PDUSessionResourceSetupResponseTransfer,
+      pduSessionResourceSetupResponseTransferIEs);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_PDUSessionResourceSetupResponseTransfer, NULL,
       pduSessionResourceSetupResponseTransferIEs, buf, buf_size);
@@ -183,9 +186,9 @@ int PduSessionResourceSetupResponseTransferIE::encode2buffer(uint8_t *buf,
 }
 
 //------------------------------------------------------------------------------
-//Decapsulation
-bool PduSessionResourceSetupResponseTransferIE::decodefromIE(uint8_t *buf,
-                                                             int buf_size) {
+// Decapsulation
+bool PduSessionResourceSetupResponseTransferIE::decodefromIE(
+    uint8_t* buf, int buf_size) {
   asn_dec_rval_t rc = asn_decode(
       NULL, ATS_ALIGNED_CANONICAL_PER,
       &asn_DEF_Ngap_PDUSessionResourceSetupResponseTransfer,
@@ -201,31 +204,33 @@ bool PduSessionResourceSetupResponseTransferIE::decodefromIE(uint8_t *buf,
   }
   cout << "rc.consumed to decode = " << rc.consumed << endl;
   cout << endl;
-  //asn_fprint(stderr, &asn_DEF_Ngap_PDUSessionResourceSetupResponseTransfer, pduSessionResourceSetupResponseTransferIEs);
+  // asn_fprint(stderr, &asn_DEF_Ngap_PDUSessionResourceSetupResponseTransfer,
+  // pduSessionResourceSetupResponseTransferIEs);
 
   dlQoSFlowPerTNLInformation = new DLQoSFlowPerTNLInformation();
   if (!dlQoSFlowPerTNLInformation->decodefromDLQoSFlowPerTNLInformation(
-      &pduSessionResourceSetupResponseTransferIEs->qosFlowPerTNLInformation)) {
+          &pduSessionResourceSetupResponseTransferIEs
+               ->qosFlowPerTNLInformation)) {
     cout << "decoded ngap DLQoSFlowPerTNLInformation IE error" << endl;
     return false;
   }
 
   if (pduSessionResourceSetupResponseTransferIEs
-      ->additionalQosFlowPerTNLInformation) {
+          ->additionalQosFlowPerTNLInformation) {
     additionalDLQoSFlowPerTNLInformation = new DLQoSFlowPerTNLInformation();
     if (!additionalDLQoSFlowPerTNLInformation
-        ->decodefromDLQoSFlowPerTNLInformation(
-        pduSessionResourceSetupResponseTransferIEs
-            ->additionalQosFlowPerTNLInformation)) {
+             ->decodefromDLQoSFlowPerTNLInformation(
+                 pduSessionResourceSetupResponseTransferIEs
+                     ->additionalQosFlowPerTNLInformation)) {
       cout << "decoded ngap AdditionalDLQoSFlowPerTNLInformation IE error"
-          << endl;
+           << endl;
       return false;
     }
   }
   if (pduSessionResourceSetupResponseTransferIEs->securityResult) {
     securityResult = new SecurityResult();
     if (!securityResult->decodefromSecurityResult(
-        pduSessionResourceSetupResponseTransferIEs->securityResult)) {
+            pduSessionResourceSetupResponseTransferIEs->securityResult)) {
       cout << "decoded ngap SecurityResult IE error" << endl;
       return false;
     }
@@ -236,28 +241,27 @@ bool PduSessionResourceSetupResponseTransferIE::decodefromIE(uint8_t *buf,
 
 //------------------------------------------------------------------------------
 bool PduSessionResourceSetupResponseTransferIE::getDLQoSFlowPerTNLInformation(
-    GtpTunnel_t &uptlinfo, std::vector<AssociatedQosFlow_t> &list) {
-  if (!dlQoSFlowPerTNLInformation)
-    return false;
-  UpTransportLayerInformation *m_uPTransportLayerInformation;
-  AssociatedQosFlowList *m_associatedQosFlowList;
+    GtpTunnel_t& uptlinfo, std::vector<AssociatedQosFlow_t>& list) {
+  if (!dlQoSFlowPerTNLInformation) return false;
+  UpTransportLayerInformation* m_uPTransportLayerInformation;
+  AssociatedQosFlowList* m_associatedQosFlowList;
   dlQoSFlowPerTNLInformation->getDLQoSFlowPerTNLInformation(
       m_uPTransportLayerInformation, m_associatedQosFlowList);
-  TransportLayerAddress *m_transportLayerAddress;
-  GtpTeid *m_gtpTeid;
+  TransportLayerAddress* m_transportLayerAddress;
+  GtpTeid* m_gtpTeid;
   m_uPTransportLayerInformation->getUpTransportLayerInformation(
       m_transportLayerAddress, m_gtpTeid);
   m_transportLayerAddress->getTransportLayerAddress(uptlinfo.ip_address);
   m_gtpTeid->getGtpTeid(uptlinfo.gtp_teid);
 
-  AssociatedQosFlowItem *m_associatedQosFlowItem;
+  AssociatedQosFlowItem* m_associatedQosFlowItem;
   int numofitem;
-  m_associatedQosFlowList->getAssociatedQosFlowList(m_associatedQosFlowItem,
-                                                    numofitem);
+  m_associatedQosFlowList->getAssociatedQosFlowList(
+      m_associatedQosFlowItem, numofitem);
   for (int i = 0; i < numofitem; i++) {
     AssociatedQosFlow_t AssociatedQosFlow_str;
     long m_qosFlowMappingIndication;
-    QosFlowIdentifier *m_qosFlowIdentifier;
+    QosFlowIdentifier* m_qosFlowIdentifier;
     m_associatedQosFlowItem[i].getAssociatedQosFlowItem(
         m_qosFlowMappingIndication, m_qosFlowIdentifier);
     m_qosFlowIdentifier->getQosFlowIdentifier(
@@ -270,7 +274,8 @@ bool PduSessionResourceSetupResponseTransferIE::getDLQoSFlowPerTNLInformation(
               1,
               sizeof(e_Ngap_AssociatedQosFlowItem__qosFlowMappingIndication));
       *AssociatedQosFlow_str.qosFlowMappingIndication =
-          (e_Ngap_AssociatedQosFlowItem__qosFlowMappingIndication) m_qosFlowMappingIndication;
+          (e_Ngap_AssociatedQosFlowItem__qosFlowMappingIndication)
+              m_qosFlowMappingIndication;
     }
 
     list.push_back(AssociatedQosFlow_str);
@@ -280,29 +285,29 @@ bool PduSessionResourceSetupResponseTransferIE::getDLQoSFlowPerTNLInformation(
 }
 
 //------------------------------------------------------------------------------
-bool PduSessionResourceSetupResponseTransferIE::getAdditionalDLQoSFlowPerTNLInformation(
-    GtpTunnel_t &uptlinfo, std::vector<AssociatedQosFlow_t> &list) {
-  if (!additionalDLQoSFlowPerTNLInformation)
-    return false;
-  UpTransportLayerInformation *m_uPTransportLayerInformation;
-  AssociatedQosFlowList *m_associatedQosFlowList;
+bool PduSessionResourceSetupResponseTransferIE::
+    getAdditionalDLQoSFlowPerTNLInformation(
+        GtpTunnel_t& uptlinfo, std::vector<AssociatedQosFlow_t>& list) {
+  if (!additionalDLQoSFlowPerTNLInformation) return false;
+  UpTransportLayerInformation* m_uPTransportLayerInformation;
+  AssociatedQosFlowList* m_associatedQosFlowList;
   additionalDLQoSFlowPerTNLInformation->getDLQoSFlowPerTNLInformation(
       m_uPTransportLayerInformation, m_associatedQosFlowList);
-  TransportLayerAddress *m_transportLayerAddress;
-  GtpTeid *m_gtpTeid;
+  TransportLayerAddress* m_transportLayerAddress;
+  GtpTeid* m_gtpTeid;
   m_uPTransportLayerInformation->getUpTransportLayerInformation(
       m_transportLayerAddress, m_gtpTeid);
   m_transportLayerAddress->getTransportLayerAddress(uptlinfo.ip_address);
   m_gtpTeid->getGtpTeid(uptlinfo.gtp_teid);
 
-  AssociatedQosFlowItem *m_associatedQosFlowItem;
+  AssociatedQosFlowItem* m_associatedQosFlowItem;
   int numofitem;
-  m_associatedQosFlowList->getAssociatedQosFlowList(m_associatedQosFlowItem,
-                                                    numofitem);
+  m_associatedQosFlowList->getAssociatedQosFlowList(
+      m_associatedQosFlowItem, numofitem);
   for (int i = 0; i < numofitem; i++) {
     AssociatedQosFlow_t AssociatedQosFlow_str;
     long m_qosFlowMappingIndication;
-    QosFlowIdentifier *m_qosFlowIdentifier;
+    QosFlowIdentifier* m_qosFlowIdentifier;
     m_associatedQosFlowItem[i].getAssociatedQosFlowItem(
         m_qosFlowMappingIndication, m_qosFlowIdentifier);
     m_qosFlowIdentifier->getQosFlowIdentifier(
@@ -316,7 +321,8 @@ bool PduSessionResourceSetupResponseTransferIE::getAdditionalDLQoSFlowPerTNLInfo
               sizeof(e_Ngap_AssociatedQosFlowItem__qosFlowMappingIndication));
 
       *AssociatedQosFlow_str.qosFlowMappingIndication =
-          (e_Ngap_AssociatedQosFlowItem__qosFlowMappingIndication) m_qosFlowMappingIndication;
+          (e_Ngap_AssociatedQosFlowItem__qosFlowMappingIndication)
+              m_qosFlowMappingIndication;
     }
 
     list.push_back(AssociatedQosFlow_str);
@@ -327,14 +333,13 @@ bool PduSessionResourceSetupResponseTransferIE::getAdditionalDLQoSFlowPerTNLInfo
 
 //------------------------------------------------------------------------------
 bool PduSessionResourceSetupResponseTransferIE::getSecurityResult(
-    long &integrityProtectionResult, long &confidentialityProtectionResult) {
-  if (!securityResult)
-    return false;
+    long& integrityProtectionResult, long& confidentialityProtectionResult) {
+  if (!securityResult) return false;
 
-  IntegrityProtectionResult *m_integrityProtectionResult;
-  ConfidentialityProtectionResult *m_confidentialityProtectionResult;
-  securityResult->getSecurityResult(m_integrityProtectionResult,
-                                    m_confidentialityProtectionResult);
+  IntegrityProtectionResult* m_integrityProtectionResult;
+  ConfidentialityProtectionResult* m_confidentialityProtectionResult;
+  securityResult->getSecurityResult(
+      m_integrityProtectionResult, m_confidentialityProtectionResult);
 
   m_integrityProtectionResult->getIntegrityProtectionResult(
       integrityProtectionResult);
@@ -343,4 +348,4 @@ bool PduSessionResourceSetupResponseTransferIE::getSecurityResult(
 
   return true;
 }
-}
+}  // namespace ngap

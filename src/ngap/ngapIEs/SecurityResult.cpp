@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,27 +35,26 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 SecurityResult::SecurityResult() {
-  integrityProtectionResult = NULL;
+  integrityProtectionResult       = NULL;
   confidentialityProtectionResult = NULL;
 }
 
 //------------------------------------------------------------------------------
-SecurityResult::~SecurityResult() {
-}
+SecurityResult::~SecurityResult() {}
 
 //------------------------------------------------------------------------------
 void SecurityResult::setSecurityResult(
-    IntegrityProtectionResult *m_integrityProtectionResult,
-    ConfidentialityProtectionResult *m_confidentialityProtectionResult) {
-  integrityProtectionResult = m_integrityProtectionResult;
+    IntegrityProtectionResult* m_integrityProtectionResult,
+    ConfidentialityProtectionResult* m_confidentialityProtectionResult) {
+  integrityProtectionResult       = m_integrityProtectionResult;
   confidentialityProtectionResult = m_confidentialityProtectionResult;
 }
 
 //------------------------------------------------------------------------------
 bool SecurityResult::getSecurityResult(
-    IntegrityProtectionResult *&m_integrityProtectionResult,
-    ConfidentialityProtectionResult *&m_confidentialityProtectionResult) {
-  m_integrityProtectionResult = integrityProtectionResult;
+    IntegrityProtectionResult*& m_integrityProtectionResult,
+    ConfidentialityProtectionResult*& m_confidentialityProtectionResult) {
+  m_integrityProtectionResult       = integrityProtectionResult;
   m_confidentialityProtectionResult = confidentialityProtectionResult;
 
   return true;
@@ -63,17 +62,15 @@ bool SecurityResult::getSecurityResult(
 
 //------------------------------------------------------------------------------
 bool SecurityResult::encode2SecurityResult(
-    Ngap_SecurityResult_t *securityResult) {
-  if (!integrityProtectionResult)
-    return false;
-  if (!confidentialityProtectionResult)
-    return false;
+    Ngap_SecurityResult_t* securityResult) {
+  if (!integrityProtectionResult) return false;
+  if (!confidentialityProtectionResult) return false;
 
   if (!integrityProtectionResult->encode2IntegrityProtectionResult(
-      securityResult->integrityProtectionResult))
+          securityResult->integrityProtectionResult))
     return false;
   if (!confidentialityProtectionResult->encode2ConfidentialityProtectionResult(
-      securityResult->confidentialityProtectionResult))
+          securityResult->confidentialityProtectionResult))
     return false;
 
   return true;
@@ -81,18 +78,18 @@ bool SecurityResult::encode2SecurityResult(
 
 //------------------------------------------------------------------------------
 bool SecurityResult::decodefromSecurityResult(
-    Ngap_SecurityResult_t *securityResult) {
-  integrityProtectionResult = new IntegrityProtectionResult();
+    Ngap_SecurityResult_t* securityResult) {
+  integrityProtectionResult       = new IntegrityProtectionResult();
   confidentialityProtectionResult = new ConfidentialityProtectionResult();
 
   if (!integrityProtectionResult->decodefromIntegrityProtectionResult(
-      securityResult->integrityProtectionResult))
+          securityResult->integrityProtectionResult))
     return false;
   if (!confidentialityProtectionResult
-      ->decodefromConfidentialityProtectionResult(
-      securityResult->confidentialityProtectionResult))
+           ->decodefromConfidentialityProtectionResult(
+               securityResult->confidentialityProtectionResult))
     return false;
 
   return true;
 }
-}
+}  // namespace ngap

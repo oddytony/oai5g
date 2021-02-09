@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -36,7 +36,7 @@ ABBA::ABBA(uint8_t iei) {
 }
 
 //------------------------------------------------------------------------------
-ABBA::ABBA(const uint8_t iei, uint8_t length, uint8_t *value) {
+ABBA::ABBA(const uint8_t iei, uint8_t length, uint8_t* value) {
   _iei = iei;
   for (int i = 0; i < length; i++) {
     this->_value[i] = value[i];
@@ -45,10 +45,8 @@ ABBA::ABBA(const uint8_t iei, uint8_t length, uint8_t *value) {
 }
 
 //------------------------------------------------------------------------------
-ABBA::ABBA() {
-}
-ABBA::~ABBA() {
-}
+ABBA::ABBA() {}
+ABBA::~ABBA() {}
 
 //------------------------------------------------------------------------------
 uint8_t ABBA::getValue() {
@@ -59,14 +57,14 @@ uint8_t ABBA::getValue() {
 }
 
 //------------------------------------------------------------------------------
-int ABBA::encode2buffer(uint8_t *buf, int len) {
+int ABBA::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("Encoding ABBA IEI (0x%x)", _iei);
   if (len < _length) {
     Logger::nas_mm().error("len is less than %d", _length);
     return 0;
   }
   int encoded_size = 0;
-  if (_iei) {  //option
+  if (_iei) {  // option
     *(buf + encoded_size) = _iei;
     encoded_size++;
     *(buf + encoded_size) = _length - 2;
@@ -95,17 +93,17 @@ int ABBA::encode2buffer(uint8_t *buf, int len) {
 }
 
 //------------------------------------------------------------------------------
-int ABBA::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int ABBA::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("Encoding ABBA IEI (0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
     decoded_size++;
   }
-  _length = 0x00;
-  _value[255] = { };
-  _length = *(buf + decoded_size);
+  _length     = 0x00;
+  _value[255] = {};
+  _length     = *(buf + decoded_size);
   decoded_size++;
-  int i = 0;
+  int i          = 0;
   uint8_t Length = _length;
   while (Length != 0) {
     _value[i] = *(buf + decoded_size);
@@ -114,9 +112,9 @@ int ABBA::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
     i++;
   }
   for (int j = 0; j < _length; j++) {
-    Logger::nas_mm().debug("Decoded ABBA value (0x%4x), length (0x%4x)", _value[j], _length);
+    Logger::nas_mm().debug(
+        "Decoded ABBA value (0x%4x), length (0x%4x)", _value[j], _length);
   }
   Logger::nas_mm().debug("Decoded ABBA len (%d)", decoded_size);
   return decoded_size;
 }
-

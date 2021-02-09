@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -43,24 +43,25 @@ class UserLocationInformationEUTRA {
   UserLocationInformationEUTRA();
   virtual ~UserLocationInformationEUTRA();
 
-  void setInformationEUTRA(EUTRA_CGI *m_eUTRA_CGI, TAI *m_tAI);
-  //void setInformationEUTRA(EUTRA_CGI* m_eUTRA_CGI,TAI* m_tAI,TimeStamp* m_timeStamp);
+  void setInformationEUTRA(EUTRA_CGI* m_eUTRA_CGI, TAI* m_tAI);
+  // void setInformationEUTRA(EUTRA_CGI* m_eUTRA_CGI,TAI* m_tAI,TimeStamp*
+  // m_timeStamp);
   bool encode2UserLocationInformationEUTRA(
-      Ngap_UserLocationInformationEUTRA_t *userLocationInformation);
+      Ngap_UserLocationInformationEUTRA_t* userLocationInformation);
   bool decodefromUserLocationInformationEUTRA(
-      Ngap_UserLocationInformationEUTRA_t *userLocationInformation);
-  //void getInformationEUTRA(EUTRA_CGI* &m_eUTRA_CGI,TAI* &m_tAI,TimeStamp* &m_timeStamp);
-  void getInformationEUTRA(EUTRA_CGI *&m_eUTRA_CGI, TAI *&m_tAI);
-  //bool getTimeStampPresence();
+      Ngap_UserLocationInformationEUTRA_t* userLocationInformation);
+  // void getInformationEUTRA(EUTRA_CGI* &m_eUTRA_CGI,TAI* &m_tAI,TimeStamp*
+  // &m_timeStamp);
+  void getInformationEUTRA(EUTRA_CGI*& m_eUTRA_CGI, TAI*& m_tAI);
+  // bool getTimeStampPresence();
 
  private:
-  EUTRA_CGI *eUTRA_CGI;
-  TAI *tAI;
-  //bool istimeStampSet;
-  //TimeStamp *timeStamp;
+  EUTRA_CGI* eUTRA_CGI;
+  TAI* tAI;
+  // bool istimeStampSet;
+  // TimeStamp *timeStamp;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

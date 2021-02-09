@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -26,8 +26,8 @@
  \email: contact@openairinterface.org
  */
 
-#ifndef  _S_NSSAI_H_
-#define  _S_NSSAI_H_
+#ifndef _S_NSSAI_H_
+#define _S_NSSAI_H_
 
 #include <string>
 
@@ -48,17 +48,18 @@ class S_NSSAI {
   bool sDEncode2OctetString(Ngap_SD_t*);
   bool sDdecodefromOctetString(Ngap_SD_t*);
   void setSst(const std::string charSst);
-  void getSst(std::string &charSst);
+  void getSst(std::string& charSst);
   void setSd(const std::string charSd);
-  bool getSd(std::string &s_nssaiSd);
+  bool getSd(std::string& s_nssaiSd);
   bool encode2S_NSSAI(Ngap_S_NSSAI_t*);
   bool decodefromS_NSSAI(Ngap_S_NSSAI_t*);
+
  private:
-  uint8_t sst;  //mandotory  OCTET_STRING(SIZE(1))
-  uint32_t sd;  //OCTET_STRING(SIZE(3))
+  uint8_t sst;  // mandotory  OCTET_STRING(SIZE(1))
+  uint32_t sd;  // OCTET_STRING(SIZE(3))
   bool sdIsSet;
 };
 
-}
+}  // namespace ngap
 
 #endif

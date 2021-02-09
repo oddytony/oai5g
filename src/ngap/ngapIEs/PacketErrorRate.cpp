@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,23 +34,21 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PacketErrorRate::PacketErrorRate() {
-}
+PacketErrorRate::PacketErrorRate() {}
 
 //------------------------------------------------------------------------------
-PacketErrorRate::~PacketErrorRate() {
-}
+PacketErrorRate::~PacketErrorRate() {}
 
 //------------------------------------------------------------------------------
 void PacketErrorRate::setPacketErrorRate(long m_pERScalar, long m_pERExponent) {
-  pERScalar = m_pERScalar;
+  pERScalar   = m_pERScalar;
   pERExponent = m_pERExponent;
 }
 
 //------------------------------------------------------------------------------
-bool PacketErrorRate::getPacketErrorRate(long &m_pERScalar,
-                                         long &m_pERExponent) {
-  m_pERScalar = pERScalar;
+bool PacketErrorRate::getPacketErrorRate(
+    long& m_pERScalar, long& m_pERExponent) {
+  m_pERScalar   = pERScalar;
   m_pERExponent = pERExponent;
 
   return true;
@@ -58,8 +56,8 @@ bool PacketErrorRate::getPacketErrorRate(long &m_pERScalar,
 
 //------------------------------------------------------------------------------
 bool PacketErrorRate::encode2PacketErrorRate(
-    Ngap_PacketErrorRate_t *packetErrorRate) {
-  packetErrorRate->pERScalar = pERScalar;
+    Ngap_PacketErrorRate_t* packetErrorRate) {
+  packetErrorRate->pERScalar   = pERScalar;
   packetErrorRate->pERExponent = pERExponent;
 
   return true;
@@ -67,11 +65,10 @@ bool PacketErrorRate::encode2PacketErrorRate(
 
 //------------------------------------------------------------------------------
 bool PacketErrorRate::decodefromPacketErrorRate(
-    Ngap_PacketErrorRate_t *packetErrorRate) {
-  pERScalar = packetErrorRate->pERScalar;
+    Ngap_PacketErrorRate_t* packetErrorRate) {
+  pERScalar   = packetErrorRate->pERScalar;
   pERExponent = packetErrorRate->pERExponent;
 
   return true;
 }
-}
-
+}  // namespace ngap

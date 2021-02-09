@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-ReflectiveQosAttribute::ReflectiveQosAttribute() {
-}
+ReflectiveQosAttribute::ReflectiveQosAttribute() {}
 
 //------------------------------------------------------------------------------
-ReflectiveQosAttribute::~ReflectiveQosAttribute() {
-}
+ReflectiveQosAttribute::~ReflectiveQosAttribute() {}
 
 //------------------------------------------------------------------------------
 void ReflectiveQosAttribute::setReflectiveQosAttribute(
@@ -49,7 +47,7 @@ void ReflectiveQosAttribute::setReflectiveQosAttribute(
 
 //------------------------------------------------------------------------------
 bool ReflectiveQosAttribute::getReflectiveQosAttribute(
-    e_Ngap_ReflectiveQosAttribute &value) {
+    e_Ngap_ReflectiveQosAttribute& value) {
   if (attribute == 0)
     value = (e_Ngap_ReflectiveQosAttribute) attribute;
   else
@@ -60,7 +58,7 @@ bool ReflectiveQosAttribute::getReflectiveQosAttribute(
 
 //------------------------------------------------------------------------------
 bool ReflectiveQosAttribute::encode2ReflectiveQosAttribute(
-    Ngap_ReflectiveQosAttribute_t *reflectiveQosAttribute) {
+    Ngap_ReflectiveQosAttribute_t* reflectiveQosAttribute) {
   *reflectiveQosAttribute = attribute;
 
   return true;
@@ -68,9 +66,9 @@ bool ReflectiveQosAttribute::encode2ReflectiveQosAttribute(
 
 //------------------------------------------------------------------------------
 bool ReflectiveQosAttribute::decodefromReflectiveQosAttribute(
-    Ngap_ReflectiveQosAttribute_t *reflectiveQosAttribute) {
+    Ngap_ReflectiveQosAttribute_t* reflectiveQosAttribute) {
   attribute = *reflectiveQosAttribute;
 
   return true;
 }
-}
+}  // namespace ngap

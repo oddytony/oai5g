@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -43,20 +43,21 @@ class SupportedTaItem {
   SupportedTaItem();
   virtual ~SupportedTaItem();
 
-  void setTac(TAC *m_tac);
-  void getTac(TAC *&m_tac);
-  void setBroadcastPlmnList(BroadcastPLMNItem *m_broadcastPLMNItem,
-                            int numOfItem);
-  void getBroadcastPlmnList(BroadcastPLMNItem *&m_broadcastPLMNItem,
-                            int &numOfItem);
-  bool encode2SupportedTaItem(Ngap_SupportedTAItem_t *ta);
-  bool decodefromSupportedTaItem(Ngap_SupportedTAItem_t *ta);
+  void setTac(TAC* m_tac);
+  void getTac(TAC*& m_tac);
+  void setBroadcastPlmnList(
+      BroadcastPLMNItem* m_broadcastPLMNItem, int numOfItem);
+  void getBroadcastPlmnList(
+      BroadcastPLMNItem*& m_broadcastPLMNItem, int& numOfItem);
+  bool encode2SupportedTaItem(Ngap_SupportedTAItem_t* ta);
+  bool decodefromSupportedTaItem(Ngap_SupportedTAItem_t* ta);
+
  private:
-  TAC *tac;
-  BroadcastPLMNItem *broadcastPLMNItem;
+  TAC* tac;
+  BroadcastPLMNItem* broadcastPLMNItem;
   int numberOfBroadcastItem;
 };
 
-}
+}  // namespace ngap
 
 #endif

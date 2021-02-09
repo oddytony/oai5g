@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -43,22 +43,27 @@ class PDUSessionResourceFailedToSetupListSURes {
   virtual ~PDUSessionResourceFailedToSetupListSURes();
 
   void setPDUSessionResourceFailedToSetupListSURes(
-      PDUSessionResourceFailedToSetupItemSURes *m_pduSessionResourceFailedToSetupItemSURes,
+      PDUSessionResourceFailedToSetupItemSURes*
+          m_pduSessionResourceFailedToSetupItemSURes,
       int num);
   void getPDUSessionResourceFailedToSetupListSURes(
-      PDUSessionResourceFailedToSetupItemSURes *&m_pduSessionResourceFailedToSetupItemSURes,
-      int &num);
+      PDUSessionResourceFailedToSetupItemSURes*&
+          m_pduSessionResourceFailedToSetupItemSURes,
+      int& num);
 
   bool encode2PDUSessionResourceFailedToSetupListSURes(
-      Ngap_PDUSessionResourceFailedToSetupListSURes_t *pduSessionResourceFailedToSetupListSURes);
+      Ngap_PDUSessionResourceFailedToSetupListSURes_t*
+          pduSessionResourceFailedToSetupListSURes);
   bool decodefromPDUSessionResourceFailedToSetupListSURes(
-      Ngap_PDUSessionResourceFailedToSetupListSURes_t *pduSessionResourceFailedToSetupListSURes);
+      Ngap_PDUSessionResourceFailedToSetupListSURes_t*
+          pduSessionResourceFailedToSetupListSURes);
+
  private:
-  PDUSessionResourceFailedToSetupItemSURes *pduSessionResourceFailedToSetupItemSURes;
+  PDUSessionResourceFailedToSetupItemSURes*
+      pduSessionResourceFailedToSetupItemSURes;
   int numofpduSessionResourceFailedToSetupItemSURes;
 };
 
-}
+}  // namespace ngap
 
 #endif
-

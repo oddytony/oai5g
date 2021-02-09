@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -44,19 +44,20 @@ class SecurityResult {
   virtual ~SecurityResult();
 
   void setSecurityResult(
-      IntegrityProtectionResult *m_integrityProtectionResult,
-      ConfidentialityProtectionResult *m_confidentialityProtectionResult);
+      IntegrityProtectionResult* m_integrityProtectionResult,
+      ConfidentialityProtectionResult* m_confidentialityProtectionResult);
   bool getSecurityResult(
-      IntegrityProtectionResult *&m_integrityProtectionResult,
-      ConfidentialityProtectionResult *&m_confidentialityProtectionResult);
+      IntegrityProtectionResult*& m_integrityProtectionResult,
+      ConfidentialityProtectionResult*& m_confidentialityProtectionResult);
 
   bool encode2SecurityResult(Ngap_SecurityResult_t*);
   bool decodefromSecurityResult(Ngap_SecurityResult_t*);
+
  private:
-  IntegrityProtectionResult *integrityProtectionResult;
-  ConfidentialityProtectionResult *confidentialityProtectionResult;
+  IntegrityProtectionResult* integrityProtectionResult;
+  ConfidentialityProtectionResult* confidentialityProtectionResult;
 };
 
-}
+}  // namespace ngap
 
 #endif

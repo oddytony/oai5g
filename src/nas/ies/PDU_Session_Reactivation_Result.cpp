@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -36,23 +36,22 @@ PDU_Session_Reactivation_Result::PDU_Session_Reactivation_Result(uint8_t iei) {
 }
 
 //------------------------------------------------------------------------------
-PDU_Session_Reactivation_Result::PDU_Session_Reactivation_Result(const uint8_t iei, uint16_t value) {
-  _iei = iei;
+PDU_Session_Reactivation_Result::PDU_Session_Reactivation_Result(
+    const uint8_t iei, uint16_t value) {
+  _iei   = iei;
   _value = value;
   length = 4;
 }
 
 //------------------------------------------------------------------------------
-PDU_Session_Reactivation_Result::PDU_Session_Reactivation_Result() {
-}
+PDU_Session_Reactivation_Result::PDU_Session_Reactivation_Result() {}
 
 //------------------------------------------------------------------------------
-PDU_Session_Reactivation_Result::~PDU_Session_Reactivation_Result() {
-}
+PDU_Session_Reactivation_Result::~PDU_Session_Reactivation_Result() {}
 
 //------------------------------------------------------------------------------
 void PDU_Session_Reactivation_Result::setValue(uint8_t iei, uint16_t value) {
-  _iei = iei;
+  _iei   = iei;
   _value = value;
 }
 
@@ -62,8 +61,9 @@ uint16_t PDU_Session_Reactivation_Result::getValue() {
 }
 
 //------------------------------------------------------------------------------
-int PDU_Session_Reactivation_Result::encode2buffer(uint8_t *buf, int len) {
-  Logger::nas_mm().debug("encoding PDU_Session_Reactivation_Result iei(0x%x)", _iei);
+int PDU_Session_Reactivation_Result::encode2buffer(uint8_t* buf, int len) {
+  Logger::nas_mm().debug(
+      "encoding PDU_Session_Reactivation_Result iei(0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
     return 0;
@@ -82,13 +82,16 @@ int PDU_Session_Reactivation_Result::encode2buffer(uint8_t *buf, int len) {
     //*(buf + encoded_size) = length - 1; encoded_size++;
     //*(buf + encoded_size) = _value; encoded_size++; encoded_size++;
   }
-  Logger::nas_mm().debug("encoded PDU_Session_Reactivation_Result len(%d)", encoded_size);
+  Logger::nas_mm().debug(
+      "encoded PDU_Session_Reactivation_Result len(%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
-int PDU_Session_Reactivation_Result::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
-  Logger::nas_mm().debug("decoding PDU_Session_Reactivation_Result iei(0x%x)", *buf);
+int PDU_Session_Reactivation_Result::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option) {
+  Logger::nas_mm().debug(
+      "decoding PDU_Session_Reactivation_Result iei(0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
     decoded_size++;
@@ -100,8 +103,9 @@ int PDU_Session_Reactivation_Result::decodefrombuffer(uint8_t *buf, int len, boo
   decoded_size++;
   _value |= (*(buf + decoded_size)) << 8;
   decoded_size++;
-  Logger::nas_mm().debug("decoded PDU_Session_Reactivation_Result value(0x%4x)", _value);
-  Logger::nas_mm().debug("decoded PDU_Session_Reactivation_Result len(%d)", decoded_size);
+  Logger::nas_mm().debug(
+      "decoded PDU_Session_Reactivation_Result value(0x%4x)", _value);
+  Logger::nas_mm().debug(
+      "decoded PDU_Session_Reactivation_Result len(%d)", decoded_size);
   return decoded_size;
 }
-

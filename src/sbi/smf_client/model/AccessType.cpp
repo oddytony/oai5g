@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,100 +10,90 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "AccessType.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
+AccessType::AccessType() {}
 
+AccessType::~AccessType() {}
 
-AccessType::AccessType()
-{
+void AccessType::validate() {
+  // TODO: implement validation
 }
 
-AccessType::~AccessType()
-{
+web::json::value AccessType::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  if (m_value == eAccessType::AccessType_3GPP_ACCESS)
+    val = web::json::value::string(U("3GPP_ACCESS"));
+  if (m_value == eAccessType::AccessType_NON_3GPP_ACCESS)
+    val = web::json::value::string(U("NON_3GPP_ACCESS"));
+
+  return val;
 }
 
-void AccessType::validate()
-{
-    // TODO: implement validation
+void AccessType::fromJson(const web::json::value& val) {
+  auto s = val.as_string();
+
+  if (s == utility::conversions::to_string_t("3GPP_ACCESS"))
+    m_value = eAccessType::AccessType_3GPP_ACCESS;
+  if (s == utility::conversions::to_string_t("NON_3GPP_ACCESS"))
+    m_value = eAccessType::AccessType_NON_3GPP_ACCESS;
 }
 
-web::json::value AccessType::toJson() const
-{
-    web::json::value val = web::json::value::object();
+void AccessType::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 
-    
-    if (m_value == eAccessType::AccessType_3GPP_ACCESS) val = web::json::value::string(U("3GPP_ACCESS"));
-    if (m_value == eAccessType::AccessType_NON_3GPP_ACCESS) val = web::json::value::string(U("NON_3GPP_ACCESS"));
+  utility::string_t s;
 
-    return val;
+  if (m_value == eAccessType::AccessType_3GPP_ACCESS)
+    s = utility::conversions::to_string_t("3GPP_ACCESS");
+  if (m_value == eAccessType::AccessType_NON_3GPP_ACCESS)
+    s = utility::conversions::to_string_t("NON_3GPP_ACCESS");
+
+  multipart->add(ModelBase::toHttpContent(namePrefix, s));
 }
 
-void AccessType::fromJson(const web::json::value& val)
-{
-    auto s = val.as_string();
+void AccessType::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
 
-    
-    if (s == utility::conversions::to_string_t("3GPP_ACCESS")) m_value = eAccessType::AccessType_3GPP_ACCESS;
-    if (s == utility::conversions::to_string_t("NON_3GPP_ACCESS")) m_value = eAccessType::AccessType_NON_3GPP_ACCESS;
-}
-
-void AccessType::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
+  {
     utility::string_t s;
+    s = ModelBase::stringFromHttpContent(multipart->getContent(namePrefix));
+    eAccessType v;
 
-    
-    if (m_value == eAccessType::AccessType_3GPP_ACCESS) s = utility::conversions::to_string_t("3GPP_ACCESS");
-    if (m_value == eAccessType::AccessType_NON_3GPP_ACCESS) s = utility::conversions::to_string_t("NON_3GPP_ACCESS");
+    if (s == utility::conversions::to_string_t("3GPP_ACCESS"))
+      v = eAccessType::AccessType_3GPP_ACCESS;
+    if (s == utility::conversions::to_string_t("NON_3GPP_ACCESS"))
+      v = eAccessType::AccessType_NON_3GPP_ACCESS;
 
-    multipart->add(ModelBase::toHttpContent(namePrefix, s));
+    setValue(v);
+  }
 }
 
-void AccessType::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    {
-        utility::string_t s;
-        s = ModelBase::stringFromHttpContent(multipart->getContent(namePrefix));
-        eAccessType v;
-        
-        
-        if (s == utility::conversions::to_string_t("3GPP_ACCESS")) v = eAccessType::AccessType_3GPP_ACCESS;
-        if (s == utility::conversions::to_string_t("NON_3GPP_ACCESS")) v = eAccessType::AccessType_NON_3GPP_ACCESS;
-
-        setValue(v);
-    }
+AccessType::eAccessType AccessType::getValue() const {
+  return m_value;
 }
 
-AccessType::eAccessType AccessType::getValue() const
-{
-   return m_value;
+void AccessType::setValue(AccessType::eAccessType const value) {
+  m_value = value;
 }
 
-void AccessType::setValue(AccessType::eAccessType const value)
-{
-   m_value = value;
-}
-
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

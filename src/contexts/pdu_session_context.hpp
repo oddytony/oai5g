@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -43,9 +43,14 @@ class pdu_session_context {
   uint8_t req_type;
   uint8_t pdu_session_id;
   bstring n2sm;
+  bool isn2sm_avaliable;
+  bstring n1sm;
+  bool isn1sm_avaliable;
   std::string dnn;
-  std::string remote_smf_addr[0];  //"192.168.12.10:8080"
+  std::string smf_addr;  //"192.168.12.10:8080"
+  std::string smf_api_version;
   bool smf_available;
+  std::string location;
   snssai_t snssai;
   plmn_t plmn;
   std::string smf_context_location;

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,12 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-DelayCritical::DelayCritical() {
-}
+DelayCritical::DelayCritical() {}
 
 //------------------------------------------------------------------------------
-DelayCritical::~DelayCritical() {
-}
+DelayCritical::~DelayCritical() {}
 
 //------------------------------------------------------------------------------
 void DelayCritical::setDelayCritical(e_Ngap_DelayCritical value) {
@@ -47,7 +45,7 @@ void DelayCritical::setDelayCritical(e_Ngap_DelayCritical value) {
 }
 
 //------------------------------------------------------------------------------
-bool DelayCritical::getDelayCritical(e_Ngap_DelayCritical &value) {
+bool DelayCritical::getDelayCritical(e_Ngap_DelayCritical& value) {
   if ((delaycritical >= 0) && (delaycritical <= 1))
     value = (e_Ngap_DelayCritical) delaycritical;
   else
@@ -57,7 +55,7 @@ bool DelayCritical::getDelayCritical(e_Ngap_DelayCritical &value) {
 }
 
 //------------------------------------------------------------------------------
-bool DelayCritical::encode2DelayCritical(Ngap_DelayCritical_t *delayCritical) {
+bool DelayCritical::encode2DelayCritical(Ngap_DelayCritical_t* delayCritical) {
   *delayCritical = delaycritical;
 
   return true;
@@ -65,9 +63,9 @@ bool DelayCritical::encode2DelayCritical(Ngap_DelayCritical_t *delayCritical) {
 
 //------------------------------------------------------------------------------
 bool DelayCritical::decodefromDelayCritical(
-    Ngap_DelayCritical_t *delayCritical) {
+    Ngap_DelayCritical_t* delayCritical) {
   delaycritical = *delayCritical;
 
   return true;
 }
-}
+}  // namespace ngap

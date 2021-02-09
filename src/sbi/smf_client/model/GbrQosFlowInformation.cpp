@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -9,266 +10,252 @@
  * Do not edit the class manually.
  */
 
-
-
 #include "GbrQosFlowInformation.h"
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
-
-
-GbrQosFlowInformation::GbrQosFlowInformation()
-{
-    m_MaxFbrDl = utility::conversions::to_string_t("");
-    m_MaxFbrUl = utility::conversions::to_string_t("");
-    m_GuaFbrDl = utility::conversions::to_string_t("");
-    m_GuaFbrUl = utility::conversions::to_string_t("");
-    m_NotifControlIsSet = false;
-    m_MaxPacketLossRateDl = 0;
-    m_MaxPacketLossRateDlIsSet = false;
-    m_MaxPacketLossRateUl = 0;
-    m_MaxPacketLossRateUlIsSet = false;
+GbrQosFlowInformation::GbrQosFlowInformation() {
+  m_MaxFbrDl                 = utility::conversions::to_string_t("");
+  m_MaxFbrUl                 = utility::conversions::to_string_t("");
+  m_GuaFbrDl                 = utility::conversions::to_string_t("");
+  m_GuaFbrUl                 = utility::conversions::to_string_t("");
+  m_NotifControlIsSet        = false;
+  m_MaxPacketLossRateDl      = 0;
+  m_MaxPacketLossRateDlIsSet = false;
+  m_MaxPacketLossRateUl      = 0;
+  m_MaxPacketLossRateUlIsSet = false;
 }
 
-GbrQosFlowInformation::~GbrQosFlowInformation()
-{
+GbrQosFlowInformation::~GbrQosFlowInformation() {}
+
+void GbrQosFlowInformation::validate() {
+  // TODO: implement validation
 }
 
-void GbrQosFlowInformation::validate()
-{
-    // TODO: implement validation
+web::json::value GbrQosFlowInformation::toJson() const {
+  web::json::value val = web::json::value::object();
+
+  val[utility::conversions::to_string_t("maxFbrDl")] =
+      ModelBase::toJson(m_MaxFbrDl);
+  val[utility::conversions::to_string_t("maxFbrUl")] =
+      ModelBase::toJson(m_MaxFbrUl);
+  val[utility::conversions::to_string_t("guaFbrDl")] =
+      ModelBase::toJson(m_GuaFbrDl);
+  val[utility::conversions::to_string_t("guaFbrUl")] =
+      ModelBase::toJson(m_GuaFbrUl);
+  if (m_NotifControlIsSet) {
+    val[utility::conversions::to_string_t("notifControl")] =
+        ModelBase::toJson(m_NotifControl);
+  }
+  if (m_MaxPacketLossRateDlIsSet) {
+    val[utility::conversions::to_string_t("maxPacketLossRateDl")] =
+        ModelBase::toJson(m_MaxPacketLossRateDl);
+  }
+  if (m_MaxPacketLossRateUlIsSet) {
+    val[utility::conversions::to_string_t("maxPacketLossRateUl")] =
+        ModelBase::toJson(m_MaxPacketLossRateUl);
+  }
+
+  return val;
 }
 
-web::json::value GbrQosFlowInformation::toJson() const
-{
-    web::json::value val = web::json::value::object();
-
-    val[utility::conversions::to_string_t("maxFbrDl")] = ModelBase::toJson(m_MaxFbrDl);
-    val[utility::conversions::to_string_t("maxFbrUl")] = ModelBase::toJson(m_MaxFbrUl);
-    val[utility::conversions::to_string_t("guaFbrDl")] = ModelBase::toJson(m_GuaFbrDl);
-    val[utility::conversions::to_string_t("guaFbrUl")] = ModelBase::toJson(m_GuaFbrUl);
-    if(m_NotifControlIsSet)
-    {
-        val[utility::conversions::to_string_t("notifControl")] = ModelBase::toJson(m_NotifControl);
+void GbrQosFlowInformation::fromJson(const web::json::value& val) {
+  setMaxFbrDl(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("maxFbrDl"))));
+  setMaxFbrUl(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("maxFbrUl"))));
+  setGuaFbrDl(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("guaFbrDl"))));
+  setGuaFbrUl(ModelBase::stringFromJson(
+      val.at(utility::conversions::to_string_t("guaFbrUl"))));
+  if (val.has_field(utility::conversions::to_string_t("notifControl"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("notifControl"));
+    if (!fieldValue.is_null()) {
+      std::shared_ptr<NotificationControl> newItem(new NotificationControl());
+      newItem->fromJson(fieldValue);
+      setNotifControl(newItem);
     }
-    if(m_MaxPacketLossRateDlIsSet)
-    {
-        val[utility::conversions::to_string_t("maxPacketLossRateDl")] = ModelBase::toJson(m_MaxPacketLossRateDl);
+  }
+  if (val.has_field(utility::conversions::to_string_t("maxPacketLossRateDl"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("maxPacketLossRateDl"));
+    if (!fieldValue.is_null()) {
+      setMaxPacketLossRateDl(ModelBase::int32_tFromJson(fieldValue));
     }
-    if(m_MaxPacketLossRateUlIsSet)
-    {
-        val[utility::conversions::to_string_t("maxPacketLossRateUl")] = ModelBase::toJson(m_MaxPacketLossRateUl);
+  }
+  if (val.has_field(utility::conversions::to_string_t("maxPacketLossRateUl"))) {
+    const web::json::value& fieldValue =
+        val.at(utility::conversions::to_string_t("maxPacketLossRateUl"));
+    if (!fieldValue.is_null()) {
+      setMaxPacketLossRateUl(ModelBase::int32_tFromJson(fieldValue));
     }
-
-    return val;
+  }
 }
 
-void GbrQosFlowInformation::fromJson(const web::json::value& val)
-{
-    setMaxFbrDl(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("maxFbrDl"))));
-    setMaxFbrUl(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("maxFbrUl"))));
-    setGuaFbrDl(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("guaFbrDl"))));
-    setGuaFbrUl(ModelBase::stringFromJson(val.at(utility::conversions::to_string_t("guaFbrUl"))));
-    if(val.has_field(utility::conversions::to_string_t("notifControl")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("notifControl"));
-        if(!fieldValue.is_null())
-        {
-            std::shared_ptr<NotificationControl> newItem(new NotificationControl());
-            newItem->fromJson(fieldValue);
-            setNotifControl( newItem );
-        }
+void GbrQosFlowInformation::toMultipart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) const {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("maxFbrDl"), m_MaxFbrDl));
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("maxFbrUl"), m_MaxFbrUl));
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("guaFbrDl"), m_GuaFbrDl));
+  multipart->add(ModelBase::toHttpContent(
+      namePrefix + utility::conversions::to_string_t("guaFbrUl"), m_GuaFbrUl));
+  if (m_NotifControlIsSet) {
+    if (m_NotifControl.get()) {
+      m_NotifControl->toMultipart(
+          multipart, utility::conversions::to_string_t("notifControl."));
     }
-    if(val.has_field(utility::conversions::to_string_t("maxPacketLossRateDl")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("maxPacketLossRateDl"));
-        if(!fieldValue.is_null())
-        {
-            setMaxPacketLossRateDl(ModelBase::int32_tFromJson(fieldValue));
-        }
+  }
+  if (m_MaxPacketLossRateDlIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("maxPacketLossRateDl"),
+        m_MaxPacketLossRateDl));
+  }
+  if (m_MaxPacketLossRateUlIsSet) {
+    multipart->add(ModelBase::toHttpContent(
+        namePrefix + utility::conversions::to_string_t("maxPacketLossRateUl"),
+        m_MaxPacketLossRateUl));
+  }
+}
+
+void GbrQosFlowInformation::fromMultiPart(
+    std::shared_ptr<MultipartFormData> multipart,
+    const utility::string_t& prefix) {
+  utility::string_t namePrefix = prefix;
+  if (namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) !=
+                                   utility::conversions::to_string_t(".")) {
+    namePrefix += utility::conversions::to_string_t(".");
+  }
+
+  setMaxFbrDl(ModelBase::stringFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("maxFbrDl"))));
+  setMaxFbrUl(ModelBase::stringFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("maxFbrUl"))));
+  setGuaFbrDl(ModelBase::stringFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("guaFbrDl"))));
+  setGuaFbrUl(ModelBase::stringFromHttpContent(
+      multipart->getContent(utility::conversions::to_string_t("guaFbrUl"))));
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("notifControl"))) {
+    if (multipart->hasContent(
+            utility::conversions::to_string_t("notifControl"))) {
+      std::shared_ptr<NotificationControl> newItem(new NotificationControl());
+      newItem->fromMultiPart(
+          multipart, utility::conversions::to_string_t("notifControl."));
+      setNotifControl(newItem);
     }
-    if(val.has_field(utility::conversions::to_string_t("maxPacketLossRateUl")))
-    {
-        const web::json::value& fieldValue = val.at(utility::conversions::to_string_t("maxPacketLossRateUl"));
-        if(!fieldValue.is_null())
-        {
-            setMaxPacketLossRateUl(ModelBase::int32_tFromJson(fieldValue));
-        }
-    }
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("maxPacketLossRateDl"))) {
+    setMaxPacketLossRateDl(
+        ModelBase::int32_tFromHttpContent(multipart->getContent(
+            utility::conversions::to_string_t("maxPacketLossRateDl"))));
+  }
+  if (multipart->hasContent(
+          utility::conversions::to_string_t("maxPacketLossRateUl"))) {
+    setMaxPacketLossRateUl(
+        ModelBase::int32_tFromHttpContent(multipart->getContent(
+            utility::conversions::to_string_t("maxPacketLossRateUl"))));
+  }
 }
 
-void GbrQosFlowInformation::toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix) const
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("maxFbrDl"), m_MaxFbrDl));
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("maxFbrUl"), m_MaxFbrUl));
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("guaFbrDl"), m_GuaFbrDl));
-    multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("guaFbrUl"), m_GuaFbrUl));
-    if(m_NotifControlIsSet)
-    {
-        if (m_NotifControl.get())
-        {
-            m_NotifControl->toMultipart(multipart, utility::conversions::to_string_t("notifControl."));
-        }
-    }
-    if(m_MaxPacketLossRateDlIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("maxPacketLossRateDl"), m_MaxPacketLossRateDl));
-    }
-    if(m_MaxPacketLossRateUlIsSet)
-    {
-        multipart->add(ModelBase::toHttpContent(namePrefix + utility::conversions::to_string_t("maxPacketLossRateUl"), m_MaxPacketLossRateUl));
-    }
+utility::string_t GbrQosFlowInformation::getMaxFbrDl() const {
+  return m_MaxFbrDl;
 }
 
-void GbrQosFlowInformation::fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& prefix)
-{
-    utility::string_t namePrefix = prefix;
-    if(namePrefix.size() > 0 && namePrefix.substr(namePrefix.size() - 1) != utility::conversions::to_string_t("."))
-    {
-        namePrefix += utility::conversions::to_string_t(".");
-    }
-
-    setMaxFbrDl(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("maxFbrDl"))));
-    setMaxFbrUl(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("maxFbrUl"))));
-    setGuaFbrDl(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("guaFbrDl"))));
-    setGuaFbrUl(ModelBase::stringFromHttpContent(multipart->getContent(utility::conversions::to_string_t("guaFbrUl"))));
-    if(multipart->hasContent(utility::conversions::to_string_t("notifControl")))
-    {
-        if(multipart->hasContent(utility::conversions::to_string_t("notifControl")))
-        {
-            std::shared_ptr<NotificationControl> newItem(new NotificationControl());
-            newItem->fromMultiPart(multipart, utility::conversions::to_string_t("notifControl."));
-            setNotifControl( newItem );
-        }
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("maxPacketLossRateDl")))
-    {
-        setMaxPacketLossRateDl(ModelBase::int32_tFromHttpContent(multipart->getContent(utility::conversions::to_string_t("maxPacketLossRateDl"))));
-    }
-    if(multipart->hasContent(utility::conversions::to_string_t("maxPacketLossRateUl")))
-    {
-        setMaxPacketLossRateUl(ModelBase::int32_tFromHttpContent(multipart->getContent(utility::conversions::to_string_t("maxPacketLossRateUl"))));
-    }
+void GbrQosFlowInformation::setMaxFbrDl(const utility::string_t& value) {
+  m_MaxFbrDl = value;
 }
 
-utility::string_t GbrQosFlowInformation::getMaxFbrDl() const
-{
-    return m_MaxFbrDl;
+utility::string_t GbrQosFlowInformation::getMaxFbrUl() const {
+  return m_MaxFbrUl;
 }
 
-void GbrQosFlowInformation::setMaxFbrDl(const utility::string_t& value)
-{
-    m_MaxFbrDl = value;
-    
+void GbrQosFlowInformation::setMaxFbrUl(const utility::string_t& value) {
+  m_MaxFbrUl = value;
 }
 
-utility::string_t GbrQosFlowInformation::getMaxFbrUl() const
-{
-    return m_MaxFbrUl;
+utility::string_t GbrQosFlowInformation::getGuaFbrDl() const {
+  return m_GuaFbrDl;
 }
 
-void GbrQosFlowInformation::setMaxFbrUl(const utility::string_t& value)
-{
-    m_MaxFbrUl = value;
-    
+void GbrQosFlowInformation::setGuaFbrDl(const utility::string_t& value) {
+  m_GuaFbrDl = value;
 }
 
-utility::string_t GbrQosFlowInformation::getGuaFbrDl() const
-{
-    return m_GuaFbrDl;
+utility::string_t GbrQosFlowInformation::getGuaFbrUl() const {
+  return m_GuaFbrUl;
 }
 
-void GbrQosFlowInformation::setGuaFbrDl(const utility::string_t& value)
-{
-    m_GuaFbrDl = value;
-    
+void GbrQosFlowInformation::setGuaFbrUl(const utility::string_t& value) {
+  m_GuaFbrUl = value;
 }
 
-utility::string_t GbrQosFlowInformation::getGuaFbrUl() const
-{
-    return m_GuaFbrUl;
+std::shared_ptr<NotificationControl> GbrQosFlowInformation::getNotifControl()
+    const {
+  return m_NotifControl;
 }
 
-void GbrQosFlowInformation::setGuaFbrUl(const utility::string_t& value)
-{
-    m_GuaFbrUl = value;
-    
+void GbrQosFlowInformation::setNotifControl(
+    const std::shared_ptr<NotificationControl>& value) {
+  m_NotifControl      = value;
+  m_NotifControlIsSet = true;
 }
 
-std::shared_ptr<NotificationControl> GbrQosFlowInformation::getNotifControl() const
-{
-    return m_NotifControl;
+bool GbrQosFlowInformation::notifControlIsSet() const {
+  return m_NotifControlIsSet;
 }
 
-void GbrQosFlowInformation::setNotifControl(const std::shared_ptr<NotificationControl>& value)
-{
-    m_NotifControl = value;
-    m_NotifControlIsSet = true;
+void GbrQosFlowInformation::unsetNotifControl() {
+  m_NotifControlIsSet = false;
 }
 
-bool GbrQosFlowInformation::notifControlIsSet() const
-{
-    return m_NotifControlIsSet;
+int32_t GbrQosFlowInformation::getMaxPacketLossRateDl() const {
+  return m_MaxPacketLossRateDl;
 }
 
-void GbrQosFlowInformation::unsetNotifControl()
-{
-    m_NotifControlIsSet = false;
+void GbrQosFlowInformation::setMaxPacketLossRateDl(int32_t value) {
+  m_MaxPacketLossRateDl      = value;
+  m_MaxPacketLossRateDlIsSet = true;
 }
 
-int32_t GbrQosFlowInformation::getMaxPacketLossRateDl() const
-{
-    return m_MaxPacketLossRateDl;
+bool GbrQosFlowInformation::maxPacketLossRateDlIsSet() const {
+  return m_MaxPacketLossRateDlIsSet;
 }
 
-void GbrQosFlowInformation::setMaxPacketLossRateDl(int32_t value)
-{
-    m_MaxPacketLossRateDl = value;
-    m_MaxPacketLossRateDlIsSet = true;
+void GbrQosFlowInformation::unsetMaxPacketLossRateDl() {
+  m_MaxPacketLossRateDlIsSet = false;
 }
 
-bool GbrQosFlowInformation::maxPacketLossRateDlIsSet() const
-{
-    return m_MaxPacketLossRateDlIsSet;
+int32_t GbrQosFlowInformation::getMaxPacketLossRateUl() const {
+  return m_MaxPacketLossRateUl;
 }
 
-void GbrQosFlowInformation::unsetMaxPacketLossRateDl()
-{
-    m_MaxPacketLossRateDlIsSet = false;
+void GbrQosFlowInformation::setMaxPacketLossRateUl(int32_t value) {
+  m_MaxPacketLossRateUl      = value;
+  m_MaxPacketLossRateUlIsSet = true;
 }
 
-int32_t GbrQosFlowInformation::getMaxPacketLossRateUl() const
-{
-    return m_MaxPacketLossRateUl;
+bool GbrQosFlowInformation::maxPacketLossRateUlIsSet() const {
+  return m_MaxPacketLossRateUlIsSet;
 }
 
-void GbrQosFlowInformation::setMaxPacketLossRateUl(int32_t value)
-{
-    m_MaxPacketLossRateUl = value;
-    m_MaxPacketLossRateUlIsSet = true;
+void GbrQosFlowInformation::unsetMaxPacketLossRateUl() {
+  m_MaxPacketLossRateUlIsSet = false;
 }
 
-bool GbrQosFlowInformation::maxPacketLossRateUlIsSet() const
-{
-    return m_MaxPacketLossRateUlIsSet;
-}
-
-void GbrQosFlowInformation::unsetMaxPacketLossRateUl()
-{
-    m_MaxPacketLossRateUlIsSet = false;
-}
-
-}
-}
-}
-
-
+}  // namespace model
+}  // namespace smf
+}  // namespace oai

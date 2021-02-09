@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,19 +35,18 @@ EPS_NAS_Message_Container::EPS_NAS_Message_Container(uint8_t iei) {
 }
 
 //------------------------------------------------------------------------------
-EPS_NAS_Message_Container::EPS_NAS_Message_Container(const uint8_t iei, bstring value) {
-  _iei = iei;
+EPS_NAS_Message_Container::EPS_NAS_Message_Container(
+    const uint8_t iei, bstring value) {
+  _iei   = iei;
   _value = bstrcpy(value);
   length = blength(value) + 3;
 }
 
 //------------------------------------------------------------------------------
-EPS_NAS_Message_Container::EPS_NAS_Message_Container() {
-}
+EPS_NAS_Message_Container::EPS_NAS_Message_Container() {}
 
 //------------------------------------------------------------------------------
-EPS_NAS_Message_Container::~EPS_NAS_Message_Container() {
-}
+EPS_NAS_Message_Container::~EPS_NAS_Message_Container() {}
 
 //------------------------------------------------------------------------------
 void EPS_NAS_Message_Container::setValue(uint8_t iei, uint8_t value) {
@@ -56,12 +55,12 @@ void EPS_NAS_Message_Container::setValue(uint8_t iei, uint8_t value) {
 }
 
 //------------------------------------------------------------------------------
-void EPS_NAS_Message_Container::getValue(bstring &value) {
+void EPS_NAS_Message_Container::getValue(bstring& value) {
   value = bstrcpy(_value);
 }
 
 //------------------------------------------------------------------------------
-int EPS_NAS_Message_Container::encode2buffer(uint8_t *buf, int len) {
+int EPS_NAS_Message_Container::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("encoding EPS_NAS_Message_Container iei(0x%x)", _iei);
   if (len < length) {
     Logger::nas_mm().error("len is less than %d", length);
@@ -79,15 +78,17 @@ int EPS_NAS_Message_Container::encode2buffer(uint8_t *buf, int len) {
     encoded_size += size;
 
   } else {
-//		*(buf + encoded_size) = length - 1; encoded_size++;
-//		*(buf + encoded_size) = _value; encoded_size++; encoded_size++;
+    //		*(buf + encoded_size) = length - 1; encoded_size++;
+    //		*(buf + encoded_size) = _value; encoded_size++; encoded_size++;
   }
-  Logger::nas_mm().debug("encoded EPS_NAS_Message_Container len(%d)", encoded_size);
+  Logger::nas_mm().debug(
+      "encoded EPS_NAS_Message_Container len(%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
-int EPS_NAS_Message_Container::decodefrombuffer(uint8_t *buf, int len, bool is_option) {
+int EPS_NAS_Message_Container::decodefrombuffer(
+    uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("decoding EPS_NAS_Message_Container iei(0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
@@ -101,9 +102,11 @@ int EPS_NAS_Message_Container::decodefrombuffer(uint8_t *buf, int len, bool is_o
   decode_bstring(&_value, length, (buf + decoded_size), len - decoded_size);
   decoded_size += length;
   for (int i = 0; i < length; i++) {
-    Logger::nas_mm().debug("decoded EPS_NAS_Message_Container value(0x%x)", (uint8_t*) _value->data[i]);
+    Logger::nas_mm().debug(
+        "decoded EPS_NAS_Message_Container value(0x%x)",
+        (uint8_t*) _value->data[i]);
   }
-  Logger::nas_mm().debug("decoded EPS_NAS_Message_Container len(%d)", decoded_size);
+  Logger::nas_mm().debug(
+      "decoded EPS_NAS_Message_Container len(%d)", decoded_size);
   return decoded_size;
 }
-

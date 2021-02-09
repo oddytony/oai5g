@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -47,34 +47,35 @@ class CoreNetworkAssistanceInfo {
   virtual ~CoreNetworkAssistanceInfo();
 
   void setCoreNetworkAssistanceInfo(
-      UEIdentityIndexValue *m_ueIdentityIndexValue,
-      DefaultPagingDRX *m_pagingDRX,
-      PeriodicRegistrationUpdateTimer *m_periodicRegUpdateTimer,
-      bool m_micoModeInd, TAI *m_tai, int m_numoftai);
+      UEIdentityIndexValue* m_ueIdentityIndexValue,
+      DefaultPagingDRX* m_pagingDRX,
+      PeriodicRegistrationUpdateTimer* m_periodicRegUpdateTimer,
+      bool m_micoModeInd, TAI* m_tai, int m_numoftai);
   void setCoreNetworkAssistanceInfo(
-      UEIdentityIndexValue *m_ueIdentityIndexValue,
-      PeriodicRegistrationUpdateTimer *m_periodicRegUpdateTimer,
-      bool m_micoModeInd, TAI *m_tai, int m_numoftai);
+      UEIdentityIndexValue* m_ueIdentityIndexValue,
+      PeriodicRegistrationUpdateTimer* m_periodicRegUpdateTimer,
+      bool m_micoModeInd, TAI* m_tai, int m_numoftai);
   void getCoreNetworkAssistanceInfo(
-      UEIdentityIndexValue *&m_ueIdentityIndexValue,
-      DefaultPagingDRX *&m_pagingDRX,
-      PeriodicRegistrationUpdateTimer *&m_periodicRegUpdateTimer,
-      bool &m_micoModeInd, TAI *&m_tai, int &m_numoftai);
+      UEIdentityIndexValue*& m_ueIdentityIndexValue,
+      DefaultPagingDRX*& m_pagingDRX,
+      PeriodicRegistrationUpdateTimer*& m_periodicRegUpdateTimer,
+      bool& m_micoModeInd, TAI*& m_tai, int& m_numoftai);
 
-  bool encode2CoreNetworkAssistanceInfo(
-      Ngap_CoreNetworkAssistanceInformation_t *coreNetworkAssistanceInformation);
+  bool encode2CoreNetworkAssistanceInfo(Ngap_CoreNetworkAssistanceInformation_t*
+                                            coreNetworkAssistanceInformation);
   bool decodefromCoreNetworkAssistanceInfo(
-      Ngap_CoreNetworkAssistanceInformation_t *coreNetworkAssistanceInformation);
+      Ngap_CoreNetworkAssistanceInformation_t*
+          coreNetworkAssistanceInformation);
+
  private:
-  UEIdentityIndexValue *ueIdentityIndexValue;
-  DefaultPagingDRX *pagingDRX;
-  PeriodicRegistrationUpdateTimer *periodicRegUpdateTimer;
-  MICOModeIndication *micoModeInd;
-  TAI *tai;
+  UEIdentityIndexValue* ueIdentityIndexValue;
+  DefaultPagingDRX* pagingDRX;
+  PeriodicRegistrationUpdateTimer* periodicRegUpdateTimer;
+  MICOModeIndication* micoModeInd;
+  TAI* tai;
   int numoftai;
 };
 
-}
+}  // namespace ngap
 
 #endif
-
