@@ -150,7 +150,6 @@ amf_n11::amf_n11() {
 amf_n11::~amf_n11() {}
 
 //------------------------------------------------------------------------------
-
 void amf_n11::handle_itti_message(
     itti_pdu_session_resource_setup_response& itti_msg) {}
 
@@ -484,13 +483,6 @@ bool amf_n11::smf_selection_from_configuration(
   return false;
 }
 
-//------------------------------------------------------------------------------
-/*bool amf_n11::smf_selection_from_context(
-    std::string& smf_addr, std::string& smf_api_version) {
-  // TODO:
-}
-*/
-// handlers for smf client response
 //------------------------------------------------------------------------------
 void amf_n11::handle_post_sm_context_response_error_400() {}
 
