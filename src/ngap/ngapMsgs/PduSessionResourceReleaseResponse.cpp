@@ -293,6 +293,7 @@ bool PduSessionResourceReleaseResponseMsg::decodefrompdu(
             pduSessionResourceReleaseResponseIEs->protocolIEs.list.array[i]
                     ->value.present ==
                 Ngap_PDUSessionResourceReleaseResponseIEs__value_PR_AMF_UE_NGAP_ID) {
+
           amfUeNgapId = new AMF_UE_NGAP_ID();
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
                   pduSessionResourceReleaseResponseIEs->protocolIEs.list

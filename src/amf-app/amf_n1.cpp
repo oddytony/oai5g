@@ -914,7 +914,7 @@ void amf_n1::registration_request_handle(
     } break;
 
     case MOBILITY_REGISTRATION_UPDATING: {
-      Logger::amf_n1().error("Network handling mobility registration ...");
+      Logger::amf_n1().debug("Network handling mobility registration ...");
       run_mobility_registration_update_procedure(nc);
     } break;
 

@@ -80,7 +80,7 @@ bool PDUSessionResourceReleasedItemRelRes::
         Ngap_PDUSessionResourceReleasedItemRelRes_t*
             pduSessionResourceReleasedItemRelRes) {
   pDUSessionID = new PDUSessionID();
-
+  pDUSessionID->setPDUSessionID(pduSessionResourceReleasedItemRelRes->pDUSessionID);
   pDUSessionResourceReleaseResponseTransfer =
       pduSessionResourceReleasedItemRelRes
           ->pDUSessionResourceReleaseResponseTransfer;
