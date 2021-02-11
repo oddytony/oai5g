@@ -121,7 +121,7 @@ COPY --from=oai-amf-builder /openair-amf/scripts/entrypoint.sh entrypoint.sh
 # Copying template configuration files
 WORKDIR /openair-amf/etc
 COPY --from=oai-amf-builder /openair-amf/etc/amf.conf .
-COPY --from=oai-amf-builder /openair-amf/etc/modules.conf .
+#COPY --from=oai-amf-builder /openair-amf/etc/modules.conf .
 
 WORKDIR /openair-amf
 
@@ -129,7 +129,7 @@ WORKDIR /openair-amf
 EXPOSE 80/tcp 9090/tcp 38412/sctp
 
 CMD ["/openair-amf/bin/oai_amf", "-c", "/openair-amf/etc/amf.conf", "-o"]
+
 ENTRYPOINT ["/openair-amf/bin/entrypoint.sh"]
+
 #CMD ["sleep", "infinity"]
-
-
