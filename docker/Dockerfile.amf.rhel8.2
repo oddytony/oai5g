@@ -112,7 +112,7 @@ COPY --from=oai-amf-builder /usr/lib64/libicudata.so.60 /usr/lib64/
 COPY --from=oai-amf-builder /usr/lib64/libicui18n.so.60 /usr/lib64/
 COPY --from=oai-amf-builder /usr/lib64/libicuuc.so.60 /usr/lib64/
 
-COPY --from=oai-smf-builder /openair-smf/scripts/entrypoint.sh entrypoint.sh
+COPY --from=oai-amf-builder /openair-amf/scripts/entrypoint.sh entrypoint.sh
 
 # debug
 #RUN ldconfig -v
@@ -128,8 +128,8 @@ WORKDIR /openair-amf
 # expose ports
 EXPOSE 80/tcp 9090/tcp 38412/sctp
 
-CMD ["/openair-smf/bin/oai_amf", "-c", "/openair-smf/etc/amf.conf", "-o"]
-ENTRYPOINT ["/openair-smf/bin/entrypoint.sh"]
+CMD ["/openair-amf/bin/oai_amf", "-c", "/openair-amf/etc/amf.conf", "-o"]
+ENTRYPOINT ["/openair-amf/bin/entrypoint.sh"]
 #CMD ["sleep", "infinity"]
 
 
