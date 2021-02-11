@@ -776,7 +776,7 @@ class HtmlReport():
 		if os.path.isfile(cwd + '/archives/' + logFileName):
 			if nfType == 'AMF':
 				section_start_pattern = 'Successfully tagged oai-amf'
-				section_end_pattern = 'OAI-SMF DOCKER IMAGE BUILD'
+				section_end_pattern = 'OAI-AMF DOCKER IMAGE BUILD'
 			section_status = False
 			status = False
 			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
@@ -790,7 +790,7 @@ class HtmlReport():
 					if section_status:
 						if nfType == 'AMF':
 							if self.git_pull_request:
-								result = re.search('oai-amf *ci-temp', line)
+								result = re.search('oai-amf *ci-tmp', line)
 							else:
 								result = re.search('oai-amf *develop', line)
 						if result is not None:
