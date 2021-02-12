@@ -532,7 +532,14 @@ void amf_n1::identity_response_handle(
 void amf_n1::service_request_handle(
     bool isNasSig, std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id,
     long amf_ue_ngap_id, bstring nas) {
-  if (!nc.get()) {
+  string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
+                          ":amfid_" + to_string(amf_ue_ngap_id);
+  std::shared_ptr<ue_context> uc;
+  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+
+  if (!nc.get() or (uc.get() == nullptr)) {
+    Logger::amf_n1().debug(
+        "Cannot find NAS/UE context, send Service Reject to UE");
     // service reject
     uint8_t nas[4];
     nas[0] = EPD_5GS_MM_MSG;
@@ -570,39 +577,25 @@ void amf_n1::service_request_handle(
       "amf_ue_ngap_id %d, ran_ue_ngap_id %d", amf_ue_ngap_id, ran_ue_ngap_id);
   Logger::amf_n1().debug("Key for pdu session context: SUPI %s", supi.c_str());
   std::shared_ptr<pdu_session_context> psc;
-  /*
-   //TODO: get the pdu_session_context from AMF_APP based on both SUPI and PDU
-   Session ID string ue_context_key = "app_ue_ranid_" +
-   to_string(ran_ue_ngap_id) +
-                            ":amfid_" + to_string(amf_ue_ngap_id);
-    std::shared_ptr<ue_context> uc;
 
-    uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
-    if (uc.get() !=nullptr){
-            if (!uc.get()->find_pdu_session_context(pdu_session_id,psc)) {
-            }
+  // get PDU session status
+  std::vector<uint8_t> pdu_session_to_be_activated = {};
+  uint16_t pdu_session_status       = (uint16_t) serReq->getPduSessionStatus();
+  uint8_t pdu_sessino_status_byte_1 = uint8_t(pdu_session_status & 0x00ff);
+  uint8_t pdu_sessino_status_byte_2 = uint8_t(pdu_session_status >> 8);
+  for (int i = 1; i < 7; i++) {
+    if (pdu_sessino_status_byte_1 % (uint16_t)(pow(2, i)) == 1) {
+      pdu_session_to_be_activated.push_back(i);
     }
-    //TO check: in which condition we should have PDU Session ID
-  */
-
-  if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
-    psc = amf_n11_inst->supi_to_pdu_ctx(supi);
-    if (!psc) {
-      Logger::amf_n1().error("Cannot get pdu_session_context");
-      return;
+  }
+  for (int i = 0; i < 7; i++) {
+    if (pdu_sessino_status_byte_2 % (uint16_t)(pow(2, i)) == 1) {
+      pdu_session_to_be_activated.push_back(i + 8);
     }
-  } else {
-    Logger::amf_n1().error(
-        "Cannot get pdu_session_context with SUPI %s", supi.c_str());
   }
 
-  //TODO: is_supi_to_pdu_ctx should be removed
-  if (!amf_n11_inst->is_supi_to_pdu_ctx(supi) || !psc.get()->isn2sm_avaliable) {
-    Logger::amf_n1().error(
-        "Cannot get pdu session information with supi (%s)", supi.c_str());
-    if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
-      psc.get()->isn2sm_avaliable = true;
-    }
+  // No PDU Sessions To Be Activated
+  if (pdu_session_to_be_activated.size() == 0) {
     serApt->setPDU_session_status(0x0000);
     uint8_t buffer[BUFFER_SIZE_256];
     int encoded_size = serApt->encode2buffer(buffer, BUFFER_SIZE_256);
@@ -635,46 +628,157 @@ void amf_n1::service_request_handle(
           i->get_msg_name());
     }
     return;
-  }
-  serApt->setPDU_session_status(0x2000);
-  serApt->setPDU_session_reactivation_result(0x0000);
-  uint8_t buffer[BUFFER_SIZE_256];
-  int encoded_size = serApt->encode2buffer(buffer, BUFFER_SIZE_256);
-  bstring protectedNas;
-  encode_nas_message_protected(
-      secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
-      buffer, encoded_size, protectedNas);
-  uint8_t* kamf = nc.get()->kamf[secu->vector_pointer];
-  uint8_t kgnb[32];
-  uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
-  Logger::amf_n1().debug("uplink count(%d)", secu->ul_count.seq_num);
-  print_buffer("amf_n1", "kamf", kamf, 32);
-  Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
-  bstring kgnb_bs = blk2bstr(kgnb, 32);
-  itti_initial_context_setup_request* itti_msg =
-      new itti_initial_context_setup_request(TASK_AMF_N1, TASK_AMF_N2);
-  itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
-  itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
-  itti_msg->nas            = protectedNas;
-  itti_msg->kgnb           = kgnb_bs;
-  itti_msg->is_sr          = true;  // service request indicator
-  itti_msg->pdu_session_id = psc.get()->pdu_session_id;
-  itti_msg->is_pdu_exist   = true;
-  if (psc.get()->isn2sm_avaliable) {
-    itti_msg->n2sm             = psc.get()->n2sm;
-    itti_msg->isn2sm_avaliable = true;
+
   } else {
+    // TODO: Contact SMF to activate UP for these sessions
+
+    // DO for 1 PDU session ID for now
+    serApt->setPDU_session_status(0x2000);  // PSI 1 (0x0200), should be updated
+    serApt->setPDU_session_reactivation_result(0x0000);
+    uint8_t buffer[BUFFER_SIZE_256];
+    int encoded_size = serApt->encode2buffer(buffer, BUFFER_SIZE_256);
+    bstring protectedNas;
+    encode_nas_message_protected(
+        secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
+        buffer, encoded_size, protectedNas);
+    uint8_t* kamf = nc.get()->kamf[secu->vector_pointer];
+    uint8_t kgnb[32];
+    uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
+    Logger::amf_n1().debug("uplink count(%d)", secu->ul_count.seq_num);
+    print_buffer("amf_n1", "kamf", kamf, 32);
+    Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
+    bstring kgnb_bs = blk2bstr(kgnb, 32);
+    itti_initial_context_setup_request* itti_msg =
+        new itti_initial_context_setup_request(TASK_AMF_N1, TASK_AMF_N2);
+    itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
+    itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
+    itti_msg->nas            = protectedNas;
+    itti_msg->kgnb           = kgnb_bs;
+    itti_msg->is_sr          = true;  // service request indicator
+    itti_msg->pdu_session_id = 1;     // PSI 1, should be updated
+    itti_msg->is_pdu_exist   = true;
+    // if (psc.get()->isn2sm_avaliable) {
+    //  itti_msg->n2sm             = psc.get()->n2sm;
+    //  itti_msg->isn2sm_avaliable = true;
+    //} else {
     itti_msg->isn2sm_avaliable = false;
-    Logger::amf_n1().error("Cannot get pdu session information");
+    // Logger::amf_n1().error("Cannot get pdu session information");
+    //}
+    std::shared_ptr<itti_initial_context_setup_request> i =
+        std::shared_ptr<itti_initial_context_setup_request>(itti_msg);
+    int ret = itti_inst->send_msg(i);
+    if (0 != ret) {
+      Logger::amf_n1().error(
+          "Could not send ITTI message %s to task TASK_AMF_N2",
+          i->get_msg_name());
+    }
   }
-  std::shared_ptr<itti_initial_context_setup_request> i =
-      std::shared_ptr<itti_initial_context_setup_request>(itti_msg);
-  int ret = itti_inst->send_msg(i);
-  if (0 != ret) {
-    Logger::amf_n1().error(
-        "Could not send ITTI message %s to task TASK_AMF_N2",
-        i->get_msg_name());
-  }
+  //
+  /*
+   //TODO: get the pdu_session_context from AMF_APP based on both SUPI and PDU
+   Session ID string ue_context_key = "app_ue_ranid_" +
+   to_string(ran_ue_ngap_id) +
+                            ":amfid_" + to_string(amf_ue_ngap_id);
+    std::shared_ptr<ue_context> uc;
+
+    uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+    if (uc.get() !=nullptr){
+            if (!uc.get()->find_pdu_session_context(pdu_session_id,psc)) {
+            }
+    }
+    //TO check: in which condition we should have PDU Session ID
+  */
+  /*
+    if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
+      psc = amf_n11_inst->supi_to_pdu_ctx(supi);
+      if (!psc) {
+        Logger::amf_n1().error("Cannot get pdu_session_context");
+        return;
+      }
+    } else {
+      Logger::amf_n1().error(
+          "Cannot get pdu_session_context with SUPI %s", supi.c_str());
+    }
+
+    // TODO: is_supi_to_pdu_ctx should be removed
+    if (!amf_n11_inst->is_supi_to_pdu_ctx(supi) || !psc.get()->isn2sm_avaliable)
+    { Logger::amf_n1().error( "Cannot get pdu session information with supi
+    (%s)", supi.c_str()); if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
+        psc.get()->isn2sm_avaliable = true;
+      }
+      serApt->setPDU_session_status(0x0000);
+      uint8_t buffer[BUFFER_SIZE_256];
+      int encoded_size = serApt->encode2buffer(buffer, BUFFER_SIZE_256);
+      bstring protectedNas;
+      encode_nas_message_protected(
+          secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
+          buffer, encoded_size, protectedNas);
+      uint8_t* kamf = nc.get()->kamf[secu->vector_pointer];
+      uint8_t kgnb[32];
+      uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow <<
+    8); Logger::amf_n1().debug("uplink count(%d)", secu->ul_count.seq_num);
+      print_buffer("amf_n1", "kamf", kamf, 32);
+      Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
+      bstring kgnb_bs = blk2bstr(kgnb, 32);
+
+      itti_initial_context_setup_request* itti_msg =
+          new itti_initial_context_setup_request(TASK_AMF_N1, TASK_AMF_N2);
+      itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
+      itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
+      itti_msg->nas            = protectedNas;
+      itti_msg->kgnb           = kgnb_bs;
+      itti_msg->is_sr          = true;  // service request indicator
+      itti_msg->is_pdu_exist   = false;
+      std::shared_ptr<itti_initial_context_setup_request> i =
+          std::shared_ptr<itti_initial_context_setup_request>(itti_msg);
+      int ret = itti_inst->send_msg(i);
+      if (0 != ret) {
+        Logger::amf_n1().error(
+            "Could not send ITTI message %s to task TASK_AMF_N2",
+            i->get_msg_name());
+      }
+      return;
+    }
+    serApt->setPDU_session_status(0x2000);
+    serApt->setPDU_session_reactivation_result(0x0000);
+    uint8_t buffer[BUFFER_SIZE_256];
+    int encoded_size = serApt->encode2buffer(buffer, BUFFER_SIZE_256);
+    bstring protectedNas;
+    encode_nas_message_protected(
+        secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
+        buffer, encoded_size, protectedNas);
+    uint8_t* kamf = nc.get()->kamf[secu->vector_pointer];
+    uint8_t kgnb[32];
+    uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
+    Logger::amf_n1().debug("uplink count(%d)", secu->ul_count.seq_num);
+    print_buffer("amf_n1", "kamf", kamf, 32);
+    Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
+    bstring kgnb_bs = blk2bstr(kgnb, 32);
+    itti_initial_context_setup_request* itti_msg =
+        new itti_initial_context_setup_request(TASK_AMF_N1, TASK_AMF_N2);
+    itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
+    itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
+    itti_msg->nas            = protectedNas;
+    itti_msg->kgnb           = kgnb_bs;
+    itti_msg->is_sr          = true;  // service request indicator
+    itti_msg->pdu_session_id = psc.get()->pdu_session_id;
+    itti_msg->is_pdu_exist   = true;
+    if (psc.get()->isn2sm_avaliable) {
+      itti_msg->n2sm             = psc.get()->n2sm;
+      itti_msg->isn2sm_avaliable = true;
+    } else {
+      itti_msg->isn2sm_avaliable = false;
+      Logger::amf_n1().error("Cannot get pdu session information");
+    }
+    std::shared_ptr<itti_initial_context_setup_request> i =
+        std::shared_ptr<itti_initial_context_setup_request>(itti_msg);
+    int ret = itti_inst->send_msg(i);
+    if (0 != ret) {
+      Logger::amf_n1().error(
+          "Could not send ITTI message %s to task TASK_AMF_N2",
+          i->get_msg_name());
+    }
+    */
 }
 
 //------------------------------------------------------------------------------
@@ -914,6 +1018,8 @@ void amf_n1::registration_request_handle(
     } break;
 
     case MOBILITY_REGISTRATION_UPDATING: {
+      // TODO: check if the List Of PDU Sessions To Be Activated is available
+      // regReq->getPduSessionStatus()
       Logger::amf_n1().debug("Network handling mobility registration ...");
       run_mobility_registration_update_procedure(nc);
     } break;
@@ -1070,7 +1176,7 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
     }
   } else if (nc.get()->is_5g_guti_present) {
     Logger::amf_n1().debug("Start to run UE Identification Request procedure");
-    nc.get()->is_auth_vectors_present = false;
+    nc.get()->is_auth_vectors_present   = false;
     std::unique_ptr<IdentityRequest> ir = std::make_unique<IdentityRequest>();
     ir->setHeader(PLAIN_5GS_MSG);
     ir->set_5GS_Identity_Type(SUCI);
@@ -1976,7 +2082,6 @@ void amf_n1::encode_nas_message_protected(
 
     case INTEGRITY_PROTECTED_AND_CIPHERED_WITH_NEW_SECU_CTX: {
     } break;
-
   }
   protected_nas = blk2bstr(protected_nas_buf, encoded_size);
   nsc->dl_count.seq_num++;
@@ -1986,7 +2091,6 @@ void amf_n1::encode_nas_message_protected(
 bool amf_n1::nas_message_integrity_protected(
     nas_secu_ctx* nsc, uint8_t direction, uint8_t* input_nas, int input_nas_len,
     uint32_t& mac32) {
-
   uint32_t count = 0x00000000;
   if (direction)
     count = 0x00000000 | ((nsc->dl_count.overflow & 0x0000ffff) << 8) |
@@ -2041,7 +2145,6 @@ bool amf_n1::nas_message_integrity_protected(
       Logger::amf_n1().debug("Result for NIA2, mac32: 0x%x", mac32);
       return true;
     } break;
-
   }
 }
 
@@ -2086,7 +2189,6 @@ bool amf_n1::nas_message_cipher_protected(
       nas_algorithms::nas_stream_encrypt_nea2(
           &stream_cipher, (uint8_t*) bdata(output_nas));
     } break;
-
   }
 }
 
@@ -2365,7 +2467,6 @@ void amf_n1::sha256(
 void amf_n1::run_mobility_registration_update_procedure(
     std::shared_ptr<nas_context> nc) {
   // encoding REGISTRATION ACCEPT
-  // RegistrationAccept* regAccept = new RegistrationAccept();
   std::unique_ptr<RegistrationAccept> regAccept =
       std::make_unique<RegistrationAccept>();
   regAccept->setHeader(PLAIN_5GS_MSG);
@@ -2421,26 +2522,24 @@ void amf_n1::run_mobility_registration_update_procedure(
   string supi = "imsi-" + nc.get()->imsi;
   Logger::amf_n1().debug("Key for pdu session context SUPI (%s)", supi.c_str());
   std::shared_ptr<pdu_session_context> psc;
-  /*
-   //TODO: get the pdu_session_context from AMF_APP based on both SUPI and PDU
-   Session ID string ue_context_key = "app_ue_ranid_" +
-   to_string(ran_ue_ngap_id) +
-                            ":amfid_" + to_string(amf_ue_ngap_id);
-    std::shared_ptr<ue_context> uc;
 
-    uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
-    if (uc.get() !=nullptr){
-          if (!uc.get()->find_pdu_session_context()) {
-          }
-    }
-      //TO check: in which condition we should have PDU Session ID
+  /*
+  if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
+     psc = amf_n11_inst->supi_to_pdu_ctx(supi);
+   } else {
+     Logger::amf_n1().error(
+         "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
+   }
   */
 
-  if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
-    psc = amf_n11_inst->supi_to_pdu_ctx(supi);
-  } else {
-    Logger::amf_n1().error(
-        "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
+  string ue_context_key = "app_ue_ranid_" + to_string(nc->ran_ue_ngap_id) +
+                          ":amfid_" + to_string(nc->amf_ue_ngap_id);
+  std::shared_ptr<ue_context> uc;
+
+  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+  if (uc.get() == nullptr) {
+    Logger::amf_n1().warn(
+        "Cannot find the UE context with key %s", ue_context_key.c_str());
   }
 
   uint8_t* kamf = nc.get()->kamf[secu->vector_pointer];
@@ -2457,6 +2556,9 @@ void amf_n1::run_mobility_registration_update_procedure(
   itti_msg->kgnb           = kgnb_bs;
   itti_msg->nas            = protectedNas;
   itti_msg->is_sr          = true;  // service request indicator
+  // TODO: should not get from Pdu_session_context
+  // TODO: should come from NAS (if UE includes in the List Of PDU Sessions To
+  // Be Activated)
   itti_msg->pdu_session_id = psc.get()->pdu_session_id;
   itti_msg->n2sm           = psc.get()->n2sm;
   std::shared_ptr<itti_initial_context_setup_request> i =

@@ -295,6 +295,7 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer& smf) {
       Logger::amf_n11().debug(
           "Decoded PTI for PDUSessionEstablishmentRequest(0x%x)", pti);
       if (psc.get()->isn1sm_avaliable && psc.get()->isn2sm_avaliable) {
+        // TODO: should be removed
         itti_n1n2_message_transfer_request* itti_msg =
             new itti_n1n2_message_transfer_request(TASK_AMF_N11, TASK_AMF_APP);
         itti_msg->supi = supi;
