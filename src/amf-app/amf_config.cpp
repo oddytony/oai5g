@@ -377,6 +377,7 @@ int amf_config::load(const std::string& config_file) {
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
     return -1;
   }
+  return 1;
 }
 
 //------------------------------------------------------------------------------

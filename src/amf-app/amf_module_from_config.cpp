@@ -86,6 +86,7 @@ int amf_modules::load(const std::string& config_file) {
       Logger::config().error("wrong NGAP message configuration");
     }
   }
+  return 1;
 }
 
 //------------------------------------------------------------------------------
