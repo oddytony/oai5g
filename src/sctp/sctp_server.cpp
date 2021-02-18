@@ -74,6 +74,7 @@ int sctp_server::create_socket(const char* address, const uint16_t port_num) {
   if (bind(socket_, (struct sockaddr*) &serverAddr_, sizeof(serverAddr_)) !=
       0) {
     Logger::sctp().error("Socket bind: %s:%d", strerror(errno), errno);
+    return -1;
   }
   bzero(&events_, sizeof(events_));
   events_.sctp_data_io_event     = 1;
@@ -83,6 +84,7 @@ int sctp_server::create_socket(const char* address, const uint16_t port_num) {
       socket_, IPPROTO_SCTP, SCTP_EVENTS, &events_,
       sizeof(struct sctp_event_subscribe));
   listen(socket_, 5);
+  return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -205,13 +207,14 @@ int sctp_server::sctp_read_from_socket(int sd, uint32_t ppid) {
         payload, (sctp_assoc_id_t) sinfo.sinfo_assoc_id, sinfo.sinfo_stream,
         association->instreams, association->outstreams);
   }
+  return 0;
 }
 
 //------------------------------------------------------------------------------
-int sctp_server::sctp_handle_com_down(sctp_assoc_id_t assoc_id) {}
+int sctp_server::sctp_handle_com_down(sctp_assoc_id_t assoc_id) {return 0;}
 
 //------------------------------------------------------------------------------
-int sctp_server::sctp_handle_reset(const sctp_assoc_id_t assoc_id) {}
+int sctp_server::sctp_handle_reset(const sctp_assoc_id_t assoc_id) {return 0;}
 
 //------------------------------------------------------------------------------
 int sctp_server::handle_assoc_change(
