@@ -94,11 +94,15 @@ int _5GSTrackingAreaIdList::encode_00_type(
 
 //------------------------------------------------------------------------------
 int _5GSTrackingAreaIdList::encode_01_type(
-    p_tai_t item, uint8_t* buf, int len) {}
+    p_tai_t item, uint8_t* buf, int len) {
+	return 1;
+}
 
 //------------------------------------------------------------------------------
 int _5GSTrackingAreaIdList::encode_10_type(
-    p_tai_t item, uint8_t* buf, int len) {}
+    p_tai_t item, uint8_t* buf, int len) {
+	return 1;
+}
 
 //------------------------------------------------------------------------------
 int _5GSTrackingAreaIdList::encode_mcc_mnc(

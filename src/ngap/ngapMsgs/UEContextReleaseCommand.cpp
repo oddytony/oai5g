@@ -162,4 +162,5 @@ int UEContextReleaseCommandMsg::encode2buffer(uint8_t* buf, int buf_size) {
 //------------------------------------------------------------------------------
 bool UEContextReleaseCommandMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   pdu = ngap_msg_pdu;
+  return true;
 }

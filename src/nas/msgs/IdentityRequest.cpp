@@ -92,4 +92,5 @@ int IdentityRequest::decodefrombuffer(
   Logger::nas_mm().debug("decoded_size(%d)", decoded_size);
   Logger::nas_mm().debug(
       "decoded IdentityRequest message len(%d)", decoded_size);
+  return 1;
 }

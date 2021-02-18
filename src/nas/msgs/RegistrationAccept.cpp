@@ -842,4 +842,5 @@ int RegistrationAccept::decodefrombuffer(
   }
   Logger::nas_mm().debug(
       "Decoded RegistrationAccept message len (%d)", decoded_size);
+  return 1;
 }

@@ -83,7 +83,7 @@ void Payload_Container::getValue(bstring& cnt) {
 
 //------------------------------------------------------------------------------
 int Payload_Container::encode2buffer(uint8_t* buf, int len) {
-  Logger::nas_mm().debug("encoding Payload_Container iei(0x%x)", _iei);
+  Logger::nas_mm().debug("Encoding Payload_Container iei(0x%x)", _iei);
   if (len < length) {
     // Logger::nas_mm().error("len is less than %d", length);
     // return 0;
@@ -147,19 +147,20 @@ int Payload_Container::encode2buffer(uint8_t* buf, int len) {
 		}
 	}
 #endif
-  Logger::nas_mm().debug("encoded Payload_Container len(%d)", encoded_size);
+  Logger::nas_mm().debug("Encoded Payload_Container len(%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
 
 int Payload_Container::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
+	return 0;
 }
 
 //------------------------------------------------------------------------------
 int Payload_Container::decodefrombuffer(
     uint8_t* buf, int len, bool is_option, uint8_t type) {
-  Logger::nas_mm().debug("decoding Payload_Container iei(0x%x)", _iei);
+  Logger::nas_mm().debug("Decoding Payload_Container iei (0x%x)", _iei);
   int decoded_size = 0;
   if (is_option) {
     decoded_size++;
@@ -211,7 +212,6 @@ int Payload_Container::decodefrombuffer(
     CONTENT.insert(CONTENT.end(), payloadcontainerentry);
     num_entries--;
   }
-  // Logger::nas_mm().debug("decoded Payload_Container value(0x%x)", _value);
-  Logger::nas_mm().debug("decoded Payload_Container len(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded Payload_Container len (%d)", decoded_size);
   return decoded_size;
 }

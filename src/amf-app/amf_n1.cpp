@@ -943,7 +943,7 @@ void amf_n1::registration_request_handle(
 
 //------------------------------------------------------------------------------
 // authentication vector handlers
-bool amf_n1::generate_authentication_vector() {}
+bool amf_n1::generate_authentication_vector() {return true;}
 
 // context management functions
 //------------------------------------------------------------------------------
@@ -1307,6 +1307,7 @@ bool amf_n1::authentication_vectors_generator_in_udm(
     Logger::amf_n1().error("Failed to fetch user data from MySQL");
     return false;
   }
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -2043,6 +2044,7 @@ bool amf_n1::nas_message_integrity_protected(
     } break;
 
   }
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -2086,8 +2088,8 @@ bool amf_n1::nas_message_cipher_protected(
       nas_algorithms::nas_stream_encrypt_nea2(
           &stream_cipher, (uint8_t*) bdata(output_nas));
     } break;
-
   }
+  return true;
 }
 
 //------------------------------------------------------------------------------

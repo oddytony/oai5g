@@ -71,7 +71,7 @@ bool Network_Slicing_Indication::getNSSCI() {
 
 //------------------------------------------------------------------------------
 int Network_Slicing_Indication::encode2buffer(uint8_t* buf, int len) {
-  Logger::nas_mm().debug("encoding Network_Slicing_Indication iei(0x%x)", _iei);
+  Logger::nas_mm().debug("Encoding Network_Slicing_Indication iei (0x%x)", _iei);
   if (len < 1) {
     //	Logger::nas_mm().error("len is less than %d", length);
     return 0;
@@ -85,20 +85,21 @@ int Network_Slicing_Indication::encode2buffer(uint8_t* buf, int len) {
   } else {
     octet = (_iei << 4) | (DCNI << 1) | NSSCI;
     Logger::nas_mm().debug(
-        "decoded Network_Slicing_Indication DCNI(0x%x) NSSCI(0x%x)", octet,
+        "Decoded Network_Slicing_Indication DCNI (0x%x) NSSCI (0x%x)", octet,
         NSSCI);
     *buf = octet;
     Logger::nas_mm().debug(
-        "encoded Network_Slicing_Indication IE(len(1 octet))");
+        "Encoded Network_Slicing_Indication IE (len, 1 octet)");
     return 1;
   }
+  return 1;
 }
 
 //------------------------------------------------------------------------------
 int Network_Slicing_Indication::decodefrombuffer(
     uint8_t* buf, int len, bool is_option) {
   if (len < 1) {
-    Logger::nas_mm().error("len is less than one");
+    Logger::nas_mm().error("Len is less than one");
     return 0;
   } else {
     uint8_t octet = (*buf);
@@ -112,7 +113,7 @@ int Network_Slicing_Indication::decodefrombuffer(
     DCNI  = octet & 0x02;
     NSSCI = octet & 0x01;
     Logger::nas_mm().debug(
-        "decoded Network_Slicing_Indication DCNI(0x%x) NSSCI(0x%x)", DCNI,
+        "Decoded Network_Slicing_Indication DCNI (0x%x) NSSCI (0x%x)", DCNI,
         NSSCI);
     return 1;
   }

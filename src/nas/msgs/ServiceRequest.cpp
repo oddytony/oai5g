@@ -232,6 +232,7 @@ int ServiceRequest::decodefrombuffer(
   }
   Logger::nas_mm().debug(
       "Decoded ServiceRequest message len (%d)", decoded_size);
+  return 1;
 }
 
 //------------------------------------------------------------------------------

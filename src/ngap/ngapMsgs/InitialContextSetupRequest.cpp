@@ -825,6 +825,7 @@ bool InitialContextSetupRequestMsg::getCoreNetworkAssistanceInfo(
 
     taiListForRRcInactive.push_back(tai_str);
   }
+  return true;
 }
 
 //------------------------------------------------------------------------------

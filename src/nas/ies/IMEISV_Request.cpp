@@ -59,9 +59,9 @@ uint8_t IMEISV_Request::getValue() {
 
 //------------------------------------------------------------------------------
 int IMEISV_Request::encode2buffer(uint8_t* buf, int len) {
-  Logger::nas_mm().debug("encoding IMEISV_Request iei(0x%x)", _iei);
+  Logger::nas_mm().debug("Encoding IMEISV_Request iei (0x%x)", _iei);
   if (len < 1) {
-    Logger::nas_mm().error("len is less than 1");
+    Logger::nas_mm().error("Len is less than 1");
     return 0;
   }
   uint8_t octet = 0;
@@ -73,15 +73,16 @@ int IMEISV_Request::encode2buffer(uint8_t* buf, int len) {
   } else {
     octet = (_iei << 4) | (_value & 0x07);
     *buf  = octet;
-    Logger::nas_mm().debug("encoded IMEISV_Request IE(len(1 octet))");
+    Logger::nas_mm().debug("Encoded IMEISV_Request IE (len - 1 octet)");
     return 1;
   }
+  return 1;
 }
 
 //------------------------------------------------------------------------------
 int IMEISV_Request::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   if (len < 1) {
-    Logger::nas_mm().error("len is less than one");
+    Logger::nas_mm().error("Len is less than one");
     return 0;
   } else {
     uint8_t octet = (*buf);
@@ -91,7 +92,7 @@ int IMEISV_Request::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
       _iei = 0;
     }
     _value = octet & 0x07;
-    Logger::nas_mm().debug("decoded IMEISV_Request value(0x%x)", _value);
+    Logger::nas_mm().debug("Decoded IMEISV_Request value (0x%x)", _value);
     return 1;
   }
 }

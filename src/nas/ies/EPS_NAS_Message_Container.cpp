@@ -61,9 +61,9 @@ void EPS_NAS_Message_Container::getValue(bstring& value) {
 
 //------------------------------------------------------------------------------
 int EPS_NAS_Message_Container::encode2buffer(uint8_t* buf, int len) {
-  Logger::nas_mm().debug("encoding EPS_NAS_Message_Container iei(0x%x)", _iei);
+  Logger::nas_mm().debug("Encoding EPS_NAS_Message_Container iei (0x%x)", _iei);
   if (len < length) {
-    Logger::nas_mm().error("len is less than %d", length);
+    Logger::nas_mm().error("Len is less than %d", length);
     return 0;
   }
   int encoded_size = 0;
@@ -82,14 +82,14 @@ int EPS_NAS_Message_Container::encode2buffer(uint8_t* buf, int len) {
     //		*(buf + encoded_size) = _value; encoded_size++; encoded_size++;
   }
   Logger::nas_mm().debug(
-      "encoded EPS_NAS_Message_Container len(%d)", encoded_size);
+      "Encoded EPS_NAS_Message_Container len (%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
 int EPS_NAS_Message_Container::decodefrombuffer(
     uint8_t* buf, int len, bool is_option) {
-  Logger::nas_mm().debug("decoding EPS_NAS_Message_Container iei(0x%x)", *buf);
+  Logger::nas_mm().debug("Decoding EPS_NAS_Message_Container iei (0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
     decoded_size++;
@@ -103,10 +103,10 @@ int EPS_NAS_Message_Container::decodefrombuffer(
   decoded_size += length;
   for (int i = 0; i < length; i++) {
     Logger::nas_mm().debug(
-        "decoded EPS_NAS_Message_Container value(0x%x)",
-        (uint8_t*) _value->data[i]);
+        "Decoded EPS_NAS_Message_Container value (0x%x)",
+        (uint8_t) _value->data[i]);
   }
   Logger::nas_mm().debug(
-      "decoded EPS_NAS_Message_Container len(%d)", decoded_size);
+      "Decoded EPS_NAS_Message_Container len (%d)", decoded_size);
   return decoded_size;
 }

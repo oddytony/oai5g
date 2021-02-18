@@ -203,4 +203,5 @@ int AuthenticationRequest::decodefrombuffer(
   }
   Logger::nas_mm().debug(
       "Decoded AuthenticationRequest message (len %d)", decoded_size);
+  return 1;
 }

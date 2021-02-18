@@ -60,7 +60,7 @@ NSSAI::~NSSAI() {}
 void NSSAI::setS_NAASI(uint8_t SST) {}
 
 //------------------------------------------------------------------------------
-bool NSSAI::getValue(std::vector<struct SNSSAI_s>& nssai) {
+void NSSAI::getValue(std::vector<struct SNSSAI_s>& nssai) {
   nssai.assign(S_NSSAI.begin(), S_NSSAI.end());
 }
 

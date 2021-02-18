@@ -428,7 +428,7 @@ int _5GSMobilityIdentity::encodeRoutid2buffer(string routidstr, uint8_t* buf) {
 }
 
 //------------------------------------------------------------------------------
-int _5GSMobilityIdentity::encodeMSIN2buffer(string msinstr, uint8_t* buf) {}
+int _5GSMobilityIdentity::encodeMSIN2buffer(string msinstr, uint8_t* buf) {return 1;}
 
 //------------------------------------------------------------------------------
 int _5GSMobilityIdentity::imeisv_encode2buffer(uint8_t* buf, int len) {
@@ -676,7 +676,7 @@ int _5GSMobilityIdentity::imeisv_decodefrombuffer(uint8_t* buf, int len) {
   for (int i = 0; i < length; i++) {
     Logger::nas_mm().debug(
         "decoded 5GSMobilityIdentity IMEISV value(0x%x)",
-        (uint8_t*) _IMEISV.identity->data[i]);
+        (uint8_t) _IMEISV.identity->data[i]);
   }
   Logger::nas_mm().debug(
       "decoded 5GSMobilityIdentity IMEISV len(%d)", decoded_size);

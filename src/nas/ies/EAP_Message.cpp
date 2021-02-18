@@ -70,13 +70,13 @@ int EAP_Message::encode2buffer(uint8_t* buf, int len) {
   int size = encode_bstring(EAP, (buf + encoded_size), len - encoded_size);
   encoded_size += size;
 
-  Logger::nas_mm().debug("encoded EAP_Message len(%d)", encoded_size);
+  Logger::nas_mm().debug("encoded EAP_Message len (%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
 int EAP_Message::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
-  Logger::nas_mm().debug("decoding EAP_Message iei(0x%x)", *buf);
+  Logger::nas_mm().debug("decoding EAP_Message iei (0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
     decoded_size++;
@@ -90,8 +90,8 @@ int EAP_Message::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   decoded_size += length;
   for (int i = 0; i < length; i++) {
     Logger::nas_mm().debug(
-        "decoded EAP_Message value(0x%x)", (uint8_t*) EAP->data[i]);
+        "decoded EAP_Message value (0x%x)", (uint8_t) EAP->data[i]);
   }
-  Logger::nas_mm().debug("decoded EAP_Message len(%d)", decoded_size);
+  Logger::nas_mm().debug("decoded EAP_Message len (%d)", decoded_size);
   return decoded_size;
 }
