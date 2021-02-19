@@ -76,10 +76,11 @@ bool UpTransportLayerInformation::encode2UpTransportLayerInformation(
     return false;
   }
 
-  if (!gtpTeid->encode2GtpTeid(gtptunnel->gTP_TEID)) return false;
+  if (!gtpTeid->encode2GtpTeid(gtptunnel->gTP_TEID)) {
+    free_wrapper((void**) &gtptunnel);
+    return false;
+  }
   upTransportLayerInfo.choice.gTPTunnel = gtptunnel;
-
-  //free_wrapper((void**) &gtptunnel);
   return true;
 }
 

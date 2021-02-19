@@ -58,7 +58,7 @@ void DownlinkRANStatusTransfer::setAmfUeNgapId(unsigned long id) {
 
   ret = ASN_SEQUENCE_ADD(&DownlinkranstatustransferIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 void DownlinkRANStatusTransfer::setRanUeNgapId(uint32_t id) {
   if (!ranUeNgapId) ranUeNgapId = new RAN_UE_NGAP_ID();
@@ -81,7 +81,7 @@ void DownlinkRANStatusTransfer::setRanUeNgapId(uint32_t id) {
 
   ret = ASN_SEQUENCE_ADD(&DownlinkranstatustransferIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
@@ -91,8 +91,8 @@ void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
     ranStatusTransfer_TransparentContainer =
         new RANStatusTransferTransparentContainer();
   }
-  Ngap_DRB_ID_t* dRB_id = (Ngap_DRB_ID_t*) calloc(1, sizeof(Ngap_DRB_ID_t));
-  dRB_id                = &drb_id;
+  // Ngap_DRB_ID_t* dRB_id = (Ngap_DRB_ID_t*) calloc(1, sizeof(Ngap_DRB_ID_t));
+  // dRB_id                = &drb_id;
   COUNTValueForPDCP_SN18* UL_value =
       (COUNTValueForPDCP_SN18*) calloc(1, sizeof(COUNTValueForPDCP_SN18));
   UL_value->setvalue(ul_pcdp, ul_hfn_pdcp);
@@ -108,7 +108,7 @@ void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
   dRBStatusUL* UL = (dRBStatusUL*) calloc(1, sizeof(dRBStatusUL));
   UL->setdRBStatusUL(UL18);
   dRBSubjectItem* m_item = (dRBSubjectItem*) calloc(1, sizeof(dRBSubjectItem));
-  m_item->setdRBSubjectItem(dRB_id, UL, DL);
+  m_item->setdRBSubjectItem(&drb_id, UL, DL);
   dRBSubjectList* m_list = (dRBSubjectList*) calloc(1, sizeof(dRBSubjectList));
   m_list->setdRBSubjectItem(m_item, 1);
   ranStatusTransfer_TransparentContainer->setdRBSubject_list(m_list);
@@ -124,7 +124,7 @@ void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
                      &ie->value.choice.RANStatusTransfer_TransparentContainer);
   if (!ret) {
     cout << "encode ranstatustransfer_transparentcontainer error" << endl;
-    free_wrapper((void**) &dRB_id);
+    // free_wrapper((void**) &dRB_id);
     free_wrapper((void**) &UL_value);
     free_wrapper((void**) &DL_value);
     free_wrapper((void**) &UL18);
@@ -139,17 +139,17 @@ void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
       0) {
     cout << "encode ranstatustransfer_transparentcontainer error 2" << endl;
   }
- /* free_wrapper((void**) &dRB_id);
-  free_wrapper((void**) &UL_value);
-  free_wrapper((void**) &DL_value);
-  free_wrapper((void**) &UL18);
-  free_wrapper((void**) &DL18);
-  free_wrapper((void**) &DL);
-  free_wrapper((void**) &UL);
-  free_wrapper((void**) &m_list);
-  free_wrapper((void**) &m_item);
-  free_wrapper((void**) &ie);
-  */
+  /* free_wrapper((void**) &dRB_id);
+   free_wrapper((void**) &UL_value);
+   free_wrapper((void**) &DL_value);
+   free_wrapper((void**) &UL18);
+   free_wrapper((void**) &DL18);
+   free_wrapper((void**) &DL);
+   free_wrapper((void**) &UL);
+   free_wrapper((void**) &m_list);
+   free_wrapper((void**) &m_item);
+   free_wrapper((void**) &ie);
+   */
 }
 void DownlinkRANStatusTransfer::setmessagetype() {
   if (!DownlinkranstatustransferPDU) {
