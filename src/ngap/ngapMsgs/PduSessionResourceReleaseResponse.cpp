@@ -111,7 +111,7 @@ void PduSessionResourceReleaseResponseMsg::setAmfUeNgapId(unsigned long id) {
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceReleaseResponseIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::nas_mm().warn("Encode AMF_UE_NGAP_ID IE error");
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ void PduSessionResourceReleaseResponseMsg::setRanUeNgapId(
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceReleaseResponseIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::nas_mm().warn("Encode RAN_UE_NGAP_ID IE error");
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ void PduSessionResourceReleaseResponseMsg::setPduSessionResourceReleasedList(
   if (ret != 0)
     Logger::nas_mm().warn(
         "Encode PDUSessionResourceReleasedListRelRes IE error");
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -231,7 +231,7 @@ void PduSessionResourceReleaseResponseMsg::setUserLocationInfoNR(
       &pduSessionResourceReleaseResponseIEs->protocolIEs.list, ie);
   if (ret != 0)
     Logger::nas_mm().warn("Encode UserLocationInformation IE error");
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

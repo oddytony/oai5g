@@ -113,7 +113,7 @@ void PduSessionResourceReleaseCommandMsg::setAmfUeNgapId(unsigned long id) {
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceReleaseCommandIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::nas_mm().warn("Encode AMF_UE_NGAP_ID IE error");
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -140,7 +140,7 @@ void PduSessionResourceReleaseCommandMsg::setRanUeNgapId(
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceReleaseCommandIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::nas_mm().warn("Encode RAN_UE_NGAP_ID IE error");
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -169,7 +169,7 @@ void PduSessionResourceReleaseCommandMsg::setRanPagingPriority(
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceReleaseCommandIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::nas_mm().warn("Encode RANPagingPriority IE error");
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ void PduSessionResourceReleaseCommandMsg::setNasPdu(
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceReleaseCommandIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::nas_mm().warn("Encode NAS_PDU IE error");
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

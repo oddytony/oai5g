@@ -112,7 +112,7 @@ void PduSessionResourceSetupResponseMsg::setAmfUeNgapId(unsigned long id) {
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupResponseIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -139,7 +139,7 @@ void PduSessionResourceSetupResponseMsg::setRanUeNgapId(
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupResponseIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

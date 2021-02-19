@@ -92,7 +92,7 @@ void PduSessionResourceSetupRequestTransferIE::
       &pduSessionResourceSetupRequestTransferIEs->protocolIEs.list, ie);
   if (ret != 0)
     cout << "encode PDUSessionAggregateMaximumBitRate IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -126,7 +126,7 @@ void PduSessionResourceSetupRequestTransferIE::setUL_NG_U_UP_TNL_Information(
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupRequestTransferIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UPTransportLayerInformation IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ void PduSessionResourceSetupRequestTransferIE::setDataForwardingNotPossible() {
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupRequestTransferIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode DataForwardingNotPossible IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -184,7 +184,7 @@ void PduSessionResourceSetupRequestTransferIE::setPduSessionType(
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupRequestTransferIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode PDUSessionType IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -229,7 +229,7 @@ void PduSessionResourceSetupRequestTransferIE::setSecurityIndication(
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupRequestTransferIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode SecurityIndication IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -271,7 +271,7 @@ void PduSessionResourceSetupRequestTransferIE::setSecurityIndication(
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupRequestTransferIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode SecurityIndication IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -299,7 +299,7 @@ void PduSessionResourceSetupRequestTransferIE::setNetworkInstance(long value) {
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupRequestTransferIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode NetworkInstance IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -481,7 +481,7 @@ void PduSessionResourceSetupRequestTransferIE::setQosFlowSetupRequestList(
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupRequestTransferIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode QosFlowSetupRequestList IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

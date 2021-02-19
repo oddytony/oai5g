@@ -268,7 +268,7 @@ void HandoverRequest::setAmfUeNgapId(unsigned long id) {
 
   ret = ASN_SEQUENCE_ADD(&handoverRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 void HandoverRequest::setHandoverType(long type)  // 0--intra5gs
@@ -282,7 +282,7 @@ void HandoverRequest::setHandoverType(long type)  // 0--intra5gs
   ie->value.choice.HandoverType = type;
   int ret = ASN_SEQUENCE_ADD(&handoverRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode HandoverType IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 void HandoverRequest::setCause(Ngap_Cause_PR m_causePresent, long value)  //
@@ -299,7 +299,7 @@ void HandoverRequest::setCause(Ngap_Cause_PR m_causePresent, long value)  //
   cause->encode2Cause(&(ie->value.choice.Cause));
   int ret = ASN_SEQUENCE_ADD(&handoverRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode Cause IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 void HandoverRequest::setUEAggregateMaximumBitRate(
@@ -321,7 +321,7 @@ void HandoverRequest::setUEAggregateMaximumBitRate(
 
   int ret = ASN_SEQUENCE_ADD(&handoverRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UEAggregateMaximumBitRate IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 void HandoverRequest::setUESecurityCapabilities(
     uint16_t m_NR_EncryptionAlgs, uint16_t m_NR_IntegrityProtectionAlgs,
@@ -343,7 +343,7 @@ void HandoverRequest::setUESecurityCapabilities(
 
   int ret = ASN_SEQUENCE_ADD(&handoverRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UESecurityCapabilities IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 void HandoverRequest::setGUAMI(
@@ -361,7 +361,7 @@ void HandoverRequest::setGUAMI(
 
   int ret = ASN_SEQUENCE_ADD(&handoverRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode GUAMI IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 void HandoverRequest::setAllowedNSSAI(std::vector<S_NSSAI> list) {
   if (!allowedNSSAI) allowedNSSAI = new Ngap_AllowedNSSAI_t();
@@ -385,7 +385,7 @@ void HandoverRequest::setAllowedNSSAI(std::vector<S_NSSAI> list) {
   ie->value.choice.AllowedNSSAI = *allowedNSSAI;
   int ret = ASN_SEQUENCE_ADD(&handoverRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AllowedNSSAI IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 void HandoverRequest::setSecurityContext(long count, uint8_t* buffer) {
   if (!SecurityContext) SecurityContext = new Ngap_SecurityContext_t();
@@ -403,7 +403,7 @@ void HandoverRequest::setSecurityContext(long count, uint8_t* buffer) {
   ie->value.choice.SecurityContext = *SecurityContext;
   int ret = ASN_SEQUENCE_ADD(&handoverRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode SecurityContext IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 void HandoverRequest::setPduSessionResourceSetupList(
@@ -446,7 +446,7 @@ void HandoverRequest::setPduSessionResourceSetupList(
   ret = ASN_SEQUENCE_ADD(&handoverRequestIEs->protocolIEs.list, ie);
   if (ret != 0)
     cout << "encode PDUSessionResourceSetupListSUReq IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 void HandoverRequest::setSourceToTarget_TransparentContainer(
@@ -465,7 +465,7 @@ void HandoverRequest::setSourceToTarget_TransparentContainer(
   int ret = ASN_SEQUENCE_ADD(&handoverRequestIEs->protocolIEs.list, ie);
   if (ret != 0)
     cout << "encode SourceToTarget_TransparentContainer IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 void HandoverRequest::setMobilityRestrictionList(PlmnId* m_plmnId) {
   if (!mobilityrestrictionlist) {
@@ -481,7 +481,7 @@ void HandoverRequest::setMobilityRestrictionList(PlmnId* m_plmnId) {
       &(ie->value.choice.MobilityRestrictionList));
   int ret = ASN_SEQUENCE_ADD(&handoverRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode MobilityRestrictionList IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 }  // namespace ngap

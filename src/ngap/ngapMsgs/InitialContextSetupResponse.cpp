@@ -109,7 +109,7 @@ void InitialContextSetupResponseMsg::setAmfUeNgapId(unsigned long id) {
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupResponseIEs->protocolIEs.list, ie);
   if (ret != 0) std::cout << "Encode AMF_UE_NGAP_ID IE error" << std::endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -134,7 +134,7 @@ void InitialContextSetupResponseMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupResponseIEs->protocolIEs.list, ie);
   if (ret != 0) std::cout << "Encode RAN_UE_NGAP_ID IE error" << std::endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -180,7 +180,7 @@ void InitialContextSetupResponseMsg::setPduSessionResourceSetupResponseList(
   if (ret != 0)
     std::cout << "Encode PDUSessionResourceSetupListCxtRes IE error"
               << std::endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -231,7 +231,7 @@ void InitialContextSetupResponseMsg::setPduSessionResourceFailedToSetupList(
   if (ret != 0)
     std::cout << "Encode PDUSessionResourceFailedToSetupListCxtRes IE error"
               << std::endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

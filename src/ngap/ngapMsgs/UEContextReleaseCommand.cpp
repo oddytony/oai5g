@@ -90,7 +90,7 @@ void UEContextReleaseCommandMsg::setAmfUeNgapId(unsigned long id) {
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UE_NGAP_IDs IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ void UEContextReleaseCommandMsg::setUeNgapIdPair(
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UE_NGAP_IDs IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

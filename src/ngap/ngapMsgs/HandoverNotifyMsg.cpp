@@ -182,7 +182,7 @@ void HandoverNotifyMsg::setUserLocationInfoNR(
 
   ret = ASN_SEQUENCE_ADD(&handoverNotifyIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UserLocationInformation IE error" << endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 uint32_t HandoverNotifyMsg::getRanUeNgapId() {
   return ranUeNgapId->getRanUeNgapId();

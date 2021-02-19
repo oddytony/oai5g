@@ -75,12 +75,13 @@ bool SecurityIndication::encode2SecurityIndication(
     if (!maxIPDataRate) return false;
     if (!maximumIntegrityProtectedDataRate
              ->encode2MaximumIntegrityProtectedDataRate(*maxIPDataRate)) {
+    	free_wrapper((void**) &maxIPDataRate);
       return false;
-      free_wrapper((void**) &maxIPDataRate);
+
     }
 
     securityIndication->maximumIntegrityProtectedDataRate = maxIPDataRate;
-    free_wrapper((void**) &maxIPDataRate);
+    //free_wrapper((void**) &maxIPDataRate);
   }
 
   return true;

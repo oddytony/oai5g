@@ -104,7 +104,7 @@ void UplinkNASTransportMsg::setAmfUeNgapId(unsigned long id) {
 
   ret = ASN_SEQUENCE_ADD(&uplinkNASTransportIEs->protocolIEs.list, ie);
   if (ret != 0) std::cout << "Encode AMF_UE_NGAP_ID IE error" << std::endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -127,7 +127,7 @@ void UplinkNASTransportMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
 
   ret = ASN_SEQUENCE_ADD(&uplinkNASTransportIEs->protocolIEs.list, ie);
   if (ret != 0) std::cout << "Encode RAN_UE_NGAP_ID IE error" << std::endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -151,7 +151,7 @@ void UplinkNASTransportMsg::setNasPdu(uint8_t* nas, size_t sizeofnas) {
 
   ret = ASN_SEQUENCE_ADD(&uplinkNASTransportIEs->protocolIEs.list, ie);
   if (ret != 0) std::cout << "Encode NAS_PDU IE error" << std::endl;
-  free_wrapper((void**) &ie);
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ void UplinkNASTransportMsg::setUserLocationInfoNR(
   ret = ASN_SEQUENCE_ADD(&uplinkNASTransportIEs->protocolIEs.list, ie);
   if (ret != 0)
     std::cout << "Encode UserLocationInformation IE error" << std::endl;
-  free_wrapper((void**) &ie);
+ // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
