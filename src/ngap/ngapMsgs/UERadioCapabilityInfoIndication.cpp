@@ -34,6 +34,7 @@ extern "C" {
 #include "per_encoder.h"
 #include "per_decoder.h"
 #include "constraints.h"
+#include "dynamic_memory_check.h"
 }
 
 #include <iostream>
@@ -104,12 +105,14 @@ void UeRadioCapabilityInfoIndicationMsg::setAmfUeNgapId(unsigned long id) {
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &ueRadioCapabilityInfoIndicationIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -129,12 +132,14 @@ void UeRadioCapabilityInfoIndicationMsg::setRanUeNgapId(
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &ueRadioCapabilityInfoIndicationIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -156,12 +161,14 @@ void UeRadioCapabilityInfoIndicationMsg::setUERadioCapability(
       ie->value.choice.UERadioCapability);
   if (!ret) {
     cout << "encode UERadioCapability IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &ueRadioCapabilityInfoIndicationIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UERadioCapability IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -197,12 +204,14 @@ void UeRadioCapabilityInfoIndicationMsg::setUERadioCapabilityForPaging(
       &ie->value.choice.UERadioCapabilityForPaging);
   if (!ret) {
     cout << "encode UERadioCapabilityForPaging IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &ueRadioCapabilityInfoIndicationIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UERadioCapabilityForPaging IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

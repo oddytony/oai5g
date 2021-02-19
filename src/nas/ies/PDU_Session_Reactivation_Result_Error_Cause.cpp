@@ -33,7 +33,10 @@ using namespace nas;
 //------------------------------------------------------------------------------
 PDU_Session_Reactivation_Result_Error_Cause::
     PDU_Session_Reactivation_Result_Error_Cause(uint8_t iei) {
-  _iei = iei;
+  _iei       = iei;
+  _value     = 0;
+  SESSION_ID = 0;
+  length     = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -48,7 +51,12 @@ PDU_Session_Reactivation_Result_Error_Cause::
 
 //------------------------------------------------------------------------------
 PDU_Session_Reactivation_Result_Error_Cause::
-    PDU_Session_Reactivation_Result_Error_Cause() {}
+    PDU_Session_Reactivation_Result_Error_Cause() {
+  _iei       = 0;
+  _value     = 0;
+  SESSION_ID = 0;
+  length     = 0;
+}
 
 //------------------------------------------------------------------------------
 PDU_Session_Reactivation_Result_Error_Cause::

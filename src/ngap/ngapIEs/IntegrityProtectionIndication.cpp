@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-IntegrityProtectionIndication::IntegrityProtectionIndication() {}
+IntegrityProtectionIndication::IntegrityProtectionIndication() {
+  indication = 0;
+}
 
 //------------------------------------------------------------------------------
 IntegrityProtectionIndication::~IntegrityProtectionIndication() {}

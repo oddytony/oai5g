@@ -32,7 +32,8 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 IMEISV_Request::IMEISV_Request(uint8_t iei) {
-  _iei = iei;
+  _iei   = iei;
+  _value = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -42,7 +43,7 @@ IMEISV_Request::IMEISV_Request(const uint8_t iei, uint8_t value) {
 }
 
 //------------------------------------------------------------------------------
-IMEISV_Request::IMEISV_Request() {}
+IMEISV_Request::IMEISV_Request() : _iei(), _value() {}
 
 //------------------------------------------------------------------------------
 IMEISV_Request::~IMEISV_Request() {}

@@ -34,13 +34,18 @@ extern "C" {
 #include "per_encoder.h"
 #include "per_decoder.h"
 #include "constraints.h"
+#include "dynamic_memory_check.h"
 }
 using namespace ngap;
 using namespace std;
 
 //------------------------------------------------------------------------------
 UEContextReleaseCompleteMsg::UEContextReleaseCompleteMsg() {
-  pdu = NULL;
+  pdu                     = nullptr;
+  ies                     = nullptr;
+  amfUeNgapId             = nullptr;
+  ranUeNgapId             = nullptr;
+  userLocationInformation = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -75,10 +80,12 @@ void UEContextReleaseCompleteMsg::setAmfUeNgapId(unsigned long id) {
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -95,10 +102,12 @@ void UEContextReleaseCompleteMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -138,10 +147,12 @@ void UEContextReleaseCompleteMsg::setUserLocationInfoNR(
       &ie->value.choice.UserLocationInformation);
   if (!ret) {
     cout << "encode UserLocationInformation IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UserLocationInformation IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

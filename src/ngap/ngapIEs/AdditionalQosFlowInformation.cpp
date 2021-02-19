@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-AdditionalQosFlowInformation::AdditionalQosFlowInformation() {}
+AdditionalQosFlowInformation::AdditionalQosFlowInformation() {
+  additional = 0;
+}
 
 //------------------------------------------------------------------------------
 AdditionalQosFlowInformation::~AdditionalQosFlowInformation() {}

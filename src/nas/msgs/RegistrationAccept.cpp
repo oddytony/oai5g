@@ -35,34 +35,35 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 RegistrationAccept::RegistrationAccept() {
-  plain_header                                   = NULL;
-  ie_5gs_registration_result                     = NULL;
-  ie_5g_guti                                     = NULL;
-  ie_equivalent_plmns                            = NULL;
-  ie_allowed_nssai                               = NULL;
-  ie_rejected_nssai                              = NULL;
-  ie_configured_nssai                            = NULL;
-  ie_5gs_network_feature_support                 = NULL;
-  ie_PDU_session_status                          = NULL;
-  ie_pdu_session_reactivation_result             = NULL;
-  ie_pdu_session_reactivation_result_error_cause = NULL;
-  ie_MICO_indicationl                            = NULL;
-  ie_network_slicing_indication                  = NULL;
-  ie_T3512_value                                 = NULL;
-  ie_Non_3GPP_de_registration_timer_value        = NULL;
-  ie_T3502_value                                 = NULL;
-  ie_sor_transparent_container                   = NULL;
-  ie_eap_message                                 = NULL;
-  ie_nssai_inclusion_mode                        = NULL;
-  ie_negotiated_drx_parameters                   = NULL;
-  ie_non_3gpp_nw_policies                        = NULL;
-  ie_eps_bearer_context_status                   = NULL;
-  ie_extended_drx_parameters                     = NULL;
-  ie_T3447_value                                 = NULL;
-  ie_T3448_value                                 = NULL;
-  ie_T3324_value                                 = NULL;
-  ie_ue_radio_capability_id                      = NULL;
-  ie_pending_nssai                               = NULL;
+  plain_header                                   = nullptr;
+  ie_5gs_registration_result                     = nullptr;
+  ie_5g_guti                                     = nullptr;
+  ie_equivalent_plmns                            = nullptr;
+  ie_allowed_nssai                               = nullptr;
+  ie_rejected_nssai                              = nullptr;
+  ie_configured_nssai                            = nullptr;
+  ie_5gs_network_feature_support                 = nullptr;
+  ie_PDU_session_status                          = nullptr;
+  ie_pdu_session_reactivation_result             = nullptr;
+  ie_pdu_session_reactivation_result_error_cause = nullptr;
+  ie_MICO_indicationl                            = nullptr;
+  ie_network_slicing_indication                  = nullptr;
+  ie_T3512_value                                 = nullptr;
+  ie_Non_3GPP_de_registration_timer_value        = nullptr;
+  ie_T3502_value                                 = nullptr;
+  ie_sor_transparent_container                   = nullptr;
+  ie_eap_message                                 = nullptr;
+  ie_nssai_inclusion_mode                        = nullptr;
+  ie_negotiated_drx_parameters                   = nullptr;
+  ie_non_3gpp_nw_policies                        = nullptr;
+  ie_eps_bearer_context_status                   = nullptr;
+  ie_extended_drx_parameters                     = nullptr;
+  ie_T3447_value                                 = nullptr;
+  ie_T3448_value                                 = nullptr;
+  ie_T3324_value                                 = nullptr;
+  ie_ue_radio_capability_id                      = nullptr;
+  ie_pending_nssai                               = nullptr;
+  ie_tai_list                                    = nullptr;
 }
 
 //------------------------------------------------------------------------------

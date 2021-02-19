@@ -58,8 +58,8 @@ bool NR_CGI::encode2NR_CGI(Ngap_NR_CGI_t* nr_cgi) {
 
 //------------------------------------------------------------------------------
 bool NR_CGI::decodefromNR_CGI(Ngap_NR_CGI_t* nr_cgi) {
-  plmnId         = new PlmnId();
-  nRCellIdentity = new NRCellIdentity();
+  if (plmnId == nullptr) plmnId = new PlmnId();
+  if (nRCellIdentity == nullptr) nRCellIdentity = new NRCellIdentity();
   if (!plmnId->decodefromoctetstring(nr_cgi->pLMNIdentity)) return false;
   if (!nRCellIdentity->decodefrombitstring(nr_cgi->nRCellIdentity))
     return false;

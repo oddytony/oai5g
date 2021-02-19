@@ -89,8 +89,8 @@ int MICO_Indication::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
     SPRTI = octet & 0x02;
     RAAI  = octet & 0x01;
     Logger::nas_mm().debug(
-        "decoded MICO_Indication iei (0x%x) sprti (0x%x) raai (0x%x)", iei, SPRTI,
-        RAAI);
+        "decoded MICO_Indication iei (0x%x) sprti (0x%x) raai (0x%x)", iei,
+        SPRTI, RAAI);
     return 1;
   }
 }

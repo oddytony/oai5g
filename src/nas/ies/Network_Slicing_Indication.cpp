@@ -32,7 +32,9 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 Network_Slicing_Indication::Network_Slicing_Indication(uint8_t iei) {
-  _iei = iei;
+  _iei  = iei;
+  DCNI  = false;
+  NSSCI = false;
 }
 
 //------------------------------------------------------------------------------
@@ -44,7 +46,8 @@ Network_Slicing_Indication::Network_Slicing_Indication(
 }
 
 //------------------------------------------------------------------------------
-Network_Slicing_Indication::Network_Slicing_Indication() {}
+Network_Slicing_Indication::Network_Slicing_Indication()
+    : _iei(), DCNI(), NSSCI() {}
 
 //------------------------------------------------------------------------------
 Network_Slicing_Indication::~Network_Slicing_Indication() {}
@@ -71,7 +74,8 @@ bool Network_Slicing_Indication::getNSSCI() {
 
 //------------------------------------------------------------------------------
 int Network_Slicing_Indication::encode2buffer(uint8_t* buf, int len) {
-  Logger::nas_mm().debug("Encoding Network_Slicing_Indication iei (0x%x)", _iei);
+  Logger::nas_mm().debug(
+      "Encoding Network_Slicing_Indication iei (0x%x)", _iei);
   if (len < 1) {
     //	Logger::nas_mm().error("len is less than %d", length);
     return 0;

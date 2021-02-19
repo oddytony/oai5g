@@ -34,6 +34,7 @@ extern "C" {
 #include "per_encoder.h"
 #include "per_decoder.h"
 #include "constraints.h"
+#include "dynamic_memory_check.h"
 }
 
 #include <iostream>
@@ -97,11 +98,13 @@ void UplinkNASTransportMsg::setAmfUeNgapId(unsigned long id) {
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     std::cout << "Encode AMF_UE_NGAP_ID IE error" << std::endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&uplinkNASTransportIEs->protocolIEs.list, ie);
   if (ret != 0) std::cout << "Encode AMF_UE_NGAP_ID IE error" << std::endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -118,11 +121,13 @@ void UplinkNASTransportMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     std::cout << "Encode RAN_UE_NGAP_ID IE error" << std::endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&uplinkNASTransportIEs->protocolIEs.list, ie);
   if (ret != 0) std::cout << "Encode RAN_UE_NGAP_ID IE error" << std::endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -140,11 +145,13 @@ void UplinkNASTransportMsg::setNasPdu(uint8_t* nas, size_t sizeofnas) {
   int ret = nasPdu->encode2octetstring(ie->value.choice.NAS_PDU);
   if (!ret) {
     std::cout << "Encode NAS_PDU IE error" << std::endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&uplinkNASTransportIEs->protocolIEs.list, ie);
   if (ret != 0) std::cout << "Encode NAS_PDU IE error" << std::endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -183,12 +190,14 @@ void UplinkNASTransportMsg::setUserLocationInfoNR(
       &ie->value.choice.UserLocationInformation);
   if (!ret) {
     std::cout << "Encode UserLocationInformation IE error" << std::endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&uplinkNASTransportIEs->protocolIEs.list, ie);
   if (ret != 0)
     std::cout << "Encode UserLocationInformation IE error" << std::endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

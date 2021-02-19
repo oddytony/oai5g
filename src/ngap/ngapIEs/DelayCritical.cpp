@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-DelayCritical::DelayCritical() {}
+DelayCritical::DelayCritical() {
+  delaycritical = 0;
+}
 
 //------------------------------------------------------------------------------
 DelayCritical::~DelayCritical() {}

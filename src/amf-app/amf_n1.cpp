@@ -596,7 +596,7 @@ void amf_n1::service_request_handle(
         "Cannot get pdu_session_context with SUPI %s", supi.c_str());
   }
 
-  //TODO: is_supi_to_pdu_ctx should be removed
+  // TODO: is_supi_to_pdu_ctx should be removed
   if (!amf_n11_inst->is_supi_to_pdu_ctx(supi) || !psc.get()->isn2sm_avaliable) {
     Logger::amf_n1().error(
         "Cannot get pdu session information with supi (%s)", supi.c_str());
@@ -943,7 +943,9 @@ void amf_n1::registration_request_handle(
 
 //------------------------------------------------------------------------------
 // authentication vector handlers
-bool amf_n1::generate_authentication_vector() {return true;}
+bool amf_n1::generate_authentication_vector() {
+  return true;
+}
 
 // context management functions
 //------------------------------------------------------------------------------
@@ -1070,7 +1072,7 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
     }
   } else if (nc.get()->is_5g_guti_present) {
     Logger::amf_n1().debug("Start to run UE Identification Request procedure");
-    nc.get()->is_auth_vectors_present = false;
+    nc.get()->is_auth_vectors_present   = false;
     std::unique_ptr<IdentityRequest> ir = std::make_unique<IdentityRequest>();
     ir->setHeader(PLAIN_5GS_MSG);
     ir->set_5GS_Identity_Type(SUCI);
@@ -1731,7 +1733,9 @@ bool amf_n1::start_security_mode_control_procedure(
     nc.get()->is_current_security_available = true;
   }
 
-  SecurityModeCommand* smc = new SecurityModeCommand();
+  // SecurityModeCommand* smc = new SecurityModeCommand();
+  std::unique_ptr<SecurityModeCommand> smc =
+      std::make_unique<SecurityModeCommand>();
   smc->setHeader(PLAIN_5GS_MSG);
   smc->setNAS_Security_Algorithms(amf_nea, amf_nia);
   Logger::amf_n1().debug("Encoded ngKSI 0x%x", nc.get()->ngKsi);
@@ -1754,6 +1758,7 @@ bool amf_n1::start_security_mode_control_procedure(
   itti_send_dl_nas_buffer_to_task_n2(
       intProtctedNas, nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id);
   // secu_ctx->dl_count.seq_num ++;
+  free_wrapper((void**) &data);
   return true;
 }
 
@@ -1955,8 +1960,9 @@ void amf_n1::encode_nas_message_protected(
     } break;
 
     case INTEGRITY_PROTECTED_WITH_NEW_SECU_CTX: {
-      if (!nsc || !is_secu_ctx_new) {
+      if ((nsc == nullptr) || !is_secu_ctx_new) {
         Logger::amf_n1().error("Security context is too old");
+        return;
       }
       protected_nas_buf[0] = EPD_5GS_MM_MSG;
       protected_nas_buf[1] = INTEGRITY_PROTECTED_WITH_NEW_SECU_CTX;
@@ -1977,7 +1983,6 @@ void amf_n1::encode_nas_message_protected(
 
     case INTEGRITY_PROTECTED_AND_CIPHERED_WITH_NEW_SECU_CTX: {
     } break;
-
   }
   protected_nas = blk2bstr(protected_nas_buf, encoded_size);
   nsc->dl_count.seq_num++;
@@ -1987,7 +1992,7 @@ void amf_n1::encode_nas_message_protected(
 bool amf_n1::nas_message_integrity_protected(
     nas_secu_ctx* nsc, uint8_t direction, uint8_t* input_nas, int input_nas_len,
     uint32_t& mac32) {
-
+  if (nsc == nullptr) return false;
   uint32_t count = 0x00000000;
   if (direction)
     count = 0x00000000 | ((nsc->dl_count.overflow & 0x0000ffff) << 8) |
@@ -2042,7 +2047,6 @@ bool amf_n1::nas_message_integrity_protected(
       Logger::amf_n1().debug("Result for NIA2, mac32: 0x%x", mac32);
       return true;
     } break;
-
   }
   return true;
 }

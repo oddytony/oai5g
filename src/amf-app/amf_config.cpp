@@ -64,6 +64,34 @@ amf_config::amf_config() {
   enable_smf_selection      = false;
   enable_external_ausf      = false;
   enable_external_udm       = false;
+  instance                  = 0;
+  n2                        = {};
+  n11                       = {};
+  statistics_interval       = 0;
+  guami                     = {};
+  guami_list                = {};
+  relativeAMFCapacity       = 0;
+  plmn_list                 = {};
+  auth_conf auth_para       = {};
+  nas_cfg                   = {};
+  smf_pool                  = {};
+  enable_nf_registration    = false;
+  enable_smf_selection      = false;
+  enable_external_ausf      = false;
+  enable_external_udm       = false;
+
+  struct {
+    struct in_addr ipv4_addr;
+    unsigned int port;
+    std::string api_version;
+  } nrf_addr;
+
+  struct {
+    struct in_addr ipv4_addr;
+    unsigned int port;
+    std::string api_version;
+  } ausf_addr;
+
   // TODO:
 }
 
@@ -385,66 +413,50 @@ void amf_config::display() {
   Logger::config().info(
       "======================    AMF   =====================");
   Logger::config().info("Configuration AMF:");
-  Logger::config().info(
-      "- Instance ...........................................: %d", instance);
-  Logger::config().info(
-      "- PID dir ............................................: %s",
-      pid_dir.c_str());
-  Logger::config().info(
-      "- AMF NAME............................................: %s",
-      AMF_Name.c_str());
+  Logger::config().info("- Instance ................: %d", instance);
+  Logger::config().info("- PID dir .................: %s", pid_dir.c_str());
+  Logger::config().info("- AMF NAME.................: %s", AMF_Name.c_str());
   Logger::config().info(
       "- GUAMI (MCC, MNC, Region ID, AMF Set ID, AMF pointer): ");
   Logger::config().info(
       "   (%s, %s, %s, %s, %s )", guami.mcc.c_str(), guami.mnc.c_str(),
       guami.regionID.c_str(), guami.AmfSetID.c_str(), guami.AmfPointer.c_str());
-  Logger::config().info(
-      "- SERVED_GUAMI_LIST...................................: ");
+  Logger::config().info("- Served_Guami_List .......: ");
   for (int i = 0; i < guami_list.size(); i++) {
     Logger::config().info(
         "   (%s, %s, %s , %s, %s)", guami_list[i].mcc.c_str(),
         guami_list[i].mnc.c_str(), guami_list[i].regionID.c_str(),
         guami_list[i].AmfSetID.c_str(), guami_list[i].AmfPointer.c_str());
   }
-  Logger::config().info(
-      "- RELATIVE_CAPACITY...................................: %d",
-      relativeAMFCapacity);
-  Logger::config().info(
-      "- PLMN_SUPPORT_LIST...................................: ");
+  Logger::config().info("- Relative Capacity .......: %d", relativeAMFCapacity);
+  Logger::config().info("- PLMN Support ............: ");
   for (int i = 0; i < plmn_list.size(); i++) {
     Logger::config().info(
-        "   (MCC %s, MNC %s) ", plmn_list[i].mcc.c_str(),
+        "       MCC, MNC ...........: %s, %s", plmn_list[i].mcc.c_str(),
         plmn_list[i].mnc.c_str());
-    Logger::config().info("   TAC: %d", plmn_list[i].tac);
-    Logger::config().info(
-        "   SLICE_SUPPORT_LIST (SST, SD) ....................: ");
+    Logger::config().info("       TAC ................: %d", plmn_list[i].tac);
+    Logger::config().info("       Slice Support ......:");
     for (int j = 0; j < plmn_list[i].slice_list.size(); j++) {
       Logger::config().info(
-          "     (%s, %s) ", plmn_list[i].slice_list[j].sST.c_str(),
+          "           SST, SD ........: %s, %s",
+          plmn_list[i].slice_list[j].sST.c_str(),
           plmn_list[i].slice_list[j].sD.c_str());
     }
   }
   Logger::config().info(
-      "- Emergency Support................... ...............: %s",
-      is_emergency_support.c_str());
+      "- Emergency Support .......: %s", is_emergency_support.c_str());
   Logger::config().info(
-      "- MYSQL Server Addr...................................: %s",
-      auth_para.mysql_server.c_str());
+      "- MySQL Server Addr .......: %s", auth_para.mysql_server.c_str());
   Logger::config().info(
-      "- MYSQL user .........................................: %s",
-      auth_para.mysql_user.c_str());
+      "- MySQL user ..............: %s", auth_para.mysql_user.c_str());
   Logger::config().info(
-      "- MYSQL pass .........................................: %s",
-      auth_para.mysql_pass.c_str());
+      "- MySQL pass ..............: %s", auth_para.mysql_pass.c_str());
   Logger::config().info(
-      "- MYSQL db ...........................................: %s",
-      auth_para.mysql_db.c_str());
+      "- MySQL DB ................: %s", auth_para.mysql_db.c_str());
   Logger::config().info(
-      "- operator key .......................................: %s",
-      auth_para.operator_key.c_str());
+      "- operator key ............: %s", auth_para.operator_key.c_str());
   Logger::config().info(
-      "- random .............................................: %s",
-      auth_para.random.c_str());
+      "- random ..................: %s", auth_para.random.c_str());
 
   Logger::config().info("- N2 Networking:");
   Logger::config().info("    iface .................: %s", n2.if_name.c_str());
@@ -456,24 +468,25 @@ void amf_config::display() {
   Logger::config().info(
       "    ip ....................: %s", inet_ntoa(n11.addr4));
   Logger::config().info("    port ..................: %d", n11.port);
-  Logger::config().info("    API version............: %s", sbi_api_version.c_str());
+  Logger::config().info(
+      "    API version............: %s", sbi_api_version.c_str());
 
   if (enable_nf_registration or enable_smf_selection) {
     Logger::config().info("- NRF:");
     Logger::config().info(
-        "    IP addr ..............: %s", inet_ntoa(nrf_addr.ipv4_addr));
-    Logger::config().info("    Port .................: %d", nrf_addr.port);
+        "    IP addr ...............: %s", inet_ntoa(nrf_addr.ipv4_addr));
+    Logger::config().info("    Port ..................: %d", nrf_addr.port);
     Logger::config().info(
-        "    Api version ..........: %s", nrf_addr.api_version.c_str());
+        "    Api version ...........: %s", nrf_addr.api_version.c_str());
   }
 
   if (enable_external_ausf) {
     Logger::config().info("- AUSF:");
     Logger::config().info(
-        "    IP addr ..............: %s", inet_ntoa(ausf_addr.ipv4_addr));
-    Logger::config().info("    Port .................: %d", ausf_addr.port);
+        "    IP addr ...............: %s", inet_ntoa(ausf_addr.ipv4_addr));
+    Logger::config().info("    Port ..................: %d", ausf_addr.port);
     Logger::config().info(
-        "    Api version ..........: %s", ausf_addr.api_version.c_str());
+        "    Api version ...........: %s", ausf_addr.api_version.c_str());
   }
 
   Logger::config().info("- Remote SMF Pool.........: ");
@@ -491,13 +504,13 @@ void amf_config::display() {
 
   Logger::config().info("- Supported Features:");
   Logger::config().info(
-      "    NF Registration........: %s", enable_nf_registration ? "Yes" : "No");
+      "    NF Registration .......: %s", enable_nf_registration ? "Yes" : "No");
   Logger::config().info(
-      "    SMF Selection..........: %s", enable_smf_selection ? "Yes" : "No");
+      "    SMF Selection .........: %s", enable_smf_selection ? "Yes" : "No");
   Logger::config().info(
-      "    External AUSF..........: %s", enable_external_ausf ? "Yes" : "No");
+      "    External AUSF .........: %s", enable_external_ausf ? "Yes" : "No");
   Logger::config().info(
-      "    External UDM..........: %s", enable_external_udm ? "Yes" : "No");
+      "    External UDM ..........: %s", enable_external_udm ? "Yes" : "No");
 }
 
 //------------------------------------------------------------------------------

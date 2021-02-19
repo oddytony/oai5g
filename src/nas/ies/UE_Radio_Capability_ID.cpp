@@ -32,7 +32,8 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 UE_Radio_Capability_ID::UE_Radio_Capability_ID(uint8_t iei) {
-  _iei = iei;
+  _iei   = iei;
+  _value = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -43,7 +44,10 @@ UE_Radio_Capability_ID::UE_Radio_Capability_ID(
 }
 
 //------------------------------------------------------------------------------
-UE_Radio_Capability_ID::UE_Radio_Capability_ID() {}
+UE_Radio_Capability_ID::UE_Radio_Capability_ID() {
+  _iei   = 0;
+  _value = 0;
+}
 
 //------------------------------------------------------------------------------
 UE_Radio_Capability_ID::~UE_Radio_Capability_ID() {}

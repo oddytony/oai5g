@@ -30,7 +30,10 @@
 #include <fstream>
 #include "sha256.hpp"
 
-Sha256::Sha256() {}
+Sha256::Sha256() : m_block(), m_h() {
+  m_tot_len = 0;
+  m_len     = 0;
+}
 Sha256::~Sha256() {}
 
 const unsigned int Sha256::sha256_k[64] =  // UL = uint32

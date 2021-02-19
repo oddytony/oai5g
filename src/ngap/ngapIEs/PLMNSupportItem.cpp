@@ -39,8 +39,9 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 PLMNSupportItem::PLMNSupportItem() {
-  plmn   = NULL;
-  snssai = NULL;
+  plmn        = nullptr;
+  snssai      = nullptr;
+  numOfSnssai = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -71,7 +72,7 @@ bool PLMNSupportItem::encode2PLMNSupportItem(
 //------------------------------------------------------------------------------
 bool PLMNSupportItem::decodefromPLMNSupportItem(
     Ngap_PLMNSupportItem_t* plmnsupportItem) {
-  plmn = new PlmnId();
+  if (plmn == nullptr) plmn = new PlmnId();
   if (!plmn->decodefromoctetstring(plmnsupportItem->pLMNIdentity)) return false;
   numOfSnssai = plmnsupportItem->sliceSupportList.list.count;
   snssai      = new S_NSSAI[numOfSnssai]();

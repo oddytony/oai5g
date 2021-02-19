@@ -68,7 +68,7 @@ bool PDUSessionResourceSetupItemSURes::
     decodefromPDUSessionResourceSetupItemSURes(
         Ngap_PDUSessionResourceSetupItemSURes_t*
             pduSessionResourceSetupItemSURes) {
-  pDUSessionID = new PDUSessionID();
+  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
   if (!pDUSessionID->decodefromPDUSessionID(
           pduSessionResourceSetupItemSURes->pDUSessionID))
     return false;

@@ -30,8 +30,9 @@
 using namespace nas;
 
 //------------------------------------------------------------------------------
-EPS_NAS_Message_Container::EPS_NAS_Message_Container(uint8_t iei) {
-  _iei = iei;
+EPS_NAS_Message_Container::EPS_NAS_Message_Container(uint8_t iei) : _value() {
+  _iei   = iei;
+  length = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -43,7 +44,8 @@ EPS_NAS_Message_Container::EPS_NAS_Message_Container(
 }
 
 //------------------------------------------------------------------------------
-EPS_NAS_Message_Container::EPS_NAS_Message_Container() {}
+EPS_NAS_Message_Container::EPS_NAS_Message_Container()
+    : _iei(), length(), _value() {}
 
 //------------------------------------------------------------------------------
 EPS_NAS_Message_Container::~EPS_NAS_Message_Container() {}

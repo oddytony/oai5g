@@ -29,6 +29,11 @@
 #include "SecurityIndication.hpp"
 
 #include <iostream>
+
+extern "C" {
+#include "dynamic_memory_check.h"
+}
+
 using namespace std;
 
 namespace ngap {
@@ -69,9 +74,13 @@ bool SecurityIndication::encode2SecurityIndication(
             1, sizeof(Ngap_MaximumIntegrityProtectedDataRate_t));
     if (!maxIPDataRate) return false;
     if (!maximumIntegrityProtectedDataRate
-             ->encode2MaximumIntegrityProtectedDataRate(*maxIPDataRate))
+             ->encode2MaximumIntegrityProtectedDataRate(*maxIPDataRate)) {
       return false;
+      free_wrapper((void**) &maxIPDataRate);
+    }
+
     securityIndication->maximumIntegrityProtectedDataRate = maxIPDataRate;
+    free_wrapper((void**) &maxIPDataRate);
   }
 
   return true;

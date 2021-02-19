@@ -35,8 +35,16 @@
 using namespace nas;
 
 //------------------------------------------------------------------------------
-void _5GSMobilityIdentity::setIEI(uint8_t _iei) {
-  iei = _iei;
+_5GSMobilityIdentity::_5GSMobilityIdentity() {
+  iei              = 0;
+  _5g_guti         = nullptr;
+  imei_imeisv      = nullptr;
+  supi_format_imsi = nullptr;
+  _5g_s_tmsi       = nullptr;
+  _IMEISV          = {};
+  is_no_identity   = false;
+  length           = 0;
+  typeOfIdentity   = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -49,6 +57,45 @@ _5GSMobilityIdentity::_5GSMobilityIdentity(
   _5g_s_tmsi->amf_set_id  = amfSetId;
   _5g_s_tmsi->amf_pointer = amfPointer;
   _5g_s_tmsi->_5g_tmsi    = tmsi;
+
+  is_no_identity = false;
+  length         = 0;
+
+  _5g_guti         = nullptr;
+  imei_imeisv      = nullptr;
+  supi_format_imsi = nullptr;
+  _IMEISV          = {};
+}
+
+//------------------------------------------------------------------------------
+_5GSMobilityIdentity::_5GSMobilityIdentity(
+    const string mcc, const string mnc, const string routingInd,
+    uint8_t protection_sch_id, const string msin) {
+  iei                           = 0;
+  typeOfIdentity                = SUCI;
+  supi_format_imsi              = (SUCI_imsi_t*) calloc(1, sizeof(SUCI_imsi_t));
+  supi_format_imsi->supi_format = SUPI_FORMAT_IMSI;
+  supi_format_imsi->mcc         = mcc;
+  supi_format_imsi->mnc         = mnc;
+  supi_format_imsi->routingIndicator   = routingInd;
+  supi_format_imsi->protectionSchemeId = protection_sch_id;
+  supi_format_imsi->homeNetworkPKI     = HOME_NETWORK_PKI_0_WHEN_PSI_0;
+  supi_format_imsi->msin               = msin;
+  length                               = 10 + ceil(msin.length() / 2);
+  is_no_identity                       = false;
+
+  _5g_s_tmsi  = nullptr;
+  _5g_guti    = nullptr;
+  imei_imeisv = nullptr;
+  _IMEISV     = {};
+}
+
+//------------------------------------------------------------------------------
+_5GSMobilityIdentity::~_5GSMobilityIdentity() {}
+
+//------------------------------------------------------------------------------
+void _5GSMobilityIdentity::setIEI(uint8_t _iei) {
+  iei = _iei;
 }
 
 //------------------------------------------------------------------------------
@@ -129,41 +176,12 @@ bool _5GSMobilityIdentity::get5G_S_TMSI(
 }
 
 //------------------------------------------------------------------------------
-_5GSMobilityIdentity::_5GSMobilityIdentity(
-    const string mcc, const string mnc, const string routingInd,
-    uint8_t protection_sch_id, const string msin) {
-  iei                           = 0;
-  typeOfIdentity                = SUCI;
-  supi_format_imsi              = (SUCI_imsi_t*) calloc(1, sizeof(SUCI_imsi_t));
-  supi_format_imsi->supi_format = SUPI_FORMAT_IMSI;
-  supi_format_imsi->mcc         = mcc;
-  supi_format_imsi->mnc         = mnc;
-  supi_format_imsi->routingIndicator   = routingInd;
-  supi_format_imsi->protectionSchemeId = protection_sch_id;
-  supi_format_imsi->homeNetworkPKI     = HOME_NETWORK_PKI_0_WHEN_PSI_0;
-  supi_format_imsi->msin               = msin;
-  length                               = 10 + ceil(msin.length() / 2);
-}
-
-//------------------------------------------------------------------------------
-_5GSMobilityIdentity::_5GSMobilityIdentity() {
-  iei              = 0;
-  _5g_guti         = NULL;
-  imei_imeisv      = NULL;
-  supi_format_imsi = NULL;
-  _5g_s_tmsi       = NULL;
-  _IMEISV          = {};
-}
-
-//------------------------------------------------------------------------------
-_5GSMobilityIdentity::~_5GSMobilityIdentity() {}
-
-//------------------------------------------------------------------------------
 void _5GSMobilityIdentity::set5GGUTI(
     const string mcc, const string mnc, uint8_t amf_region_id,
     uint16_t amf_set_id, uint8_t amf_pointer, const uint32_t _5g_tmsi) {
-  typeOfIdentity          = _5G_GUTI;
-  _5g_guti                = (_5G_GUTI_t*) calloc(1, sizeof(_5G_GUTI_t));
+  typeOfIdentity = _5G_GUTI;
+  if (_5g_guti == nullptr)
+    _5g_guti = (_5G_GUTI_t*) calloc(1, sizeof(_5G_GUTI_t));
   _5g_guti->mcc           = mcc;
   _5g_guti->mnc           = mnc;
   _5g_guti->amf_region_id = amf_region_id;
@@ -177,10 +195,11 @@ void _5GSMobilityIdentity::set5GGUTI(
 void _5GSMobilityIdentity::setSuciWithSupiImsi(
     const string& mcc, const string& mnc, const string& routingInd,
     uint8_t protecSchId, const string& msin_digits) {
-  supi_format_imsi              = (SUCI_imsi_t*) calloc(1, sizeof(SUCI_imsi_t));
-  supi_format_imsi->supi_format = SUPI_FORMAT_IMSI;
-  supi_format_imsi->mcc         = mcc;
-  supi_format_imsi->mnc         = mnc;
+  if (supi_format_imsi == nullptr)
+    supi_format_imsi = (SUCI_imsi_t*) calloc(1, sizeof(SUCI_imsi_t));
+  supi_format_imsi->supi_format        = SUPI_FORMAT_IMSI;
+  supi_format_imsi->mcc                = mcc;
+  supi_format_imsi->mnc                = mnc;
   supi_format_imsi->routingIndicator   = routingInd;
   supi_format_imsi->protectionSchemeId = protecSchId;
   supi_format_imsi->homeNetworkPKI     = HOME_NETWORK_PKI_0_WHEN_PSI_0;
@@ -191,7 +210,8 @@ void _5GSMobilityIdentity::setSuciWithSupiImsi(
 void _5GSMobilityIdentity::setSuciWithSupiImsi(
     const string& mcc, const string& mnc, const string& routingInd,
     uint8_t protecSchId, uint8_t home_pki, const string& msin_digits) {
-  supi_format_imsi              = (SUCI_imsi_t*) calloc(1, sizeof(SUCI_imsi_t));
+  if (supi_format_imsi == nullptr)
+    supi_format_imsi = (SUCI_imsi_t*) calloc(1, sizeof(SUCI_imsi_t));
   supi_format_imsi->supi_format = SUPI_FORMAT_IMSI;
   supi_format_imsi->mcc         = mcc;
   supi_format_imsi->mnc         = mnc;
@@ -428,7 +448,9 @@ int _5GSMobilityIdentity::encodeRoutid2buffer(string routidstr, uint8_t* buf) {
 }
 
 //------------------------------------------------------------------------------
-int _5GSMobilityIdentity::encodeMSIN2buffer(string msinstr, uint8_t* buf) {return 1;}
+int _5GSMobilityIdentity::encodeMSIN2buffer(string msinstr, uint8_t* buf) {
+  return 1;
+}
 
 //------------------------------------------------------------------------------
 int _5GSMobilityIdentity::imeisv_encode2buffer(uint8_t* buf, int len) {

@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-ConfidentialityProtectionIndication::ConfidentialityProtectionIndication() {}
+ConfidentialityProtectionIndication::ConfidentialityProtectionIndication() {
+  indication = 0;
+}
 
 //------------------------------------------------------------------------------
 ConfidentialityProtectionIndication::~ConfidentialityProtectionIndication() {}

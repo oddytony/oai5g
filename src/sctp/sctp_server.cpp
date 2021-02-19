@@ -54,6 +54,12 @@ namespace sctp {
 sctp_server::sctp_server(const char* address, const uint16_t port_num) {
   Logger::sctp().debug("creating socket!!");
   create_socket(address, port_num);
+  app_ = nullptr;
+  // pthread_t thread_;
+  sctp_desc   = {};
+  serverAddr_ = {};
+  events_     = {};
+  sctp_ctx    = {};
 }
 
 //------------------------------------------------------------------------------
@@ -211,10 +217,14 @@ int sctp_server::sctp_read_from_socket(int sd, uint32_t ppid) {
 }
 
 //------------------------------------------------------------------------------
-int sctp_server::sctp_handle_com_down(sctp_assoc_id_t assoc_id) {return 0;}
+int sctp_server::sctp_handle_com_down(sctp_assoc_id_t assoc_id) {
+  return 0;
+}
 
 //------------------------------------------------------------------------------
-int sctp_server::sctp_handle_reset(const sctp_assoc_id_t assoc_id) {return 0;}
+int sctp_server::sctp_handle_reset(const sctp_assoc_id_t assoc_id) {
+  return 0;
+}
 
 //------------------------------------------------------------------------------
 int sctp_server::handle_assoc_change(

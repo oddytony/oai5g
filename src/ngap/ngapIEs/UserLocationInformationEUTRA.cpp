@@ -91,7 +91,7 @@ bool UserLocationInformationEUTRA::encode2UserLocationInformationEUTRA(
 //------------------------------------------------------------------------------
 bool UserLocationInformationEUTRA::decodefromUserLocationInformationEUTRA(
     Ngap_UserLocationInformationEUTRA_t* userLocationInformationEUTRA) {
-  eUTRA_CGI = new EUTRA_CGI();
+  if (eUTRA_CGI == nullptr) eUTRA_CGI = new EUTRA_CGI();
   if (!eUTRA_CGI->decodefromEUTRA_CGI(
           &userLocationInformationEUTRA->eUTRA_CGI)) {
     cout << "[Warning] eUTRA_CGI->decodefromEUTRA_CGI() error!" << endl;

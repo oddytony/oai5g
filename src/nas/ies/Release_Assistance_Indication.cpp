@@ -32,7 +32,8 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 Release_Assistance_Indication::Release_Assistance_Indication(uint8_t iei) {
-  _iei = iei;
+  _iei   = iei;
+  _value = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -43,7 +44,10 @@ Release_Assistance_Indication::Release_Assistance_Indication(
 }
 
 //------------------------------------------------------------------------------
-Release_Assistance_Indication::Release_Assistance_Indication() {}
+Release_Assistance_Indication::Release_Assistance_Indication() {
+  _iei   = 0;
+  _value = 0;
+}
 
 //------------------------------------------------------------------------------
 Release_Assistance_Indication::~Release_Assistance_Indication() {}

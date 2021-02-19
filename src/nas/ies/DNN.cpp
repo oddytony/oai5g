@@ -31,8 +31,9 @@
 using namespace nas;
 
 //------------------------------------------------------------------------------
-DNN::DNN(uint8_t iei) {
-  _iei = iei;
+DNN::DNN(uint8_t iei) : _DNN() {
+  _iei   = iei;
+  length = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -43,7 +44,7 @@ DNN::DNN(const uint8_t iei, bstring dnn) {
 }
 
 //------------------------------------------------------------------------------
-DNN::DNN() {}
+DNN::DNN() : _iei(), _DNN(), length() {}
 
 //------------------------------------------------------------------------------
 DNN::~DNN() {}
@@ -93,8 +94,7 @@ int DNN::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   decode_bstring(&_DNN, length, (buf + decoded_size), len - decoded_size);
   decoded_size += length;
   for (int i = 0; i < blength(_DNN); i++) {
-    Logger::nas_mm().debug(
-        "Decoded DNN value: 0x%x", (uint8_t) bdata(_DNN)[i]);
+    Logger::nas_mm().debug("Decoded DNN value: 0x%x", (uint8_t) bdata(_DNN)[i]);
   }
   Logger::nas_mm().debug("Decoded DNN len: %d", decoded_size);
   return decoded_size;

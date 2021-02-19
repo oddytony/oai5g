@@ -28,6 +28,7 @@ extern "C" {
 #include "per_decoder.h"
 #include "constraints.h"
 #include "Ngap_PDUSessionResourceHandoverItem.h"
+#include "dynamic_memory_check.h"
 }
 
 #include <iostream>
@@ -230,11 +231,13 @@ void HandoverCommandMsg::setAmfUeNgapId(unsigned long id) {
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&handoverCommandIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 void HandoverCommandMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
@@ -250,11 +253,13 @@ void HandoverCommandMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&handoverCommandIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 void HandoverCommandMsg::setHandoverType(long type) {
@@ -267,6 +272,7 @@ void HandoverCommandMsg::setHandoverType(long type) {
   ie->value.choice.HandoverType = type;
   int ret = ASN_SEQUENCE_ADD(&handoverCommandIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode HandoverType IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 void HandoverCommandMsg::setPduSessionResourceHandoverList(
@@ -277,10 +283,10 @@ void HandoverCommandMsg::setPduSessionResourceHandoverList(
   Ngap_HandoverCommandIEs_t* ie =
       (Ngap_HandoverCommandIEs_t*) calloc(1, sizeof(Ngap_HandoverCommandIEs_t));
 
+  Ngap_PDUSessionResourceHandoverItem_t* item =
+      (Ngap_PDUSessionResourceHandoverItem_t*) calloc(
+          1, sizeof(Ngap_PDUSessionResourceHandoverItem_t));
   for (int i = 0; i < list.size(); i++) {
-    Ngap_PDUSessionResourceHandoverItem_t* item =
-        (Ngap_PDUSessionResourceHandoverItem_t*) calloc(
-            1, sizeof(Ngap_PDUSessionResourceHandoverItem_t));
     item->pDUSessionID            = list[i].pduSessionId;
     item->handoverCommandTransfer = list[i].HandoverCommandTransfer;
     int ret = ASN_SEQUENCE_ADD(&PDUSessionResourceHandoverList->list, item);
@@ -297,6 +303,8 @@ void HandoverCommandMsg::setPduSessionResourceHandoverList(
   int ret = ASN_SEQUENCE_ADD(&handoverCommandIEs->protocolIEs.list, ie);
   if (ret != 0)
     cout << "encode PDUSessionResourceHandoverList IE error" << endl;
+  free_wrapper((void**) &item);
+  free_wrapper((void**) &ie);
 }
 
 void HandoverCommandMsg::setTargetToSource_TransparentContainer(
@@ -314,6 +322,7 @@ void HandoverCommandMsg::setTargetToSource_TransparentContainer(
   ie->value.choice.TargetToSource_TransparentContainer = targetTosource;
   int ret = ASN_SEQUENCE_ADD(&handoverCommandIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode HandoverType IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 }  // namespace ngap

@@ -33,7 +33,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-MaximumDataBurstVolume::MaximumDataBurstVolume() {}
+MaximumDataBurstVolume::MaximumDataBurstVolume() {
+  maximumdataburstvolume = 0;
+}
 
 //------------------------------------------------------------------------------
 MaximumDataBurstVolume::~MaximumDataBurstVolume() {}

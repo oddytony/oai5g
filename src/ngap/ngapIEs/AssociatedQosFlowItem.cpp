@@ -84,7 +84,7 @@ bool AssociatedQosFlowItem::encode2AssociatedQosFlowItem(
 //------------------------------------------------------------------------------
 bool AssociatedQosFlowItem::decodefromAssociatedQosFlowItem(
     Ngap_AssociatedQosFlowItem_t* associatedQosFlowItem) {
-  qosFlowIdentifier = new QosFlowIdentifier();
+  if (qosFlowIdentifier == nullptr) qosFlowIdentifier = new QosFlowIdentifier();
   if (!qosFlowIdentifier->decodefromQosFlowIdentifier(
           &associatedQosFlowItem->qosFlowIdentifier))
     return false;

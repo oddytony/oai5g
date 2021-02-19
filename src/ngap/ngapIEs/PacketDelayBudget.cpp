@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PacketDelayBudget::PacketDelayBudget() {}
+PacketDelayBudget::PacketDelayBudget() {
+  packetdelaybudget = 0;
+}
 
 //------------------------------------------------------------------------------
 PacketDelayBudget::~PacketDelayBudget() {}

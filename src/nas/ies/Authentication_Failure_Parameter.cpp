@@ -33,7 +33,9 @@ using namespace nas;
 //------------------------------------------------------------------------------
 Authentication_Failure_Parameter::Authentication_Failure_Parameter(
     uint8_t iei) {
-  _iei = iei;
+  _iei   = iei;
+  length = 0;
+  value  = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -45,7 +47,8 @@ Authentication_Failure_Parameter::Authentication_Failure_Parameter(
 }
 
 //------------------------------------------------------------------------------
-Authentication_Failure_Parameter::Authentication_Failure_Parameter() {}
+Authentication_Failure_Parameter::Authentication_Failure_Parameter()
+    : _iei(), length(), value() {}
 
 //------------------------------------------------------------------------------
 Authentication_Failure_Parameter::~Authentication_Failure_Parameter() {}

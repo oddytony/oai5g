@@ -33,7 +33,16 @@
 using namespace nas;
 
 //------------------------------------------------------------------------------
-ServiceRequest::ServiceRequest() {}
+ServiceRequest::ServiceRequest() {
+  plain_header                  = nullptr;
+  ie_ngKSI                      = nullptr;
+  ie_service_type               = nullptr;
+  ie_5g_s_tmsi                  = nullptr;
+  ie_uplink_data_status         = nullptr;
+  ie_PDU_session_status         = nullptr;
+  ie_allowed_PDU_session_status = nullptr;
+  ie_nas_message_container      = nullptr;
+}
 
 //------------------------------------------------------------------------------
 ServiceRequest::~ServiceRequest() {}

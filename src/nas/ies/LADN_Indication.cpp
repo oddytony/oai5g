@@ -32,7 +32,9 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 LADN_Indication::LADN_Indication(uint8_t iei) {
-  _iei = iei;
+  _iei   = iei;
+  length = 0;
+  LADN   = {};
 }
 
 //------------------------------------------------------------------------------
@@ -46,7 +48,7 @@ LADN_Indication::LADN_Indication(const uint8_t iei, std::vector<bstring> ladn) {
 }
 
 //------------------------------------------------------------------------------
-LADN_Indication::LADN_Indication() {}
+LADN_Indication::LADN_Indication() : _iei(), length(), LADN() {}
 
 //------------------------------------------------------------------------------
 LADN_Indication::~LADN_Indication() {}

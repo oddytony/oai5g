@@ -32,7 +32,8 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 SecurityKey::SecurityKey() {
-  securitykeybuffer = NULL;
+  securitykeybuffer = nullptr;
+  buffersize        = 0;
 }
 
 //------------------------------------------------------------------------------

@@ -31,8 +31,9 @@
 using namespace nas;
 
 //------------------------------------------------------------------------------
-NAS_Message_Container::NAS_Message_Container(uint8_t iei) {
-  _iei = iei;
+NAS_Message_Container::NAS_Message_Container(uint8_t iei) : _value() {
+  _iei   = iei;
+  length = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -43,7 +44,7 @@ NAS_Message_Container::NAS_Message_Container(const uint8_t iei, bstring value) {
 }
 
 //------------------------------------------------------------------------------
-NAS_Message_Container::NAS_Message_Container() {}
+NAS_Message_Container::NAS_Message_Container() : _iei(), length(), _value() {}
 
 //------------------------------------------------------------------------------
 NAS_Message_Container::~NAS_Message_Container() {}

@@ -35,6 +35,7 @@ extern "C" {
 #include "per_decoder.h"
 #include "constraints.h"
 #include "Ngap_UE-NGAP-ID-pair.h"
+#include "dynamic_memory_check.h"
 }
 
 using namespace ngap;
@@ -42,10 +43,11 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 UEContextReleaseCommandMsg::UEContextReleaseCommandMsg() {
-  pdu         = NULL;
-  amfUeNgapId = NULL;
-  ranUeNgapId = NULL;
-  causeValue  = NULL;
+  pdu         = nullptr;
+  amfUeNgapId = nullptr;
+  ranUeNgapId = nullptr;
+  causeValue  = nullptr;
+  ies         = nullptr;
 }
 
 UEContextReleaseCommandMsg::~UEContextReleaseCommandMsg() {
@@ -83,10 +85,12 @@ void UEContextReleaseCommandMsg::setAmfUeNgapId(unsigned long id) {
       ie->value.choice.UE_NGAP_IDs.choice.aMF_UE_NGAP_ID);
   if (!ret) {
     cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UE_NGAP_IDs IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -109,16 +113,19 @@ void UEContextReleaseCommandMsg::setUeNgapIdPair(
       ie->value.choice.UE_NGAP_IDs.choice.uE_NGAP_ID_pair->aMF_UE_NGAP_ID);
   if (!ret) {
     cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
   ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(
       ie->value.choice.UE_NGAP_IDs.choice.uE_NGAP_ID_pair->rAN_UE_NGAP_ID);
   if (!ret) {
     cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UE_NGAP_IDs IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-IndexToRFSP::IndexToRFSP() {}
+IndexToRFSP::IndexToRFSP() {
+  indexToRFSP = 0;
+}
 
 //------------------------------------------------------------------------------
 IndexToRFSP::~IndexToRFSP() {}

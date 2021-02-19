@@ -34,6 +34,7 @@ extern "C" {
 #include "per_encoder.h"
 #include "per_decoder.h"
 #include "constraints.h"
+#include "dynamic_memory_check.h"
 }
 
 #include <iostream>
@@ -103,11 +104,13 @@ void DownLinkNasTransportMsg::setAmfUeNgapId(unsigned long id) {
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&downLinkNasTransportIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -125,11 +128,13 @@ void DownLinkNasTransportMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&downLinkNasTransportIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -147,11 +152,13 @@ void DownLinkNasTransportMsg::setOldAmfName(const std::string name) {
   int ret = oldAmfName->encode2AmfName(&ie->value.choice.AMFName);
   if (!ret) {
     cout << "encode oldAmfName IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&downLinkNasTransportIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode oldAmfName IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -170,11 +177,13 @@ void DownLinkNasTransportMsg::setRanPagingPriority(uint8_t pagingPriority) {
       ie->value.choice.RANPagingPriority);
   if (!ret) {
     cout << "encode RANPagingPriority IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&downLinkNasTransportIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RANPagingPriority IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -193,11 +202,13 @@ void DownLinkNasTransportMsg::setNasPdu(uint8_t* nas, size_t sizeofnas) {
   int ret = nasPdu->encode2octetstring(ie->value.choice.NAS_PDU);
   if (!ret) {
     cout << "encode NAS_PDU IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&downLinkNasTransportIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode NAS_PDU IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -216,11 +227,13 @@ void DownLinkNasTransportMsg::setIndex2Rat_Frequency_SelectionPriority(
   int ret = indexToRFSP->encode2IndexToRFSP(ie->value.choice.IndexToRFSP);
   if (!ret) {
     cout << "encode IndexToRFSP IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&downLinkNasTransportIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode IndexToRFSP IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

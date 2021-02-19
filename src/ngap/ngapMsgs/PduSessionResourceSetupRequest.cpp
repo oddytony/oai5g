@@ -34,6 +34,7 @@ extern "C" {
 #include "per_encoder.h"
 #include "per_decoder.h"
 #include "constraints.h"
+#include "dynamic_memory_check.h"
 }
 
 #include <iostream>
@@ -43,13 +44,14 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 PduSessionResourceSetupRequestMsg::PduSessionResourceSetupRequestMsg() {
-  pduSessionResourceSetupRequestPdu  = NULL;
-  pduSessionResourceSetupRequestIEs  = NULL;
-  amfUeNgapId                        = NULL;
-  ranUeNgapId                        = NULL;
-  ranPagingPriority                  = NULL;
-  nasPdu                             = NULL;
-  pduSessionResourceSetupRequestList = NULL;
+  pduSessionResourceSetupRequestPdu  = nullptr;
+  pduSessionResourceSetupRequestIEs  = nullptr;
+  amfUeNgapId                        = nullptr;
+  ranUeNgapId                        = nullptr;
+  ranPagingPriority                  = nullptr;
+  nasPdu                             = nullptr;
+  pduSessionResourceSetupRequestList = nullptr;
+  pduSessionAggregateMaximumBitRate  = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -104,12 +106,14 @@ void PduSessionResourceSetupRequestMsg::setAmfUeNgapId(unsigned long id) {
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -129,12 +133,14 @@ void PduSessionResourceSetupRequestMsg::setRanUeNgapId(
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -155,12 +161,14 @@ void PduSessionResourceSetupRequestMsg::setRanPagingPriority(uint8_t priority) {
       ie->value.choice.RANPagingPriority);
   if (!ret) {
     cout << "encode RANPagingPriority IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RANPagingPriority IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -180,12 +188,14 @@ void PduSessionResourceSetupRequestMsg::setNasPdu(
   int ret = nasPdu->encode2octetstring(ie->value.choice.NAS_PDU);
   if (!ret) {
     cout << "encode NAS_PDU IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode NAS_PDU IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -229,6 +239,7 @@ void PduSessionResourceSetupRequestMsg::setPduSessionResourceSetupRequestList(
                     &ie->value.choice.PDUSessionResourceSetupListSUReq);
   if (!ret) {
     cout << "encode PDUSessionResourceSetupListSUReq IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
@@ -236,6 +247,7 @@ void PduSessionResourceSetupRequestMsg::setPduSessionResourceSetupRequestList(
       &pduSessionResourceSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0)
     cout << "encode PDUSessionResourceSetupListSUReq IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

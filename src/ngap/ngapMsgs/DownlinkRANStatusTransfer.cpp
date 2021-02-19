@@ -22,6 +22,11 @@
 #include "DownlinkRANStatusTransfer.hpp"
 #include <iostream>
 #include <vector>
+
+extern "C" {
+#include "dynamic_memory_check.h"
+}
+
 using namespace std;
 namespace ngap {
 DownlinkRANStatusTransfer::DownlinkRANStatusTransfer() {
@@ -47,11 +52,13 @@ void DownlinkRANStatusTransfer::setAmfUeNgapId(unsigned long id) {
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&DownlinkranstatustransferIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 void DownlinkRANStatusTransfer::setRanUeNgapId(uint32_t id) {
   if (!ranUeNgapId) ranUeNgapId = new RAN_UE_NGAP_ID();
@@ -68,12 +75,15 @@ void DownlinkRANStatusTransfer::setRanUeNgapId(uint32_t id) {
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&DownlinkranstatustransferIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  free_wrapper((void**) &ie);
 }
+
 void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
     long drb_id, long ul_pcdp, long ul_hfn_pdcp, long dl_pcdp,
     long dl_hfn_pdcp) {
@@ -114,11 +124,31 @@ void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
                      &ie->value.choice.RANStatusTransfer_TransparentContainer);
   if (!ret) {
     cout << "encode ranstatustransfer_transparentcontainer error" << endl;
+    free_wrapper((void**) &dRB_id);
+    free_wrapper((void**) &UL_value);
+    free_wrapper((void**) &DL_value);
+    free_wrapper((void**) &UL18);
+    free_wrapper((void**) &DL18);
+    free_wrapper((void**) &DL);
+    free_wrapper((void**) &UL);
+    free_wrapper((void**) &m_item);
+    free_wrapper((void**) &m_list);
+    free_wrapper((void**) &ie);
   }
   if (ASN_SEQUENCE_ADD(&DownlinkranstatustransferIEs->protocolIEs.list, ie) !=
       0) {
     cout << "encode ranstatustransfer_transparentcontainer error 2" << endl;
   }
+  free_wrapper((void**) &dRB_id);
+  free_wrapper((void**) &UL_value);
+  free_wrapper((void**) &DL_value);
+  free_wrapper((void**) &UL18);
+  free_wrapper((void**) &DL18);
+  free_wrapper((void**) &DL);
+  free_wrapper((void**) &UL);
+  free_wrapper((void**) &m_list);
+  free_wrapper((void**) &m_item);
+  free_wrapper((void**) &ie);
 }
 void DownlinkRANStatusTransfer::setmessagetype() {
   if (!DownlinkranstatustransferPDU) {

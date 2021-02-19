@@ -35,6 +35,7 @@ extern "C" {
 #include "per_encoder.h"
 #include "per_decoder.h"
 #include "constraints.h"
+#include "dynamic_memory_check.h"
 }
 
 #include <iostream>
@@ -203,11 +204,13 @@ void NGSetupRequestMsg::setDefaultPagingDRX(e_Ngap_PagingDRX value) {
       defaultPagingDRXIE.encode2DefaultPagingDRX(ie->value.choice.PagingDRX);
   if (!ret) {
     cout << "encode DefaultPagingDRX IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&ngSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode DefaultPagingDRX IE error" << endl;
+  free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

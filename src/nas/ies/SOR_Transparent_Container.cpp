@@ -31,8 +31,9 @@
 using namespace nas;
 
 //------------------------------------------------------------------------------
-SOR_Transparent_Container::SOR_Transparent_Container(uint8_t iei) {
-  _iei = iei;
+SOR_Transparent_Container::SOR_Transparent_Container(uint8_t iei) : _value() {
+  _iei   = iei;
+  HEADER = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -46,7 +47,8 @@ SOR_Transparent_Container::SOR_Transparent_Container(
 }
 
 //------------------------------------------------------------------------------
-SOR_Transparent_Container::SOR_Transparent_Container() {}
+SOR_Transparent_Container::SOR_Transparent_Container()
+    : _iei(), HEADER(), _value() {}
 
 //------------------------------------------------------------------------------
 SOR_Transparent_Container::~SOR_Transparent_Container() {}

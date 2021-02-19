@@ -34,11 +34,23 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 _5GS_Update_Type::_5GS_Update_Type(uint8_t iei) {
-  _iei = iei;
+  _iei          = iei;
+  EPS_PNB_CIoT  = 0;
+  _5GS_PNB_CIoT = 0;
+  NG_RAN        = false;
+  SMS           = false;
+  length        = 0;
 }
 
 //------------------------------------------------------------------------------
-_5GS_Update_Type::_5GS_Update_Type() {}
+_5GS_Update_Type::_5GS_Update_Type() {
+  _iei          = 0;
+  EPS_PNB_CIoT  = 0;
+  _5GS_PNB_CIoT = 0;
+  NG_RAN        = false;
+  SMS           = false;
+  length        = 0;
+}
 
 //------------------------------------------------------------------------------
 _5GS_Update_Type::~_5GS_Update_Type() {}

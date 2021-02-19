@@ -31,14 +31,17 @@
 using namespace nas;
 
 //------------------------------------------------------------------------------
-Payload_Container::Payload_Container(uint8_t iei) {
-  _iei = iei;
+Payload_Container::Payload_Container(uint8_t iei) : content() {
+  _iei    = iei;
+  length  = 0;
+  CONTENT = {};
 }
 
 //------------------------------------------------------------------------------
 Payload_Container::Payload_Container(uint8_t iei, bstring b) {
   _iei    = iei;
   content = b;
+  CONTENT = {};
 }
 
 //------------------------------------------------------------------------------
@@ -60,7 +63,10 @@ Payload_Container::Payload_Container(
 }
 
 //------------------------------------------------------------------------------
-Payload_Container::Payload_Container() {}
+Payload_Container::Payload_Container() : content() {
+  _iei    = 0;
+  CONTENT = {};
+}
 
 //------------------------------------------------------------------------------
 Payload_Container::~Payload_Container() {}
@@ -154,7 +160,7 @@ int Payload_Container::encode2buffer(uint8_t* buf, int len) {
 //------------------------------------------------------------------------------
 
 int Payload_Container::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
-	return 0;
+  return 0;
 }
 
 //------------------------------------------------------------------------------

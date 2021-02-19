@@ -31,8 +31,9 @@
 using namespace nas;
 
 //------------------------------------------------------------------------------
-EAP_Message::EAP_Message(uint8_t iei) {
-  _iei = iei;
+EAP_Message::EAP_Message(uint8_t iei) : EAP() {
+  _iei   = iei;
+  length = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -43,7 +44,7 @@ EAP_Message::EAP_Message(const uint8_t iei, bstring eap) {
 }
 
 //------------------------------------------------------------------------------
-EAP_Message::EAP_Message() {}
+EAP_Message::EAP_Message() : _iei(), EAP(), length() {}
 
 //------------------------------------------------------------------------------
 EAP_Message::~EAP_Message() {}
