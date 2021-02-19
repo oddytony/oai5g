@@ -795,7 +795,7 @@ void amf_n1::registration_request_handle(
         nc.get()->serving_network            = snn;
         nc.get()->is_5g_guti_present         = true;
         nc.get()->to_be_register_by_new_suci = true;
-        nc.get()->ngKsi                      = 100;
+        nc.get()->ngKsi                      = 100 & 0xf;
         // supi2amfId[("imsi-"+nc.get()->imsi)] = amf_ue_ngap_id;
         // supi2ranId[("imsi-"+nc.get()->imsi)] = ran_ue_ngap_id;
       }
@@ -1941,12 +1941,15 @@ void amf_n1::encode_nas_message_protected(
     case INTEGRITY_PROTECTED_AND_CIPHERED: {
       bstring input = blk2bstr(input_nas_buf, input_nas_len);
       bstring ciphered;
+      //balloc(ciphered, blength(input));
       nas_message_cipher_protected(nsc, NAS_MESSAGE_DOWNLINK, input, ciphered);
       protected_nas_buf[0] = EPD_5GS_MM_MSG;
       protected_nas_buf[1] = INTEGRITY_PROTECTED_AND_CIPHERED;
       protected_nas_buf[6] = (uint8_t) nsc->dl_count.seq_num;
+      //if (bdata(ciphered) != nullptr)
       memcpy(
           &protected_nas_buf[7], (uint8_t*) bdata(ciphered), blength(ciphered));
+
       uint32_t mac32;
       if (!(nas_message_integrity_protected(
               nsc, NAS_MESSAGE_DOWNLINK, protected_nas_buf + 6,

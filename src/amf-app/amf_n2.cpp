@@ -934,8 +934,8 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   plmn->getMcc(mcc);
   plmn->getMnc(mnc);
   printf(
-      "Handover required:Target ID GlobalRanNodeID PLmn=mcc%s mnc%s "
-      "gnbid=%x\n",
+      "Handover required: Target ID GlobalRanNodeID PLmn (mcc: %s, mnc: %s, "
+      "gnbid: %ld)\n",
       mcc.c_str(), mnc.c_str(), gnbid->getValue());
   TAI* tai = new TAI();
   itti_msg.handvoerRequ->getTAI(tai);

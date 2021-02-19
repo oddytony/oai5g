@@ -6,7 +6,7 @@ using namespace oai::amf::api;
 void AMFApiServer::init(size_t thr) {
   auto opts = Pistache::Http::Endpoint::options().threads(thr);
   opts.flags(Pistache::Tcp::Options::ReuseAddr);
-  opts.maxPayload(PISTACHE_SERVER_MAX_PAYLOAD);
+  opts.maxRequestSize(PISTACHE_SERVER_MAX_PAYLOAD);
   m_httpEndpoint->init(opts);
   m_individualSubscriptionDocumentApiImpl->init();
   m_individualUeContextDocumentApiImpl->init();
