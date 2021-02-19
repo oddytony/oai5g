@@ -264,6 +264,7 @@ int _5GSMobilityIdentity::encode2buffer(uint8_t* buf, int len) {
       return _5g_s_tmsi_encode2buffer(buf, len);
     } break;
   }
+  return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -522,6 +523,7 @@ int _5GSMobilityIdentity::decodefrombuffer(
       return decoded_size;
     } break;
   }
+  return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -616,6 +618,7 @@ int _5GSMobilityIdentity::suci_decodefrombuffer(
     default: {
     } break;
   }
+  return 0;
 }
 
 //------------------------------------------------------------------------------
