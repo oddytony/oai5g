@@ -53,7 +53,10 @@ RUN rm -f /etc/rhsm-host && \
         ninja-build \
         boost-devel \
         openssl-devel \
-        openssl
+        openssl \
+        libasan && \
+    echo "/usr/local/lib" > /etc/ld.so.conf.d/local-lib.conf && \
+    echo "/usr/local/lib64" >> /etc/ld.so.conf.d/local-lib.conf
 
 # Some GIT configuration command quite useful
 RUN /bin/bash -c "if [[ -v NEEDED_GIT_PROXY ]]; then git config --global http.proxy $NEEDED_GIT_PROXY; fi"
@@ -62,7 +65,12 @@ RUN git config --global http.sslverify false
 
 # cpprest package install
 RUN git clone https://github.com/Microsoft/cpprestsdk.git
-RUN cd cpprestsdk && git submodule update --init && mkdir build && cd build && cmake3 -G Ninja .. -DCMAKE_BUILD_TYPE=Release && ninja install && ldconfig -v
+RUN cd cpprestsdk && \
+    git submodule update --init && \
+    mkdir build && cd build && \
+    cmake3 -G Ninja .. -DCMAKE_BUILD_TYPE=Release && \
+    ninja install && \
+    ldconfig -v
 
 # Copying source code
 WORKDIR /openair-amf/
@@ -75,7 +83,7 @@ RUN ./build_amf --install-deps --force
 # Building AMF
 WORKDIR /openair-amf/build/scripts
 RUN ./build_amf --clean --Verbose --build-type Release --jobs
-
+#RUN ./build_amf --clean --Verbose --build-type Debug --jobs
 
 #---------------------------------------------------------------------
 # TARGET IMAGE
@@ -111,6 +119,8 @@ COPY --from=oai-amf-builder /usr/lib64/libboost_regex.so.1.66.0 /usr/lib64/
 COPY --from=oai-amf-builder /usr/lib64/libicudata.so.60 /usr/lib64/
 COPY --from=oai-amf-builder /usr/lib64/libicui18n.so.60 /usr/lib64/
 COPY --from=oai-amf-builder /usr/lib64/libicuuc.so.60 /usr/lib64/
+COPY --from=oai-amf-builder /usr/lib64/libasan.so.5.0.0 /usr/lib64/
+COPY --from=oai-amf-builder /usr/lib64/libasan.so.5 /usr/lib64/
 
 COPY --from=oai-amf-builder /openair-amf/scripts/entrypoint.sh entrypoint.sh
 
@@ -121,15 +131,14 @@ COPY --from=oai-amf-builder /openair-amf/scripts/entrypoint.sh entrypoint.sh
 # Copying template configuration files
 WORKDIR /openair-amf/etc
 COPY --from=oai-amf-builder /openair-amf/etc/amf.conf .
-#COPY --from=oai-amf-builder /openair-amf/etc/modules.conf .
 
 WORKDIR /openair-amf
 
 # expose ports
 EXPOSE 80/tcp 9090/tcp 38412/sctp
 
-CMD ["/openair-amf/bin/oai_amf", "-c", "/openair-amf/etc/amf.conf", "-o"]
-
 ENTRYPOINT ["/openair-amf/bin/entrypoint.sh"]
+
+CMD ["/openair-amf/bin/oai_amf", "-c", "/openair-amf/etc/amf.conf", "-o"]
 
 #CMD ["sleep", "infinity"]
