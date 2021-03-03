@@ -53,13 +53,11 @@ ngap_app::ngap_app(const std::string& address, const uint16_t port_num)
 ngap_app::~ngap_app() {}
 
 //------------------------------------------------------------------------------
-// received sctp payload and decode it to NGAP message and send itti message to
-// TASK_AMF_N2
 void ngap_app::handle_receive(
     bstring payload, sctp_assoc_id_t assoc_id, sctp_stream_id_t stream,
     sctp_stream_id_t instreams, sctp_stream_id_t outstreams) {
   Logger::ngap().debug(
-      "Handling SCTP payload from sctp_server on assoc_id (%d), stream_id "
+      "Handling SCTP payload from SCTP Server on assoc_id (%d), stream_id "
       "(%d), instreams (%d), outstreams (%d)",
       assoc_id, stream, instreams, outstreams);
   Ngap_NGAP_PDU_t* ngap_msg_pdu =
@@ -71,14 +69,13 @@ void ngap_app::handle_receive(
       "Decoded NGAP message, procedure code %d, present %d",
       ngap_msg_pdu->choice.initiatingMessage->procedureCode,
       ngap_msg_pdu->present);
+  // Handle the message
   (*messages_callback[ngap_msg_pdu->choice.initiatingMessage->procedureCode]
                      [ngap_msg_pdu->present - 1])(
       assoc_id, stream, ngap_msg_pdu);
 }
 
 //------------------------------------------------------------------------------
-// handle new sctp association
-// TNL association(clause 8.7.1.1, 3gpp ts38.413)
 void ngap_app::handle_sctp_new_association(
     sctp_assoc_id_t assoc_id, sctp_stream_id_t instreams,
     sctp_stream_id_t outstreams) {
@@ -119,7 +116,6 @@ uint32_t ngap_app::getPpid() {
   return ppid_;
 }
 
-// gnb context management
 //------------------------------------------------------------------------------
 bool ngap_app::is_assoc_id_2_gnb_context(
     const sctp_assoc_id_t& assoc_id) const {

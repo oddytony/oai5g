@@ -24,6 +24,7 @@
 
 #include "itti_msg.hpp"
 #include "NGSetupRequest.hpp"
+#include "NGReset.hpp"
 #include "InitialUEMessage.hpp"
 #include "UplinkNASTransport.hpp"
 #include "UEContextReleaseRequest.hpp"
@@ -64,6 +65,16 @@ class itti_ng_setup_request : public itti_msg_n2 {
 
  public:
   NGSetupRequestMsg* ngSetupReq;
+};
+
+class itti_ng_reset : public itti_msg_n2 {
+ public:
+  itti_ng_reset(const task_id_t origin, const task_id_t destination)
+      : itti_msg_n2(NG_RESET, origin, destination) {}
+  itti_ng_reset(const itti_ng_reset& i) : itti_msg_n2(i) {}
+
+ public:
+  NGResetMsg* ngReset;
 };
 
 class itti_initial_ue_message : public itti_msg_n2 {

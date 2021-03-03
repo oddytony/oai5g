@@ -39,6 +39,7 @@
 #include "itti_msg_n11.hpp"
 #include "itti.hpp"
 #include "NGSetupRequest.hpp"
+#include "NGReset.hpp"
 #include "PduSessionResourceSetupResponse.hpp"
 #include "PduSessionResourceReleaseResponse.hpp"
 #include "InitialContextSetupResponse.hpp"
@@ -646,7 +647,27 @@ int nas_non_delivery_indication(
 int ng_reset(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p) {
-  Logger::ngap().debug("Sending itti ng reset to TASK_AMF_N2");
+  Logger::ngap().debug("Sending ITTI NG Reset to TASK_AMF_N2");
+
+  asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
+  NGResetMsg* ngReset = new NGResetMsg();
+  if (!ngReset->decodefrompdu(message_p)) {
+    Logger::ngap().error("Decoding NGReset message error");
+    return -1;
+  }
+
+  itti_ng_reset* itti_msg          = new itti_ng_reset(TASK_NGAP, TASK_AMF_N2);
+  itti_msg->assoc_id               = assoc_id;
+  itti_msg->stream                 = stream;
+  itti_msg->ngReset                = ngReset;
+  std::shared_ptr<itti_ng_reset> i = std::shared_ptr<itti_ng_reset>(itti_msg);
+  int ret                          = itti_inst->send_msg(i);
+  if (0 != ret) {
+    Logger::ngap().error(
+        "Could not send ITTI message %s to task TASK_AMF_N2",
+        i->get_msg_name());
+  }
+
   return 0;
 }
 

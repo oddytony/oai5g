@@ -48,13 +48,31 @@ class ngap_app : public sctp_application {
   ~ngap_app();
   uint32_t getPpid();
 
+  /*
+   * Handle SCTP payload (decode it and send ITTI msg to N2)
+   * @param [bstring] payload: payload
+   * @param [sctp_assoc_id_t] assoc_id: gNB association ID
+   * @param [sctp_stream_id_t] stream: stream
+   * @param [sctp_stream_id_t] instreams: instreams
+   * @param [sctp_stream_id_t] outstreams: outstreams
+   * @return void:
+   */
   void handle_receive(
       bstring payload, sctp_assoc_id_t assoc_id, sctp_stream_id_t stream,
       sctp_stream_id_t instreams, sctp_stream_id_t outstreams);
+
+  /*
+   * Handle new SCTP TNL Association (clause 8.7.1.1, 3gpp ts38.413)
+   * @param [sctp_assoc_id_t] assoc_id: gNB association ID
+   * @param [sctp_stream_id_t] instreams: instreams
+   * @param [sctp_stream_id_t] outstreams: outstreams
+   * @return void:
+   */
   void handle_sctp_new_association(
       sctp_assoc_id_t assoc_id, sctp_stream_id_t instreams,
       sctp_stream_id_t outstreams);
 
+  // gnb context management
   bool is_assoc_id_2_gnb_context(const sctp_assoc_id_t& assoc_id) const;
   void set_assoc_id_2_gnb_context(
       const sctp_assoc_id_t& assoc_id, std::shared_ptr<gnb_context> gc);
