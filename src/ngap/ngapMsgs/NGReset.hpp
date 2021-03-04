@@ -56,6 +56,7 @@ class NGResetMsg {
   bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
   void getCause(Ngap_Cause_t&);
   void getResetType(Ngap_ResetType_t&);
+  bool getResetType(ResetType&);
 
  private:
   Ngap_NGAP_PDU_t* ngResetPdu;

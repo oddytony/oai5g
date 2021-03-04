@@ -345,7 +345,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
       "gNB with gNB_id 0x%x, assoc_id %d has been attached to AMF",
       gc.get()->globalRanNodeId, itti_msg.assoc_id);
   stacs.gNB_connected += 1;
-  stacs.gnbs.push_back(gnbItem);
+  stacs.gnbs.insert(std::pair<uint32_t, gnb_infos>(gnbItem.gnb_id, gnbItem));
   return;
 }
 
@@ -361,15 +361,43 @@ void amf_n2::handle_itti_message(itti_ng_reset& itti_msg) {
     return;
   }
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
-  if (gc.get()->ng_state == NGAP_RESETING ||
-      gc.get()->ng_state == NGAP_SHUTDOWN) {
-    Logger::amf_n2().warn(
-        "Received new association request on an association that is being %s, "
-        "ignoring",
-        ng_gnb_state_str[gc.get()->ng_state]);
-  } else {
+
+  gc.get()->ng_state = NGAP_RESETING;
+  // TODO: (8.7.4.2.2, NG Reset initiated by the NG-RAN node @3GPP TS 38.413
+  // V16.0.0) the AMF shall release all allocated resources on NG related to the
+  // UE association(s) indicated explicitly or implicitly in the NG RESET message
+  // and remove the NGAP ID for the indicated UE associations.
+  ResetType reset_type = {};
+  itti_msg.ngReset->getResetType(reset_type);
+  if (reset_type.getResetType() == Ngap_ResetType_PR_nG_Interface) {
+    // Reset all
+    // release all the resources related to this interface
+
+    for (auto ue_context : ranid2uecontext) {
+      if (ue_context.second->gnb_assoc_id == itti_msg.assoc_id) {
+        uint32_t ran_ue_ngap_id = ue_context.second->ran_ue_ngap_id;
+        long amf_ue_ngap_id     = ue_context.second->amf_ue_ngap_id;
+        // get NAS context
+        std::shared_ptr<nas_context> nc;
+        if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+          nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+        else {
+          Logger::amf_n2().warn(
+              "No existed nas_context with amf_ue_ngap_id(0x%x)",
+              amf_ue_ngap_id);
+        }
+        stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
+      }
+    }
+    // delete gNB context
+    Logger::amf_n2().debug("Remove gNB Context %d", itti_msg.assoc_id);
+    remove_gnb_context(itti_msg.assoc_id);
+    stacs.gnbs.erase(gc.get()->globalRanNodeId);
     Logger::amf_n2().debug(
-        "Update gNB context with assoc id (%d)", itti_msg.assoc_id);
+        "Remove gNB with globalRanNodeId %ld", gc.get()->globalRanNodeId);
+    stacs.gNB_connected -= 1;
+  } else if (
+      reset_type.getResetType() == Ngap_ResetType_PR_partOfNG_Interface) {
   }
 
   return;

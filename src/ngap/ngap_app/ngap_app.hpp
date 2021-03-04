@@ -83,6 +83,8 @@ class ngap_app : public sctp_application {
       const long& gnb_id, std::shared_ptr<gnb_context> gc);
   std::shared_ptr<gnb_context> gnb_id_2_gnb_context(const long& gnb_id) const;
 
+  void remove_gnb_context(const long& gnb_id);
+
  protected:
   sctp_server sctp_s_38412;
   uint32_t ppid_;

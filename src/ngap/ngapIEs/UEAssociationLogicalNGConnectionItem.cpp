@@ -84,7 +84,22 @@ void UEAssociationLogicalNGConnectionItem::setRanUeNgapId(
 
 //------------------------------------------------------------------------------
 bool UEAssociationLogicalNGConnectionItem::encode(
-    Ngap_UE_associatedLogicalNG_connectionItem_t& item) {}
+    Ngap_UE_associatedLogicalNG_connectionItem_t& item) {
+  item.aMF_UE_NGAP_ID = new Ngap_AMF_UE_NGAP_ID_t();
+  amfUeNgapId->encode2AMF_UE_NGAP_ID(*item.aMF_UE_NGAP_ID);
+  item.rAN_UE_NGAP_ID = new Ngap_RAN_UE_NGAP_ID_t();
+  ranUeNgapId->encode2RAN_UE_NGAP_ID(*item.rAN_UE_NGAP_ID);
+}
+
+//------------------------------------------------------------------------------
+bool UEAssociationLogicalNGConnectionItem::encode(
+    UEAssociationLogicalNGConnectionItem& item) {
+  item.amfUeNgapId = new AMF_UE_NGAP_ID();
+  item.amfUeNgapId = amfUeNgapId;
+  item.ranUeNgapId = new RAN_UE_NGAP_ID();
+  item.ranUeNgapId = ranUeNgapId;
+}
+
 //------------------------------------------------------------------------------
 bool UEAssociationLogicalNGConnectionItem::decode(
     Ngap_UE_associatedLogicalNG_connectionItem_t* item) {

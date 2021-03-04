@@ -45,13 +45,29 @@ ResetType::ResetType() {
 ResetType::~ResetType() {}
 
 //------------------------------------------------------------------------------
-void ResetType::setResetType(long) {}
+void ResetType::setResetType(long nG_Interface) {
+  this->present      = Ngap_ResetType_PR_nG_Interface;
+  this->nG_Interface = nG_Interface;
+}
 
+void ResetType::setResetType(
+    std::vector<UEAssociationLogicalNGConnectionItem> list) {
+  this->present = Ngap_ResetType_PR_partOfNG_Interface;
+  UEAssociationLogicalNGConnectionItem* item =
+      new UEAssociationLogicalNGConnectionItem[list.size()]();
+  for (int i = 0; i < list.size(); i++) {
+    item[i].encode(list[i]);
+  }
+}
 //------------------------------------------------------------------------------
-bool ResetType::encode(Ngap_ResetType_t* type) {}
+bool ResetType::encode(Ngap_ResetType_t* type) {
+  // TODO:
+  return true;
+}
 
 //------------------------------------------------------------------------------
 bool ResetType::decode(Ngap_ResetType_t* type) {
+  present = type->present;
   if (type->present == Ngap_ResetType_PR_nG_Interface) {
     nG_Interface = (long) type->choice.nG_Interface;
     return true;
@@ -72,14 +88,24 @@ bool ResetType::decode(Ngap_ResetType_t* type) {
 }
 
 //------------------------------------------------------------------------------
-void ResetType::getResetType(long& resetType) {}
+void ResetType::getResetType(long& resetType) {
+  // TODO
+}
+
+uint8_t ResetType::getResetType() {
+  return present;
+}
 
 //------------------------------------------------------------------------------
 void ResetType::getResetType(
-    struct Ngap_UE_associatedLogicalNG_connectionList*& list) {}
+    struct Ngap_UE_associatedLogicalNG_connectionList*& list) {
+  // TODO:
+}
 
 //------------------------------------------------------------------------------
 void ResetType::setUE_associatedLogicalNG_connectionList(
-    const std::vector<UEAssociationLogicalNGConnectionItem> list) {}
+    const std::vector<UEAssociationLogicalNGConnectionItem> list) {
+  // TODO:
+}
 
 }  // namespace ngap

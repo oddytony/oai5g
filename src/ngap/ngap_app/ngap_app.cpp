@@ -153,6 +153,12 @@ std::shared_ptr<gnb_context> ngap_app::gnb_id_2_gnb_context(
 //------------------------------------------------------------------------------
 void ngap_app::set_gnb_id_2_gnb_context(
     const long& gnb_id, std::shared_ptr<gnb_context> gc) {
-  std::shared_lock lock(m_gnbid2gnbContext);
+  std::unique_lock lock(m_gnbid2gnbContext);
   gnbid2gnbContext[gnb_id] = gc;
+}
+
+//------------------------------------------------------------------------------
+void ngap_app::remove_gnb_context(const long& gnb_id) {
+  std::unique_lock lock(m_gnbid2gnbContext);
+  gnbid2gnbContext.erase(gnb_id);
 }

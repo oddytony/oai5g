@@ -98,6 +98,19 @@ void NGResetMsg::getResetType(Ngap_ResetType_t& resetType) {
   // resetType = this->resetType;
 }
 
+bool NGResetMsg::getResetType(ResetType& resetType) {
+  if (!this->resetType) return false;
+
+  if (this->resetType->getResetType() == Ngap_ResetType_PR_nG_Interface) {
+    long ng_interface = 0;
+    this->resetType->getResetType(ng_interface);
+    resetType.setResetType(ng_interface);
+  } else if (
+      this->resetType->getResetType() == Ngap_ResetType_PR_partOfNG_Interface) {
+    // TODO
+  }
+}
+
 //------------------------------------------------------------------------------
 int NGResetMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, ngResetPdu);
@@ -124,7 +137,7 @@ bool NGResetMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
         switch (ngResetIEs->protocolIEs.list.array[i]->id) {
           case Ngap_ProtocolIE_ID_id_Cause: {
             if (ngResetIEs->protocolIEs.list.array[i]->criticality ==
-                    Ngap_Criticality_reject &&
+                    Ngap_Criticality_ignore &&
                 ngResetIEs->protocolIEs.list.array[i]->value.present ==
                     Ngap_NGResetIEs__value_PR_Cause) {
               cause = new Cause();
@@ -141,7 +154,7 @@ bool NGResetMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           } break;
           case Ngap_ProtocolIE_ID_id_ResetType: {
             if (ngResetIEs->protocolIEs.list.array[i]->criticality ==
-                    Ngap_Criticality_ignore &&
+                    Ngap_Criticality_reject &&
                 ngResetIEs->protocolIEs.list.array[i]->value.present ==
                     Ngap_NGResetIEs__value_PR_ResetType) {
               resetType = new ResetType();

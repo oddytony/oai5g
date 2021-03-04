@@ -43,10 +43,12 @@ class ResetType {
   virtual ~ResetType();
 
   void setResetType(long);
+  void setResetType(std::vector<UEAssociationLogicalNGConnectionItem> list);
   bool encode(Ngap_ResetType_t* type);
   bool decode(Ngap_ResetType_t* type);
 
   void getResetType(long&);
+  uint8_t getResetType();
   void getResetType(struct Ngap_UE_associatedLogicalNG_connectionList*&);
 
   void setUE_associatedLogicalNG_connectionList(

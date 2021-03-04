@@ -65,13 +65,14 @@ class statistics {
   ~statistics();
   void update_ue_info(const ue_info_t& ue_info);
   void update_5gmm_state(const std::string& imsi, const std::string& state);
+  void remove_gnb(const uint32_t gnb_id);
 
  public:
   uint32_t gNB_connected;
   uint32_t UE_connected;
   uint32_t UE_registred;
   // uint32_t        system_pdu_sessions;
-  std::vector<gnb_infos> gnbs;
+  std::map<uint32_t, gnb_infos> gnbs;
   std::map<std::string, ue_info_t> ue_infos;
 };
 

@@ -48,6 +48,7 @@ class UEAssociationLogicalNGConnectionItem {
   void setRanUeNgapId(uint32_t id);
 
   bool encode(Ngap_UE_associatedLogicalNG_connectionItem_t& item);
+  bool encode(UEAssociationLogicalNGConnectionItem& item);
   bool decode(Ngap_UE_associatedLogicalNG_connectionItem_t* item);
 
  private:
