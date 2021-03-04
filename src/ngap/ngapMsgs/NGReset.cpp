@@ -51,7 +51,7 @@ NGResetMsg::NGResetMsg() {
   ngResetIEs = nullptr;
   // cause      = {};
   cause     = nullptr;
-  resetType = {};
+  resetType = nullptr;
 }
 //------------------------------------------------------------------------------
 NGResetMsg::~NGResetMsg() {}
@@ -87,7 +87,7 @@ void NGResetMsg::setCause(Ngap_Cause_t cause) {
 
 //------------------------------------------------------------------------------
 void NGResetMsg::setResetType(Ngap_ResetType_t resetType) {
-  this->resetType = resetType;
+  // is->resetType = resetType;
 }
 
 void NGResetMsg::getCause(Ngap_Cause_t& cause) {
@@ -95,7 +95,7 @@ void NGResetMsg::getCause(Ngap_Cause_t& cause) {
 }
 
 void NGResetMsg::getResetType(Ngap_ResetType_t& resetType) {
-  resetType = this->resetType;
+  // resetType = this->resetType;
 }
 
 //------------------------------------------------------------------------------
@@ -131,11 +131,9 @@ bool NGResetMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
               if (!cause->decodefromCause(
                       &ngResetIEs->protocolIEs.list.array[i]
                            ->value.choice.Cause)) {
-                cout << "decoded ngap Cause IE error" << endl;
+                cout << "Decoded NGAP Cause IE error" << endl;
                 return false;
               }
-              // cause =
-              // ngResetIEs->protocolIEs.list.array[i]->value.choice.Cause;
             } else {
               cout << "Decoded NGAP Cause IE error" << endl;
               return false;
@@ -146,8 +144,13 @@ bool NGResetMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                     Ngap_Criticality_ignore &&
                 ngResetIEs->protocolIEs.list.array[i]->value.present ==
                     Ngap_NGResetIEs__value_PR_ResetType) {
-              resetType =
-                  ngResetIEs->protocolIEs.list.array[i]->value.choice.ResetType;
+              resetType = new ResetType();
+              if (!resetType->decode(&ngResetIEs->protocolIEs.list.array[i]
+                                          ->value.choice.ResetType)) {
+                cout << "Decoded NGAP ResetType IE error" << endl;
+                return false;
+              }
+
             } else {
               cout << "Decoded NGAP ResetType IE error" << endl;
               return false;

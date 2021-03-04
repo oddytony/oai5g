@@ -33,6 +33,7 @@
 
 #include "MessageType.hpp"
 #include "Cause.hpp"
+#include "ResetType.hpp"
 
 extern "C" {
 #include "Ngap_NGAP-PDU.h"
@@ -60,9 +61,10 @@ class NGResetMsg {
   Ngap_NGAP_PDU_t* ngResetPdu;
   Ngap_NGReset_t* ngResetIEs;
   // Ngap_Cause_t cause;
-  Ngap_ResetType_t resetType;
+  // Ngap_ResetType_t resetType;
+
   Cause* cause;
-  //  ResetType	 resetType;
+  ResetType* resetType;
 };
 
 }  // namespace ngap
