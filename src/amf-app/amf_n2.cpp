@@ -96,6 +96,11 @@ void amf_n2_task(void* args_p) {
         itti_ng_setup_request* m = dynamic_cast<itti_ng_setup_request*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
+      case NG_RESET: {
+        Logger::amf_n2().info("Received NGReset message, handling");
+        itti_ng_reset* m = dynamic_cast<itti_ng_reset*>(msg);
+        amf_n2_inst->handle_itti_message(ref(*m));
+      } break;
       case INITIAL_UE_MSG: {
         Logger::amf_n2().info("Received INITIAL_UE_MESSAGE message, handling");
         itti_initial_ue_message* m =
@@ -341,6 +346,32 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
       gc.get()->globalRanNodeId, itti_msg.assoc_id);
   stacs.gNB_connected += 1;
   stacs.gnbs.push_back(gnbItem);
+  return;
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::handle_itti_message(itti_ng_reset& itti_msg) {
+  Logger::amf_n2().debug(
+      "Parameters: assoc_id %d, stream %d", itti_msg.assoc_id, itti_msg.stream);
+
+  std::shared_ptr<gnb_context> gc;
+  if (!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
+    Logger::amf_n2().error(
+        "No existed gNB context with assoc_id(%d)", itti_msg.assoc_id);
+    return;
+  }
+  gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
+  if (gc.get()->ng_state == NGAP_RESETING ||
+      gc.get()->ng_state == NGAP_SHUTDOWN) {
+    Logger::amf_n2().warn(
+        "Received new association request on an association that is being %s, "
+        "ignoring",
+        ng_gnb_state_str[gc.get()->ng_state]);
+  } else {
+    Logger::amf_n2().debug(
+        "Update gNB context with assoc id (%d)", itti_msg.assoc_id);
+  }
+
   return;
 }
 

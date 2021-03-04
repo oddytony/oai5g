@@ -32,10 +32,7 @@
 #include "NgapIEsStruct.hpp"
 
 #include "MessageType.hpp"
-#include "GlobalRanNodeId.hpp"
-#include "RanNodeName.hpp"
-#include "DefaultPagingDRX.hpp"
-#include "SupportedTAList.hpp"
+#include "Cause.hpp"
 
 extern "C" {
 #include "Ngap_NGAP-PDU.h"
@@ -62,9 +59,9 @@ class NGResetMsg {
  private:
   Ngap_NGAP_PDU_t* ngResetPdu;
   Ngap_NGReset_t* ngResetIEs;
-  Ngap_Cause_t cause;
+  // Ngap_Cause_t cause;
   Ngap_ResetType_t resetType;
-  //  Cause	 *cause;
+  Cause* cause;
   //  ResetType	 resetType;
 };
 

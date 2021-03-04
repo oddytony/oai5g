@@ -47,10 +47,11 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 NGResetMsg::NGResetMsg() {
-  ngResetPdu = NULL;
-  ngResetIEs = NULL;
-  cause      = {};
-  resetType  = {};
+  ngResetPdu = nullptr;
+  ngResetIEs = nullptr;
+  // cause      = {};
+  cause     = nullptr;
+  resetType = {};
 }
 //------------------------------------------------------------------------------
 NGResetMsg::~NGResetMsg() {}
@@ -81,7 +82,7 @@ void NGResetMsg::setMessageType() {
 
 //------------------------------------------------------------------------------
 void NGResetMsg::setCause(Ngap_Cause_t cause) {
-  this->cause = cause;
+  // this->cause = cause;
 }
 
 //------------------------------------------------------------------------------
@@ -90,7 +91,7 @@ void NGResetMsg::setResetType(Ngap_ResetType_t resetType) {
 }
 
 void NGResetMsg::getCause(Ngap_Cause_t& cause) {
-  cause = this->cause;
+  // cause = this->cause;
 }
 
 void NGResetMsg::getResetType(Ngap_ResetType_t& resetType) {
@@ -126,7 +127,15 @@ bool NGResetMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                     Ngap_Criticality_reject &&
                 ngResetIEs->protocolIEs.list.array[i]->value.present ==
                     Ngap_NGResetIEs__value_PR_Cause) {
-              cause = ngResetIEs->protocolIEs.list.array[i]->value.choice.Cause;
+              cause = new Cause();
+              if (!cause->decodefromCause(
+                      &ngResetIEs->protocolIEs.list.array[i]
+                           ->value.choice.Cause)) {
+                cout << "decoded ngap Cause IE error" << endl;
+                return false;
+              }
+              // cause =
+              // ngResetIEs->protocolIEs.list.array[i]->value.choice.Cause;
             } else {
               cout << "Decoded NGAP Cause IE error" << endl;
               return false;
