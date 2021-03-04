@@ -112,6 +112,46 @@ void ngap_app::handle_sctp_new_association(
 }
 
 //------------------------------------------------------------------------------
+void ngap_app::handle_sctp_shutdown(sctp_assoc_id_t assoc_id) {
+  Logger::ngap().debug(
+      "Handle a SCTP Shutdown event (association id: %d)", assoc_id);
+
+  // remove all the context
+  /*
+    for (auto ue_context : ranid2uecontext) {
+      if (ue_context.second->gnb_assoc_id == itti_msg.assoc_id) {
+        uint32_t ran_ue_ngap_id = ue_context.second->ran_ue_ngap_id;
+        long amf_ue_ngap_id     = ue_context.second->amf_ue_ngap_id;
+        // get NAS context
+        std::shared_ptr<nas_context> nc;
+        if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+          nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+        else {
+          Logger::amf_n2().warn(
+              "No existed nas_context with amf_ue_ngap_id(0x%x)",
+              amf_ue_ngap_id);
+        }
+        stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
+      }
+    }
+  */
+  // delete gNB context
+  Logger::ngap().debug("Remove gNB Context %d", assoc_id);
+  remove_gnb_context(assoc_id);
+  /*
+    stacs.gnbs.erase(gc.get()->globalRanNodeId);
+    Logger::amf_n2().debug(
+        "Remove gNB with globalRanNodeId 0x%x", gc.get()->globalRanNodeId);
+    stacs.gNB_connected -= 1;
+
+    stacs.display();
+  */
+
+  // Handle the message
+  (*events_callback[1])(assoc_id);
+}
+
+//------------------------------------------------------------------------------
 uint32_t ngap_app::getPpid() {
   return ppid_;
 }

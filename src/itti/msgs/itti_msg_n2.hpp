@@ -77,6 +77,13 @@ class itti_ng_reset : public itti_msg_n2 {
   NGResetMsg* ngReset;
 };
 
+class itti_ng_shutdown : public itti_msg_n2 {
+ public:
+  itti_ng_shutdown(const task_id_t origin, const task_id_t destination)
+      : itti_msg_n2(NG_SHUTDOWN, origin, destination) {}
+  itti_ng_shutdown(const itti_ng_shutdown& i) : itti_msg_n2(i) {}
+};
+
 class itti_initial_ue_message : public itti_msg_n2 {
  public:
   itti_initial_ue_message(const task_id_t origin, const task_id_t destination)

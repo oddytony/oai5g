@@ -48,6 +48,7 @@ class amf_n2 : public ngap::ngap_app {
   void handle_itti_message(itti_new_sctp_association& new_assoc);
   void handle_itti_message(itti_ng_setup_request& ngsetupreq);
   void handle_itti_message(itti_ng_reset&);
+  void handle_itti_message(itti_ng_shutdown&);
   void handle_itti_message(itti_initial_ue_message& init_ue_msg);
   void handle_itti_message(itti_ul_nas_transport& ul_nas_transport);
   void handle_itti_message(itti_dl_nas_transport& dl_nas_transport);

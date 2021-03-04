@@ -101,6 +101,11 @@ void amf_n2_task(void* args_p) {
         itti_ng_reset* m = dynamic_cast<itti_ng_reset*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
+      case NG_SHUTDOWN: {
+        Logger::amf_n2().info("Received SCTP Shutdown Event, handling");
+        itti_ng_shutdown* m = dynamic_cast<itti_ng_shutdown*>(msg);
+        amf_n2_inst->handle_itti_message(ref(*m));
+      } break;
       case INITIAL_UE_MSG: {
         Logger::amf_n2().info("Received INITIAL_UE_MESSAGE message, handling");
         itti_initial_ue_message* m =
@@ -365,14 +370,13 @@ void amf_n2::handle_itti_message(itti_ng_reset& itti_msg) {
   gc.get()->ng_state = NGAP_RESETING;
   // TODO: (8.7.4.2.2, NG Reset initiated by the NG-RAN node @3GPP TS 38.413
   // V16.0.0) the AMF shall release all allocated resources on NG related to the
-  // UE association(s) indicated explicitly or implicitly in the NG RESET message
-  // and remove the NGAP ID for the indicated UE associations.
+  // UE association(s) indicated explicitly or implicitly in the NG RESET
+  // message and remove the NGAP ID for the indicated UE associations.
   ResetType reset_type = {};
   itti_msg.ngReset->getResetType(reset_type);
   if (reset_type.getResetType() == Ngap_ResetType_PR_nG_Interface) {
     // Reset all
     // release all the resources related to this interface
-
     for (auto ue_context : ranid2uecontext) {
       if (ue_context.second->gnb_assoc_id == itti_msg.assoc_id) {
         uint32_t ran_ue_ngap_id = ue_context.second->ran_ue_ngap_id;
@@ -389,17 +393,54 @@ void amf_n2::handle_itti_message(itti_ng_reset& itti_msg) {
         stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
       }
     }
-    // delete gNB context
-    Logger::amf_n2().debug("Remove gNB Context %d", itti_msg.assoc_id);
-    remove_gnb_context(itti_msg.assoc_id);
-    stacs.gnbs.erase(gc.get()->globalRanNodeId);
-    Logger::amf_n2().debug(
-        "Remove gNB with globalRanNodeId %ld", gc.get()->globalRanNodeId);
-    stacs.gNB_connected -= 1;
+    stacs.display();
   } else if (
       reset_type.getResetType() == Ngap_ResetType_PR_partOfNG_Interface) {
+    // TODO:
   }
 
+  return;
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::handle_itti_message(itti_ng_shutdown& itti_msg) {
+  Logger::amf_n2().debug("Parameters: assoc_id %d", itti_msg.assoc_id);
+
+  std::shared_ptr<gnb_context> gc;
+  if (!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
+    Logger::amf_n2().error(
+        "No existed gNB context with assoc_id(%d)", itti_msg.assoc_id);
+    return;
+  }
+  gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
+
+  gc.get()->ng_state = NGAP_SHUTDOWN;
+
+  // release all the resources related to this interface
+  for (auto ue_context : ranid2uecontext) {
+    if (ue_context.second->gnb_assoc_id == itti_msg.assoc_id) {
+      uint32_t ran_ue_ngap_id = ue_context.second->ran_ue_ngap_id;
+      long amf_ue_ngap_id     = ue_context.second->amf_ue_ngap_id;
+      // get NAS context
+      std::shared_ptr<nas_context> nc;
+      if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+        nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+      else {
+        Logger::amf_n2().warn(
+            "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+      }
+      stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
+    }
+  }
+
+  // Delete gNB context
+  Logger::amf_n2().debug("Remove gNB Context %d", itti_msg.assoc_id);
+  remove_gnb_context(itti_msg.assoc_id);
+  stacs.gnbs.erase(gc.get()->globalRanNodeId);
+  Logger::amf_n2().debug(
+      "Remove gNB with globalRanNodeId 0x%x", gc.get()->globalRanNodeId);
+  stacs.gNB_connected -= 1;
+  stacs.display();
   return;
 }
 

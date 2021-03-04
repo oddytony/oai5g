@@ -58,6 +58,8 @@ typedef int (*ngap_message_decoded_callback)(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p);
 
+typedef void (*ngap_event_callback)(const sctp_assoc_id_t assoc_id);
+
 //------------------------------------------------------------------------------
 int ngap_amf_handle_ng_setup_request(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
@@ -998,6 +1000,29 @@ ngap_message_decoded_callback messages_callback[][3] = {
     {0, 0, 0},                              /*WriteReplaceWarning*/
     {0, 0, 0}                               /*WriteReplaceWarning*/
 
+};
+
+//------------------------------------------------------------------------------
+void ngap_sctp_shutdown(const sctp_assoc_id_t assoc_id) {
+  Logger::ngap().debug("Sending ITTI SCTP Shutdown event to TASK_AMF_N2");
+
+  itti_ng_shutdown* itti_msg = new itti_ng_shutdown(TASK_NGAP, TASK_AMF_N2);
+  itti_msg->assoc_id         = assoc_id;
+  std::shared_ptr<itti_ng_shutdown> i =
+      std::shared_ptr<itti_ng_shutdown>(itti_msg);
+  int ret = itti_inst->send_msg(i);
+  if (0 != ret) {
+    Logger::ngap().error(
+        "Could not send ITTI message %s to task TASK_AMF_N2",
+        i->get_msg_name());
+  }
+  return;
+}
+
+//------------------------------------------------------------------------------
+ngap_event_callback events_callback[][1] = {
+    {ngap_sctp_shutdown},
+    {0} /*reserved*/
 };
 
 #endif
