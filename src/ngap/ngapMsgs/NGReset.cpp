@@ -49,9 +49,8 @@ namespace ngap {
 NGResetMsg::NGResetMsg() {
   ngResetPdu = nullptr;
   ngResetIEs = nullptr;
-  // cause      = {};
-  cause     = nullptr;
-  resetType = nullptr;
+  cause      = nullptr;
+  resetType  = nullptr;
 }
 //------------------------------------------------------------------------------
 NGResetMsg::~NGResetMsg() {}
@@ -74,7 +73,7 @@ void NGResetMsg::setMessageType() {
     NgResetMessageTypeIE.encode2pdu(ngResetPdu);
     ngResetIEs = &(ngResetPdu->choice.initiatingMessage->value.choice.NGReset);
   } else {
-    cout << "[warning] This information doesn't refer to NGReset "
+    cout << "[Warning] This information doesn't refer to NGReset "
             "Message!!!"
          << endl;
   }

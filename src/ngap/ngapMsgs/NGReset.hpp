@@ -61,8 +61,6 @@ class NGResetMsg {
  private:
   Ngap_NGAP_PDU_t* ngResetPdu;
   Ngap_NGReset_t* ngResetIEs;
-  // Ngap_Cause_t cause;
-  // Ngap_ResetType_t resetType;
 
   Cause* cause;
   ResetType* resetType;
