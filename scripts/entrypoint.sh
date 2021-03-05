@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-CONFIG_DIR="/oai-cn5g-amf/etc"
+CONFIG_DIR="/openair-amf/etc"
 PUSH_PROTOCOL_OPTION=${PUSH_PROTOCOL_OPTION:-no}
 
 for c in ${CONFIG_DIR}/*.conf; do
