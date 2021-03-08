@@ -583,19 +583,25 @@ void amf_n1::service_request_handle(
   uint16_t pdu_session_status       = (uint16_t) serReq->getPduSessionStatus();
   uint8_t pdu_sessino_status_byte_1 = uint8_t(pdu_session_status & 0x00ff);
   uint8_t pdu_sessino_status_byte_2 = uint8_t(pdu_session_status >> 8);
-  for (int i = 1; i < 7; i++) {
-    if (pdu_sessino_status_byte_1 % (uint16_t)(pow(2, i)) == 1) {
+  for (int i = 0; i < 8; i++) {
+    if (pdu_sessino_status_byte_1 % (uint8_t)(pow(2, i)) == 1) {
+      pdu_session_to_be_activated.push_back(i + 8);
+    }
+  }
+  for (int i = 1; i < 8; i++) {
+    if (pdu_sessino_status_byte_2 % (uint8_t)(pow(2, i)) == 1) {
       pdu_session_to_be_activated.push_back(i);
     }
   }
-  for (int i = 0; i < 7; i++) {
-    if (pdu_sessino_status_byte_2 % (uint16_t)(pow(2, i)) == 1) {
-      pdu_session_to_be_activated.push_back(i + 8);
-    }
+
+  if (pdu_session_to_be_activated.size() > 0) {
+    for (auto i : pdu_session_to_be_activated)
+      Logger::amf_n1().debug("PDU session to be activated %d", i);
   }
 
   // No PDU Sessions To Be Activated
   if (pdu_session_to_be_activated.size() == 0) {
+    Logger::amf_n1().debug("There is no PDU session to be activated");
     serApt->setPDU_session_status(0x0000);
     uint8_t buffer[BUFFER_SIZE_256];
     int encoded_size = serApt->encode2buffer(buffer, BUFFER_SIZE_256);
@@ -631,9 +637,9 @@ void amf_n1::service_request_handle(
 
   } else {
     // TODO: Contact SMF to activate UP for these sessions
-
     // DO for 1 PDU session ID for now
-    serApt->setPDU_session_status(0x2000);  // PSI 1 (0x0200), should be updated
+    serApt->setPDU_session_status(
+        serReq->getPduSessionStatus());  // PSI 1 (0x0200), should be updated
     serApt->setPDU_session_reactivation_result(0x0000);
     uint8_t buffer[BUFFER_SIZE_256];
     int encoded_size = serApt->encode2buffer(buffer, BUFFER_SIZE_256);
@@ -657,13 +663,13 @@ void amf_n1::service_request_handle(
     itti_msg->is_sr          = true;  // service request indicator
     itti_msg->pdu_session_id = 1;     // PSI 1, should be updated
     itti_msg->is_pdu_exist   = true;
-    // if (psc.get()->isn2sm_avaliable) {
-    //  itti_msg->n2sm             = psc.get()->n2sm;
-    //  itti_msg->isn2sm_avaliable = true;
-    //} else {
-    itti_msg->isn2sm_avaliable = false;
-    // Logger::amf_n1().error("Cannot get pdu session information");
-    //}
+    if (psc.get()->isn2sm_avaliable) {
+      itti_msg->n2sm             = psc.get()->n2sm;
+      itti_msg->isn2sm_avaliable = true;
+    } else {
+      itti_msg->isn2sm_avaliable = false;
+      Logger::amf_n1().error("Cannot get pdu session information");
+    }
     std::shared_ptr<itti_initial_context_setup_request> i =
         std::shared_ptr<itti_initial_context_setup_request>(itti_msg);
     int ret = itti_inst->send_msg(i);
@@ -1941,12 +1947,12 @@ void amf_n1::encode_nas_message_protected(
     case INTEGRITY_PROTECTED_AND_CIPHERED: {
       bstring input = blk2bstr(input_nas_buf, input_nas_len);
       bstring ciphered;
-      //balloc(ciphered, blength(input));
+      // balloc(ciphered, blength(input));
       nas_message_cipher_protected(nsc, NAS_MESSAGE_DOWNLINK, input, ciphered);
       protected_nas_buf[0] = EPD_5GS_MM_MSG;
       protected_nas_buf[1] = INTEGRITY_PROTECTED_AND_CIPHERED;
       protected_nas_buf[6] = (uint8_t) nsc->dl_count.seq_num;
-      //if (bdata(ciphered) != nullptr)
+      // if (bdata(ciphered) != nullptr)
       memcpy(
           &protected_nas_buf[7], (uint8_t*) bdata(ciphered), blength(ciphered));
 
