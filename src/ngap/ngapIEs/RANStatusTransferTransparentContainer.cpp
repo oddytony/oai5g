@@ -54,7 +54,7 @@ bool RANStatusTransferTransparentContainer::
     decoderanstatustransfer_transparentcontainer(
         Ngap_RANStatusTransfer_TransparentContainer_t*
             ranstatustransfer_transparentcontainer) {
-  drb_sub_list = new dRBSubjectList();
+  if (drb_sub_list == nullptr) drb_sub_list = new dRBSubjectList();
   if (!drb_sub_list->decodefromdRBSubjectlist(
           ranstatustransfer_transparentcontainer
               ->dRBsSubjectToStatusTransferList)) {

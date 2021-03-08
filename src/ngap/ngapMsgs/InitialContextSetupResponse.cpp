@@ -34,6 +34,7 @@ extern "C" {
 #include "per_encoder.h"
 #include "per_decoder.h"
 #include "constraints.h"
+#include "dynamic_memory_check.h"
 }
 
 #include <iostream>
@@ -102,11 +103,13 @@ void InitialContextSetupResponseMsg::setAmfUeNgapId(unsigned long id) {
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     std::cout << "Encode AMF_UE_NGAP_ID IE error" << std::endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupResponseIEs->protocolIEs.list, ie);
   if (ret != 0) std::cout << "Encode AMF_UE_NGAP_ID IE error" << std::endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -125,11 +128,13 @@ void InitialContextSetupResponseMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     std::cout << "Encode RAN_UE_NGAP_ID IE error" << std::endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupResponseIEs->protocolIEs.list, ie);
   if (ret != 0) std::cout << "Encode RAN_UE_NGAP_ID IE error" << std::endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -167,6 +172,7 @@ void InitialContextSetupResponseMsg::setPduSessionResourceSetupResponseList(
   if (!ret) {
     std::cout << "Encode PDUSessionResourceSetupListCxtRes IE error"
               << std::endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
@@ -174,6 +180,7 @@ void InitialContextSetupResponseMsg::setPduSessionResourceSetupResponseList(
   if (ret != 0)
     std::cout << "Encode PDUSessionResourceSetupListCxtRes IE error"
               << std::endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -216,6 +223,7 @@ void InitialContextSetupResponseMsg::setPduSessionResourceFailedToSetupList(
   if (!ret) {
     std::cout << "Encode PDUSessionResourceFailedToSetupListCxtRes IE error"
               << std::endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
@@ -223,6 +231,7 @@ void InitialContextSetupResponseMsg::setPduSessionResourceFailedToSetupList(
   if (ret != 0)
     std::cout << "Encode PDUSessionResourceFailedToSetupListCxtRes IE error"
               << std::endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

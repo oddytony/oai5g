@@ -34,11 +34,19 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 UENetworkCapability::UENetworkCapability(uint8_t iei) {
-  _iei = iei;
+  _iei       = iei;
+  _5g_EEASel = 0;
+  _5g_EIASel = 0;
+  length     = 0;
 }
 
 //------------------------------------------------------------------------------
-UENetworkCapability::UENetworkCapability() {}
+UENetworkCapability::UENetworkCapability() {
+  _iei       = 0;
+  _5g_EEASel = 0;
+  _5g_EIASel = 0;
+  length     = 0;
+}
 
 //------------------------------------------------------------------------------
 UENetworkCapability::~UENetworkCapability() {}

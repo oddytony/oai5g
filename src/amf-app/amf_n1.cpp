@@ -673,112 +673,6 @@ void amf_n1::service_request_handle(
           i->get_msg_name());
     }
   }
-  //
-  /*
-   //TODO: get the pdu_session_context from AMF_APP based on both SUPI and PDU
-   Session ID string ue_context_key = "app_ue_ranid_" +
-   to_string(ran_ue_ngap_id) +
-                            ":amfid_" + to_string(amf_ue_ngap_id);
-    std::shared_ptr<ue_context> uc;
-
-    uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
-    if (uc.get() !=nullptr){
-            if (!uc.get()->find_pdu_session_context(pdu_session_id,psc)) {
-            }
-    }
-    //TO check: in which condition we should have PDU Session ID
-  */
-  /*
-    if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
-      psc = amf_n11_inst->supi_to_pdu_ctx(supi);
-      if (!psc) {
-        Logger::amf_n1().error("Cannot get pdu_session_context");
-        return;
-      }
-    } else {
-      Logger::amf_n1().error(
-          "Cannot get pdu_session_context with SUPI %s", supi.c_str());
-    }
-
-    // TODO: is_supi_to_pdu_ctx should be removed
-    if (!amf_n11_inst->is_supi_to_pdu_ctx(supi) || !psc.get()->isn2sm_avaliable)
-    { Logger::amf_n1().error( "Cannot get pdu session information with supi
-    (%s)", supi.c_str()); if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
-        psc.get()->isn2sm_avaliable = true;
-      }
-      serApt->setPDU_session_status(0x0000);
-      uint8_t buffer[BUFFER_SIZE_256];
-      int encoded_size = serApt->encode2buffer(buffer, BUFFER_SIZE_256);
-      bstring protectedNas;
-      encode_nas_message_protected(
-          secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
-          buffer, encoded_size, protectedNas);
-      uint8_t* kamf = nc.get()->kamf[secu->vector_pointer];
-      uint8_t kgnb[32];
-      uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow <<
-    8); Logger::amf_n1().debug("uplink count(%d)", secu->ul_count.seq_num);
-      print_buffer("amf_n1", "kamf", kamf, 32);
-      Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
-      bstring kgnb_bs = blk2bstr(kgnb, 32);
-
-      itti_initial_context_setup_request* itti_msg =
-          new itti_initial_context_setup_request(TASK_AMF_N1, TASK_AMF_N2);
-      itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
-      itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
-      itti_msg->nas            = protectedNas;
-      itti_msg->kgnb           = kgnb_bs;
-      itti_msg->is_sr          = true;  // service request indicator
-      itti_msg->is_pdu_exist   = false;
-      std::shared_ptr<itti_initial_context_setup_request> i =
-          std::shared_ptr<itti_initial_context_setup_request>(itti_msg);
-      int ret = itti_inst->send_msg(i);
-      if (0 != ret) {
-        Logger::amf_n1().error(
-            "Could not send ITTI message %s to task TASK_AMF_N2",
-            i->get_msg_name());
-      }
-      return;
-    }
-    serApt->setPDU_session_status(0x2000);
-    serApt->setPDU_session_reactivation_result(0x0000);
-    uint8_t buffer[BUFFER_SIZE_256];
-    int encoded_size = serApt->encode2buffer(buffer, BUFFER_SIZE_256);
-    bstring protectedNas;
-    encode_nas_message_protected(
-        secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
-        buffer, encoded_size, protectedNas);
-    uint8_t* kamf = nc.get()->kamf[secu->vector_pointer];
-    uint8_t kgnb[32];
-    uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
-    Logger::amf_n1().debug("uplink count(%d)", secu->ul_count.seq_num);
-    print_buffer("amf_n1", "kamf", kamf, 32);
-    Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
-    bstring kgnb_bs = blk2bstr(kgnb, 32);
-    itti_initial_context_setup_request* itti_msg =
-        new itti_initial_context_setup_request(TASK_AMF_N1, TASK_AMF_N2);
-    itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
-    itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
-    itti_msg->nas            = protectedNas;
-    itti_msg->kgnb           = kgnb_bs;
-    itti_msg->is_sr          = true;  // service request indicator
-    itti_msg->pdu_session_id = psc.get()->pdu_session_id;
-    itti_msg->is_pdu_exist   = true;
-    if (psc.get()->isn2sm_avaliable) {
-      itti_msg->n2sm             = psc.get()->n2sm;
-      itti_msg->isn2sm_avaliable = true;
-    } else {
-      itti_msg->isn2sm_avaliable = false;
-      Logger::amf_n1().error("Cannot get pdu session information");
-    }
-    std::shared_ptr<itti_initial_context_setup_request> i =
-        std::shared_ptr<itti_initial_context_setup_request>(itti_msg);
-    int ret = itti_inst->send_msg(i);
-    if (0 != ret) {
-      Logger::amf_n1().error(
-          "Could not send ITTI message %s to task TASK_AMF_N2",
-          i->get_msg_name());
-    }
-    */
 }
 
 //------------------------------------------------------------------------------
@@ -899,7 +793,7 @@ void amf_n1::registration_request_handle(
         nc.get()->serving_network            = snn;
         nc.get()->is_5g_guti_present         = true;
         nc.get()->to_be_register_by_new_suci = true;
-        nc.get()->ngKsi                      = 100;
+        nc.get()->ngKsi                      = 100 & 0xf;
         // supi2amfId[("imsi-"+nc.get()->imsi)] = amf_ue_ngap_id;
         // supi2ranId[("imsi-"+nc.get()->imsi)] = ran_ue_ngap_id;
       }
@@ -1049,7 +943,9 @@ void amf_n1::registration_request_handle(
 
 //------------------------------------------------------------------------------
 // authentication vector handlers
-bool amf_n1::generate_authentication_vector() {}
+bool amf_n1::generate_authentication_vector() {
+  return true;
+}
 
 // context management functions
 //------------------------------------------------------------------------------
@@ -1413,6 +1309,7 @@ bool amf_n1::authentication_vectors_generator_in_udm(
     Logger::amf_n1().error("Failed to fetch user data from MySQL");
     return false;
   }
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -1836,7 +1733,9 @@ bool amf_n1::start_security_mode_control_procedure(
     nc.get()->is_current_security_available = true;
   }
 
-  SecurityModeCommand* smc = new SecurityModeCommand();
+  // SecurityModeCommand* smc = new SecurityModeCommand();
+  std::unique_ptr<SecurityModeCommand> smc =
+      std::make_unique<SecurityModeCommand>();
   smc->setHeader(PLAIN_5GS_MSG);
   smc->setNAS_Security_Algorithms(amf_nea, amf_nia);
   Logger::amf_n1().debug("Encoded ngKSI 0x%x", nc.get()->ngKsi);
@@ -1859,6 +1758,7 @@ bool amf_n1::start_security_mode_control_procedure(
   itti_send_dl_nas_buffer_to_task_n2(
       intProtctedNas, nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id);
   // secu_ctx->dl_count.seq_num ++;
+  free_wrapper((void**) &data);
   return true;
 }
 
@@ -2041,12 +1941,15 @@ void amf_n1::encode_nas_message_protected(
     case INTEGRITY_PROTECTED_AND_CIPHERED: {
       bstring input = blk2bstr(input_nas_buf, input_nas_len);
       bstring ciphered;
+      //balloc(ciphered, blength(input));
       nas_message_cipher_protected(nsc, NAS_MESSAGE_DOWNLINK, input, ciphered);
       protected_nas_buf[0] = EPD_5GS_MM_MSG;
       protected_nas_buf[1] = INTEGRITY_PROTECTED_AND_CIPHERED;
       protected_nas_buf[6] = (uint8_t) nsc->dl_count.seq_num;
+      //if (bdata(ciphered) != nullptr)
       memcpy(
           &protected_nas_buf[7], (uint8_t*) bdata(ciphered), blength(ciphered));
+
       uint32_t mac32;
       if (!(nas_message_integrity_protected(
               nsc, NAS_MESSAGE_DOWNLINK, protected_nas_buf + 6,
@@ -2060,8 +1963,9 @@ void amf_n1::encode_nas_message_protected(
     } break;
 
     case INTEGRITY_PROTECTED_WITH_NEW_SECU_CTX: {
-      if (!nsc || !is_secu_ctx_new) {
+      if ((nsc == nullptr) || !is_secu_ctx_new) {
         Logger::amf_n1().error("Security context is too old");
+        return;
       }
       protected_nas_buf[0] = EPD_5GS_MM_MSG;
       protected_nas_buf[1] = INTEGRITY_PROTECTED_WITH_NEW_SECU_CTX;
@@ -2091,6 +1995,7 @@ void amf_n1::encode_nas_message_protected(
 bool amf_n1::nas_message_integrity_protected(
     nas_secu_ctx* nsc, uint8_t direction, uint8_t* input_nas, int input_nas_len,
     uint32_t& mac32) {
+  if (nsc == nullptr) return false;
   uint32_t count = 0x00000000;
   if (direction)
     count = 0x00000000 | ((nsc->dl_count.overflow & 0x0000ffff) << 8) |
@@ -2146,6 +2051,7 @@ bool amf_n1::nas_message_integrity_protected(
       return true;
     } break;
   }
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -2190,6 +2096,7 @@ bool amf_n1::nas_message_cipher_protected(
           &stream_cipher, (uint8_t*) bdata(output_nas));
     } break;
   }
+  return true;
 }
 
 //------------------------------------------------------------------------------

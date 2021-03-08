@@ -32,7 +32,8 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 MA_PDU_Session_Information::MA_PDU_Session_Information(uint8_t iei) {
-  _iei = iei;
+  _iei   = iei;
+  _value = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -43,7 +44,10 @@ MA_PDU_Session_Information::MA_PDU_Session_Information(
 }
 
 //------------------------------------------------------------------------------
-MA_PDU_Session_Information::MA_PDU_Session_Information() {}
+MA_PDU_Session_Information::MA_PDU_Session_Information() {
+  _iei   = 0;
+  _value = 0;
+}
 
 //------------------------------------------------------------------------------
 MA_PDU_Session_Information::~MA_PDU_Session_Information() {}

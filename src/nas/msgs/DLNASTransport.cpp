@@ -224,4 +224,5 @@ int DLNASTransport::decodefrombuffer(
   }
   Logger::nas_mm().debug(
       "Decoded DLNASTransport message len (%d)", decoded_size);
+  return 1;
 }

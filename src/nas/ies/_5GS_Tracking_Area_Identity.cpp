@@ -32,7 +32,13 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 _5GS_Tracking_Area_Identity::_5GS_Tracking_Area_Identity(uint8_t iei) {
-  _iei = iei;
+  _iei      = iei;
+  _MNC_MCC1 = 0;
+  _MNC_MCC2 = 0;
+  _MNC_MCC3 = 0;
+  _TAC1     = 0;
+  _TAC2     = 0;
+  _TAC3     = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -55,7 +61,15 @@ _5GS_Tracking_Area_Identity::_5GS_Tracking_Area_Identity(
 }
 
 //------------------------------------------------------------------------------
-_5GS_Tracking_Area_Identity::_5GS_Tracking_Area_Identity() {}
+_5GS_Tracking_Area_Identity::_5GS_Tracking_Area_Identity() {
+  _iei      = 0;
+  _MNC_MCC1 = 0;
+  _MNC_MCC2 = 0;
+  _MNC_MCC3 = 0;
+  _TAC1     = 0;
+  _TAC2     = 0;
+  _TAC3     = 0;
+}
 _5GS_Tracking_Area_Identity::~_5GS_Tracking_Area_Identity() {}
 
 //------------------------------------------------------------------------------

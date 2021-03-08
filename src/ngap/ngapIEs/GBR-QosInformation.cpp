@@ -35,9 +35,13 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 GBR_QosInformation::GBR_QosInformation() {
-  notificationControl     = NULL;
-  maximumPacketLossRateDL = NULL;
-  maximumPacketLossRateUL = NULL;
+  notificationControl     = nullptr;
+  maximumPacketLossRateDL = nullptr;
+  maximumPacketLossRateUL = nullptr;
+  maximumFlowBitRateDL    = 0;
+  maximumFlowBitRateUL    = 0;
+  guaranteedFlowBitRateDL = 0;
+  guaranteedFlowBitRateUL = 0;
 }
 
 //------------------------------------------------------------------------------

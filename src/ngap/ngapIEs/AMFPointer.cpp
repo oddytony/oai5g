@@ -35,7 +35,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-AMFPointer::AMFPointer() {}
+AMFPointer::AMFPointer() {
+  pointer = 0;
+}
 
 //------------------------------------------------------------------------------
 AMFPointer::~AMFPointer() {}

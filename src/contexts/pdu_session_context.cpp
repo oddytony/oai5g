@@ -33,6 +33,17 @@ pdu_session_context::pdu_session_context() {
   smf_available    = false;
   isn2sm_avaliable = false;
   isn1sm_avaliable = false;
+  ran_ue_ngap_id   = 0;
+  amf_ue_ngap_id   = 0;
+  req_type         = 0;
+  pdu_session_id   = 0;
+  // bstring n2sm;
+  isn2sm_avaliable = false;
+  // bstring n1sm;
+  isn1sm_avaliable = false;
+  smf_available    = false;
+  snssai           = {};
+  plmn             = {};
 }
 
 //------------------------------------------------------------------------------

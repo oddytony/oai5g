@@ -143,4 +143,5 @@ int AuthenticationFailure::decodefrombuffer(
   }
   Logger::nas_mm().debug(
       "Decoded AuthenticationFailure message len (%d)", decoded_size);
+  return 1;
 }

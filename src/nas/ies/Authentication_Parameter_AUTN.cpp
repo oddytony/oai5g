@@ -31,7 +31,8 @@
 using namespace nas;
 
 //------------------------------------------------------------------------------
-Authentication_Parameter_AUTN::Authentication_Parameter_AUTN(uint8_t iei) {
+Authentication_Parameter_AUTN::Authentication_Parameter_AUTN(uint8_t iei)
+    : _value() {
   _iei = iei;
 }
 
@@ -45,7 +46,8 @@ Authentication_Parameter_AUTN::Authentication_Parameter_AUTN(
 }
 
 //------------------------------------------------------------------------------
-Authentication_Parameter_AUTN::Authentication_Parameter_AUTN() {}
+Authentication_Parameter_AUTN::Authentication_Parameter_AUTN()
+    : _iei(), _value() {}
 
 //------------------------------------------------------------------------------
 Authentication_Parameter_AUTN::~Authentication_Parameter_AUTN() {}
@@ -54,7 +56,7 @@ Authentication_Parameter_AUTN::~Authentication_Parameter_AUTN() {}
 uint8_t* Authentication_Parameter_AUTN::getValue() {
   // for (int j = 0; j < 16; j++) {
   //	Logger::nas_mm().debug("decoded Authentication_Response_Parameter
-  //value(0x%2x)", _value[j]);
+  // value(0x%2x)", _value[j]);
   //}
   return _value;
 }

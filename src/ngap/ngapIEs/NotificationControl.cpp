@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-NotificationControl::NotificationControl() {}
+NotificationControl::NotificationControl() {
+  notificationcontrol = 0;
+}
 
 //------------------------------------------------------------------------------
 NotificationControl::~NotificationControl() {}

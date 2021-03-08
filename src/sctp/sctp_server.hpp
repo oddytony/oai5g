@@ -83,8 +83,9 @@ class sctp_application {
       sctp_stream_id_t instreams, sctp_stream_id_t outstreams) = 0;
   virtual void handle_sctp_new_association(
       sctp_assoc_id_t assoc_id, sctp_stream_id_t instreams,
-      sctp_stream_id_t outstreams) = 0;
-  virtual uint32_t getPpid()       = 0;
+      sctp_stream_id_t outstreams)                            = 0;
+  virtual void handle_sctp_shutdown(sctp_assoc_id_t assoc_id) = 0;
+  virtual uint32_t getPpid()                                  = 0;
 };
 
 class sctp_server {

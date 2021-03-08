@@ -58,8 +58,8 @@ bool GlobalgNBId::encode2GlobalgNBId(Ngap_GlobalGNB_ID_t* globalgnbid) {
 
 //------------------------------------------------------------------------------
 bool GlobalgNBId::decodefromGlobalgNBId(Ngap_GlobalGNB_ID_t* globalgnbid) {
-  plmnId = new PlmnId();
-  gNB_ID = new GNB_ID();
+  if (plmnId == nullptr) plmnId = new PlmnId();
+  if (gNB_ID == nullptr) gNB_ID = new GNB_ID();
   if (!plmnId->decodefromoctetstring(globalgnbid->pLMNIdentity)) return false;
   if (!gNB_ID->decodefrombitstring(globalgnbid->gNB_ID)) return false;
 

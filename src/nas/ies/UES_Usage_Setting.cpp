@@ -32,7 +32,8 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 UES_Usage_Setting::UES_Usage_Setting(uint8_t iei) {
-  _iei = iei;
+  _iei               = iei;
+  _ues_usage_setting = false;
 }
 
 //------------------------------------------------------------------------------
@@ -43,7 +44,10 @@ UES_Usage_Setting::UES_Usage_Setting(
 }
 
 //------------------------------------------------------------------------------
-UES_Usage_Setting::UES_Usage_Setting() {}
+UES_Usage_Setting::UES_Usage_Setting() {
+  _iei               = 0;
+  _ues_usage_setting = false;
+}
 
 //------------------------------------------------------------------------------
 UES_Usage_Setting::~UES_Usage_Setting() {}

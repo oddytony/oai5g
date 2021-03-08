@@ -31,7 +31,8 @@ using namespace std;
 
 namespace ngap {
 QosFlowItemWithDataForWarding::QosFlowItemWithDataForWarding() {
-  qosFlowIdentifier = NULL;
+  qosFlowIdentifier = nullptr;
+  value             = 0;
 }
 QosFlowItemWithDataForWarding::~QosFlowItemWithDataForWarding() {}
 void QosFlowItemWithDataForWarding::getQosFlowItemWithDataForWarding(
@@ -46,7 +47,7 @@ void QosFlowItemWithDataForWarding::getQosFlowItemWithDataForWarding(
 }
 bool QosFlowItemWithDataForWarding::decodeformQosFlowItemWithDataForWarding(
     Ngap_QosFlowSetupResponseItemHOReqAck_t* qosFlowItemWithDataForWarding) {
-  qosFlowIdentifier = new QosFlowIdentifier();
+  if (qosFlowIdentifier == nullptr) qosFlowIdentifier = new QosFlowIdentifier();
   if (!qosFlowIdentifier->decodefromQosFlowIdentifier(
           &(qosFlowItemWithDataForWarding->qosFlowIdentifier))) {
     printf("false\n");

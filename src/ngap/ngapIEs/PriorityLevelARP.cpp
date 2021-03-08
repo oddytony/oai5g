@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PriorityLevelARP::PriorityLevelARP() {}
+PriorityLevelARP::PriorityLevelARP() {
+  prioritylevelarp = 0;
+}
 
 //------------------------------------------------------------------------------
 PriorityLevelARP::~PriorityLevelARP() {}

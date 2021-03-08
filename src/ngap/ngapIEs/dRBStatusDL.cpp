@@ -52,7 +52,7 @@ bool dRBStatusDL::encodedRBStatusDL(Ngap_DRBStatusDL_t* dL) {
   return true;
 }
 bool dRBStatusDL::decodedRBStatusDL(Ngap_DRBStatusDL_t* dL) {
-  dl18 = new DRBStatusDL18();
+  if (dl18 == nullptr) dl18 = new DRBStatusDL18();
   if (!dl18->decodeddRBStatusDL18(dL->choice.dRBStatusDL18)) {
     cout << "decodedRBStatusDL error" << endl;
     return false;

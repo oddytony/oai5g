@@ -96,6 +96,16 @@ void amf_n2_task(void* args_p) {
         itti_ng_setup_request* m = dynamic_cast<itti_ng_setup_request*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
+      case NG_RESET: {
+        Logger::amf_n2().info("Received NGReset message, handling");
+        itti_ng_reset* m = dynamic_cast<itti_ng_reset*>(msg);
+        amf_n2_inst->handle_itti_message(ref(*m));
+      } break;
+      case NG_SHUTDOWN: {
+        Logger::amf_n2().info("Received SCTP Shutdown Event, handling");
+        itti_ng_shutdown* m = dynamic_cast<itti_ng_shutdown*>(msg);
+        amf_n2_inst->handle_itti_message(ref(*m));
+      } break;
       case INITIAL_UE_MSG: {
         Logger::amf_n2().info("Received INITIAL_UE_MESSAGE message, handling");
         itti_initial_ue_message* m =
@@ -340,7 +350,97 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
       "gNB with gNB_id 0x%x, assoc_id %d has been attached to AMF",
       gc.get()->globalRanNodeId, itti_msg.assoc_id);
   stacs.gNB_connected += 1;
-  stacs.gnbs.push_back(gnbItem);
+  stacs.gnbs.insert(std::pair<uint32_t, gnb_infos>(gnbItem.gnb_id, gnbItem));
+  return;
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::handle_itti_message(itti_ng_reset& itti_msg) {
+  Logger::amf_n2().debug(
+      "Parameters: assoc_id %d, stream %d", itti_msg.assoc_id, itti_msg.stream);
+
+  std::shared_ptr<gnb_context> gc;
+  if (!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
+    Logger::amf_n2().error(
+        "No existed gNB context with assoc_id(%d)", itti_msg.assoc_id);
+    return;
+  }
+  gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
+
+  gc.get()->ng_state = NGAP_RESETING;
+  // TODO: (8.7.4.2.2, NG Reset initiated by the NG-RAN node @3GPP TS 38.413
+  // V16.0.0) the AMF shall release all allocated resources on NG related to the
+  // UE association(s) indicated explicitly or implicitly in the NG RESET
+  // message and remove the NGAP ID for the indicated UE associations.
+  ResetType reset_type = {};
+  itti_msg.ngReset->getResetType(reset_type);
+  if (reset_type.getResetType() == Ngap_ResetType_PR_nG_Interface) {
+    // Reset all
+    // release all the resources related to this interface
+    for (auto ue_context : ranid2uecontext) {
+      if (ue_context.second->gnb_assoc_id == itti_msg.assoc_id) {
+        uint32_t ran_ue_ngap_id = ue_context.second->ran_ue_ngap_id;
+        long amf_ue_ngap_id     = ue_context.second->amf_ue_ngap_id;
+        // get NAS context
+        std::shared_ptr<nas_context> nc;
+        if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+          nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+        else {
+          Logger::amf_n2().warn(
+              "No existed nas_context with amf_ue_ngap_id(0x%x)",
+              amf_ue_ngap_id);
+        }
+        stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
+      }
+    }
+    stacs.display();
+  } else if (
+      reset_type.getResetType() == Ngap_ResetType_PR_partOfNG_Interface) {
+    // TODO:
+  }
+
+  return;
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::handle_itti_message(itti_ng_shutdown& itti_msg) {
+  Logger::amf_n2().debug("Parameters: assoc_id %d", itti_msg.assoc_id);
+
+  std::shared_ptr<gnb_context> gc;
+  if (!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
+    Logger::amf_n2().error(
+        "No existed gNB context with assoc_id(%d)", itti_msg.assoc_id);
+    return;
+  }
+  gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
+
+  gc.get()->ng_state = NGAP_SHUTDOWN;
+
+  // Release all the resources related to this interface
+  for (auto ue_context : ranid2uecontext) {
+    if (ue_context.second->gnb_assoc_id == itti_msg.assoc_id) {
+      uint32_t ran_ue_ngap_id = ue_context.second->ran_ue_ngap_id;
+      long amf_ue_ngap_id     = ue_context.second->amf_ue_ngap_id;
+      // get NAS context
+      std::shared_ptr<nas_context> nc;
+      if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+        nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+      else {
+        Logger::amf_n2().warn(
+            "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+      }
+      stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
+    }
+  }
+
+  // Delete gNB context
+  Logger::amf_n2().debug("Remove gNB Context %d", itti_msg.assoc_id);
+  remove_gnb_context(itti_msg.assoc_id);
+  stacs.gnbs.erase(gc.get()->globalRanNodeId);
+  Logger::amf_n2().debug(
+      "Remove gNB with globalRanNodeId 0x%x", gc.get()->globalRanNodeId);
+  stacs.gNB_connected -= 1;
+  stacs.display();
   return;
 }
 
@@ -934,8 +1034,8 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   plmn->getMcc(mcc);
   plmn->getMnc(mnc);
   printf(
-      "Handover required:Target ID GlobalRanNodeID PLmn=mcc%s mnc%s "
-      "gnbid=%x\n",
+      "Handover required: Target ID GlobalRanNodeID PLmn (mcc: %s, mnc: %s, "
+      "gnbid: %ld)\n",
       mcc.c_str(), mnc.c_str(), gnbid->getValue());
   TAI* tai = new TAI();
   itti_msg.handvoerRequ->getTAI(tai);
@@ -1111,7 +1211,7 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   std::shared_ptr<nas_context> nc =
       amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
 
-  //setPduSessionResourceHandoverList_PDYSessionID_handovercommandtransfer
+  // setPduSessionResourceHandoverList_PDYSessionID_handovercommandtransfer
   std::vector<PDUSessionResourceHandoverItem_t> handover_list;
   PDUSessionResourceHandoverItem_t item;
   // set pdu id
@@ -1145,7 +1245,7 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   handover_list.push_back(item);
   handovercommand->setPduSessionResourceHandoverList(handover_list);
   handovercommand->setTargetToSource_TransparentContainer(targetTosource);
-  //setPduSessionResourceHandoverList_PDYSessionID_handovercommandtransfer-end
+  // setPduSessionResourceHandoverList_PDYSessionID_handovercommandtransfer-end
   uint8_t buffer[10240];
   int encoded_size = handovercommand->encode2buffer(buffer, 10240);
   bstring b        = blk2bstr(buffer, encoded_size);

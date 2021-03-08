@@ -91,7 +91,7 @@ bool SupportedTaItem::encode2SupportedTaItem(Ngap_SupportedTAItem_t* ta) {
 
 //------------------------------------------------------------------------------
 bool SupportedTaItem::decodefromSupportedTaItem(Ngap_SupportedTAItem_t* pdu) {
-  tac = new TAC();
+  if (tac == nullptr) tac = new TAC();
   if (!tac->decodefromoctetstring(pdu->tAC)) return false;
   numberOfBroadcastItem = pdu->broadcastPLMNList.list.count;
   broadcastPLMNItem     = new BroadcastPLMNItem[numberOfBroadcastItem]();

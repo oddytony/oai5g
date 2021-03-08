@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PDUSessionID::PDUSessionID() {}
+PDUSessionID::PDUSessionID() {
+  pdusessionid = 0;
+}
 
 //------------------------------------------------------------------------------
 PDUSessionID::~PDUSessionID() {}

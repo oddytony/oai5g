@@ -233,6 +233,7 @@ bool RegistrationRequest::getUeSecurityCapability(uint8_t& ea, uint8_t& ia) {
   } else {
     return -1;
   }
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -249,6 +250,7 @@ bool RegistrationRequest::getRequestedNssai(
   } else {
     return -1;
   }
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -273,6 +275,7 @@ bool RegistrationRequest::getS1UeNetworkCapability(uint8_t& eea, uint8_t& eia) {
   } else {
     return -1;
   }
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -803,7 +806,7 @@ int RegistrationRequest::encode2buffer(uint8_t* buf, int len) {
 //------------------------------------------------------------------------------
 int RegistrationRequest::decodefrombuffer(
     NasMmPlainHeader* header, uint8_t* buf, int len) {
-  Logger::nas_mm().debug("****Decoding RegistrationRequest message****");
+  Logger::nas_mm().debug("Decoding RegistrationRequest message");
   int decoded_size       = 3;
   plain_header           = header;
   ie_5gsregistrationtype = new _5GSRegistrationType();
@@ -1005,5 +1008,6 @@ int RegistrationRequest::decodefrombuffer(
     }
   }
   Logger::nas_mm().debug(
-      "****Decoded RegistrationRequest message (len %d)****", decoded_size);
+      "Decoded RegistrationRequest message (len %d)", decoded_size);
+  return 1;
 }

@@ -56,13 +56,23 @@ void statistics::display() {
   }
 
   // TODO: Show the list of common PLMNs
-  for (int i = 0; i < gnbs.size(); i++) {
+  int i = 1;
+  for (auto const& gnb : gnbs) {
     Logger::amf_app().info(
         "|      %d      |    Connected     |         0x%x       |         %s   "
         "     |          %s, %d          | ",
-        i + 1, gnbs[i].gnb_id, gnbs[i].gnb_name.c_str(),
-        (gnbs[i].mcc + gnbs[i].mnc).c_str(), gnbs[i].tac);
+        i, gnb.second.gnb_id, gnb.second.gnb_name.c_str(),
+        (gnb.second.mcc + gnb.second.mnc).c_str(), gnb.second.tac);
+    i++;
   }
+  /*  for (int i = 0; i < gnbs.size(); i++) {
+      Logger::amf_app().info(
+          "|      %d      |    Connected     |         0x%x       |         %s "
+          "     |          %s, %d          | ",
+          i + 1, gnbs[i].gnb_id, gnbs[i].gnb_name.c_str(),
+          (gnbs[i].mcc + gnbs[i].mnc).c_str(), gnbs[i].tac);
+    }
+    */
   Logger::amf_app().info(
       "|-----------------------------------------------------------------------"
       "-----------------------------------------|");
@@ -78,7 +88,7 @@ void statistics::display() {
       "| Index |      5GMM state      |      IMSI        |     GUTI      | RAN "
       "UE NGAP ID | AMF UE ID |  PLMN   |Cell ID|");
 
-  int i = 0;
+  i = 0;
   for (auto const& ue : ue_infos) {
     Logger::amf_app().info(
         "|%7d|%22s|%18s|%15s|%16d|%11d|%9s|%7d|", i + 1,
@@ -135,5 +145,6 @@ void statistics::update_5gmm_state(
   }
 }
 
+void statistics::remove_gnb(const uint32_t gnb_id) {}
 //------------------------------------------------------------------------------
 statistics::~statistics() {}

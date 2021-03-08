@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PeriodicRegistrationUpdateTimer::PeriodicRegistrationUpdateTimer() {}
+PeriodicRegistrationUpdateTimer::PeriodicRegistrationUpdateTimer() {
+  updatetimer = 0;
+}
 
 //------------------------------------------------------------------------------
 PeriodicRegistrationUpdateTimer::~PeriodicRegistrationUpdateTimer() {}

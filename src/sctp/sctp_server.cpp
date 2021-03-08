@@ -54,6 +54,12 @@ namespace sctp {
 sctp_server::sctp_server(const char* address, const uint16_t port_num) {
   Logger::sctp().debug("creating socket!!");
   create_socket(address, port_num);
+  app_ = nullptr;
+  // pthread_t thread_;
+  sctp_desc   = {};
+  serverAddr_ = {};
+  events_     = {};
+  sctp_ctx    = {};
 }
 
 //------------------------------------------------------------------------------
@@ -74,6 +80,7 @@ int sctp_server::create_socket(const char* address, const uint16_t port_num) {
   if (bind(socket_, (struct sockaddr*) &serverAddr_, sizeof(serverAddr_)) !=
       0) {
     Logger::sctp().error("Socket bind: %s:%d", strerror(errno), errno);
+    return -1;
   }
   bzero(&events_, sizeof(events_));
   events_.sctp_data_io_event     = 1;
@@ -83,6 +90,7 @@ int sctp_server::create_socket(const char* address, const uint16_t port_num) {
       socket_, IPPROTO_SCTP, SCTP_EVENTS, &events_,
       sizeof(struct sctp_event_subscribe));
   listen(socket_, 5);
+  return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -167,9 +175,8 @@ int sctp_server::sctp_read_from_socket(int sd, uint32_t ppid) {
     switch (snp->sn_header.sn_type) {
       case SCTP_SHUTDOWN_EVENT: {
         Logger::sctp().debug("SCTP Shutdown Event received");
+        return sctp_handle_com_down(snp->sn_shutdown_event.sse_assoc_id);
         break;
-        // return sctp_handle_com_down((sctp_assoc_id_t)
-        // snp->sn_shutdown_event.sse_assoc_id);
       }
       case SCTP_ASSOC_CHANGE: {
         Logger::sctp().debug("SCTP Association Change event received");
@@ -205,13 +212,19 @@ int sctp_server::sctp_read_from_socket(int sd, uint32_t ppid) {
         payload, (sctp_assoc_id_t) sinfo.sinfo_assoc_id, sinfo.sinfo_stream,
         association->instreams, association->outstreams);
   }
+  return 0;
 }
 
 //------------------------------------------------------------------------------
-int sctp_server::sctp_handle_com_down(sctp_assoc_id_t assoc_id) {}
+int sctp_server::sctp_handle_com_down(sctp_assoc_id_t assoc_id) {
+  	  app_->handle_sctp_shutdown(assoc_id);
+ return 0;
+}
 
 //------------------------------------------------------------------------------
-int sctp_server::sctp_handle_reset(const sctp_assoc_id_t assoc_id) {}
+int sctp_server::sctp_handle_reset(const sctp_assoc_id_t assoc_id) {
+  return 0;
+}
 
 //------------------------------------------------------------------------------
 int sctp_server::handle_assoc_change(

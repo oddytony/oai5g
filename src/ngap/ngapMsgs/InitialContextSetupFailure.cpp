@@ -34,6 +34,7 @@ extern "C" {
 #include "per_encoder.h"
 #include "per_decoder.h"
 #include "constraints.h"
+#include "dynamic_memory_check.h"
 }
 
 #include <iostream>
@@ -102,11 +103,13 @@ void InitialContextSetupFailureMsg::setAmfUeNgapId(unsigned long id) {
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupFailureIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -125,11 +128,13 @@ void InitialContextSetupFailureMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupFailureIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

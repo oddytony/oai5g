@@ -79,8 +79,10 @@ bool SecurityResult::encode2SecurityResult(
 //------------------------------------------------------------------------------
 bool SecurityResult::decodefromSecurityResult(
     Ngap_SecurityResult_t* securityResult) {
-  integrityProtectionResult       = new IntegrityProtectionResult();
-  confidentialityProtectionResult = new ConfidentialityProtectionResult();
+  if (integrityProtectionResult == nullptr)
+    integrityProtectionResult = new IntegrityProtectionResult();
+  if (integrityProtectionResult == nullptr)
+    confidentialityProtectionResult = new ConfidentialityProtectionResult();
 
   if (!integrityProtectionResult->decodefromIntegrityProtectionResult(
           securityResult->integrityProtectionResult))

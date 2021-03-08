@@ -76,8 +76,10 @@ bool DLQoSFlowPerTNLInformation::encode2DLQoSFlowPerTNLInformation(
 //------------------------------------------------------------------------------
 bool DLQoSFlowPerTNLInformation::decodefromDLQoSFlowPerTNLInformation(
     Ngap_QosFlowPerTNLInformation_t* qosFlowPerTNLInformation) {
-  uPTransportLayerInformation = new UpTransportLayerInformation();
-  associatedQosFlowList       = new AssociatedQosFlowList();
+  if (uPTransportLayerInformation == nullptr)
+    uPTransportLayerInformation = new UpTransportLayerInformation();
+  if (associatedQosFlowList == nullptr)
+    associatedQosFlowList = new AssociatedQosFlowList();
   if (!uPTransportLayerInformation->decodefromUpTransportLayerInformation(
           qosFlowPerTNLInformation->uPTransportLayerInformation))
     return false;

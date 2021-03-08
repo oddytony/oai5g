@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-QosFlowIdentifier::QosFlowIdentifier() {}
+QosFlowIdentifier::QosFlowIdentifier() {
+  identifier = 0;
+}
 
 //------------------------------------------------------------------------------
 QosFlowIdentifier::~QosFlowIdentifier() {}

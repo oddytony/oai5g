@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PriorityLevelQos::PriorityLevelQos() {}
+PriorityLevelQos::PriorityLevelQos() {
+  prioritylevelqos = 0;
+}
 
 //------------------------------------------------------------------------------
 PriorityLevelQos::~PriorityLevelQos() {}

@@ -64,7 +64,10 @@ bool PDUSessionResourceSetupItemSUReq::encode2PDUSessionResourceSetupItemSUReq(
     Ngap_NAS_PDU_t* naspdu =
         (Ngap_NAS_PDU_t*) calloc(1, sizeof(Ngap_NAS_PDU_t));
     if (!naspdu) return false;
-    if (!nAS_PDU->encode2octetstring(*naspdu)) return false;
+    if (!nAS_PDU->encode2octetstring(*naspdu)) {
+      if (naspdu != nullptr) free(naspdu);
+      return false;
+    }
     pduSessionResourceSetupItemSUReq->pDUSessionNAS_PDU = naspdu;
   }
   if (!s_NSSAI->encode2S_NSSAI(&pduSessionResourceSetupItemSUReq->s_NSSAI))
@@ -80,8 +83,8 @@ bool PDUSessionResourceSetupItemSUReq::
     decodefromPDUSessionResourceSetupItemSUReq(
         Ngap_PDUSessionResourceSetupItemSUReq_t*
             pduSessionResourceSetupItemSUReq) {
-  pDUSessionID = new PDUSessionID();
-  s_NSSAI      = new S_NSSAI();
+  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
+  s_NSSAI = new S_NSSAI();
   if (!pDUSessionID->decodefromPDUSessionID(
           pduSessionResourceSetupItemSUReq->pDUSessionID))
     return false;

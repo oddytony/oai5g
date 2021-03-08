@@ -39,6 +39,7 @@ CriticalityDiagnostics::CriticalityDiagnostics() {
   triggeringMessageIsSet            = false;
   procedureCriticalityIsSet         = false;
   numberOfIEsCriticalityDiagnostics = 0;
+  iEsCriticalityDiagnostics         = nullptr;
 }
 
 //------------------------------------------------------------------------------

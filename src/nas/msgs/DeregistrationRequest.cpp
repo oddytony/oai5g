@@ -199,7 +199,7 @@ int DeregistrationRequest::encode2buffer(uint8_t* buf, int len) {
 //------------------------------------------------------------------------------
 int DeregistrationRequest::decodefrombuffer(
     NasMmPlainHeader* header, uint8_t* buf, int len) {
-  Logger::nas_mm().debug("****Decoding DeregistrationRequest message****");
+  Logger::nas_mm().debug("Decoding DeregistrationRequest message");
   int decoded_size      = 3;
   plain_header          = header;
   ie_deregistrationtype = new _5GSDeregistrationType();
@@ -213,5 +213,6 @@ int DeregistrationRequest::decodefrombuffer(
   decoded_size += ie_5gs_mobility_id->decodefrombuffer(
       buf + decoded_size, len - decoded_size, false);
   Logger::nas_mm().debug(
-      "****Decoded DeregistrationRequest message (len %d)****", decoded_size);
+      "Decoded DeregistrationRequest message (len %d)", decoded_size);
+  return 1;
 }

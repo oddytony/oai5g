@@ -35,7 +35,8 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 PLMNSupportList::PLMNSupportList() {
-  plmnsupportItemItem = NULL;
+  plmnsupportItemItem         = nullptr;
+  numberOfplmnsupportItemItem = 0;
 }
 
 //------------------------------------------------------------------------------

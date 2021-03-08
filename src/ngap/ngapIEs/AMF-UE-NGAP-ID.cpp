@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-AMF_UE_NGAP_ID::AMF_UE_NGAP_ID() {}
+AMF_UE_NGAP_ID::AMF_UE_NGAP_ID() {
+  amfUeNgapId = 0;
+}
 
 //------------------------------------------------------------------------------
 AMF_UE_NGAP_ID::~AMF_UE_NGAP_ID() {}

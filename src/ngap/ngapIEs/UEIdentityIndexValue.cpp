@@ -34,14 +34,16 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-UEIdentityIndexValue::UEIdentityIndexValue() {}
+UEIdentityIndexValue::UEIdentityIndexValue() {
+  indexLength10 = 0;
+}
 
 //------------------------------------------------------------------------------
 UEIdentityIndexValue::~UEIdentityIndexValue() {}
 
 //------------------------------------------------------------------------------
 void UEIdentityIndexValue::setUEIdentityIndexValue(
-    uint16_t m_indexLength10 /*10bits限制*/) {
+    uint16_t m_indexLength10 /*10bits*/) {
   indexLength10 = m_indexLength10;
 }
 
@@ -77,7 +79,7 @@ bool UEIdentityIndexValue::decodefromUEIdentityIndexValue(
 
 //------------------------------------------------------------------------------
 void UEIdentityIndexValue::getUEIdentityIndexValue(
-    uint16_t& m_indexLength10 /*10bits限制*/) {
+    uint16_t& m_indexLength10 /*10bits*/) {
   m_indexLength10 = indexLength10;
 }
 
