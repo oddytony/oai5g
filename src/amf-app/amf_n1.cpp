@@ -60,6 +60,7 @@
 #include "ConfirmationData.h"
 #include "ConfirmationDataResponse.h"
 #include <curl/curl.h>
+#include <bitset>
 
 extern "C" {
 #include "bstrlib.h"
@@ -87,6 +88,8 @@ Sha256 ctx;
 random_state_t random_state;
 static uint8_t no_random_delta = 0;
 void amf_n1_task(void*);
+
+typedef std::bitset<sizeof(uint16_t)> pdu_session_status_bits;
 
 //------------------------------------------------------------------------------
 void amf_n1_task(void*) {
@@ -576,21 +579,22 @@ void amf_n1::service_request_handle(
   Logger::amf_n1().debug(
       "amf_ue_ngap_id %d, ran_ue_ngap_id %d", amf_ue_ngap_id, ran_ue_ngap_id);
   Logger::amf_n1().debug("Key for pdu session context: SUPI %s", supi.c_str());
-  std::shared_ptr<pdu_session_context> psc;
+  //  std::shared_ptr<pdu_session_context> psc;
 
   // get PDU session status
   std::vector<uint8_t> pdu_session_to_be_activated = {};
-  uint16_t pdu_session_status       = (uint16_t) serReq->getPduSessionStatus();
-  uint8_t pdu_sessino_status_byte_1 = uint8_t(pdu_session_status & 0x00ff);
-  uint8_t pdu_sessino_status_byte_2 = uint8_t(pdu_session_status >> 8);
+  uint16_t pdu_session_status = (uint16_t) serReq->getPduSessionStatus();
+
   for (int i = 0; i < 8; i++) {
-    if (pdu_sessino_status_byte_1 % (uint8_t)(pow(2, i)) == 1) {
+    if (pdu_session_status_bits((uint16_t) serReq->getPduSessionStatus())
+            .test(i)) {
       pdu_session_to_be_activated.push_back(i + 8);
     }
   }
-  for (int i = 1; i < 8; i++) {
-    if (pdu_sessino_status_byte_2 % (uint8_t)(pow(2, i)) == 1) {
-      pdu_session_to_be_activated.push_back(i);
+  for (int i = 9; i < 16; i++) {
+    if (pdu_session_status_bits((uint16_t) serReq->getPduSessionStatus())
+            .test(i)) {
+      pdu_session_to_be_activated.push_back(i - 8);
     }
   }
 
@@ -637,10 +641,19 @@ void amf_n1::service_request_handle(
 
   } else {
     // TODO: Contact SMF to activate UP for these sessions
-    // DO for 1 PDU session ID for now
-    serApt->setPDU_session_status(
-        serReq->getPduSessionStatus());  // PSI 1 (0x0200), should be updated
+    // DO for 1st PDU session ID for now
+    std::shared_ptr<pdu_session_context> psc = {};
+
+    serApt->setPDU_session_status(serReq->getPduSessionStatus());
     serApt->setPDU_session_reactivation_result(0x0000);
+
+    uint8_t pdu_session_id = pdu_session_to_be_activated.at(0);
+    if (!amf_app_inst->find_pdu_session_context(supi, pdu_session_id, psc)) {
+      Logger::amf_n1().error(
+          "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
+      return;
+    }
+
     uint8_t buffer[BUFFER_SIZE_256];
     int encoded_size = serApt->encode2buffer(buffer, BUFFER_SIZE_256);
     bstring protectedNas;
