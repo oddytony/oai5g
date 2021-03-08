@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PDUSessionType::PDUSessionType() {}
+PDUSessionType::PDUSessionType() {
+  pdusessiontype = 0;
+}
 
 //------------------------------------------------------------------------------
 PDUSessionType::~PDUSessionType() {}

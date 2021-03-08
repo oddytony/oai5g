@@ -33,7 +33,9 @@ using namespace nas;
 //------------------------------------------------------------------------------
 Authentication_Failure_Parameter::Authentication_Failure_Parameter(
     uint8_t iei) {
-  _iei = iei;
+  _iei   = iei;
+  length = 0;
+  value  = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -45,7 +47,8 @@ Authentication_Failure_Parameter::Authentication_Failure_Parameter(
 }
 
 //------------------------------------------------------------------------------
-Authentication_Failure_Parameter::Authentication_Failure_Parameter() {}
+Authentication_Failure_Parameter::Authentication_Failure_Parameter()
+    : _iei(), length(), value() {}
 
 //------------------------------------------------------------------------------
 Authentication_Failure_Parameter::~Authentication_Failure_Parameter() {}
@@ -77,7 +80,7 @@ int Authentication_Failure_Parameter::encode2buffer(uint8_t* buf, int len) {
     //		*(buf + encoded_size) = _value; encoded_size++; encoded_size++;
   }
   Logger::nas_mm().debug(
-      "encoded Authentication_Failure_Parameter len(%d)", encoded_size);
+      "Encoded Authentication_Failure_Parameter len (%d)", encoded_size);
   return encoded_size;
 }
 
@@ -85,7 +88,7 @@ int Authentication_Failure_Parameter::encode2buffer(uint8_t* buf, int len) {
 int Authentication_Failure_Parameter::decodefrombuffer(
     uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug(
-      "decoding Authentication_Failure_Parameter iei(0x%x)", *buf);
+      "Decoding Authentication_Failure_Parameter iei (0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
     decoded_size++;
@@ -93,15 +96,15 @@ int Authentication_Failure_Parameter::decodefrombuffer(
   length = *(buf + decoded_size);
   decoded_size++;
   Logger::nas_mm().debug(
-      "decoded IE Authentication_Failure_Parameter length(%d)", length);
+      "Decoded IE Authentication_Failure_Parameter length (%d)", length);
   decode_bstring(&value, length, (buf + decoded_size), len - decoded_size);
   decoded_size += length;
   for (int i = 0; i < length; i++) {
     Logger::nas_mm().debug(
-        "decoded Authentication_Failure_Parameter value(0x%x)",
-        (uint8_t*) value->data[i]);
+        "Decoded Authentication_Failure_Parameter value (0x%x)",
+        (uint8_t) value->data[i]);
   }
   Logger::nas_mm().debug(
-      "decoded Authentication_Failure_Parameter len(%d)", decoded_size);
+      "Decoded Authentication_Failure_Parameter len (%d)", decoded_size);
   return decoded_size;
 }

@@ -32,7 +32,11 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 _5GS_Registration_Result::_5GS_Registration_Result(uint8_t iei) {
-  _iei = iei;
+  _iei      = iei;
+  Emergency = false;
+  NSSAA     = false;
+  SMS       = false;
+  _value    = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -46,7 +50,13 @@ _5GS_Registration_Result::_5GS_Registration_Result(
 }
 
 //------------------------------------------------------------------------------
-_5GS_Registration_Result::_5GS_Registration_Result() {}
+_5GS_Registration_Result::_5GS_Registration_Result() {
+  _iei      = 0;
+  Emergency = false;
+  NSSAA     = false;
+  SMS       = false;
+  _value    = 0;
+}
 _5GS_Registration_Result::~_5GS_Registration_Result() {}
 
 //------------------------------------------------------------------------------

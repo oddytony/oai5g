@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-ReflectiveQosAttribute::ReflectiveQosAttribute() {}
+ReflectiveQosAttribute::ReflectiveQosAttribute() {
+  attribute = 0;
+}
 
 //------------------------------------------------------------------------------
 ReflectiveQosAttribute::~ReflectiveQosAttribute() {}

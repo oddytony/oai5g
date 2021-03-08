@@ -34,7 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PacketErrorRate::PacketErrorRate() {}
+PacketErrorRate::PacketErrorRate() {
+  pERScalar   = 0;
+  pERExponent = 0;
+}
 
 //------------------------------------------------------------------------------
 PacketErrorRate::~PacketErrorRate() {}

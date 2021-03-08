@@ -42,7 +42,7 @@ class NSSAI {
   void setS_NAASI(uint8_t SST);
   int encode2buffer(uint8_t* buf, int len);
   int decodefrombuffer(uint8_t* buf, int len, bool is_option);
-  bool getValue(std::vector<struct SNSSAI_s>& nssai);
+  void getValue(std::vector<struct SNSSAI_s>& nssai);
 
  private:
   uint8_t _iei;

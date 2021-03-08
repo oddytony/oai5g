@@ -35,6 +35,7 @@ extern "C" {
 #include "per_encoder.h"
 #include "per_decoder.h"
 #include "constraints.h"
+#include "dynamic_memory_check.h"
 }
 
 #include <iostream>
@@ -105,12 +106,14 @@ void PduSessionResourceReleaseCommandMsg::setAmfUeNgapId(unsigned long id) {
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     Logger::nas_mm().warn("Encode AMF_UE_NGAP_ID IE error");
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceReleaseCommandIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::nas_mm().warn("Encode AMF_UE_NGAP_ID IE error");
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -130,12 +133,14 @@ void PduSessionResourceReleaseCommandMsg::setRanUeNgapId(
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     Logger::nas_mm().warn("Encode RAN_UE_NGAP_ID IE error");
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceReleaseCommandIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::nas_mm().warn("Encode RAN_UE_NGAP_ID IE error");
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -157,12 +162,14 @@ void PduSessionResourceReleaseCommandMsg::setRanPagingPriority(
       ie->value.choice.RANPagingPriority);
   if (!ret) {
     Logger::nas_mm().warn("Encode RANPagingPriority IE error");
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceReleaseCommandIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::nas_mm().warn("Encode RANPagingPriority IE error");
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -183,12 +190,14 @@ void PduSessionResourceReleaseCommandMsg::setNasPdu(
   int ret = nasPdu->encode2octetstring(ie->value.choice.NAS_PDU);
   if (!ret) {
     Logger::nas_mm().warn("encode NAS_PDU IE error");
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceReleaseCommandIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::nas_mm().warn("Encode NAS_PDU IE error");
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

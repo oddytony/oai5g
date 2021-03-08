@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-MaximumIntegrityProtectedDataRate::MaximumIntegrityProtectedDataRate() {}
+MaximumIntegrityProtectedDataRate::MaximumIntegrityProtectedDataRate() {
+  maxintprotdatarate = 0;
+}
 
 //------------------------------------------------------------------------------
 MaximumIntegrityProtectedDataRate::~MaximumIntegrityProtectedDataRate() {}

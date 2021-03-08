@@ -66,10 +66,10 @@ bool GUAMI::encode2GUAMI(Ngap_GUAMI_t* guami) {
 
 //------------------------------------------------------------------------------
 bool GUAMI::decodefromGUAMI(Ngap_GUAMI_t* pdu) {
-  plmnId      = new PlmnId();
-  aMFRegionID = new AMFRegionID();
-  aMFSetID    = new AMFSetID();
-  aMFPointer  = new AMFPointer();
+  if (plmnId == nullptr) plmnId = new PlmnId();
+  if (aMFRegionID == nullptr) aMFRegionID = new AMFRegionID();
+  if (aMFSetID == nullptr) aMFSetID = new AMFSetID();
+  if (aMFPointer == nullptr) aMFPointer = new AMFPointer();
   if (!plmnId->decodefromoctetstring(pdu->pLMNIdentity)) return false;
   if (!aMFRegionID->decodefrombitstring(pdu->aMFRegionID)) return false;
   if (!aMFSetID->decodefrombitstring(pdu->aMFSetID)) return false;

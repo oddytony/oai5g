@@ -22,7 +22,15 @@
 #include "ue_context.hpp"
 
 //------------------------------------------------------------------------------
-ue_context::ue_context() {}
+ue_context::ue_context() {
+  ran_ue_ngap_id     = 0;
+  amf_ue_ngap_id     = 0;
+  rrc_estb_cause     = {};
+  isUeContextRequest = false;
+  cgi                = {};
+  tai                = {};
+  pdu_sessions       = {};
+}
 
 //------------------------------------------------------------------------------
 bool ue_context::find_pdu_session_context(

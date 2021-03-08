@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-AveragingWindow::AveragingWindow() {}
+AveragingWindow::AveragingWindow() {
+  averagingwindow = 0;
+}
 
 //------------------------------------------------------------------------------
 AveragingWindow::~AveragingWindow() {}

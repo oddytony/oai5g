@@ -85,7 +85,7 @@ bool BroadcastPLMNItem::encode2BroadcastPLMNItem(
 //------------------------------------------------------------------------------
 bool BroadcastPLMNItem::decodefromBroadcastPLMNItem(
     Ngap_BroadcastPLMNItem_t* pdu) {
-  plmn = new PlmnId();
+  if (plmn == nullptr) plmn = new PlmnId();
   if (!plmn->decodefromoctetstring(pdu->pLMNIdentity)) return false;
   numOfSnssai = pdu->tAISliceSupportList.list.count;
   snssai      = new S_NSSAI[numOfSnssai]();

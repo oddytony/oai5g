@@ -34,6 +34,7 @@ extern "C" {
 #include "per_encoder.h"
 #include "per_decoder.h"
 #include "constraints.h"
+#include "dynamic_memory_check.h"
 }
 
 #include <iostream>
@@ -100,11 +101,13 @@ void InitialUEMessageMsg::setRanUENgapID(uint32_t ran_ue_ngap_id) {
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialUEMessageIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -122,11 +125,13 @@ void InitialUEMessageMsg::setNasPdu(uint8_t* nas, size_t sizeofnas) {
   int ret = nasPdu->encode2octetstring(ie->value.choice.NAS_PDU);
   if (!ret) {
     cout << "encode NAS_PDU IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialUEMessageIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode NAS_PDU IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -165,11 +170,13 @@ void InitialUEMessageMsg::setUserLocationInfoNR(
       &ie->value.choice.UserLocationInformation);
   if (!ret) {
     cout << "encode UserLocationInformation IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialUEMessageIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UserLocationInformation IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -190,11 +197,13 @@ void InitialUEMessageMsg::setRRCEstablishmentCause(
       ie->value.choice.RRCEstablishmentCause);
   if (!ret) {
     cout << "encode RRCEstablishmentCause IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialUEMessageIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RRCEstablishmentCause IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -216,11 +225,13 @@ void InitialUEMessageMsg::setUeContextRequest(
       ie->value.choice.UEContextRequest);
   if (!ret) {
     cout << "encode UEContextRequest IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialUEMessageIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UEContextRequest IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

@@ -34,6 +34,7 @@ extern "C" {
 #include "per_encoder.h"
 #include "per_decoder.h"
 #include "constraints.h"
+#include "dynamic_memory_check.h"
 }
 
 #include <iostream>
@@ -111,11 +112,13 @@ void InitialContextSetupRequestMsg::setAmfUeNgapId(unsigned long id) {
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -134,11 +137,13 @@ void InitialContextSetupRequestMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -156,11 +161,13 @@ void InitialContextSetupRequestMsg::setOldAmfName(const std::string name) {
   int ret = oldAmfName->encode2AmfName(&ie->value.choice.AMFName);
   if (!ret) {
     cout << "encode oldAmfName IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode oldAmfName IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -184,11 +191,13 @@ void InitialContextSetupRequestMsg::setUEAggregateMaxBitRate(
       ie->value.choice.UEAggregateMaximumBitRate);
   if (!ret) {
     cout << "encode UEAggregateMaxBitRate IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UEAggregateMaxBitRate IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -232,12 +241,14 @@ void InitialContextSetupRequestMsg::setCoreNetworkAssistanceInfo(
       &ie->value.choice.CoreNetworkAssistanceInformation);
   if (!ret) {
     cout << "encode CoreNetworkAssistanceInformation IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0)
     cout << "encode CoreNetworkAssistanceInformation IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -278,12 +289,14 @@ void InitialContextSetupRequestMsg::setCoreNetworkAssistanceInfo(
       &ie->value.choice.CoreNetworkAssistanceInformation);
   if (!ret) {
     cout << "encode CoreNetworkAssistanceInformation IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0)
     cout << "encode CoreNetworkAssistanceInformation IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -312,11 +325,13 @@ void InitialContextSetupRequestMsg::setGuami(Guami_t value) {
   int ret = guami->encode2GUAMI(&ie->value.choice.GUAMI);
   if (!ret) {
     cout << "encode GUAMI IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode GUAMI IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -372,12 +387,14 @@ void InitialContextSetupRequestMsg::setPduSessionResourceSetupRequestList(
   cout << "encode2PDUSessionResourceSetupListCxtReq over" << endl;
   if (!ret) {
     cout << "encode PDUSessionResourceSetupListCxtReq IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0)
     cout << "encode PDUSessionResourceSetupListCxtReq IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -400,11 +417,13 @@ void InitialContextSetupRequestMsg::setAllowedNssai(std::vector<S_Nssai> list) {
   int ret = allowedNssai->encode2AllowedNSSAI(&ie->value.choice.AllowedNSSAI);
   if (!ret) {
     cout << "encode AllowedNSSAI IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AllowedNSSAI IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -430,11 +449,13 @@ void InitialContextSetupRequestMsg::setUESecurityCapability(
       ie->value.choice.UESecurityCapabilities);
   if (!ret) {
     cout << "encode UESecurityCapabilities IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UESecurityCapabilities IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -453,11 +474,13 @@ void InitialContextSetupRequestMsg::setSecurityKey(uint8_t* key) {
   int ret = securityKey->encode2bitstring(ie->value.choice.SecurityKey);
   if (!ret) {
     cout << "encode SecurityKey IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode SecurityKey IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -476,11 +499,13 @@ void InitialContextSetupRequestMsg::setNasPdu(uint8_t* nas, size_t sizeofnas) {
   int ret = nasPdu->encode2octetstring(ie->value.choice.NAS_PDU);
   if (!ret) {
     cout << "encode NAS_PDU IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode NAS_PDU IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -502,11 +527,13 @@ void InitialContextSetupRequestMsg::setUERadioCapability(
       ie->value.choice.UERadioCapability);
   if (!ret) {
     cout << "encode UERadioCapability IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UERadioCapability IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -794,9 +821,9 @@ bool InitialContextSetupRequestMsg::getUEAggregateMaxBitRate(
 
 //------------------------------------------------------------------------------
 bool InitialContextSetupRequestMsg::getCoreNetworkAssistanceInfo(
-    uint16_t& ueIdentityIndexValue /*10bits限制*/,
-    int& ueSpecificDrx /*-1,不存在?*/, uint8_t& periodicRegUpdateTimer,
-    bool& micoModeInd /*可选*/, std::vector<Tai_t>& taiListForRRcInactive) {
+    uint16_t& ueIdentityIndexValue /*10bits*/, int& ueSpecificDrx /*-1*/,
+    uint8_t& periodicRegUpdateTimer, bool& micoModeInd,
+    std::vector<Tai_t>& taiListForRRcInactive) {
   if (!coreNetworkAssistanceInfo) return false;
   UEIdentityIndexValue* m_ueIdentityIndexValue;
   DefaultPagingDRX* m_pagingDRX;
@@ -825,6 +852,7 @@ bool InitialContextSetupRequestMsg::getCoreNetworkAssistanceInfo(
 
     taiListForRRcInactive.push_back(tai_str);
   }
+  return true;
 }
 
 //------------------------------------------------------------------------------

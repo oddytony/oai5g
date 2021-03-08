@@ -303,4 +303,5 @@ int SecurityModeCommand::decodefrombuffer(
   }
   Logger::nas_mm().debug(
       "Decoded SecurityModeCommand message len (%d)", decoded_size);
+  return 1;
 }

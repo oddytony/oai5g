@@ -90,7 +90,7 @@ bool UserLocationInformationNR::encode2UserLocationInformationNR(
 //------------------------------------------------------------------------------
 bool UserLocationInformationNR::decodefromUserLocationInformationNR(
     Ngap_UserLocationInformationNR_t* userLocationInformationNR) {
-  nR_CGI = new NR_CGI();
+  if (nR_CGI == nullptr) nR_CGI = new NR_CGI();
   if (!nR_CGI->decodefromNR_CGI(&userLocationInformationNR->nR_CGI)) {
     cout << "[Warning] nR_CGI->decodefromNR_CGI() error!" << endl;
     return false;

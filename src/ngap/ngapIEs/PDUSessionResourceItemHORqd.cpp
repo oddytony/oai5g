@@ -54,7 +54,7 @@ bool PDUSessionResourceItemHORqd::encode2PDUSessionResourceItemHORqd(
 }
 bool PDUSessionResourceItemHORqd::decodefromPDUSessionResourceItemHORqd(
     Ngap_PDUSessionResourceItemHORqd_t* pdUSessionResourceItemHORqd) {
-  pDUSessionID = new PDUSessionID();
+  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
   if (!pDUSessionID->decodefromPDUSessionID(
           pdUSessionResourceItemHORqd->pDUSessionID))
     return false;

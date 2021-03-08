@@ -53,7 +53,7 @@ bool dRBStatusUL::encodedRBStatusUL(Ngap_DRBStatusUL_t* uL) {
   return true;
 }
 bool dRBStatusUL::decodedRBStatusUL(Ngap_DRBStatusUL_t* uL) {
-  ul18 = new dRBStatusUL18();
+  if (ul18 == nullptr) ul18 = new dRBStatusUL18();
   if (!ul18->decodeddRBStatusUL18(uL->choice.dRBStatusUL18)) {
     cout << "decodeddRBStatusUL18 error" << endl;
     return false;

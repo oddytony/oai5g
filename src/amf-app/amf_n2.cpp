@@ -1111,7 +1111,7 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   std::shared_ptr<nas_context> nc =
       amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
 
-  //setPduSessionResourceHandoverList_PDYSessionID_handovercommandtransfer
+  // setPduSessionResourceHandoverList_PDYSessionID_handovercommandtransfer
   std::vector<PDUSessionResourceHandoverItem_t> handover_list;
   PDUSessionResourceHandoverItem_t item;
   // set pdu id
@@ -1145,7 +1145,7 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   handover_list.push_back(item);
   handovercommand->setPduSessionResourceHandoverList(handover_list);
   handovercommand->setTargetToSource_TransparentContainer(targetTosource);
-  //setPduSessionResourceHandoverList_PDYSessionID_handovercommandtransfer-end
+  // setPduSessionResourceHandoverList_PDYSessionID_handovercommandtransfer-end
   uint8_t buffer[10240];
   int encoded_size = handovercommand->encode2buffer(buffer, 10240);
   bstring b        = blk2bstr(buffer, encoded_size);

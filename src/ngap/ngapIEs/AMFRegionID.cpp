@@ -35,7 +35,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-AMFRegionID::AMFRegionID() {}
+AMFRegionID::AMFRegionID() {
+  regionid = 0;
+}
 
 //------------------------------------------------------------------------------
 AMFRegionID::~AMFRegionID() {}

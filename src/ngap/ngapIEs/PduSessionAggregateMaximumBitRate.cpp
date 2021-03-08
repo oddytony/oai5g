@@ -34,7 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PduSessionAggregateMaximumBitRate::PduSessionAggregateMaximumBitRate() {}
+PduSessionAggregateMaximumBitRate::PduSessionAggregateMaximumBitRate() {
+  aggregatemaxbitratedl = 0;
+  aggregatemaxbitrateul = 0;
+}
 
 //------------------------------------------------------------------------------
 PduSessionAggregateMaximumBitRate::~PduSessionAggregateMaximumBitRate() {}

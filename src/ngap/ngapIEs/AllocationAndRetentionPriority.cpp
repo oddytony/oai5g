@@ -35,9 +35,9 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 AllocationAndRetentionPriority::AllocationAndRetentionPriority() {
-  priorityLevelARP         = NULL;
-  pre_emptionCapability    = NULL;
-  pre_emptionVulnerability = NULL;
+  priorityLevelARP         = nullptr;
+  pre_emptionCapability    = nullptr;
+  pre_emptionVulnerability = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -87,9 +87,11 @@ bool AllocationAndRetentionPriority::encode2AllocationAndRetentionPriority(
 //------------------------------------------------------------------------------
 bool AllocationAndRetentionPriority::decodefromAllocationAndRetentionPriority(
     Ngap_AllocationAndRetentionPriority_t* allocationAndRetentionPriority) {
-  priorityLevelARP         = new PriorityLevelARP();
-  pre_emptionCapability    = new Pre_emptionCapability();
-  pre_emptionVulnerability = new Pre_emptionVulnerability();
+  if (priorityLevelARP == nullptr) priorityLevelARP = new PriorityLevelARP();
+  if (pre_emptionCapability == nullptr)
+    pre_emptionCapability = new Pre_emptionCapability();
+  if (pre_emptionVulnerability == nullptr)
+    pre_emptionVulnerability = new Pre_emptionVulnerability();
   if (!priorityLevelARP->decodefromPriorityLevelARP(
           &allocationAndRetentionPriority->priorityLevelARP))
     return false;

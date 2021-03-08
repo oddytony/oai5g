@@ -32,7 +32,9 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 PDU_Session_Reactivation_Result::PDU_Session_Reactivation_Result(uint8_t iei) {
-  _iei = iei;
+  _iei   = iei;
+  _value = 0;
+  length = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -44,7 +46,11 @@ PDU_Session_Reactivation_Result::PDU_Session_Reactivation_Result(
 }
 
 //------------------------------------------------------------------------------
-PDU_Session_Reactivation_Result::PDU_Session_Reactivation_Result() {}
+PDU_Session_Reactivation_Result::PDU_Session_Reactivation_Result() {
+  _iei   = 0;
+  _value = 0;
+  length = 0;
+}
 
 //------------------------------------------------------------------------------
 PDU_Session_Reactivation_Result::~PDU_Session_Reactivation_Result() {}

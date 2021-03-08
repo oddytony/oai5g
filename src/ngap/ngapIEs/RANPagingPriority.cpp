@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-RANPagingPriority::RANPagingPriority() {}
+RANPagingPriority::RANPagingPriority() {
+  ranPagingPriority = 0;
+}
 
 //------------------------------------------------------------------------------
 RANPagingPriority::~RANPagingPriority() {}

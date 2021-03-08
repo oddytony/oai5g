@@ -42,13 +42,17 @@ using namespace std;
 namespace ngap {
 
 HandoverRequestAck::HandoverRequestAck() {
-  amfUeNgapId                         = NULL;
-  ranUeNgapId                         = NULL;
-  pduSessionResourceAdmittedList      = NULL;
-  PDUSessionResourceFailedToSetupList = NULL;
-  TargetToSource_TransparentContainer = NULL;
-  CriticalityDiagnostics              = NULL;
+  amfUeNgapId                         = nullptr;
+  ranUeNgapId                         = nullptr;
+  pduSessionResourceAdmittedList      = nullptr;
+  PDUSessionResourceFailedToSetupList = nullptr;
+  TargetToSource_TransparentContainer = nullptr;
+  CriticalityDiagnostics              = nullptr;
+  handoverRequestAckPdu               = nullptr;
+  handoverRequestAckIEs               = nullptr;
+  handovertype                        = nullptr;
 }
+
 HandoverRequestAck::~HandoverRequestAck() {}
 unsigned long HandoverRequestAck::getAmfUeNgapId() {
   return amfUeNgapId->getAMF_UE_NGAP_ID();

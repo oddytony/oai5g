@@ -86,10 +86,11 @@ int _5GSDeregistrationType::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().error("Encoding 5GSDeregistrationType IE");
   if (len < 1) {
     Logger::nas_mm().error(
-        "encoding 5GSDeregistrationType error(len is less than one)");
+        "Encoding 5GSDeregistrationType error (len is less than one)");
     return -1;
   }
   *buf = u1.b;
+  return 0;
 }
 
 //------------------------------------------------------------------------------

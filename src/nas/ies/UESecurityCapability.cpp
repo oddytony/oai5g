@@ -32,11 +32,19 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 UESecurityCapability::UESecurityCapability(uint8_t iei) {
-  _iei = iei;
+  _iei      = iei;
+  _5g_EASel = 0;
+  _5g_IASel = 0;
+  length    = 0;
 }
 
 //------------------------------------------------------------------------------
-UESecurityCapability::UESecurityCapability() {}
+UESecurityCapability::UESecurityCapability() {
+  _iei      = 0;
+  _5g_EASel = 0;
+  _5g_IASel = 0;
+  length    = 0;
+}
 
 //------------------------------------------------------------------------------
 UESecurityCapability::~UESecurityCapability() {}

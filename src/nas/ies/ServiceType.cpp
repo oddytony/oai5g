@@ -70,6 +70,7 @@ int ServiceType::decodefrombuffer(
       value = (*buf) & 0x0f;
     return 0;
   }
+  return 0;
 }
 
 //------------------------------------------------------------------------------

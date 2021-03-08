@@ -58,8 +58,8 @@ bool TAI::encode2TAI(Ngap_TAI_t* tai) {
 
 //------------------------------------------------------------------------------
 bool TAI::decodefromTAI(Ngap_TAI_t* tai) {
-  plmnId = new PlmnId();
-  tac    = new TAC();
+  if (plmnId == nullptr) plmnId = new PlmnId();
+  if (tac == nullptr) tac = new TAC();
   if (!plmnId->decodefromoctetstring(tai->pLMNIdentity)) return false;
   if (!tac->decodefromoctetstring(tai->tAC)) return false;
 

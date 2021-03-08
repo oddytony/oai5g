@@ -59,8 +59,8 @@ bool EUTRA_CGI::encode2EUTRA_CGI(Ngap_EUTRA_CGI_t* eutra_cgi) {
 
 //------------------------------------------------------------------------------
 bool EUTRA_CGI::decodefromEUTRA_CGI(Ngap_EUTRA_CGI_t* eutra_cgi) {
-  plmnId            = new PlmnId();
-  eUTRACellIdentity = new EUTRACellIdentity();
+  if (plmnId == nullptr) plmnId = new PlmnId();
+  if (eUTRACellIdentity == nullptr) eUTRACellIdentity = new EUTRACellIdentity();
   if (!plmnId->decodefromoctetstring(eutra_cgi->pLMNIdentity)) return false;
   if (!eUTRACellIdentity->decodefrombitstring(eutra_cgi->eUTRACellIdentity))
     return false;

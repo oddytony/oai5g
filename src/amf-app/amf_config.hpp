@@ -45,7 +45,6 @@
 #define AMF_CONFIG_STRING_STATISTICS_TIMER_INTERVAL "STATISTICS_TIMER_INTERVAL"
 #define AMF_CONFIG_STRING_INTERFACES "INTERFACES"
 #define AMF_CONFIG_STRING_INTERFACE_NGAP_AMF "NGAP_AMF"
-#define AMF_CONFIG_STRING_INTERFACE_NAUSF "NAUSF"
 
 #define AMF_CONFIG_STRING_INTERFACE_NAME "INTERFACE_NAME"
 #define AMF_CONFIG_STRING_IPV4_ADDRESS "IPV4_ADDRESS"
@@ -180,7 +179,6 @@ class amf_config {
   std::string pid_dir;
   interface_cfg_t n2;
   interface_cfg_t n11;
-  interface_cfg_t nausf;
   itti_cfg_t itti;
   std::string sbi_api_version;
   unsigned int statistics_interval;

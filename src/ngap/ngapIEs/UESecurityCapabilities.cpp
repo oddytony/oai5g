@@ -34,7 +34,12 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-UESecurityCapabilities::UESecurityCapabilities() {}
+UESecurityCapabilities::UESecurityCapabilities() {
+  NR_EncryptionAlgs              = 0;
+  NR_IntegrityProtectionAlgs     = 0;
+  E_UTRA_EncryptionAlgs          = 0;
+  E_UTRA_IntegrityProtectionAlgs = 0;
+}
 
 //------------------------------------------------------------------------------
 UESecurityCapabilities::~UESecurityCapabilities() {}

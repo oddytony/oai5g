@@ -31,8 +31,9 @@
 using namespace nas;
 
 //------------------------------------------------------------------------------
-NAS_Message_Container::NAS_Message_Container(uint8_t iei) {
-  _iei = iei;
+NAS_Message_Container::NAS_Message_Container(uint8_t iei) : _value() {
+  _iei   = iei;
+  length = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -43,7 +44,7 @@ NAS_Message_Container::NAS_Message_Container(const uint8_t iei, bstring value) {
 }
 
 //------------------------------------------------------------------------------
-NAS_Message_Container::NAS_Message_Container() {}
+NAS_Message_Container::NAS_Message_Container() : _iei(), length(), _value() {}
 
 //------------------------------------------------------------------------------
 NAS_Message_Container::~NAS_Message_Container() {}
@@ -63,7 +64,7 @@ void NAS_Message_Container::getValue(bstring& value) {
 int NAS_Message_Container::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("Encoding NAS_Message_Container IEI 0x%x", _iei);
   if (len < length) {
-    Logger::nas_mm().error("len is less than %d", length);
+    Logger::nas_mm().error("Len is less than %d", length);
     return 0;
   }
   int encoded_size = 0;
@@ -89,7 +90,7 @@ int NAS_Message_Container::encode2buffer(uint8_t* buf, int len) {
 //------------------------------------------------------------------------------
 int NAS_Message_Container::decodefrombuffer(
     uint8_t* buf, int len, bool is_option) {
-  Logger::nas_mm().debug("Decoding NAS_Message_Container iei(0x%x)", *buf);
+  Logger::nas_mm().debug("Decoding NAS_Message_Container iei (0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
     decoded_size++;
@@ -103,7 +104,7 @@ int NAS_Message_Container::decodefrombuffer(
   decoded_size += length;
   for (int i = 0; i < length; i++) {
     Logger::nas_mm().debug(
-        "Decoded NAS_Message_Container value 0x%x", (uint8_t*) _value->data[i]);
+        "Decoded NAS_Message_Container value 0x%x", (uint8_t) _value->data[i]);
   }
   Logger::nas_mm().debug(
       "Decoded NAS_Message_Container (len %d)", decoded_size);

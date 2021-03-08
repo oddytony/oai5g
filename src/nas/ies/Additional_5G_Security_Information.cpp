@@ -33,7 +33,9 @@ using namespace nas;
 //------------------------------------------------------------------------------
 Additional_5G_Security_Information::Additional_5G_Security_Information(
     uint8_t iei) {
-  _iei = iei;
+  _iei  = iei;
+  RINMR = false;
+  HDP   = false;
 }
 
 //------------------------------------------------------------------------------
@@ -45,7 +47,11 @@ Additional_5G_Security_Information::Additional_5G_Security_Information(
 }
 
 //------------------------------------------------------------------------------
-Additional_5G_Security_Information::Additional_5G_Security_Information() {}
+Additional_5G_Security_Information::Additional_5G_Security_Information()
+    : _iei() {
+  RINMR = false;
+  HDP   = false;
+}
 
 //------------------------------------------------------------------------------
 Additional_5G_Security_Information::~Additional_5G_Security_Information() {}

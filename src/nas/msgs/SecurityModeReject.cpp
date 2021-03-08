@@ -93,4 +93,5 @@ int SecurityModeReject::decodefrombuffer(
   Logger::nas_mm().debug("first option iei(0x%x)", octet);
   Logger::nas_mm().debug(
       "decoded SecurityModeReject message len(%d)", decoded_size);
+  return 1;
 }

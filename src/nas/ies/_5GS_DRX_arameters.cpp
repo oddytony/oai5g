@@ -32,7 +32,8 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 _5GS_DRX_arameters::_5GS_DRX_arameters(uint8_t iei) {
-  _iei = iei;
+  _iei   = iei;
+  _value = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -42,7 +43,10 @@ _5GS_DRX_arameters::_5GS_DRX_arameters(const uint8_t iei, uint8_t value) {
 }
 
 //------------------------------------------------------------------------------
-_5GS_DRX_arameters::_5GS_DRX_arameters() {}
+_5GS_DRX_arameters::_5GS_DRX_arameters() {
+  _iei   = 0;
+  _value = 0;
+}
 _5GS_DRX_arameters::~_5GS_DRX_arameters() {}
 
 //------------------------------------------------------------------------------

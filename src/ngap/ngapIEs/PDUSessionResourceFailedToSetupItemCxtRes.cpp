@@ -74,7 +74,7 @@ bool PDUSessionResourceFailedToSetupItemCxtRes::
     decodefromPDUSessionResourceFailedToSetupItemCxtRes(
         Ngap_PDUSessionResourceFailedToSetupItemCxtRes_t*
             pduSessionResourceFailedToSetupItemCxtRes) {
-  pDUSessionID = new PDUSessionID();
+  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
   if (!pDUSessionID->decodefromPDUSessionID(
           pduSessionResourceFailedToSetupItemCxtRes->pDUSessionID))
     return false;

@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-NetworkInstance::NetworkInstance() {}
+NetworkInstance::NetworkInstance() {
+  networkinstance = 0;
+}
 
 //------------------------------------------------------------------------------
 NetworkInstance::~NetworkInstance() {}

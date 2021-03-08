@@ -71,4 +71,5 @@ int DeregistrationAccept::decodefrombuffer(
   plain_header     = header;
   Logger::nas_mm().debug(
       "decoded De-registrationReject message len (%d)", decoded_size);
+  return 1;
 }

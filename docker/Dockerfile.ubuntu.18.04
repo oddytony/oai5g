@@ -47,7 +47,7 @@ RUN git config --global https.postBuffer 123289600
 RUN git config --global http.sslverify false
 
 WORKDIR /openair-amf/
-COPY ./ /openair-amf
+COPY . /openair-amf
 
 # Installing all the needed libraries/packages to build and run AMF
 WORKDIR /openair-amf/build/scripts
@@ -77,6 +77,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DE
 # Copying executable and generated libraries
 WORKDIR /openair-amf/bin
 COPY --from=oai-amf-builder /openair-amf/build/amf/build/amf oai_amf
+COPY --from=oai-amf-builder /openair-amf/scripts/entrypoint.sh entrypoint.sh
 
 WORKDIR /usr/lib/x86_64-linux-gnu
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libmysqlclient.so.20 .
@@ -100,6 +101,7 @@ COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libroken.so.18 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libwind.so.0 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libhx509.so.5 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libsqlite3.so.0 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libasan.so.4 .
 
 WORKDIR /usr/local/lib
 COPY --from=oai-amf-builder /usr/local/lib/libpistache.so  .
@@ -109,7 +111,12 @@ RUN ldconfig
 # Copying template configuration files
 WORKDIR /openair-amf/etc
 COPY --from=oai-amf-builder /openair-amf/etc/amf.conf .
-COPY --from=oai-amf-builder /openair-amf/etc/modules.conf .
 
 WORKDIR /openair-amf
 
+# expose ports
+EXPOSE 80/tcp 9090/tcp 38412/sctp
+
+ENTRYPOINT ["/bin/bash","/openair-amf/bin/entrypoint.sh"]
+
+CMD ["/openair-amf/bin/oai_amf", "-c", "/openair-amf/etc/amf.conf", "-o"]

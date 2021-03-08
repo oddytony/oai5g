@@ -55,8 +55,8 @@ bool PDUSessionResourceSetupItemHOReq::
     decodefromPDUSessionResourceSetupItemHOReq(
         Ngap_PDUSessionResourceSetupItemHOReq_t*
             pduSessionResourceSetupItemHOReq) {
-  pDUSessionID = new PDUSessionID();
-  s_NSSAI      = new S_NSSAI();
+  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
+  s_NSSAI = new S_NSSAI();
   if (!pDUSessionID->decodefromPDUSessionID(
           pduSessionResourceSetupItemHOReq->pDUSessionID))
     return false;

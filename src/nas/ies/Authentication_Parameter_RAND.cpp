@@ -31,7 +31,8 @@
 using namespace nas;
 
 //------------------------------------------------------------------------------
-Authentication_Parameter_RAND::Authentication_Parameter_RAND(uint8_t iei) {
+Authentication_Parameter_RAND::Authentication_Parameter_RAND(uint8_t iei)
+    : _value() {
   _iei = iei;
 }
 
@@ -45,7 +46,8 @@ Authentication_Parameter_RAND::Authentication_Parameter_RAND(
 }
 
 //------------------------------------------------------------------------------
-Authentication_Parameter_RAND::Authentication_Parameter_RAND() {}
+Authentication_Parameter_RAND::Authentication_Parameter_RAND()
+    : _iei(), _value() {}
 
 //------------------------------------------------------------------------------
 Authentication_Parameter_RAND::~Authentication_Parameter_RAND() {}

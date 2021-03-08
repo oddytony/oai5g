@@ -46,10 +46,10 @@ bool PDUSessionResourceAdmittedItem::encode2PDUSessionResourceAdmittedItem(
 
   return true;
 }
-//�����......
+
 bool PDUSessionResourceAdmittedItem::decodefromPDUSessionResourceAdmittedItem(
     Ngap_PDUSessionResourceAdmittedItem_t* pdUSessionResourceAdmittedItem) {
-  pDUSessionID = new PDUSessionID();
+  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
   if (!pDUSessionID->decodefromPDUSessionID(
           pdUSessionResourceAdmittedItem->pDUSessionID))
     return false;

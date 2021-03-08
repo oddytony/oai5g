@@ -32,7 +32,9 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 PDU_Session_Status::PDU_Session_Status(uint8_t iei) {
-  _iei = iei;
+  _iei   = iei;
+  _value = 0;
+  length = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -43,7 +45,11 @@ PDU_Session_Status::PDU_Session_Status(const uint8_t iei, uint16_t value) {
 }
 
 //------------------------------------------------------------------------------
-PDU_Session_Status::PDU_Session_Status() {}
+PDU_Session_Status::PDU_Session_Status() {
+  _iei   = 0;
+  _value = 0;
+  length = 0;
+}
 
 //------------------------------------------------------------------------------
 PDU_Session_Status::~PDU_Session_Status() {}
