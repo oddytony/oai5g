@@ -101,6 +101,7 @@ COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libroken.so.18 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libwind.so.0 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libhx509.so.5 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libsqlite3.so.0 .
+COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libasan.so.4 .
 
 WORKDIR /usr/local/lib
 COPY --from=oai-amf-builder /usr/local/lib/libpistache.so  .
