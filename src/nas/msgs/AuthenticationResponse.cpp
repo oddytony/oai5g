@@ -152,4 +152,5 @@ int AuthenticationResponse::decodefrombuffer(
   }
   Logger::nas_mm().debug(
       "Decoded AuthenticationResponse message len (%d)", decoded_size);
+  return 1;
 }

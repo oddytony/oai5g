@@ -32,11 +32,21 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 _5GS_Network_Feature_Support::_5GS_Network_Feature_Support(uint8_t iei) {
-  _iei = iei;
+  _iei    = iei;
+  _value  = 0;
+  _value2 = 0;
+  length  = 0;
 }
 
 //------------------------------------------------------------------------------
-_5GS_Network_Feature_Support::_5GS_Network_Feature_Support() {}
+_5GS_Network_Feature_Support::_5GS_Network_Feature_Support() {
+  _iei    = 0;
+  _value  = 0;
+  _value2 = 0;
+  length  = 0;
+}
+
+//------------------------------------------------------------------------------
 _5GS_Network_Feature_Support::~_5GS_Network_Feature_Support() {}
 
 //------------------------------------------------------------------------------

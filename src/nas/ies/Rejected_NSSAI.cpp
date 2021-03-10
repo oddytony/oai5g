@@ -32,7 +32,11 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 Rejected_NSSAI::Rejected_NSSAI(uint8_t iei) {
-  _iei = iei;
+  _iei            = iei;
+  length          = 0;
+  _s_nssai_SST    = 0;
+  _s_nssai_length = 0;
+  _cause          = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -45,7 +49,13 @@ Rejected_NSSAI::Rejected_NSSAI(const uint8_t iei, uint8_t cause, uint8_t SST) {
 }
 
 //------------------------------------------------------------------------------
-Rejected_NSSAI::Rejected_NSSAI() {}
+Rejected_NSSAI::Rejected_NSSAI() {
+  _iei            = 0;
+  length          = 0;
+  _s_nssai_SST    = 0;
+  _s_nssai_length = 0;
+  _cause          = 0;
+}
 
 //------------------------------------------------------------------------------
 Rejected_NSSAI::~Rejected_NSSAI() {}

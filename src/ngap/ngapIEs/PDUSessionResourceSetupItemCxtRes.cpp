@@ -70,7 +70,7 @@ bool PDUSessionResourceSetupItemCxtRes::
     decodefromPDUSessionResourceSetupItemCxtRes(
         Ngap_PDUSessionResourceSetupItemCxtRes_t*
             pduSessionResourceSetupItemCxtRes) {
-  pDUSessionID = new PDUSessionID();
+  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
   if (!pDUSessionID->decodefromPDUSessionID(
           pduSessionResourceSetupItemCxtRes->pDUSessionID))
     return false;

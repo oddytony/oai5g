@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-Pre_emptionCapability::Pre_emptionCapability() {}
+Pre_emptionCapability::Pre_emptionCapability() {
+  capability = 0;
+}
 
 //------------------------------------------------------------------------------
 Pre_emptionCapability::~Pre_emptionCapability() {}

@@ -119,8 +119,10 @@ bool QosFlowLevelQosParameters::encode2QosFlowLevelQosParameters(
 //------------------------------------------------------------------------------
 bool QosFlowLevelQosParameters::decodefromQosFlowLevelQosParameters(
     Ngap_QosFlowLevelQosParameters_t* qosFlowLevelQosParameters) {
-  qosCharacteristics             = new QosCharacteristics();
-  allocationAndRetentionPriority = new AllocationAndRetentionPriority();
+  if (qosCharacteristics == nullptr)
+    qosCharacteristics = new QosCharacteristics();
+  if (allocationAndRetentionPriority == nullptr)
+    allocationAndRetentionPriority = new AllocationAndRetentionPriority();
 
   if (!qosCharacteristics->decodefromQosCharacteristics(
           &qosFlowLevelQosParameters->qosCharacteristics))

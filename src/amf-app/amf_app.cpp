@@ -86,7 +86,7 @@ amf_app::amf_app(const amf_config& amf_cfg) {
   timer_id_t tid = itti_inst->timer_setup(
       amf_cfg.statistics_interval, 0, TASK_AMF_APP,
       TASK_AMF_APP_PERIODIC_STATISTICS, 0);
-  Logger::amf_app().startup("Started timer(%d)", tid);
+  Logger::amf_app().startup("Started timer (%d)", tid);
 }
 
 //------------------------------------------------------------------------------

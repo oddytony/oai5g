@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-DefaultPagingDRX::DefaultPagingDRX() {}
+DefaultPagingDRX::DefaultPagingDRX() {
+  pagingDrx = 0;
+}
 
 //------------------------------------------------------------------------------
 DefaultPagingDRX::~DefaultPagingDRX() {}

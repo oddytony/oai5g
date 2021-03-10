@@ -76,8 +76,9 @@ bool QosFlowSetupRequestItem::encode2QosFlowSetupRequestItem(
 //------------------------------------------------------------------------------
 bool QosFlowSetupRequestItem::decodefromQosFlowSetupRequestItem(
     Ngap_QosFlowSetupRequestItem_t* qosFlowSetupRequestItem) {
-  qosFlowIdentifier         = new QosFlowIdentifier();
-  qosFlowLevelQosParameters = new QosFlowLevelQosParameters();
+  if (qosFlowIdentifier == nullptr) qosFlowIdentifier = new QosFlowIdentifier();
+  if (qosFlowLevelQosParameters == nullptr)
+    qosFlowLevelQosParameters = new QosFlowLevelQosParameters();
 
   if (!qosFlowIdentifier->decodefromQosFlowIdentifier(
           &qosFlowSetupRequestItem->qosFlowIdentifier))

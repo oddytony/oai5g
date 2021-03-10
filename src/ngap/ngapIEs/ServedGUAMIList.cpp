@@ -35,7 +35,8 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 ServedGUAMIList::ServedGUAMIList() {
-  servedGUAMIItem = NULL;
+  servedGUAMIItem         = nullptr;
+  numberOfservedGUAMIItem = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -66,7 +67,8 @@ bool ServedGUAMIList::encode2ServedGUAMIList(
 //------------------------------------------------------------------------------
 bool ServedGUAMIList::decodefromServedGUAMIList(Ngap_ServedGUAMIList_t* pdu) {
   numberOfservedGUAMIItem = pdu->list.count;
-  servedGUAMIItem         = new ServedGUAMIItem[numberOfservedGUAMIItem]();
+  if (servedGUAMIItem == nullptr)
+    servedGUAMIItem = new ServedGUAMIItem[numberOfservedGUAMIItem]();
   for (int i = 0; i < numberOfservedGUAMIItem; i++) {
     if (!servedGUAMIItem[i].decodefromServedGUAMIItem(pdu->list.array[i]))
       return false;

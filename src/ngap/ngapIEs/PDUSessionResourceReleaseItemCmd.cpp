@@ -61,7 +61,7 @@ bool PDUSessionResourceReleaseItemCmd::
     decodefromPDUSessionResourceReleaseItemCmd(
         Ngap_PDUSessionResourceToReleaseItemRelCmd_t*
             pduSessionResourceReleaseCommandTransfer) {
-  pDUSessionID = new PDUSessionID();
+  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
   if (!pDUSessionID->decodefromPDUSessionID(
           pduSessionResourceReleaseCommandTransfer->pDUSessionID))
     return false;

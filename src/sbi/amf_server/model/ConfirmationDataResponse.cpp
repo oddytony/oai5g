@@ -22,6 +22,7 @@ ConfirmationDataResponse::ConfirmationDataResponse() {
   m_SupiIsSet  = false;
   m_Kseaf      = "";
   m_KseafIsSet = false;
+  m_AuthResult = false;
 }
 
 ConfirmationDataResponse::~ConfirmationDataResponse() {}

@@ -109,7 +109,7 @@ bool NonDynamic5QIDescriptor::encode2NonDynamic5QIDescriptor(
 //------------------------------------------------------------------------------
 bool NonDynamic5QIDescriptor::decodefromNonDynamic5QIDescriptor(
     Ngap_NonDynamic5QIDescriptor_t* nonDynamic5QIDescriptor) {
-  fiveQI = new FiveQI();
+  if (fiveQI == nullptr) fiveQI = new FiveQI();
   if (!fiveQI->decodefromFiveQI(&nonDynamic5QIDescriptor->fiveQI)) return false;
   if (nonDynamic5QIDescriptor->priorityLevelQos) {
     priorityLevelQos = new PriorityLevelQos();

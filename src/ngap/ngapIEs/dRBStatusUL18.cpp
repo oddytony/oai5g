@@ -42,7 +42,7 @@ bool dRBStatusUL18::encodeddRBStatusUL18(Ngap_DRBStatusUL18_t* UL18) {
   return true;
 }
 bool dRBStatusUL18::decodeddRBStatusUL18(Ngap_DRBStatusUL18_t* UL18) {
-  pdcp_value = new COUNTValueForPDCP_SN18();
+  if (pdcp_value == nullptr) pdcp_value = new COUNTValueForPDCP_SN18();
   if (!pdcp_value->decodedCOUNTValueForPDCP_SN18(UL18->uL_COUNTValue)) {
     cout << "decodeddRBStatusUL18 error" << endl;
     return false;

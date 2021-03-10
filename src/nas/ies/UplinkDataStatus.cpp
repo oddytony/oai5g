@@ -32,7 +32,9 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 UplinkDataStatus::UplinkDataStatus(uint8_t iei) {
-  _iei = iei;
+  _iei   = iei;
+  _value = 0;
+  length = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -43,7 +45,11 @@ UplinkDataStatus::UplinkDataStatus(const uint8_t iei, uint16_t value) {
 }
 
 //------------------------------------------------------------------------------
-UplinkDataStatus::UplinkDataStatus() {}
+UplinkDataStatus::UplinkDataStatus() {
+  _iei   = 0;
+  _value = 0;
+  length = 0;
+}
 
 //-----------------------------------------------------------------------------
 UplinkDataStatus::~UplinkDataStatus() {}

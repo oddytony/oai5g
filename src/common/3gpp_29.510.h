@@ -192,6 +192,7 @@ typedef struct subscription_condition_s {
       }
     }
     // TODO:
+    return *this;
   }
 
   virtual ~subscription_condition_s(){};
@@ -258,6 +259,7 @@ typedef struct nf_service_version_s {
   nf_service_version_s& operator=(const nf_service_version_s& s) {
     api_version_in_uri = s.api_version_in_uri;
     api_full_version   = s.api_full_version;
+    return *this;
   }
 
   std::string to_string() const {

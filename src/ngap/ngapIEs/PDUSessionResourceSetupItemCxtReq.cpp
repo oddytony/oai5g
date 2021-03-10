@@ -69,7 +69,10 @@ bool PDUSessionResourceSetupItemCxtReq::
     Ngap_NAS_PDU_t* naspdu =
         (Ngap_NAS_PDU_t*) calloc(1, sizeof(Ngap_NAS_PDU_t));
     if (!naspdu) return false;
-    if (!nAS_PDU->encode2octetstring(*naspdu)) return false;
+    if (!nAS_PDU->encode2octetstring(*naspdu)) {
+      if (naspdu != nullptr) free(naspdu);
+      return false;
+    }
     pduSessionResourceSetupItemCxtReq->nAS_PDU = naspdu;
     cout << "encode2pdu  nas-pdu over" << endl;
   }
@@ -88,8 +91,8 @@ bool PDUSessionResourceSetupItemCxtReq::
     decodefromPDUSessionResourceSetupItemCxtReq(
         Ngap_PDUSessionResourceSetupItemCxtReq_t*
             pduSessionResourceSetupItemCxtReq) {
-  pDUSessionID = new PDUSessionID();
-  s_NSSAI      = new S_NSSAI();
+  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
+  if (s_NSSAI == nullptr) s_NSSAI = new S_NSSAI();
   if (!pDUSessionID->decodefromPDUSessionID(
           pduSessionResourceSetupItemCxtReq->pDUSessionID))
     return false;
@@ -98,7 +101,7 @@ bool PDUSessionResourceSetupItemCxtReq::
     return false;
 
   if (pduSessionResourceSetupItemCxtReq->nAS_PDU) {
-    nAS_PDU = new NAS_PDU();
+    if (nAS_PDU == nullptr) nAS_PDU = new NAS_PDU();
     if (!nAS_PDU->decodefromoctetstring(
             *pduSessionResourceSetupItemCxtReq->nAS_PDU))
       return false;

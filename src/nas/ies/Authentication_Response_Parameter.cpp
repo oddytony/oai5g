@@ -96,7 +96,7 @@ int Authentication_Response_Parameter::decodefrombuffer(
   decoded_size += length;
   for (int i = 0; i < length; i++) {
     Logger::nas_mm().debug(
-        "Decoded NAS_Message_Container value 0x%x", (uint8_t*) PARA->data[i]);
+        "Decoded NAS_Message_Container value 0x%x", (uint8_t) PARA->data[i]);
   }
   Logger::nas_mm().debug(
       "Decoded Authentication_Response_Parameter (len %d)", decoded_size);

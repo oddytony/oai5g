@@ -33,6 +33,7 @@ extern "C" {
 #include "per_encoder.h"
 #include "per_decoder.h"
 #include "constraints.h"
+#include "dynamic_memory_check.h"
 }
 
 #include <iostream>
@@ -41,10 +42,13 @@ extern "C" {
 using namespace std;
 namespace ngap {
 HandoverNotifyMsg::HandoverNotifyMsg() {
-  amfUeNgapId             = NULL;
-  ranUeNgapId             = NULL;
-  userLocationInformation = NULL;
+  amfUeNgapId             = nullptr;
+  ranUeNgapId             = nullptr;
+  userLocationInformation = nullptr;
+  handoverNotifyPdu       = nullptr;
+  handoverNotifyIEs       = nullptr;
 }
+
 HandoverNotifyMsg::~HandoverNotifyMsg(){};
 unsigned long HandoverNotifyMsg::getAmfUeNgapId() {
   return amfUeNgapId->getAMF_UE_NGAP_ID();
@@ -172,11 +176,13 @@ void HandoverNotifyMsg::setUserLocationInfoNR(
       &ie->value.choice.UserLocationInformation);
   if (!ret) {
     cout << "encode UserLocationInformation IE error" << endl;
+    free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&handoverNotifyIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UserLocationInformation IE error" << endl;
+  //free_wrapper((void**) &ie);
 }
 uint32_t HandoverNotifyMsg::getRanUeNgapId() {
   return ranUeNgapId->getRanUeNgapId();

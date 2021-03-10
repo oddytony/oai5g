@@ -30,6 +30,7 @@
 
 extern "C" {
 #include "Ngap_GTPTunnel.h"
+#include "dynamic_memory_check.h"
 }
 
 #include <iostream>
@@ -70,11 +71,16 @@ bool UpTransportLayerInformation::encode2UpTransportLayerInformation(
       (Ngap_GTPTunnel_t*) calloc(1, sizeof(Ngap_GTPTunnel_t));
   if (!gtptunnel) return false;
   if (!transportLayerAddress->encode2TransportLayerAddress(
-          gtptunnel->transportLayerAddress))
+          gtptunnel->transportLayerAddress)) {
+    free_wrapper((void**) &gtptunnel);
     return false;
-  if (!gtpTeid->encode2GtpTeid(gtptunnel->gTP_TEID)) return false;
-  upTransportLayerInfo.choice.gTPTunnel = gtptunnel;
+  }
 
+  if (!gtpTeid->encode2GtpTeid(gtptunnel->gTP_TEID)) {
+    free_wrapper((void**) &gtptunnel);
+    return false;
+  }
+  upTransportLayerInfo.choice.gTPTunnel = gtptunnel;
   return true;
 }
 

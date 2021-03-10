@@ -19,7 +19,6 @@
  *      contact@openairinterface.org
  */
 
-
 #ifndef _DRBSTATUSDL18_H_
 #define _DRBSTATUSDL18_H_
 #include "COUNTValueForPDCP_SN18.hpp"

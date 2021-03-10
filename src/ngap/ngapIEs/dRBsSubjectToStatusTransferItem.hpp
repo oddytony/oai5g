@@ -19,7 +19,6 @@
  *      contact@openairinterface.org
  */
 
-
 #ifndef _DRBSSUBJECTTOSTATUSTRANSFERITEM_H_
 #define _DRBSSUBJECTTOSTATUSTRANSFERITEM_H_
 #include "dRBStatusUL.hpp"

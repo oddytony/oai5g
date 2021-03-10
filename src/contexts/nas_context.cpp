@@ -29,11 +29,21 @@
 #include "nas_context.hpp"
 
 //------------------------------------------------------------------------------
-nas_context::nas_context() {
-  security_ctx                                          = NULL;
-  is_imsi_present                                       = false;
+nas_context::nas_context() : _vector(), _5g_he_av(), _5g_av(), kamf() {
+  security_ctx                                          = nullptr;
   is_stacs_available                                    = false;
-  is_auth_vectors_present                               = false;
+  auts                                                  = nullptr;
+  ctx_avaliability_ind                                  = false;
+  amf_ue_ngap_id                                        = 0;
+  ran_ue_ngap_id                                        = 0;
+  _5gmm_state                                           = {};
+  registration_type                                     = 0;
+  follow_on_req_pending_ind                             = false;
+  ngKsi                                                 = 0;
+  mmCapability                                          = 0;
+  ueSecurityCapEnc                                      = 0;
+  ueSecurityCapInt                                      = 0;
+  requestedNssai                                        = {};
   is_specific_procedure_for_registration_running        = false;
   is_specific_procedure_for_deregistration_running      = false;
   is_specific_procedure_for_eCell_inactivity_running    = false;
@@ -41,7 +51,14 @@ nas_context::nas_context() {
   is_common_procedure_for_identification_running        = false;
   is_common_procedure_for_security_mode_control_running = false;
   is_common_procedure_for_nas_transport_running         = false;
-  auts                                                  = NULL;
+  _security                                             = {};
+  security_ctx                                          = nullptr;
+  is_current_security_available                         = false;
+  registration_attempt_counter                          = 0;
+  is_imsi_present                                       = false;
+  is_5g_guti_present                                    = false;
+  is_auth_vectors_present                               = false;
+  to_be_register_by_new_suci                            = false;
 }
 
 //------------------------------------------------------------------------------

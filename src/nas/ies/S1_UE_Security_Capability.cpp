@@ -34,11 +34,19 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 S1_UE_Security_Capability::S1_UE_Security_Capability(uint8_t iei) {
-  _iei = iei;
+  _iei       = iei;
+  _5g_EEASel = 0;
+  _5g_EIASel = 0;
+  length     = 0;
 }
 
 //------------------------------------------------------------------------------
-S1_UE_Security_Capability::S1_UE_Security_Capability() {}
+S1_UE_Security_Capability::S1_UE_Security_Capability() {
+  _iei       = 0;
+  _5g_EEASel = 0;
+  _5g_EIASel = 0;
+  length     = 0;
+}
 
 //------------------------------------------------------------------------------
 S1_UE_Security_Capability::~S1_UE_Security_Capability() {}

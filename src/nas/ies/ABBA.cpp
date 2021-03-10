@@ -31,8 +31,9 @@
 using namespace nas;
 
 //------------------------------------------------------------------------------
-ABBA::ABBA(uint8_t iei) {
-  _iei = iei;
+ABBA::ABBA(uint8_t iei) : _value() {
+  _iei    = iei;
+  _length = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -45,7 +46,9 @@ ABBA::ABBA(const uint8_t iei, uint8_t length, uint8_t* value) {
 }
 
 //------------------------------------------------------------------------------
-ABBA::ABBA() {}
+ABBA::ABBA() : _value(), _length(), _iei() {}
+
+//------------------------------------------------------------------------------
 ABBA::~ABBA() {}
 
 //------------------------------------------------------------------------------
@@ -99,9 +102,8 @@ int ABBA::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   if (is_option) {
     decoded_size++;
   }
-  _length     = 0x00;
-  _value[255] = {};
-  _length     = *(buf + decoded_size);
+  _length = 0x00;
+  _length = *(buf + decoded_size);
   decoded_size++;
   int i          = 0;
   uint8_t Length = _length;

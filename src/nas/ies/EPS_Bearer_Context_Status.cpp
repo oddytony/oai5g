@@ -32,7 +32,9 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 EPS_Bearer_Context_Status::EPS_Bearer_Context_Status(uint8_t iei) {
-  _iei = iei;
+  _iei   = iei;
+  length = 0;
+  _value = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -44,7 +46,8 @@ EPS_Bearer_Context_Status::EPS_Bearer_Context_Status(
 }
 
 //------------------------------------------------------------------------------
-EPS_Bearer_Context_Status::EPS_Bearer_Context_Status() {}
+EPS_Bearer_Context_Status::EPS_Bearer_Context_Status()
+    : _iei(), length(), _value() {}
 
 //------------------------------------------------------------------------------
 EPS_Bearer_Context_Status::~EPS_Bearer_Context_Status() {}

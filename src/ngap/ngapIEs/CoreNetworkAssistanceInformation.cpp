@@ -39,11 +39,11 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 CoreNetworkAssistanceInfo::CoreNetworkAssistanceInfo() {
-  ueIdentityIndexValue   = NULL;
-  pagingDRX              = NULL;
-  periodicRegUpdateTimer = NULL;
-  micoModeInd            = NULL;
-  tai                    = NULL;
+  ueIdentityIndexValue   = nullptr;
+  pagingDRX              = nullptr;
+  periodicRegUpdateTimer = nullptr;
+  micoModeInd            = nullptr;
+  tai                    = nullptr;
   numoftai               = 0;
 }
 
@@ -118,8 +118,10 @@ bool CoreNetworkAssistanceInfo::encode2CoreNetworkAssistanceInfo(
 //------------------------------------------------------------------------------
 bool CoreNetworkAssistanceInfo::decodefromCoreNetworkAssistanceInfo(
     Ngap_CoreNetworkAssistanceInformation_t* coreNetworkAssistanceInformation) {
-  ueIdentityIndexValue   = new UEIdentityIndexValue();
-  periodicRegUpdateTimer = new PeriodicRegistrationUpdateTimer();
+  if (ueIdentityIndexValue == nullptr)
+    ueIdentityIndexValue = new UEIdentityIndexValue();
+  if (periodicRegUpdateTimer == nullptr)
+    periodicRegUpdateTimer = new PeriodicRegistrationUpdateTimer();
   if (!ueIdentityIndexValue->decodefromUEIdentityIndexValue(
           &coreNetworkAssistanceInformation->uEIdentityIndexValue))
     return false;

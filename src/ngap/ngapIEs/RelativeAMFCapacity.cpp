@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-RelativeAMFCapacity::RelativeAMFCapacity() {}
+RelativeAMFCapacity::RelativeAMFCapacity() {
+  amfcapacity = 0;
+}
 
 //------------------------------------------------------------------------------
 RelativeAMFCapacity::~RelativeAMFCapacity() {}

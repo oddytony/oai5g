@@ -16,7 +16,9 @@ namespace oai {
 namespace smf {
 namespace model {
 
-AccessType::AccessType() {}
+AccessType::AccessType() {
+  m_value = {};
+}
 
 AccessType::~AccessType() {}
 

@@ -144,9 +144,9 @@ bool Dynamic5QIDescriptor::encode2Dynamic5QIDescriptor(
 //------------------------------------------------------------------------------
 bool Dynamic5QIDescriptor::decodefromDynamic5QIDescriptor(
     Ngap_Dynamic5QIDescriptor_t* dynamic5QIDescriptor) {
-  priorityLevelQos  = new PriorityLevelQos();
-  packetDelayBudget = new PacketDelayBudget();
-  packetErrorRate   = new PacketErrorRate();
+  if (priorityLevelQos == nullptr) priorityLevelQos = new PriorityLevelQos();
+  if (packetDelayBudget == nullptr) packetDelayBudget = new PacketDelayBudget();
+  if (packetErrorRate == nullptr) packetErrorRate = new PacketErrorRate();
   if (!priorityLevelQos->decodefromPriorityLevelQos(
           &dynamic5QIDescriptor->priorityLevelQos))
     return false;

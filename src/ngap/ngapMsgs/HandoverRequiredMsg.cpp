@@ -37,14 +37,16 @@ using namespace std;
 namespace ngap {
 
 HandoverRequiredMsg::HandoverRequiredMsg() {
-  amfUeNgapId                         = NULL;
-  ranUeNgapId                         = NULL;
-  handovertype                        = NULL;
-  cause                               = NULL;
-  targetid                            = NULL;
-  directforwardingPathAvailability    = NULL;
-  PDUSessionResourceList              = NULL;
-  SourceToTarget_TransparentContainer = NULL;
+  amfUeNgapId                         = nullptr;
+  ranUeNgapId                         = nullptr;
+  handovertype                        = nullptr;
+  cause                               = nullptr;
+  targetid                            = nullptr;
+  directforwardingPathAvailability    = nullptr;
+  PDUSessionResourceList              = nullptr;
+  SourceToTarget_TransparentContainer = nullptr;
+  handoverRequiredPdu                 = nullptr;
+  handoverRequiredIEs                 = nullptr;
 }
 HandoverRequiredMsg::~HandoverRequiredMsg() {}
 

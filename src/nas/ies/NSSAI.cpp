@@ -34,7 +34,9 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 NSSAI::NSSAI(uint8_t iei) {
-  _iei = iei;
+  _iei    = iei;
+  length  = 0;
+  S_NSSAI = {};
 }
 
 //------------------------------------------------------------------------------
@@ -51,7 +53,7 @@ NSSAI::NSSAI(const uint8_t iei, std::vector<struct SNSSAI_s> nssai) {
 }
 
 //------------------------------------------------------------------------------
-NSSAI::NSSAI() {}
+NSSAI::NSSAI() : _iei(), length(), S_NSSAI() {}
 
 //------------------------------------------------------------------------------
 NSSAI::~NSSAI() {}
@@ -60,7 +62,7 @@ NSSAI::~NSSAI() {}
 void NSSAI::setS_NAASI(uint8_t SST) {}
 
 //------------------------------------------------------------------------------
-bool NSSAI::getValue(std::vector<struct SNSSAI_s>& nssai) {
+void NSSAI::getValue(std::vector<struct SNSSAI_s>& nssai) {
   nssai.assign(S_NSSAI.begin(), S_NSSAI.end());
 }
 

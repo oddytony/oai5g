@@ -34,7 +34,10 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-UEAggregateMaxBitRate::UEAggregateMaxBitRate() {}
+UEAggregateMaxBitRate::UEAggregateMaxBitRate() {
+  ueaggregatemaxbitratedl = 0;
+  ueaggregatemaxbitrateul = 0;
+}
 
 //------------------------------------------------------------------------------
 UEAggregateMaxBitRate::~UEAggregateMaxBitRate() {}

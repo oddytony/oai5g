@@ -32,7 +32,9 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 Additional_Information::Additional_Information(uint8_t iei) {
-  _iei = iei;
+  _iei   = iei;
+  length = 0;
+  _value = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -44,7 +46,7 @@ Additional_Information::Additional_Information(
 }
 
 //------------------------------------------------------------------------------
-Additional_Information::Additional_Information() {}
+Additional_Information::Additional_Information() : _iei(), length(), _value() {}
 
 //------------------------------------------------------------------------------
 Additional_Information::~Additional_Information() {}

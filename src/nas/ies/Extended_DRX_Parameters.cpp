@@ -31,7 +31,9 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 Extended_DRX_Parameters::Extended_DRX_Parameters(uint8_t iei) {
-  _iei = iei;
+  _iei         = iei;
+  _paging_time = 0;
+  _value       = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -43,7 +45,8 @@ Extended_DRX_Parameters::Extended_DRX_Parameters(
 }
 
 //------------------------------------------------------------------------------
-Extended_DRX_Parameters::Extended_DRX_Parameters() {}
+Extended_DRX_Parameters::Extended_DRX_Parameters()
+    : _iei(), _paging_time(), _value() {}
 
 //------------------------------------------------------------------------------
 Extended_DRX_Parameters::~Extended_DRX_Parameters() {}

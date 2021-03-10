@@ -32,7 +32,8 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 Request_Type::Request_Type(uint8_t iei) {
-  _iei = iei;
+  _iei   = iei;
+  _value = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -42,7 +43,10 @@ Request_Type::Request_Type(const uint8_t iei, uint8_t value) {
 }
 
 //------------------------------------------------------------------------------
-Request_Type::Request_Type() {}
+Request_Type::Request_Type() {
+  _iei   = 0;
+  _value = 0;
+}
 
 //------------------------------------------------------------------------------
 Request_Type::~Request_Type() {}

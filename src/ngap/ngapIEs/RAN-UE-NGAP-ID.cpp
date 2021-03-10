@@ -35,7 +35,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-RAN_UE_NGAP_ID::RAN_UE_NGAP_ID() {}
+RAN_UE_NGAP_ID::RAN_UE_NGAP_ID() {
+  ranUeNgapId = 0;
+}
 
 //------------------------------------------------------------------------------
 RAN_UE_NGAP_ID::~RAN_UE_NGAP_ID() {}

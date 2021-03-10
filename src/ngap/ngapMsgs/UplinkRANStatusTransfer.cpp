@@ -36,6 +36,8 @@ UplinkRANStatusTransfer::UplinkRANStatusTransfer() {
   amfUeNgapId                            = NULL;
   ranUeNgapId                            = NULL;
   ranStatusTransfer_TransparentContainer = NULL;
+  UplinkRANStatusTransferPDU             = nullptr;
+  UplinkRANStatusTransferIEs             = nullptr;
 }
 UplinkRANStatusTransfer::~UplinkRANStatusTransfer() {}
 unsigned long UplinkRANStatusTransfer::getAmfUeNgapId() {
