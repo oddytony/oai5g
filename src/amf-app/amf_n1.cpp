@@ -89,8 +89,6 @@ random_state_t random_state;
 static uint8_t no_random_delta = 0;
 void amf_n1_task(void*);
 
-typedef std::bitset<sizeof(uint16_t)> pdu_session_status_bits;
-
 //------------------------------------------------------------------------------
 void amf_n1_task(void*) {
   const task_id_t task_id = TASK_AMF_N1;
@@ -579,22 +577,17 @@ void amf_n1::service_request_handle(
   Logger::amf_n1().debug(
       "amf_ue_ngap_id %d, ran_ue_ngap_id %d", amf_ue_ngap_id, ran_ue_ngap_id);
   Logger::amf_n1().debug("Key for pdu session context: SUPI %s", supi.c_str());
-  //  std::shared_ptr<pdu_session_context> psc;
 
   // get PDU session status
   std::vector<uint8_t> pdu_session_to_be_activated = {};
-  uint16_t pdu_session_status = (uint16_t) serReq->getPduSessionStatus();
+  std::bitset<16> pdu_session_status_bits((uint16_t) 0x0200);
 
-  for (int i = 0; i < 8; i++) {
-    if (pdu_session_status_bits((uint16_t) serReq->getPduSessionStatus())
-            .test(i)) {
-      pdu_session_to_be_activated.push_back(i + 8);
-    }
-  }
-  for (int i = 9; i < 16; i++) {
-    if (pdu_session_status_bits((uint16_t) serReq->getPduSessionStatus())
-            .test(i)) {
-      pdu_session_to_be_activated.push_back(i - 8);
+  for (int i = 0; i < 15; i++) {
+    if (pdu_session_status_bits.test(i)) {
+      if (i <= 7)
+        pdu_session_to_be_activated.push_back(8 + i);
+      else if (i > 8)
+        pdu_session_to_be_activated.push_back(i - 8);
     }
   }
 
