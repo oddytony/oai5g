@@ -54,6 +54,7 @@ class ue_context {
   void add_pdu_session_context(
       const std::uint8_t& session_id,
       const std::shared_ptr<pdu_session_context>& context);
+  void copy_pdu_sessions(std::shared_ptr<ue_context>& ue_ctx);
 
  public:
   uint32_t ran_ue_ngap_id;   // 32bits

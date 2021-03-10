@@ -572,11 +572,25 @@ void amf_n1::service_request_handle(
   std::unique_ptr<ServiceAccept> serApt = std::make_unique<ServiceAccept>();
   serApt->setHeader(PLAIN_5GS_MSG);
   string supi      = "imsi-" + nc.get()->imsi;
+  uc.get()->supi   = supi;
   supi2amfId[supi] = amf_ue_ngap_id;
   supi2ranId[supi] = ran_ue_ngap_id;
   Logger::amf_n1().debug(
       "amf_ue_ngap_id %d, ran_ue_ngap_id %d", amf_ue_ngap_id, ran_ue_ngap_id);
   Logger::amf_n1().debug("Key for pdu session context: SUPI %s", supi.c_str());
+
+  // get the status of PDU Session context
+
+  std::shared_ptr<pdu_session_context> old_psc = {};
+  if (amf_app_inst->is_supi_2_ue_context(supi)) {
+    std::shared_ptr<ue_context> old_uc = {};
+    old_uc                             = amf_app_inst->supi_2_ue_context(supi);
+    uc->copy_pdu_sessions(old_uc);
+    amf_app_inst->set_supi_2_ue_context(supi, uc);
+  }
+
+  // associate SUPI with UC
+  amf_app_inst->set_supi_2_ue_context(supi, uc);
 
   // get PDU session status
   std::vector<uint8_t> pdu_session_to_be_activated = {};

@@ -52,3 +52,7 @@ void ue_context::add_pdu_session_context(
   std::unique_lock lock(m_pdu_session);
   pdu_sessions[session_id] = context;
 }
+
+void ue_context::copy_pdu_sessions(std::shared_ptr<ue_context>& ue_ctx) {
+  pdu_sessions = ue_ctx->pdu_sessions;
+}

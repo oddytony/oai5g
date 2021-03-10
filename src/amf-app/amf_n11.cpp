@@ -171,7 +171,7 @@ void amf_n11::handle_itti_message(
       "ID %d)",
       supi.c_str(), itti_msg.pdu_session_id);
 
-  std::shared_ptr<pdu_session_context> psc;
+  std::shared_ptr<pdu_session_context> psc = {};
   if (!uc.get()->find_pdu_session_context(itti_msg.pdu_session_id, psc)) {
     Logger::amf_n11().error(
         "Could not find psu_session_context with SUPI %s, Failed",
