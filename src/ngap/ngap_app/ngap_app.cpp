@@ -170,10 +170,9 @@ void ngap_app::set_gnb_id_2_gnb_context(
 
 //------------------------------------------------------------------------------
 void ngap_app::remove_gnb_context(const long& gnb_id) {
-
   if (is_gnb_id_2_gnb_context(gnb_id)) {
-	  std::unique_lock lock(m_gnbid2gnbContext);
-	  gnbid2gnbContext.erase(gnb_id);
-	  return;
+    std::unique_lock lock(m_gnbid2gnbContext);
+    gnbid2gnbContext.erase(gnb_id);
+    return;
   }
 }

@@ -237,19 +237,21 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
         "Update gNB context with assoc id (%d)", itti_msg.assoc_id);
   }
 
-  gnb_infos gnbItem;
+  gnb_infos gnbItem = {};
 
   // Get IE Global RAN Node ID
-  uint32_t gnb_id;
+  uint32_t gnb_id = {};
   std::string gnb_mcc;
   std::string gnb_mnc;
   if (!itti_msg.ngSetupReq->getGlobalGnbID(gnb_id, gnb_mcc, gnb_mnc)) {
-    Logger::amf_n2().error("Missing Mandatory IE GlobalGnbID");
+    Logger::amf_n2().error("Missing Mandatory IE Global RAN Node ID");
     return;
   }
-  Logger::amf_n2().debug("IE GlobalGNBID: 0x%x", gnb_id);
+  Logger::amf_n2().debug("Global RAN Node ID: 0x%x", gnb_id);
   gc->globalRanNodeId = gnb_id;
   gnbItem.gnb_id      = gnb_id;
+  gnbItem.mcc         = gnb_mcc;
+  gnbItem.mnc         = gnb_mnc;
 
   std::string gnb_name;
   if (!itti_msg.ngSetupReq->getRanNodeName(gnb_name)) {
@@ -267,15 +269,16 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
   }
   Logger::amf_n2().debug("IE DefaultPagingDRX: %d", defPagingDrx);
 
+  // Get supported TA List
   vector<SupportedItem_t> s_ta_list;
-  if (!itti_msg.ngSetupReq->getSupportedTAList(
-          s_ta_list)) {  // getSupportedTAList
+  if (!itti_msg.ngSetupReq->getSupportedTAList(s_ta_list)) {
     return;
   }
   // TODO: should be removed, since we stored list of common PLMNs
-  gnbItem.mcc = s_ta_list[0].b_plmn_list[0].mcc;
-  gnbItem.mnc = s_ta_list[0].b_plmn_list[0].mnc;
-  gnbItem.tac = s_ta_list[0].tac;
+  // gnbItem.mcc = s_ta_list[0].b_plmn_list[0].mcc;
+  // gnbItem.mnc = s_ta_list[0].b_plmn_list[0].mnc;
+  // gnbItem.tac = s_ta_list[0].tac;
+
   // association GlobalRANNodeID with assoc_id
   // store RAN Node Name in gNB context, if present
   // verify PLMN Identity and TAC with configuration and store supportedTAList
@@ -404,8 +407,6 @@ void amf_n2::handle_itti_message(itti_ng_reset& itti_msg) {
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_ng_shutdown& itti_msg) {
-  Logger::amf_n2().debug("Parameters: assoc_id %d", itti_msg.assoc_id);
-
   std::shared_ptr<gnb_context> gc;
   if (!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
     Logger::amf_n2().error(
@@ -434,11 +435,11 @@ void amf_n2::handle_itti_message(itti_ng_shutdown& itti_msg) {
   }
 
   // Delete gNB context
-  Logger::amf_n2().debug("Remove gNB Context %d", itti_msg.assoc_id);
   remove_gnb_context(itti_msg.assoc_id);
   stacs.gnbs.erase(gc.get()->globalRanNodeId);
   Logger::amf_n2().debug(
-      "Remove gNB with globalRanNodeId 0x%x", gc.get()->globalRanNodeId);
+      "Remove gNB with association id %d, globalRanNodeId 0x%x",
+      itti_msg.assoc_id, gc.get()->globalRanNodeId);
   stacs.gNB_connected -= 1;
   stacs.display();
   return;
