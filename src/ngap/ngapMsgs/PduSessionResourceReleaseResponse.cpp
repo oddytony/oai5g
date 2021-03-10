@@ -111,7 +111,7 @@ void PduSessionResourceReleaseResponseMsg::setAmfUeNgapId(unsigned long id) {
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceReleaseResponseIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::nas_mm().warn("Encode AMF_UE_NGAP_ID IE error");
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ void PduSessionResourceReleaseResponseMsg::setRanUeNgapId(
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceReleaseResponseIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::nas_mm().warn("Encode RAN_UE_NGAP_ID IE error");
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ void PduSessionResourceReleaseResponseMsg::setPduSessionResourceReleasedList(
   if (ret != 0)
     Logger::nas_mm().warn(
         "Encode PDUSessionResourceReleasedListRelRes IE error");
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -231,7 +231,7 @@ void PduSessionResourceReleaseResponseMsg::setUserLocationInfoNR(
       &pduSessionResourceReleaseResponseIEs->protocolIEs.list, ie);
   if (ret != 0)
     Logger::nas_mm().warn("Encode UserLocationInformation IE error");
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -298,7 +298,7 @@ bool PduSessionResourceReleaseResponseMsg::decodefrompdu(
         pduSessionResourceReleaseResponseIEs->protocolIEs.list.array[i]->id) {
       case Ngap_ProtocolIE_ID_id_AMF_UE_NGAP_ID: {
         if (pduSessionResourceReleaseResponseIEs->protocolIEs.list.array[i]
-                    ->criticality == Ngap_Criticality_reject &&
+                    ->criticality == Ngap_Criticality_ignore &&
             pduSessionResourceReleaseResponseIEs->protocolIEs.list.array[i]
                     ->value.present ==
                 Ngap_PDUSessionResourceReleaseResponseIEs__value_PR_AMF_UE_NGAP_ID) {
@@ -318,7 +318,7 @@ bool PduSessionResourceReleaseResponseMsg::decodefrompdu(
 
       case Ngap_ProtocolIE_ID_id_RAN_UE_NGAP_ID: {
         if (pduSessionResourceReleaseResponseIEs->protocolIEs.list.array[i]
-                    ->criticality == Ngap_Criticality_reject &&
+                    ->criticality == Ngap_Criticality_ignore &&
             pduSessionResourceReleaseResponseIEs->protocolIEs.list.array[i]
                     ->value.present ==
                 Ngap_PDUSessionResourceReleaseResponseIEs__value_PR_RAN_UE_NGAP_ID) {
@@ -338,7 +338,7 @@ bool PduSessionResourceReleaseResponseMsg::decodefrompdu(
 
       case Ngap_ProtocolIE_ID_id_PDUSessionResourceReleasedListRelRes: {
         if (pduSessionResourceReleaseResponseIEs->protocolIEs.list.array[i]
-                    ->criticality == Ngap_Criticality_reject &&
+                    ->criticality == Ngap_Criticality_ignore &&
             pduSessionResourceReleaseResponseIEs->protocolIEs.list.array[i]
                     ->value.present ==
                 Ngap_PDUSessionResourceReleaseResponseIEs__value_PR_PDUSessionResourceReleasedListRelRes) {

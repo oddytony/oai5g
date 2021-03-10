@@ -280,6 +280,16 @@ void amf_app::handle_itti_message(
     set_ran_amf_id_2_ue_context(ue_context_key, uc);
   }
 
+  // Update AMF UE NGAP ID
+  std::shared_ptr<ue_ngap_context> unc = {};
+  if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id)) {
+    Logger::amf_n1().error(
+        "Could not find UE NGAP Context with ran_ue_ngap_id (0x%x)",
+        itti_msg.ran_ue_ngap_id);
+  } else {
+    unc.get()->amf_ue_ngap_id = amf_ue_ngap_id;
+  }
+
   if (uc.get() == nullptr) {
     Logger::amf_app().error(
         "Failed to create ue_context with ran_amf_id %s",
