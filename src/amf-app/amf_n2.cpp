@@ -596,12 +596,15 @@ void amf_n2::handle_itti_message(itti_ul_nas_transport& ul_nas_transport) {
         "which's amf_ue_ngap_id (0x%x)",
         amf_ue_ngap_id, unc.get()->amf_ue_ngap_id);
   }
-  if (unc.get()->ng_ue_state != NGAP_UE_CONNECTED) {
-    Logger::amf_n2().error(
-        "Received NGAP UPLINK_NAS_TRANSPORT while UE in state != "
-        "NGAP_UE_CONNECTED");
-    // return;
-  }
+  /*
+     //TODO: check with a correct NGAP state
+     if (unc.get()->ng_ue_state != NGAP_UE_CONNECTED) {
+      Logger::amf_n2().error(
+          "Received NGAP UPLINK_NAS_TRANSPORT while UE in state != "
+          "NGAP_UE_CONNECTED");
+      // return;
+    }
+    */
   itti_uplink_nas_data_ind* itti_msg =
       new itti_uplink_nas_data_ind(TASK_AMF_N2, TASK_AMF_N1);
   itti_msg->is_nas_signalling_estab_req = false;

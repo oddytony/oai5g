@@ -303,7 +303,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
             "Received mac32 (0x%x) from the message", mac32_recv);
         if (mac32 == mac32_recv) {
           isMatched = true;
-          Logger::amf_n1().error("Integrity matched");
+          Logger::amf_n1().debug("Integrity matched");
           // nc.get()->security_ctx->ul_count.seq_num ++;
         }
         if (!isMatched) {
