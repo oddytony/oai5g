@@ -42,20 +42,24 @@ void statistics::display() {
       "information-------------------------------------------|");
   Logger::amf_app().info(
       "|    Index    |      Status      |       Global ID       |       gNB "
-      "Name       |    PLMN     | Supported TA list |");
+      "Name       |              PLMN            |");
   if (gnbs.size() == 0) {
     Logger::amf_app().info(
         "|      -      |          -       |           -           |           "
-        "-          |         -     |        -       |");
+        "-          |                              |");
   }
 
   int i = 1;
   for (auto const& gnb : gnbs) {
     Logger::amf_app().info(
         "|      %d      |    Connected     |         0x%x       |         %s   "
-        "     |    %s, %s     |  %s   |",
+        "     |    %s, %s           | ",
         i, gnb.second.gnb_id, gnb.second.gnb_name.c_str(),
-        gnb.second.mcc.c_str(), gnb.second.mnc.c_str(),
+        gnb.second.mcc.c_str(), gnb.second.mnc.c_str());
+    Logger::amf_app().info(
+        "| Supported TA list %s                                                "
+        "                    "
+        "                             |",
         gnb.second.plmn_to_string().c_str());
     i++;
   }
@@ -78,7 +82,7 @@ void statistics::display() {
   i = 0;
   for (auto const& ue : ue_infos) {
     Logger::amf_app().info(
-        "|%7d|%22s|%18s|%15s|%16d|%11d|%3s, %4s|%7d|", i + 1,
+        "|%7d|%22s|%18s|%15s|%16d|%11d|%3s, %3s|%7d|", i + 1,
         ue.second.registerStatus.c_str(), ue.second.imsi.c_str(),
         ue.second.guti.c_str(), ue.second.ranid, ue.second.amfid,
         ue.second.mcc.c_str(), ue.second.mnc.c_str(), ue.second.cellId);

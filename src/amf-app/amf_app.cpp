@@ -287,6 +287,7 @@ void amf_app::handle_itti_message(
         "Could not find UE NGAP Context with ran_ue_ngap_id (0x%x)",
         itti_msg.ran_ue_ngap_id);
   } else {
+    unc = amf_n2_inst->ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
     unc.get()->amf_ue_ngap_id = amf_ue_ngap_id;
   }
 
