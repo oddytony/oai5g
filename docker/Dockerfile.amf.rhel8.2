@@ -35,10 +35,6 @@ ARG NEEDED_GIT_PROXY
 COPY tmp/ca/redhat-uep.pem /etc/rhsm/ca
 COPY tmp/entitlement/*.pem /etc/pki/entitlement
 
-#ENV DEBIAN_FRONTEND=noninteractive
-#ENV TZ=Europe
-#RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
 RUN rm -f /etc/rhsm-host && \
     yum repolist --disablerepo=* && \
     subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms && \
@@ -81,7 +77,7 @@ RUN ./build_amf --clean --Verbose --build-type Release --jobs
 # TARGET IMAGE
 #---------------------------------------------------------------------
 FROM registry.access.redhat.com/ubi8/ubi:latest as oai-amf
-
+ENV TZ=Europe/Paris 
 # We install some debug tools for the moment in addition of mandatory libraries
 RUN yum update -y && \
     yum install -y --enablerepo="ubi-8-codeready-builder" \
@@ -128,8 +124,6 @@ WORKDIR /openair-amf
 # expose ports
 EXPOSE 80/tcp 9090/tcp 38412/sctp
 
-CMD ["/openair-amf/bin/oai_amf", "-c", "/openair-amf/etc/amf.conf", "-o"]
-
 ENTRYPOINT ["/openair-amf/bin/entrypoint.sh"]
 
-#CMD ["sleep", "infinity"]
+CMD ["/openair-amf/bin/oai_amf", "-c", "/openair-amf/etc/amf.conf", "-o"]
