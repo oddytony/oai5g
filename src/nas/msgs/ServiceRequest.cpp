@@ -202,7 +202,7 @@ int ServiceRequest::decodefrombuffer(
       buf + decoded_size, len - decoded_size, false);
   uint8_t octet = *(buf + decoded_size);
   Logger::nas_mm().debug("First optional IE (0x%x)", octet);
-  while (!octet) {
+  while ((octet != 0x0)) {
     switch (octet) {
       case 0x40: {
         Logger::nas_mm().debug("Decoding ie_uplink_data_status (IEI: 0x40)");

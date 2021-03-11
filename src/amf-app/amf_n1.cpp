@@ -601,10 +601,45 @@ void amf_n1::service_request_handle(
   // associate SUPI with UC
   amf_app_inst->set_supi_2_ue_context(supi, uc);
 
-  // get PDU session status
+  // Get PDU session status from Service Request
+  uint16_t pdu_session_status = (uint16_t) serReq->getPduSessionStatus();
+  if (pdu_session_status <
+      0) {  // Get PDU Session Status from NAS Message Container
+    bstring plain_msg;
+    if (serReq->getNasMessageContainer(plain_msg)) {
+      uint8_t* buf_nas     = (uint8_t*) bdata(plain_msg);
+      uint8_t message_type = *(buf_nas + 2);
+      Logger::amf_n1().debug("NAS message type 0x%x", message_type);
+
+      switch (message_type) {
+        case REGISTRATION_REQUEST: {
+          Logger::nas_mm().debug(
+              "NAS Message Container contains a Registration Request, handling "
+              "...");
+        } break;
+
+        case SERVICE_REQUEST: {
+          Logger::nas_mm().debug(
+              "NAS Message Container contains a Service Request, handling ...");
+          std::unique_ptr<ServiceRequest> serReqNas =
+              std::make_unique<ServiceRequest>();
+          serReqNas->decodefrombuffer(
+              nullptr, (uint8_t*) bdata(plain_msg), blength(plain_msg));
+          bdestroy(plain_msg);
+          if (serReqNas->getPduSessionStatus() > 0) {
+            pdu_session_status = serReqNas->getPduSessionStatus();
+          }
+        } break;
+
+        default:
+          Logger::nas_mm().error(
+              "NAS Message Container, unknown NAS message 0x%x", message_type);
+      }
+    }
+  }
+
   std::vector<uint8_t> pdu_session_to_be_activated = {};
-  std::bitset<16> pdu_session_status_bits(
-      (uint16_t) serReq->getPduSessionStatus());
+  std::bitset<16> pdu_session_status_bits(pdu_session_status);
 
   for (int i = 0; i < 15; i++) {
     if (pdu_session_status_bits.test(i)) {
