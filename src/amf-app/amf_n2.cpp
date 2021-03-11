@@ -201,8 +201,7 @@ amf_n2::amf_n2(const std::string& address, const uint16_t port_num)
     Logger::amf_n2().error("Cannot create task TASK_AMF_N2");
     throw std::runtime_error("Cannot create task TASK_AMF_N2");
   }
-  Logger::amf_n2().startup("Started");
-  Logger::amf_n2().debug("Construct amf_n2 successfully");
+  Logger::amf_n2().startup("amf_n2 started");
 }
 
 //------------------------------------------------------------------------------
@@ -1114,25 +1113,36 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   // handoverrequest->setSourceToTarget_TransparentContainer(sourceTotarget);
   string supi = "imsi-" + nc.get()->imsi;
 
-  // TODO: REMOVE supi_to_pdu_ctx (need PDU Session ID)/ list of PDU Session ID
-  std::shared_ptr<pdu_session_context> psc =
-      amf_n11_inst->supi_to_pdu_ctx(supi);
+  // Get all the active PDU sessions
+  std::vector<std::shared_ptr<pdu_session_context>> pdu_sessions = {};
+  if (!amf_app_inst->get_pdu_sessions_context(supi, pdu_sessions)) {
+    Logger::amf_n2().warn("Error when retrieving the active PDU Sessions!");
+  }
 
   std::vector<PDUSessionResourceSetupRequestItem_t> list;
   PDUSessionResourceSetupRequestItem_t item;
-  item.pduSessionId      = psc.get()->pdu_session_id;
-  item.s_nssai.sst       = "01";
-  item.s_nssai.sd        = "";
-  item.pduSessionNAS_PDU = NULL;
-  bstring n2sm           = psc.get()->n2sm;
-  if (blength(psc.get()->n2sm) != 0) {
-    item.pduSessionResourceSetupRequestTransfer.buf =
-        (uint8_t*) bdata(psc.get()->n2sm);
-    item.pduSessionResourceSetupRequestTransfer.size = blength(psc.get()->n2sm);
-  } else {
-    Logger::amf_n2().error("n2sm empty!");
+
+  if (pdu_sessions.size() > 0) {
+    for (auto pdu_session : pdu_sessions) {
+      if (pdu_session.get() != nullptr) {
+        item.pduSessionId      = pdu_session.get()->pdu_session_id;
+        item.s_nssai.sst       = pdu_session.get()->snssai.sST;
+        item.s_nssai.sd        = pdu_session.get()->snssai.sD;
+        item.pduSessionNAS_PDU = NULL;
+        bstring n2sm           = pdu_session.get()->n2sm;
+        if (blength(pdu_session.get()->n2sm) != 0) {
+          item.pduSessionResourceSetupRequestTransfer.buf =
+              (uint8_t*) bdata(pdu_session.get()->n2sm);
+          item.pduSessionResourceSetupRequestTransfer.size =
+              blength(pdu_session.get()->n2sm);
+        } else {
+          Logger::amf_n2().error("n2sm empty!");
+        }
+        list.push_back(item);
+      }
+    }
   }
-  list.push_back(item);
+
   handoverrequest->setPduSessionResourceSetupList(list);
   handoverrequest->setAllowedNSSAI(Allowed_Nssai);
   handoverrequest->setSourceToTarget_TransparentContainer(sourceTotarget);

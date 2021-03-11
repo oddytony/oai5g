@@ -92,6 +92,9 @@ class amf_app {
       const string& supi, const std::uint8_t pdu_session_id,
       std::shared_ptr<pdu_session_context>& psc);
 
+  bool get_pdu_sessions_context(
+      const string& supi,
+      std::vector<std::shared_ptr<pdu_session_context>>& sessions_ctx);
   // SMF Client response handlers
   void handle_post_sm_context_response_error_400();
   // others

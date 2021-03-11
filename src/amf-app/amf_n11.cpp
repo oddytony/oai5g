@@ -64,6 +64,7 @@ extern amf_config amf_cfg;
 extern amf_n11* amf_n11_inst;
 extern amf_n1* amf_n1_inst;
 extern amf_app* amf_app_inst;
+extern statistics stacs;
 
 extern void msg_str_2_msg_hex(std::string msg, bstring& b);
 extern void convert_string_2_hex(std::string& input, std::string& output);
@@ -139,11 +140,10 @@ void amf_n11_task(void*) {
 //------------------------------------------------------------------------------
 amf_n11::amf_n11() {
   if (itti_inst->create_task(TASK_AMF_N11, amf_n11_task, nullptr)) {
-    Logger::amf_n11().error("Cannot create task TASK_AMF_N1");
-    throw std::runtime_error("Cannot create task TASK_AMF_N1");
+    Logger::amf_n11().error("Cannot create task TASK_AMF_N11");
+    throw std::runtime_error("Cannot create task TASK_AMF_N11");
   }
-  Logger::amf_n11().startup("Started");
-  Logger::amf_n11().debug("Construct amf_n1 successfully");
+  Logger::amf_n11().startup("amf_n11 started");
 }
 
 //------------------------------------------------------------------------------
@@ -165,7 +165,6 @@ void amf_n11::handle_itti_message(
   if (uc.get() != nullptr) {
     supi = uc->supi;
   }
-  // std::string supi = pduid2supi.at(itti_msg.pdu_session_id);
   Logger::amf_n11().debug(
       "Send PDU Session Update SM Context Request to SMF (SUPI %s, PDU Session "
       "ID %d)",
@@ -216,6 +215,8 @@ void amf_n11::handle_itti_message(
       (uint8_t*) bdata(itti_msg.n2sm), blength(itti_msg.n2sm), n2SmMsg);
   curl_http_client(
       remote_uri, json_part, "", n2SmMsg, supi, itti_msg.pdu_session_id);
+
+  stacs.display();
 }
 
 //------------------------------------------------------------------------------
@@ -237,19 +238,17 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer& smf) {
   if (!uc.get()->find_pdu_session_context(smf.pdu_sess_id, psc)) {
     psc = std::shared_ptr<pdu_session_context>(new pdu_session_context());
     uc.get()->add_pdu_session_context(smf.pdu_sess_id, psc);
-    set_supi_to_pdu_ctx(supi, psc);  // TODO: should be removed
     Logger::amf_n11().debug("Create a PDU Session Context");
   }
 
-  pduid2supi[smf.pdu_sess_id] = supi;
-  psc.get()->amf_ue_ngap_id   = nc.get()->amf_ue_ngap_id;
-  psc.get()->ran_ue_ngap_id   = nc.get()->ran_ue_ngap_id;
-  psc.get()->req_type         = smf.req_type;
-  psc.get()->pdu_session_id   = smf.pdu_sess_id;
-  psc.get()->snssai.sST       = smf.snssai.sST;
-  psc.get()->snssai.sD        = smf.snssai.sD;
-  psc.get()->plmn.mcc         = smf.plmn.mcc;
-  psc.get()->plmn.mnc         = smf.plmn.mnc;
+  psc.get()->amf_ue_ngap_id = nc.get()->amf_ue_ngap_id;
+  psc.get()->ran_ue_ngap_id = nc.get()->ran_ue_ngap_id;
+  psc.get()->req_type       = smf.req_type;
+  psc.get()->pdu_session_id = smf.pdu_sess_id;
+  psc.get()->snssai.sST     = smf.snssai.sST;
+  psc.get()->snssai.sD      = smf.snssai.sD;
+  psc.get()->plmn.mcc       = smf.plmn.mcc;
+  psc.get()->plmn.mnc       = smf.plmn.mnc;
 
   // parse binary dnn and store
   std::string dnn = "default";
@@ -423,11 +422,17 @@ void amf_n11::handle_pdu_session_initial_request(
 //------------------------------------------------------------------------------
 void amf_n11::handle_itti_message(
     itti_nsmf_pdusession_release_sm_context& itti_msg) {
-  // TTN: Should be replace by new mechanism to support multiple PDU sessions
-  // Need PDU session ID
-  std::shared_ptr<pdu_session_context> psc = supi_to_pdu_ctx(itti_msg.supi);
-  string smf_addr;
-  std::string smf_api_version;
+  // TODO: Need PDU session ID
+  uint8_t pdu_session_id                   = 1;  // Hardcoded
+  std::shared_ptr<pdu_session_context> psc = {};
+  if (!amf_app_inst->find_pdu_session_context(
+          itti_msg.supi, pdu_session_id, psc)) {
+    Logger::amf_n11().warn(
+        "PDU Session context for SUPI %s doesn't exit!", itti_msg.supi.c_str());
+    return;
+  }
+
+  string smf_addr, smf_api_version;
 
   if (!psc.get()->smf_available) {
     Logger::amf_n11().error("No SMF is available for this PDU session");
@@ -448,26 +453,6 @@ void amf_n11::handle_itti_message(
   std::string json_part = pdu_session_release_request.dump();
   curl_http_client(
       remote_uri, json_part, "", "", itti_msg.supi, psc.get()->pdu_session_id);
-}
-
-// Context management functions
-//------------------------------------------------------------------------------
-bool amf_n11::is_supi_to_pdu_ctx(const std::string& supi) const {
-  std::shared_lock lock(m_supi2pdu);
-  return bool{supi2pdu.count(supi) > 0};
-}
-
-std::shared_ptr<pdu_session_context> amf_n11::supi_to_pdu_ctx(
-    const std::string& supi) const {
-  std::shared_lock lock(m_supi2pdu);
-  return supi2pdu.at(supi);
-}
-
-//------------------------------------------------------------------------------
-void amf_n11::set_supi_to_pdu_ctx(
-    const string& supi, std::shared_ptr<pdu_session_context> psc) {
-  std::shared_lock lock(m_supi2pdu);
-  supi2pdu[supi] = psc;
 }
 
 // SMF selection

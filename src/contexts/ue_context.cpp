@@ -56,3 +56,12 @@ void ue_context::add_pdu_session_context(
 void ue_context::copy_pdu_sessions(std::shared_ptr<ue_context>& ue_ctx) {
   pdu_sessions = ue_ctx->pdu_sessions;
 }
+
+bool ue_context::get_pdu_sessions_context(
+    std::vector<std::shared_ptr<pdu_session_context>>& sessions_ctx) {
+  std::shared_lock lock(m_pdu_session);
+  for (auto s : pdu_sessions) {
+    sessions_ctx.push_back(s.second);
+  }
+  return true;
+}

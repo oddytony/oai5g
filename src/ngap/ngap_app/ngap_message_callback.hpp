@@ -53,6 +53,7 @@ using namespace amf_application;
 extern itti_mw* itti_inst;
 extern amf_n1* amf_n1_inst;
 extern amf_n11* amf_n11_inst;
+extern amf_app* amf_app_inst;
 
 typedef int (*ngap_message_decoded_callback)(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
@@ -406,16 +407,16 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
           amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
       string supi = "imsi-" + nct.get()->imsi;
       std::shared_ptr<pdu_session_context> psc;
-      if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
-        psc = amf_n11_inst->supi_to_pdu_ctx(supi);
-        if (!psc) {
-          Logger::amf_n1().error("connot get pdu_session_context");
-          return 0;
+      if (amf_app_inst->find_pdu_session_context(
+              supi, list_fail[0].pduSessionId, psc)) {
+        if (psc.get() == nullptr) {
+          Logger::amf_n1().error("Cannot get pdu_session_context");
+          return -1;
         }
       }
       psc.get()->isn2sm_avaliable = false;
       Logger::ngap().debug(
-          "receive pdu session resource setup response fail(multi pdu session "
+          "Receive pdu session resource setup response fail (multi pdu session "
           "id),set pdu session context isn2sm_avaliable = false");
       /*Logger::ngap().debug("Sending itti ue context release command to
        TASK_AMF_N2"); itti_ue_context_release_command * itti_msg = new

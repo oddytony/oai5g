@@ -122,8 +122,7 @@ amf_n1::amf_n1() {
     Logger::amf_n1().error("Cannot create task TASK_AMF_N1");
     throw std::runtime_error("Cannot create task TASK_AMF_N1");
   }
-  Logger::amf_n1().startup("Started");
-  Logger::amf_n1().debug("Construct amf_n1 successfully");
+  Logger::amf_n1().startup("amf_n1 started");
 }
 
 //------------------------------------------------------------------------------
@@ -604,7 +603,8 @@ void amf_n1::service_request_handle(
 
   // get PDU session status
   std::vector<uint8_t> pdu_session_to_be_activated = {};
-  std::bitset<16> pdu_session_status_bits((uint16_t) 0x0200);
+  std::bitset<16> pdu_session_status_bits(
+      (uint16_t) serReq->getPduSessionStatus());
 
   for (int i = 0; i < 15; i++) {
     if (pdu_session_status_bits.test(i)) {
@@ -951,7 +951,8 @@ void amf_n1::registration_request_handle(
       // TODO: check if the List Of PDU Sessions To Be Activated is available
       // regReq->getPduSessionStatus()
       Logger::amf_n1().debug("Network handling mobility registration ...");
-      run_mobility_registration_update_procedure(nc);
+      run_mobility_registration_update_procedure(
+          nc, regReq->getUplinkDataStatus(), regReq->getPduSessionStatus());
     } break;
 
     case PERIODIC_REGISTRATION_UPDATING: {
@@ -2408,7 +2409,8 @@ void amf_n1::sha256(
 
 //------------------------------------------------------------------------------
 void amf_n1::run_mobility_registration_update_procedure(
-    std::shared_ptr<nas_context> nc) {
+    std::shared_ptr<nas_context> nc, uint16_t uplink_data_status,
+    uint16_t pdu_session_status) {
   // encoding REGISTRATION ACCEPT
   std::unique_ptr<RegistrationAccept> regAccept =
       std::make_unique<RegistrationAccept>();
@@ -2442,8 +2444,6 @@ void amf_n1::run_mobility_registration_update_procedure(
   // std::string guti = amf_cfg.guami.mcc + amf_cfg.guami.mnc +
   // amf_cfg.guami.regionID + amf_cfg.guami.AmfSetID + amf_cfg.guami.AmfPointer
   // + "0001";
-  std::string guti = "1234567890";  // TODO: need modify
-  Logger::amf_n1().debug("Allocated GUTI %s", guti.c_str());
 
   regAccept->set_5GS_Network_Feature_Support(0x00, 0x00);
   uint8_t buffer[1024] = {0};
@@ -2464,25 +2464,39 @@ void amf_n1::run_mobility_registration_update_procedure(
 
   string supi = "imsi-" + nc.get()->imsi;
   Logger::amf_n1().debug("Key for pdu session context SUPI (%s)", supi.c_str());
-  std::shared_ptr<pdu_session_context> psc;
-
-  /*
-  if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
-     psc = amf_n11_inst->supi_to_pdu_ctx(supi);
-   } else {
-     Logger::amf_n1().error(
-         "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
-   }
-  */
-
+  std::shared_ptr<pdu_session_context> psc = {};
   string ue_context_key = "app_ue_ranid_" + to_string(nc->ran_ue_ngap_id) +
                           ":amfid_" + to_string(nc->amf_ue_ngap_id);
-  std::shared_ptr<ue_context> uc;
-
+  std::shared_ptr<ue_context> uc = {};
   uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+
   if (uc.get() == nullptr) {
     Logger::amf_n1().warn(
         "Cannot find the UE context with key %s", ue_context_key.c_str());
+    return;
+  }
+  // get PDU session status
+  std::vector<uint8_t> pdu_session_to_be_activated = {};
+  std::bitset<16> pdu_session_status_bits((uint16_t) pdu_session_status);
+
+  for (int i = 0; i < 15; i++) {
+    if (pdu_session_status_bits.test(i)) {
+      if (i <= 7)
+        pdu_session_to_be_activated.push_back(8 + i);
+      else if (i > 8)
+        pdu_session_to_be_activated.push_back(i - 8);
+    }
+  }
+
+  if (pdu_session_to_be_activated.size() > 0) {
+    for (auto i : pdu_session_to_be_activated)
+      Logger::amf_n1().debug("PDU session to be activated %d", i);
+  }
+
+  if (pdu_session_to_be_activated.size() > 0) {
+    // get PDU session context for 1 PDU session for now
+    // TODO: multiple PDU sessions
+    uc->find_pdu_session_context(pdu_session_to_be_activated[0], psc);
   }
 
   uint8_t* kamf = nc.get()->kamf[secu->vector_pointer];
@@ -2490,7 +2504,6 @@ void amf_n1::run_mobility_registration_update_procedure(
   uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
   Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
   print_buffer("amf_n1", "kamf", kamf, 32);
-  // Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
   bstring kgnb_bs = blk2bstr(kgnb, 32);
   itti_initial_context_setup_request* itti_msg =
       new itti_initial_context_setup_request(TASK_AMF_N1, TASK_AMF_N2);
@@ -2499,11 +2512,12 @@ void amf_n1::run_mobility_registration_update_procedure(
   itti_msg->kgnb           = kgnb_bs;
   itti_msg->nas            = protectedNas;
   itti_msg->is_sr          = true;  // service request indicator
-  // TODO: should not get from Pdu_session_context
-  // TODO: should come from NAS (if UE includes in the List Of PDU Sessions To
-  // Be Activated)
-  itti_msg->pdu_session_id = psc.get()->pdu_session_id;
-  itti_msg->n2sm           = psc.get()->n2sm;
+
+  if (psc.get() != nullptr) {
+    itti_msg->pdu_session_id = psc.get()->pdu_session_id;
+    itti_msg->n2sm           = psc.get()->n2sm;
+  }
+
   std::shared_ptr<itti_initial_context_setup_request> i =
       std::shared_ptr<itti_initial_context_setup_request>(itti_msg);
   int ret = itti_inst->send_msg(i);

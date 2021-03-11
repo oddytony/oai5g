@@ -216,6 +216,16 @@ bool amf_app::find_pdu_session_context(
   return true;
 }
 
+bool amf_app::get_pdu_sessions_context(
+    const string& supi,
+    std::vector<std::shared_ptr<pdu_session_context>>& sessions_ctx) {
+  if (!is_supi_2_ue_context(supi)) return false;
+  std::shared_ptr<ue_context> uc = {};
+  uc                             = supi_2_ue_context(supi);
+  if (!uc.get()->get_pdu_sessions_context(sessions_ctx)) return false;
+  return true;
+}
+
 //------------------------------------------------------------------------------
 void amf_app::handle_itti_message(
     itti_n1n2_message_transfer_request& itti_msg) {
