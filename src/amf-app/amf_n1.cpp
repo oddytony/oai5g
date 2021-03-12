@@ -603,8 +603,8 @@ void amf_n1::service_request_handle(
 
   // Get PDU session status from Service Request
   uint16_t pdu_session_status = (uint16_t) serReq->getPduSessionStatus();
-  if (pdu_session_status <
-      0) {  // Get PDU Session Status from NAS Message Container
+  if (pdu_session_status == 0) {
+    // Get PDU Session Status from NAS Message Container if available
     bstring plain_msg;
     if (serReq->getNasMessageContainer(plain_msg)) {
       uint8_t* buf_nas     = (uint8_t*) bdata(plain_msg);
@@ -614,8 +614,7 @@ void amf_n1::service_request_handle(
       switch (message_type) {
         case REGISTRATION_REQUEST: {
           Logger::nas_mm().debug(
-              "NAS Message Container contains a Registration Request, handling "
-              "...");
+              "TODO: NAS Message Container contains a Registration Request");
         } break;
 
         case SERVICE_REQUEST: {

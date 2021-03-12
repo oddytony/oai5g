@@ -241,7 +241,7 @@ int ServiceRequest::decodefrombuffer(
   }
   Logger::nas_mm().debug(
       "Decoded ServiceRequest message len (%d)", decoded_size);
-  return 1;
+  return decoded_size;
 }
 
 //------------------------------------------------------------------------------
@@ -251,7 +251,7 @@ uint8_t ServiceRequest::getngKSI() {
     a = (ie_ngKSI->getTypeOfSecurityContext()) | ie_ngKSI->getasKeyIdentifier();
     return a;
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -269,7 +269,7 @@ uint16_t ServiceRequest::getPduSessionStatus() {
   if (ie_PDU_session_status) {
     return ie_PDU_session_status->getValue();
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -278,7 +278,7 @@ uint16_t ServiceRequest::getAllowedPduSessionStatus() {
   if (ie_allowed_PDU_session_status) {
     return ie_allowed_PDU_session_status->getValue();
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -297,7 +297,7 @@ uint8_t ServiceRequest::getServiceType() {
   if (ie_service_type)
     return ie_service_type->getValue();
   else
-    return -1;
+    return 0;
 }
 
 //------------------------------------------------------------------------------
