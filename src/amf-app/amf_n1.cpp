@@ -626,7 +626,7 @@ void amf_n1::service_request_handle(
               nullptr, (uint8_t*) bdata(plain_msg), blength(plain_msg));
           bdestroy(plain_msg);
           if (serReqNas->getPduSessionStatus() > 0) {
-            pdu_session_status = serReqNas->getPduSessionStatus();
+            pdu_session_status = (uint16_t) serReqNas->getPduSessionStatus();
           }
         } break;
 
