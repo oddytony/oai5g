@@ -46,19 +46,17 @@ typedef struct {
   // long nrCellId;
   std::string plmn_to_string() const {
     std::string s = {};
-    //    s.append("PLMN List: ");
     for (auto supported_item : plmn_list) {
       s.append("TAC " + std::to_string(supported_item.tac));
-      s.append(", PLMN ");
       for (auto plmn_slice : supported_item.b_plmn_list) {
-        s.append("(MCC " + plmn_slice.mcc);
+        s.append("( MCC " + plmn_slice.mcc);
         s.append(", MNC " + plmn_slice.mnc);
         for (auto slice : plmn_slice.slice_list) {
-          s.append(" (SST " + slice.sst + ", SD " + slice.sd + "), ");
+          s.append("(SST " + slice.sst + ", SD " + slice.sd + "),");
         }
-        s.append("),");
+        s.append(")");
       }
-      s.append("), ");
+      s.append("),");
     }
     return s;
   }

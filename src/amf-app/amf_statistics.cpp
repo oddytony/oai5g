@@ -56,8 +56,9 @@ void statistics::display() {
         "     |            %s, %s             | ",
         i, gnb.second.gnb_id, gnb.second.gnb_name.c_str(),
         gnb.second.mcc.c_str(), gnb.second.mnc.c_str());
-    Logger::amf_app().info(
-        "| Supported TA list %s|", gnb.second.plmn_to_string().c_str());
+    // Comment out to show the supported TA list
+    // Logger::amf_app().info(
+    //    "| Supported TA list: %s|", gnb.second.plmn_to_string().c_str());
     i++;
   }
 

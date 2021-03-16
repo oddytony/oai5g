@@ -692,7 +692,9 @@ void amf_n1::service_request_handle(
 
   } else {
     // TODO: Contact SMF to activate UP for these sessions
-    // DO for 1st PDU session ID for now
+    // TODO: modify itti_initial_context_setup_request for supporting multiple
+    // PDU sessions
+
     std::shared_ptr<pdu_session_context> psc = {};
 
     serApt->setPDU_session_status(serReq->getPduSessionStatus());
@@ -725,14 +727,14 @@ void amf_n1::service_request_handle(
     itti_msg->nas            = protectedNas;
     itti_msg->kgnb           = kgnb_bs;
     itti_msg->is_sr          = true;  // service request indicator
-    itti_msg->pdu_session_id = 1;     // PSI 1, should be updated
+    itti_msg->pdu_session_id = pdu_session_id;
     itti_msg->is_pdu_exist   = true;
     if (psc.get()->isn2sm_avaliable) {
       itti_msg->n2sm             = psc.get()->n2sm;
       itti_msg->isn2sm_avaliable = true;
     } else {
       itti_msg->isn2sm_avaliable = false;
-      Logger::amf_n1().error("Cannot get pdu session information");
+      Logger::amf_n1().error("Cannot get PDU session information");
     }
     std::shared_ptr<itti_initial_context_setup_request> i =
         std::shared_ptr<itti_initial_context_setup_request>(itti_msg);
