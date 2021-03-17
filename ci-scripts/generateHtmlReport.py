@@ -109,7 +109,16 @@ class HtmlReport():
 		buildSummary += '      <td><a href="' + self.git_url + '">' + self.git_url + '</a></td>\n'
 		buildSummary += '    </tr>\n'
 		if self.git_pull_request:
+			buildSummary += '	 <tr>\n'
 			buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-log-out"></span> Source Branch</td>\n'
+			buildSummary += '	   <td><a href="TEMPLATE_MERGE_REQUEST_LINK">TEMPLATE_MERGE_REQUEST_LINK</a></td>\n'
+			buildSummary += '	 </tr>\n'
+			buildSummary += '	 <tr>\n'
+			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-header"></span> Merge Request Title</td>\n'
+			buildSummary += '	   <td>TEMPLATE_MERGE_REQUEST_TEMPLATE</td>\n'
+			buildSummary += '	 </tr>\n'
+			buildSummary += '	 <tr>\n'
+			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-log-out"></span> Source Branch</td>\n'
 			buildSummary += '      <td>' + self.git_src_branch + '</td>\n'
 			buildSummary += '    </tr>\n'
 			buildSummary += '    <tr>\n'
@@ -457,7 +466,7 @@ class HtmlReport():
 		cwd = os.getcwd()
 		variants = ['docker', 'podman']
 		for variant in variants:
-			logFileName = 'spgwu_' + variant + '_image_build.log'
+			logFileName = 'amf_' + variant + '_image_build.log'
 			if os.path.isfile(cwd + '/archives/' + logFileName):
 				status = False
 				section_start_pattern = 'build_amf --install-deps --force'
@@ -576,7 +585,7 @@ class HtmlReport():
 		cwd = os.getcwd()
 		variants = ['docker', 'podman']
 		for variant in variants:
-			logFileName = 'spgwu_' + variant + '_image_build.log'
+			logFileName = 'amf_' + variant + '_image_build.log'
 			if os.path.isfile(cwd + '/archives/' + logFileName):
 				status = False
 				if nfType == 'AMF':
@@ -623,7 +632,7 @@ class HtmlReport():
 		cwd = os.getcwd()
 		variants = ['docker', 'podman']
 		for variant in variants:
-			logFileName = 'spgwu_' + variant + '_image_build.log'
+			logFileName = 'amf_' + variant + '_image_build.log'
 			nb_errors = 0
 			nb_warnings = 0
 			if os.path.isfile(cwd + '/archives/' + logFileName):
@@ -688,7 +697,7 @@ class HtmlReport():
 		cwd = os.getcwd()
 		variants = ['docker', 'podman']
 		for variant in variants:
-			logFileName = 'spgwu_' + variant + '_image_build.log'
+			logFileName = 'amf_' + variant + '_image_build.log'
 			if os.path.isfile(cwd + '/archives/' + logFileName):
 				section_start_pattern = 'FROM ubuntu:bionic as oai-amf$'
 				section_end_pattern = 'WORKDIR /openair-amf/etc'
@@ -734,10 +743,13 @@ class HtmlReport():
 		cwd = os.getcwd()
 		variants = ['docker', 'podman']
 		for variant in variants:
-			logFileName = 'spgwu_' + variant + '_image_build.log'
+			logFileName = 'amf_' + variant + '_image_build.log'
 			if os.path.isfile(cwd + '/archives/' + logFileName):
 				section_start_pattern = 'WORKDIR /openair-amf/etc'
-				section_end_pattern = 'Successfully tagged oai-amf'
+				if variant == 'docker':
+					section_end_pattern = 'Successfully tagged oai-amf'
+				else:
+					section_end_pattern = 'COMMIT oai-amf:' 
 				section_status = False
 				status = False
 				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
@@ -782,11 +794,15 @@ class HtmlReport():
 		cwd = os.getcwd()
 		variants = ['docker', 'podman']
 		for variant in variants:
-			logFileName = 'spgwu_' + variant + '_image_build.log'
+			logFileName = 'amf_' + variant + '_image_build.log'
 			if os.path.isfile(cwd + '/archives/' + logFileName):
 				if nfType == 'AMF':
-					section_start_pattern = 'Successfully tagged oai-amf'
-					section_end_pattern = 'OAI-AMF DOCKER IMAGE BUILD'
+					if variant == 'docker':
+						section_start_pattern = 'Successfully tagged oai-amf'
+						section_end_pattern = 'OAI-AMF DOCKER IMAGE BUILD'
+					else:
+						section_start_pattern = 'COMMIT oai-amf:'
+						section_end_pattern = 'OAI-AMF PODMAN RHEL8 IMAGE BUILD'
 				section_status = False
 				status = False
 				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
@@ -796,15 +812,15 @@ class HtmlReport():
 							section_status = True
 						result = re.search(section_end_pattern, line)
 						if result is not None:
-							section_status = False
+							section_status = True
 						if section_status:
 							if nfType == 'AMF':
 								if self.git_pull_request:
 									result = re.search('oai-amf *ci-tmp', line)
 								else:
-									result = re.search('oai-amf *develop', line)
+									result = re.search('oai-amf *temp', line)
 							if result is not None:
-								result = re.search('ago *([0-9A-Z]+)', line)
+								result = re.search('ago  *([0-9A-Z]+)', line)
 								if result is not None:
 									size = result.group(1)
 									status = True
