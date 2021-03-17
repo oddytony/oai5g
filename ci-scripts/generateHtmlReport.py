@@ -20,6 +20,7 @@
 # */
 #---------------------------------------------------------------------
 
+import glob
 import os
 import re
 import sys
@@ -148,23 +149,10 @@ class HtmlReport():
 		self.file.write(buildSummary)
 
 		cwd = os.getcwd()
-		if os.path.isfile(cwd + '/ds_tester_results_oai_cn5g.html'):
-			newEpcReport = open(cwd + '/ds_tester_results_oai_cn5g_new.html', 'w')
+		for reportFile in glob.glob('./*results_oai_cn5g.html'):
+			newEpcReport = open(cwd + '/' + str(reportFile) + '.new', 'w')
 			buildSummaryDone = True
-			with open(cwd + '/ds_tester_results_oai_cn5g.html', 'r') as originalEpcReport:
-				for line in originalEpcReport:
-					result = re.search('DS Tester Summary', line)
-					if (result is not None) and buildSummaryDone:
-						newEpcReport.write(buildSummary)
-						buildSummaryDone = False
-					newEpcReport.write(line)
-				originalEpcReport.close()
-			newEpcReport.close()
-			os.rename(cwd + '/ds_tester_results_oai_cn5g_new.html', cwd + '/ds_tester_results_oai_cn5g.html')
-		if os.path.isfile(cwd + '/deploy_results_oai_cn5g.html'):
-			newEpcReport = open(cwd + '/deploy_results_oai_cn5g_new.html', 'w')
-			buildSummaryDone = True
-			with open(cwd + '/deploy_results_oai_cn5g.html', 'r') as originalEpcReport:
+			with open(cwd + '/' + str(reportFile), 'r') as originalEpcReport:
 				for line in originalEpcReport:
 					result = re.search('Deployment Summary', line)
 					if (result is not None) and buildSummaryDone:
@@ -173,7 +161,7 @@ class HtmlReport():
 					newEpcReport.write(line)
 				originalEpcReport.close()
 			newEpcReport.close()
-			os.rename(cwd + '/deploy_results_oai_cn5g_new.html', cwd + '/deploy_results_oai_cn5g.html')
+			os.rename(cwd + '/' + str(reportFile) + '.new', cwd + '/' + str(reportFile))
 
 	def generateFooter(self):
 		self.file.write('  <div class="well well-lg">End of Build Report -- Copyright <span class="glyphicon glyphicon-copyright-mark"></span> 2020 <a href="http://www.openairinterface.org/">OpenAirInterface</a>. All Rights Reserved.</div>\n')
@@ -413,8 +401,12 @@ class HtmlReport():
 			section_start_pattern = 'git config --global http'
 			section_end_pattern = 'WORKDIR /openair-amf/build/scripts'
 			section_status = False
+			usingBaseImage = False
 			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
 				for line in logfile:
+					result = re.search('FROM oai-amf-base:latest', line)
+					if result is not None:
+						usingBaseImage = True
 					result = re.search(section_start_pattern, line)
 					if result is not None:
 						section_status = True
@@ -424,10 +416,14 @@ class HtmlReport():
 						status = True
 				logfile.close()
 
-			if status:
+			if status and not usingBaseImage:
 				cell_msg = '      <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
 				cell_msg += 'OK:\n'
 				cell_msg += ' -- All Git Operations went successfully</b></pre></td>\n'
+			elif usingBaseImage:
+				cell_msg = '      <td bgcolor="LightGray"><pre style="border:none; background-color:LightGray"><b>'
+				cell_msg += 'Not Relevant:\n'
+				cell_msg += ' Using a base image to build\n'
 			else:
 				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
 				cell_msg += 'KO::\n'
@@ -470,8 +466,12 @@ class HtmlReport():
 			pistache_build_status = False
 			json_build_start = False
 			json_build_status = False
+			usingBaseImage = False
 			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
 				for line in logfile:
+					result = re.search('FROM oai-amf-base:latest', line)
+					if result is not None:
+						usingBaseImage = True
 					result = re.search(section_start_pattern, line)
 					if result is not None:
 						section_status = True
@@ -512,37 +512,42 @@ class HtmlReport():
 						if result is not None:
 							json_build_status = True
 				logfile.close()
-			if status:
+			if status and not usingBaseImage:
 				cell_msg = '	  <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
 				cell_msg += 'OK:\n'
+			elif usingBaseImage:
+				cell_msg = '	  <td bgcolor="LightGray"><pre style="border:none; background-color:LightGray"><b>'
+				cell_msg += 'Not Relevant:\n'
+				cell_msg += ' Using a base image to build\n'
 			else:
 				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
 				cell_msg += 'KO:\n'
-			cell_msg += ' -- build_amf --install-deps --force\n'
-			if package_install:
-				cell_msg += '   ** Packages Installation: OK\n'
-			else:
-				cell_msg += '   ** Packages Installation: KO\n'
-			if fmt_build_status:
-				cell_msg += '   ** fmt Installation: OK\n'
-			else:
-				cell_msg += '   ** fmt Installation: KO\n'
-			if folly_build_status:
-				cell_msg += '   ** folly Installation: OK\n'
-			else:
-				cell_msg += '   ** folly Installation: KO\n'
-			if spdlog_build_status:
-				cell_msg += '   ** spdlog Installation: OK\n'
-			else:
-				cell_msg += '   ** spdlog Installation: KO\n'
-			if pistache_build_status:
-				cell_msg += '   ** pistache Installation: OK\n'
-			else:
-				cell_msg += '   ** pistache Installation: KO\n'
-			if json_build_status:
-				cell_msg += '   ** Nlohmann Json Installation: OK\n'
-			else:
-				cell_msg += '   ** Nlohmann Json Installation: KO\n'
+			if not usingBaseImage:
+				cell_msg += ' -- build_amf --install-deps --force\n'
+				if package_install:
+					cell_msg += '   ** Packages Installation: OK\n'
+				else:
+					cell_msg += '   ** Packages Installation: KO\n'
+				if fmt_build_status:
+					cell_msg += '   ** fmt Installation: OK\n'
+				else:
+					cell_msg += '   ** fmt Installation: KO\n'
+				if folly_build_status:
+					cell_msg += '   ** folly Installation: OK\n'
+				else:
+					cell_msg += '   ** folly Installation: KO\n'
+				if spdlog_build_status:
+					cell_msg += '   ** spdlog Installation: OK\n'
+				else:
+					cell_msg += '   ** spdlog Installation: KO\n'
+				if pistache_build_status:
+					cell_msg += '   ** pistache Installation: OK\n'
+				else:
+					cell_msg += '   ** pistache Installation: KO\n'
+				if json_build_status:
+					cell_msg += '   ** Nlohmann Json Installation: OK\n'
+				else:
+					cell_msg += '   ** Nlohmann Json Installation: KO\n'
 			cell_msg += '</b></pre></td>\n'
 		else:
 			cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
