@@ -153,7 +153,7 @@ class HtmlReport():
 			buildSummaryDone = True
 			with open(cwd + '/ds_tester_results_oai_cn5g.html', 'r') as originalEpcReport:
 				for line in originalEpcReport:
-					result = re.search('DS Tester Summary', line)
+					result = re.search('Deployment Summary', line)
 					if (result is not None) and buildSummaryDone:
 						newEpcReport.write(buildSummary)
 						buildSummaryDone = False
@@ -366,12 +366,13 @@ class HtmlReport():
 			self.file.write('  </div>\n')
 
 	def buildSummaryHeader(self):
-		self.file.write('  <h2>Docker Image Build Summary</h2>\n')
+		self.file.write('  <h2>Docker / Podman Image Build Summary</h2>\n')
 		self.file.write('  <table class="table-bordered" width = "100%" align = "center" border = "1">\n')
 		self.file.write('     <tr bgcolor="#33CCFF" >\n')
 		self.file.write('   	<th>Stage Name</th>\n')
 		self.file.write('   	<th>Image Kind</th>\n')
-		self.file.write('   	<th>OAI AMF cNF</th>\n')
+		self.file.write('		<th>OAI AMF <font color="Gold">Ubuntu18</font> Image</th>\n')
+		self.file.write('		<th>OAI AMF <font color="Gold">RHEL8</font> Image</th>\n')
 		self.file.write('     </tr>\n')
 
 	def buildSummaryFooter(self):
@@ -401,42 +402,43 @@ class HtmlReport():
 	def analyze_docker_build_git_part(self, nfType):
 		if nfType != 'AMF':
 			self.file.write('      <td>N/A</td>\n')
-			self.file.write('      <td>Wrong NF Type for this Report</td>\n')
+			self.file.write('      <td colspan="2">Wrong NF Type for this Report</td>\n')
 			return
 
-		logFileName = 'amf_docker_image_build.log'
 		self.file.write('      <td>Builder Image</td>\n')
-
 		cwd = os.getcwd()
-		if os.path.isfile(cwd + '/archives/' + logFileName):
-			status = False
-			section_start_pattern = 'git config --global http'
-			section_end_pattern = 'WORKDIR /openair-amf/build/scripts'
-			section_status = False
-			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
-				for line in logfile:
-					result = re.search(section_start_pattern, line)
-					if result is not None:
-						section_status = True
-					result = re.search(section_end_pattern, line)
-					if result is not None:
-						section_status = False
-						status = True
-				logfile.close()
+		variants = ['docker', 'podman']
+		for variant in variants:
+			logFileName = 'amf_' + variant + '_image_build.log'
+			if os.path.isfile(cwd + '/archives/' + logFileName):
+				status = False
+				section_start_pattern = 'git config --global http'
+				section_end_pattern = 'WORKDIR /openair-amf/build/scripts'
+				section_status = False
+				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
+					for line in logfile:
+						result = re.search(section_start_pattern, line)
+						if result is not None:
+							section_status = True
+						result = re.search(section_end_pattern, line)
+						if result is not None:
+							section_status = False
+							status = True
+					logfile.close()
 
-			if status:
-				cell_msg = '      <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
-				cell_msg += 'OK:\n'
-				cell_msg += ' -- All Git Operations went successfully</b></pre></td>\n'
+				if status:
+					cell_msg = '      <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+					cell_msg += 'OK:\n'
+					cell_msg += ' -- All Git Operations went successfully</b></pre></td>\n'
+				else:
+					cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+					cell_msg += 'KO::\n'
+					cell_msg += ' -- Some Git Operations went WRONG</b></pre></td>\n'
 			else:
-				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-				cell_msg += 'KO::\n'
-				cell_msg += ' -- Some Git Operations went WRONG</b></pre></td>\n'
-		else:
-			cell_msg = '      <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
+				cell_msg = '      <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+				cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
 
-		self.file.write(cell_msg)
+			self.file.write(cell_msg)
 
 	def installLibsPackagesRow(self):
 		self.file.write('    <tr>\n')
@@ -447,108 +449,110 @@ class HtmlReport():
 	def analyze_install_log(self, nfType):
 		if nfType != 'AMF':
 			self.file.write('      <td>N/A</td>\n')
-			self.file.write('      <td>Wrong NF Type for this Report</td>\n')
+			self.file.write('      <td colspan="2">Wrong NF Type for this Report</td>\n')
 			return
 
-		logFileName = 'amf_docker_image_build.log'
 		self.file.write('      <td>Builder Image</td>\n')
 
 		cwd = os.getcwd()
-		if os.path.isfile(cwd + '/archives/' + logFileName):
-			status = False
-			section_start_pattern = 'build_amf --install-deps --force'
-			section_end_pattern = 'build_amf --clean --Verbose --build-type Release --jobs'
-			section_status = False
-			package_install = False
-			fmt_build_start = False
-			fmt_build_status = False
-			folly_build_start = False
-			folly_build_status = False
-			spdlog_build_start = False
-			spdlog_build_status = False
-			pistache_build_start = False
-			pistache_build_status = False
-			json_build_start = False
-			json_build_status = False
-			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
-				for line in logfile:
-					result = re.search(section_start_pattern, line)
-					if result is not None:
-						section_status = True
-					result = re.search(section_end_pattern, line)
-					if result is not None:
-						section_status = False
-					if section_status:
-						result = re.search('AMF deps installation successful', line)
+		variants = ['docker', 'podman']
+		for variant in variants:
+			logFileName = 'spgwu_' + variant + '_image_build.log'
+			if os.path.isfile(cwd + '/archives/' + logFileName):
+				status = False
+				section_start_pattern = 'build_amf --install-deps --force'
+				section_end_pattern = 'build_amf --clean --Verbose --build-type Release --jobs'
+				section_status = False
+				package_install = False
+				fmt_build_start = False
+				fmt_build_status = False
+				folly_build_start = False
+				folly_build_status = False
+				spdlog_build_start = False
+				spdlog_build_status = False
+				pistache_build_start = False
+				pistache_build_status = False
+				json_build_start = False
+				json_build_status = False
+				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
+					for line in logfile:
+						result = re.search(section_start_pattern, line)
 						if result is not None:
-							status = True
-						result = re.search('Install fmt from source', line)
+							section_status = True
+						result = re.search(section_end_pattern, line)
 						if result is not None:
-							package_install = True
-							fmt_build_start = True
-						result = re.search('Installing: /usr/local/lib/pkgconfig/fmt.pc', line)
-						if result is not None:
-							fmt_build_status = True
-						result = re.search('Cloning into \'folly\'', line)
-						if result is not None:
-							folly_build_start = True
-						result = re.search('Installing: /usr/local/lib/libfollybenchmark.a', line)
-						if result is not None:
-							folly_build_status = True
-						result = re.search('Install spdlog from', line)
-						if result is not None:
-							spdlog_build_start = True
-						result = re.search('Install Pistache from', line)
-						if result is not None:
-							spdlog_build_status = True
-							pistache_build_start = True
-						result = re.search('Installing: /usr/local/lib/libpistache.a', line)
-						if result is not None:
-							pistache_build_status = True
-						result = re.search('Install Nlohmann Json', line)
-						if result is not None:
-							json_build_status = True
-						result = re.search('Installing: /usr/local/lib/cmake/nlohmann_json/nlohmann_jsonTargets.cmake', line)
-						if result is not None:
-							json_build_status = True
-				logfile.close()
-			if status:
-				cell_msg = '	  <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
-				cell_msg += 'OK:\n'
+							section_status = False
+						if section_status:
+							result = re.search('AMF deps installation successful', line)
+							if result is not None:
+								status = True
+							result = re.search('Install fmt from source', line)
+							if result is not None:
+								package_install = True
+								fmt_build_start = True
+							result = re.search('Installing: /usr/local/lib/pkgconfig/fmt.pc', line)
+							if result is not None:
+								fmt_build_status = True
+							result = re.search('Cloning into \'folly\'', line)
+							if result is not None:
+								folly_build_start = True
+							result = re.search('Installing: /usr/local/lib/libfollybenchmark.a', line)
+							if result is not None:
+								folly_build_status = True
+							result = re.search('Install spdlog from', line)
+							if result is not None:
+								spdlog_build_start = True
+							result = re.search('Install Pistache from', line)
+							if result is not None:
+								spdlog_build_status = True
+								pistache_build_start = True
+							result = re.search('Installing: /usr/local/lib/libpistache.a', line)
+							if result is not None:
+								pistache_build_status = True
+							result = re.search('Install Nlohmann Json', line)
+							if result is not None:
+								json_build_status = True
+							result = re.search('Installing: /usr/local/lib/cmake/nlohmann_json/nlohmann_jsonTargets.cmake', line)
+							if result is not None:
+								json_build_status = True
+					logfile.close()
+				if status:
+					cell_msg = '	  <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+					cell_msg += 'OK:\n'
+				else:
+					cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+					cell_msg += 'KO:\n'
+				cell_msg += ' -- build_amf --install-deps --force\n'
+				if package_install:
+					cell_msg += '   ** Packages Installation: OK\n'
+				else:
+					cell_msg += '   ** Packages Installation: KO\n'
+				if fmt_build_status:
+					cell_msg += '   ** fmt Installation: OK\n'
+				else:
+					cell_msg += '   ** fmt Installation: KO\n'
+				if folly_build_status:
+					cell_msg += '   ** folly Installation: OK\n'
+				else:
+					cell_msg += '   ** folly Installation: KO\n'
+				if spdlog_build_status:
+					cell_msg += '   ** spdlog Installation: OK\n'
+				else:
+					cell_msg += '   ** spdlog Installation: KO\n'
+				if pistache_build_status:
+					cell_msg += '   ** pistache Installation: OK\n'
+				else:
+					cell_msg += '   ** pistache Installation: KO\n'
+				if json_build_status:
+					cell_msg += '   ** Nlohmann Json Installation: OK\n'
+				else:
+					cell_msg += '   ** Nlohmann Json Installation: KO\n'
+				cell_msg += '</b></pre></td>\n'
 			else:
 				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-				cell_msg += 'KO:\n'
-			cell_msg += ' -- build_amf --install-deps --force\n'
-			if package_install:
-				cell_msg += '   ** Packages Installation: OK\n'
-			else:
-				cell_msg += '   ** Packages Installation: KO\n'
-			if fmt_build_status:
-				cell_msg += '   ** fmt Installation: OK\n'
-			else:
-				cell_msg += '   ** fmt Installation: KO\n'
-			if folly_build_status:
-				cell_msg += '   ** folly Installation: OK\n'
-			else:
-				cell_msg += '   ** folly Installation: KO\n'
-			if spdlog_build_status:
-				cell_msg += '   ** spdlog Installation: OK\n'
-			else:
-				cell_msg += '   ** spdlog Installation: KO\n'
-			if pistache_build_status:
-				cell_msg += '   ** pistache Installation: OK\n'
-			else:
-				cell_msg += '   ** pistache Installation: KO\n'
-			if json_build_status:
-				cell_msg += '   ** Nlohmann Json Installation: OK\n'
-			else:
-				cell_msg += '   ** Nlohmann Json Installation: KO\n'
-			cell_msg += '</b></pre></td>\n'
-		else:
-			cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
+				cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
 
-		self.file.write(cell_msg)
+			self.file.write(cell_msg)
 
 	def buildCompileRows(self):
 		self.file.write('	 <tr>\n')
@@ -563,47 +567,48 @@ class HtmlReport():
 		if nfType != 'AMF':
 			if imageKind:
 				self.file.write('      <td>N/A</td>\n')
-			self.file.write('	   <td>Wrong NF Type for this Report</td>\n')
+			self.file.write('	   <td colspan="2">Wrong NF Type for this Report</td>\n')
 			return
 
-		if nfType == 'AMF':
-			logFileName = 'amf_docker_image_build.log'
 		if imageKind:
 			self.file.write('      <td>Builder Image</td>\n')
 
 		cwd = os.getcwd()
-		if os.path.isfile(cwd + '/archives/' + logFileName):
-			status = False
-			if nfType == 'AMF':
-				section_start_pattern = 'build_amf --clean --Verbose --build-type Release --jobs'
-				section_end_pattern = 'FROM ubuntu:bionic as oai-amf$'
-				pass_pattern = 'amf installed'
-			section_status = False
-			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
-				for line in logfile:
-					result = re.search(section_start_pattern, line)
-					if result is not None:
-						section_status = True
-					result = re.search(section_end_pattern, line)
-					if result is not None:
-						section_status = False
-					if section_status:
-						result = re.search(pass_pattern, line)
+		variants = ['docker', 'podman']
+		for variant in variants:
+			logFileName = 'spgwu_' + variant + '_image_build.log'
+			if os.path.isfile(cwd + '/archives/' + logFileName):
+				status = False
+				if nfType == 'AMF':
+					section_start_pattern = 'build_amf --clean --Verbose --build-type Release --jobs'
+					section_end_pattern = 'FROM ubuntu:bionic as oai-amf$'
+					pass_pattern = 'amf installed'
+				section_status = False
+				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
+					for line in logfile:
+						result = re.search(section_start_pattern, line)
 						if result is not None:
-							status = True
-				logfile.close()
-			if status:
-				cell_msg = '	  <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
-				cell_msg += 'OK:\n'
+							section_status = True
+						result = re.search(section_end_pattern, line)
+						if result is not None:
+							section_status = False
+						if section_status:
+							result = re.search(pass_pattern, line)
+							if result is not None:
+								status = True
+					logfile.close()
+				if status:
+					cell_msg = '	  <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+					cell_msg += 'OK:\n'
+				else:
+					cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+					cell_msg += 'KO:\n'
+				cell_msg += ' -- ' + section_start_pattern + '</b></pre></td>\n'
 			else:
 				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-				cell_msg += 'KO:\n'
-			cell_msg += ' -- ' + section_start_pattern + '</b></pre></td>\n'
-		else:
-			cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
+				cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
 
-		self.file.write(cell_msg)
+			self.file.write(cell_msg)
 
 	def analyze_compile_log(self, nfType, imageKind):
 		if nfType != 'AMF':
@@ -612,59 +617,59 @@ class HtmlReport():
 			self.file.write('	   <td>Wrong NF Type for this Report</td>\n')
 			return
 
-		if nfType == 'AMF':
-			logFileName = 'amf_docker_image_build.log'
 		if imageKind:
 			self.file.write('      <td>Builder Image</td>\n')
 
 		cwd = os.getcwd()
-		nb_errors = 0
-		nb_warnings = 0
-
-		if os.path.isfile(cwd + '/archives/' + logFileName):
-			if nfType == 'AMF':
-				section_start_pattern = 'build_amf --clean --Verbose --build-type Release --jobs'
-				section_end_pattern = 'FROM ubuntu:bionic as oai-amf$'
-			section_status = False
-			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
-				for line in logfile:
-					result = re.search(section_start_pattern, line)
-					if result is not None:
-						section_status = True
-					result = re.search(section_end_pattern, line)
-					if result is not None:
-						section_status = False
-					if section_status:
-						result = re.search('error:', line)
+		variants = ['docker', 'podman']
+		for variant in variants:
+			logFileName = 'spgwu_' + variant + '_image_build.log'
+			nb_errors = 0
+			nb_warnings = 0
+			if os.path.isfile(cwd + '/archives/' + logFileName):
+				if nfType == 'AMF':
+					section_start_pattern = 'build_amf --clean --Verbose --build-type Release --jobs'
+					section_end_pattern = 'FROM ubuntu:bionic as oai-amf$'
+				section_status = False
+				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
+					for line in logfile:
+						result = re.search(section_start_pattern, line)
 						if result is not None:
-							nb_errors += 1
-						result = re.search('warning:', line)
+							section_status = True
+						result = re.search(section_end_pattern, line)
 						if result is not None:
-							correctLine = re.sub("^.*/openair-amf","/openair-amf",line.strip())
-							wordsList = correctLine.split(None,2)
-							filename = re.sub(":[0-9]*:[0-9]*:","", wordsList[0])
-							linenumber = re.sub(filename + ':',"", wordsList[0])
-							linenumber = re.sub(':[0-9]*:',"", linenumber)
-							error_warning_status = re.sub(':',"", wordsList[1])
-							error_warning_msg = re.sub('^.*' + error_warning_status + ':', '', correctLine)
-							nb_warnings += 1
-							self.warning_rows += '<tr><td>' + filename + '</td><td>' + linenumber + '</td><td>' + error_warning_status + '</td><td>' + error_warning_msg + '</td></tr>\n'
-				logfile.close()
-			if nb_warnings == 0 and nb_errors == 0:
-				cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
-			elif nb_warnings < 20 and nb_errors == 0:
-				cell_msg = '	   <td bgcolor="Orange"><pre style="border:none; background-color:Orange"><b>'
+							section_status = False
+						if section_status:
+							result = re.search('error:', line)
+							if result is not None:
+								nb_errors += 1
+							result = re.search('warning:', line)
+							if result is not None:
+								correctLine = re.sub("^.*/openair-amf","/openair-amf",line.strip())
+								wordsList = correctLine.split(None,2)
+								filename = re.sub(":[0-9]*:[0-9]*:","", wordsList[0])
+								linenumber = re.sub(filename + ':',"", wordsList[0])
+								linenumber = re.sub(':[0-9]*:',"", linenumber)
+								error_warning_status = re.sub(':',"", wordsList[1])
+								error_warning_msg = re.sub('^.*' + error_warning_status + ':', '', correctLine)
+								nb_warnings += 1
+								self.warning_rows += '<tr><td>' + filename + '</td><td>' + linenumber + '</td><td>' + error_warning_status + '</td><td>' + error_warning_msg + '</td></tr>\n'
+					logfile.close()
+				if nb_warnings == 0 and nb_errors == 0:
+					cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+				elif nb_warnings < 20 and nb_errors == 0:
+					cell_msg = '	   <td bgcolor="Orange"><pre style="border:none; background-color:Orange"><b>'
+				else:
+					cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+				if nb_errors > 0:
+					cell_msg += str(nb_errors) + ' errors found in compile log\n'
+				cell_msg += str(nb_warnings) + ' warnings found in compile log</b></pre></td>\n'
+				self.nb_warnings = nb_warnings
 			else:
-				cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			if nb_errors > 0:
-				cell_msg += str(nb_errors) + ' errors found in compile log\n'
-			cell_msg += str(nb_warnings) + ' warnings found in compile log</b></pre></td>\n'
-			self.nb_warnings = nb_warnings
-		else:
-			cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
+				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+				cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
 
-		self.file.write(cell_msg)
+			self.file.write(cell_msg)
 
 	def copyToTargetImage(self):
 		self.file.write('	 <tr>\n')
@@ -675,40 +680,42 @@ class HtmlReport():
 	def analyze_copy_log(self, nfType):
 		if nfType != 'AMF':
 			self.file.write('      <td>N/A</td>\n')
-			self.file.write('	   <td>Wrong NF Type for this Report</td>\n')
+			self.file.write('	   <td colspan="2">Wrong NF Type for this Report</td>\n')
 			return
 
-		logFileName = 'amf_docker_image_build.log'
 		self.file.write('      <td>Target Image</td>\n')
 
 		cwd = os.getcwd()
-		if os.path.isfile(cwd + '/archives/' + logFileName):
-			section_start_pattern = 'FROM ubuntu:bionic as oai-amf$'
-			section_end_pattern = 'WORKDIR /openair-amf/etc'
-			section_status = False
-			status = False
-			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
-				for line in logfile:
-					result = re.search(section_start_pattern, line)
-					if result is not None:
-						section_status = True
-					result = re.search(section_end_pattern, line)
-					if result is not None:
-						section_status = False
-						status = True
-				logfile.close()
-			if status:
-				cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
-				cell_msg += 'OK:\n'
+		variants = ['docker', 'podman']
+		for variant in variants:
+			logFileName = 'spgwu_' + variant + '_image_build.log'
+			if os.path.isfile(cwd + '/archives/' + logFileName):
+				section_start_pattern = 'FROM ubuntu:bionic as oai-amf$'
+				section_end_pattern = 'WORKDIR /openair-amf/etc'
+				section_status = False
+				status = False
+				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
+					for line in logfile:
+						result = re.search(section_start_pattern, line)
+						if result is not None:
+							section_status = True
+						result = re.search(section_end_pattern, line)
+						if result is not None:
+							section_status = False
+							status = True
+					logfile.close()
+				if status:
+					cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+					cell_msg += 'OK:\n'
+				else:
+					cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+					cell_msg += 'KO:\n'
+				cell_msg += '</b></pre></td>\n'
 			else:
-				cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-				cell_msg += 'KO:\n'
-			cell_msg += '</b></pre></td>\n'
-		else:
-			cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
+				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+				cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
 
-		self.file.write(cell_msg)
+			self.file.write(cell_msg)
 
 	def copyConfToolsToTargetImage(self):
 		self.file.write('	 <tr>\n')
@@ -719,40 +726,42 @@ class HtmlReport():
 	def analyze_copy_conf_tool_log(self, nfType):
 		if nfType != 'AMF':
 			self.file.write('      <td>N/A</td>\n')
-			self.file.write('	   <td>Wrong NF Type for this Report</td>\n')
+			self.file.write('	   <td colspan="2">Wrong NF Type for this Report</td>\n')
 			return
 
-		logFileName = 'amf_docker_image_build.log'
 		self.file.write('      <td>Target Image</td>\n')
 
 		cwd = os.getcwd()
-		if os.path.isfile(cwd + '/archives/' + logFileName):
-			section_start_pattern = 'WORKDIR /openair-amf/etc'
-			section_end_pattern = 'Successfully tagged oai-amf'
-			section_status = False
-			status = False
-			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
-				for line in logfile:
-					result = re.search(section_start_pattern, line)
-					if result is not None:
-						section_status = True
-					result = re.search(section_end_pattern, line)
-					if result is not None:
-						section_status = False
-						status = True
-				logfile.close()
-			if status:
-				cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
-				cell_msg += 'OK:\n'
+		variants = ['docker', 'podman']
+		for variant in variants:
+			logFileName = 'spgwu_' + variant + '_image_build.log'
+			if os.path.isfile(cwd + '/archives/' + logFileName):
+				section_start_pattern = 'WORKDIR /openair-amf/etc'
+				section_end_pattern = 'Successfully tagged oai-amf'
+				section_status = False
+				status = False
+				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
+					for line in logfile:
+						result = re.search(section_start_pattern, line)
+						if result is not None:
+							section_status = True
+						result = re.search(section_end_pattern, line)
+						if result is not None:
+							section_status = False
+							status = True
+					logfile.close()
+				if status:
+					cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+					cell_msg += 'OK:\n'
+				else:
+					cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+					cell_msg += 'KO:\n'
+				cell_msg += '</b></pre></td>\n'
 			else:
-				cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-				cell_msg += 'KO:\n'
-			cell_msg += '</b></pre></td>\n'
-		else:
-			cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
+				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+				cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
 
-		self.file.write(cell_msg)
+			self.file.write(cell_msg)
 
 	def imageSizeRow(self):
 		self.file.write('	 <tr>\n')
@@ -764,53 +773,54 @@ class HtmlReport():
 		if nfType != 'AMF':
 			if imageKind:
 				self.file.write('      <td>N/A</td>\n')
-			self.file.write('	   <td>Wrong NF Type for this Report</td>\n')
+			self.file.write('	   <td colspan="2">Wrong NF Type for this Report</td>\n')
 			return
 
-		if nfType == 'AMF':
-			logFileName = 'amf_docker_image_build.log'
 		if imageKind:
 			self.file.write('      <td>Target Image</td>\n')
 
 		cwd = os.getcwd()
-		if os.path.isfile(cwd + '/archives/' + logFileName):
-			if nfType == 'AMF':
-				section_start_pattern = 'Successfully tagged oai-amf'
-				section_end_pattern = 'OAI-AMF DOCKER IMAGE BUILD'
-			section_status = False
-			status = False
-			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
-				for line in logfile:
-					result = re.search(section_start_pattern, line)
-					if result is not None:
-						section_status = True
-					result = re.search(section_end_pattern, line)
-					if result is not None:
-						section_status = False
-					if section_status:
-						if nfType == 'AMF':
-							if self.git_pull_request:
-								result = re.search('oai-amf *ci-tmp', line)
-							else:
-								result = re.search('oai-amf *develop', line)
+		variants = ['docker', 'podman']
+		for variant in variants:
+			logFileName = 'spgwu_' + variant + '_image_build.log'
+			if os.path.isfile(cwd + '/archives/' + logFileName):
+				if nfType == 'AMF':
+					section_start_pattern = 'Successfully tagged oai-amf'
+					section_end_pattern = 'OAI-AMF DOCKER IMAGE BUILD'
+				section_status = False
+				status = False
+				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
+					for line in logfile:
+						result = re.search(section_start_pattern, line)
 						if result is not None:
-							result = re.search('ago *([0-9A-Z]+)', line)
+							section_status = True
+						result = re.search(section_end_pattern, line)
+						if result is not None:
+							section_status = False
+						if section_status:
+							if nfType == 'AMF':
+								if self.git_pull_request:
+									result = re.search('oai-amf *ci-tmp', line)
+								else:
+									result = re.search('oai-amf *develop', line)
 							if result is not None:
-								size = result.group(1)
-								status = True
-				logfile.close()
-			if status:
-				cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
-				cell_msg += 'OK:  ' + size + '\n'
+								result = re.search('ago *([0-9A-Z]+)', line)
+								if result is not None:
+									size = result.group(1)
+									status = True
+					logfile.close()
+				if status:
+					cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+					cell_msg += 'OK:  ' + size + '\n'
+				else:
+					cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+					cell_msg += 'KO:\n'
+				cell_msg += '</b></pre></td>\n'
 			else:
-				cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-				cell_msg += 'KO:\n'
-			cell_msg += '</b></pre></td>\n'
-		else:
-			cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
+				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+				cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
 
-		self.file.write(cell_msg)
+			self.file.write(cell_msg)
 
 def Usage():
 	print('----------------------------------------------------------------------------------------------------------------------')
