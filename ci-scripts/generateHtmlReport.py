@@ -818,7 +818,7 @@ class HtmlReport():
 								if self.git_pull_request:
 									result = re.search('oai-amf *ci-tmp', line)
 								else:
-									result = re.search('oai-amf *temp', line)
+									result = re.search('oai-amf *develop', line)
 							if result is not None:
 								result = re.search('ago  *([0-9A-Z]+)', line)
 								if result is not None:
