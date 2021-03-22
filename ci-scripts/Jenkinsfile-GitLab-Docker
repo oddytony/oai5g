@@ -133,7 +133,7 @@ pipeline {
             sh "./ci-scripts/doGitLabMerge.sh --src-branch ${env.gitlabSourceBranch} --src-commit ${env.gitlabMergeRequestLastCommit} --target-branch ${env.gitlabTargetBranch} --target-commit ${GIT_COMMIT}"
             sh "sleep 10"
             amf_tag = "ci-tmp"
-            rhel_amf_tag = 'ci-temp-pr-' + env.gitlabMergeRequestId + '-' + shortenShaOne
+            rhel_amf_tag = 'ci-tmp-pr-' + env.gitlabMergeRequestIid + '-' + shortenShaOne
             amf_branch = env.gitlabSourceBranch
             echo "MR TAG      is ${rhel_amf_tag}"
           } else {
@@ -400,7 +400,7 @@ pipeline {
         }
         try {
           if ("MERGE".equals(env.gitlabActionType)) {
-            myShCmd('sudo podman image rm oai-amf:ci-temp', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
+            myShCmd('sudo podman image rm oai-amf:ci-tmp', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
           }
         } catch (Exception e) {
           echo "We failed to delete the OAI-AMF temp image"
