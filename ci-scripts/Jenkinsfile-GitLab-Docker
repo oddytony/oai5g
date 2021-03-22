@@ -428,11 +428,11 @@ pipeline {
         if ("MERGE".equals(env.gitlabActionType)) {
           sh "python3 ci-scripts/generateHtmlReport.py --job_name=${JOB_NAME} --job_id=${BUILD_ID} --job_url=${BUILD_URL} --git_url=${GIT_URL} --git_src_branch=${env.gitlabSourceBranch} --git_src_commit=${env.gitlabMergeRequestLastCommit} --git_pull_request=True --git_target_branch=${env.gitlabTargetBranch} --git_target_commit=${GIT_COMMIT}"
           if (fileExists('test_results_oai_amf.html')) {
-            sh "sed -i -e 's#TEMPLATE_MERGE_REQUEST_LINK#${ghprbPullLink}#g' test_results_oai_amf.html"
+            sh "sed -i -e 's#TEMPLATE_MERGE_REQUEST_LINK#${gitlabMergeRequestLink}#g' test_results_oai_amf.html"
             sh "sed -i -e 's#TEMPLATE_MERGE_REQUEST_TEMPLATE#${env.gitlabMergeRequestTitle}#' test_results_oai_amf.html"
           }
           if (fileExists('test_results_oai_cn5g.html')) {
-            sh "sed -i -e 's#TEMPLATE_MERGE_REQUEST_LINK#${ghprbPullLink}#g' *_results_oai_cn5g.html"
+            sh "sed -i -e 's#TEMPLATE_MERGE_REQUEST_LINK#${gitlabMergeRequestLink}#g' *_results_oai_cn5g.html"
             sh "sed -i -e 's#TEMPLATE_MERGE_REQUEST_TEMPLATE#${env.gitlabMergeRequestTitle}#' *_results_oai_cn5g.html"
           }
         } else {
