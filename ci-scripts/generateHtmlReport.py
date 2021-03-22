@@ -161,20 +161,7 @@ class HtmlReport():
 		for reportFile in glob.glob('./*results_oai_cn5g.html'):
 			newEpcReport = open(cwd + '/' + str(reportFile) + '.new', 'w')
 			buildSummaryDone = True
-			with open(cwd + '/ds_tester_results_oai_cn5g.html', 'r') as originalEpcReport:
-				for line in originalEpcReport:
-					result = re.search('Deployment Summary', line)
-					if (result is not None) and buildSummaryDone:
-						newEpcReport.write(buildSummary)
-						buildSummaryDone = False
-					newEpcReport.write(line)
-				originalEpcReport.close()
-			newEpcReport.close()
-			os.rename(cwd + '/ds_tester_results_oai_cn5g_new.html', cwd + '/ds_tester_results_oai_cn5g.html')
-		if os.path.isfile(cwd + '/deploy_results_oai_cn5g.html'):
-			newEpcReport = open(cwd + '/deploy_results_oai_cn5g_new.html', 'w')
-			buildSummaryDone = True
-			with open(cwd + '/deploy_results_oai_cn5g.html', 'r') as originalEpcReport:
+			with open(cwd + str(reportFile), 'r') as originalEpcReport:
 				for line in originalEpcReport:
 					result = re.search('Deployment Summary', line)
 					if (result is not None) and buildSummaryDone:
