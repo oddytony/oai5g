@@ -483,14 +483,18 @@ class HtmlReport():
 				pistache_build_status = False
 				json_build_start = False
 				json_build_status = False
+				base_image = False
 				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
 					for line in logfile:
+						result = re.search('FROM oai-amf-base', line)
+						if result is not None:
+							base_image = True
 						result = re.search(section_start_pattern, line)
 						if result is not None:
 							section_status = True
 						result = re.search(section_end_pattern, line)
 						if result is not None:
-							section_status = False
+							section_status = True
 						if section_status:
 							result = re.search('AMF deps installation successful', line)
 							if result is not None:
@@ -525,34 +529,49 @@ class HtmlReport():
 							if result is not None:
 								json_build_status = True
 					logfile.close()
-				if status:
+				if base_image:
+					cell_msg = '      <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+					cell_msg += 'N/A:\n'
+				elif status:
 					cell_msg = '	  <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
 					cell_msg += 'OK:\n'
 				else:
 					cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
 					cell_msg += 'KO:\n'
 				cell_msg += ' -- build_amf --install-deps --force\n'
-				if package_install:
+				if base_image:
+					cell_msg += '   ** Packages Installation: N/A\n'
+				elif package_install:
 					cell_msg += '   ** Packages Installation: OK\n'
 				else:
 					cell_msg += '   ** Packages Installation: KO\n'
-				if fmt_build_status:
+				if base_image:
+					cell_msg += '   ** fmt Installation: N/A\n'
+				elif fmt_build_status:
 					cell_msg += '   ** fmt Installation: OK\n'
 				else:
 					cell_msg += '   ** fmt Installation: KO\n'
-				if folly_build_status:
+				if base_image:
+					cell_msg += '   ** folly Installation: N/A\n'
+				elif folly_build_status:
 					cell_msg += '   ** folly Installation: OK\n'
 				else:
 					cell_msg += '   ** folly Installation: KO\n'
-				if spdlog_build_status:
+				if base_image:
+					cell_msg += '   ** spdlog Installation: N/A\n'
+				elif spdlog_build_status:
 					cell_msg += '   ** spdlog Installation: OK\n'
 				else:
 					cell_msg += '   ** spdlog Installation: KO\n'
-				if pistache_build_status:
+				if base_image:
+					cell_msg += '   ** pistache Installation: N/A\n'
+				elif pistache_build_status:
 					cell_msg += '   ** pistache Installation: OK\n'
 				else:
 					cell_msg += '   ** pistache Installation: KO\n'
-				if json_build_status:
+				if base_image:
+					cell_msg += '   ** Nlohmann Json Installation: N/A\n'
+				elif json_build_status:
 					cell_msg += '   ** Nlohmann Json Installation: OK\n'
 				else:
 					cell_msg += '   ** Nlohmann Json Installation: KO\n'
