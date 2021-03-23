@@ -20,6 +20,7 @@
 # */
 #---------------------------------------------------------------------
 
+import glob
 import os
 import re
 import sys
@@ -157,10 +158,10 @@ class HtmlReport():
 		self.file.write(buildSummary)
 
 		cwd = os.getcwd()
-		if os.path.isfile(cwd + '/ds_tester_results_oai_cn5g.html'):
-			newEpcReport = open(cwd + '/ds_tester_results_oai_cn5g_new.html', 'w')
+		for reportFile in glob.glob('./*results_oai_cn5g.html'):
+			newEpcReport = open(cwd + '/' + str(reportFile) + '.new', 'w')
 			buildSummaryDone = True
-			with open(cwd + '/ds_tester_results_oai_cn5g.html', 'r') as originalEpcReport:
+			with open(cwd + '/' + str(reportFile), 'r') as originalEpcReport:
 				for line in originalEpcReport:
 					result = re.search('Deployment Summary', line)
 					if (result is not None) and buildSummaryDone:
@@ -169,20 +170,7 @@ class HtmlReport():
 					newEpcReport.write(line)
 				originalEpcReport.close()
 			newEpcReport.close()
-			os.rename(cwd + '/ds_tester_results_oai_cn5g_new.html', cwd + '/ds_tester_results_oai_cn5g.html')
-		if os.path.isfile(cwd + '/deploy_results_oai_cn5g.html'):
-			newEpcReport = open(cwd + '/deploy_results_oai_cn5g_new.html', 'w')
-			buildSummaryDone = True
-			with open(cwd + '/deploy_results_oai_cn5g.html', 'r') as originalEpcReport:
-				for line in originalEpcReport:
-					result = re.search('Deployment Summary', line)
-					if (result is not None) and buildSummaryDone:
-						newEpcReport.write(buildSummary)
-						buildSummaryDone = False
-					newEpcReport.write(line)
-				originalEpcReport.close()
-			newEpcReport.close()
-			os.rename(cwd + '/deploy_results_oai_cn5g_new.html', cwd + '/deploy_results_oai_cn5g.html')
+			os.rename(cwd + '/' + str(reportFile) + '.new', cwd + '/' + str(reportFile))
 
 	def generateFooter(self):
 		self.file.write('  <div class="well well-lg">End of Build Report -- Copyright <span class="glyphicon glyphicon-copyright-mark"></span> 2020 <a href="http://www.openairinterface.org/">OpenAirInterface</a>. All Rights Reserved.</div>\n')
