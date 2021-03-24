@@ -175,9 +175,8 @@ int sctp_server::sctp_read_from_socket(int sd, uint32_t ppid) {
     switch (snp->sn_header.sn_type) {
       case SCTP_SHUTDOWN_EVENT: {
         Logger::sctp().debug("SCTP Shutdown Event received");
+        return sctp_handle_com_down(snp->sn_shutdown_event.sse_assoc_id);
         break;
-        // return sctp_handle_com_down((sctp_assoc_id_t)
-        // snp->sn_shutdown_event.sse_assoc_id);
       }
       case SCTP_ASSOC_CHANGE: {
         Logger::sctp().debug("SCTP Association Change event received");
@@ -218,7 +217,8 @@ int sctp_server::sctp_read_from_socket(int sd, uint32_t ppid) {
 
 //------------------------------------------------------------------------------
 int sctp_server::sctp_handle_com_down(sctp_assoc_id_t assoc_id) {
-  return 0;
+  	  app_->handle_sctp_shutdown(assoc_id);
+ return 0;
 }
 
 //------------------------------------------------------------------------------

@@ -28,6 +28,7 @@
 
 #include "PDU_Session_Status.hpp"
 #include "logger.hpp"
+#include "common_defs.h"
 using namespace nas;
 
 //------------------------------------------------------------------------------
@@ -98,14 +99,12 @@ int PDU_Session_Status::decodefrombuffer(
   if (is_option) {
     decoded_size++;
   }
+
   _value = 0x0000;
   length = *(buf + decoded_size);
   decoded_size++;
-  _value |= *(buf + decoded_size);
-  decoded_size++;
-  _value |= (*(buf + decoded_size)) << 8;
-  decoded_size++;
-  Logger::nas_mm().debug("decoded PDU_Session_Status value(0x%4x)", _value);
+  DECODE_U16(buf + decoded_size, _value, decoded_size);
+  Logger::nas_mm().debug("decoded PDU_Session_Status value (0x%x)", _value);
   Logger::nas_mm().debug("decoded PDU_Session_Status len(%d)", decoded_size);
   return decoded_size;
 }

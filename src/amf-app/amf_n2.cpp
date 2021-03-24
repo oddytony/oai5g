@@ -96,6 +96,16 @@ void amf_n2_task(void* args_p) {
         itti_ng_setup_request* m = dynamic_cast<itti_ng_setup_request*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
+      case NG_RESET: {
+        Logger::amf_n2().info("Received NGReset message, handling");
+        itti_ng_reset* m = dynamic_cast<itti_ng_reset*>(msg);
+        amf_n2_inst->handle_itti_message(ref(*m));
+      } break;
+      case NG_SHUTDOWN: {
+        Logger::amf_n2().info("Received SCTP Shutdown Event, handling");
+        itti_ng_shutdown* m = dynamic_cast<itti_ng_shutdown*>(msg);
+        amf_n2_inst->handle_itti_message(ref(*m));
+      } break;
       case INITIAL_UE_MSG: {
         Logger::amf_n2().info("Received INITIAL_UE_MESSAGE message, handling");
         itti_initial_ue_message* m =
@@ -191,8 +201,7 @@ amf_n2::amf_n2(const std::string& address, const uint16_t port_num)
     Logger::amf_n2().error("Cannot create task TASK_AMF_N2");
     throw std::runtime_error("Cannot create task TASK_AMF_N2");
   }
-  Logger::amf_n2().startup("Started");
-  Logger::amf_n2().debug("Construct amf_n2 successfully");
+  Logger::amf_n2().startup("amf_n2 started");
 }
 
 //------------------------------------------------------------------------------
@@ -227,19 +236,21 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
         "Update gNB context with assoc id (%d)", itti_msg.assoc_id);
   }
 
-  gnb_infos gnbItem;
+  gnb_infos gnbItem = {};
 
   // Get IE Global RAN Node ID
-  uint32_t gnb_id;
+  uint32_t gnb_id = {};
   std::string gnb_mcc;
   std::string gnb_mnc;
   if (!itti_msg.ngSetupReq->getGlobalGnbID(gnb_id, gnb_mcc, gnb_mnc)) {
-    Logger::amf_n2().error("Missing Mandatory IE GlobalGnbID");
+    Logger::amf_n2().error("Missing Mandatory IE Global RAN Node ID");
     return;
   }
-  Logger::amf_n2().debug("IE GlobalGNBID: 0x%x", gnb_id);
+  Logger::amf_n2().debug("Global RAN Node ID: 0x%x", gnb_id);
   gc->globalRanNodeId = gnb_id;
   gnbItem.gnb_id      = gnb_id;
+  gnbItem.mcc         = gnb_mcc;
+  gnbItem.mnc         = gnb_mnc;
 
   std::string gnb_name;
   if (!itti_msg.ngSetupReq->getRanNodeName(gnb_name)) {
@@ -257,15 +268,16 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
   }
   Logger::amf_n2().debug("IE DefaultPagingDRX: %d", defPagingDrx);
 
+  // Get supported TA List
   vector<SupportedItem_t> s_ta_list;
-  if (!itti_msg.ngSetupReq->getSupportedTAList(
-          s_ta_list)) {  // getSupportedTAList
+  if (!itti_msg.ngSetupReq->getSupportedTAList(s_ta_list)) {
     return;
   }
   // TODO: should be removed, since we stored list of common PLMNs
-  gnbItem.mcc = s_ta_list[0].b_plmn_list[0].mcc;
-  gnbItem.mnc = s_ta_list[0].b_plmn_list[0].mnc;
-  gnbItem.tac = s_ta_list[0].tac;
+  // gnbItem.mcc = s_ta_list[0].b_plmn_list[0].mcc;
+  // gnbItem.mnc = s_ta_list[0].b_plmn_list[0].mnc;
+  // gnbItem.tac = s_ta_list[0].tac;
+
   // association GlobalRANNodeID with assoc_id
   // store RAN Node Name in gNB context, if present
   // verify PLMN Identity and TAC with configuration and store supportedTAList
@@ -340,7 +352,95 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
       "gNB with gNB_id 0x%x, assoc_id %d has been attached to AMF",
       gc.get()->globalRanNodeId, itti_msg.assoc_id);
   stacs.gNB_connected += 1;
-  stacs.gnbs.push_back(gnbItem);
+  stacs.gnbs.insert(std::pair<uint32_t, gnb_infos>(gnbItem.gnb_id, gnbItem));
+  return;
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::handle_itti_message(itti_ng_reset& itti_msg) {
+  Logger::amf_n2().debug(
+      "Parameters: assoc_id %d, stream %d", itti_msg.assoc_id, itti_msg.stream);
+
+  std::shared_ptr<gnb_context> gc;
+  if (!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
+    Logger::amf_n2().error(
+        "No existed gNB context with assoc_id(%d)", itti_msg.assoc_id);
+    return;
+  }
+  gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
+
+  gc.get()->ng_state = NGAP_RESETING;
+  // TODO: (8.7.4.2.2, NG Reset initiated by the NG-RAN node @3GPP TS 38.413
+  // V16.0.0) the AMF shall release all allocated resources on NG related to the
+  // UE association(s) indicated explicitly or implicitly in the NG RESET
+  // message and remove the NGAP ID for the indicated UE associations.
+  ResetType reset_type = {};
+  itti_msg.ngReset->getResetType(reset_type);
+  if (reset_type.getResetType() == Ngap_ResetType_PR_nG_Interface) {
+    // Reset all
+    // release all the resources related to this interface
+    for (auto ue_context : ranid2uecontext) {
+      if (ue_context.second->gnb_assoc_id == itti_msg.assoc_id) {
+        uint32_t ran_ue_ngap_id = ue_context.second->ran_ue_ngap_id;
+        long amf_ue_ngap_id     = ue_context.second->amf_ue_ngap_id;
+        // get NAS context
+        std::shared_ptr<nas_context> nc;
+        if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+          nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+        else {
+          Logger::amf_n2().warn(
+              "No existed nas_context with amf_ue_ngap_id(0x%x)",
+              amf_ue_ngap_id);
+        }
+        stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
+      }
+    }
+    stacs.display();
+  } else if (
+      reset_type.getResetType() == Ngap_ResetType_PR_partOfNG_Interface) {
+    // TODO:
+  }
+
+  return;
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::handle_itti_message(itti_ng_shutdown& itti_msg) {
+  std::shared_ptr<gnb_context> gc;
+  if (!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
+    Logger::amf_n2().error(
+        "No existed gNB context with assoc_id(%d)", itti_msg.assoc_id);
+    return;
+  }
+  gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
+
+  gc.get()->ng_state = NGAP_SHUTDOWN;
+
+  // Release all the resources related to this interface
+  for (auto ue_context : ranid2uecontext) {
+    if (ue_context.second->gnb_assoc_id == itti_msg.assoc_id) {
+      uint32_t ran_ue_ngap_id = ue_context.second->ran_ue_ngap_id;
+      long amf_ue_ngap_id     = ue_context.second->amf_ue_ngap_id;
+      // get NAS context
+      std::shared_ptr<nas_context> nc;
+      if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+        nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+      else {
+        Logger::amf_n2().warn(
+            "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+      }
+      stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
+    }
+  }
+
+  // Delete gNB context
+  remove_gnb_context(itti_msg.assoc_id);
+  stacs.gnbs.erase(gc.get()->globalRanNodeId);
+  Logger::amf_n2().debug(
+      "Remove gNB with association id %d, globalRanNodeId 0x%x",
+      itti_msg.assoc_id, gc.get()->globalRanNodeId);
+  stacs.gNB_connected -= 1;
+  stacs.display();
   return;
 }
 
@@ -495,12 +595,15 @@ void amf_n2::handle_itti_message(itti_ul_nas_transport& ul_nas_transport) {
         "which's amf_ue_ngap_id (0x%x)",
         amf_ue_ngap_id, unc.get()->amf_ue_ngap_id);
   }
-  if (unc.get()->ng_ue_state != NGAP_UE_CONNECTED) {
-    Logger::amf_n2().error(
-        "Received NGAP UPLINK_NAS_TRANSPORT while UE in state != "
-        "NGAP_UE_CONNECTED");
-    // return;
-  }
+  /*
+     //TODO: check with a correct NGAP state
+     if (unc.get()->ng_ue_state != NGAP_UE_CONNECTED) {
+      Logger::amf_n2().error(
+          "Received NGAP UPLINK_NAS_TRANSPORT while UE in state != "
+          "NGAP_UE_CONNECTED");
+      // return;
+    }
+    */
   itti_uplink_nas_data_ind* itti_msg =
       new itti_uplink_nas_data_ind(TASK_AMF_N2, TASK_AMF_N1);
   itti_msg->is_nas_signalling_estab_req = false;
@@ -934,8 +1037,8 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   plmn->getMcc(mcc);
   plmn->getMnc(mnc);
   printf(
-      "Handover required:Target ID GlobalRanNodeID PLmn=mcc%s mnc%s "
-      "gnbid=%x\n",
+      "Handover required: Target ID GlobalRanNodeID PLmn (mcc: %s, mnc: %s, "
+      "gnbid: %ld)\n",
       mcc.c_str(), mnc.c_str(), gnbid->getValue());
   TAI* tai = new TAI();
   itti_msg.handvoerRequ->getTAI(tai);
@@ -1010,25 +1113,36 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   // handoverrequest->setSourceToTarget_TransparentContainer(sourceTotarget);
   string supi = "imsi-" + nc.get()->imsi;
 
-  // TODO: REMOVE supi_to_pdu_ctx (need PDU Session ID)/ list of PDU Session ID
-  std::shared_ptr<pdu_session_context> psc =
-      amf_n11_inst->supi_to_pdu_ctx(supi);
+  // Get all the active PDU sessions
+  std::vector<std::shared_ptr<pdu_session_context>> pdu_sessions = {};
+  if (!amf_app_inst->get_pdu_sessions_context(supi, pdu_sessions)) {
+    Logger::amf_n2().warn("Error when retrieving the active PDU Sessions!");
+  }
 
   std::vector<PDUSessionResourceSetupRequestItem_t> list;
   PDUSessionResourceSetupRequestItem_t item;
-  item.pduSessionId      = psc.get()->pdu_session_id;
-  item.s_nssai.sst       = "01";
-  item.s_nssai.sd        = "";
-  item.pduSessionNAS_PDU = NULL;
-  bstring n2sm           = psc.get()->n2sm;
-  if (blength(psc.get()->n2sm) != 0) {
-    item.pduSessionResourceSetupRequestTransfer.buf =
-        (uint8_t*) bdata(psc.get()->n2sm);
-    item.pduSessionResourceSetupRequestTransfer.size = blength(psc.get()->n2sm);
-  } else {
-    Logger::amf_n2().error("n2sm empty!");
+
+  if (pdu_sessions.size() > 0) {
+    for (auto pdu_session : pdu_sessions) {
+      if (pdu_session.get() != nullptr) {
+        item.pduSessionId      = pdu_session.get()->pdu_session_id;
+        item.s_nssai.sst       = pdu_session.get()->snssai.sST;
+        item.s_nssai.sd        = pdu_session.get()->snssai.sD;
+        item.pduSessionNAS_PDU = NULL;
+        bstring n2sm           = pdu_session.get()->n2sm;
+        if (blength(pdu_session.get()->n2sm) != 0) {
+          item.pduSessionResourceSetupRequestTransfer.buf =
+              (uint8_t*) bdata(pdu_session.get()->n2sm);
+          item.pduSessionResourceSetupRequestTransfer.size =
+              blength(pdu_session.get()->n2sm);
+        } else {
+          Logger::amf_n2().error("n2sm empty!");
+        }
+        list.push_back(item);
+      }
+    }
   }
-  list.push_back(item);
+
   handoverrequest->setPduSessionResourceSetupList(list);
   handoverrequest->setAllowedNSSAI(Allowed_Nssai);
   handoverrequest->setSourceToTarget_TransparentContainer(sourceTotarget);

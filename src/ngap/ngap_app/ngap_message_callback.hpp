@@ -39,6 +39,7 @@
 #include "itti_msg_n11.hpp"
 #include "itti.hpp"
 #include "NGSetupRequest.hpp"
+#include "NGReset.hpp"
 #include "PduSessionResourceSetupResponse.hpp"
 #include "PduSessionResourceReleaseResponse.hpp"
 #include "InitialContextSetupResponse.hpp"
@@ -52,10 +53,13 @@ using namespace amf_application;
 extern itti_mw* itti_inst;
 extern amf_n1* amf_n1_inst;
 extern amf_n11* amf_n11_inst;
+extern amf_app* amf_app_inst;
 
 typedef int (*ngap_message_decoded_callback)(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p);
+
+typedef void (*ngap_event_callback)(const sctp_assoc_id_t assoc_id);
 
 //------------------------------------------------------------------------------
 int ngap_amf_handle_ng_setup_request(
@@ -403,16 +407,16 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
           amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
       string supi = "imsi-" + nct.get()->imsi;
       std::shared_ptr<pdu_session_context> psc;
-      if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
-        psc = amf_n11_inst->supi_to_pdu_ctx(supi);
-        if (!psc) {
-          Logger::amf_n1().error("connot get pdu_session_context");
-          return 0;
+      if (amf_app_inst->find_pdu_session_context(
+              supi, list_fail[0].pduSessionId, psc)) {
+        if (psc.get() == nullptr) {
+          Logger::amf_n1().error("Cannot get pdu_session_context");
+          return -1;
         }
       }
       psc.get()->isn2sm_avaliable = false;
       Logger::ngap().debug(
-          "receive pdu session resource setup response fail(multi pdu session "
+          "Receive pdu session resource setup response fail (multi pdu session "
           "id),set pdu session context isn2sm_avaliable = false");
       /*Logger::ngap().debug("Sending itti ue context release command to
        TASK_AMF_N2"); itti_ue_context_release_command * itti_msg = new
@@ -646,7 +650,27 @@ int nas_non_delivery_indication(
 int ng_reset(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p) {
-  Logger::ngap().debug("Sending itti ng reset to TASK_AMF_N2");
+  Logger::ngap().debug("Sending ITTI NG Reset to TASK_AMF_N2");
+
+  asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
+  NGResetMsg* ngReset = new NGResetMsg();
+  if (!ngReset->decodefrompdu(message_p)) {
+    Logger::ngap().error("Decoding NGReset message error");
+    return -1;
+  }
+
+  itti_ng_reset* itti_msg          = new itti_ng_reset(TASK_NGAP, TASK_AMF_N2);
+  itti_msg->assoc_id               = assoc_id;
+  itti_msg->stream                 = stream;
+  itti_msg->ngReset                = ngReset;
+  std::shared_ptr<itti_ng_reset> i = std::shared_ptr<itti_ng_reset>(itti_msg);
+  int ret                          = itti_inst->send_msg(i);
+  if (0 != ret) {
+    Logger::ngap().error(
+        "Could not send ITTI message %s to task TASK_AMF_N2",
+        i->get_msg_name());
+  }
+
   return 0;
 }
 
@@ -977,6 +1001,29 @@ ngap_message_decoded_callback messages_callback[][3] = {
     {0, 0, 0},                              /*WriteReplaceWarning*/
     {0, 0, 0}                               /*WriteReplaceWarning*/
 
+};
+
+//------------------------------------------------------------------------------
+void ngap_sctp_shutdown(const sctp_assoc_id_t assoc_id) {
+  Logger::ngap().debug("Sending ITTI SCTP Shutdown event to TASK_AMF_N2");
+
+  itti_ng_shutdown* itti_msg = new itti_ng_shutdown(TASK_NGAP, TASK_AMF_N2);
+  itti_msg->assoc_id         = assoc_id;
+  std::shared_ptr<itti_ng_shutdown> i =
+      std::shared_ptr<itti_ng_shutdown>(itti_msg);
+  int ret = itti_inst->send_msg(i);
+  if (0 != ret) {
+    Logger::ngap().error(
+        "Could not send ITTI message %s to task TASK_AMF_N2",
+        i->get_msg_name());
+  }
+  return;
+}
+
+//------------------------------------------------------------------------------
+ngap_event_callback events_callback[][1] = {
+    {ngap_sctp_shutdown},
+    {0} /*reserved*/
 };
 
 #endif

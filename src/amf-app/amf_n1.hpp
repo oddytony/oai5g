@@ -104,7 +104,8 @@ class amf_n1 {
   void run_registration_procedure(std::shared_ptr<nas_context>& nc);
   void run_initial_registration_procedure();
   void run_mobility_registration_update_procedure(
-      std::shared_ptr<nas_context> nc);
+      std::shared_ptr<nas_context> nc, uint16_t uplink_data_status,
+      uint16_t pdu_session_status);
   // authentication
   bool auth_vectors_generator(std::shared_ptr<nas_context>& nc);
 

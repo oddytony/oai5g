@@ -132,7 +132,8 @@ int _5GSMobilityIdentity::_5g_s_tmsi_encode2buffer(uint8_t* buf, int len) {
 int _5GSMobilityIdentity::_5g_s_tmsi_decodefrombuffer(uint8_t* buf, int len) {
   int decoded_size = 0;
   _5g_s_tmsi       = (_5G_S_TMSI_t*) calloc(1, sizeof(_5G_S_TMSI_t));
-  uint8_t octet    = *(buf + decoded_size);
+  decoded_size++;  // type of identity
+  uint8_t octet = *(buf + decoded_size);
   decoded_size++;
   _5g_s_tmsi->amf_set_id = 0x0000 | ((uint16_t) octet) << 2;
   octet                  = *(buf + decoded_size);
@@ -264,6 +265,7 @@ int _5GSMobilityIdentity::encode2buffer(uint8_t* buf, int len) {
       return _5g_s_tmsi_encode2buffer(buf, len);
     } break;
   }
+  return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -522,6 +524,7 @@ int _5GSMobilityIdentity::decodefrombuffer(
       return decoded_size;
     } break;
   }
+  return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -616,6 +619,7 @@ int _5GSMobilityIdentity::suci_decodefrombuffer(
     default: {
     } break;
   }
+  return 0;
 }
 
 //------------------------------------------------------------------------------

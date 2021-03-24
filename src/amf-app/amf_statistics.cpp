@@ -33,13 +33,7 @@
 //------------------------------------------------------------------------------
 void statistics::display() {
   Logger::amf_app().info("");
-  // Logger::amf_app().info("--------------------------------------------------");
-  // Logger::amf_app().info("| connected gNBs | connected UEs | registered UEs
-  // |");
-  // Logger::amf_app().info("--------------------------------------------------");
-  // Logger::amf_app().info("|       %d       |       %d      |        %d
-  // |",gNB_connected,UE_connected,UE_registred);
-  // Logger::amf_app().info("--------------------------------------------------");
+
   Logger::amf_app().info(
       "|-----------------------------------------------------------------------"
       "-----------------------------------------|");
@@ -48,21 +42,26 @@ void statistics::display() {
       "information-------------------------------------------|");
   Logger::amf_app().info(
       "|    Index    |      Status      |       Global ID       |       gNB "
-      "Name       |    Tracking Area (PLMN, TAC)   |");
+      "Name       |               PLMN             |");
   if (gnbs.size() == 0) {
     Logger::amf_app().info(
         "|      -      |          -       |           -           |           "
-        "-          |                -               |");
+        "-          |               -                |");
   }
 
-  // TODO: Show the list of common PLMNs
-  for (int i = 0; i < gnbs.size(); i++) {
+  int i = 1;
+  for (auto const& gnb : gnbs) {
     Logger::amf_app().info(
         "|      %d      |    Connected     |         0x%x       |         %s   "
-        "     |          %s, %d          | ",
-        i + 1, gnbs[i].gnb_id, gnbs[i].gnb_name.c_str(),
-        (gnbs[i].mcc + gnbs[i].mnc).c_str(), gnbs[i].tac);
+        "     |            %s, %s             | ",
+        i, gnb.second.gnb_id, gnb.second.gnb_name.c_str(),
+        gnb.second.mcc.c_str(), gnb.second.mnc.c_str());
+    // Comment out to show the supported TA list
+    // Logger::amf_app().info(
+    //    "| Supported TA list: %s|", gnb.second.plmn_to_string().c_str());
+    i++;
   }
+
   Logger::amf_app().info(
       "|-----------------------------------------------------------------------"
       "-----------------------------------------|");
@@ -78,13 +77,13 @@ void statistics::display() {
       "| Index |      5GMM state      |      IMSI        |     GUTI      | RAN "
       "UE NGAP ID | AMF UE ID |  PLMN   |Cell ID|");
 
-  int i = 0;
+  i = 0;
   for (auto const& ue : ue_infos) {
     Logger::amf_app().info(
-        "|%7d|%22s|%18s|%15s|%16d|%11d|%9s|%7d|", i + 1,
+        "|%7d|%22s|%18s|%15s|%16d|%11d| %3s,%3s |%7d|", i + 1,
         ue.second.registerStatus.c_str(), ue.second.imsi.c_str(),
         ue.second.guti.c_str(), ue.second.ranid, ue.second.amfid,
-        (ue.second.mcc + ue.second.mnc).c_str(), ue.second.cellId);
+        ue.second.mcc.c_str(), ue.second.mnc.c_str(), ue.second.cellId);
     i++;
   }
   Logger::amf_app().info(
@@ -135,5 +134,6 @@ void statistics::update_5gmm_state(
   }
 }
 
+void statistics::remove_gnb(const uint32_t gnb_id) {}
 //------------------------------------------------------------------------------
 statistics::~statistics() {}

@@ -202,7 +202,7 @@ int ServiceRequest::decodefrombuffer(
       buf + decoded_size, len - decoded_size, false);
   uint8_t octet = *(buf + decoded_size);
   Logger::nas_mm().debug("First optional IE (0x%x)", octet);
-  while (!octet) {
+  while ((octet != 0x0)) {
     switch (octet) {
       case 0x40: {
         Logger::nas_mm().debug("Decoding ie_uplink_data_status (IEI: 0x40)");
@@ -241,7 +241,7 @@ int ServiceRequest::decodefrombuffer(
   }
   Logger::nas_mm().debug(
       "Decoded ServiceRequest message len (%d)", decoded_size);
-  return 1;
+  return decoded_size;
 }
 
 //------------------------------------------------------------------------------
@@ -251,7 +251,7 @@ uint8_t ServiceRequest::getngKSI() {
     a = (ie_ngKSI->getTypeOfSecurityContext()) | ie_ngKSI->getasKeyIdentifier();
     return a;
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -269,7 +269,7 @@ uint16_t ServiceRequest::getPduSessionStatus() {
   if (ie_PDU_session_status) {
     return ie_PDU_session_status->getValue();
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -278,7 +278,7 @@ uint16_t ServiceRequest::getAllowedPduSessionStatus() {
   if (ie_allowed_PDU_session_status) {
     return ie_allowed_PDU_session_status->getValue();
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -297,7 +297,7 @@ uint8_t ServiceRequest::getServiceType() {
   if (ie_service_type)
     return ie_service_type->getValue();
   else
-    return -1;
+    return 0;
 }
 
 //------------------------------------------------------------------------------

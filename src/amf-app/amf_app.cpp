@@ -216,6 +216,16 @@ bool amf_app::find_pdu_session_context(
   return true;
 }
 
+bool amf_app::get_pdu_sessions_context(
+    const string& supi,
+    std::vector<std::shared_ptr<pdu_session_context>>& sessions_ctx) {
+  if (!is_supi_2_ue_context(supi)) return false;
+  std::shared_ptr<ue_context> uc = {};
+  uc                             = supi_2_ue_context(supi);
+  if (!uc.get()->get_pdu_sessions_context(sessions_ctx)) return false;
+  return true;
+}
+
 //------------------------------------------------------------------------------
 void amf_app::handle_itti_message(
     itti_n1n2_message_transfer_request& itti_msg) {
@@ -278,6 +288,17 @@ void amf_app::handle_itti_message(
         ue_context_key.c_str());
     uc = std::shared_ptr<ue_context>(new ue_context());
     set_ran_amf_id_2_ue_context(ue_context_key, uc);
+  }
+
+  // Update AMF UE NGAP ID
+  std::shared_ptr<ue_ngap_context> unc = {};
+  if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id)) {
+    Logger::amf_n1().error(
+        "Could not find UE NGAP Context with ran_ue_ngap_id (0x%x)",
+        itti_msg.ran_ue_ngap_id);
+  } else {
+    unc = amf_n2_inst->ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
+    unc.get()->amf_ue_ngap_id = amf_ue_ngap_id;
   }
 
   if (uc.get() == nullptr) {
