@@ -35,10 +35,6 @@ ARG NEEDED_GIT_PROXY
 COPY tmp/ca/redhat-uep.pem /etc/rhsm/ca
 COPY tmp/entitlement/*.pem /etc/pki/entitlement
 
-#ENV DEBIAN_FRONTEND=noninteractive
-#ENV TZ=Europe
-#RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
 RUN rm -f /etc/rhsm-host && \
     yum repolist --disablerepo=* && \
     subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms && \
