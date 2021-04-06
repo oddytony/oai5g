@@ -29,8 +29,9 @@
 #ifndef _PRINT_BUFFER_H
 #define _PRINT_BUFFER_H
 
-#include "logger.hpp"
 #include <string>
+
+#include "logger.hpp"
 
 //------------------------------------------------------------------------------
 void print_buffer(

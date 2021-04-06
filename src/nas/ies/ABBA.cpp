@@ -27,6 +27,7 @@
  */
 
 #include "ABBA.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 
@@ -102,8 +103,9 @@ int ABBA::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   if (is_option) {
     decoded_size++;
   }
-  _length = 0x00;
-  _length = *(buf + decoded_size);
+  _length     = 0x00;
+  _value[255] = {};
+  _length     = *(buf + decoded_size);
   decoded_size++;
   int i          = 0;
   uint8_t Length = _length;

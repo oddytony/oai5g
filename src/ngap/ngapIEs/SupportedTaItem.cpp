@@ -27,12 +27,13 @@
  */
 
 #include "SupportedTaItem.hpp"
-#include "String2Value.hpp"
+
 #include "BroadcastPLMNItem.hpp"
+#include "String2Value.hpp"
 
 extern "C" {
-#include "Ngap_SupportedTAItem.h"
 #include "Ngap_BroadcastPLMNItem.h"
+#include "Ngap_SupportedTAItem.h"
 }
 
 #include <string>

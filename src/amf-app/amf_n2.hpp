@@ -33,11 +33,10 @@
 #include "HandoverCommandMsg.hpp"
 #include "HandoverRequest.hpp"
 #include "PduSessionResourceReleaseCommand.hpp"
+#include "amf.hpp"
 #include "itti_msg_n2.hpp"
 #include "ngap_app.hpp"
 #include "ue_ngap_context.hpp"
-
-#include "amf.hpp"
 
 namespace amf_application {
 

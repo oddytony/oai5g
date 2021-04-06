@@ -22,30 +22,29 @@
 #ifndef _HANDOVERREQUEST_H_
 #define _HANDOVERREQUEST_H_
 
-#include "NgapIEsStruct.hpp"
-
-#include "MessageType.hpp"
-#include "GlobalRanNodeId.hpp"
-#include "RanNodeName.hpp"
-#include "DefaultPagingDRX.hpp"
-#include "SupportedTAList.hpp"
 #include "AMF-UE-NGAP-ID.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
 #include "Cause.hpp"
+#include "DefaultPagingDRX.hpp"
+#include "GlobalRanNodeId.hpp"
+#include "MessageType.hpp"
+#include "NgapIEsStruct.hpp"
+#include "RAN-UE-NGAP-ID.hpp"
+#include "RanNodeName.hpp"
+#include "SupportedTAList.hpp"
 #include "UEAggregateMaxBitRate.hpp"
 extern "C" {
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
-#include "Ngap_NGSetupRequest.h"
 #include "Ngap_AllowedNSSAI-Item.h"
+#include "Ngap_NGAP-PDU.h"
+#include "Ngap_NGSetupRequest.h"
+#include "Ngap_ProtocolIE-Field.h"
 }
 
-#include "UESecurityCapabilities.hpp"
-#include "PDUSessionResourceSetupListHOReq.hpp"
 #include "GUAMI.hpp"
+#include "MobilityRestrictionList.hpp"
+#include "PDUSessionResourceSetupListHOReq.hpp"
 #include "S-NSSAI.hpp"
 #include "SecurityKey.hpp"
-#include "MobilityRestrictionList.hpp"
+#include "UESecurityCapabilities.hpp"
 namespace ngap {
 
 class HandoverRequest {
@@ -77,7 +76,7 @@ class HandoverRequest {
   void setMobilityRestrictionList(PlmnId* m_plmnId);
   int encode2buffer(uint8_t* buf, int buf_size);
   // bool decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu);
-  unsigned long getAmfUeNgapId();  // return -1;(不存在)
+  unsigned long getAmfUeNgapId();  // return -1;
 
  private:
   Ngap_NGAP_PDU_t* handoverRequestPdu;

@@ -316,7 +316,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
   NGSetupResponseMsg ngSetupResp;
   ngSetupResp.setMessageType();
   ngSetupResp.setAMFName(amf_cfg.AMF_Name);
-  ngSetupResp.setRelativeAmfCapacity(amf_cfg.relativeAMFCapacity);
+  // ngSetupResp.setRelativeAmfCapacity(amf_cfg.relativeAMFCapacity);
   std::vector<struct GuamiItem_s> guami_list;
   for (int i = 0; i < amf_cfg.guami_list.size(); i++) {
     struct GuamiItem_s tmp;
@@ -329,6 +329,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
     guami_list.push_back(tmp);
   }
   ngSetupResp.setGUAMIList(guami_list);
+  ngSetupResp.setRelativeAmfCapacity(amf_cfg.relativeAMFCapacity);
   std::vector<PlmnSliceSupport_t> plmn_list;
   for (int i = 0; i < amf_cfg.plmn_list.size(); i++) {
     PlmnSliceSupport_t tmp;
@@ -730,7 +731,7 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
       PDUSessionResourceSetupRequestItem_t item;
       item.pduSessionId      = itti_msg.pdu_session_id;
       item.s_nssai.sst       = "01";
-      item.s_nssai.sd        = "";
+      item.s_nssai.sd        = "None";
       item.pduSessionNAS_PDU = NULL;
       if (itti_msg.isn2sm_avaliable) {
         bstring n2sm = itti_msg.n2sm;
@@ -750,7 +751,7 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
     }
   }
 
-  uint8_t buffer[10000];
+  uint8_t buffer[20000];
   int encoded_size = msg->encode2buffer(buffer, 10000);
   bstring b        = blk2bstr(buffer, encoded_size);
   sctp_s_38412.sctp_send_msg(
@@ -788,8 +789,8 @@ void amf_n2::handle_itti_message(
   nas_pdu[blength(itti_msg.nas)] = '\0';
   item.pduSessionNAS_PDU         = nas_pdu;
   item.sizeofpduSessionNAS_PDU   = blength(itti_msg.nas);
-  item.s_nssai.sst               = "01";  // TODO: get from N1N2msgTranferMsg
-  item.s_nssai.sd                = "";    // TODO: get from N1N2msgTranferMsg
+  item.s_nssai.sst               = "01";    // TODO: get from N1N2msgTranferMsg
+  item.s_nssai.sd                = "none";  // TODO: get from N1N2msgTranferMsg
 
   // Get NSSAI from PDU Session Context
   std::shared_ptr<nas_context> nc;
@@ -819,7 +820,7 @@ void amf_n2::handle_itti_message(
   item.pduSessionResourceSetupRequestTransfer.size = blength(itti_msg.n2sm);
   list.push_back(item);
   psrsr->setPduSessionResourceSetupRequestList(list);
-
+  psrsr->setUEAggregateMaxBitRate(0x08a7d8c0, 0x20989680);
   size_t buffer_size = BUFFER_SIZE_512;
   char* buffer       = (char*) calloc(1, buffer_size);
   int encoded_size   = 0;

@@ -29,20 +29,19 @@
 #ifndef _INITIALUEMESSAGE_H_
 #define _INITIALUEMESSAGE_H_
 
-#include "NgapIEsStruct.hpp"
-
+#include "FiveGSTmsi.hpp"
 #include "MessageType.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
 #include "NAS-PDU.hpp"
-#include "UserLocationInformation.hpp"
+#include "NgapIEsStruct.hpp"
+#include "RAN-UE-NGAP-ID.hpp"
 #include "RRCEstablishmentCause.hpp"
 #include "UEContextRequest.hpp"
-#include "FiveGSTmsi.hpp"
+#include "UserLocationInformation.hpp"
 
 extern "C" {
+#include "Ngap_InitialUEMessage.h"
 #include "Ngap_NGAP-PDU.h"
 #include "Ngap_ProtocolIE-Field.h"
-#include "Ngap_InitialUEMessage.h"
 }
 
 namespace ngap {

@@ -44,6 +44,8 @@ class UESecurityCapability {
   void setIASel(uint8_t sel);
   uint8_t getEASel();
   uint8_t getIASel();
+  void setLenght(uint8_t len);
+  uint8_t getLenght();
   int encode2buffer(uint8_t* buf, int len);
   int decodefrombuffer(uint8_t* buf, int len, bool is_option);
 

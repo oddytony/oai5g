@@ -30,8 +30,9 @@
 #define _PDU_SESSION_CONTEXT_H_
 
 #include <string>
-#include "bstrlib.h"
+
 #include "amf.hpp"
+#include "bstrlib.h"
 
 class pdu_session_context {
  public:

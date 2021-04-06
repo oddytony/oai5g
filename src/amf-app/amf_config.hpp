@@ -29,14 +29,15 @@
 #ifndef _AMF_CONFIG_H_
 #define _AMF_CONFIG_H_
 
-#include "amf_config.hpp"
-
 #include <arpa/inet.h>
-#include <libconfig.h++>
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <vector>
+
+#include <libconfig.h++>
 #include <string>
+#include <vector>
+
+#include "amf_config.hpp"
 #include "thread_sched.hpp"
 
 #define AMF_CONFIG_STRING_AMF_CONFIG "AMF"

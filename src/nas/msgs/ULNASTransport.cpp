@@ -27,6 +27,7 @@
  */
 
 #include "ULNASTransport.hpp"
+
 #include "3gpp_ts24501.hpp"
 #include "logger.hpp"
 
@@ -325,6 +326,7 @@ int ULNASTransport::decodefrombuffer(
   Logger::nas_mm().debug("Decoded_size (%d)", decoded_size);
   uint8_t octet = *(buf + decoded_size);
   Logger::nas_mm().debug("First option IEI (0x%x)", octet);
+  bool flag = false;
   while ((octet != 0x0)) {
     switch ((octet & 0xf0) >> 4) {
       case 0x8: {
@@ -351,6 +353,9 @@ int ULNASTransport::decodefrombuffer(
         octet = *(buf + decoded_size);
         Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       } break;
+      default: {
+        flag = true;
+      }
     }
     switch (octet) {
       case 0x12: {
@@ -393,9 +398,18 @@ int ULNASTransport::decodefrombuffer(
         octet = *(buf + decoded_size);
         Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       } break;
+      default: {
+        if (flag) {
+          Logger::nas_mm().debug("Unknown IEI (0x%x)", octet);
+          decoded_size++;
+          *(buf + decoded_size) = 0x00;
+          octet                 = *(buf + decoded_size);
+          Logger::nas_mm().debug("Next IEI (0x%x)", octet);
+        }
+      }
     }
+    flag = false;
   }
   Logger::nas_mm().debug(
       "decoded ULNASTransport message len(%d)", decoded_size);
-  return 1;
 }

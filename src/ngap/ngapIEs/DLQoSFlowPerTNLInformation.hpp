@@ -29,8 +29,8 @@
 #ifndef _DLQOSFLOWPERTNLINFORMATION_H_
 #define _DLQOSFLOWPERTNLINFORMATION_H_
 
-#include "UPTransportLayerInformation.hpp"
 #include "AssociatedQosFlowList.hpp"
+#include "UPTransportLayerInformation.hpp"
 
 extern "C" {
 #include "Ngap_QosFlowPerTNLInformation.h"

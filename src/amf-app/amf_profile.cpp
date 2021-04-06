@@ -27,11 +27,12 @@
  \email: Tien-Thinh.Nguyen@eurecom.fr
  */
 
+#include "amf_profile.hpp"
+
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
 #include "logger.hpp"
-#include "amf_profile.hpp"
 #include "string.hpp"
 
 using namespace std;

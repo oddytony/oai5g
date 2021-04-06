@@ -23,11 +23,12 @@
 #define _5GAKA_H_
 
 // extern "C"{
+#include <gmp.h>
+#include <pthread.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <gmp.h>
-#include <pthread.h>
+
 #include <string>
 //}
 

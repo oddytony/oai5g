@@ -29,11 +29,11 @@
 #include "NGSetupResponse.hpp"
 
 extern "C" {
-#include "constr_TYPE.h"
 #include "asn_codecs.h"
-#include "per_encoder.h"
-#include "per_decoder.h"
+#include "constr_TYPE.h"
 #include "constraints.h"
+#include "per_decoder.h"
+#include "per_encoder.h"
 }
 
 #include <iostream>
@@ -172,7 +172,9 @@ void NGSetupResponseMsg::setPlmnSupportList(
     S_NSSAI* snssai = new S_NSSAI[list[i].slice_list.size()]();
     for (int j = 0; j < list[i].slice_list.size(); j++) {
       snssai[j].setSst(list[i].slice_list[j].sst);
-      if (list[i].slice_list[j].sd.size()) {
+      if (list[i].slice_list[j].sd.size() &&
+          (list[i].slice_list[j].sd.compare("None") &&
+           list[i].slice_list[j].sd.compare("none"))) {
         snssai[j].setSd(list[i].slice_list[j].sd);
       }
     }

@@ -27,8 +27,9 @@
  */
 
 #include "nas_mm_plain_header.hpp"
-#include "logger.hpp"
+
 #include "3gpp_ts24501.hpp"
+#include "logger.hpp"
 
 using namespace nas;
 

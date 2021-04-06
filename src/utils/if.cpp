@@ -12,21 +12,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "common_defs.h"
 #include "if.hpp"
-#include "logger.hpp"
 
+#include <arpa/inet.h>
 #include <errno.h>
-#include <sys/socket.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
-#include <arpa/inet.h>
-#include <unistd.h>
 #include <net/if.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+#include "common_defs.h"
+#include "logger.hpp"
 
 #define BUFFER_SIZE 4096
 

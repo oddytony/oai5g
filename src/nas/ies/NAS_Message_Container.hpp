@@ -28,12 +28,13 @@
 
 #ifndef __NAS_Message_Container_H_
 #define __NAS_Message_Container_H_
-#include <iostream>
 #include <stdint.h>
+
+#include <iostream>
 extern "C" {
-#include "bstrlib.h"
-#include "TLVEncoder.h"
 #include "TLVDecoder.h"
+#include "TLVEncoder.h"
+#include "bstrlib.h"
 }
 
 namespace nas {

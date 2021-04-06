@@ -20,15 +20,17 @@
  */
 
 #include "authentication_algorithms_with_5gaka.hpp"
+
+#include <errno.h>
+#include <gmp.h>
+#include <nettle/hmac.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <string.h>
-#include <gmp.h>
-#include <nettle/hmac.h>
-#include "logger.hpp"
+
 #include "OCTET_STRING.h"
+#include "logger.hpp"
 
 extern void print_buffer(
     const std::string app, const std::string commit, uint8_t* buf, int len);

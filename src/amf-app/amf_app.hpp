@@ -32,12 +32,13 @@
 #include <map>
 #include <shared_mutex>
 #include <string>
+
 #include "amf_config.hpp"
 #include "amf_module_from_config.hpp"
 #include "amf_profile.hpp"
+#include "itti.hpp"
 #include "itti_msg_amf_app.hpp"
 #include "ue_context.hpp"
-#include "itti.hpp"
 
 using namespace config;
 

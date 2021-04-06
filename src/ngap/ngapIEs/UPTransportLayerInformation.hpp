@@ -29,8 +29,8 @@
 #ifndef _UPTRANSPORTLAYERINFORMATION_H_
 #define _UPTRANSPORTLAYERINFORMATION_H_
 
-#include "TransportLayerAddress.hpp"
 #include "GTP-TEID.hpp"
+#include "TransportLayerAddress.hpp"
 
 extern "C" {
 #include "Ngap_UPTransportLayerInformation.h"

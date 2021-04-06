@@ -29,8 +29,8 @@
 #ifndef _SERVEDGUAMIITEM_H_
 #define _SERVEDGUAMIITEM_H_
 
-#include "GUAMI.hpp"
 #include "AMFName.hpp"
+#include "GUAMI.hpp"
 
 extern "C" {
 #include "Ngap_ServedGUAMIItem.h"

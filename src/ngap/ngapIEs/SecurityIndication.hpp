@@ -29,8 +29,8 @@
 #ifndef _SECURITYINDICATION_H_
 #define _SECURITYINDICATION_H_
 
-#include "IntegrityProtectionIndication.hpp"
 #include "ConfidentialityProtectionIndication.hpp"
+#include "IntegrityProtectionIndication.hpp"
 #include "MaximumIntegrityProtectedDataRate.hpp"
 
 extern "C" {

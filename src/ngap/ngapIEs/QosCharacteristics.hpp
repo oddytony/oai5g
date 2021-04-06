@@ -29,8 +29,8 @@
 #ifndef _QOSCHARACTERISTICS_H_
 #define _QOSCHARACTERISTICS_H_
 
-#include "NonDynamic5QIDescriptor.hpp"
 #include "Dynamic5QIDescriptor.hpp"
+#include "NonDynamic5QIDescriptor.hpp"
 
 extern "C" {
 #include "Ngap_QosCharacteristics.h"

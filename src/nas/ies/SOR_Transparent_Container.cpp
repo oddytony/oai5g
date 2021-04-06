@@ -27,6 +27,7 @@
  */
 
 #include "SOR_Transparent_Container.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 

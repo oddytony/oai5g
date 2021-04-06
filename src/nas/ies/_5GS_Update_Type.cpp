@@ -27,8 +27,10 @@
  */
 
 #include "_5GS_Update_Type.hpp"
-#include "logger.hpp"
+
 #include <iostream>
+
+#include "logger.hpp"
 using namespace nas;
 using namespace std;
 

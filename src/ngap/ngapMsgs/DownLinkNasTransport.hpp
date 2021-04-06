@@ -29,18 +29,18 @@
 #ifndef _DOWNLINKNASTRANSPORT_H_
 #define _DOWNLINKNASTRANSPORT_H_
 
-#include "MessageType.hpp"
 #include "AMF-UE-NGAP-ID.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
 #include "AMFName.hpp"
-#include "RANPagingPriority.hpp"
-#include "NAS-PDU.hpp"
 #include "IndexToRFSP.hpp"
+#include "MessageType.hpp"
+#include "NAS-PDU.hpp"
+#include "RAN-UE-NGAP-ID.hpp"
+#include "RANPagingPriority.hpp"
 
 extern "C" {
+#include "Ngap_DownlinkNASTransport.h"
 #include "Ngap_NGAP-PDU.h"
 #include "Ngap_ProtocolIE-Field.h"
-#include "Ngap_DownlinkNASTransport.h"
 }
 
 namespace ngap {

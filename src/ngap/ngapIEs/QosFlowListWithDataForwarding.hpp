@@ -29,8 +29,8 @@
 #ifndef _QOSFLOWLISTWITHDATAFORWRADING_H_
 #define _QOSFLOWLISTWITHDATAFORWRADING_H_
 
-#include "QosFlowLevelQosParameters.hpp"
 #include "QosFlowItemWithDataForwarding.hpp"
+#include "QosFlowLevelQosParameters.hpp"
 extern "C" {
 #include "Ngap_QosFlowSetupResponseListHOReqAck.h"
 }

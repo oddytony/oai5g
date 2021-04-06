@@ -27,6 +27,7 @@
  */
 
 #include "Network_Slicing_Indication.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 

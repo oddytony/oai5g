@@ -29,21 +29,22 @@
 #ifndef _NAS_ALGORITHMS_H_
 #define _NAS_ALGORITHMS_H_
 
-#include "authentication_algorithms_with_5gaka.hpp"
-#include <nettle/nettle-meta.h>
+#include <math.h>
 #include <nettle/aes.h>
 #include <nettle/ctr.h>
+#include <nettle/nettle-meta.h>
 #include <openssl/aes.h>
+#include <openssl/bio.h>
 #include <openssl/cmac.h>
+#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <openssl/bio.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <math.h>
+
+#include "authentication_algorithms_with_5gaka.hpp"
 extern "C" {
 #include "snow3g.h"
 #include "conversions.h"

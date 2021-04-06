@@ -29,16 +29,15 @@
 #ifndef _NG_RESET_H_
 #define _NG_RESET_H_
 
-#include "NgapIEsStruct.hpp"
-
-#include "MessageType.hpp"
 #include "Cause.hpp"
+#include "MessageType.hpp"
+#include "NgapIEsStruct.hpp"
 #include "ResetType.hpp"
 
 extern "C" {
 #include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
 #include "Ngap_NGSetupRequest.h"
+#include "Ngap_ProtocolIE-Field.h"
 }
 
 namespace ngap {

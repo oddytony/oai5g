@@ -91,7 +91,8 @@ int amf_modules::load(const std::string& config_file) {
 
 //------------------------------------------------------------------------------
 void amf_modules::display() {
-  Logger::config().info("============    AMF Registered Modules   ============");
+  Logger::config().info(
+      "============    AMF Registered Modules   ============");
   Logger::config().info("NGAP Message Modules:");
   Logger::config().info(
       "- %s(Procedure code %d, Type of Msg %d)\n", msgName.c_str(),

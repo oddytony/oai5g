@@ -29,8 +29,8 @@
 #ifndef _SECURITYRESULT_H_
 #define _SECURITYRESULT_H_
 
-#include "IntegrityProtectionResult.hpp"
 #include "ConfidentialityProtectionResult.hpp"
+#include "IntegrityProtectionResult.hpp"
 
 extern "C" {
 #include "Ngap_SecurityResult.h"

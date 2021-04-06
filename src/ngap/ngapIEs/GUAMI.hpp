@@ -29,10 +29,10 @@
 #ifndef _GUAMI_H_
 #define _GUAMI_H_
 
-#include "PlmnId.hpp"
+#include "AMFPointer.hpp"
 #include "AMFRegionID.hpp"
 #include "AMFSetID.hpp"
-#include "AMFPointer.hpp"
+#include "PlmnId.hpp"
 
 extern "C" {
 #include "Ngap_GUAMI.h"

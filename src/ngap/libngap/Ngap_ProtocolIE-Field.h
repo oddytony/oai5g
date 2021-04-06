@@ -289,7 +289,8 @@ typedef enum Ngap_PDUSessionResourceSetupRequestIEs__value_PR {
 	Ngap_PDUSessionResourceSetupRequestIEs__value_PR_RAN_UE_NGAP_ID,
 	Ngap_PDUSessionResourceSetupRequestIEs__value_PR_RANPagingPriority,
 	Ngap_PDUSessionResourceSetupRequestIEs__value_PR_NAS_PDU,
-	Ngap_PDUSessionResourceSetupRequestIEs__value_PR_PDUSessionResourceSetupListSUReq
+	Ngap_PDUSessionResourceSetupRequestIEs__value_PR_PDUSessionResourceSetupListSUReq,
+        Ngap_PDUSessionResourceSetupRequestIEs__value_PR_UEAggregateMaximumBitRate
 } Ngap_PDUSessionResourceSetupRequestIEs__value_PR;
 typedef enum Ngap_PDUSessionResourceSetupResponseIEs__value_PR {
 	Ngap_PDUSessionResourceSetupResponseIEs__value_PR_NOTHING,	/* No components present */
@@ -1329,6 +1330,7 @@ typedef struct Ngap_PDUSessionResourceSetupRequestIEs {
 			Ngap_RANPagingPriority_t	 RANPagingPriority;
 			Ngap_NAS_PDU_t	 NAS_PDU;
 			Ngap_PDUSessionResourceSetupListSUReq_t	 PDUSessionResourceSetupListSUReq;
+			Ngap_UEAggregateMaximumBitRate_t UEAggregateMaximumBitRate;
 		} choice;
 		
 		/* Context for parsing across buffer boundaries */

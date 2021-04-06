@@ -30,13 +30,15 @@
 #include <chrono>
 #include <condition_variable>
 //#include <iomanip>
+#include <stdint.h>
+
 #include <iostream>
 #include <memory>
 #include <mutex>
 #include <queue>
 #include <set>
-#include <stdint.h>
 #include <thread>
+
 #include "itti_msg.hpp"
 #include "thread_sched.hpp"
 

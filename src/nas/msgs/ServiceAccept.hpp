@@ -30,8 +30,10 @@
 #define _SERVICE_ACCEPT_H_
 
 #include <stdint.h>
-#include "nas_ie_header.hpp"
+
 #include <string>
+
+#include "nas_ie_header.hpp"
 
 namespace nas {
 

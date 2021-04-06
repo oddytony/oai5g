@@ -29,12 +29,14 @@
 #ifndef _REGISTRATION_REQUEST_H_
 #define _REGISTRATION_REQUEST_H_
 
-#include "nas_ie_header.hpp"
+#include <bstrlib.h>
+#include <stdint.h>
+
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <stdint.h>
-#include <bstrlib.h>
+
+#include "nas_ie_header.hpp"
 using namespace std;
 namespace nas {
 

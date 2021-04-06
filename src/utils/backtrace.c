@@ -28,16 +28,15 @@
  * policies, either expressed or implied, of the FreeBSD Project.
  */
 
+#include "backtrace.h"
+
+#include <execinfo.h>
 #include <pthread.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-
-#include <signal.h>
-#include <execinfo.h>
-
-#include "backtrace.h"
+#include <unistd.h>
 
 /* Obtain a backtrace and print it to stdout. */
 void display_backtrace(void) {

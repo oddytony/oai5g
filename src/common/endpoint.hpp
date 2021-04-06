@@ -29,12 +29,12 @@
 #ifndef FILE_ENDPOINT_HPP_SEEN
 #define FILE_ENDPOINT_HPP_SEEN
 
-#include "conversions.hpp"
-
 #include <arpa/inet.h>
 #include <inttypes.h>
-#include <sys/socket.h>
 #include <string.h>
+#include <sys/socket.h>
+
+#include "conversions.hpp"
 
 class endpoint {
  public:

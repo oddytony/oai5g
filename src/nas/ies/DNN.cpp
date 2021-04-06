@@ -27,6 +27,7 @@
  */
 
 #include "DNN.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 

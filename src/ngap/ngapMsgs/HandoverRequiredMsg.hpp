@@ -22,24 +22,23 @@
 #ifndef _HANDOVERREQUIRED_H_
 #define _HANDOVERREQUIRED_H_
 
-#include "NgapIEsStruct.hpp"
-
-#include "MessageType.hpp"
-#include "GlobalRanNodeId.hpp"
-#include "RanNodeName.hpp"
-#include "DefaultPagingDRX.hpp"
-#include "SupportedTAList.hpp"
 #include "AMF-UE-NGAP-ID.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
 #include "Cause.hpp"
+#include "DefaultPagingDRX.hpp"
+#include "GlobalRanNodeId.hpp"
+#include "MessageType.hpp"
+#include "NgapIEsStruct.hpp"
+#include "RAN-UE-NGAP-ID.hpp"
+#include "RanNodeName.hpp"
+#include "SupportedTAList.hpp"
 extern "C" {
 #include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
 #include "Ngap_NGSetupRequest.h"
+#include "Ngap_ProtocolIE-Field.h"
 }
-#include "TAI.hpp"
 #include "NgapIEsStruct.hpp"
 #include "PDUSessionResourceListHORqd.hpp"
+#include "TAI.hpp"
 namespace ngap {
 
 class HandoverRequiredMsg {

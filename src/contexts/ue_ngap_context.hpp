@@ -30,6 +30,7 @@
 #define _UE_NGAP_CONTEXT_H_
 
 #include <stdint.h>
+
 #include <map>
 
 #include "gNB_context.hpp"

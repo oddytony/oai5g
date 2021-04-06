@@ -29,6 +29,7 @@
 #include "amf_n11.hpp"
 
 #include <curl/curl.h>
+
 #include <nlohmann/json.hpp>
 
 #include "3gpp_ts24501.hpp"
@@ -293,6 +294,10 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer& smf) {
       uint8_t pti     = sm_msg[2];
       Logger::amf_n11().debug(
           "Decoded PTI for PDUSessionEstablishmentRequest(0x%x)", pti);
+      psc.get()->isn2sm_avaliable = false;
+      handle_pdu_session_initial_request(
+          supi, psc, smf_addr, smf_api_version, smf.sm_msg, dnn);
+      /*
       if (psc.get()->isn1sm_avaliable && psc.get()->isn2sm_avaliable) {
         // TODO: should be removed
         itti_n1n2_message_transfer_request* itti_msg =
@@ -322,6 +327,7 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer& smf) {
         handle_pdu_session_initial_request(
             supi, psc, smf_addr, smf_api_version, smf.sm_msg, dnn);
       }
+      */
     } break;
     case EXISTING_PDU_SESSION: {
       // TODO:
@@ -582,6 +588,14 @@ void amf_n11::curl_http_client(
       // free curl before returning
       curl_slist_free_all(headers);
       curl_easy_cleanup(curl);
+      // TODO: To be verified
+      psc.get()->smf_context_location =
+          "/nsmf-pdusession/v2/sm-contexts/1";  // try to fix bugs for
+                                                // no-response from SMF when
+                                                // requesting
+                                                // /nsmf-pdusession/v2/sm-contexts
+                                                // (first pdu session
+                                                // establishment request)
       return;
     }
 
@@ -875,7 +889,7 @@ bool amf_n11::send_ue_authentication_request(
 
     } else {
       Logger::amf_n11().warn(
-          "UE Authentication, could not get response from NRF");
+          "UE Authentication, could not get response from AUSF");
       return false;
     }
 

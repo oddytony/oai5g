@@ -22,13 +22,12 @@
 #ifndef _PDUSESSIONRESOURCERELEASECOMMANDTRANSFER_H_
 #define _PDUSESSIONRESOURCERELEASECOMMANDTRANSFER_H_
 
+#include "Cause.hpp"
 #include "NgapIEsStruct.hpp"
 
-#include "Cause.hpp"
-
 extern "C" {
-#include "Ngap_ProtocolIE-Field.h"
 #include "Ngap_PDUSessionResourceReleaseCommandTransfer.h"
+#include "Ngap_ProtocolIE-Field.h"
 }
 
 namespace ngap {

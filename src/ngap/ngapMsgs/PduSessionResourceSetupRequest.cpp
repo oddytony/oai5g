@@ -29,12 +29,12 @@
 #include "PduSessionResourceSetupRequest.hpp"
 
 extern "C" {
-#include "constr_TYPE.h"
 #include "asn_codecs.h"
-#include "per_encoder.h"
-#include "per_decoder.h"
+#include "constr_TYPE.h"
 #include "constraints.h"
 #include "dynamic_memory_check.h"
+#include "per_decoder.h"
+#include "per_encoder.h"
 }
 
 #include <iostream>
@@ -51,11 +51,39 @@ PduSessionResourceSetupRequestMsg::PduSessionResourceSetupRequestMsg() {
   ranPagingPriority                  = nullptr;
   nasPdu                             = nullptr;
   pduSessionResourceSetupRequestList = nullptr;
-  pduSessionAggregateMaximumBitRate  = nullptr;
+  uEAggregateMaxBitRate              = nullptr;
 }
 
 //------------------------------------------------------------------------------
 PduSessionResourceSetupRequestMsg::~PduSessionResourceSetupRequestMsg() {}
+//-----------------------------------------------------------------------------
+void PduSessionResourceSetupRequestMsg::setUEAggregateMaxBitRate(
+    long bit_rate_downlink, long bit_rate_uplink) {
+  if (!uEAggregateMaxBitRate)
+    uEAggregateMaxBitRate = new UEAggregateMaxBitRate();
+
+  uEAggregateMaxBitRate->setUEAggregateMaxBitRate(
+      bit_rate_downlink, bit_rate_uplink);
+
+  Ngap_PDUSessionResourceSetupRequestIEs_t* ie =
+      (Ngap_PDUSessionResourceSetupRequestIEs_t*) calloc(
+          1, sizeof(Ngap_PDUSessionResourceSetupRequestIEs_t));
+  ie->id          = Ngap_ProtocolIE_ID_id_UEAggregateMaximumBitRate;
+  ie->criticality = Ngap_Criticality_ignore;
+  ie->value.present =
+      Ngap_PDUSessionResourceSetupRequestIEs__value_PR_UEAggregateMaximumBitRate;
+
+  int ret = uEAggregateMaxBitRate->encode2UEAggregateMaxBitRate(
+      ie->value.choice.UEAggregateMaximumBitRate);
+  if (!ret) {
+    cout << "encode UEAggregateMaxBitRate IE error" << endl;
+    return;
+  }
+
+  ret = ASN_SEQUENCE_ADD(
+      &pduSessionResourceSetupRequestIEs->protocolIEs.list, ie);
+  if (ret != 0) cout << "encode UEAggregateMaxBitRate IE error" << endl;
+}
 
 //------------------------------------------------------------------------------
 void PduSessionResourceSetupRequestMsg::setMessageType() {
@@ -280,7 +308,7 @@ int PduSessionResourceSetupRequestMsg::encode2buffer(
 //------------------------------------------------------------------------------
 void PduSessionResourceSetupRequestMsg::encode2buffer_new(
     char* buf, int& encoded_size) {
-  char* buffer = (char*) calloc(1, 512);  // TODO: remove hardcoded value
+  char* buffer = (char*) calloc(1, 1024);  // TODO: remove hardcoded value
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, pduSessionResourceSetupRequestPdu);
   encoded_size = aper_encode_to_new_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, pduSessionResourceSetupRequestPdu,

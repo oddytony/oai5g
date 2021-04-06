@@ -29,12 +29,12 @@
 #include "InitialContextSetupResponse.hpp"
 
 extern "C" {
-#include "constr_TYPE.h"
 #include "asn_codecs.h"
-#include "per_encoder.h"
-#include "per_decoder.h"
+#include "constr_TYPE.h"
 #include "constraints.h"
 #include "dynamic_memory_check.h"
+#include "per_decoder.h"
+#include "per_encoder.h"
 }
 
 #include <iostream>
@@ -109,7 +109,7 @@ void InitialContextSetupResponseMsg::setAmfUeNgapId(unsigned long id) {
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupResponseIEs->protocolIEs.list, ie);
   if (ret != 0) std::cout << "Encode AMF_UE_NGAP_ID IE error" << std::endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -134,7 +134,7 @@ void InitialContextSetupResponseMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupResponseIEs->protocolIEs.list, ie);
   if (ret != 0) std::cout << "Encode RAN_UE_NGAP_ID IE error" << std::endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -180,7 +180,7 @@ void InitialContextSetupResponseMsg::setPduSessionResourceSetupResponseList(
   if (ret != 0)
     std::cout << "Encode PDUSessionResourceSetupListCxtRes IE error"
               << std::endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -231,7 +231,7 @@ void InitialContextSetupResponseMsg::setPduSessionResourceFailedToSetupList(
   if (ret != 0)
     std::cout << "Encode PDUSessionResourceFailedToSetupListCxtRes IE error"
               << std::endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -276,11 +276,12 @@ bool InitialContextSetupResponseMsg::decodefrompdu(
        i++) {
     switch (initialContextSetupResponseIEs->protocolIEs.list.array[i]->id) {
       case Ngap_ProtocolIE_ID_id_AMF_UE_NGAP_ID: {
-        if (initialContextSetupResponseIEs->protocolIEs.list.array[i]
-                    ->criticality == Ngap_Criticality_ignore &&
+        // TODO: to be verified
+        if (/*initialContextSetupResponseIEs->protocolIEs.list.array[i]
+                    ->criticality == Ngap_Criticality_ignore &&*/
             initialContextSetupResponseIEs->protocolIEs.list.array[i]
-                    ->value.present ==
-                Ngap_InitialContextSetupResponseIEs__value_PR_AMF_UE_NGAP_ID) {
+                ->value.present ==
+            Ngap_InitialContextSetupResponseIEs__value_PR_AMF_UE_NGAP_ID) {
           amfUeNgapId = new AMF_UE_NGAP_ID();
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
                   initialContextSetupResponseIEs->protocolIEs.list.array[i]
@@ -294,11 +295,12 @@ bool InitialContextSetupResponseMsg::decodefrompdu(
         }
       } break;
       case Ngap_ProtocolIE_ID_id_RAN_UE_NGAP_ID: {
-        if (initialContextSetupResponseIEs->protocolIEs.list.array[i]
-                    ->criticality == Ngap_Criticality_ignore &&
+        // TODO: to be verified
+        if (/*initialContextSetupResponseIEs->protocolIEs.list.array[i]
+                    ->criticality == Ngap_Criticality_ignore &&*/
             initialContextSetupResponseIEs->protocolIEs.list.array[i]
-                    ->value.present ==
-                Ngap_InitialContextSetupResponseIEs__value_PR_RAN_UE_NGAP_ID) {
+                ->value.present ==
+            Ngap_InitialContextSetupResponseIEs__value_PR_RAN_UE_NGAP_ID) {
           ranUeNgapId = new RAN_UE_NGAP_ID();
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
                   initialContextSetupResponseIEs->protocolIEs.list.array[i]

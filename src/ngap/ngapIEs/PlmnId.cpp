@@ -27,6 +27,7 @@
  */
 
 #include "PlmnId.hpp"
+
 #include "String2Value.hpp"
 
 extern "C" {

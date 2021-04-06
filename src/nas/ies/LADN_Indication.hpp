@@ -1,4 +1,4 @@
- /*
+/*
  * Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -28,13 +28,14 @@
 
 #ifndef __LADN_Indication_H_
 #define __LADN_Indication_H_
+#include <stdint.h>
+
 #include <iostream>
 #include <vector>
-#include <stdint.h>
 extern "C" {
-#include "bstrlib.h"
-#include "TLVEncoder.h"
 #include "TLVDecoder.h"
+#include "TLVEncoder.h"
+#include "bstrlib.h"
 }
 using namespace std;
 namespace nas {

@@ -30,8 +30,8 @@
 #define _USERLOCATIONINFORMATION_H_
 
 #include "UserLocationInformationEUTRA.hpp"
-#include "UserLocationInformationNR.hpp"
 #include "UserLocationInformationN3IWF.hpp"
+#include "UserLocationInformationNR.hpp"
 
 extern "C" {
 #include "Ngap_UserLocationInformation.h"

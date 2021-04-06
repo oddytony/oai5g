@@ -29,14 +29,13 @@
 #ifndef _PDU_SESSION_RESOURCE_RELEASE_RESPONSE_H_
 #define _PDU_SESSION_RESOURCE_RELEASE_RESPONSE_H_
 
-#include "NgapIEsStruct.hpp"
-
-#include "MessageType.hpp"
 #include "AMF-UE-NGAP-ID.hpp"
+#include "CriticalityDiagnostics.hpp"
+#include "MessageType.hpp"
+#include "NgapIEsStruct.hpp"
+#include "PDUSessionResourceReleasedListRelRes.hpp"
 #include "RAN-UE-NGAP-ID.hpp"
 #include "UserLocationInformation.hpp"
-#include "CriticalityDiagnostics.hpp"
-#include "PDUSessionResourceReleasedListRelRes.hpp"
 
 extern "C" {
 #include "Ngap_NGAP-PDU.h"

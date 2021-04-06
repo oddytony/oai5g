@@ -2,9 +2,9 @@
  * Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
- * The OpenAirInterface Software Alliance licenses this file to You under 
+ * The OpenAirInterface Software Alliance licenses this file to You under
  * the Apache License, Version 2.0  (the "License"); you may not use this file
- * except in compliance with the License.  
+ * except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
@@ -25,17 +25,17 @@
  \company Eurecom
  */
 
+#include "TLVEncoder.h"
+
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
-
-#include "TLVEncoder.h"
 
 int errorCodeEncoder = 0;
 
-int encode_bstring(const_bstring const str, uint8_t *const buffer,
-                   const uint32_t buflen) {
+int encode_bstring(
+    const_bstring const str, uint8_t* const buffer, const uint32_t buflen) {
   if (str) {
     if (blength(str) > 0) {
       CHECK_PDU_POINTER_AND_LENGTH_ENCODER(buffer, blength(str), buflen);
@@ -48,4 +48,3 @@ int encode_bstring(const_bstring const str, uint8_t *const buffer,
     return 0;
   }
 }
-

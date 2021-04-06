@@ -29,22 +29,22 @@
 #ifndef _NGAP_MESSAGE_CALLBACK_H_
 #define _NGAP_MESSAGE_CALLBACK_H_
 
-#include "logger.hpp"
+#include "InitialContextSetupResponse.hpp"
+#include "NGReset.hpp"
+#include "NGSetupRequest.hpp"
+#include "PDUSessionResourceSetupUnsuccessfulTransfer.hpp"
+#include "PduSessionResourceReleaseResponse.hpp"
+#include "PduSessionResourceSetupResponse.hpp"
+#include "amf_app.hpp"
 #include "amf_n1.hpp"
 #include "amf_n11.hpp"
-#include "PDUSessionResourceSetupUnsuccessfulTransfer.hpp"
-#include "amf_app.hpp"
-#include "sctp_server.hpp"
-#include "itti_msg_n2.hpp"
-#include "itti_msg_n11.hpp"
 #include "itti.hpp"
-#include "NGSetupRequest.hpp"
-#include "NGReset.hpp"
-#include "PduSessionResourceSetupResponse.hpp"
-#include "PduSessionResourceReleaseResponse.hpp"
-#include "InitialContextSetupResponse.hpp"
-#include "pdu_session_context.hpp"
+#include "itti_msg_n11.hpp"
+#include "itti_msg_n2.hpp"
+#include "logger.hpp"
 #include "nas_context.hpp"
+#include "pdu_session_context.hpp"
+#include "sctp_server.hpp"
 
 using namespace sctp;
 using namespace ngap;
@@ -335,7 +335,7 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
     Logger::ngap().error(
         "Decoding PduSessionResourceSetupResponseMsg "
         "getPduSessionResourceSetupResponseList IE  error");
-    return -1;
+    // return -1;
   } else {
     // TODO: for multiple PDU Sessions
     uint8_t transferIe[500];

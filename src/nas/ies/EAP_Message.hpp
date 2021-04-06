@@ -29,12 +29,13 @@
 #ifndef __EAP_Message_H_
 #define __EAP_Message_H_
 
-#include <iostream>
 #include <stdint.h>
+
+#include <iostream>
 extern "C" {
-#include "bstrlib.h"
-#include "TLVEncoder.h"
 #include "TLVDecoder.h"
+#include "TLVEncoder.h"
+#include "bstrlib.h"
 }
 namespace nas {
 
