@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * Guami.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_Guami_H_
 #define OAI_SMF_MODEL_Guami_H_
-
 
 #include "../ModelBase.h"
 
@@ -28,54 +28,53 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  Guami
-    : public ModelBase
-{
-public:
-    Guami();
-    virtual ~Guami();
+class Guami : public ModelBase {
+ public:
+  Guami();
+  virtual ~Guami();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// Guami members
+  /////////////////////////////////////////////
+  /// Guami members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<PlmnId> getPlmnId() const;
-    
-    void setPlmnId(const std::shared_ptr<PlmnId>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<PlmnId> getPlmnId() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getAmfId() const;
-    
-    void setAmfId(const utility::string_t& value);
+  void setPlmnId(const std::shared_ptr<PlmnId>& value);
 
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getAmfId() const;
 
-protected:
-    std::shared_ptr<PlmnId> m_PlmnId;
-        utility::string_t m_AmfId;
-    };
+  void setAmfId(const utility::string_t& value);
 
+ protected:
+  std::shared_ptr<PlmnId> m_PlmnId;
+  utility::string_t m_AmfId;
+};
 
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_Guami_H_ */

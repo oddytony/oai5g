@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * NgRanTargetId.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_NgRanTargetId_H_
 #define OAI_SMF_MODEL_NgRanTargetId_H_
-
 
 #include "../ModelBase.h"
 
@@ -28,54 +28,53 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  NgRanTargetId
-    : public ModelBase
-{
-public:
-    NgRanTargetId();
-    virtual ~NgRanTargetId();
+class NgRanTargetId : public ModelBase {
+ public:
+  NgRanTargetId();
+  virtual ~NgRanTargetId();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// NgRanTargetId members
+  /////////////////////////////////////////////
+  /// NgRanTargetId members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<GlobalRanNodeId> getRanNodeId() const;
-    
-    void setRanNodeId(const std::shared_ptr<GlobalRanNodeId>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<GlobalRanNodeId> getRanNodeId() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<Tai> getTai() const;
-    
-    void setTai(const std::shared_ptr<Tai>& value);
+  void setRanNodeId(const std::shared_ptr<GlobalRanNodeId>& value);
 
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<Tai> getTai() const;
 
-protected:
-    std::shared_ptr<GlobalRanNodeId> m_RanNodeId;
-        std::shared_ptr<Tai> m_Tai;
-    };
+  void setTai(const std::shared_ptr<Tai>& value);
 
+ protected:
+  std::shared_ptr<GlobalRanNodeId> m_RanNodeId;
+  std::shared_ptr<Tai> m_Tai;
+};
 
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_NgRanTargetId_H_ */

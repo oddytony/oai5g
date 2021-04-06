@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * ReleaseData.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_ReleaseData_H_
 #define OAI_SMF_MODEL_ReleaseData_H_
-
 
 #include "../ModelBase.h"
 
@@ -33,126 +33,130 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  ReleaseData
-    : public ModelBase
-{
-public:
-    ReleaseData();
-    virtual ~ReleaseData();
+class ReleaseData : public ModelBase {
+ public:
+  ReleaseData();
+  virtual ~ReleaseData();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// ReleaseData members
+  /////////////////////////////////////////////
+  /// ReleaseData members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<Cause> getCause() const;
-    bool causeIsSet() const;
-    void unsetCause();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<Cause> getCause() const;
+  bool causeIsSet() const;
+  void unsetCause();
 
-    void setCause(const std::shared_ptr<Cause>& value);
+  void setCause(const std::shared_ptr<Cause>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<NgApCause> getNgApCause() const;
-    bool ngApCauseIsSet() const;
-    void unsetNgApCause();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<NgApCause> getNgApCause() const;
+  bool ngApCauseIsSet() const;
+  void unsetNgApCause();
 
-    void setNgApCause(const std::shared_ptr<NgApCause>& value);
+  void setNgApCause(const std::shared_ptr<NgApCause>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t get5gMmCauseValue() const;
-    bool _5gMmCauseValueIsSet() const;
-    void unset_5gMmCauseValue();
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t get5gMmCauseValue() const;
+  bool _5gMmCauseValueIsSet() const;
+  void unset_5gMmCauseValue();
 
-    void set5gMmCauseValue(int32_t value);
+  void set5gMmCauseValue(int32_t value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<UserLocation> getUeLocation() const;
-    bool ueLocationIsSet() const;
-    void unsetUeLocation();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<UserLocation> getUeLocation() const;
+  bool ueLocationIsSet() const;
+  void unsetUeLocation();
 
-    void setUeLocation(const std::shared_ptr<UserLocation>& value);
+  void setUeLocation(const std::shared_ptr<UserLocation>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getUeTimeZone() const;
-    bool ueTimeZoneIsSet() const;
-    void unsetUeTimeZone();
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getUeTimeZone() const;
+  bool ueTimeZoneIsSet() const;
+  void unsetUeTimeZone();
 
-    void setUeTimeZone(const utility::string_t& value);
+  void setUeTimeZone(const utility::string_t& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<UserLocation> getAddUeLocation() const;
-    bool addUeLocationIsSet() const;
-    void unsetAddUeLocation();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<UserLocation> getAddUeLocation() const;
+  bool addUeLocationIsSet() const;
+  void unsetAddUeLocation();
 
-    void setAddUeLocation(const std::shared_ptr<UserLocation>& value);
+  void setAddUeLocation(const std::shared_ptr<UserLocation>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::vector<std::shared_ptr<SecondaryRatUsageReport>>& getSecondaryRatUsageReport();
-    bool secondaryRatUsageReportIsSet() const;
-    void unsetSecondaryRatUsageReport();
+  /// <summary>
+  ///
+  /// </summary>
+  std::vector<std::shared_ptr<SecondaryRatUsageReport>>&
+  getSecondaryRatUsageReport();
+  bool secondaryRatUsageReportIsSet() const;
+  void unsetSecondaryRatUsageReport();
 
-    void setSecondaryRatUsageReport(const std::vector<std::shared_ptr<SecondaryRatUsageReport>>& value);
+  void setSecondaryRatUsageReport(
+      const std::vector<std::shared_ptr<SecondaryRatUsageReport>>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::vector<std::shared_ptr<SecondaryRatUsageInfo>>& getSecondaryRatUsageInfo();
-    bool secondaryRatUsageInfoIsSet() const;
-    void unsetSecondaryRatUsageInfo();
+  /// <summary>
+  ///
+  /// </summary>
+  std::vector<std::shared_ptr<SecondaryRatUsageInfo>>&
+  getSecondaryRatUsageInfo();
+  bool secondaryRatUsageInfoIsSet() const;
+  void unsetSecondaryRatUsageInfo();
 
-    void setSecondaryRatUsageInfo(const std::vector<std::shared_ptr<SecondaryRatUsageInfo>>& value);
+  void setSecondaryRatUsageInfo(
+      const std::vector<std::shared_ptr<SecondaryRatUsageInfo>>& value);
 
-
-protected:
-    std::shared_ptr<Cause> m_Cause;
-    bool m_CauseIsSet;
-    std::shared_ptr<NgApCause> m_NgApCause;
-    bool m_NgApCauseIsSet;
-    int32_t m__5gMmCauseValue;
-    bool m__5gMmCauseValueIsSet;
-    std::shared_ptr<UserLocation> m_UeLocation;
-    bool m_UeLocationIsSet;
-    utility::string_t m_UeTimeZone;
-    bool m_UeTimeZoneIsSet;
-    std::shared_ptr<UserLocation> m_AddUeLocation;
-    bool m_AddUeLocationIsSet;
-    std::vector<std::shared_ptr<SecondaryRatUsageReport>> m_SecondaryRatUsageReport;
-    bool m_SecondaryRatUsageReportIsSet;
-    std::vector<std::shared_ptr<SecondaryRatUsageInfo>> m_SecondaryRatUsageInfo;
-    bool m_SecondaryRatUsageInfoIsSet;
+ protected:
+  std::shared_ptr<Cause> m_Cause;
+  bool m_CauseIsSet;
+  std::shared_ptr<NgApCause> m_NgApCause;
+  bool m_NgApCauseIsSet;
+  int32_t m__5gMmCauseValue;
+  bool m__5gMmCauseValueIsSet;
+  std::shared_ptr<UserLocation> m_UeLocation;
+  bool m_UeLocationIsSet;
+  utility::string_t m_UeTimeZone;
+  bool m_UeTimeZoneIsSet;
+  std::shared_ptr<UserLocation> m_AddUeLocation;
+  bool m_AddUeLocationIsSet;
+  std::vector<std::shared_ptr<SecondaryRatUsageReport>>
+      m_SecondaryRatUsageReport;
+  bool m_SecondaryRatUsageReportIsSet;
+  std::vector<std::shared_ptr<SecondaryRatUsageInfo>> m_SecondaryRatUsageInfo;
+  bool m_SecondaryRatUsageInfoIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_ReleaseData_H_ */

@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * SmContextReleaseData.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_SmContextReleaseData_H_
 #define OAI_SMF_MODEL_SmContextReleaseData_H_
-
 
 #include "../ModelBase.h"
 
@@ -32,148 +32,147 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  SmContextReleaseData
-    : public ModelBase
-{
-public:
-    SmContextReleaseData();
-    virtual ~SmContextReleaseData();
+class SmContextReleaseData : public ModelBase {
+ public:
+  SmContextReleaseData();
+  virtual ~SmContextReleaseData();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// SmContextReleaseData members
+  /////////////////////////////////////////////
+  /// SmContextReleaseData members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<Cause> getCause() const;
-    bool causeIsSet() const;
-    void unsetCause();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<Cause> getCause() const;
+  bool causeIsSet() const;
+  void unsetCause();
 
-    void setCause(const std::shared_ptr<Cause>& value);
+  void setCause(const std::shared_ptr<Cause>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<NgApCause> getNgApCause() const;
-    bool ngApCauseIsSet() const;
-    void unsetNgApCause();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<NgApCause> getNgApCause() const;
+  bool ngApCauseIsSet() const;
+  void unsetNgApCause();
 
-    void setNgApCause(const std::shared_ptr<NgApCause>& value);
+  void setNgApCause(const std::shared_ptr<NgApCause>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t get5gMmCauseValue() const;
-    bool _5gMmCauseValueIsSet() const;
-    void unset_5gMmCauseValue();
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t get5gMmCauseValue() const;
+  bool _5gMmCauseValueIsSet() const;
+  void unset_5gMmCauseValue();
 
-    void set5gMmCauseValue(int32_t value);
+  void set5gMmCauseValue(int32_t value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<UserLocation> getUeLocation() const;
-    bool ueLocationIsSet() const;
-    void unsetUeLocation();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<UserLocation> getUeLocation() const;
+  bool ueLocationIsSet() const;
+  void unsetUeLocation();
 
-    void setUeLocation(const std::shared_ptr<UserLocation>& value);
+  void setUeLocation(const std::shared_ptr<UserLocation>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getUeTimeZone() const;
-    bool ueTimeZoneIsSet() const;
-    void unsetUeTimeZone();
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getUeTimeZone() const;
+  bool ueTimeZoneIsSet() const;
+  void unsetUeTimeZone();
 
-    void setUeTimeZone(const utility::string_t& value);
+  void setUeTimeZone(const utility::string_t& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<UserLocation> getAddUeLocation() const;
-    bool addUeLocationIsSet() const;
-    void unsetAddUeLocation();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<UserLocation> getAddUeLocation() const;
+  bool addUeLocationIsSet() const;
+  void unsetAddUeLocation();
 
-    void setAddUeLocation(const std::shared_ptr<UserLocation>& value);
+  void setAddUeLocation(const std::shared_ptr<UserLocation>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    bool isVsmfReleaseOnly() const;
-    bool vsmfReleaseOnlyIsSet() const;
-    void unsetVsmfReleaseOnly();
+  /// <summary>
+  ///
+  /// </summary>
+  bool isVsmfReleaseOnly() const;
+  bool vsmfReleaseOnlyIsSet() const;
+  void unsetVsmfReleaseOnly();
 
-    void setVsmfReleaseOnly(bool value);
+  void setVsmfReleaseOnly(bool value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<RefToBinaryData> getN2SmInfo() const;
-    bool n2SmInfoIsSet() const;
-    void unsetN2SmInfo();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<RefToBinaryData> getN2SmInfo() const;
+  bool n2SmInfoIsSet() const;
+  void unsetN2SmInfo();
 
-    void setN2SmInfo(const std::shared_ptr<RefToBinaryData>& value);
+  void setN2SmInfo(const std::shared_ptr<RefToBinaryData>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<N2SmInfoType> getN2SmInfoType() const;
-    bool n2SmInfoTypeIsSet() const;
-    void unsetN2SmInfoType();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<N2SmInfoType> getN2SmInfoType() const;
+  bool n2SmInfoTypeIsSet() const;
+  void unsetN2SmInfoType();
 
-    void setN2SmInfoType(const std::shared_ptr<N2SmInfoType>& value);
+  void setN2SmInfoType(const std::shared_ptr<N2SmInfoType>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    bool isIsmfReleaseOnly() const;
-    bool ismfReleaseOnlyIsSet() const;
-    void unsetIsmfReleaseOnly();
+  /// <summary>
+  ///
+  /// </summary>
+  bool isIsmfReleaseOnly() const;
+  bool ismfReleaseOnlyIsSet() const;
+  void unsetIsmfReleaseOnly();
 
-    void setIsmfReleaseOnly(bool value);
+  void setIsmfReleaseOnly(bool value);
 
-
-protected:
-    std::shared_ptr<Cause> m_Cause;
-    bool m_CauseIsSet;
-    std::shared_ptr<NgApCause> m_NgApCause;
-    bool m_NgApCauseIsSet;
-    int32_t m__5gMmCauseValue;
-    bool m__5gMmCauseValueIsSet;
-    std::shared_ptr<UserLocation> m_UeLocation;
-    bool m_UeLocationIsSet;
-    utility::string_t m_UeTimeZone;
-    bool m_UeTimeZoneIsSet;
-    std::shared_ptr<UserLocation> m_AddUeLocation;
-    bool m_AddUeLocationIsSet;
-    bool m_VsmfReleaseOnly;
-    bool m_VsmfReleaseOnlyIsSet;
-    std::shared_ptr<RefToBinaryData> m_N2SmInfo;
-    bool m_N2SmInfoIsSet;
-    std::shared_ptr<N2SmInfoType> m_N2SmInfoType;
-    bool m_N2SmInfoTypeIsSet;
-    bool m_IsmfReleaseOnly;
-    bool m_IsmfReleaseOnlyIsSet;
+ protected:
+  std::shared_ptr<Cause> m_Cause;
+  bool m_CauseIsSet;
+  std::shared_ptr<NgApCause> m_NgApCause;
+  bool m_NgApCauseIsSet;
+  int32_t m__5gMmCauseValue;
+  bool m__5gMmCauseValueIsSet;
+  std::shared_ptr<UserLocation> m_UeLocation;
+  bool m_UeLocationIsSet;
+  utility::string_t m_UeTimeZone;
+  bool m_UeTimeZoneIsSet;
+  std::shared_ptr<UserLocation> m_AddUeLocation;
+  bool m_AddUeLocationIsSet;
+  bool m_VsmfReleaseOnly;
+  bool m_VsmfReleaseOnlyIsSet;
+  std::shared_ptr<RefToBinaryData> m_N2SmInfo;
+  bool m_N2SmInfoIsSet;
+  std::shared_ptr<N2SmInfoType> m_N2SmInfoType;
+  bool m_N2SmInfoTypeIsSet;
+  bool m_IsmfReleaseOnly;
+  bool m_IsmfReleaseOnlyIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_SmContextReleaseData_H_ */

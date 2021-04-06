@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * BackupAmfInfo.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_BackupAmfInfo_H_
 #define OAI_SMF_MODEL_BackupAmfInfo_H_
-
 
 #include "../ModelBase.h"
 
@@ -29,57 +29,56 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  BackupAmfInfo
-    : public ModelBase
-{
-public:
-    BackupAmfInfo();
-    virtual ~BackupAmfInfo();
+class BackupAmfInfo : public ModelBase {
+ public:
+  BackupAmfInfo();
+  virtual ~BackupAmfInfo();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// BackupAmfInfo members
+  /////////////////////////////////////////////
+  /// BackupAmfInfo members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getBackupAmf() const;
-    
-    void setBackupAmf(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getBackupAmf() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::vector<std::shared_ptr<Guami>>& getGuamiList();
-    bool guamiListIsSet() const;
-    void unsetGuamiList();
+  void setBackupAmf(const utility::string_t& value);
 
-    void setGuamiList(const std::vector<std::shared_ptr<Guami>>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::vector<std::shared_ptr<Guami>>& getGuamiList();
+  bool guamiListIsSet() const;
+  void unsetGuamiList();
 
+  void setGuamiList(const std::vector<std::shared_ptr<Guami>>& value);
 
-protected:
-    utility::string_t m_BackupAmf;
-        std::vector<std::shared_ptr<Guami>> m_GuamiList;
-    bool m_GuamiListIsSet;
+ protected:
+  utility::string_t m_BackupAmf;
+  std::vector<std::shared_ptr<Guami>> m_GuamiList;
+  bool m_GuamiListIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_BackupAmfInfo_H_ */

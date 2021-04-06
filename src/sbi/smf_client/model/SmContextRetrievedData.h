@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * SmContextRetrievedData.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_SmContextRetrievedData_H_
 #define OAI_SMF_MODEL_SmContextRetrievedData_H_
-
 
 #include "../ModelBase.h"
 
@@ -28,57 +28,56 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  SmContextRetrievedData
-    : public ModelBase
-{
-public:
-    SmContextRetrievedData();
-    virtual ~SmContextRetrievedData();
+class SmContextRetrievedData : public ModelBase {
+ public:
+  SmContextRetrievedData();
+  virtual ~SmContextRetrievedData();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// SmContextRetrievedData members
+  /////////////////////////////////////////////
+  /// SmContextRetrievedData members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getUeEpsPdnConnection() const;
-    
-    void setUeEpsPdnConnection(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getUeEpsPdnConnection() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<SmContext> getSmContext() const;
-    bool smContextIsSet() const;
-    void unsetSmContext();
+  void setUeEpsPdnConnection(const utility::string_t& value);
 
-    void setSmContext(const std::shared_ptr<SmContext>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<SmContext> getSmContext() const;
+  bool smContextIsSet() const;
+  void unsetSmContext();
 
+  void setSmContext(const std::shared_ptr<SmContext>& value);
 
-protected:
-    utility::string_t m_UeEpsPdnConnection;
-        std::shared_ptr<SmContext> m_SmContext;
-    bool m_SmContextIsSet;
+ protected:
+  utility::string_t m_UeEpsPdnConnection;
+  std::shared_ptr<SmContext> m_SmContext;
+  bool m_SmContextIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_SmContextRetrievedData_H_ */

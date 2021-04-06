@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,85 +13,82 @@
 /*
  * NonDynamic5Qi.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_NonDynamic5Qi_H_
 #define OAI_SMF_MODEL_NonDynamic5Qi_H_
 
-
 #include "../ModelBase.h"
-
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  NonDynamic5Qi
-    : public ModelBase
-{
-public:
-    NonDynamic5Qi();
-    virtual ~NonDynamic5Qi();
+class NonDynamic5Qi : public ModelBase {
+ public:
+  NonDynamic5Qi();
+  virtual ~NonDynamic5Qi();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// NonDynamic5Qi members
+  /////////////////////////////////////////////
+  /// NonDynamic5Qi members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t getPriorityLevel() const;
-    bool priorityLevelIsSet() const;
-    void unsetPriorityLevel();
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t getPriorityLevel() const;
+  bool priorityLevelIsSet() const;
+  void unsetPriorityLevel();
 
-    void setPriorityLevel(int32_t value);
+  void setPriorityLevel(int32_t value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t getAverWindow() const;
-    bool averWindowIsSet() const;
-    void unsetAverWindow();
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t getAverWindow() const;
+  bool averWindowIsSet() const;
+  void unsetAverWindow();
 
-    void setAverWindow(int32_t value);
+  void setAverWindow(int32_t value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t getMaxDataBurstVol() const;
-    bool maxDataBurstVolIsSet() const;
-    void unsetMaxDataBurstVol();
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t getMaxDataBurstVol() const;
+  bool maxDataBurstVolIsSet() const;
+  void unsetMaxDataBurstVol();
 
-    void setMaxDataBurstVol(int32_t value);
+  void setMaxDataBurstVol(int32_t value);
 
-
-protected:
-    int32_t m_PriorityLevel;
-    bool m_PriorityLevelIsSet;
-    int32_t m_AverWindow;
-    bool m_AverWindowIsSet;
-    int32_t m_MaxDataBurstVol;
-    bool m_MaxDataBurstVolIsSet;
+ protected:
+  int32_t m_PriorityLevel;
+  bool m_PriorityLevelIsSet;
+  int32_t m_AverWindow;
+  bool m_AverWindowIsSet;
+  int32_t m_MaxDataBurstVol;
+  bool m_MaxDataBurstVolIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_NonDynamic5Qi_H_ */

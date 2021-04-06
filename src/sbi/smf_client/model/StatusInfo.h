@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * StatusInfo.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_StatusInfo_H_
 #define OAI_SMF_MODEL_StatusInfo_H_
-
 
 #include "../ModelBase.h"
 
@@ -28,57 +28,56 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  StatusInfo
-    : public ModelBase
-{
-public:
-    StatusInfo();
-    virtual ~StatusInfo();
+class StatusInfo : public ModelBase {
+ public:
+  StatusInfo();
+  virtual ~StatusInfo();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// StatusInfo members
+  /////////////////////////////////////////////
+  /// StatusInfo members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<ResourceStatus> getResourceStatus() const;
-    
-    void setResourceStatus(const std::shared_ptr<ResourceStatus>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<ResourceStatus> getResourceStatus() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<Cause> getCause() const;
-    bool causeIsSet() const;
-    void unsetCause();
+  void setResourceStatus(const std::shared_ptr<ResourceStatus>& value);
 
-    void setCause(const std::shared_ptr<Cause>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<Cause> getCause() const;
+  bool causeIsSet() const;
+  void unsetCause();
 
+  void setCause(const std::shared_ptr<Cause>& value);
 
-protected:
-    std::shared_ptr<ResourceStatus> m_ResourceStatus;
-        std::shared_ptr<Cause> m_Cause;
-    bool m_CauseIsSet;
+ protected:
+  std::shared_ptr<ResourceStatus> m_ResourceStatus;
+  std::shared_ptr<Cause> m_Cause;
+  bool m_CauseIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_StatusInfo_H_ */

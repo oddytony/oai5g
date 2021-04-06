@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * InvalidParam.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_InvalidParam_H_
 #define OAI_SMF_MODEL_InvalidParam_H_
-
 
 #include "../ModelBase.h"
 
@@ -27,57 +27,56 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  InvalidParam
-    : public ModelBase
-{
-public:
-    InvalidParam();
-    virtual ~InvalidParam();
+class InvalidParam : public ModelBase {
+ public:
+  InvalidParam();
+  virtual ~InvalidParam();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// InvalidParam members
+  /////////////////////////////////////////////
+  /// InvalidParam members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getParam() const;
-    
-    void setParam(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getParam() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getReason() const;
-    bool reasonIsSet() const;
-    void unsetReason();
+  void setParam(const utility::string_t& value);
 
-    void setReason(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getReason() const;
+  bool reasonIsSet() const;
+  void unsetReason();
 
+  void setReason(const utility::string_t& value);
 
-protected:
-    utility::string_t m_Param;
-        utility::string_t m_Reason;
-    bool m_ReasonIsSet;
+ protected:
+  utility::string_t m_Param;
+  utility::string_t m_Reason;
+  bool m_ReasonIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_InvalidParam_H_ */

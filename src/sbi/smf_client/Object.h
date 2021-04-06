@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -18,7 +19,6 @@
 #ifndef OAI_SMF_MODEL_Object_H_
 #define OAI_SMF_MODEL_Object_H_
 
-
 #include "ModelBase.h"
 
 #include <cpprest/details/basic_types.h>
@@ -28,33 +28,36 @@ namespace oai {
 namespace smf {
 namespace model {
 
-class  Object : public ModelBase
-{
-public:
-    Object();
-    virtual ~Object();
+class Object : public ModelBase {
+ public:
+  Object();
+  virtual ~Object();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
-    void validate() override;
+  /////////////////////////////////////////////
+  /// ModelBase overrides
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// Object manipulation
-    web::json::value getValue(const utility::string_t& key) const;
-    void setValue(const utility::string_t& key, const web::json::value& value);
+  /////////////////////////////////////////////
+  /// Object manipulation
+  web::json::value getValue(const utility::string_t& key) const;
+  void setValue(const utility::string_t& key, const web::json::value& value);
 
-private:
-    web::json::value m_object;
+ private:
+  web::json::value m_object;
 };
 
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_Object_H_ */
