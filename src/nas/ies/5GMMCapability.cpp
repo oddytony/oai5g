@@ -27,6 +27,7 @@
  */
 
 #include "5GMMCapability.hpp"
+
 #include "logger.hpp"
 
 using namespace nas;

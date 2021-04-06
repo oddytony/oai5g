@@ -26,12 +26,12 @@
  */
 #include "conversions.hpp"
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
+#include <arpa/inet.h>
 #include <ctype.h>
 #include <inttypes.h>
-#include <arpa/inet.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 static const char hex_to_ascii_table[16] = {
     '0', '1', '2', '3', '4', '5', '6', '7',

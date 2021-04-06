@@ -28,11 +28,11 @@
 #include "PDUSessionResourceReleaseCommandTransfer.hpp"
 
 extern "C" {
-#include "constr_TYPE.h"
 #include "asn_codecs.h"
-#include "per_encoder.h"
-#include "per_decoder.h"
+#include "constr_TYPE.h"
 #include "constraints.h"
+#include "per_decoder.h"
+#include "per_encoder.h"
 }
 
 #include <iostream>

@@ -32,6 +32,7 @@
 #include <mysql/mysql.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <map>
 #include <shared_mutex>
 
@@ -68,8 +69,8 @@ class amf_n1 {
       SecurityHeaderType type, std::shared_ptr<nas_context> nc,
       uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg,
       std::string snn, uint8_t ulCount);
-  //  void uplink_nas_msg_handle(uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
-  //                             bstring plain_msg);
+  void uplink_nas_msg_handle(
+      uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg);
   void uplink_nas_msg_handle(
       uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg,
       plmn_t plmn);
@@ -111,7 +112,7 @@ class amf_n1 {
 
   bool get_authentication_vectors_from_ausf(std::shared_ptr<nas_context>& nc);
   bool _5g_aka_confirmation_from_ausf(
-      std::shared_ptr<nas_context>& nc, std::string& resStar);
+      std::shared_ptr<nas_context>& nc, bstring resStar);
 
   bool authentication_vectors_generator_in_ausf(
       std::shared_ptr<nas_context>& nc);
@@ -176,6 +177,8 @@ class amf_n1 {
       uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas);
   void ul_nas_transport_handle(
       uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas, plmn_t plmn);
+  void registration_complete_handle(
+      uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas_msg);
   void sha256(unsigned char* message, int msg_len, unsigned char* output);
   void service_request_handle(
       bool isNasSig, std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id,

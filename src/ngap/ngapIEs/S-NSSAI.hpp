@@ -32,9 +32,9 @@
 #include <string>
 
 extern "C" {
-#include "Ngap_SST.h"
-#include "Ngap_SD.h"
 #include "Ngap_S-NSSAI.h"
+#include "Ngap_SD.h"
+#include "Ngap_SST.h"
 }
 
 namespace ngap {

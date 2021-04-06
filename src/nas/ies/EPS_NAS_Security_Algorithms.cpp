@@ -26,8 +26,10 @@
  \email: contact@openairinterface.org
  */
 #include "EPS_NAS_Security_Algorithms.hpp"
-#include "logger.hpp"
+
 #include <iostream>
+
+#include "logger.hpp"
 using namespace nas;
 using namespace std;
 

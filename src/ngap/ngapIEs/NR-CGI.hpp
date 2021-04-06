@@ -29,8 +29,8 @@
 #ifndef _NR_CGI_H_
 #define _NR_CGI_H_
 
-#include "PlmnId.hpp"
 #include "NRCellIdentity.hpp"
+#include "PlmnId.hpp"
 
 extern "C" {
 #include "Ngap_NR-CGI.h"

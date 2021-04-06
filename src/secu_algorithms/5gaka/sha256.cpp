@@ -26,9 +26,10 @@
  \email: contact@openairinterface.org
  */
 
+#include "sha256.hpp"
+
 #include <cstring>
 #include <fstream>
-#include "sha256.hpp"
 
 Sha256::Sha256() : m_block(), m_h() {
   m_tot_len = 0;

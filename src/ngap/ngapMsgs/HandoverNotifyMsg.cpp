@@ -28,12 +28,12 @@
 #include "HandoverNotifyMsg.hpp"
 
 extern "C" {
-#include "constr_TYPE.h"
 #include "asn_codecs.h"
-#include "per_encoder.h"
-#include "per_decoder.h"
+#include "constr_TYPE.h"
 #include "constraints.h"
 #include "dynamic_memory_check.h"
+#include "per_decoder.h"
+#include "per_encoder.h"
 }
 
 #include <iostream>
@@ -182,7 +182,7 @@ void HandoverNotifyMsg::setUserLocationInfoNR(
 
   ret = ASN_SEQUENCE_ADD(&handoverNotifyIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UserLocationInformation IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 uint32_t HandoverNotifyMsg::getRanUeNgapId() {
   return ranUeNgapId->getRanUeNgapId();

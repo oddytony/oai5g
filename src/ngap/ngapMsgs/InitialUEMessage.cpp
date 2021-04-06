@@ -29,12 +29,12 @@
 #include "InitialUEMessage.hpp"
 
 extern "C" {
-#include "constr_TYPE.h"
 #include "asn_codecs.h"
-#include "per_encoder.h"
-#include "per_decoder.h"
+#include "constr_TYPE.h"
 #include "constraints.h"
 #include "dynamic_memory_check.h"
+#include "per_decoder.h"
+#include "per_encoder.h"
 }
 
 #include <iostream>
@@ -107,7 +107,7 @@ void InitialUEMessageMsg::setRanUENgapID(uint32_t ran_ue_ngap_id) {
 
   ret = ASN_SEQUENCE_ADD(&initialUEMessageIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -131,7 +131,7 @@ void InitialUEMessageMsg::setNasPdu(uint8_t* nas, size_t sizeofnas) {
 
   ret = ASN_SEQUENCE_ADD(&initialUEMessageIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode NAS_PDU IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -176,7 +176,7 @@ void InitialUEMessageMsg::setUserLocationInfoNR(
 
   ret = ASN_SEQUENCE_ADD(&initialUEMessageIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UserLocationInformation IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -203,7 +203,7 @@ void InitialUEMessageMsg::setRRCEstablishmentCause(
 
   ret = ASN_SEQUENCE_ADD(&initialUEMessageIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RRCEstablishmentCause IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -231,7 +231,7 @@ void InitialUEMessageMsg::setUeContextRequest(
 
   ret = ASN_SEQUENCE_ADD(&initialUEMessageIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UEContextRequest IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -305,6 +305,7 @@ bool InitialUEMessageMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
         }
       } break;
       case Ngap_ProtocolIE_ID_id_UserLocationInformation: {
+        // TODO: to be verified
         if (initialUEMessageIEs->protocolIEs.list.array[i]->criticality ==
                 Ngap_Criticality_reject &&
             initialUEMessageIEs->protocolIEs.list.array[i]->value.present ==

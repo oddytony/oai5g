@@ -21,8 +21,8 @@
 
 #ifndef _RANSTATUSTRANSFERTRANSPATENTCONTAINER_H_
 #define _RANSTATUSTRANSFERTRANSPATENTCONTAINER_H_
-#include "dRBsSubjectToStatusTransferList.hpp"
 #include "dRBsSubjectToStatusTransferItem.hpp"
+#include "dRBsSubjectToStatusTransferList.hpp"
 extern "C" {
 #include "Ngap_RANStatusTransfer-TransparentContainer.h"
 }

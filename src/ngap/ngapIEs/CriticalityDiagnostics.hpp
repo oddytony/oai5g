@@ -32,10 +32,10 @@
 #include "IEsCriticalityDiagnostics.hpp"
 
 extern "C" {
+#include "Ngap_CriticalityDiagnostics-IE-List.h"
+#include "Ngap_CriticalityDiagnostics.h"
 #include "Ngap_NGSetupFailure.h"
 #include "Ngap_ProtocolIE-Field.h"
-#include "Ngap_CriticalityDiagnostics.h"
-#include "Ngap_CriticalityDiagnostics-IE-List.h"
 }
 
 namespace ngap {

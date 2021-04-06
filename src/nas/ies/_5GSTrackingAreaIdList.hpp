@@ -30,6 +30,7 @@
 #define __5GSTrackingAreaIdList_H_
 
 #include <vector>
+
 #include "struct.hpp"
 
 namespace nas {

@@ -29,8 +29,8 @@
 #ifndef _UERADIOCAPABILITYFORPAGING_H_
 #define _UERADIOCAPABILITYFORPAGING_H_
 
-#include "UERadioCapabilityForPagingOfNR.hpp"
 #include "UERadioCapabilityForPagingOfEUTRA.hpp"
+#include "UERadioCapabilityForPagingOfNR.hpp"
 
 extern "C" {
 #include "Ngap_UERadioCapabilityForPaging.h"

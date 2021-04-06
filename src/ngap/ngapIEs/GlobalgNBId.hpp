@@ -29,8 +29,8 @@
 #ifndef _GlobalgNBId_H
 #define _GlobalgNBId_H
 
-#include "PlmnId.hpp"
 #include "GNB-ID.hpp"
+#include "PlmnId.hpp"
 
 extern "C" {
 #include "Ngap_GlobalGNB-ID.h"

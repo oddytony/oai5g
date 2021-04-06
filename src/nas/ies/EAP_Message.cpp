@@ -27,6 +27,7 @@
  */
 
 #include "EAP_Message.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 

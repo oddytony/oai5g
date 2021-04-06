@@ -26,15 +26,16 @@
  \email: contact@openairinterface.org
  */
 
-#include "sctp_server.hpp"
 #include "ngap_app.hpp"
-#include "logger.hpp"
+
 #include "amf_module_from_config.hpp"
+#include "logger.hpp"
 #include "ngap_message_callback.hpp"
+#include "sctp_server.hpp"
 
 extern "C" {
-#include "Ngap_NGAP-PDU.h"
 #include "Ngap_InitiatingMessage.h"
+#include "Ngap_NGAP-PDU.h"
 }
 
 using namespace sctp;
@@ -69,6 +70,9 @@ void ngap_app::handle_receive(
       "Decoded NGAP message, procedure code %d, present %d",
       ngap_msg_pdu->choice.initiatingMessage->procedureCode,
       ngap_msg_pdu->present);
+  printf("after decoding ...\n");
+  asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, ngap_msg_pdu);
+  printf("end decoding ...\n");
   // Handle the message
   (*messages_callback[ngap_msg_pdu->choice.initiatingMessage->procedureCode]
                      [ngap_msg_pdu->present - 1])(

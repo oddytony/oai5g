@@ -22,18 +22,18 @@
 #ifndef _ITTI_MSG_N2_H_
 #define _ITTI_MSG_N2_H_
 
-#include "itti_msg.hpp"
-#include "NGSetupRequest.hpp"
-#include "NGReset.hpp"
-#include "InitialUEMessage.hpp"
-#include "UplinkNASTransport.hpp"
-#include "UEContextReleaseRequest.hpp"
-#include "UERadioCapabilityInfoIndication.hpp"
-#include "sctp_server.hpp"
+#include "HandoverNotifyMsg.hpp"
 #include "HandoverRequestAck.hpp"
 #include "HandoverRequiredMsg.hpp"
-#include "HandoverNotifyMsg.hpp"
+#include "InitialUEMessage.hpp"
+#include "NGReset.hpp"
+#include "NGSetupRequest.hpp"
+#include "UEContextReleaseRequest.hpp"
+#include "UERadioCapabilityInfoIndication.hpp"
+#include "UplinkNASTransport.hpp"
 #include "UplinkRANStatusTransfer.hpp"
+#include "itti_msg.hpp"
+#include "sctp_server.hpp"
 using namespace ngap;
 using namespace sctp;
 

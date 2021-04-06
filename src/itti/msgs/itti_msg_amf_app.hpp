@@ -22,9 +22,10 @@
 #ifndef _AMF_APP_ITTI_H_
 #define _AMF_APP_ITTI_H_
 
-#include "itti_msg.hpp"
-#include "NgapIEsStruct.hpp"
 #include <string>
+
+#include "NgapIEsStruct.hpp"
+#include "itti_msg.hpp"
 using namespace ngap;
 #include "bstrlib.h"
 

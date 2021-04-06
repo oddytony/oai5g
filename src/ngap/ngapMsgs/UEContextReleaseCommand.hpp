@@ -29,9 +29,9 @@
 #ifndef _UE_CONTEXT_RELEASE_COMMAND_H_
 #define _UE_CONTEXT_RELEASE_COMMAND_H_
 
-#include "MessageType.hpp"
-#include "Cause.hpp"
 #include "AMF-UE-NGAP-ID.hpp"
+#include "Cause.hpp"
+#include "MessageType.hpp"
 #include "RAN-UE-NGAP-ID.hpp"
 
 extern "C" {

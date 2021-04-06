@@ -28,23 +28,23 @@
 #ifndef _UPLINKRANSTATUSTRANSFER_H_
 #define _UPLINKRANSTATUSTRANSFER_H_
 #include "AMF-UE-NGAP-ID.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
 #include "NgapIEsStruct.hpp"
+#include "RAN-UE-NGAP-ID.hpp"
 #include "RANStatusTransferTransparentContainer.hpp"
 extern "C" {
-#include "Ngap_UplinkRANStatusTransfer.h"
-#include "Ngap_RANStatusTransfer-TransparentContainer.h"
+#include "Ngap_InitiatingMessage.h"
 #include "Ngap_NGAP-PDU.h"
 #include "Ngap_ProtocolIE-Field.h"
-#include "Ngap_InitiatingMessage.h"
+#include "Ngap_RANStatusTransfer-TransparentContainer.h"
+#include "Ngap_UplinkRANStatusTransfer.h"
 }
 namespace ngap {
 class UplinkRANStatusTransfer {
  public:
   UplinkRANStatusTransfer();
   virtual ~UplinkRANStatusTransfer();
-  unsigned long getAmfUeNgapId();  // return -1;(不存在)
-  uint32_t getRanUeNgapId();       // return -1;(不存在)
+  unsigned long getAmfUeNgapId();  // return -1;
+  uint32_t getRanUeNgapId();       // return -1;
   void getRANStatusTransfer_TransparentContainer(
       RANStatusTransferTransparentContainer*&
           ranstatustransfer_transparentcontainer);

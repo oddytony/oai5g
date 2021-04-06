@@ -22,10 +22,10 @@
 #ifndef _PDUSESSIONRESOURCESETUPITEMHOREQ_H_
 #define _PDUSESSIONRESOURCESETUPITEMHOREQ_H_
 
-#include "PDUSessionID.hpp"
 #include "NAS-PDU.hpp"
-#include "S-NSSAI.hpp"
+#include "PDUSessionID.hpp"
 #include "PDUSessionResourceSetupRequestTransfer.hpp"
+#include "S-NSSAI.hpp"
 
 extern "C" {
 #include "Ngap_PDUSessionResourceSetupItemHOReq.h"

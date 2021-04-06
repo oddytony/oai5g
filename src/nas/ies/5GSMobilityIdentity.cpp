@@ -27,9 +27,11 @@
  */
 
 #include "5GSMobilityIdentity.hpp"
+
+#include <math.h>
+
 #include "3gpp_ts24501.hpp"
 #include "String2Value.hpp"
-#include <math.h>
 #include "logger.hpp"
 
 using namespace nas;

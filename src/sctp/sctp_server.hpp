@@ -29,17 +29,19 @@
 #ifndef _SCTP_SERVER_H_
 #define _SCTP_SERVER_H_
 
-#include "endpoint.hpp"
 #include <thread>
+
+#include "endpoint.hpp"
 extern "C" {
 #include <netinet/in.h>
 #include <netinet/sctp.h>
+
 #include "bstrlib.h"
 }
-#include <vector>
 #include <iostream>
+#include <vector>
 
-#define SCTP_RECV_BUFFER_SIZE 1024
+#define SCTP_RECV_BUFFER_SIZE 2048
 #define SCTP_RC_ERROR -1
 #define SCTP_RC_NORMAL_READ 0
 #define SCTP_RC_DISCONNECT 1

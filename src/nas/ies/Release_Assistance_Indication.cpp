@@ -27,6 +27,7 @@
  */
 
 #include "Release_Assistance_Indication.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 

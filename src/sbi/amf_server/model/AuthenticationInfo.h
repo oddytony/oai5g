@@ -19,7 +19,7 @@
 #ifndef AuthenticationInfo_H_
 #define AuthenticationInfo_H_
 
-//#include "ResynchronizationInfo.h"
+#include "ResynchronizationInfo.h"
 //#include "TraceData.h"
 #include <nlohmann/json.hpp>
 #include <string>
@@ -33,7 +33,7 @@ namespace model {
 ///
 /// </summary>
 class AuthenticationInfo {
-public:
+ public:
   AuthenticationInfo();
   virtual ~AuthenticationInfo();
 
@@ -46,88 +46,88 @@ public:
   ///
   /// </summary>
   std::string getSupiOrSuci() const;
-  void setSupiOrSuci(std::string const &value);
+  void setSupiOrSuci(std::string const& value);
   /// <summary>
   ///
   /// </summary>
   std::string getServingNetworkName() const;
-  void setServingNetworkName(std::string const &value);
+  void setServingNetworkName(std::string const& value);
   /// <summary>
   ///
   /// </summary>
-//  ResynchronizationInfo getResynchronizationInfo() const;
-//  void setResynchronizationInfo(ResynchronizationInfo const &value);
-//  bool resynchronizationInfoIsSet() const;
-//  void unsetResynchronizationInfo();
-//  /// <summary>
-//  ///
-//  /// </summary>
-//  std::string getPei() const;
-//  void setPei(std::string const &value);
-//  bool peiIsSet() const;
-//  void unsetPei();
-//  /// <summary>
-//  ///
-//  /// </summary>
-//  TraceData getTraceData() const;
-//  void setTraceData(TraceData const &value);
-//  bool traceDataIsSet() const;
-//  void unsetTraceData();
-//  /// <summary>
-//  ///
-//  /// </summary>
-//  std::string getUdmGroupId() const;
-//  void setUdmGroupId(std::string const &value);
-//  bool udmGroupIdIsSet() const;
-//  void unsetUdmGroupId();
-//  /// <summary>
-//  ///
-//  /// </summary>
-//  std::string getRoutingIndicator() const;
-//  void setRoutingIndicator(std::string const &value);
-//  bool routingIndicatorIsSet() const;
-//  void unsetRoutingIndicator();
-//  /// <summary>
-//  ///
-//  /// </summary>
-//  std::vector<std::string> &getCellCagInfo();
-//  void setCellCagInfo(std::vector<std::string> const &value);
-//  bool cellCagInfoIsSet() const;
-//  void unsetCellCagInfo();
-//  /// <summary>
-//  ///
-//  /// </summary>
-//  bool isN5gcInd() const;
-//  void setN5gcInd(bool const value);
-//  bool n5gcIndIsSet() const;
-//  void unsetN5gcInd();
+  ResynchronizationInfo getResynchronizationInfo() const;
+  void setResynchronizationInfo(ResynchronizationInfo const& value);
+  bool resynchronizationInfoIsSet() const;
+  void unsetResynchronizationInfo();
+  //  /// <summary>
+  //  ///
+  //  /// </summary>
+  //  std::string getPei() const;
+  //  void setPei(std::string const &value);
+  //  bool peiIsSet() const;
+  //  void unsetPei();
+  //  /// <summary>
+  //  ///
+  //  /// </summary>
+  //  TraceData getTraceData() const;
+  //  void setTraceData(TraceData const &value);
+  //  bool traceDataIsSet() const;
+  //  void unsetTraceData();
+  //  /// <summary>
+  //  ///
+  //  /// </summary>
+  //  std::string getUdmGroupId() const;
+  //  void setUdmGroupId(std::string const &value);
+  //  bool udmGroupIdIsSet() const;
+  //  void unsetUdmGroupId();
+  //  /// <summary>
+  //  ///
+  //  /// </summary>
+  //  std::string getRoutingIndicator() const;
+  //  void setRoutingIndicator(std::string const &value);
+  //  bool routingIndicatorIsSet() const;
+  //  void unsetRoutingIndicator();
+  //  /// <summary>
+  //  ///
+  //  /// </summary>
+  //  std::vector<std::string> &getCellCagInfo();
+  //  void setCellCagInfo(std::vector<std::string> const &value);
+  //  bool cellCagInfoIsSet() const;
+  //  void unsetCellCagInfo();
+  //  /// <summary>
+  //  ///
+  //  /// </summary>
+  //  bool isN5gcInd() const;
+  //  void setN5gcInd(bool const value);
+  //  bool n5gcIndIsSet() const;
+  //  void unsetN5gcInd();
 
-  friend void to_json(nlohmann::json &j, const AuthenticationInfo &o);
-  friend void from_json(const nlohmann::json &j, AuthenticationInfo &o);
+  friend void to_json(nlohmann::json& j, const AuthenticationInfo& o);
+  friend void from_json(const nlohmann::json& j, AuthenticationInfo& o);
 
-protected:
+ protected:
   std::string m_SupiOrSuci;
 
   std::string m_ServingNetworkName;
 
-//  ResynchronizationInfo m_ResynchronizationInfo;
-//  bool m_ResynchronizationInfoIsSet;
-//  std::string m_Pei;
-//  bool m_PeiIsSet;
-//  TraceData m_TraceData;
-//  bool m_TraceDataIsSet;
-//  std::string m_UdmGroupId;
-//  bool m_UdmGroupIdIsSet;
-//  std::string m_RoutingIndicator;
-//  bool m_RoutingIndicatorIsSet;
-//  std::vector<std::string> m_CellCagInfo;
-//  bool m_CellCagInfoIsSet;
-//  bool m_N5gcInd;
-//  bool m_N5gcIndIsSet;
+  ResynchronizationInfo m_ResynchronizationInfo;
+  bool m_ResynchronizationInfoIsSet;
+  //  std::string m_Pei;
+  //  bool m_PeiIsSet;
+  //  TraceData m_TraceData;
+  //  bool m_TraceDataIsSet;
+  //  std::string m_UdmGroupId;
+  //  bool m_UdmGroupIdIsSet;
+  //  std::string m_RoutingIndicator;
+  //  bool m_RoutingIndicatorIsSet;
+  //  std::vector<std::string> m_CellCagInfo;
+  //  bool m_CellCagInfoIsSet;
+  //  bool m_N5gcInd;
+  //  bool m_N5gcIndIsSet;
 };
 
-} // namespace model
-} // namespace amf
-} // namespace oai
+}  // namespace model
+}  // namespace amf
+}  // namespace oai
 
 #endif /* AuthenticationInfo_H_ */

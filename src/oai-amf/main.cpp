@@ -19,30 +19,29 @@
  *      contact@openairinterface.org
  */
 
-#include <iostream>
-#include <thread>
 #include <signal.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <cstring>
+#include <iostream>
+#include <string>
+#include <thread>
+
 #include "AMFApiServer.hpp"
+#include "amf_app.hpp"
+#include "amf_config.hpp"
+#include "amf_module_from_config.hpp"
+#include "amf_statistics.hpp"
+#include "itti.hpp"
+#include "logger.hpp"
+#include "ngap_app.hpp"
+#include "normalizer.hh"
+#include "options.hpp"
 #include "pistache/endpoint.h"
 #include "pistache/http.h"
 #include "pistache/router.h"
-
-#include "logger.hpp"
-#include "options.hpp"
-#include "amf_config.hpp"
-#include "ngap_app.hpp"
-#include "itti.hpp"
-#include "amf_app.hpp"
-#include "amf_module_from_config.hpp"
-#include "amf_statistics.hpp"
-
-#include <string>
-#include <cstring>
-#include "normalizer.hh"
 
 extern void hexStr2Byte(const char* src, unsigned char* dest, int len);
 extern void print_buffer(

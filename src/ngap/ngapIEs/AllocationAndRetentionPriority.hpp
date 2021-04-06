@@ -29,9 +29,9 @@
 #ifndef _ALLOCATIONANDRETENTIONPRIORITY_H_
 #define _ALLOCATIONANDRETENTIONPRIORITY_H_
 
-#include "PriorityLevelARP.hpp"
 #include "Pre-emptionCapability.hpp"
 #include "Pre-emptionVulnerability.hpp"
+#include "PriorityLevelARP.hpp"
 
 extern "C" {
 #include "Ngap_AllocationAndRetentionPriority.h"

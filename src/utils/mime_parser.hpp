@@ -27,8 +27,8 @@
  */
 #ifndef FILE_MIME_PARSER_HPP_SEEN
 #define FILE_MIME_PARSER_HPP_SEEN
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
 
 enum class multipart_related_content_part_e { JSON = 0, NAS = 1, NGAP = 2 };

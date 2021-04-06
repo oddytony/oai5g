@@ -27,10 +27,12 @@
  */
 
 #include "DeregistrationRequest.hpp"
-#include "3gpp_ts24501.hpp"
-#include "logger.hpp"
-#include "String2Value.hpp"
+
 #include <string>
+
+#include "3gpp_ts24501.hpp"
+#include "String2Value.hpp"
+#include "logger.hpp"
 using namespace nas;
 
 //------------------------------------------------------------------------------

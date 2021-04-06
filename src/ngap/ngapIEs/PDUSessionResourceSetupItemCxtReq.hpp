@@ -29,8 +29,8 @@
 #ifndef _PDUSESSIONRESOURCESETUPITEMCXTREQ_H_
 #define _PDUSESSIONRESOURCESETUPITEMCXTREQ_H_
 
-#include "PDUSessionID.hpp"
 #include "NAS-PDU.hpp"
+#include "PDUSessionID.hpp"
 #include "S-NSSAI.hpp"
 //#include "PDUSessionResourceSetupRequestTransfer.hpp"
 

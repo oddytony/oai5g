@@ -29,10 +29,10 @@
 #ifndef _UE_CONTEXT_RELEASE_COMPLETE_H_
 #define _UE_CONTEXT_RELEASE_COMPLETE_H_
 
-#include "MessageType.hpp"
 #include "AMF-UE-NGAP-ID.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
+#include "MessageType.hpp"
 #include "NgapIEsStruct.hpp"
+#include "RAN-UE-NGAP-ID.hpp"
 #include "UserLocationInformation.hpp"
 
 extern "C" {

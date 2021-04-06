@@ -21,8 +21,8 @@
 
 #ifndef _DRBSSUBJECTTOSTATUSTRANSFERITEM_H_
 #define _DRBSSUBJECTTOSTATUSTRANSFERITEM_H_
-#include "dRBStatusUL.hpp"
 #include "dRBStatusDL.hpp"
+#include "dRBStatusUL.hpp"
 extern "C" {
 #include "Ngap_DRBsSubjectToStatusTransferItem.h"
 }

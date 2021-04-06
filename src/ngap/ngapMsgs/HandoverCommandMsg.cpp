@@ -21,14 +21,14 @@
 
 #include "HandoverCommandMsg.hpp"
 extern "C" {
-#include "constr_TYPE.h"
 #include "Ngap_NGAP-PDU.h"
-#include "asn_codecs.h"
-#include "per_encoder.h"
-#include "per_decoder.h"
-#include "constraints.h"
 #include "Ngap_PDUSessionResourceHandoverItem.h"
+#include "asn_codecs.h"
+#include "constr_TYPE.h"
+#include "constraints.h"
 #include "dynamic_memory_check.h"
+#include "per_decoder.h"
+#include "per_encoder.h"
 }
 
 #include <iostream>
@@ -237,7 +237,7 @@ void HandoverCommandMsg::setAmfUeNgapId(unsigned long id) {
 
   ret = ASN_SEQUENCE_ADD(&handoverCommandIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 void HandoverCommandMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
@@ -259,7 +259,7 @@ void HandoverCommandMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
 
   ret = ASN_SEQUENCE_ADD(&handoverCommandIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 void HandoverCommandMsg::setHandoverType(long type) {
@@ -272,7 +272,7 @@ void HandoverCommandMsg::setHandoverType(long type) {
   ie->value.choice.HandoverType = type;
   int ret = ASN_SEQUENCE_ADD(&handoverCommandIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode HandoverType IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 void HandoverCommandMsg::setPduSessionResourceHandoverList(
@@ -303,8 +303,8 @@ void HandoverCommandMsg::setPduSessionResourceHandoverList(
   int ret = ASN_SEQUENCE_ADD(&handoverCommandIEs->protocolIEs.list, ie);
   if (ret != 0)
     cout << "encode PDUSessionResourceHandoverList IE error" << endl;
-  //free_wrapper((void**) &item);
- // free_wrapper((void**) &ie);
+  // free_wrapper((void**) &item);
+  // free_wrapper((void**) &ie);
 }
 
 void HandoverCommandMsg::setTargetToSource_TransparentContainer(
@@ -322,7 +322,7 @@ void HandoverCommandMsg::setTargetToSource_TransparentContainer(
   ie->value.choice.TargetToSource_TransparentContainer = targetTosource;
   int ret = ASN_SEQUENCE_ADD(&handoverCommandIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode HandoverType IE error" << endl;
- // free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 }  // namespace ngap

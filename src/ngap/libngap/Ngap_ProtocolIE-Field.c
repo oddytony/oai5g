@@ -18813,19 +18813,26 @@ asn_SEQUENCE_specifics_t asn_SPC_Ngap_PDUSessionResourceModifyRequestTransferIEs
 	-1,	/* First extension addition */
 };
 asn_TYPE_descriptor_t asn_DEF_Ngap_PDUSessionResourceModifyRequestTransferIEs = {
-	"PDUSessionResourceModifyRequestTransferIEs",
-	"PDUSessionResourceModifyRequestTransferIEs",
-	&asn_OP_SEQUENCE,
-	asn_DEF_Ngap_PDUSessionResourceModifyRequestTransferIEs_tags_109,
-	sizeof(asn_DEF_Ngap_PDUSessionResourceModifyRequestTransferIEs_tags_109)
-		/sizeof(asn_DEF_Ngap_PDUSessionResourceModifyRequestTransferIEs_tags_109[0]), /* 1 */
-	asn_DEF_Ngap_PDUSessionResourceModifyRequestTransferIEs_tags_109,	/* Same as above */
-	sizeof(asn_DEF_Ngap_PDUSessionResourceModifyRequestTransferIEs_tags_109)
-		/sizeof(asn_DEF_Ngap_PDUSessionResourceModifyRequestTransferIEs_tags_109[0]), /* 1 */
-	{ 0, 0, SEQUENCE_constraint },
-	asn_MBR_Ngap_PDUSessionResourceModifyRequestTransferIEs_109,
-	3,	/* Elements count */
-	&asn_SPC_Ngap_PDUSessionResourceModifyRequestTransferIEs_specs_109	/* Additional specs */
+    "PDUSessionResourceModifyRequestTransferIEs",
+    "PDUSessionResourceModifyRequestTransferIEs",
+    &asn_OP_SEQUENCE,
+    asn_DEF_Ngap_PDUSessionResourceModifyRequestTransferIEs_tags_109,
+    sizeof(asn_DEF_Ngap_PDUSessionResourceModifyRequestTransferIEs_tags_109) /
+        sizeof(asn_DEF_Ngap_PDUSessionResourceModifyRequestTransferIEs_tags_109
+                   [0]),                                              /* 1 */
+    asn_DEF_Ngap_PDUSessionResourceModifyRequestTransferIEs_tags_109, /* Same
+                                                                         as
+                                                                         above
+                                                                       */
+    sizeof(asn_DEF_Ngap_PDUSessionResourceModifyRequestTransferIEs_tags_109) /
+        sizeof(asn_DEF_Ngap_PDUSessionResourceModifyRequestTransferIEs_tags_109
+                   [0]), /* 1 */
+    {0, 0, SEQUENCE_constraint},
+    asn_MBR_Ngap_PDUSessionResourceModifyRequestTransferIEs_109,
+    3, /* Elements count */
+    &asn_SPC_Ngap_PDUSessionResourceModifyRequestTransferIEs_specs_109 /* Additional
+                                                                          specs
+                                                                        */
 };
 
 static asn_TYPE_member_t asn_MBR_Ngap_value_116[] = {
@@ -19037,6 +19044,19 @@ static asn_TYPE_member_t asn_MBR_Ngap_value_120[] = {
 		0, 0, /* No default value */
 		"PDUSessionResourceSetupListSUReq"
 		},
+    {ATF_NOFLAGS,
+     0,
+     offsetof(
+         struct Ngap_PDUSessionResourceSetupRequestIEs__value,
+         choice.UEAggregateMaximumBitRate),
+     (ASN_TAG_CLASS_UNIVERSAL | (16 << 2)),
+     0,
+     &asn_DEF_Ngap_UEAggregateMaximumBitRate,
+     0,
+     {0, 0, 0},
+     0,
+     0, /* No default value */
+     "UEAggregateMaximumBitRate"},
 };
 static const asn_TYPE_tag2member_t asn_MAP_Ngap_value_tag2el_120[] = {
     { (ASN_TAG_CLASS_UNIVERSAL | (2 << 2)), 0, 0, 2 }, /* AMF-UE-NGAP-ID */
@@ -19066,7 +19086,7 @@ asn_TYPE_descriptor_t asn_DEF_Ngap_value_120 = {
 	0,	/* No tags (count) */
 	{ 0, 0, OPEN_TYPE_constraint },
 	asn_MBR_Ngap_value_120,
-	5,	/* Elements count */
+	6,	/* Elements count */
 	&asn_SPC_Ngap_value_specs_120	/* Additional specs */
 };
 

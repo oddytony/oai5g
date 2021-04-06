@@ -27,9 +27,10 @@
  */
 
 #include "AMFRegionID.hpp"
-#include "String2Value.hpp"
 
 #include <iostream>
+
+#include "String2Value.hpp"
 using namespace std;
 
 namespace ngap {

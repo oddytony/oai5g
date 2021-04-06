@@ -27,6 +27,7 @@
  */
 
 #include "UESecurityCapability.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 
@@ -55,7 +56,7 @@ UESecurityCapability::UESecurityCapability(
   _iei      = iei;
   _5g_EASel = _5gg_EASel;
   _5g_IASel = _5gg_IASel;
-  length    = 4;
+  length    = 2;
 }
 
 //------------------------------------------------------------------------------
@@ -79,6 +80,22 @@ uint8_t UESecurityCapability::getIASel() {
 }
 
 //------------------------------------------------------------------------------
+void UESecurityCapability::setLenght(uint8_t len) {
+  if ((len > 0) && (len <= 4)) {
+    length = len;
+  } else {
+    Logger::nas_mm().debug("Set UESecurityCapability Lenght faile %d", len);
+    Logger::nas_mm().debug(
+        "UESecurityCapability Lenght is set to the default value %d", length);
+  }
+}
+
+//------------------------------------------------------------------------------
+uint8_t UESecurityCapability::getLenght() {
+  return length;
+}
+
+//------------------------------------------------------------------------------
 int UESecurityCapability::encode2buffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("Encoding UESecurityCapability IEI 0x%x", _iei);
   if (len < length) {
@@ -89,19 +106,32 @@ int UESecurityCapability::encode2buffer(uint8_t* buf, int len) {
   if (_iei) {
     *(buf + encoded_size) = _iei;
     encoded_size++;
-    *(buf + encoded_size) = length - 2;
+    *(buf + encoded_size) = length;
     encoded_size++;
     *(buf + encoded_size) = _5g_EASel;
     encoded_size++;
     *(buf + encoded_size) = _5g_IASel;
     encoded_size++;
+    if (length == 4) {
+      *(buf + encoded_size) = 0xf0;
+      encoded_size++;
+      *(buf + encoded_size) = 0xf0;
+      encoded_size++;
+    }
+
   } else {
-    *(buf + encoded_size) = length - 2;
+    *(buf + encoded_size) = length;
     encoded_size++;
     *(buf + encoded_size) = _5g_EASel;
     encoded_size++;
     *(buf + encoded_size) = _5g_IASel;
     encoded_size++;
+    if (length == 4) {
+      *(buf + encoded_size) = 0xf0;
+      encoded_size++;
+      *(buf + encoded_size) = 0xf0;
+      encoded_size++;
+    }
   }
   Logger::nas_mm().debug("encoded UESecurityCapability (len %d)", encoded_size);
   return encoded_size;
@@ -121,6 +151,7 @@ int UESecurityCapability::decodefrombuffer(
   decoded_size++;
   _5g_IASel = *(buf + decoded_size);
   decoded_size++;
+  if (length == 4) decoded_size += 2;  // to do: decoding EEA EIA
   Logger::nas_mm().debug(
       "UESecurityCapability EA 0x%d,IA 0x%d", _5g_EASel, _5g_IASel);
   return decoded_size;

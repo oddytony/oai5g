@@ -29,14 +29,13 @@
 #ifndef _DYNAMIC5QIDESCRIPTOR_H_
 #define _DYNAMIC5QIDESCRIPTOR_H_
 
-#include "PriorityLevelQos.hpp"
+#include "AveragingWindow.hpp"
+#include "DelayCritical.hpp"
+#include "FiveQI.hpp"
+#include "MaximumDataBurstVolume.hpp"
 #include "PacketDelayBudget.hpp"
 #include "PacketErrorRate.hpp"
-
-#include "FiveQI.hpp"
-#include "DelayCritical.hpp"
-#include "AveragingWindow.hpp"
-#include "MaximumDataBurstVolume.hpp"
+#include "PriorityLevelQos.hpp"
 
 extern "C" {
 #include "Ngap_Dynamic5QIDescriptor.h"

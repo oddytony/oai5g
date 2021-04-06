@@ -29,17 +29,16 @@
 #ifndef _INITIALCONTEXTSETUPFAILURE_H_
 #define _INITIALCONTEXTSETUPFAILURE_H_
 
-#include "NgapIEsStruct.hpp"
-
-#include "MessageType.hpp"
 #include "AMF-UE-NGAP-ID.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
+#include "MessageType.hpp"
+#include "NgapIEsStruct.hpp"
 #include "PDUSessionResourceFailedToSetupListCxtFail.hpp"
+#include "RAN-UE-NGAP-ID.hpp"
 
 extern "C" {
+#include "Ngap_InitialContextSetupFailure.h"
 #include "Ngap_NGAP-PDU.h"
 #include "Ngap_ProtocolIE-Field.h"
-#include "Ngap_InitialContextSetupFailure.h"
 }
 
 namespace ngap {

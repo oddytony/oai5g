@@ -25243,19 +25243,26 @@ asn_SEQUENCE_specifics_t asn_SPC_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs
 	-1,	/* First extension addition */
 };
 asn_TYPE_descriptor_t asn_DEF_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs = {
-	"PDUSessionResourceReleasedItemPSAck-ExtIEs",
-	"PDUSessionResourceReleasedItemPSAck-ExtIEs",
-	&asn_OP_SEQUENCE,
-	asn_DEF_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_tags_433,
-	sizeof(asn_DEF_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_tags_433)
-		/sizeof(asn_DEF_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_tags_433[0]), /* 1 */
-	asn_DEF_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_tags_433,	/* Same as above */
-	sizeof(asn_DEF_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_tags_433)
-		/sizeof(asn_DEF_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_tags_433[0]), /* 1 */
-	{ 0, 0, SEQUENCE_constraint },
-	asn_MBR_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_433,
-	3,	/* Elements count */
-	&asn_SPC_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_specs_433	/* Additional specs */
+    "PDUSessionResourceReleasedItemPSAck-ExtIEs",
+    "PDUSessionResourceReleasedItemPSAck-ExtIEs",
+    &asn_OP_SEQUENCE,
+    asn_DEF_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_tags_433,
+    sizeof(asn_DEF_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_tags_433) /
+        sizeof(asn_DEF_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_tags_433
+                   [0]),                                              /* 1 */
+    asn_DEF_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_tags_433, /* Same
+                                                                         as
+                                                                         above
+                                                                       */
+    sizeof(asn_DEF_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_tags_433) /
+        sizeof(asn_DEF_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_tags_433
+                   [0]), /* 1 */
+    {0, 0, SEQUENCE_constraint},
+    asn_MBR_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_433,
+    3, /* Elements count */
+    &asn_SPC_Ngap_PDUSessionResourceReleasedItemPSAck_ExtIEs_specs_433 /* Additional
+                                                                          specs
+                                                                        */
 };
 
 static asn_CHOICE_specifics_t asn_SPC_Ngap_extensionValue_specs_440 = {

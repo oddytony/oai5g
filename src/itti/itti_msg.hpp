@@ -28,6 +28,7 @@
 #define SRC_ITTI_ITTI_MSG_HPP_INCLUDED_
 
 #include <stdint.h>
+
 #include <utility>
 
 typedef enum {

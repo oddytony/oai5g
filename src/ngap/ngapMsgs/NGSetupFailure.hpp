@@ -29,8 +29,8 @@
 #ifndef _NGSETUPFAILURE_H_
 #define _NGSETUPFAILURE_H_
 
-#include "MessageType.hpp"
 #include "Cause.hpp"
+#include "MessageType.hpp"
 #include "TimeToWait.hpp"
 //#include "CriticalityDiagnostics.hpp"
 

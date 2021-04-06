@@ -28,17 +28,16 @@
 #ifndef _HANDOVERNOTIFYMSG_H_
 #define _HANDOVERNOTIFYMSG_H_
 
-#include "NgapIEsStruct.hpp"
-
 #include "AMF-UE-NGAP-ID.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
 #include "MessageType.hpp"
+#include "NgapIEsStruct.hpp"
+#include "RAN-UE-NGAP-ID.hpp"
 #include "UserLocationInformation.hpp"
 
 extern "C" {
+#include "Ngap_HandoverNotify.h"
 #include "Ngap_NGAP-PDU.h"
 #include "Ngap_ProtocolIE-Field.h"
-#include "Ngap_HandoverNotify.h"
 }
 
 namespace ngap {
@@ -49,8 +48,8 @@ class HandoverNotifyMsg {
   int encode2buffer(uint8_t* buf, int buf_size);
   bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
   void setUserLocationInfoNR(struct NrCgi_s cig, struct Tai_s tai);
-  unsigned long getAmfUeNgapId();  // return -1;(������)
-  uint32_t getRanUeNgapId();       // return -1;(������)
+  unsigned long getAmfUeNgapId();  // return -1;
+  uint32_t getRanUeNgapId();       // return -1;
   bool getUserLocationInfoNR(struct NrCgi_s& cig, struct Tai_s& tai);
 
  private:

@@ -29,13 +29,13 @@
 #include "NGSetupRequest.hpp"
 
 extern "C" {
-#include "constr_TYPE.h"
 #include "Ngap_NGAP-PDU.h"
 #include "asn_codecs.h"
-#include "per_encoder.h"
-#include "per_decoder.h"
+#include "constr_TYPE.h"
 #include "constraints.h"
 #include "dynamic_memory_check.h"
+#include "per_decoder.h"
+#include "per_encoder.h"
 }
 
 #include <iostream>
@@ -210,7 +210,7 @@ void NGSetupRequestMsg::setDefaultPagingDRX(e_Ngap_PagingDRX value) {
 
   ret = ASN_SEQUENCE_ADD(&ngSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode DefaultPagingDRX IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

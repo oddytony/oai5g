@@ -29,8 +29,8 @@
 #ifndef _UERADIOCAPABILITYINFOINDICATION_H_
 #define _UERADIOCAPABILITYINFOINDICATION_H_
 
-#include "MessageType.hpp"
 #include "AMF-UE-NGAP-ID.hpp"
+#include "MessageType.hpp"
 #include "RAN-UE-NGAP-ID.hpp"
 #include "UERadioCapability.hpp"
 #include "UERadioCapabilityForPaging.hpp"

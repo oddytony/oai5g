@@ -29,14 +29,13 @@
 #ifndef _PDU_SESSION_RESOURCE_RELEASE_COMMAND_H_
 #define _PDU_SESSION_RESOURCE_RELEASE_COMMAND_H_
 
-#include "NgapIEsStruct.hpp"
-
-#include "MessageType.hpp"
 #include "AMF-UE-NGAP-ID.hpp"
+#include "MessageType.hpp"
+#include "NAS-PDU.hpp"
+#include "NgapIEsStruct.hpp"
+#include "PDUSessionResourceToReleaseListRelCmd.hpp"
 #include "RAN-UE-NGAP-ID.hpp"
 #include "RANPagingPriority.hpp"
-#include "NAS-PDU.hpp"
-#include "PDUSessionResourceToReleaseListRelCmd.hpp"
 
 extern "C" {
 #include "Ngap_NGAP-PDU.h"

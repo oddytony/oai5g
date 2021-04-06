@@ -22,25 +22,26 @@
 #ifndef _HANDOVERREQUESTACK_H_
 #define _HANDOVERREQUESTACK_H_
 
+#include "AMF-UE-NGAP-ID.hpp"
+#include "Cause.hpp"
+#include "DefaultPagingDRX.hpp"
+#include "GlobalRanNodeId.hpp"
+#include "MessageType.hpp"
 #include "NgapIEsStruct.hpp"
 #include "PDUSessionResourceAdmittedItem.hpp"
 #include "PDUSessionResourceAdmittedList.hpp"
-#include "MessageType.hpp"
-#include "GlobalRanNodeId.hpp"
-#include "RanNodeName.hpp"
-#include "DefaultPagingDRX.hpp"
-#include "SupportedTAList.hpp"
-#include "AMF-UE-NGAP-ID.hpp"
 #include "RAN-UE-NGAP-ID.hpp"
-#include "Cause.hpp"
+#include "RanNodeName.hpp"
+#include "SupportedTAList.hpp"
 extern "C" {
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
+#include "Ngap_HandoverRequestAcknowledgeTransfer.h"
 #include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
 #include "Ngap_NGSetupRequest.h"
 #include "Ngap_PDUSessionResourceAdmittedItem.h"
-#include "Ngap_HandoverRequestAcknowledgeTransfer.h"
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include "Ngap_ProtocolIE-Field.h"
 }
 
 namespace ngap {
@@ -53,8 +54,8 @@ class HandoverRequestAck {
   int encode2buffer(uint8_t* buf, int buf_size);
   bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
 
-  unsigned long getAmfUeNgapId();  // return -1;(不存在)
-  uint32_t getRanUeNgapId();       // return -1;(不存在)
+  unsigned long getAmfUeNgapId();  // return -1;
+  uint32_t getRanUeNgapId();       // return -1;
 
   void setMessageType();  // Initialize the PDU and populate the MessageType;
   OCTET_STRING_t getTargetToSource_TransparentContainer();

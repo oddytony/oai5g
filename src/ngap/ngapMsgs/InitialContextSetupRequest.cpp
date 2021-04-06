@@ -29,12 +29,12 @@
 #include "InitialContextSetupRequest.hpp"
 
 extern "C" {
-#include "constr_TYPE.h"
 #include "asn_codecs.h"
-#include "per_encoder.h"
-#include "per_decoder.h"
+#include "constr_TYPE.h"
 #include "constraints.h"
 #include "dynamic_memory_check.h"
+#include "per_decoder.h"
+#include "per_encoder.h"
 }
 
 #include <iostream>
@@ -118,7 +118,7 @@ void InitialContextSetupRequestMsg::setAmfUeNgapId(unsigned long id) {
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ void InitialContextSetupRequestMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -167,7 +167,7 @@ void InitialContextSetupRequestMsg::setOldAmfName(const std::string name) {
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode oldAmfName IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ void InitialContextSetupRequestMsg::setUEAggregateMaxBitRate(
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UEAggregateMaxBitRate IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -248,7 +248,7 @@ void InitialContextSetupRequestMsg::setCoreNetworkAssistanceInfo(
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0)
     cout << "encode CoreNetworkAssistanceInformation IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -296,7 +296,7 @@ void InitialContextSetupRequestMsg::setCoreNetworkAssistanceInfo(
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0)
     cout << "encode CoreNetworkAssistanceInformation IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -331,7 +331,7 @@ void InitialContextSetupRequestMsg::setGuami(Guami_t value) {
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode GUAMI IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -394,7 +394,7 @@ void InitialContextSetupRequestMsg::setPduSessionResourceSetupRequestList(
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0)
     cout << "encode PDUSessionResourceSetupListCxtReq IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -403,7 +403,9 @@ void InitialContextSetupRequestMsg::setAllowedNssai(std::vector<S_Nssai> list) {
   S_NSSAI* m_snssai = new S_NSSAI[list.size()]();
   for (int i = 0; i < list.size(); i++) {
     m_snssai[i].setSst(list[i].sst);
-    if (list[i].sd.size()) m_snssai[i].setSd(list[i].sd);
+    if (list[i].sd.size() &&
+        (list[i].sd.compare("None") && list[i].sd.compare("none")))
+      m_snssai[i].setSd(list[i].sd);
   }
   allowedNssai->setAllowedNSSAI(m_snssai, list.size());
 
@@ -423,7 +425,7 @@ void InitialContextSetupRequestMsg::setAllowedNssai(std::vector<S_Nssai> list) {
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AllowedNSSAI IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -455,7 +457,7 @@ void InitialContextSetupRequestMsg::setUESecurityCapability(
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UESecurityCapabilities IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -480,7 +482,7 @@ void InitialContextSetupRequestMsg::setSecurityKey(uint8_t* key) {
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode SecurityKey IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -493,7 +495,7 @@ void InitialContextSetupRequestMsg::setNasPdu(uint8_t* nas, size_t sizeofnas) {
       (Ngap_InitialContextSetupRequestIEs_t*) calloc(
           1, sizeof(Ngap_InitialContextSetupRequestIEs_t));
   ie->id            = Ngap_ProtocolIE_ID_id_NAS_PDU;
-  ie->criticality   = Ngap_Criticality_reject;
+  ie->criticality   = Ngap_Criticality_ignore;
   ie->value.present = Ngap_InitialContextSetupRequestIEs__value_PR_NAS_PDU;
 
   int ret = nasPdu->encode2octetstring(ie->value.choice.NAS_PDU);
@@ -505,7 +507,7 @@ void InitialContextSetupRequestMsg::setNasPdu(uint8_t* nas, size_t sizeofnas) {
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode NAS_PDU IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -533,7 +535,7 @@ void InitialContextSetupRequestMsg::setUERadioCapability(
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UERadioCapability IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -765,7 +767,7 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
       } break;
       case Ngap_ProtocolIE_ID_id_NAS_PDU: {
         if (initialContextSetupRequestIEs->protocolIEs.list.array[i]
-                    ->criticality == Ngap_Criticality_reject &&
+                    ->criticality == Ngap_Criticality_ignore &&
             initialContextSetupRequestIEs->protocolIEs.list.array[i]
                     ->value.present ==
                 Ngap_InitialContextSetupRequestIEs__value_PR_NAS_PDU) {
