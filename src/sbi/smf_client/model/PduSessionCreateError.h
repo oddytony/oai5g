@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * PduSessionCreateError.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_PduSessionCreateError_H_
 #define OAI_SMF_MODEL_PduSessionCreateError_H_
-
 
 #include "../ModelBase.h"
 
@@ -29,90 +29,89 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  PduSessionCreateError
-    : public ModelBase
-{
-public:
-    PduSessionCreateError();
-    virtual ~PduSessionCreateError();
+class PduSessionCreateError : public ModelBase {
+ public:
+  PduSessionCreateError();
+  virtual ~PduSessionCreateError();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// PduSessionCreateError members
+  /////////////////////////////////////////////
+  /// PduSessionCreateError members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<ProblemDetails_2> getError() const;
-    
-    void setError(const std::shared_ptr<ProblemDetails_2>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<ProblemDetails_2> getError() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getN1smCause() const;
-    bool n1smCauseIsSet() const;
-    void unsetN1smCause();
+  void setError(const std::shared_ptr<ProblemDetails_2>& value);
 
-    void setN1smCause(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getN1smCause() const;
+  bool n1smCauseIsSet() const;
+  void unsetN1smCause();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<RefToBinaryData> getN1SmInfoToUe() const;
-    bool n1SmInfoToUeIsSet() const;
-    void unsetN1SmInfoToUe();
+  void setN1smCause(const utility::string_t& value);
 
-    void setN1SmInfoToUe(const std::shared_ptr<RefToBinaryData>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<RefToBinaryData> getN1SmInfoToUe() const;
+  bool n1SmInfoToUeIsSet() const;
+  void unsetN1SmInfoToUe();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t getBackOffTimer() const;
-    bool backOffTimerIsSet() const;
-    void unsetBackOffTimer();
+  void setN1SmInfoToUe(const std::shared_ptr<RefToBinaryData>& value);
 
-    void setBackOffTimer(int32_t value);
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t getBackOffTimer() const;
+  bool backOffTimerIsSet() const;
+  void unsetBackOffTimer();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::datetime getRecoveryTime() const;
-    bool recoveryTimeIsSet() const;
-    void unsetRecoveryTime();
+  void setBackOffTimer(int32_t value);
 
-    void setRecoveryTime(const utility::datetime& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::datetime getRecoveryTime() const;
+  bool recoveryTimeIsSet() const;
+  void unsetRecoveryTime();
 
+  void setRecoveryTime(const utility::datetime& value);
 
-protected:
-    std::shared_ptr<ProblemDetails_2> m_Error;
-        utility::string_t m_N1smCause;
-    bool m_N1smCauseIsSet;
-    std::shared_ptr<RefToBinaryData> m_N1SmInfoToUe;
-    bool m_N1SmInfoToUeIsSet;
-    int32_t m_BackOffTimer;
-    bool m_BackOffTimerIsSet;
-    utility::datetime m_RecoveryTime;
-    bool m_RecoveryTimeIsSet;
+ protected:
+  std::shared_ptr<ProblemDetails_2> m_Error;
+  utility::string_t m_N1smCause;
+  bool m_N1smCauseIsSet;
+  std::shared_ptr<RefToBinaryData> m_N1SmInfoToUe;
+  bool m_N1SmInfoToUeIsSet;
+  int32_t m_BackOffTimer;
+  bool m_BackOffTimerIsSet;
+  utility::datetime m_RecoveryTime;
+  bool m_RecoveryTimeIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_PduSessionCreateError_H_ */

@@ -39,7 +39,9 @@ void N1N2MessageCollectionDocumentApi::setupRoutes() {
   using namespace Pistache::Rest;
 
   Routes::Post(
-      *router, base + amf_cfg.sbi_api_version + "/ue-contexts/:ueContextId/n1-n2-messages",
+      *router,
+      base + amf_cfg.sbi_api_version +
+          "/ue-contexts/:ueContextId/n1-n2-messages",
       Routes::bind(
           &N1N2MessageCollectionDocumentApi::n1_n2_message_transfer_handler,
           this));

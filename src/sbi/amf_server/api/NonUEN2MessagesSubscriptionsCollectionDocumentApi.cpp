@@ -38,7 +38,8 @@ void NonUEN2MessagesSubscriptionsCollectionDocumentApi::setupRoutes() {
   using namespace Pistache::Rest;
 
   Routes::Post(
-      *router, base + amf_cfg.sbi_api_version + "/non-ue-n2-messages/subscriptions",
+      *router,
+      base + amf_cfg.sbi_api_version + "/non-ue-n2-messages/subscriptions",
       Routes::bind(
           &NonUEN2MessagesSubscriptionsCollectionDocumentApi::
               non_ue_n2_info_subscribe_handler,

@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * IndividualSMContextApi.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_API_IndividualSMContextApi_H_
 #define OAI_SMF_API_IndividualSMContextApi_H_
-
 
 #include "../ApiClient.h"
 
@@ -30,7 +30,6 @@
 #include "SmContextUpdatedData.h"
 #include <cpprest/details/basic_types.h>
 
-
 #include <boost/optional.hpp>
 
 namespace oai {
@@ -39,60 +38,57 @@ namespace api {
 
 using namespace oai::smf::model;
 
+class IndividualSMContextApi {
+ public:
+  explicit IndividualSMContextApi(std::shared_ptr<ApiClient> apiClient);
 
+  virtual ~IndividualSMContextApi();
 
-class  IndividualSMContextApi 
-{
-public:
+  /// <summary>
+  /// Release SM Context
+  /// </summary>
+  /// <remarks>
+  ///
+  /// </remarks>
+  /// <param name="smContextRef">SM context reference</param>
+  /// <param name="smContextReleaseData">representation of the data to be sent
+  /// to the SMF when releasing the SM context (optional)</param>
+  pplx::task<void> releaseSmContext(
+      utility::string_t smContextRef,
+      boost::optional<std::shared_ptr<SmContextReleaseData>>
+          smContextReleaseData);
+  /// <summary>
+  /// Retrieve SM Context
+  /// </summary>
+  /// <remarks>
+  ///
+  /// </remarks>
+  /// <param name="smContextRef">SM context reference</param>
+  /// <param name="smContextRetrieveData">parameters used to retrieve the SM
+  /// context (optional)</param>
+  pplx::task<std::shared_ptr<SmContextRetrievedData>> retrieveSmContext(
+      utility::string_t smContextRef,
+      boost::optional<std::shared_ptr<SmContextRetrieveData>>
+          smContextRetrieveData);
+  /// <summary>
+  /// Update SM Context
+  /// </summary>
+  /// <remarks>
+  ///
+  /// </remarks>
+  /// <param name="smContextRef">SM context reference</param>
+  /// <param name="smContextUpdateData">representation of the updates to apply
+  /// to the SM context</param>
+  pplx::task<std::shared_ptr<SmContextUpdatedData>> updateSmContext(
+      utility::string_t smContextRef,
+      std::shared_ptr<SmContextUpdateData> smContextUpdateData);
 
-    explicit IndividualSMContextApi( std::shared_ptr<ApiClient> apiClient );
-
-    virtual ~IndividualSMContextApi();
-
-    /// <summary>
-    /// Release SM Context
-    /// </summary>
-    /// <remarks>
-    /// 
-    /// </remarks>
-    /// <param name="smContextRef">SM context reference</param>
-    /// <param name="smContextReleaseData">representation of the data to be sent to the SMF when releasing the SM context (optional)</param>
-    pplx::task<void> releaseSmContext(
-        utility::string_t smContextRef,
-        boost::optional<std::shared_ptr<SmContextReleaseData>> smContextReleaseData
-    );
-    /// <summary>
-    /// Retrieve SM Context
-    /// </summary>
-    /// <remarks>
-    /// 
-    /// </remarks>
-    /// <param name="smContextRef">SM context reference</param>
-    /// <param name="smContextRetrieveData">parameters used to retrieve the SM context (optional)</param>
-    pplx::task<std::shared_ptr<SmContextRetrievedData>> retrieveSmContext(
-        utility::string_t smContextRef,
-        boost::optional<std::shared_ptr<SmContextRetrieveData>> smContextRetrieveData
-    );
-    /// <summary>
-    /// Update SM Context
-    /// </summary>
-    /// <remarks>
-    /// 
-    /// </remarks>
-    /// <param name="smContextRef">SM context reference</param>
-    /// <param name="smContextUpdateData">representation of the updates to apply to the SM context</param>
-    pplx::task<std::shared_ptr<SmContextUpdatedData>> updateSmContext(
-        utility::string_t smContextRef,
-        std::shared_ptr<SmContextUpdateData> smContextUpdateData
-    );
-
-protected:
-    std::shared_ptr<ApiClient> m_ApiClient;
+ protected:
+  std::shared_ptr<ApiClient> m_ApiClient;
 };
 
-}
-}
-}
+}  // namespace api
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_API_IndividualSMContextApi_H_ */
-

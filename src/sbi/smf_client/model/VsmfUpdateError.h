@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * VsmfUpdateError.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_VsmfUpdateError_H_
 #define OAI_SMF_MODEL_VsmfUpdateError_H_
-
 
 #include "../ModelBase.h"
 
@@ -31,134 +31,133 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  VsmfUpdateError
-    : public ModelBase
-{
-public:
-    VsmfUpdateError();
-    virtual ~VsmfUpdateError();
+class VsmfUpdateError : public ModelBase {
+ public:
+  VsmfUpdateError();
+  virtual ~VsmfUpdateError();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// VsmfUpdateError members
+  /////////////////////////////////////////////
+  /// VsmfUpdateError members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<ProblemDetails_2> getError() const;
-    
-    void setError(const std::shared_ptr<ProblemDetails_2>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<ProblemDetails_2> getError() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t getPti() const;
-    bool ptiIsSet() const;
-    void unsetPti();
+  void setError(const std::shared_ptr<ProblemDetails_2>& value);
 
-    void setPti(int32_t value);
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t getPti() const;
+  bool ptiIsSet() const;
+  void unsetPti();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getN1smCause() const;
-    bool n1smCauseIsSet() const;
-    void unsetN1smCause();
+  void setPti(int32_t value);
 
-    void setN1smCause(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getN1smCause() const;
+  bool n1smCauseIsSet() const;
+  void unsetN1smCause();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<RefToBinaryData> getN1SmInfoFromUe() const;
-    bool n1SmInfoFromUeIsSet() const;
-    void unsetN1SmInfoFromUe();
+  void setN1smCause(const utility::string_t& value);
 
-    void setN1SmInfoFromUe(const std::shared_ptr<RefToBinaryData>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<RefToBinaryData> getN1SmInfoFromUe() const;
+  bool n1SmInfoFromUeIsSet() const;
+  void unsetN1SmInfoFromUe();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<RefToBinaryData> getUnknownN1SmInfo() const;
-    bool unknownN1SmInfoIsSet() const;
-    void unsetUnknownN1SmInfo();
+  void setN1SmInfoFromUe(const std::shared_ptr<RefToBinaryData>& value);
 
-    void setUnknownN1SmInfo(const std::shared_ptr<RefToBinaryData>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<RefToBinaryData> getUnknownN1SmInfo() const;
+  bool unknownN1SmInfoIsSet() const;
+  void unsetUnknownN1SmInfo();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::vector<int32_t>& getFailedToAssignEbiList();
-    bool failedToAssignEbiListIsSet() const;
-    void unsetFailedToAssignEbiList();
+  void setUnknownN1SmInfo(const std::shared_ptr<RefToBinaryData>& value);
 
-    void setFailedToAssignEbiList(std::vector<int32_t> value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::vector<int32_t>& getFailedToAssignEbiList();
+  bool failedToAssignEbiListIsSet() const;
+  void unsetFailedToAssignEbiList();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<NgApCause> getNgApCause() const;
-    bool ngApCauseIsSet() const;
-    void unsetNgApCause();
+  void setFailedToAssignEbiList(std::vector<int32_t> value);
 
-    void setNgApCause(const std::shared_ptr<NgApCause>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<NgApCause> getNgApCause() const;
+  bool ngApCauseIsSet() const;
+  void unsetNgApCause();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t get5gMmCauseValue() const;
-    bool _5gMmCauseValueIsSet() const;
-    void unset_5gMmCauseValue();
+  void setNgApCause(const std::shared_ptr<NgApCause>& value);
 
-    void set5gMmCauseValue(int32_t value);
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t get5gMmCauseValue() const;
+  bool _5gMmCauseValueIsSet() const;
+  void unset_5gMmCauseValue();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::datetime getRecoveryTime() const;
-    bool recoveryTimeIsSet() const;
-    void unsetRecoveryTime();
+  void set5gMmCauseValue(int32_t value);
 
-    void setRecoveryTime(const utility::datetime& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::datetime getRecoveryTime() const;
+  bool recoveryTimeIsSet() const;
+  void unsetRecoveryTime();
 
+  void setRecoveryTime(const utility::datetime& value);
 
-protected:
-    std::shared_ptr<ProblemDetails_2> m_Error;
-        int32_t m_Pti;
-    bool m_PtiIsSet;
-    utility::string_t m_N1smCause;
-    bool m_N1smCauseIsSet;
-    std::shared_ptr<RefToBinaryData> m_N1SmInfoFromUe;
-    bool m_N1SmInfoFromUeIsSet;
-    std::shared_ptr<RefToBinaryData> m_UnknownN1SmInfo;
-    bool m_UnknownN1SmInfoIsSet;
-    std::vector<int32_t> m_FailedToAssignEbiList;
-    bool m_FailedToAssignEbiListIsSet;
-    std::shared_ptr<NgApCause> m_NgApCause;
-    bool m_NgApCauseIsSet;
-    int32_t m__5gMmCauseValue;
-    bool m__5gMmCauseValueIsSet;
-    utility::datetime m_RecoveryTime;
-    bool m_RecoveryTimeIsSet;
+ protected:
+  std::shared_ptr<ProblemDetails_2> m_Error;
+  int32_t m_Pti;
+  bool m_PtiIsSet;
+  utility::string_t m_N1smCause;
+  bool m_N1smCauseIsSet;
+  std::shared_ptr<RefToBinaryData> m_N1SmInfoFromUe;
+  bool m_N1SmInfoFromUeIsSet;
+  std::shared_ptr<RefToBinaryData> m_UnknownN1SmInfo;
+  bool m_UnknownN1SmInfoIsSet;
+  std::vector<int32_t> m_FailedToAssignEbiList;
+  bool m_FailedToAssignEbiListIsSet;
+  std::shared_ptr<NgApCause> m_NgApCause;
+  bool m_NgApCauseIsSet;
+  int32_t m__5gMmCauseValue;
+  bool m__5gMmCauseValueIsSet;
+  utility::datetime m_RecoveryTime;
+  bool m_RecoveryTimeIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_VsmfUpdateError_H_ */

@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * QosFlowProfile.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_QosFlowProfile_H_
 #define OAI_SMF_MODEL_QosFlowProfile_H_
-
 
 #include "../ModelBase.h"
 
@@ -32,112 +32,112 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  QosFlowProfile
-    : public ModelBase
-{
-public:
-    QosFlowProfile();
-    virtual ~QosFlowProfile();
+class QosFlowProfile : public ModelBase {
+ public:
+  QosFlowProfile();
+  virtual ~QosFlowProfile();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// QosFlowProfile members
+  /////////////////////////////////////////////
+  /// QosFlowProfile members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t get5qi() const;
-    
-    void set5qi(int32_t value);
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t get5qi() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<NonDynamic5Qi> getNonDynamic5Qi() const;
-    bool nonDynamic5QiIsSet() const;
-    void unsetNonDynamic5Qi();
+  void set5qi(int32_t value);
 
-    void setNonDynamic5Qi(const std::shared_ptr<NonDynamic5Qi>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<NonDynamic5Qi> getNonDynamic5Qi() const;
+  bool nonDynamic5QiIsSet() const;
+  void unsetNonDynamic5Qi();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<Dynamic5Qi> getDynamic5Qi() const;
-    bool dynamic5QiIsSet() const;
-    void unsetDynamic5Qi();
+  void setNonDynamic5Qi(const std::shared_ptr<NonDynamic5Qi>& value);
 
-    void setDynamic5Qi(const std::shared_ptr<Dynamic5Qi>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<Dynamic5Qi> getDynamic5Qi() const;
+  bool dynamic5QiIsSet() const;
+  void unsetDynamic5Qi();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<Arp> getArp() const;
-    bool arpIsSet() const;
-    void unsetArp();
+  void setDynamic5Qi(const std::shared_ptr<Dynamic5Qi>& value);
 
-    void setArp(const std::shared_ptr<Arp>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<Arp> getArp() const;
+  bool arpIsSet() const;
+  void unsetArp();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<GbrQosFlowInformation> getGbrQosFlowInfo() const;
-    bool gbrQosFlowInfoIsSet() const;
-    void unsetGbrQosFlowInfo();
+  void setArp(const std::shared_ptr<Arp>& value);
 
-    void setGbrQosFlowInfo(const std::shared_ptr<GbrQosFlowInformation>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<GbrQosFlowInformation> getGbrQosFlowInfo() const;
+  bool gbrQosFlowInfoIsSet() const;
+  void unsetGbrQosFlowInfo();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<ReflectiveQoSAttribute> getRqa() const;
-    bool rqaIsSet() const;
-    void unsetRqa();
+  void setGbrQosFlowInfo(const std::shared_ptr<GbrQosFlowInformation>& value);
 
-    void setRqa(const std::shared_ptr<ReflectiveQoSAttribute>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<ReflectiveQoSAttribute> getRqa() const;
+  bool rqaIsSet() const;
+  void unsetRqa();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<AdditionalQosFlowInfo> getAdditionalQosFlowInfo() const;
-    bool additionalQosFlowInfoIsSet() const;
-    void unsetAdditionalQosFlowInfo();
+  void setRqa(const std::shared_ptr<ReflectiveQoSAttribute>& value);
 
-    void setAdditionalQosFlowInfo(const std::shared_ptr<AdditionalQosFlowInfo>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<AdditionalQosFlowInfo> getAdditionalQosFlowInfo() const;
+  bool additionalQosFlowInfoIsSet() const;
+  void unsetAdditionalQosFlowInfo();
 
+  void setAdditionalQosFlowInfo(
+      const std::shared_ptr<AdditionalQosFlowInfo>& value);
 
-protected:
-    int32_t m__5qi;
-        std::shared_ptr<NonDynamic5Qi> m_NonDynamic5Qi;
-    bool m_NonDynamic5QiIsSet;
-    std::shared_ptr<Dynamic5Qi> m_Dynamic5Qi;
-    bool m_Dynamic5QiIsSet;
-    std::shared_ptr<Arp> m_Arp;
-    bool m_ArpIsSet;
-    std::shared_ptr<GbrQosFlowInformation> m_GbrQosFlowInfo;
-    bool m_GbrQosFlowInfoIsSet;
-    std::shared_ptr<ReflectiveQoSAttribute> m_Rqa;
-    bool m_RqaIsSet;
-    std::shared_ptr<AdditionalQosFlowInfo> m_AdditionalQosFlowInfo;
-    bool m_AdditionalQosFlowInfoIsSet;
+ protected:
+  int32_t m__5qi;
+  std::shared_ptr<NonDynamic5Qi> m_NonDynamic5Qi;
+  bool m_NonDynamic5QiIsSet;
+  std::shared_ptr<Dynamic5Qi> m_Dynamic5Qi;
+  bool m_Dynamic5QiIsSet;
+  std::shared_ptr<Arp> m_Arp;
+  bool m_ArpIsSet;
+  std::shared_ptr<GbrQosFlowInformation> m_GbrQosFlowInfo;
+  bool m_GbrQosFlowInfoIsSet;
+  std::shared_ptr<ReflectiveQoSAttribute> m_Rqa;
+  bool m_RqaIsSet;
+  std::shared_ptr<AdditionalQosFlowInfo> m_AdditionalQosFlowInfo;
+  bool m_AdditionalQosFlowInfoIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_QosFlowProfile_H_ */

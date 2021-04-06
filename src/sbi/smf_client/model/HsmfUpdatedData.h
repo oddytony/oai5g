@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * HsmfUpdatedData.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_HsmfUpdatedData_H_
 #define OAI_SMF_MODEL_HsmfUpdatedData_H_
-
 
 #include "../ModelBase.h"
 
@@ -27,49 +27,48 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  HsmfUpdatedData
-    : public ModelBase
-{
-public:
-    HsmfUpdatedData();
-    virtual ~HsmfUpdatedData();
+class HsmfUpdatedData : public ModelBase {
+ public:
+  HsmfUpdatedData();
+  virtual ~HsmfUpdatedData();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// HsmfUpdatedData members
+  /////////////////////////////////////////////
+  /// HsmfUpdatedData members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<RefToBinaryData> getN1SmInfoToUe() const;
-    bool n1SmInfoToUeIsSet() const;
-    void unsetN1SmInfoToUe();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<RefToBinaryData> getN1SmInfoToUe() const;
+  bool n1SmInfoToUeIsSet() const;
+  void unsetN1SmInfoToUe();
 
-    void setN1SmInfoToUe(const std::shared_ptr<RefToBinaryData>& value);
+  void setN1SmInfoToUe(const std::shared_ptr<RefToBinaryData>& value);
 
-
-protected:
-    std::shared_ptr<RefToBinaryData> m_N1SmInfoToUe;
-    bool m_N1SmInfoToUeIsSet;
+ protected:
+  std::shared_ptr<RefToBinaryData> m_N1SmInfoToUe;
+  bool m_N1SmInfoToUeIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_HsmfUpdatedData_H_ */

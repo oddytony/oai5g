@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * Arp.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_Arp_H_
 #define OAI_SMF_MODEL_Arp_H_
-
 
 #include "../ModelBase.h"
 
@@ -28,62 +28,61 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  Arp
-    : public ModelBase
-{
-public:
-    Arp();
-    virtual ~Arp();
+class Arp : public ModelBase {
+ public:
+  Arp();
+  virtual ~Arp();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// Arp members
+  /////////////////////////////////////////////
+  /// Arp members
 
-    /// <summary>
-    /// nullable true shall not be used for this attribute
-    /// </summary>
-    int32_t getPriorityLevel() const;
-    
-    void setPriorityLevel(int32_t value);
+  /// <summary>
+  /// nullable true shall not be used for this attribute
+  /// </summary>
+  int32_t getPriorityLevel() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<PreemptionCapability> getPreemptCap() const;
-    
-    void setPreemptCap(const std::shared_ptr<PreemptionCapability>& value);
+  void setPriorityLevel(int32_t value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<PreemptionVulnerability> getPreemptVuln() const;
-    
-    void setPreemptVuln(const std::shared_ptr<PreemptionVulnerability>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<PreemptionCapability> getPreemptCap() const;
 
+  void setPreemptCap(const std::shared_ptr<PreemptionCapability>& value);
 
-protected:
-    int32_t m_PriorityLevel;
-        std::shared_ptr<PreemptionCapability> m_PreemptCap;
-        std::shared_ptr<PreemptionVulnerability> m_PreemptVuln;
-    };
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<PreemptionVulnerability> getPreemptVuln() const;
 
+  void setPreemptVuln(const std::shared_ptr<PreemptionVulnerability>& value);
 
-}
-}
-}
+ protected:
+  int32_t m_PriorityLevel;
+  std::shared_ptr<PreemptionCapability> m_PreemptCap;
+  std::shared_ptr<PreemptionVulnerability> m_PreemptVuln;
+};
+
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_Arp_H_ */

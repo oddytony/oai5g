@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * IndividualPDUSessionHSMFApi.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_API_IndividualPDUSessionHSMFApi_H_
 #define OAI_SMF_API_IndividualPDUSessionHSMFApi_H_
-
 
 #include "../ApiClient.h"
 
@@ -28,7 +28,6 @@
 #include "ReleaseData.h"
 #include <cpprest/details/basic_types.h>
 
-
 #include <boost/optional.hpp>
 
 namespace oai {
@@ -37,48 +36,43 @@ namespace api {
 
 using namespace oai::smf::model;
 
+class IndividualPDUSessionHSMFApi {
+ public:
+  explicit IndividualPDUSessionHSMFApi(std::shared_ptr<ApiClient> apiClient);
 
+  virtual ~IndividualPDUSessionHSMFApi();
 
-class  IndividualPDUSessionHSMFApi 
-{
-public:
+  /// <summary>
+  /// Release
+  /// </summary>
+  /// <remarks>
+  ///
+  /// </remarks>
+  /// <param name="pduSessionRef">PDU session reference</param>
+  /// <param name="releaseData">representation of the data to be sent to H-SMF
+  /// when releasing the PDU session (optional)</param>
+  pplx::task<void> releasePduSession(
+      utility::string_t pduSessionRef,
+      boost::optional<std::shared_ptr<ReleaseData>> releaseData);
+  /// <summary>
+  /// Update (initiated by V-SMF)
+  /// </summary>
+  /// <remarks>
+  ///
+  /// </remarks>
+  /// <param name="pduSessionRef">PDU session reference</param>
+  /// <param name="hsmfUpdateData">representation of the updates to apply to the
+  /// PDU session</param>
+  pplx::task<std::shared_ptr<HsmfUpdatedData>> updatePduSession(
+      utility::string_t pduSessionRef,
+      std::shared_ptr<HsmfUpdateData> hsmfUpdateData);
 
-    explicit IndividualPDUSessionHSMFApi( std::shared_ptr<ApiClient> apiClient );
-
-    virtual ~IndividualPDUSessionHSMFApi();
-
-    /// <summary>
-    /// Release
-    /// </summary>
-    /// <remarks>
-    /// 
-    /// </remarks>
-    /// <param name="pduSessionRef">PDU session reference</param>
-    /// <param name="releaseData">representation of the data to be sent to H-SMF when releasing the PDU session (optional)</param>
-    pplx::task<void> releasePduSession(
-        utility::string_t pduSessionRef,
-        boost::optional<std::shared_ptr<ReleaseData>> releaseData
-    );
-    /// <summary>
-    /// Update (initiated by V-SMF)
-    /// </summary>
-    /// <remarks>
-    /// 
-    /// </remarks>
-    /// <param name="pduSessionRef">PDU session reference</param>
-    /// <param name="hsmfUpdateData">representation of the updates to apply to the PDU session</param>
-    pplx::task<std::shared_ptr<HsmfUpdatedData>> updatePduSession(
-        utility::string_t pduSessionRef,
-        std::shared_ptr<HsmfUpdateData> hsmfUpdateData
-    );
-
-protected:
-    std::shared_ptr<ApiClient> m_ApiClient;
+ protected:
+  std::shared_ptr<ApiClient> m_ApiClient;
 };
 
-}
-}
-}
+}  // namespace api
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_API_IndividualPDUSessionHSMFApi_H_ */
-

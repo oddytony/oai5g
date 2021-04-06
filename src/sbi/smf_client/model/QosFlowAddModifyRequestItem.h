@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * QosFlowAddModifyRequestItem.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_QosFlowAddModifyRequestItem_H_
 #define OAI_SMF_MODEL_QosFlowAddModifyRequestItem_H_
-
 
 #include "../ModelBase.h"
 
@@ -28,90 +28,89 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  QosFlowAddModifyRequestItem
-    : public ModelBase
-{
-public:
-    QosFlowAddModifyRequestItem();
-    virtual ~QosFlowAddModifyRequestItem();
+class QosFlowAddModifyRequestItem : public ModelBase {
+ public:
+  QosFlowAddModifyRequestItem();
+  virtual ~QosFlowAddModifyRequestItem();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// QosFlowAddModifyRequestItem members
+  /////////////////////////////////////////////
+  /// QosFlowAddModifyRequestItem members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t getQfi() const;
-    
-    void setQfi(int32_t value);
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t getQfi() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t getEbi() const;
-    bool ebiIsSet() const;
-    void unsetEbi();
+  void setQfi(int32_t value);
 
-    void setEbi(int32_t value);
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t getEbi() const;
+  bool ebiIsSet() const;
+  void unsetEbi();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getQosRules() const;
-    bool qosRulesIsSet() const;
-    void unsetQosRules();
+  void setEbi(int32_t value);
 
-    void setQosRules(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getQosRules() const;
+  bool qosRulesIsSet() const;
+  void unsetQosRules();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getQosFlowDescription() const;
-    bool qosFlowDescriptionIsSet() const;
-    void unsetQosFlowDescription();
+  void setQosRules(const utility::string_t& value);
 
-    void setQosFlowDescription(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getQosFlowDescription() const;
+  bool qosFlowDescriptionIsSet() const;
+  void unsetQosFlowDescription();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<QosFlowProfile> getQosFlowProfile() const;
-    bool qosFlowProfileIsSet() const;
-    void unsetQosFlowProfile();
+  void setQosFlowDescription(const utility::string_t& value);
 
-    void setQosFlowProfile(const std::shared_ptr<QosFlowProfile>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<QosFlowProfile> getQosFlowProfile() const;
+  bool qosFlowProfileIsSet() const;
+  void unsetQosFlowProfile();
 
+  void setQosFlowProfile(const std::shared_ptr<QosFlowProfile>& value);
 
-protected:
-    int32_t m_Qfi;
-        int32_t m_Ebi;
-    bool m_EbiIsSet;
-    utility::string_t m_QosRules;
-    bool m_QosRulesIsSet;
-    utility::string_t m_QosFlowDescription;
-    bool m_QosFlowDescriptionIsSet;
-    std::shared_ptr<QosFlowProfile> m_QosFlowProfile;
-    bool m_QosFlowProfileIsSet;
+ protected:
+  int32_t m_Qfi;
+  int32_t m_Ebi;
+  bool m_EbiIsSet;
+  utility::string_t m_QosRules;
+  bool m_QosRulesIsSet;
+  utility::string_t m_QosFlowDescription;
+  bool m_QosFlowDescriptionIsSet;
+  std::shared_ptr<QosFlowProfile> m_QosFlowProfile;
+  bool m_QosFlowProfileIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_QosFlowAddModifyRequestItem_H_ */
