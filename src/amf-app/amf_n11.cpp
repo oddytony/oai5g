@@ -741,6 +741,7 @@ bool amf_n11::discover_smf(
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, NRF_CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
 
     // Response information.
     long httpCode = {0};
@@ -852,6 +853,7 @@ bool amf_n11::send_ue_authentication_request(
     curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, AUSF_CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
 
     if (http_version == 2) {
       curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
@@ -935,7 +937,7 @@ void amf_n11::curl_http_client(
       curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
     curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1);
-    curl_easy_setopt(curl, CURLOPT_INTERFACE, "ens33");
+    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
     //    Logger::amf_n1().info("[CURL] request sent by interface " +
     //    udm_cfg.nudr.if_name);
 
