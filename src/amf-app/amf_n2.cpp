@@ -703,12 +703,23 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
       0xe000);  // TODO: remove hardcoded value
   msg->setSecurityKey((uint8_t*) bdata(itti_msg.kgnb));
   msg->setNasPdu((uint8_t*) bdata(itti_msg.nas), blength(itti_msg.nas));
-
+  // TODO: get the allowed NSSAIs from conf file
   std::vector<S_Nssai> list;
-  S_Nssai item;
-  item.sst = "01";
-  item.sd  = "None";
-  list.push_back(item);
+  for (auto p : amf_cfg.plmn_list) {
+    for (auto s : p.slice_list) {
+      S_Nssai item;
+      item.sst = s.sST;
+      item.sd  = s.sD;
+      list.push_back(item);
+    }
+  }
+
+  //  std::vector<S_Nssai> list;
+  /*  S_Nssai item;
+    item.sst = "01";
+    item.sd  = "None";
+    list.push_back(item);
+  */
   msg->setAllowedNssai(list);
   bdestroy(itti_msg.nas);
   bdestroy(itti_msg.kgnb);
@@ -724,9 +735,37 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
     if (itti_msg.is_pdu_exist) {
       std::vector<PDUSessionResourceSetupRequestItem_t> list;
       PDUSessionResourceSetupRequestItem_t item;
-      item.pduSessionId      = itti_msg.pdu_session_id;
-      item.s_nssai.sst       = "01";
-      item.s_nssai.sd        = "None";
+      item.pduSessionId = itti_msg.pdu_session_id;
+
+      // Get NSSAI from PDU Session Context
+      std::shared_ptr<nas_context> nc;
+      if (amf_n1_inst->is_amf_ue_id_2_nas_context(itti_msg.amf_ue_ngap_id))
+        nc = amf_n1_inst->amf_ue_id_2_nas_context(itti_msg.amf_ue_ngap_id);
+      else {
+        Logger::amf_n2().warn(
+            "No existed nas_context with amf_ue_ngap_id(0x%x)",
+            itti_msg.amf_ue_ngap_id);
+        // TODO:
+      }
+      string supi = "imsi-" + nc.get()->imsi;
+      Logger::amf_n2().debug("SUPI (%s)", supi.c_str());
+      std::shared_ptr<pdu_session_context> psc;
+
+      if (!amf_app_inst->find_pdu_session_context(
+              supi, itti_msg.pdu_session_id, psc)) {
+        Logger::amf_n2().warn(
+            "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
+        item.s_nssai.sst = "01";
+        item.s_nssai.sd  = "None";
+      } else {
+        item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
+        item.s_nssai.sd  = psc.get()->snssai.sD;
+      }
+
+      Logger::amf_n2().debug(
+          "S_NSSAI (SST, SD) %s, %s", item.s_nssai.sst.c_str(),
+          item.s_nssai.sd.c_str());
+
       item.pduSessionNAS_PDU = NULL;
       if (itti_msg.isn2sm_avaliable) {
         bstring n2sm = itti_msg.n2sm;
@@ -784,8 +823,6 @@ void amf_n2::handle_itti_message(
   nas_pdu[blength(itti_msg.nas)] = '\0';
   item.pduSessionNAS_PDU         = nas_pdu;
   item.sizeofpduSessionNAS_PDU   = blength(itti_msg.nas);
-  item.s_nssai.sst               = "01";    // TODO: get from N1N2msgTranferMsg
-  item.s_nssai.sd                = "none";  // TODO: get from N1N2msgTranferMsg
 
   // Get NSSAI from PDU Session Context
   std::shared_ptr<nas_context> nc;
@@ -805,6 +842,11 @@ void amf_n2::handle_itti_message(
           supi, itti_msg.pdu_session_id, psc)) {
     Logger::amf_n2().warn(
         "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
+    item.s_nssai.sst = "01";    // TODO: get from N1N2msgTranferMsg
+    item.s_nssai.sd  = "none";  // TODO: get from N1N2msgTranferMsg
+  } else {
+    item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
+    item.s_nssai.sd  = psc.get()->snssai.sD;
   }
 
   // item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
