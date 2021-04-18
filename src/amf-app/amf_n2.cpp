@@ -417,10 +417,11 @@ void amf_n2::handle_itti_message(itti_ng_shutdown& itti_msg) {
   gc.get()->ng_state = NGAP_SHUTDOWN;
 
   // Release all the resources related to this interface
+  uint32_t ran_ue_ngap_id = 0;
   for (auto ue_context : ranid2uecontext) {
     if (ue_context.second->gnb_assoc_id == itti_msg.assoc_id) {
-      uint32_t ran_ue_ngap_id = ue_context.second->ran_ue_ngap_id;
-      long amf_ue_ngap_id     = ue_context.second->amf_ue_ngap_id;
+      ran_ue_ngap_id      = ue_context.second->ran_ue_ngap_id;
+      long amf_ue_ngap_id = ue_context.second->amf_ue_ngap_id;
       // get NAS context
       std::shared_ptr<nas_context> nc;
       if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
@@ -431,6 +432,10 @@ void amf_n2::handle_itti_message(itti_ng_shutdown& itti_msg) {
             "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
       }
     }
+  }
+  // remove UE context
+  if (ranid2uecontext.count(ran_ue_ngap_id) > 0) {
+    ranid2uecontext.erase(ran_ue_ngap_id);
   }
 
   // Delete gNB context
