@@ -423,13 +423,13 @@ void amf_n2::handle_itti_message(itti_ng_shutdown& itti_msg) {
       long amf_ue_ngap_id     = ue_context.second->amf_ue_ngap_id;
       // get NAS context
       std::shared_ptr<nas_context> nc;
-      if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+      if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
         nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
-      else {
+        stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
+      } else {
         Logger::amf_n2().warn(
             "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
       }
-      stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
     }
   }
 
