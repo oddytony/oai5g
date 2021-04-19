@@ -831,7 +831,7 @@ bool amf_n11::send_ue_authentication_request(
       std::string(
           inet_ntoa(*((struct in_addr*) &amf_cfg.ausf_addr.ipv4_addr))) +
       ":" + std::to_string(amf_cfg.ausf_addr.port) + "/nausf-auth/" +
-      amf_cfg.ausf_addr.api_version + "ue-authentications";
+      amf_cfg.ausf_addr.api_version + "/ue-authentications";
 
   Logger::amf_n11().debug(
       "Send UE Authentication Request to AUSF, URL %s", url.c_str());
@@ -880,10 +880,13 @@ bool amf_n11::send_ue_authentication_request(
     if ((httpCode == 200) or
         (httpCode == 201)) {  // TODO: remove hardcoded value
       try {
-        nlohmann::json::parse(*httpData.get()).get_to(ue_auth_ctx);
+        std::string tmp = *httpData.get();
+        nlohmann::json::parse(tmp.c_str()).get_to(ue_auth_ctx);
+        Logger::amf_n11().debug(
+            "UE Authentication, response from AUSF\n, %s ", tmp.c_str());
       } catch (nlohmann::json::exception& e) {
         Logger::amf_n11().warn(
-            "UE Authentication, could not parse json from the AUSF "
+            "UE Authentication, could not parse Json from the AUSF "
             "response");
         // TODO: error handling
         return false;
