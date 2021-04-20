@@ -153,6 +153,7 @@ int UESecurityCapability::decodefrombuffer(
   decoded_size++;
   if (length >= 4) decoded_size += (length - 2);  // TODO: decoding EEA EIA
   Logger::nas_mm().debug(
-      "UESecurityCapability EA 0x%d,IA 0x%d", _5g_EASel, _5g_IASel);
+      "UESecurityCapability (length %d) EA 0x%x,IA 0x%x", length, _5g_EASel,
+      _5g_IASel);
   return decoded_size;
 }
