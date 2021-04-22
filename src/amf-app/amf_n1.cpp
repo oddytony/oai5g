@@ -1517,7 +1517,7 @@ bool amf_n1::authentication_vectors_generator_in_udm(
 void amf_n1::test_generate_5g_he_av_in_udm(
     const uint8_t opc[16], uint8_t key[16], uint8_t sqnak[6],
     std::string serving_network, _5G_HE_AV_t& vector) {
-  uint8_t amf[] = {0x90, 0x01};
+  uint8_t amf[] = {0x80, 0x00};
   uint8_t mac_a[8];
   uint8_t ck[16];
   uint8_t ik[16];
@@ -1580,7 +1580,7 @@ void amf_n1::generate_5g_he_av_in_udm(
     const uint8_t opc[16], string imsi, uint8_t key[16], uint8_t sqn[6],
     std::string serving_network, _5G_HE_AV_t& vector) {
   Logger::amf_n1().debug("Generate 5g_he_av as in UDM");
-  uint8_t amf[] = {0x90, 0x01};
+  uint8_t amf[] = {0x80, 0x00};
   uint8_t mac_a[8];
   uint8_t ck[16];
   uint8_t ik[16];
