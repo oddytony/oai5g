@@ -1009,14 +1009,22 @@ void amf_n1::registration_request_handle(
 
   // Get UE Security Capability IE (optional), not included for periodic
   // registration updating procedure
-  uint8_t encrypt_alg   = {0};
-  uint8_t integrity_alg = {0};
-  if (!regReq->getUeSecurityCapability(encrypt_alg, integrity_alg)) {
+  uint8_t encrypt_alg      = {0};
+  uint8_t integrity_alg    = {0};
+  uint8_t security_cap_eea = {0};
+  uint8_t security_cap_eia = {0};
+
+  if (!regReq->getUeSecurityCapability(
+          encrypt_alg, integrity_alg, security_cap_eea, security_cap_eia)) {
     Logger::amf_n1().warn("No Optional IE UESecurityCapability available");
   }
   nc.get()->ueSecurityCapEnc = encrypt_alg;
   nc.get()->ueSecurityCapInt = integrity_alg;
-  nc.get()->ueSecurityCaplen = regReq->ie_ue_security_capability->getLenght();
+
+  nc.get()->ueSecurityCapEEA = security_cap_eea;
+  nc.get()->ueSecurityCapEIA = security_cap_eia;
+
+  nc.get()->ueSecurityCaplen = regReq->ie_ue_security_capability->getLength();
 
   // Get Requested NSSAI (Optional IE), if provided
   std::vector<SNSSAI_t> requestedNssai = {};
@@ -1938,10 +1946,17 @@ bool amf_n1::start_security_mode_control_procedure(
   smc->setNAS_Security_Algorithms(amf_nea, amf_nia);
   Logger::amf_n1().debug("Encoded ngKSI 0x%x", nc.get()->ngKsi);
   smc->setngKSI(NAS_KEY_SET_IDENTIFIER_NATIVE, nc.get()->ngKsi & 0x07);
-  smc->setUE_Security_Capability(
-      nc.get()->ueSecurityCapEnc, nc.get()->ueSecurityCapInt);
+  if (nc.get()->ueSecurityCaplen >= 4) {
+    smc->setUE_Security_Capability(
+        nc.get()->ueSecurityCapEnc, nc.get()->ueSecurityCapInt,
+        nc.get()->ueSecurityCapEEA, nc.get()->ueSecurityCapEIA);
+  } else {
+    smc->setUE_Security_Capability(
+        nc.get()->ueSecurityCapEnc, nc.get()->ueSecurityCapInt);
+  }
+
   if (smc->ie_ue_security_capability != NULL) {
-    smc->ie_ue_security_capability->setLenght(nc.get()->ueSecurityCaplen);
+    smc->ie_ue_security_capability->setLength(nc.get()->ueSecurityCaplen);
   } else {
     Logger::amf_n1().error("smc->ie_ue_security_capability is NULL");
   }

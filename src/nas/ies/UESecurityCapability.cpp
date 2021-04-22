@@ -60,6 +60,18 @@ UESecurityCapability::UESecurityCapability(
 }
 
 //------------------------------------------------------------------------------
+UESecurityCapability::UESecurityCapability(
+    const uint8_t iei, uint8_t _5gg_EASel, uint8_t _5gg_IASel, uint8_t _EEASel,
+    uint8_t _EIASel) {
+  _iei      = iei;
+  _5g_EASel = _5gg_EASel;
+  _5g_IASel = _5gg_IASel;
+  EEASel    = _EEASel;
+  EIASel    = _EIASel;
+  length    = 4;
+}
+
+//------------------------------------------------------------------------------
 void UESecurityCapability::setEASel(uint8_t sel) {
   _5g_EASel = sel;
 }
@@ -67,6 +79,16 @@ void UESecurityCapability::setEASel(uint8_t sel) {
 //------------------------------------------------------------------------------
 void UESecurityCapability::setIASel(uint8_t sel) {
   _5g_IASel = sel;
+}
+
+//------------------------------------------------------------------------------
+void UESecurityCapability::setEEASel(uint8_t sel) {
+  EEASel = sel;
+}
+
+//------------------------------------------------------------------------------
+void UESecurityCapability::setEIASel(uint8_t sel) {
+  EIASel = sel;
 }
 
 //------------------------------------------------------------------------------
@@ -80,18 +102,28 @@ uint8_t UESecurityCapability::getIASel() {
 }
 
 //------------------------------------------------------------------------------
-void UESecurityCapability::setLenght(uint8_t len) {
+uint8_t UESecurityCapability::getEEASel() {
+  return EEASel;
+}
+
+//------------------------------------------------------------------------------
+uint8_t UESecurityCapability::getEIASel() {
+  return EIASel;
+}
+
+//------------------------------------------------------------------------------
+void UESecurityCapability::setLength(uint8_t len) {
   if ((len > 0) && (len <= 4)) {
     length = len;
   } else {
-    Logger::nas_mm().debug("Set UESecurityCapability Lenght faile %d", len);
+    Logger::nas_mm().debug("Set UESecurityCapability Length fail %d", len);
     Logger::nas_mm().debug(
-        "UESecurityCapability Lenght is set to the default value %d", length);
+        "UESecurityCapability Length is set to the default value %d", length);
   }
 }
 
 //------------------------------------------------------------------------------
-uint8_t UESecurityCapability::getLenght() {
+uint8_t UESecurityCapability::getLength() {
   return length;
 }
 
@@ -113,9 +145,9 @@ int UESecurityCapability::encode2buffer(uint8_t* buf, int len) {
     *(buf + encoded_size) = _5g_IASel;
     encoded_size++;
     if (length == 4) {
-      *(buf + encoded_size) = 0xf0;
+      *(buf + encoded_size) = EEASel;  // 0xf0; //TODO: remove hardcoded value
       encoded_size++;
-      *(buf + encoded_size) = 0xf0;
+      *(buf + encoded_size) = EIASel;  // 0x70; //TODO: remove hardcoded value
       encoded_size++;
     }
 
@@ -127,9 +159,9 @@ int UESecurityCapability::encode2buffer(uint8_t* buf, int len) {
     *(buf + encoded_size) = _5g_IASel;
     encoded_size++;
     if (length == 4) {
-      *(buf + encoded_size) = 0xf0;
+      *(buf + encoded_size) = EEASel;  // 0xf0; //TODO: remove hardcoded value
       encoded_size++;
-      *(buf + encoded_size) = 0xf0;
+      *(buf + encoded_size) = EIASel;  // 0x70; //TODO: remove hardcoded value
       encoded_size++;
     }
   }
@@ -151,9 +183,16 @@ int UESecurityCapability::decodefrombuffer(
   decoded_size++;
   _5g_IASel = *(buf + decoded_size);
   decoded_size++;
-  if (length >= 4) decoded_size += (length - 2);  // TODO: decoding EEA EIA
+
+  if (length >= 4) {
+    EEASel = *(buf + decoded_size);
+    decoded_size++;
+    EIASel = *(buf + decoded_size);
+    decoded_size++;
+    decoded_size += (length - 4);  // TODO: decoding EEA EIA
+  }
   Logger::nas_mm().debug(
-      "UESecurityCapability (length %d) EA 0x%x,IA 0x%x", length, _5g_EASel,
-      _5g_IASel);
+      "UESecurityCapability (length %d) EA 0x%x,IA 0x%x, EEA 0x%x, EIA 0x%x,",
+      length, _5g_EASel, _5g_IASel, EEASel, EIASel);
   return decoded_size;
 }

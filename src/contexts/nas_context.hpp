@@ -77,6 +77,10 @@ class nas_context {
   uint8_t ueSecurityCaplen;
   uint8_t ueSecurityCapEnc;
   uint8_t ueSecurityCapInt;
+
+  uint8_t ueSecurityCapEEA;
+  uint8_t ueSecurityCapEIA;
+
   std::vector<nas::SNSSAI_t> requestedNssai;
   std::string serving_network;
   bstring auts;

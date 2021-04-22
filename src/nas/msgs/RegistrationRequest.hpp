@@ -67,6 +67,8 @@ class RegistrationRequest {
   void setNon_current_native_nas_ksi(uint8_t tsc, uint8_t key_set_id);
   void set5G_MM_capability(uint8_t value);
   void setUE_Security_Capability(uint8_t g_EASel, uint8_t g_IASel);
+  void setUE_Security_Capability(
+      uint8_t g_EASel, uint8_t g_IASel, uint8_t EEASel, uint8_t EIASel);
   void setRequested_NSSAI(std::vector<struct SNSSAI_s> nssai);
   void setUENetworkCapability(uint8_t g_EEASel, uint8_t g_EIASel);
 
@@ -98,6 +100,8 @@ class RegistrationRequest {
   uint8_t getNonCurrentNativeNasKSI();
   uint8_t get5GMMCapability();
   bool getUeSecurityCapability(uint8_t& ea, uint8_t& ia);
+  bool getUeSecurityCapability(
+      uint8_t& ea, uint8_t& ia, uint8_t& eea, uint8_t& eia);
   bool getRequestedNssai(std::vector<struct SNSSAI_s>& nssai);
   bool getS1UeNetworkCapability(uint8_t& eea, uint8_t& eia);
   uint16_t getUplinkDataStatus();

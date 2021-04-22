@@ -76,6 +76,13 @@ void SecurityModeCommand::setUE_Security_Capability(
 }
 
 //------------------------------------------------------------------------------
+void SecurityModeCommand::setUE_Security_Capability(
+    uint8_t g_EASel, uint8_t g_IASel, uint8_t EEASel, uint8_t EIASel) {
+  ie_ue_security_capability =
+      new UESecurityCapability(0x00, g_EASel, g_IASel, EEASel, EIASel);
+}
+
+//------------------------------------------------------------------------------
 void SecurityModeCommand::setIMEISV_Request(uint8_t value) {
   ie_imeisv_request = new IMEISV_Request(0x0E, value);
 }

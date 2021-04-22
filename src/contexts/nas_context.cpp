@@ -45,6 +45,8 @@ nas_context::nas_context() : _vector(), _5g_he_av(), _5g_av(), kamf() {
   mmCapability                                          = 0;
   ueSecurityCapEnc                                      = 0;
   ueSecurityCapInt                                      = 0;
+  ueSecurityCapEEA                                      = 0;
+  ueSecurityCapEIA                                      = 0;
   requestedNssai                                        = {};
   is_specific_procedure_for_registration_running        = false;
   is_specific_procedure_for_deregistration_running      = false;
