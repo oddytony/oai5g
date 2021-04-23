@@ -581,8 +581,11 @@ void amf_n11::curl_http_client(
     bstring n1sm_hex, n2sm_hex;
 
     Logger::amf_n11().debug("Get response with HTTP code (%d)", httpCode);
+    Logger::amf_n11().debug("Response body %s", response.c_str());
+
     if (static_cast<http_response_codes_e>(httpCode) ==
         http_response_codes_e::HTTP_RESPONSE_CODE_0) {
+      // TODO: should be removed
       Logger::amf_n11().error(
           "Cannot get response when calling %s", remoteUri.c_str());
       // free curl before returning
@@ -618,30 +621,33 @@ void amf_n11::curl_http_client(
         return;
       }
 
-      try {
-        response_data = nlohmann::json::parse(json_data_response);
-      } catch (nlohmann::json::exception& e) {
-        Logger::amf_n11().warn("Could not get Json content from the response");
-        // Set the default Cause
-        response_data["error"]["cause"] = "504 Gateway Timeout";
-      }
+      // Transfer N1 to gNB/UE if available
+      if (number_parts > 1) {
+        try {
+          response_data = nlohmann::json::parse(json_data_response);
+        } catch (nlohmann::json::exception& e) {
+          Logger::amf_n11().warn(
+              "Could not get Json content from the response");
+          // Set the default Cause
+          response_data["error"]["cause"] = "504 Gateway Timeout";
+        }
 
-      Logger::amf_n11().debug(
-          "Get response with jsonData: %s", json_data_response.c_str());
-      msg_str_2_msg_hex(
-          n1sm.substr(0, n1sm.length() - 2),
-          n1sm_hex);  // TODO: pdu session establishment reject bugs from SMF
-      print_buffer(
-          "amf_n11", "Get response with n1sm:", (uint8_t*) bdata(n1sm_hex),
-          blength(n1sm_hex));
+        Logger::amf_n11().debug(
+            "Get response with jsonData: %s", json_data_response.c_str());
+        msg_str_2_msg_hex(n1sm, n1sm_hex);
+        print_buffer(
+            "amf_n11", "Get response with n1sm:", (uint8_t*) bdata(n1sm_hex),
+            blength(n1sm_hex));
 
-      std::string cause = response_data["error"]["cause"];
-      Logger::amf_n11().warn(
-          "Call Network Function services failure (with cause %s)",
-          cause.c_str());
-      if (!cause.compare("DNN_DENIED"))
+        std::string cause = response_data["error"]["cause"];
+        Logger::amf_n11().debug(
+            "Call Network Function services failure (with cause %s)",
+            cause.c_str());
+        //         if (!cause.compare("DNN_DENIED"))
         handle_post_sm_context_response_error(
             httpCode, cause, n1sm_hex, supi, pdu_session_id);
+      }
+
     } else {  // Response with success code
       // Store location of the created context in case of PDU Session
       // Establishment
