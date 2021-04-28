@@ -88,7 +88,7 @@ int sctp_server::create_socket(const char* address, const uint16_t port_num) {
   events_.sctp_association_event = 1;
   setsockopt(
       socket_, IPPROTO_SCTP, SCTP_EVENTS, &events_,
-      sizeof(struct sctp_event_subscribe));
+      8);
   listen(socket_, 5);
   return 0;
 }
