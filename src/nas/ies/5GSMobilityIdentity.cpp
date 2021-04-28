@@ -558,11 +558,14 @@ int _5GSMobilityIdentity::suci_decodefrombuffer(
         decoded_size++;
         mnc += ((octet & 0x0f) * 100 + ((octet & 0xf0) >> 4) * 10);
       }
+      std::string mnc_str = std::to_string(mnc);
+      if (mnc < 10) {
+        mnc_str = "0" + mnc_str;
+      }
       Logger::nas_mm().debug(
-          "MCC %s, MNC %s", std::to_string(mcc).c_str(),
-          std::to_string(mnc).c_str());
+          "MCC %s, MNC %s", std::to_string(mcc).c_str(), mnc_str.c_str());
       supi_format_imsi->mcc = (const string)(std::to_string(mcc));
-      supi_format_imsi->mnc = (const string)(std::to_string(mnc));
+      supi_format_imsi->mnc = (const string)(mnc_str);
       int routid            = 0;
       uint8_t digit[4];
       octet = *(buf + decoded_size);
@@ -655,11 +658,16 @@ int _5GSMobilityIdentity::_5g_guti_decodefrombuffer(uint8_t* buf, int len) {
     mnc += ((octet & 0x0f) * 100 + ((octet & 0xf0) >> 4) * 10);
     Logger::nas_mm().debug("MNC (3 digits): %s", std::to_string(mnc).c_str());
   }
+
+  std::string mnc_str = std::to_string(mnc);
+  if (mnc < 10) {
+    mnc_str = "0" + mnc_str;
+  }
+
   Logger::nas_mm().debug(
-      "MCC %s, MNC %s", std::to_string(mcc).c_str(),
-      std::to_string(mnc).c_str());
+      "MCC %s, MNC %s", std::to_string(mcc).c_str(), mnc_str.c_str());
   _5g_guti->mcc = (const string)(std::to_string(mcc));
-  _5g_guti->mnc = (const string)(std::to_string(mnc));
+  _5g_guti->mnc = (const string)(mnc_str);
 
   _5g_guti->amf_region_id = *(buf + decoded_size);
   decoded_size++;
