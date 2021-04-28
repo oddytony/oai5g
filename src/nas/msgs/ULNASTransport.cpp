@@ -412,4 +412,5 @@ int ULNASTransport::decodefrombuffer(
   }
   Logger::nas_mm().debug(
       "decoded ULNASTransport message len(%d)", decoded_size);
+  return 0;
 }

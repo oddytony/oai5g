@@ -108,6 +108,7 @@ bool NGResetMsg::getResetType(ResetType& resetType) {
       this->resetType->getResetType() == Ngap_ResetType_PR_partOfNG_Interface) {
     // TODO
   }
+  return true;
 }
 
 //------------------------------------------------------------------------------

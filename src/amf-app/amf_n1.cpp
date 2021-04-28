@@ -2075,42 +2075,64 @@ void amf_n1::security_mode_complete_handle(
     return;
   }
 
+  std::shared_ptr<nas_context> nc;
+  nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
+  Logger::amf_n1().info(
+      "UE (IMSI %s, GUTI %s, current RAN ID %d, current AMF ID %d) has been "
+      "registered to the network",
+      nc.get()->imsi.c_str(), guti.c_str(), ran_ue_ngap_id, amf_ue_ngap_id);
+  if (nc.get()->is_stacs_available) {
+    stacs.update_5gmm_state(nc.get()->imsi, "5GMM-REGISTERED");
+    // update_ue_information_statics(stacs.ues[index], "", "RM-REGISTRED",
+    // ran_ue_ngap_id, amf_ue_ngap_id, "", guti, "", "", 0);
+  } else {
+    // ue_infos ueItem;
+    // update_ue_information_statics(ueItem, "CM-CONNECTED",
+    // "REGISTRATION-REGISTRED", ran_ue_ngap_id, amf_ue_ngap_id,
+    // nc.get()->imsi, "", mcc, mnc, uc.get()->cgi.nrCellID);
+    // stacs.ues.push_back(ueItem);
+    nc.get()->is_stacs_available = true;
+  }
+  set_5gmm_state(nc, _5GMM_REGISTERED);
+
+  set_guti_2_nas_context(guti, nc);
+  nc.get()->is_common_procedure_for_security_mode_control_running = false;
+  nas_secu_ctx* secu = nc.get()->security_ctx;
+  // protect nas message
+  bstring protectedNas;
+  encode_nas_message_protected(
+      secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
+      buffer, encoded_size, protectedNas);
+
   if (!uc.get()->isUeContextRequest) {
     Logger::amf_n1().debug(
         "UE Context is not requested, UE with ran_ue_ngap_id %d, "
         "amf_ue_ngap_id %d attached",
         ran_ue_ngap_id, amf_ue_ngap_id);
-    // send registration accept back
-  } else {
-    // encoding InitialContextSetupRequest(NGAP message) back
-    std::shared_ptr<nas_context> nc;
-    nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
-    Logger::amf_n1().info(
-        "UE (IMSI %s, GUTI %s, current RAN ID %d, current AMF ID %d) has been "
-        "registered to the network",
-        nc.get()->imsi.c_str(), guti.c_str(), ran_ue_ngap_id, amf_ue_ngap_id);
-    if (nc.get()->is_stacs_available) {
-      stacs.update_5gmm_state(nc.get()->imsi, "5GMM-REGISTERED");
-      // update_ue_information_statics(stacs.ues[index], "", "RM-REGISTRED",
-      // ran_ue_ngap_id, amf_ue_ngap_id, "", guti, "", "", 0);
-    } else {
-      // ue_infos ueItem;
-      // update_ue_information_statics(ueItem, "CM-CONNECTED",
-      // "REGISTRATION-REGISTRED", ran_ue_ngap_id, amf_ue_ngap_id,
-      // nc.get()->imsi, "", mcc, mnc, uc.get()->cgi.nrCellID);
-      // stacs.ues.push_back(ueItem);
-      nc.get()->is_stacs_available = true;
-    }
-    set_5gmm_state(nc, _5GMM_REGISTERED);
 
-    set_guti_2_nas_context(guti, nc);
-    nc.get()->is_common_procedure_for_security_mode_control_running = false;
-    nas_secu_ctx* secu = nc.get()->security_ctx;
-    // protect nas message
-    bstring protectedNas;
-    encode_nas_message_protected(
-        secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
-        buffer, encoded_size, protectedNas);
+    // TODO: Use DownlinkNasTransport to convey Registration Accept
+    // IE: UEAggregateMaximumBitRate
+    // AllowedNSSAI
+
+    /*   itti_dl_nas_transport* dnt =
+           new itti_dl_nas_transport(TASK_AMF_N1, TASK_AMF_N2);
+       dnt->nas            = ;
+       dnt->amf_ue_ngap_id = amf_ue_ngap_id;
+       dnt->ran_ue_ngap_id = ran_ue_ngap_id;
+       std::shared_ptr<itti_dl_nas_transport> i =
+           std::shared_ptr<itti_dl_nas_transport>(dnt);
+       int ret = itti_inst->send_msg(i);
+       if (0 != ret) {
+         Logger::amf_n1().error(
+             "Could not send ITTI message %s to task TASK_AMF_N2",
+             i->get_msg_name());
+       }
+      */
+
+  } else {
+    // use InitialContextSetupRequest (NGAP message) to convey Registration
+    // Accept
+
     uint8_t* kamf = nc.get()->kamf[secu->vector_pointer];
     uint8_t kgnb[32];
     uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
@@ -2119,6 +2141,7 @@ void amf_n1::security_mode_complete_handle(
     print_buffer("amf_n1", "kamf", kamf, 32);
     // Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
     bstring kgnb_bs = blk2bstr(kgnb, 32);
+
     itti_initial_context_setup_request* itti_msg =
         new itti_initial_context_setup_request(TASK_AMF_N1, TASK_AMF_N2);
     itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
