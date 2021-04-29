@@ -447,7 +447,7 @@ void amf_n1::uplink_nas_msg_handle(
           ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case IDENTITY_RESPONSE: {
-      Logger::amf_n1().debug("received identity response messgae , handle ...");
+      Logger::amf_n1().debug("received identity response message , handle ...");
       identity_response_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case REGISTRATION_COMPLETE: {
@@ -500,7 +500,7 @@ void amf_n1::uplink_nas_msg_handle(
           ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case IDENTITY_RESPONSE: {
-      Logger::amf_n1().debug("received identity response messgae , handle ...");
+      Logger::amf_n1().debug("received identity response message , handle ...");
       identity_response_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case REGISTRATION_COMPLETE: {
@@ -561,6 +561,22 @@ void amf_n1::identity_response_handle(
     supi = imsi.mcc + imsi.mnc + imsi.msin;
     Logger::amf_n1().debug("identity response : suci (%s)", supi.c_str());
   }
+
+  string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
+                          ":amfid_" + to_string(amf_ue_ngap_id);
+
+  if (amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
+    std::shared_ptr<ue_context> uc;
+    uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+    // Update UE context
+    if (uc.get() != nullptr) {
+      uc.get()->supi = supi;
+      // associate SUPI with UC
+      amf_app_inst->set_supi_2_ue_context(supi, uc);
+      Logger::amf_n1().debug("Update UC context, SUPI %s", supi.c_str());
+    }
+  }
+
   std::shared_ptr<nas_context> nc;
   if (is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
     nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
@@ -922,6 +938,7 @@ void amf_n1::registration_request_handle(
         nc.get()->is_5g_guti_present         = true;
         nc.get()->to_be_register_by_new_suci = true;
         nc.get()->ngKsi                      = 100 & 0xf;
+        // nc.get()->imsi =
         // supi2amfId[("imsi-"+nc.get()->imsi)] = amf_ue_ngap_id;
         // supi2ranId[("imsi-"+nc.get()->imsi)] = ran_ue_ngap_id;
       }
