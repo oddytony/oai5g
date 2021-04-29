@@ -728,14 +728,19 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
   msg->setAllowedNssai(list);
   bdestroy(itti_msg.nas);
   bdestroy(itti_msg.kgnb);
-  if (itti_msg.is_sr) {
+  if (itti_msg.is_sr or itti_msg.is_pdu_exist) {
+    // TODO: to add UEAggregateMaximumBitRate
     bstring ueCapability = gc.get()->ue_radio_cap_ind;
     uint8_t* uecap       = (uint8_t*) calloc(1, blength(ueCapability) + 1);
     memcpy(uecap, (uint8_t*) bdata(ueCapability), blength(ueCapability));
     uecap[blength(ueCapability)] = '\0';
     msg->setUERadioCapability(uecap, (size_t) blength(ueCapability));
     free(uecap);
-    Logger::amf_n2().debug("Encoding parameters for Service Request");
+    if (itti_msg.is_sr)
+      Logger::amf_n2().debug("Encoding parameters for Service Request");
+    else
+      Logger::amf_n2().debug(
+          "Encoding parameters for Initial Context Setup Request");
 
     if (itti_msg.is_pdu_exist) {
       std::vector<PDUSessionResourceSetupRequestItem_t> list;

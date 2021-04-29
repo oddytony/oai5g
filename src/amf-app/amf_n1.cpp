@@ -171,21 +171,68 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
             i->get_msg_name());
       }
     } else {
-      // PDU SESSION RESOURCE SETUP_REQUEST
-      itti_pdu_session_resource_setup_request* psrsr =
-          new itti_pdu_session_resource_setup_request(TASK_AMF_N1, TASK_AMF_N2);
-      psrsr->nas            = protected_nas;
-      psrsr->n2sm           = itti_msg.n2sm;
-      psrsr->amf_ue_ngap_id = amf_ue_ngap_id;
-      psrsr->ran_ue_ngap_id = ran_ue_ngap_id;
-      psrsr->pdu_session_id = itti_msg.pdu_session_id;
-      std::shared_ptr<itti_pdu_session_resource_setup_request> i =
-          std::shared_ptr<itti_pdu_session_resource_setup_request>(psrsr);
-      int ret = itti_inst->send_msg(i);
-      if (0 != ret) {
+      string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
+                              ":amfid_" + to_string(amf_ue_ngap_id);
+      std::shared_ptr<ue_context> uc;
+      uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+      if (uc.get() == nullptr) {
+        // TODO:
         Logger::amf_n1().error(
-            "Could not send ITTI message %s to task TASK_AMF_N2",
-            i->get_msg_name());
+            "ue_context in amf_app using ran_amf_id (%s) does not existed!",
+            ue_context_key.c_str());
+      }
+      Logger::amf_n1().info(
+          "Found ue_context (%p) in amf_app using ran_amf_id (%s)", uc.get(),
+          ue_context_key.c_str());
+
+      if (uc.get()->isUeContextRequest) {
+        // PDU SESSION RESOURCE SETUP_REQUEST
+        itti_pdu_session_resource_setup_request* psrsr =
+            new itti_pdu_session_resource_setup_request(
+                TASK_AMF_N1, TASK_AMF_N2);
+        psrsr->nas            = protected_nas;
+        psrsr->n2sm           = itti_msg.n2sm;
+        psrsr->amf_ue_ngap_id = amf_ue_ngap_id;
+        psrsr->ran_ue_ngap_id = ran_ue_ngap_id;
+        psrsr->pdu_session_id = itti_msg.pdu_session_id;
+        std::shared_ptr<itti_pdu_session_resource_setup_request> i =
+            std::shared_ptr<itti_pdu_session_resource_setup_request>(psrsr);
+        int ret = itti_inst->send_msg(i);
+        if (0 != ret) {
+          Logger::amf_n1().error(
+              "Could not send ITTI message %s to task TASK_AMF_N2",
+              i->get_msg_name());
+        }
+      } else {
+        // send using InitialContextSetupRequest
+        uint8_t* kamf = nc.get()->kamf[secu->vector_pointer];
+        uint8_t kgnb[32];
+        uint32_t ulcount =
+            secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
+        Authentication_5gaka::derive_kgnb(0, 0x01, kamf, kgnb);
+        ncc = 1;
+        print_buffer("amf_n1", "kamf", kamf, 32);
+        // Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
+        bstring kgnb_bs = blk2bstr(kgnb, 32);
+
+        itti_initial_context_setup_request* csr =
+            new itti_initial_context_setup_request(TASK_AMF_N1, TASK_AMF_N2);
+        csr->ran_ue_ngap_id = ran_ue_ngap_id;
+        csr->amf_ue_ngap_id = amf_ue_ngap_id;
+        csr->kgnb           = kgnb_bs;
+        csr->nas            = protected_nas;
+        csr->pdu_session_id = itti_msg.pdu_session_id;
+        csr->is_pdu_exist   = true;
+        csr->n2sm           = itti_msg.n2sm;
+        csr->is_sr          = false;  // TODO: for Service Request procedure
+        std::shared_ptr<itti_initial_context_setup_request> i =
+            std::shared_ptr<itti_initial_context_setup_request>(csr);
+        int ret = itti_inst->send_msg(i);
+        if (0 != ret) {
+          Logger::amf_n1().error(
+              "Could not send ITTI message %s to task TASK_AMF_N2",
+              i->get_msg_name());
+        }
       }
     }
   } else {
@@ -734,7 +781,7 @@ void amf_n1::service_request_handle(
     itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
     itti_msg->nas            = protectedNas;
     itti_msg->kgnb           = kgnb_bs;
-    itti_msg->is_sr          = true;  // service request indicator
+    itti_msg->is_sr          = true;  // Service Request indicator
     itti_msg->is_pdu_exist   = false;
     std::shared_ptr<itti_initial_context_setup_request> i =
         std::shared_ptr<itti_initial_context_setup_request>(itti_msg);
@@ -782,7 +829,7 @@ void amf_n1::service_request_handle(
     itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
     itti_msg->nas            = protectedNas;
     itti_msg->kgnb           = kgnb_bs;
-    itti_msg->is_sr          = true;  // service request indicator
+    itti_msg->is_sr          = true;  // Service Request indicator
     itti_msg->pdu_session_id = pdu_session_id;
     itti_msg->is_pdu_exist   = true;
     if (psc.get()->isn2sm_avaliable) {
@@ -2114,20 +2161,19 @@ void amf_n1::security_mode_complete_handle(
     // IE: UEAggregateMaximumBitRate
     // AllowedNSSAI
 
-    /*   itti_dl_nas_transport* dnt =
-           new itti_dl_nas_transport(TASK_AMF_N1, TASK_AMF_N2);
-       dnt->nas            = ;
-       dnt->amf_ue_ngap_id = amf_ue_ngap_id;
-       dnt->ran_ue_ngap_id = ran_ue_ngap_id;
-       std::shared_ptr<itti_dl_nas_transport> i =
-           std::shared_ptr<itti_dl_nas_transport>(dnt);
-       int ret = itti_inst->send_msg(i);
-       if (0 != ret) {
-         Logger::amf_n1().error(
-             "Could not send ITTI message %s to task TASK_AMF_N2",
-             i->get_msg_name());
-       }
-      */
+    itti_dl_nas_transport* dnt =
+        new itti_dl_nas_transport(TASK_AMF_N1, TASK_AMF_N2);
+    dnt->nas            = protectedNas;
+    dnt->amf_ue_ngap_id = amf_ue_ngap_id;
+    dnt->ran_ue_ngap_id = ran_ue_ngap_id;
+    std::shared_ptr<itti_dl_nas_transport> i =
+        std::shared_ptr<itti_dl_nas_transport>(dnt);
+    int ret = itti_inst->send_msg(i);
+    if (0 != ret) {
+      Logger::amf_n1().error(
+          "Could not send ITTI message %s to task TASK_AMF_N2",
+          i->get_msg_name());
+    }
 
   } else {
     // use InitialContextSetupRequest (NGAP message) to convey Registration
@@ -2148,7 +2194,7 @@ void amf_n1::security_mode_complete_handle(
     itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
     itti_msg->kgnb           = kgnb_bs;
     itti_msg->nas            = protectedNas;
-    itti_msg->is_sr          = false;  // TODO: for Setup Request procedure
+    itti_msg->is_sr          = false;  // TODO: for Service Request procedure
     std::shared_ptr<itti_initial_context_setup_request> i =
         std::shared_ptr<itti_initial_context_setup_request>(itti_msg);
     int ret = itti_inst->send_msg(i);

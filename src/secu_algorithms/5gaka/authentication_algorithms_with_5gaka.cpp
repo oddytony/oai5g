@@ -540,7 +540,7 @@ uint8_t* Authentication_5gaka::sqn_ms_derive(
   uint8_t* mac_s                       = NULL;
   uint8_t mac_s_computed[MAC_S_LENGTH] = {0};
   uint8_t* sqn_ms                      = NULL;
-  uint8_t amf[2]                       = {0x80, 0x00};
+  uint8_t amf[2]                       = {0x00, 0x00};  // TODO: To be verified
   int i                                = 0;
 
   conc_sqn_ms = auts;
@@ -570,7 +570,9 @@ uint8_t* Authentication_5gaka::sqn_ms_derive(
   // print_buffer ("MAC_S +: ", mac_s_computed, 8);
 
   if (memcmp(mac_s_computed, mac_s, 8) != 0) {
-    // FPRINTF_ERROR ( "Failed to verify computed SQN_MS\n");
+    Logger::amf_n1().debug(
+        "sqn_ms_derive, failed to verify computed SQN_MS (MAC does not "
+        "matched!)");
     free(sqn_ms);
     return NULL;
   }
