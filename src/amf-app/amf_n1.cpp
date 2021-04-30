@@ -558,7 +558,7 @@ void amf_n1::identity_response_handle(
   if (ir->ie_mobility_id) {
     nas::SUCI_imsi_t imsi;
     ir->ie_mobility_id->getSuciWithSupiImsi(imsi);
-    supi = "imsi-" + imsi.mcc + imsi.mnc + imsi.msin;
+    supi = imsi.mcc + imsi.mnc + imsi.msin;
     Logger::amf_n1().debug("identity response : suci (%s)", supi.c_str());
   }
 
@@ -570,10 +570,11 @@ void amf_n1::identity_response_handle(
     uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
     // Update UE context
     if (uc.get() != nullptr) {
-      uc.get()->supi = supi;
+      uc.get()->supi = "imsi-" + supi;
       // associate SUPI with UC
-      amf_app_inst->set_supi_2_ue_context(supi, uc);
-      Logger::amf_n1().debug("Update UC context, SUPI %s", supi.c_str());
+      amf_app_inst->set_supi_2_ue_context(uc.get()->supi, uc);
+      Logger::amf_n1().debug(
+          "Update UC context, SUPI %s", uc.get()->supi.c_str());
     }
   }
 
