@@ -558,7 +558,7 @@ void amf_n1::identity_response_handle(
   if (ir->ie_mobility_id) {
     nas::SUCI_imsi_t imsi;
     ir->ie_mobility_id->getSuciWithSupiImsi(imsi);
-    supi = imsi.mcc + imsi.mnc + imsi.msin;
+    supi = "imsi-" + imsi.mcc + imsi.mnc + imsi.msin;
     Logger::amf_n1().debug("identity response : suci (%s)", supi.c_str());
   }
 
