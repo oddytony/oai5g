@@ -2189,54 +2189,55 @@ void amf_n1::registration_complete_handle(
     uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas_msg) {
   Logger::amf_n1().debug(
       "receiving registration complete, encoding Configuration Update Command");
+  /*
+    time_t tt;
+    time(&tt);
+    tt    = tt + 8 * 3600;  // transform the time zone
+    tm* t = gmtime(&tt);
 
-  time_t tt;
-  time(&tt);
-  tt    = tt + 8 * 3600;  // transform the time zone
-  tm* t = gmtime(&tt);
+    uint8_t conf[45]       = {0};
+    uint8_t header[3]      = {0x7e, 0x00, 0x54};
+    uint8_t full_name[18]  = {0x43, 0x10, 0x81, 0xc1, 0x76, 0x58,
+                             0x9e, 0x9e, 0xbf, 0xcd, 0x74, 0x90,
+                             0xb3, 0x4c, 0xbf, 0xbf, 0xe5, 0x6b};
+    uint8_t short_name[11] = {0x45, 0x09, 0x81, 0xc1, 0x76, 0x58,
+                              0x9e, 0x9e, 0xbf, 0xcd, 0x74};
+    uint8_t time_zone[2]   = {0x46, 0x23};
+    uint8_t time[8]        = {0};
+    time[0]                = 0x47;
+    time[1]                = 0x12;
+    time[2] = ((t->tm_mon + 1) & 0x0f) << 4 | ((t->tm_mon + 1) & 0xf0) >> 4;
+    time[3] = ((t->tm_mday + 1) & 0x0f) << 4 | ((t->tm_mday + 1) & 0xf0) >> 4;
+    time[4] = ((t->tm_hour + 1) & 0x0f) << 4 | ((t->tm_hour + 1) & 0xf0) >> 4;
+    time[5] = ((t->tm_min + 1) & 0x0f) << 4 | ((t->tm_min + 1) & 0xf0) >> 4;
+    time[6] = ((t->tm_sec + 1) & 0x0f) << 4 | ((t->tm_sec + 1) & 0xf0) >> 4;
+    time[7] = 0x23;
+    uint8_t daylight[3] = {0x49, 0x01, 0x00};
+    memcpy(conf, header, 3);
+    memcpy(conf + 3, full_name, 18);
+    memcpy(conf + 21, short_name, 11);
+    memcpy(conf + 32, time_zone, 2);
+    memcpy(conf + 34, time, 8);
+    memcpy(conf + 42, daylight, 3);
 
-  uint8_t conf[45]       = {0};
-  uint8_t header[3]      = {0x7e, 0x00, 0x54};
-  uint8_t full_name[18]  = {0x43, 0x10, 0x81, 0xc1, 0x76, 0x58,
-                           0x9e, 0x9e, 0xbf, 0xcd, 0x74, 0x90,
-                           0xb3, 0x4c, 0xbf, 0xbf, 0xe5, 0x6b};
-  uint8_t short_name[11] = {0x45, 0x09, 0x81, 0xc1, 0x76, 0x58,
-                            0x9e, 0x9e, 0xbf, 0xcd, 0x74};
-  uint8_t time_zone[2]   = {0x46, 0x23};
-  uint8_t time[8]        = {0};
-  time[0]                = 0x47;
-  time[1]                = 0x12;
-  time[2] = ((t->tm_mon + 1) & 0x0f) << 4 | ((t->tm_mon + 1) & 0xf0) >> 4;
-  time[3] = ((t->tm_mday + 1) & 0x0f) << 4 | ((t->tm_mday + 1) & 0xf0) >> 4;
-  time[4] = ((t->tm_hour + 1) & 0x0f) << 4 | ((t->tm_hour + 1) & 0xf0) >> 4;
-  time[5] = ((t->tm_min + 1) & 0x0f) << 4 | ((t->tm_min + 1) & 0xf0) >> 4;
-  time[6] = ((t->tm_sec + 1) & 0x0f) << 4 | ((t->tm_sec + 1) & 0xf0) >> 4;
-  time[7] = 0x23;
-  uint8_t daylight[3] = {0x49, 0x01, 0x00};
-  memcpy(conf, header, 3);
-  memcpy(conf + 3, full_name, 18);
-  memcpy(conf + 21, short_name, 11);
-  memcpy(conf + 32, time_zone, 2);
-  memcpy(conf + 34, time, 8);
-  memcpy(conf + 42, daylight, 3);
+    std::shared_ptr<nas_context> nc;
+    if (is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+      nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
+    else {
+      Logger::amf_n1().warn(
+          "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+      return;
+    }
+    nas_secu_ctx* secu = nc.get()->security_ctx;
+    // protect nas message
+    bstring protectedNas;
+    encode_nas_message_protected(
+        secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
+    conf, 45, protectedNas);
 
-  std::shared_ptr<nas_context> nc;
-  if (is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
-    nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
-  else {
-    Logger::amf_n1().warn(
-        "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
-    return;
-  }
-  nas_secu_ctx* secu = nc.get()->security_ctx;
-  // protect nas message
-  bstring protectedNas;
-  encode_nas_message_protected(
-      secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK, conf,
-      45, protectedNas);
-
-  itti_send_dl_nas_buffer_to_task_n2(
-      protectedNas, ran_ue_ngap_id, amf_ue_ngap_id);
+    itti_send_dl_nas_buffer_to_task_n2(
+        protectedNas, ran_ue_ngap_id, amf_ue_ngap_id);
+        */
 }
 
 //------------------------------------------------------------------------------
