@@ -29,6 +29,7 @@
 #include "NGReset.hpp"
 #include "NGSetupRequest.hpp"
 #include "UEContextReleaseRequest.hpp"
+#include "UEContextReleaseComplete.hpp"
 #include "UERadioCapabilityInfoIndication.hpp"
 #include "UplinkNASTransport.hpp"
 #include "UplinkRANStatusTransfer.hpp"
@@ -189,6 +190,16 @@ class itti_ue_context_release_command : public itti_msg_n2 {
   uint32_t ran_ue_ngap_id;
   long amf_ue_ngap_id;
   Cause cause;
+};
+
+class itti_ue_context_release_complete : public itti_msg_n2 {
+ public:
+  itti_ue_context_release_complete(
+      const task_id_t origin, const task_id_t destination)
+      : itti_msg_n2(UE_CONTEXT_RELEASE_COMPLETE, origin, destination) {}
+  itti_ue_context_release_complete(const itti_ue_context_release_complete& i)
+      : itti_msg_n2(i) {}
+  UEContextReleaseCompleteMsg* ueCtxRelCmpl;
 };
 
 class itti_ue_radio_capability_indication : public itti_msg_n2 {

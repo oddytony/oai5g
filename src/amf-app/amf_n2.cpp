@@ -152,6 +152,13 @@ void amf_n2_task(void* args_p) {
             dynamic_cast<itti_ue_context_release_command*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
+      case UE_CONTEXT_RELEASE_COMPLETE: {
+        Logger::task_amf_n2().info(
+            "Received UE_CONTEXT_RELEASE_COMPLETE message, handling");
+        itti_ue_context_release_complete* m =
+            dynamic_cast<itti_ue_context_release_complete*>(msg);
+        amf_n2_inst->handle_itti_message(ref(*m));
+      } break;
       case PDU_SESSION_RESOURCE_RELEASE_COMMAND: {
         Logger::task_amf_n2().info(
             "Received PDU_SESSION_RESOURCE_RELEASE_COMMAND message, handling");
@@ -996,6 +1003,18 @@ void amf_n2::handle_itti_message(itti_ue_context_release_command& itti_msg) {
   sctp_s_38412.sctp_send_msg(
       gc.get()->sctp_assoc_id, unc.get()->sctp_stream_send, &b);
   return;
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::handle_itti_message(itti_ue_context_release_complete& itti_msg) {
+  Logger::amf_n2().debug("Handling UE Context Release Complete ...");
+  unsigned long amf_ue_ngap_id = itti_msg.ueCtxRelCmpl->getAmfUeNgapId();
+  uint32_t ran_ue_ngap_id      = itti_msg.ueCtxRelCmpl->getRanUeNgapId();
+  // TODO: User Location Information IE
+  // TODO: Information on Recommended Cells & RAN Nodes for Paging IE
+
+  // TODO: Process Secondary RAT Usage Information IE if available
+  // send Nsmf_PDUSession_UpdateSMContext to SMF
 }
 
 //------------------------------------------------------------------------------
