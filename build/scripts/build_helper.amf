@@ -285,7 +285,7 @@ check_install_amf_deps(){
       automake \
       bison \
       build-essential \
-      cmake \
+      $CMAKE \
       daemon \
       doxygen \
       flex \
