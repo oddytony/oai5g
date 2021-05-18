@@ -2434,44 +2434,13 @@ void amf_n1::run_initial_registration_procedure() {}
 void amf_n1::ue_initiate_de_registration_handle(
     uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas) {
   Logger::amf_n1().debug("Handling UE-initiated De-registration Request");
-  /*
-   string guti = "1234567890";//need modify
-
-   _5G_GUTI_t Guti;
-   _5GSMobilityIdentity *ulNas = new _5GSMobilityIdentity();
-   ulNas->decodefrombuffer((uint8_t*)bdata(nas)+4, blength(nas),false);
-   ulNas->get5GGUTI(Guti);
-   delete ulNas;
-   string amf_region_id = std::to_string(Guti.amf_region_id);
-   guti = Guti.mcc + Guti.mnc + std::to_string(Guti.amf_region_id) +
-   std::to_string(Guti.amf_set_id) + std::to_string(Guti.amf_pointer) +
-   std::to_string(Guti._5g_tmsi); std::shared_ptr<nas_context> nc;
-   if(!is_guti_2_nas_context(guti))
-   return;
-   nc = guti_2_nas_context(guti);
-   nc.get()-> is_auth_vectors_present = false;
-   nc.get()-> is_current_security_available = false;
-   nc.get()->security_ctx->sc_type = SECURITY_CTX_TYPE_NOT_AVAILABLE;
-   Logger::ngap().debug("sending itti ue context release command to
-   TASK_AMF_N2"); itti_ue_context_release_command * itti_msg = new
-   itti_ue_context_release_command(TASK_AMF_N1, TASK_AMF_N2);
-   itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
-   itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
-   itti_msg->cause.setChoiceOfCause(Ngap_Cause_PR_nas);
-   itti_msg->cause.setValue(2);//cause nas(2)--deregister
-   std::shared_ptr<itti_ue_context_release_command> i =
-   std::shared_ptr<itti_ue_context_release_command>(itti_msg); int ret =
-   itti_inst->send_msg(i); if (0 != ret) { Logger::ngap().error("Could not send
-   ITTI message %s to task TASK_AMF_N2", i->get_msg_name());
-   }
-   */
 
   std::shared_ptr<nas_context> nc;
   if (is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
     nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
   else {
     Logger::amf_n1().warn(
-        "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+        "No existed nas_context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
     return;
   }
 
@@ -2509,7 +2478,7 @@ void amf_n1::ue_initiate_de_registration_handle(
   print_buffer(
       "amf_n1", "De-registration Accept message buffer", buffer, encoded_size);
   if (encoded_size < 1) {
-    Logger::nas_mm().error("Encode De-registration Accept message error");
+    Logger::nas_mm().error("Encode De-registration Accept message error!");
     return;
   }
 
@@ -2519,6 +2488,29 @@ void amf_n1::ue_initiate_de_registration_handle(
   set_5gmm_state(nc, _5GMM_DEREGISTERED);
   if (nc.get()->is_stacs_available) {
     stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
+  }
+
+  // TODO: AMF to AN: N2 UE Context Release Request
+  // AMF sends N2 UE Release command to NG-RAN with Cause set to Deregistration
+  // to release N2 signalling connection
+
+  Logger::ngap().debug(
+      "Sending ITTI UE Context Release Command to TASK_AMF_N2");
+
+  itti_ue_context_release_command* itti_msg =
+      new itti_ue_context_release_command(TASK_AMF_N1, TASK_AMF_N2);
+
+  itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
+  itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
+  itti_msg->cause.setChoiceOfCause(Ngap_Cause_PR_nas);
+  itti_msg->cause.setValue(2);  // cause nas(2)--deregister
+  std::shared_ptr<itti_ue_context_release_command> i =
+      std::shared_ptr<itti_ue_context_release_command>(itti_msg);
+  int ret = itti_inst->send_msg(i);
+  if (0 != ret) {
+    Logger::ngap().error(
+        "Could not send ITTI message %s to task TASK_AMF_N2",
+        i->get_msg_name());
   }
 }
 

@@ -957,42 +957,45 @@ void amf_n2::handle_itti_message(itti_ue_context_release_request& itti_msg) {
 }
 
 void amf_n2::handle_itti_message(itti_ue_context_release_command& itti_msg) {
-  Logger::amf_n2().debug("handling ue context release command ...");
+  Logger::amf_n2().debug("Handling UE Context Release Command ...");
 
   std::shared_ptr<ue_ngap_context> unc;
   unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
   if (unc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal ue with ran_ue_ngap_id(0x%x)", itti_msg.ran_ue_ngap_id);
+        "Illegal UE with ran_ue_ngap_id (0x%x)", itti_msg.ran_ue_ngap_id);
     return;
   }
   std::shared_ptr<gnb_context> gc;
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal gnb with assoc id(0x%x)", unc.get()->gnb_assoc_id);
+        "Illegal gNB with assoc id (0x%x)", unc.get()->gnb_assoc_id);
     return;
   }
 
-  // UEContextReleaseCommandMsg* ueCtxRelCmd = new UEContextReleaseCommandMsg();
   std::unique_ptr<UEContextReleaseCommandMsg> ueCtxRelCmd =
       std::make_unique<UEContextReleaseCommandMsg>();
   ueCtxRelCmd->setMessageType();
   ueCtxRelCmd->setUeNgapIdPair(
       itti_msg.amf_ue_ngap_id, itti_msg.ran_ue_ngap_id);
+
   if (itti_msg.cause.getChoiceOfCause() == Ngap_Cause_PR_nas) {
     ueCtxRelCmd->setCauseNas((e_Ngap_CauseNas) itti_msg.cause.getValue());
   }
+
   if (itti_msg.cause.getChoiceOfCause() == Ngap_Cause_PR_radioNetwork) {
     ueCtxRelCmd->setCauseRadioNetwork(
         (e_Ngap_CauseRadioNetwork) itti_msg.cause.getValue());
   }
-  uint8_t buffer[200];
+
+  uint8_t buffer[200];  // TODO: remove hardcoded value
   int encoded_size = ueCtxRelCmd->encode2buffer(buffer, 200);
-  // delete ueCtxRelCmd;
+
   bstring b = blk2bstr(buffer, encoded_size);
   sctp_s_38412.sctp_send_msg(
       gc.get()->sctp_assoc_id, unc.get()->sctp_stream_send, &b);
+  return;
 }
 
 //------------------------------------------------------------------------------
