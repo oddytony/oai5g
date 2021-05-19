@@ -90,6 +90,7 @@ ENV TZ=Europe/Paris
 RUN yum update -y && \
     yum install -y --enablerepo="ubi-8-codeready-builder" \
     tzdata \
+    procps-ng \
     psmisc \
     net-tools \
     libevent && \
