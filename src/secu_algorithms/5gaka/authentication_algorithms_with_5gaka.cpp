@@ -560,17 +560,18 @@ uint8_t* Authentication_5gaka::sqn_ms_derive(
     sqn_ms[i] = ak[i] ^ conc_sqn_ms[i];
   }
 
-  // print_buffer ("sqn_ms_derive() KEY    : ", key, 16);
-  // print_buffer ("sqn_ms_derive() RAND   : ", rand_p, 16);
-  // print_buffer ("sqn_ms_derive() AUTS   : ", auts, 14);
-  // print_buffer ("sqn_ms_derive() AK     : ", ak, 6);
-  // print_buffer ("sqn_ms_derive() SQN_MS : ", sqn_ms, 6);
-  // print_buffer ("sqn_ms_derive() MAC_S  : ", mac_s, 8);
+  print_buffer("amf_n1", "sqn_ms_derive() KEY    : ", key, 16);
+  print_buffer("amf_n1", "sqn_ms_derive() RAND   : ", rand_p, 16);
+  print_buffer("amf_n1", "sqn_ms_derive() AUTS   : ", auts, 14);
+  print_buffer("amf_n1", "sqn_ms_derive() AK     : ", ak, 6);
+  print_buffer("amf_n1", "sqn_ms_derive() SQN_MS : ", sqn_ms, 6);
+  print_buffer("amf_n1", "sqn_ms_derive() MAC_S  : ", mac_s, 8);
   f1star(opc, key, rand_p, sqn_ms, amf, mac_s_computed);
-  // print_buffer ("MAC_S +: ", mac_s_computed, 8);
+  print_buffer("amf_n1", "MAC_S computed : ", mac_s_computed, 8);
 
   if (memcmp(mac_s_computed, mac_s, 8) != 0) {
     // FPRINTF_ERROR ( "Failed to verify computed SQN_MS\n");
+    Logger::amf_n1().warn("Failed to verify computed SQN_MS");
     free(sqn_ms);
     return NULL;
   }

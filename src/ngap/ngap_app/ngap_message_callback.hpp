@@ -283,8 +283,6 @@ int ngap_amf_handle_ue_context_release_complete(
         i->get_msg_name());
   }
   return 0;
-
-  return 0;
 }
 
 int ngap_amf_handle_pdu_session_resource_release_response(
