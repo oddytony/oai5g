@@ -27,6 +27,7 @@
  */
 
 #include "S_NSSAI.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 
@@ -139,11 +140,12 @@ int S_NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
       decoded_size++;
       a.sd |= *(buf + decoded_size);
       decoded_size++;
-      a.sd << 8;
+      a.sd = a.sd << 8;
       a.sd |= *(buf + decoded_size);
       decoded_size++;
-      a.sd << 8;
+      a.sd = a.sd << 8;
       a.sd |= *(buf + decoded_size);
+      a.sd &= 0x00ffffff;
       decoded_size++;
       a.mHplmnSst = -1;
       a.mHplmnSd  = -1;
@@ -153,11 +155,12 @@ int S_NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
       decoded_size++;
       a.sd |= *(buf + decoded_size);
       decoded_size++;
-      a.sd << 8;
+      a.sd = a.sd << 8;
       a.sd |= *(buf + decoded_size);
       decoded_size++;
-      a.sd << 8;
+      a.sd = a.sd << 8;
       a.sd |= *(buf + decoded_size);
+      a.sd &= 0x00ffffff;
       decoded_size++;
       a.mHplmnSst = *(buf + decoded_size);
       decoded_size++;
@@ -168,20 +171,21 @@ int S_NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
       decoded_size++;
       a.sd |= *(buf + decoded_size);
       decoded_size++;
-      a.sd << 8;
+      a.sd = a.sd << 8;
       a.sd |= *(buf + decoded_size);
       decoded_size++;
-      a.sd << 8;
+      a.sd = a.sd << 8;
       a.sd |= *(buf + decoded_size);
+      a.sd &= 0x00ffffff;
       decoded_size++;
       a.mHplmnSst = *(buf + decoded_size);
       decoded_size++;
       a.mHplmnSd |= *(buf + decoded_size);
       decoded_size++;
-      a.mHplmnSd << 16;
+      a.mHplmnSd = a.mHplmnSd << 8;
       a.mHplmnSd |= *(buf + decoded_size);
       decoded_size++;
-      a.mHplmnSd << 8;
+      a.mHplmnSd = a.mHplmnSd << 8;
       a.mHplmnSd |= *(buf + decoded_size);
       decoded_size++;
     } break;

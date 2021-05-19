@@ -29,18 +29,17 @@
 #ifndef _UPLINKNASTRANSPORT_H_
 #define _UPLINKNASTRANSPORT_H_
 
-#include "NgapIEsStruct.hpp"
-
-#include "MessageType.hpp"
 #include "AMF-UE-NGAP-ID.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
+#include "MessageType.hpp"
 #include "NAS-PDU.hpp"
+#include "NgapIEsStruct.hpp"
+#include "RAN-UE-NGAP-ID.hpp"
 #include "UserLocationInformation.hpp"
 
 extern "C" {
+#include "Ngap_InitialUEMessage.h"
 #include "Ngap_NGAP-PDU.h"
 #include "Ngap_ProtocolIE-Field.h"
-#include "Ngap_InitialUEMessage.h"
 }
 
 namespace ngap {

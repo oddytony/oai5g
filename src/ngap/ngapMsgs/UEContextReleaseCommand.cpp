@@ -27,15 +27,16 @@
  */
 
 #include "UEContextReleaseCommand.hpp"
+
 #include <iostream>
 extern "C" {
-#include "constr_TYPE.h"
-#include "asn_codecs.h"
-#include "per_encoder.h"
-#include "per_decoder.h"
-#include "constraints.h"
 #include "Ngap_UE-NGAP-ID-pair.h"
+#include "asn_codecs.h"
+#include "constr_TYPE.h"
+#include "constraints.h"
 #include "dynamic_memory_check.h"
+#include "per_decoder.h"
+#include "per_encoder.h"
 }
 
 using namespace ngap;
@@ -90,7 +91,7 @@ void UEContextReleaseCommandMsg::setAmfUeNgapId(unsigned long id) {
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UE_NGAP_IDs IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -125,7 +126,7 @@ void UEContextReleaseCommandMsg::setUeNgapIdPair(
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
   if (ret != 0) cout << "encode UE_NGAP_IDs IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------

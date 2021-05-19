@@ -22,14 +22,13 @@
 #ifndef _PDUSESSIONRESOURCEHANDOVERREQUIREDTRANSFER_H_
 #define _PDUSESSIONRESOURCEHANDOVERREQUIREDTRANSFER_H_
 
-#include "NgapIEsStruct.hpp"
-
 #include "DLQoSFlowPerTNLInformation.hpp"
+#include "NgapIEsStruct.hpp"
 #include "SecurityResult.hpp"
 
 extern "C" {
-#include "Ngap_ProtocolIE-Field.h"
 #include "Ngap_HandoverRequiredTransfer.h"
+#include "Ngap_ProtocolIE-Field.h"
 }
 
 namespace ngap {

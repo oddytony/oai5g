@@ -27,9 +27,10 @@
  */
 
 #include "RegistrationRequest.hpp"
+
 #include "3gpp_ts24501.hpp"
-#include "logger.hpp"
 #include "String2Value.hpp"
+#include "logger.hpp"
 using namespace nas;
 
 //------------------------------------------------------------------------------
@@ -226,10 +227,33 @@ void RegistrationRequest::setUE_Security_Capability(
 }
 
 //------------------------------------------------------------------------------
+void RegistrationRequest::setUE_Security_Capability(
+    uint8_t g_EASel, uint8_t g_IASel, uint8_t EEASel, uint8_t EIASel) {
+  ie_ue_security_capability =
+      new UESecurityCapability(0x2E, g_EASel, g_IASel, EEASel, EIASel);
+}
+
+//------------------------------------------------------------------------------
 bool RegistrationRequest::getUeSecurityCapability(uint8_t& ea, uint8_t& ia) {
   if (ie_ue_security_capability) {
     ea = ie_ue_security_capability->getEASel();
     ia = ie_ue_security_capability->getIASel();
+  } else {
+    return -1;
+  }
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool RegistrationRequest::getUeSecurityCapability(
+    uint8_t& ea, uint8_t& ia, uint8_t& eea, uint8_t& eia) {
+  if (ie_ue_security_capability) {
+    ea = ie_ue_security_capability->getEASel();
+    ia = ie_ue_security_capability->getIASel();
+    if (ie_ue_security_capability->getLength() >= 4) {
+      eea = ie_ue_security_capability->getEEASel();
+      eia = ie_ue_security_capability->getEIASel();
+    }
   } else {
     return -1;
   }

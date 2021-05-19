@@ -29,20 +29,20 @@
 #ifndef _PDUSESSIONRESOURCESETUPREQUEST_H_
 #define _PDUSESSIONRESOURCESETUPREQUEST_H_
 
-#include "NgapIEsStruct.hpp"
-
-#include "MessageType.hpp"
 #include "AMF-UE-NGAP-ID.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
-#include "RANPagingPriority.hpp"
+#include "MessageType.hpp"
 #include "NAS-PDU.hpp"
+#include "NgapIEsStruct.hpp"
 #include "PDUSessionResourceSetupListSUReq.hpp"
 #include "PduSessionAggregateMaximumBitRate.hpp"
+#include "RAN-UE-NGAP-ID.hpp"
+#include "RANPagingPriority.hpp"
+#include "UEAggregateMaxBitRate.hpp"
 
 extern "C" {
+#include "Ngap_InitialContextSetupRequest.h"
 #include "Ngap_NGAP-PDU.h"
 #include "Ngap_ProtocolIE-Field.h"
-#include "Ngap_InitialContextSetupRequest.h"
 }
 
 namespace ngap {
@@ -61,6 +61,7 @@ class PduSessionResourceSetupRequestMsg {
       std::vector<PDUSessionResourceSetupRequestItem_t> list);
   void setPduSessionAggregateMaximumBitRate(
       long bit_rate_downlink, long bit_rate_uplink);
+  void setUEAggregateMaxBitRate(long bit_rate_downlink, long bit_rate_uplink);
   int encode2buffer(uint8_t* buf, int buf_size);
   void encode2buffer_new(char* buf, int& encoded_size);
   // Decapsulation
@@ -84,6 +85,7 @@ class PduSessionResourceSetupRequestMsg {
   NAS_PDU* nasPdu;
   PDUSessionResourceSetupListSUReq* pduSessionResourceSetupRequestList;
   PduSessionAggregateMaximumBitRate* pduSessionAggregateMaximumBitRate;
+  UEAggregateMaxBitRate* uEAggregateMaxBitRate;
 };
 
 }  // namespace ngap

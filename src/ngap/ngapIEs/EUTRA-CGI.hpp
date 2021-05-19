@@ -29,8 +29,8 @@
 #ifndef _EUTRA_CGI_H_
 #define _EUTRA_CGI_H_
 
-#include "PlmnId.hpp"
 #include "EUTRACellIdentity.hpp"
+#include "PlmnId.hpp"
 
 extern "C" {
 #include "Ngap_EUTRA-CGI.h"

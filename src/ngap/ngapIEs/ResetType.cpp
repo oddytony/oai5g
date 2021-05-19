@@ -85,6 +85,7 @@ bool ResetType::decode(Ngap_ResetType_t* type) {
   } else {
     return false;
   }
+  return true;
 }
 
 //------------------------------------------------------------------------------

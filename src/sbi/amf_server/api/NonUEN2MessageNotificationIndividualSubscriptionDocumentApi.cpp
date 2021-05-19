@@ -39,7 +39,8 @@ void NonUEN2MessageNotificationIndividualSubscriptionDocumentApi::
 
   Routes::Delete(
       *router,
-      base + amf_cfg.sbi_api_version + "/non-ue-n2-messages/subscriptions/:n2NotifySubscriptionId",
+      base + amf_cfg.sbi_api_version +
+          "/non-ue-n2-messages/subscriptions/:n2NotifySubscriptionId",
       Routes::bind(
           &NonUEN2MessageNotificationIndividualSubscriptionDocumentApi::
               non_ue_n2_info_un_subscribe_handler,

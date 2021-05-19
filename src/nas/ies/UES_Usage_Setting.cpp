@@ -27,6 +27,7 @@
  */
 
 #include "UES_Usage_Setting.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 

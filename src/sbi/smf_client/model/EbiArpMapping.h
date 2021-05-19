@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * EbiArpMapping.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_EbiArpMapping_H_
 #define OAI_SMF_MODEL_EbiArpMapping_H_
-
 
 #include "../ModelBase.h"
 
@@ -27,54 +27,53 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  EbiArpMapping
-    : public ModelBase
-{
-public:
-    EbiArpMapping();
-    virtual ~EbiArpMapping();
+class EbiArpMapping : public ModelBase {
+ public:
+  EbiArpMapping();
+  virtual ~EbiArpMapping();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// EbiArpMapping members
+  /////////////////////////////////////////////
+  /// EbiArpMapping members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t getEpsBearerId() const;
-    
-    void setEpsBearerId(int32_t value);
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t getEpsBearerId() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<Arp> getArp() const;
-    
-    void setArp(const std::shared_ptr<Arp>& value);
+  void setEpsBearerId(int32_t value);
 
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<Arp> getArp() const;
 
-protected:
-    int32_t m_EpsBearerId;
-        std::shared_ptr<Arp> m_Arp;
-    };
+  void setArp(const std::shared_ptr<Arp>& value);
 
+ protected:
+  int32_t m_EpsBearerId;
+  std::shared_ptr<Arp> m_Arp;
+};
 
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_EbiArpMapping_H_ */

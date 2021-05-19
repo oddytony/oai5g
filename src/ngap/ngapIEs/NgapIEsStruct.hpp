@@ -28,18 +28,19 @@
 #ifndef _NGAPIESSTRUCT_H_
 #define _NGAPIESSTRUCT_H_
 
-#include <vector>
 #include <string>
+#include <vector>
 
 extern "C" {
 #include <OCTET_STRING.h>
-#include "Ngap_DelayCritical.h"
-#include "Ngap_Pre-emptionCapability.h"
-#include "Ngap_Pre-emptionVulnerability.h"
-#include "Ngap_NotificationControl.h"
-#include "Ngap_ReflectiveQosAttribute.h"
+
 #include "Ngap_AdditionalQosFlowInformation.h"
 #include "Ngap_AssociatedQosFlowItem.h"
+#include "Ngap_DelayCritical.h"
+#include "Ngap_NotificationControl.h"
+#include "Ngap_Pre-emptionCapability.h"
+#include "Ngap_Pre-emptionVulnerability.h"
+#include "Ngap_ReflectiveQosAttribute.h"
 }
 
 namespace ngap {

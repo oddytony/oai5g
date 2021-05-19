@@ -29,11 +29,12 @@
 #ifndef _NGAP_APPLICATION_H_
 #define _NGAP_APPLICATION_H_
 
-#include "gNB_context.hpp"
-#include "sctp_server.hpp"
 #include <map>
 #include <shared_mutex>
 #include <string>
+
+#include "gNB_context.hpp"
+#include "sctp_server.hpp"
 
 using namespace sctp;
 

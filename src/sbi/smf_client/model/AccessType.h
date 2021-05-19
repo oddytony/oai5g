@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,53 +13,52 @@
 /*
  * AccessType.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_AccessType_H_
 #define OAI_SMF_MODEL_AccessType_H_
 
-
 #include "../ModelBase.h"
-
 
 namespace oai {
 namespace smf {
 namespace model {
 
-class  AccessType
-    : public ModelBase
-{
-public:
-    AccessType();
-    virtual ~AccessType();
+class AccessType : public ModelBase {
+ public:
+  AccessType();
+  virtual ~AccessType();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    enum class eAccessType 
-    {
-        AccessType_3GPP_ACCESS,
-        AccessType_NON_3GPP_ACCESS,
-    };
+  enum class eAccessType {
+    AccessType_3GPP_ACCESS,
+    AccessType_NON_3GPP_ACCESS,
+  };
 
-    eAccessType getValue() const;
-    void setValue(eAccessType const value);
+  eAccessType getValue() const;
+  void setValue(eAccessType const value);
 
-    protected:
-        eAccessType m_value;
+ protected:
+  eAccessType m_value;
 };
 
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_AccessType_H_ */

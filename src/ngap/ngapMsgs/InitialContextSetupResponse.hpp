@@ -29,18 +29,17 @@
 #ifndef _INITIALCONTEXTSETUPRESPONSE_H_
 #define _INITIALCONTEXTSETUPRESPONSE_H_
 
-#include "NgapIEsStruct.hpp"
-
-#include "MessageType.hpp"
 #include "AMF-UE-NGAP-ID.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
-#include "PDUSessionResourceSetupListCxtRes.hpp"
+#include "MessageType.hpp"
+#include "NgapIEsStruct.hpp"
 #include "PDUSessionResourceFailedToSetupListCxtRes.hpp"
+#include "PDUSessionResourceSetupListCxtRes.hpp"
+#include "RAN-UE-NGAP-ID.hpp"
 
 extern "C" {
+#include "Ngap_InitialContextSetupResponse.h"
 #include "Ngap_NGAP-PDU.h"
 #include "Ngap_ProtocolIE-Field.h"
-#include "Ngap_InitialContextSetupResponse.h"
 }
 
 namespace ngap {

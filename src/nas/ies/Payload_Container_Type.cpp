@@ -27,6 +27,7 @@
  */
 
 #include "Payload_Container_Type.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 

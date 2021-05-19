@@ -27,6 +27,7 @@
  */
 
 #include "Additional_Information.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 

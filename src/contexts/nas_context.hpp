@@ -30,12 +30,13 @@
 #define _AMF_NAS_CONTEXT_H_
 
 #include <stdint.h>
-#include <string>
-#include "struct.hpp"
 
+#include <string>
+
+#include "authentication_algorithms_with_5gaka.hpp"
 #include "nas_security_context.hpp"
 #include "security_def.hpp"
-#include "authentication_algorithms_with_5gaka.hpp"
+#include "struct.hpp"
 
 typedef enum {
   _5GMM_STATE_MIN     = 0,
@@ -73,8 +74,13 @@ class nas_context {
   // mobility identity: imsi, supi, 5g-guti, etc
   std::string imsi;
   uint8_t mmCapability;
+  uint8_t ueSecurityCaplen;
   uint8_t ueSecurityCapEnc;
   uint8_t ueSecurityCapInt;
+
+  uint8_t ueSecurityCapEEA;
+  uint8_t ueSecurityCapEIA;
+
   std::vector<nas::SNSSAI_t> requestedNssai;
   std::string serving_network;
   bstring auts;

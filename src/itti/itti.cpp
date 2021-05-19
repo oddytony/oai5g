@@ -24,15 +24,18 @@
  \date 2018
  \email: lionel.gauthier@eurecom.fr
  */
-#include "logger.hpp"
 #include "itti.hpp"
-#include "common_defs.h"
+
+#include <signal.h>
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
-#include <signal.h>
 #include <time.h>
+
 #include <algorithm>
 #include <csignal>
+
+#include "common_defs.h"
+#include "logger.hpp"
 
 extern itti_mw* itti_inst;
 

@@ -53,7 +53,6 @@ extern "C" {
 #define Ngap_maxnoofXnGTP_TLAs (16)
 #define Ngap_maxnoofXnTLAs (16)
 
-
 #ifdef __cplusplus
 }
 #endif

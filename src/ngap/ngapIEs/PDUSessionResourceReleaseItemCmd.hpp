@@ -28,10 +28,10 @@
 #ifndef _PDUSESSIONRESOURCERELEASEITEMCMD_H_
 #define _PDUSESSIONRESOURCERELEASEITEMCMD_H_
 
-#include "PDUSessionID.hpp"
 #include "NAS-PDU.hpp"
-#include "S-NSSAI.hpp"
+#include "PDUSessionID.hpp"
 #include "PDUSessionResourceReleaseCommandTransfer.hpp"
+#include "S-NSSAI.hpp"
 
 extern "C" {
 #include "Ngap_PDUSessionResourceToReleaseItemRelCmd.h"

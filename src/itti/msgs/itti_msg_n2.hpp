@@ -22,18 +22,19 @@
 #ifndef _ITTI_MSG_N2_H_
 #define _ITTI_MSG_N2_H_
 
-#include "itti_msg.hpp"
-#include "NGSetupRequest.hpp"
-#include "NGReset.hpp"
-#include "InitialUEMessage.hpp"
-#include "UplinkNASTransport.hpp"
-#include "UEContextReleaseRequest.hpp"
-#include "UERadioCapabilityInfoIndication.hpp"
-#include "sctp_server.hpp"
+#include "HandoverNotifyMsg.hpp"
 #include "HandoverRequestAck.hpp"
 #include "HandoverRequiredMsg.hpp"
-#include "HandoverNotifyMsg.hpp"
+#include "InitialUEMessage.hpp"
+#include "NGReset.hpp"
+#include "NGSetupRequest.hpp"
+#include "UEContextReleaseRequest.hpp"
+#include "UEContextReleaseComplete.hpp"
+#include "UERadioCapabilityInfoIndication.hpp"
+#include "UplinkNASTransport.hpp"
 #include "UplinkRANStatusTransfer.hpp"
+#include "itti_msg.hpp"
+#include "sctp_server.hpp"
 using namespace ngap;
 using namespace sctp;
 
@@ -189,6 +190,16 @@ class itti_ue_context_release_command : public itti_msg_n2 {
   uint32_t ran_ue_ngap_id;
   long amf_ue_ngap_id;
   Cause cause;
+};
+
+class itti_ue_context_release_complete : public itti_msg_n2 {
+ public:
+  itti_ue_context_release_complete(
+      const task_id_t origin, const task_id_t destination)
+      : itti_msg_n2(UE_CONTEXT_RELEASE_COMPLETE, origin, destination) {}
+  itti_ue_context_release_complete(const itti_ue_context_release_complete& i)
+      : itti_msg_n2(i) {}
+  UEContextReleaseCompleteMsg* ueCtxRelCmpl;
 };
 
 class itti_ue_radio_capability_indication : public itti_msg_n2 {

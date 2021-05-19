@@ -29,12 +29,12 @@
 #include "PduSessionResourceSetupResponse.hpp"
 
 extern "C" {
-#include "constr_TYPE.h"
 #include "asn_codecs.h"
-#include "per_encoder.h"
-#include "per_decoder.h"
+#include "constr_TYPE.h"
 #include "constraints.h"
 #include "dynamic_memory_check.h"
+#include "per_decoder.h"
+#include "per_encoder.h"
 }
 
 #include <iostream>
@@ -112,7 +112,7 @@ void PduSessionResourceSetupResponseMsg::setAmfUeNgapId(unsigned long id) {
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupResponseIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -139,7 +139,7 @@ void PduSessionResourceSetupResponseMsg::setRanUeNgapId(
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupResponseIEs->protocolIEs.list, ie);
   if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
-  //free_wrapper((void**) &ie);
+  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -278,11 +278,12 @@ bool PduSessionResourceSetupResponseMsg::decodefrompdu(
        i < pduSessionResourceSetupResponseIEs->protocolIEs.list.count; i++) {
     switch (pduSessionResourceSetupResponseIEs->protocolIEs.list.array[i]->id) {
       case Ngap_ProtocolIE_ID_id_AMF_UE_NGAP_ID: {
-        if (pduSessionResourceSetupResponseIEs->protocolIEs.list.array[i]
-                    ->criticality == Ngap_Criticality_ignore &&
+        // TODO: to be verified
+        if (/*pduSessionResourceSetupResponseIEs->protocolIEs.list.array[i]
+                    ->criticality == Ngap_Criticality_ignore &&*/
             pduSessionResourceSetupResponseIEs->protocolIEs.list.array[i]
-                    ->value.present ==
-                Ngap_PDUSessionResourceSetupResponseIEs__value_PR_AMF_UE_NGAP_ID) {
+                ->value.present ==
+            Ngap_PDUSessionResourceSetupResponseIEs__value_PR_AMF_UE_NGAP_ID) {
           amfUeNgapId = new AMF_UE_NGAP_ID();
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
                   pduSessionResourceSetupResponseIEs->protocolIEs.list.array[i]
@@ -296,11 +297,12 @@ bool PduSessionResourceSetupResponseMsg::decodefrompdu(
         }
       } break;
       case Ngap_ProtocolIE_ID_id_RAN_UE_NGAP_ID: {
-        if (pduSessionResourceSetupResponseIEs->protocolIEs.list.array[i]
-                    ->criticality == Ngap_Criticality_ignore &&
+        // TODO: to be verified
+        if (/*pduSessionResourceSetupResponseIEs->protocolIEs.list.array[i]
+                    ->criticality == Ngap_Criticality_ignore &&*/
             pduSessionResourceSetupResponseIEs->protocolIEs.list.array[i]
-                    ->value.present ==
-                Ngap_PDUSessionResourceSetupResponseIEs__value_PR_RAN_UE_NGAP_ID) {
+                ->value.present ==
+            Ngap_PDUSessionResourceSetupResponseIEs__value_PR_RAN_UE_NGAP_ID) {
           ranUeNgapId = new RAN_UE_NGAP_ID();
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
                   pduSessionResourceSetupResponseIEs->protocolIEs.list.array[i]

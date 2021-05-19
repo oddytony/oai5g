@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * VolumeTimedReport.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_VolumeTimedReport_H_
 #define OAI_SMF_MODEL_VolumeTimedReport_H_
-
 
 #include "../ModelBase.h"
 
@@ -27,70 +27,69 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  VolumeTimedReport
-    : public ModelBase
-{
-public:
-    VolumeTimedReport();
-    virtual ~VolumeTimedReport();
+class VolumeTimedReport : public ModelBase {
+ public:
+  VolumeTimedReport();
+  virtual ~VolumeTimedReport();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// VolumeTimedReport members
+  /////////////////////////////////////////////
+  /// VolumeTimedReport members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::datetime getStartTimeStamp() const;
-    
-    void setStartTimeStamp(const utility::datetime& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::datetime getStartTimeStamp() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::datetime getEndTimeStamp() const;
-    
-    void setEndTimeStamp(const utility::datetime& value);
+  void setStartTimeStamp(const utility::datetime& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int64_t getDownlinkVolume() const;
-    
-    void setDownlinkVolume(int64_t value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::datetime getEndTimeStamp() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int64_t getUplinkVolume() const;
-    
-    void setUplinkVolume(int64_t value);
+  void setEndTimeStamp(const utility::datetime& value);
 
+  /// <summary>
+  ///
+  /// </summary>
+  int64_t getDownlinkVolume() const;
 
-protected:
-    utility::datetime m_StartTimeStamp;
-        utility::datetime m_EndTimeStamp;
-        int64_t m_DownlinkVolume;
-        int64_t m_UplinkVolume;
-    };
+  void setDownlinkVolume(int64_t value);
 
+  /// <summary>
+  ///
+  /// </summary>
+  int64_t getUplinkVolume() const;
 
-}
-}
-}
+  void setUplinkVolume(int64_t value);
+
+ protected:
+  utility::datetime m_StartTimeStamp;
+  utility::datetime m_EndTimeStamp;
+  int64_t m_DownlinkVolume;
+  int64_t m_UplinkVolume;
+};
+
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_VolumeTimedReport_H_ */

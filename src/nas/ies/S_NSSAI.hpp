@@ -30,6 +30,7 @@
 #define __S_NSSAI_H_
 
 #include <stdint.h>
+
 #include "nas_ie_header.hpp"
 namespace nas {
 

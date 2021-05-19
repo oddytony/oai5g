@@ -26,6 +26,7 @@
  \email: lionel.gauthier@eurecom.fr
  */
 #include "itti_msg.hpp"
+
 #include "itti.hpp"
 
 extern itti_mw* itti_inst;

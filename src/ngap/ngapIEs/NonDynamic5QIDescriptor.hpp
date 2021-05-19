@@ -29,10 +29,10 @@
 #ifndef _NONDYNAMIC5QIDESCRIPTOR_H_
 #define _NONDYNAMIC5QIDESCRIPTOR_H_
 
-#include "FiveQI.hpp"
-#include "PriorityLevelQos.hpp"
 #include "AveragingWindow.hpp"
+#include "FiveQI.hpp"
 #include "MaximumDataBurstVolume.hpp"
+#include "PriorityLevelQos.hpp"
 
 extern "C" {
 #include "Ngap_NonDynamic5QIDescriptor.h"

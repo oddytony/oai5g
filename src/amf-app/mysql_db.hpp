@@ -31,6 +31,7 @@
 
 #include <mysql/mysql.h>
 #include <pthread.h>
+
 #include <string>
 
 #define KEY_LENGTH (16)

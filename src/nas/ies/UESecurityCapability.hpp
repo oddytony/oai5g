@@ -40,10 +40,21 @@ class UESecurityCapability {
   ~UESecurityCapability();
   UESecurityCapability(
       const uint8_t iei, uint8_t _5gg_EASel, uint8_t _5gg_IASel);
+  UESecurityCapability(
+      const uint8_t iei, uint8_t _5gg_EASel, uint8_t _5gg_IASel, uint8_t EEASel,
+      uint8_t EIASel);
   void setEASel(uint8_t sel);
   void setIASel(uint8_t sel);
   uint8_t getEASel();
   uint8_t getIASel();
+
+  void setEEASel(uint8_t sel);
+  void setEIASel(uint8_t sel);
+  uint8_t getEEASel();
+  uint8_t getEIASel();
+
+  void setLength(uint8_t len);
+  uint8_t getLength();
   int encode2buffer(uint8_t* buf, int len);
   int decodefrombuffer(uint8_t* buf, int len, bool is_option);
 
@@ -52,6 +63,8 @@ class UESecurityCapability {
   uint8_t length;
   uint8_t _5g_EASel;
   uint8_t _5g_IASel;
+  uint8_t EEASel;
+  uint8_t EIASel;
 };
 
 }  // namespace nas

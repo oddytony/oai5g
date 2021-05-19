@@ -28,13 +28,14 @@
 
 #ifndef _STRUCT_H_
 #define _STRUCT_H_
-#include <iostream>
 #include <stdint.h>
+
+#include <iostream>
 #include <vector>
 extern "C" {
-#include "bstrlib.h"
-#include "TLVEncoder.h"
 #include "TLVDecoder.h"
+#include "TLVEncoder.h"
+#include "bstrlib.h"
 }
 using namespace std;
 namespace nas {

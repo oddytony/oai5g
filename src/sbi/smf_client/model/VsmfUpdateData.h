@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * VsmfUpdateData.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_VsmfUpdateData_H_
 #define OAI_SMF_MODEL_VsmfUpdateData_H_
-
 
 #include "../ModelBase.h"
 
@@ -37,222 +37,229 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  VsmfUpdateData
-    : public ModelBase
-{
-public:
-    VsmfUpdateData();
-    virtual ~VsmfUpdateData();
+class VsmfUpdateData : public ModelBase {
+ public:
+  VsmfUpdateData();
+  virtual ~VsmfUpdateData();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// VsmfUpdateData members
+  /////////////////////////////////////////////
+  /// VsmfUpdateData members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<RequestIndication> getRequestIndication() const;
-    
-    void setRequestIndication(const std::shared_ptr<RequestIndication>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<RequestIndication> getRequestIndication() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<Ambr> getSessionAmbr() const;
-    bool sessionAmbrIsSet() const;
-    void unsetSessionAmbr();
+  void setRequestIndication(const std::shared_ptr<RequestIndication>& value);
 
-    void setSessionAmbr(const std::shared_ptr<Ambr>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<Ambr> getSessionAmbr() const;
+  bool sessionAmbrIsSet() const;
+  void unsetSessionAmbr();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::vector<std::shared_ptr<QosFlowAddModifyRequestItem>>& getQosFlowsAddModRequestList();
-    bool qosFlowsAddModRequestListIsSet() const;
-    void unsetQosFlowsAddModRequestList();
+  void setSessionAmbr(const std::shared_ptr<Ambr>& value);
 
-    void setQosFlowsAddModRequestList(const std::vector<std::shared_ptr<QosFlowAddModifyRequestItem>>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::vector<std::shared_ptr<QosFlowAddModifyRequestItem>>&
+  getQosFlowsAddModRequestList();
+  bool qosFlowsAddModRequestListIsSet() const;
+  void unsetQosFlowsAddModRequestList();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::vector<std::shared_ptr<QosFlowReleaseRequestItem>>& getQosFlowsRelRequestList();
-    bool qosFlowsRelRequestListIsSet() const;
-    void unsetQosFlowsRelRequestList();
+  void setQosFlowsAddModRequestList(
+      const std::vector<std::shared_ptr<QosFlowAddModifyRequestItem>>& value);
 
-    void setQosFlowsRelRequestList(const std::vector<std::shared_ptr<QosFlowReleaseRequestItem>>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::vector<std::shared_ptr<QosFlowReleaseRequestItem>>&
+  getQosFlowsRelRequestList();
+  bool qosFlowsRelRequestListIsSet() const;
+  void unsetQosFlowsRelRequestList();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::vector<std::shared_ptr<EpsBearerInfo>>& getEpsBearerInfo();
-    bool epsBearerInfoIsSet() const;
-    void unsetEpsBearerInfo();
+  void setQosFlowsRelRequestList(
+      const std::vector<std::shared_ptr<QosFlowReleaseRequestItem>>& value);
 
-    void setEpsBearerInfo(const std::vector<std::shared_ptr<EpsBearerInfo>>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::vector<std::shared_ptr<EpsBearerInfo>>& getEpsBearerInfo();
+  bool epsBearerInfoIsSet() const;
+  void unsetEpsBearerInfo();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::vector<int32_t>& getAssignEbiList();
-    bool assignEbiListIsSet() const;
-    void unsetAssignEbiList();
+  void setEpsBearerInfo(
+      const std::vector<std::shared_ptr<EpsBearerInfo>>& value);
 
-    void setAssignEbiList(std::vector<int32_t> value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::vector<int32_t>& getAssignEbiList();
+  bool assignEbiListIsSet() const;
+  void unsetAssignEbiList();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::vector<int32_t>& getRevokeEbiList();
-    bool revokeEbiListIsSet() const;
-    void unsetRevokeEbiList();
+  void setAssignEbiList(std::vector<int32_t> value);
 
-    void setRevokeEbiList(std::vector<int32_t> value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::vector<int32_t>& getRevokeEbiList();
+  bool revokeEbiListIsSet() const;
+  void unsetRevokeEbiList();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::vector<std::shared_ptr<EbiArpMapping>>& getModifiedEbiList();
-    bool modifiedEbiListIsSet() const;
-    void unsetModifiedEbiList();
+  void setRevokeEbiList(std::vector<int32_t> value);
 
-    void setModifiedEbiList(const std::vector<std::shared_ptr<EbiArpMapping>>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::vector<std::shared_ptr<EbiArpMapping>>& getModifiedEbiList();
+  bool modifiedEbiListIsSet() const;
+  void unsetModifiedEbiList();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t getPti() const;
-    bool ptiIsSet() const;
-    void unsetPti();
+  void setModifiedEbiList(
+      const std::vector<std::shared_ptr<EbiArpMapping>>& value);
 
-    void setPti(int32_t value);
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t getPti() const;
+  bool ptiIsSet() const;
+  void unsetPti();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<RefToBinaryData> getN1SmInfoToUe() const;
-    bool n1SmInfoToUeIsSet() const;
-    void unsetN1SmInfoToUe();
+  void setPti(int32_t value);
 
-    void setN1SmInfoToUe(const std::shared_ptr<RefToBinaryData>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<RefToBinaryData> getN1SmInfoToUe() const;
+  bool n1SmInfoToUeIsSet() const;
+  void unsetN1SmInfoToUe();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    bool isAlwaysOnGranted() const;
-    bool alwaysOnGrantedIsSet() const;
-    void unsetAlwaysOnGranted();
+  void setN1SmInfoToUe(const std::shared_ptr<RefToBinaryData>& value);
 
-    void setAlwaysOnGranted(bool value);
+  /// <summary>
+  ///
+  /// </summary>
+  bool isAlwaysOnGranted() const;
+  bool alwaysOnGrantedIsSet() const;
+  void unsetAlwaysOnGranted();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getHsmfPduSessionUri() const;
-    bool hsmfPduSessionUriIsSet() const;
-    void unsetHsmfPduSessionUri();
+  void setAlwaysOnGranted(bool value);
 
-    void setHsmfPduSessionUri(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getHsmfPduSessionUri() const;
+  bool hsmfPduSessionUriIsSet() const;
+  void unsetHsmfPduSessionUri();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getSupportedFeatures() const;
-    bool supportedFeaturesIsSet() const;
-    void unsetSupportedFeatures();
+  void setHsmfPduSessionUri(const utility::string_t& value);
 
-    void setSupportedFeatures(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getSupportedFeatures() const;
+  bool supportedFeaturesIsSet() const;
+  void unsetSupportedFeatures();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<Cause> getCause() const;
-    bool causeIsSet() const;
-    void unsetCause();
+  void setSupportedFeatures(const utility::string_t& value);
 
-    void setCause(const std::shared_ptr<Cause>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<Cause> getCause() const;
+  bool causeIsSet() const;
+  void unsetCause();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getN1smCause() const;
-    bool n1smCauseIsSet() const;
-    void unsetN1smCause();
+  void setCause(const std::shared_ptr<Cause>& value);
 
-    void setN1smCause(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getN1smCause() const;
+  bool n1smCauseIsSet() const;
+  void unsetN1smCause();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t getBackOffTimer() const;
-    bool backOffTimerIsSet() const;
-    void unsetBackOffTimer();
+  void setN1smCause(const utility::string_t& value);
 
-    void setBackOffTimer(int32_t value);
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t getBackOffTimer() const;
+  bool backOffTimerIsSet() const;
+  void unsetBackOffTimer();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<MaReleaseIndication> getMaReleaseInd() const;
-    bool maReleaseIndIsSet() const;
-    void unsetMaReleaseInd();
+  void setBackOffTimer(int32_t value);
 
-    void setMaReleaseInd(const std::shared_ptr<MaReleaseIndication>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<MaReleaseIndication> getMaReleaseInd() const;
+  bool maReleaseIndIsSet() const;
+  void unsetMaReleaseInd();
 
+  void setMaReleaseInd(const std::shared_ptr<MaReleaseIndication>& value);
 
-protected:
-    std::shared_ptr<RequestIndication> m_RequestIndication;
-        std::shared_ptr<Ambr> m_SessionAmbr;
-    bool m_SessionAmbrIsSet;
-    std::vector<std::shared_ptr<QosFlowAddModifyRequestItem>> m_QosFlowsAddModRequestList;
-    bool m_QosFlowsAddModRequestListIsSet;
-    std::vector<std::shared_ptr<QosFlowReleaseRequestItem>> m_QosFlowsRelRequestList;
-    bool m_QosFlowsRelRequestListIsSet;
-    std::vector<std::shared_ptr<EpsBearerInfo>> m_EpsBearerInfo;
-    bool m_EpsBearerInfoIsSet;
-    std::vector<int32_t> m_AssignEbiList;
-    bool m_AssignEbiListIsSet;
-    std::vector<int32_t> m_RevokeEbiList;
-    bool m_RevokeEbiListIsSet;
-    std::vector<std::shared_ptr<EbiArpMapping>> m_ModifiedEbiList;
-    bool m_ModifiedEbiListIsSet;
-    int32_t m_Pti;
-    bool m_PtiIsSet;
-    std::shared_ptr<RefToBinaryData> m_N1SmInfoToUe;
-    bool m_N1SmInfoToUeIsSet;
-    bool m_AlwaysOnGranted;
-    bool m_AlwaysOnGrantedIsSet;
-    utility::string_t m_HsmfPduSessionUri;
-    bool m_HsmfPduSessionUriIsSet;
-    utility::string_t m_SupportedFeatures;
-    bool m_SupportedFeaturesIsSet;
-    std::shared_ptr<Cause> m_Cause;
-    bool m_CauseIsSet;
-    utility::string_t m_N1smCause;
-    bool m_N1smCauseIsSet;
-    int32_t m_BackOffTimer;
-    bool m_BackOffTimerIsSet;
-    std::shared_ptr<MaReleaseIndication> m_MaReleaseInd;
-    bool m_MaReleaseIndIsSet;
+ protected:
+  std::shared_ptr<RequestIndication> m_RequestIndication;
+  std::shared_ptr<Ambr> m_SessionAmbr;
+  bool m_SessionAmbrIsSet;
+  std::vector<std::shared_ptr<QosFlowAddModifyRequestItem>>
+      m_QosFlowsAddModRequestList;
+  bool m_QosFlowsAddModRequestListIsSet;
+  std::vector<std::shared_ptr<QosFlowReleaseRequestItem>>
+      m_QosFlowsRelRequestList;
+  bool m_QosFlowsRelRequestListIsSet;
+  std::vector<std::shared_ptr<EpsBearerInfo>> m_EpsBearerInfo;
+  bool m_EpsBearerInfoIsSet;
+  std::vector<int32_t> m_AssignEbiList;
+  bool m_AssignEbiListIsSet;
+  std::vector<int32_t> m_RevokeEbiList;
+  bool m_RevokeEbiListIsSet;
+  std::vector<std::shared_ptr<EbiArpMapping>> m_ModifiedEbiList;
+  bool m_ModifiedEbiListIsSet;
+  int32_t m_Pti;
+  bool m_PtiIsSet;
+  std::shared_ptr<RefToBinaryData> m_N1SmInfoToUe;
+  bool m_N1SmInfoToUeIsSet;
+  bool m_AlwaysOnGranted;
+  bool m_AlwaysOnGrantedIsSet;
+  utility::string_t m_HsmfPduSessionUri;
+  bool m_HsmfPduSessionUriIsSet;
+  utility::string_t m_SupportedFeatures;
+  bool m_SupportedFeaturesIsSet;
+  std::shared_ptr<Cause> m_Cause;
+  bool m_CauseIsSet;
+  utility::string_t m_N1smCause;
+  bool m_N1smCauseIsSet;
+  int32_t m_BackOffTimer;
+  bool m_BackOffTimerIsSet;
+  std::shared_ptr<MaReleaseIndication> m_MaReleaseInd;
+  bool m_MaReleaseIndIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_VsmfUpdateData_H_ */

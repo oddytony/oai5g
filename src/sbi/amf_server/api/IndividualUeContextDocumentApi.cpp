@@ -41,20 +41,25 @@ void IndividualUeContextDocumentApi::setupRoutes() {
       Routes::bind(
           &IndividualUeContextDocumentApi::create_ue_context_handler, this));
   Routes::Post(
-      *router, base + amf_cfg.sbi_api_version + "/ue-contexts/:ueContextId/assign-ebi",
+      *router,
+      base + amf_cfg.sbi_api_version + "/ue-contexts/:ueContextId/assign-ebi",
       Routes::bind(
           &IndividualUeContextDocumentApi::e_bi_assignment_handler, this));
   Routes::Post(
-      *router, base + amf_cfg.sbi_api_version + "/ue-contexts/:ueContextId/transfer-update",
+      *router,
+      base + amf_cfg.sbi_api_version +
+          "/ue-contexts/:ueContextId/transfer-update",
       Routes::bind(
           &IndividualUeContextDocumentApi::registration_status_update_handler,
           this));
   Routes::Post(
-      *router, base + amf_cfg.sbi_api_version + "/ue-contexts/:ueContextId/release",
+      *router,
+      base + amf_cfg.sbi_api_version + "/ue-contexts/:ueContextId/release",
       Routes::bind(
           &IndividualUeContextDocumentApi::release_ue_context_handler, this));
   Routes::Post(
-      *router, base + amf_cfg.sbi_api_version + "/ue-contexts/:ueContextId/transfer",
+      *router,
+      base + amf_cfg.sbi_api_version + "/ue-contexts/:ueContextId/transfer",
       Routes::bind(
           &IndividualUeContextDocumentApi::u_e_context_transfer_handler, this));
 

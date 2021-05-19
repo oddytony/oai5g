@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,52 +13,49 @@
 /*
  * SmContextType.h
  *
- * Possible values are   - EPS_PDN_CONNECTION   - SM_CONTEXT 
+ * Possible values are   - EPS_PDN_CONNECTION   - SM_CONTEXT
  */
 
 #ifndef OAI_SMF_MODEL_SmContextType_H_
 #define OAI_SMF_MODEL_SmContextType_H_
 
-
 #include "../ModelBase.h"
-
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// Possible values are   - EPS_PDN_CONNECTION   - SM_CONTEXT 
+/// Possible values are   - EPS_PDN_CONNECTION   - SM_CONTEXT
 /// </summary>
-class  SmContextType
-    : public ModelBase
-{
-public:
-    SmContextType();
-    virtual ~SmContextType();
+class SmContextType : public ModelBase {
+ public:
+  SmContextType();
+  virtual ~SmContextType();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// SmContextType members
+  /////////////////////////////////////////////
+  /// SmContextType members
 
-
-protected:
+ protected:
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_SmContextType_H_ */

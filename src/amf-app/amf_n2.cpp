@@ -152,6 +152,13 @@ void amf_n2_task(void* args_p) {
             dynamic_cast<itti_ue_context_release_command*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
+      case UE_CONTEXT_RELEASE_COMPLETE: {
+        Logger::task_amf_n2().info(
+            "Received UE_CONTEXT_RELEASE_COMPLETE message, handling");
+        itti_ue_context_release_complete* m =
+            dynamic_cast<itti_ue_context_release_complete*>(msg);
+        amf_n2_inst->handle_itti_message(ref(*m));
+      } break;
       case PDU_SESSION_RESOURCE_RELEASE_COMMAND: {
         Logger::task_amf_n2().info(
             "Received PDU_SESSION_RESOURCE_RELEASE_COMMAND message, handling");
@@ -316,7 +323,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
   NGSetupResponseMsg ngSetupResp;
   ngSetupResp.setMessageType();
   ngSetupResp.setAMFName(amf_cfg.AMF_Name);
-  ngSetupResp.setRelativeAmfCapacity(amf_cfg.relativeAMFCapacity);
+  // ngSetupResp.setRelativeAmfCapacity(amf_cfg.relativeAMFCapacity);
   std::vector<struct GuamiItem_s> guami_list;
   for (int i = 0; i < amf_cfg.guami_list.size(); i++) {
     struct GuamiItem_s tmp;
@@ -329,6 +336,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
     guami_list.push_back(tmp);
   }
   ngSetupResp.setGUAMIList(guami_list);
+  ngSetupResp.setRelativeAmfCapacity(amf_cfg.relativeAMFCapacity);
   std::vector<PlmnSliceSupport_t> plmn_list;
   for (int i = 0; i < amf_cfg.plmn_list.size(); i++) {
     PlmnSliceSupport_t tmp;
@@ -707,12 +715,23 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
       0xe000);  // TODO: remove hardcoded value
   msg->setSecurityKey((uint8_t*) bdata(itti_msg.kgnb));
   msg->setNasPdu((uint8_t*) bdata(itti_msg.nas), blength(itti_msg.nas));
-
+  // TODO: get the allowed NSSAIs from conf file
   std::vector<S_Nssai> list;
-  S_Nssai item;
-  item.sst = "01";
-  item.sd  = "None";
-  list.push_back(item);
+  for (auto p : amf_cfg.plmn_list) {
+    for (auto s : p.slice_list) {
+      S_Nssai item;
+      item.sst = s.sST;
+      item.sd  = s.sD;
+      list.push_back(item);
+    }
+  }
+
+  //  std::vector<S_Nssai> list;
+  /*  S_Nssai item;
+    item.sst = "01";
+    item.sd  = "None";
+    list.push_back(item);
+  */
   msg->setAllowedNssai(list);
   bdestroy(itti_msg.nas);
   bdestroy(itti_msg.kgnb);
@@ -728,9 +747,37 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
     if (itti_msg.is_pdu_exist) {
       std::vector<PDUSessionResourceSetupRequestItem_t> list;
       PDUSessionResourceSetupRequestItem_t item;
-      item.pduSessionId      = itti_msg.pdu_session_id;
-      item.s_nssai.sst       = "01";
-      item.s_nssai.sd        = "";
+      item.pduSessionId = itti_msg.pdu_session_id;
+
+      // Get NSSAI from PDU Session Context
+      std::shared_ptr<nas_context> nc;
+      if (amf_n1_inst->is_amf_ue_id_2_nas_context(itti_msg.amf_ue_ngap_id))
+        nc = amf_n1_inst->amf_ue_id_2_nas_context(itti_msg.amf_ue_ngap_id);
+      else {
+        Logger::amf_n2().warn(
+            "No existed nas_context with amf_ue_ngap_id(0x%x)",
+            itti_msg.amf_ue_ngap_id);
+        // TODO:
+      }
+      string supi = "imsi-" + nc.get()->imsi;
+      Logger::amf_n2().debug("SUPI (%s)", supi.c_str());
+      std::shared_ptr<pdu_session_context> psc;
+
+      if (!amf_app_inst->find_pdu_session_context(
+              supi, itti_msg.pdu_session_id, psc)) {
+        Logger::amf_n2().warn(
+            "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
+        item.s_nssai.sst = "01";
+        item.s_nssai.sd  = "None";
+      } else {
+        item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
+        item.s_nssai.sd  = psc.get()->snssai.sD;
+      }
+
+      Logger::amf_n2().debug(
+          "S_NSSAI (SST, SD) %s, %s", item.s_nssai.sst.c_str(),
+          item.s_nssai.sd.c_str());
+
       item.pduSessionNAS_PDU = NULL;
       if (itti_msg.isn2sm_avaliable) {
         bstring n2sm = itti_msg.n2sm;
@@ -750,7 +797,7 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
     }
   }
 
-  uint8_t buffer[10000];
+  uint8_t buffer[20000];
   int encoded_size = msg->encode2buffer(buffer, 10000);
   bstring b        = blk2bstr(buffer, encoded_size);
   sctp_s_38412.sctp_send_msg(
@@ -788,8 +835,6 @@ void amf_n2::handle_itti_message(
   nas_pdu[blength(itti_msg.nas)] = '\0';
   item.pduSessionNAS_PDU         = nas_pdu;
   item.sizeofpduSessionNAS_PDU   = blength(itti_msg.nas);
-  item.s_nssai.sst               = "01";  // TODO: get from N1N2msgTranferMsg
-  item.s_nssai.sd                = "";    // TODO: get from N1N2msgTranferMsg
 
   // Get NSSAI from PDU Session Context
   std::shared_ptr<nas_context> nc;
@@ -809,6 +854,11 @@ void amf_n2::handle_itti_message(
           supi, itti_msg.pdu_session_id, psc)) {
     Logger::amf_n2().warn(
         "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
+    item.s_nssai.sst = "01";    // TODO: get from N1N2msgTranferMsg
+    item.s_nssai.sd  = "none";  // TODO: get from N1N2msgTranferMsg
+  } else {
+    item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
+    item.s_nssai.sd  = psc.get()->snssai.sD;
   }
 
   // item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
@@ -819,7 +869,7 @@ void amf_n2::handle_itti_message(
   item.pduSessionResourceSetupRequestTransfer.size = blength(itti_msg.n2sm);
   list.push_back(item);
   psrsr->setPduSessionResourceSetupRequestList(list);
-
+  psrsr->setUEAggregateMaxBitRate(0x08a7d8c0, 0x20989680);
   size_t buffer_size = BUFFER_SIZE_512;
   char* buffer       = (char*) calloc(1, buffer_size);
   int encoded_size   = 0;
@@ -914,42 +964,57 @@ void amf_n2::handle_itti_message(itti_ue_context_release_request& itti_msg) {
 }
 
 void amf_n2::handle_itti_message(itti_ue_context_release_command& itti_msg) {
-  Logger::amf_n2().debug("handling ue context release command ...");
+  Logger::amf_n2().debug("Handling UE Context Release Command ...");
 
   std::shared_ptr<ue_ngap_context> unc;
   unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
   if (unc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal ue with ran_ue_ngap_id(0x%x)", itti_msg.ran_ue_ngap_id);
+        "Illegal UE with ran_ue_ngap_id (0x%x)", itti_msg.ran_ue_ngap_id);
     return;
   }
   std::shared_ptr<gnb_context> gc;
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal gnb with assoc id(0x%x)", unc.get()->gnb_assoc_id);
+        "Illegal gNB with assoc id (0x%x)", unc.get()->gnb_assoc_id);
     return;
   }
 
-  // UEContextReleaseCommandMsg* ueCtxRelCmd = new UEContextReleaseCommandMsg();
   std::unique_ptr<UEContextReleaseCommandMsg> ueCtxRelCmd =
       std::make_unique<UEContextReleaseCommandMsg>();
   ueCtxRelCmd->setMessageType();
   ueCtxRelCmd->setUeNgapIdPair(
       itti_msg.amf_ue_ngap_id, itti_msg.ran_ue_ngap_id);
+
   if (itti_msg.cause.getChoiceOfCause() == Ngap_Cause_PR_nas) {
     ueCtxRelCmd->setCauseNas((e_Ngap_CauseNas) itti_msg.cause.getValue());
   }
+
   if (itti_msg.cause.getChoiceOfCause() == Ngap_Cause_PR_radioNetwork) {
     ueCtxRelCmd->setCauseRadioNetwork(
         (e_Ngap_CauseRadioNetwork) itti_msg.cause.getValue());
   }
-  uint8_t buffer[200];
+
+  uint8_t buffer[200];  // TODO: remove hardcoded value
   int encoded_size = ueCtxRelCmd->encode2buffer(buffer, 200);
-  // delete ueCtxRelCmd;
+
   bstring b = blk2bstr(buffer, encoded_size);
   sctp_s_38412.sctp_send_msg(
       gc.get()->sctp_assoc_id, unc.get()->sctp_stream_send, &b);
+  return;
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::handle_itti_message(itti_ue_context_release_complete& itti_msg) {
+  Logger::amf_n2().debug("Handling UE Context Release Complete ...");
+  unsigned long amf_ue_ngap_id = itti_msg.ueCtxRelCmpl->getAmfUeNgapId();
+  uint32_t ran_ue_ngap_id      = itti_msg.ueCtxRelCmpl->getRanUeNgapId();
+  // TODO: User Location Information IE
+  // TODO: Information on Recommended Cells & RAN Nodes for Paging IE
+
+  // TODO: Process Secondary RAT Usage Information IE if available
+  // send Nsmf_PDUSession_UpdateSMContext to SMF
 }
 
 //------------------------------------------------------------------------------

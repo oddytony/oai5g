@@ -697,7 +697,7 @@ void SmContextCreateData::toMultipart(
 
   if (m_SupiIsSet) {
     ////multipart->add(ModelBase::toHttpContent(namePrefix +
-    ///utility::conversions::to_string_t("supi"), m_Supi));
+    /// utility::conversions::to_string_t("supi"), m_Supi));
   }
   if (m_UnauthenticatedSupiIsSet) {
     // multipart->add(ModelBase::toHttpContent(namePrefix +
@@ -818,7 +818,8 @@ void SmContextCreateData::toMultipart(
   }
   if (m_OldPduSessionIdIsSet) {
     // multipart->add(ModelBase::toHttpContent(namePrefix +
-    // utility::conversions::to_string_t("oldPduSessionId"), m_OldPduSessionId));
+    // utility::conversions::to_string_t("oldPduSessionId"),
+    // m_OldPduSessionId));
   }
   {
     std::vector<web::json::value> jsonArray;
@@ -923,7 +924,8 @@ void SmContextCreateData::toMultipart(
   }
   if (m_MaPduIndicationIsSet) {
     // multipart->add(ModelBase::toHttpContent(namePrefix +
-    // utility::conversions::to_string_t("maPduIndication"), m_MaPduIndication));
+    // utility::conversions::to_string_t("maPduIndication"),
+    // m_MaPduIndication));
   }
   if (m_N2SmInfoIsSet) {
     if (m_N2SmInfo.get()) {

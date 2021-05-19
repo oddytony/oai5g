@@ -30,12 +30,12 @@
 #define _MessageType_H_
 
 extern "C" {
+#include "Ngap_Criticality.h"
+#include "Ngap_InitiatingMessage.h"
 #include "Ngap_NGAP-PDU.h"
 #include "Ngap_ProcedureCode.h"
-#include "Ngap_InitiatingMessage.h"
 #include "Ngap_SuccessfulOutcome.h"
 #include "Ngap_UnsuccessfulOutcome.h"
-#include "Ngap_Criticality.h"
 }
 
 namespace ngap {

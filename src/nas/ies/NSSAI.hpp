@@ -28,9 +28,11 @@
 
 #ifndef __NSSAI_H_
 #define __NSSAI_H_
-#include <vector>
-#include "nas_ie_header.hpp"
 #include <stdint.h>
+
+#include <vector>
+
+#include "nas_ie_header.hpp"
 namespace nas {
 
 class NSSAI {

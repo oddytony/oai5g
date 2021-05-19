@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * RefToBinaryData.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_RefToBinaryData_H_
 #define OAI_SMF_MODEL_RefToBinaryData_H_
-
 
 #include "../ModelBase.h"
 
@@ -27,46 +27,45 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  RefToBinaryData
-    : public ModelBase
-{
-public:
-    RefToBinaryData();
-    virtual ~RefToBinaryData();
+class RefToBinaryData : public ModelBase {
+ public:
+  RefToBinaryData();
+  virtual ~RefToBinaryData();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// RefToBinaryData members
+  /////////////////////////////////////////////
+  /// RefToBinaryData members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getContentId() const;
-    
-    void setContentId(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getContentId() const;
 
+  void setContentId(const utility::string_t& value);
 
-protected:
-    utility::string_t m_ContentId;
-    };
+ protected:
+  utility::string_t m_ContentId;
+};
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_RefToBinaryData_H_ */

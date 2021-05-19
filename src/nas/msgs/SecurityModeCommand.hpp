@@ -43,6 +43,8 @@ class SecurityModeCommand {
   void setNAS_Security_Algorithms(uint8_t ciphering, uint8_t integrity);
   void setngKSI(uint8_t tsc, uint8_t key_set_id);
   void setUE_Security_Capability(uint8_t g_EASel, uint8_t g_IASel);
+  void setUE_Security_Capability(
+      uint8_t g_EASel, uint8_t g_IASel, uint8_t EEASel, uint8_t EIASel);
   void setIMEISV_Request(uint8_t value);
   void setEPS_NAS_Security_Algorithms(uint8_t ciphering, uint8_t integrity);
   void setAdditional_5G_Security_Information(bool rinmr, bool hdp);

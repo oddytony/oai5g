@@ -27,8 +27,9 @@
  */
 
 #include "BroadcastPLMNItem.hpp"
-#include "S-NSSAI.hpp"
+
 #include "PlmnId.hpp"
+#include "S-NSSAI.hpp"
 
 extern "C" {
 #include "Ngap_BroadcastPLMNList.h"

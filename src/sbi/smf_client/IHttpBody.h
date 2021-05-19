@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -18,23 +19,21 @@
 #ifndef OAI_SMF_MODEL_IHttpBody_H_
 #define OAI_SMF_MODEL_IHttpBody_H_
 
-
 #include <iostream>
 
 namespace oai {
 namespace smf {
 namespace model {
 
-class  IHttpBody
-{
-public:
-    virtual ~IHttpBody() { }
+class IHttpBody {
+ public:
+  virtual ~IHttpBody() {}
 
-    virtual void writeTo( std::ostream& stream ) = 0;
+  virtual void writeTo(std::ostream& stream) = 0;
 };
 
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_IHttpBody_H_ */

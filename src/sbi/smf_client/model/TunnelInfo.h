@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * TunnelInfo.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_TunnelInfo_H_
 #define OAI_SMF_MODEL_TunnelInfo_H_
-
 
 #include "../ModelBase.h"
 
@@ -27,68 +27,67 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  TunnelInfo
-    : public ModelBase
-{
-public:
-    TunnelInfo();
-    virtual ~TunnelInfo();
+class TunnelInfo : public ModelBase {
+ public:
+  TunnelInfo();
+  virtual ~TunnelInfo();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// TunnelInfo members
+  /////////////////////////////////////////////
+  /// TunnelInfo members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getIpv4Addr() const;
-    bool ipv4AddrIsSet() const;
-    void unsetIpv4Addr();
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getIpv4Addr() const;
+  bool ipv4AddrIsSet() const;
+  void unsetIpv4Addr();
 
-    void setIpv4Addr(const utility::string_t& value);
+  void setIpv4Addr(const utility::string_t& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getIpv6Addr() const;
-    bool ipv6AddrIsSet() const;
-    void unsetIpv6Addr();
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getIpv6Addr() const;
+  bool ipv6AddrIsSet() const;
+  void unsetIpv6Addr();
 
-    void setIpv6Addr(const utility::string_t& value);
+  void setIpv6Addr(const utility::string_t& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getGtpTeid() const;
-    
-    void setGtpTeid(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getGtpTeid() const;
 
+  void setGtpTeid(const utility::string_t& value);
 
-protected:
-    utility::string_t m_Ipv4Addr;
-    bool m_Ipv4AddrIsSet;
-    utility::string_t m_Ipv6Addr;
-    bool m_Ipv6AddrIsSet;
-    utility::string_t m_GtpTeid;
-    };
+ protected:
+  utility::string_t m_Ipv4Addr;
+  bool m_Ipv4AddrIsSet;
+  utility::string_t m_Ipv6Addr;
+  bool m_Ipv6AddrIsSet;
+  utility::string_t m_GtpTeid;
+};
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_TunnelInfo_H_ */

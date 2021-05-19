@@ -27,6 +27,7 @@
  */
 
 #include "UplinkDataStatus.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 

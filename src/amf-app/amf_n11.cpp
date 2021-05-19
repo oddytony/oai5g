@@ -29,6 +29,7 @@
 #include "amf_n11.hpp"
 
 #include <curl/curl.h>
+
 #include <nlohmann/json.hpp>
 
 #include "3gpp_ts24501.hpp"
@@ -293,6 +294,10 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer& smf) {
       uint8_t pti     = sm_msg[2];
       Logger::amf_n11().debug(
           "Decoded PTI for PDUSessionEstablishmentRequest(0x%x)", pti);
+      psc.get()->isn2sm_avaliable = false;
+      handle_pdu_session_initial_request(
+          supi, psc, smf_addr, smf_api_version, smf.sm_msg, dnn);
+      /*
       if (psc.get()->isn1sm_avaliable && psc.get()->isn2sm_avaliable) {
         // TODO: should be removed
         itti_n1n2_message_transfer_request* itti_msg =
@@ -322,6 +327,7 @@ void amf_n11::handle_itti_message(itti_smf_services_consumer& smf) {
         handle_pdu_session_initial_request(
             supi, psc, smf_addr, smf_api_version, smf.sm_msg, dnn);
       }
+      */
     } break;
     case EXISTING_PDU_SESSION: {
       // TODO:
@@ -575,13 +581,24 @@ void amf_n11::curl_http_client(
     bstring n1sm_hex, n2sm_hex;
 
     Logger::amf_n11().debug("Get response with HTTP code (%d)", httpCode);
+    Logger::amf_n11().debug("Response body %s", response.c_str());
+
     if (static_cast<http_response_codes_e>(httpCode) ==
         http_response_codes_e::HTTP_RESPONSE_CODE_0) {
+      // TODO: should be removed
       Logger::amf_n11().error(
           "Cannot get response when calling %s", remoteUri.c_str());
       // free curl before returning
       curl_slist_free_all(headers);
       curl_easy_cleanup(curl);
+      // TODO: To be verified
+      psc.get()->smf_context_location =
+          "/nsmf-pdusession/v2/sm-contexts/1";  // try to fix bugs for
+                                                // no-response from SMF when
+                                                // requesting
+                                                // /nsmf-pdusession/v2/sm-contexts
+                                                // (first pdu session
+                                                // establishment request)
       return;
     }
 
@@ -604,30 +621,33 @@ void amf_n11::curl_http_client(
         return;
       }
 
-      try {
-        response_data = nlohmann::json::parse(json_data_response);
-      } catch (nlohmann::json::exception& e) {
-        Logger::amf_n11().warn("Could not get Json content from the response");
-        // Set the default Cause
-        response_data["error"]["cause"] = "504 Gateway Timeout";
-      }
+      // Transfer N1 to gNB/UE if available
+      if (number_parts > 1) {
+        try {
+          response_data = nlohmann::json::parse(json_data_response);
+        } catch (nlohmann::json::exception& e) {
+          Logger::amf_n11().warn(
+              "Could not get Json content from the response");
+          // Set the default Cause
+          response_data["error"]["cause"] = "504 Gateway Timeout";
+        }
 
-      Logger::amf_n11().debug(
-          "Get response with jsonData: %s", json_data_response.c_str());
-      msg_str_2_msg_hex(
-          n1sm.substr(0, n1sm.length() - 2),
-          n1sm_hex);  // TODO: pdu session establishment reject bugs from SMF
-      print_buffer(
-          "amf_n11", "Get response with n1sm:", (uint8_t*) bdata(n1sm_hex),
-          blength(n1sm_hex));
+        Logger::amf_n11().debug(
+            "Get response with jsonData: %s", json_data_response.c_str());
+        msg_str_2_msg_hex(n1sm, n1sm_hex);
+        print_buffer(
+            "amf_n11", "Get response with n1sm:", (uint8_t*) bdata(n1sm_hex),
+            blength(n1sm_hex));
 
-      std::string cause = response_data["error"]["cause"];
-      Logger::amf_n11().warn(
-          "Call Network Function services failure (with cause %s)",
-          cause.c_str());
-      if (!cause.compare("DNN_DENIED"))
+        std::string cause = response_data["error"]["cause"];
+        Logger::amf_n11().debug(
+            "Call Network Function services failure (with cause %s)",
+            cause.c_str());
+        //         if (!cause.compare("DNN_DENIED"))
         handle_post_sm_context_response_error(
             httpCode, cause, n1sm_hex, supi, pdu_session_id);
+      }
+
     } else {  // Response with success code
       // Store location of the created context in case of PDU Session
       // Establishment
@@ -727,6 +747,7 @@ bool amf_n11::discover_smf(
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, NRF_CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
 
     // Response information.
     long httpCode = {0};
@@ -816,7 +837,7 @@ bool amf_n11::send_ue_authentication_request(
       std::string(
           inet_ntoa(*((struct in_addr*) &amf_cfg.ausf_addr.ipv4_addr))) +
       ":" + std::to_string(amf_cfg.ausf_addr.port) + "/nausf-auth/" +
-      amf_cfg.ausf_addr.api_version + "ue-authentications";
+      amf_cfg.ausf_addr.api_version + "/ue-authentications";
 
   Logger::amf_n11().debug(
       "Send UE Authentication Request to AUSF, URL %s", url.c_str());
@@ -838,6 +859,7 @@ bool amf_n11::send_ue_authentication_request(
     curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, AUSF_CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
 
     if (http_version == 2) {
       curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
@@ -864,10 +886,13 @@ bool amf_n11::send_ue_authentication_request(
     if ((httpCode == 200) or
         (httpCode == 201)) {  // TODO: remove hardcoded value
       try {
-        nlohmann::json::parse(*httpData.get()).get_to(ue_auth_ctx);
+        std::string tmp = *httpData.get();
+        nlohmann::json::parse(tmp.c_str()).get_to(ue_auth_ctx);
+        Logger::amf_n11().debug(
+            "UE Authentication, response from AUSF\n, %s ", tmp.c_str());
       } catch (nlohmann::json::exception& e) {
         Logger::amf_n11().warn(
-            "UE Authentication, could not parse json from the AUSF "
+            "UE Authentication, could not parse Json from the AUSF "
             "response");
         // TODO: error handling
         return false;
@@ -875,7 +900,7 @@ bool amf_n11::send_ue_authentication_request(
 
     } else {
       Logger::amf_n11().warn(
-          "UE Authentication, could not get response from NRF");
+          "UE Authentication, could not get response from AUSF");
       return false;
     }
 
@@ -921,7 +946,7 @@ void amf_n11::curl_http_client(
       curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
     curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1);
-    curl_easy_setopt(curl, CURLOPT_INTERFACE, "ens33");
+    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
     //    Logger::amf_n1().info("[CURL] request sent by interface " +
     //    udm_cfg.nudr.if_name);
 

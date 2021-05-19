@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * QosFlowReleaseRequestItem.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_QosFlowReleaseRequestItem_H_
 #define OAI_SMF_MODEL_QosFlowReleaseRequestItem_H_
-
 
 #include "../ModelBase.h"
 
@@ -27,68 +27,67 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  QosFlowReleaseRequestItem
-    : public ModelBase
-{
-public:
-    QosFlowReleaseRequestItem();
-    virtual ~QosFlowReleaseRequestItem();
+class QosFlowReleaseRequestItem : public ModelBase {
+ public:
+  QosFlowReleaseRequestItem();
+  virtual ~QosFlowReleaseRequestItem();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// QosFlowReleaseRequestItem members
+  /////////////////////////////////////////////
+  /// QosFlowReleaseRequestItem members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t getQfi() const;
-    
-    void setQfi(int32_t value);
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t getQfi() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getQosRules() const;
-    bool qosRulesIsSet() const;
-    void unsetQosRules();
+  void setQfi(int32_t value);
 
-    void setQosRules(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getQosRules() const;
+  bool qosRulesIsSet() const;
+  void unsetQosRules();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getQosFlowDescription() const;
-    bool qosFlowDescriptionIsSet() const;
-    void unsetQosFlowDescription();
+  void setQosRules(const utility::string_t& value);
 
-    void setQosFlowDescription(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getQosFlowDescription() const;
+  bool qosFlowDescriptionIsSet() const;
+  void unsetQosFlowDescription();
 
+  void setQosFlowDescription(const utility::string_t& value);
 
-protected:
-    int32_t m_Qfi;
-        utility::string_t m_QosRules;
-    bool m_QosRulesIsSet;
-    utility::string_t m_QosFlowDescription;
-    bool m_QosFlowDescriptionIsSet;
+ protected:
+  int32_t m_Qfi;
+  utility::string_t m_QosRules;
+  bool m_QosRulesIsSet;
+  utility::string_t m_QosFlowDescription;
+  bool m_QosFlowDescriptionIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_QosFlowReleaseRequestItem_H_ */

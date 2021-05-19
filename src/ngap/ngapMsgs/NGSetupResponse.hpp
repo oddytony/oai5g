@@ -29,13 +29,12 @@
 #ifndef _NGSETUPRESPONSE_H_
 #define _NGSETUPRESPONSE_H_
 
-#include "NgapIEsStruct.hpp"
-
-#include "MessageType.hpp"
 #include "AMFName.hpp"
-#include "ServedGUAMIList.hpp"
-#include "RelativeAMFCapacity.hpp"
+#include "MessageType.hpp"
+#include "NgapIEsStruct.hpp"
 #include "PLMNSupportList.hpp"
+#include "RelativeAMFCapacity.hpp"
+#include "ServedGUAMIList.hpp"
 //#include "CriticalityDiagnostics.hpp"
 
 extern "C" {

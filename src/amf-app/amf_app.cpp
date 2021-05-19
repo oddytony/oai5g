@@ -30,11 +30,9 @@
 
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
-
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
-#include "itti.hpp"
 
 #include "DLNASTransport.hpp"
 #include "amf_config.hpp"
@@ -42,6 +40,7 @@
 #include "amf_n11.hpp"
 #include "amf_n2.hpp"
 #include "amf_statistics.hpp"
+#include "itti.hpp"
 #include "ngap_app.hpp"
 
 using namespace ngap;

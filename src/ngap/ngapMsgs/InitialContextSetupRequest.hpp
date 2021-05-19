@@ -29,26 +29,25 @@
 #ifndef _INITIALCONTEXTSETUPREQUEST_H_
 #define _INITIALCONTEXTSETUPREQUEST_H_
 
-#include "NgapIEsStruct.hpp"
-
-#include "MessageType.hpp"
 #include "AMF-UE-NGAP-ID.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
 #include "AMFName.hpp"
-#include "UEAggregateMaxBitRate.hpp"
+#include "AllowedNssai.hpp"
 #include "CoreNetworkAssistanceInformation.hpp"
 #include "GUAMI.hpp"
-#include "PDUSessionResourceSetupListCxtReq.hpp"
-#include "AllowedNssai.hpp"
-#include "UESecurityCapabilities.hpp"
-#include "SecurityKey.hpp"
+#include "MessageType.hpp"
 #include "NAS-PDU.hpp"
+#include "NgapIEsStruct.hpp"
+#include "PDUSessionResourceSetupListCxtReq.hpp"
+#include "RAN-UE-NGAP-ID.hpp"
+#include "SecurityKey.hpp"
+#include "UEAggregateMaxBitRate.hpp"
 #include "UERadioCapability.hpp"
+#include "UESecurityCapabilities.hpp"
 
 extern "C" {
+#include "Ngap_InitialContextSetupRequest.h"
 #include "Ngap_NGAP-PDU.h"
 #include "Ngap_ProtocolIE-Field.h"
-#include "Ngap_InitialContextSetupRequest.h"
 }
 
 namespace ngap {

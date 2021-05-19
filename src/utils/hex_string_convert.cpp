@@ -19,10 +19,10 @@
  *      contact@openairinterface.org
  */
 
-#include "bstrlib.h"
 #include <iostream>
 #include <string>
 
+#include "bstrlib.h"
 #include "conversions.hpp"
 
 extern "C" {

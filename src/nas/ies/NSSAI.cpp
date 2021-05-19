@@ -27,7 +27,9 @@
  */
 
 #include "NSSAI.hpp"
+
 #include <vector>
+
 #include "logger.hpp"
 using namespace nas;
 using namespace std;

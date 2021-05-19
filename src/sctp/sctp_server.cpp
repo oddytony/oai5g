@@ -27,21 +27,20 @@
  */
 
 #include "sctp_server.hpp"
+
 #include "logger.hpp"
 extern "C" {
+#include <arpa/inet.h>
+#include <errno.h>
 #include <netinet/in.h>
 #include <netinet/sctp.h>
 #include <pthread.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <unistd.h>
 #include <string.h>
-#include <errno.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/sctp.h>
-#include <arpa/inet.h>
+#include <unistd.h>
 
 #include "bstrlib.h"
 }
@@ -217,8 +216,8 @@ int sctp_server::sctp_read_from_socket(int sd, uint32_t ppid) {
 
 //------------------------------------------------------------------------------
 int sctp_server::sctp_handle_com_down(sctp_assoc_id_t assoc_id) {
-  	  app_->handle_sctp_shutdown(assoc_id);
- return 0;
+  app_->handle_sctp_shutdown(assoc_id);
+  return 0;
 }
 
 //------------------------------------------------------------------------------

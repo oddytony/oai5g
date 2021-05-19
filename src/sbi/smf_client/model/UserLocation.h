@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * UserLocation.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_UserLocation_H_
 #define OAI_SMF_MODEL_UserLocation_H_
-
 
 #include "../ModelBase.h"
 
@@ -29,71 +29,70 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  UserLocation
-    : public ModelBase
-{
-public:
-    UserLocation();
-    virtual ~UserLocation();
+class UserLocation : public ModelBase {
+ public:
+  UserLocation();
+  virtual ~UserLocation();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// UserLocation members
+  /////////////////////////////////////////////
+  /// UserLocation members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<EutraLocation> getEutraLocation() const;
-    bool eutraLocationIsSet() const;
-    void unsetEutraLocation();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<EutraLocation> getEutraLocation() const;
+  bool eutraLocationIsSet() const;
+  void unsetEutraLocation();
 
-    void setEutraLocation(const std::shared_ptr<EutraLocation>& value);
+  void setEutraLocation(const std::shared_ptr<EutraLocation>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<NrLocation> getNrLocation() const;
-    bool nrLocationIsSet() const;
-    void unsetNrLocation();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<NrLocation> getNrLocation() const;
+  bool nrLocationIsSet() const;
+  void unsetNrLocation();
 
-    void setNrLocation(const std::shared_ptr<NrLocation>& value);
+  void setNrLocation(const std::shared_ptr<NrLocation>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<N3gaLocation> getN3gaLocation() const;
-    bool n3gaLocationIsSet() const;
-    void unsetN3gaLocation();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<N3gaLocation> getN3gaLocation() const;
+  bool n3gaLocationIsSet() const;
+  void unsetN3gaLocation();
 
-    void setN3gaLocation(const std::shared_ptr<N3gaLocation>& value);
+  void setN3gaLocation(const std::shared_ptr<N3gaLocation>& value);
 
-
-protected:
-    std::shared_ptr<EutraLocation> m_EutraLocation;
-    bool m_EutraLocationIsSet;
-    std::shared_ptr<NrLocation> m_NrLocation;
-    bool m_NrLocationIsSet;
-    std::shared_ptr<N3gaLocation> m_N3gaLocation;
-    bool m_N3gaLocationIsSet;
+ protected:
+  std::shared_ptr<EutraLocation> m_EutraLocation;
+  bool m_EutraLocationIsSet;
+  std::shared_ptr<NrLocation> m_NrLocation;
+  bool m_NrLocationIsSet;
+  std::shared_ptr<N3gaLocation> m_N3gaLocation;
+  bool m_N3gaLocationIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_UserLocation_H_ */

@@ -28,12 +28,13 @@
 
 #ifndef __DNN_H_
 #define __DNN_H_
-#include <iostream>
 #include <stdint.h>
+
+#include <iostream>
 extern "C" {
-#include "bstrlib.h"
-#include "TLVEncoder.h"
 #include "TLVDecoder.h"
+#include "TLVEncoder.h"
+#include "bstrlib.h"
 }
 namespace nas {
 

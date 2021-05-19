@@ -29,9 +29,10 @@
 #ifndef _SERVICE_REQUEST_H_
 #define _SERVICE_REQUEST_H_
 
-#include "nas_ie_header.hpp"
 #include <string>
+
 #include "bstrlib.h"
+#include "nas_ie_header.hpp"
 
 using namespace std;
 

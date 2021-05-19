@@ -27,6 +27,7 @@
  */
 
 #include "Rejected_NSSAI.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 

@@ -23,6 +23,7 @@
 #define FILE_3GPP_29_510_NRF_SEEN
 
 #include <vector>
+
 #include "3gpp_23.003.h"
 
 enum class nf_status_e { REGISTERED = 0, SUSPENDED = 1, UNDISCOVERABLE = 2 };

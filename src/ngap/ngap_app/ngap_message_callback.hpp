@@ -29,22 +29,22 @@
 #ifndef _NGAP_MESSAGE_CALLBACK_H_
 #define _NGAP_MESSAGE_CALLBACK_H_
 
-#include "logger.hpp"
+#include "InitialContextSetupResponse.hpp"
+#include "NGReset.hpp"
+#include "NGSetupRequest.hpp"
+#include "PDUSessionResourceSetupUnsuccessfulTransfer.hpp"
+#include "PduSessionResourceReleaseResponse.hpp"
+#include "PduSessionResourceSetupResponse.hpp"
+#include "amf_app.hpp"
 #include "amf_n1.hpp"
 #include "amf_n11.hpp"
-#include "PDUSessionResourceSetupUnsuccessfulTransfer.hpp"
-#include "amf_app.hpp"
-#include "sctp_server.hpp"
-#include "itti_msg_n2.hpp"
-#include "itti_msg_n11.hpp"
 #include "itti.hpp"
-#include "NGSetupRequest.hpp"
-#include "NGReset.hpp"
-#include "PduSessionResourceSetupResponse.hpp"
-#include "PduSessionResourceReleaseResponse.hpp"
-#include "InitialContextSetupResponse.hpp"
-#include "pdu_session_context.hpp"
+#include "itti_msg_n11.hpp"
+#include "itti_msg_n2.hpp"
+#include "logger.hpp"
 #include "nas_context.hpp"
+#include "pdu_session_context.hpp"
+#include "sctp_server.hpp"
 
 using namespace sctp;
 using namespace ngap;
@@ -263,6 +263,25 @@ int ngap_amf_handle_ue_context_release_complete(
     struct Ngap_NGAP_PDU* message_p) {
   Logger::ngap().debug(
       "Sending itti ue context release complete to TASK_AMF_N2");
+
+  UEContextReleaseCompleteMsg* ueCtxRelCmpl = new UEContextReleaseCompleteMsg();
+  if (!ueCtxRelCmpl->decodefrompdu(message_p)) {
+    Logger::ngap().error("Decoding UEContextReleaseComplete message error");
+    return -1;
+  }
+  itti_ue_context_release_complete* itti_msg =
+      new itti_ue_context_release_complete(TASK_NGAP, TASK_AMF_N2);
+  itti_msg->assoc_id     = assoc_id;
+  itti_msg->stream       = stream;
+  itti_msg->ueCtxRelCmpl = ueCtxRelCmpl;
+  std::shared_ptr<itti_ue_context_release_complete> i =
+      std::shared_ptr<itti_ue_context_release_complete>(itti_msg);
+  int ret = itti_inst->send_msg(i);
+  if (0 != ret) {
+    Logger::ngap().error(
+        "Could not send ITTI message %s to task TASK_AMF_N2",
+        i->get_msg_name());
+  }
   return 0;
 }
 
@@ -335,7 +354,7 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
     Logger::ngap().error(
         "Decoding PduSessionResourceSetupResponseMsg "
         "getPduSessionResourceSetupResponseList IE  error");
-    return -1;
+    // return -1;
   } else {
     // TODO: for multiple PDU Sessions
     uint8_t transferIe[500];

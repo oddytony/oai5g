@@ -27,6 +27,7 @@
  */
 
 #include "Authentication_Response_Parameter.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 

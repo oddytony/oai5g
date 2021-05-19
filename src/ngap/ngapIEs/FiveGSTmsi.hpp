@@ -29,9 +29,10 @@
 #ifndef _FiveGSTmsi_H_
 #define _FiveGSTmsi_H_
 
-#include "AMFSetID.hpp"
-#include "AMFPointer.hpp"
 #include <string>
+
+#include "AMFPointer.hpp"
+#include "AMFSetID.hpp"
 extern "C" {
 #include "Ngap_FiveG-S-TMSI.h"
 }

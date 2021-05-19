@@ -22,11 +22,12 @@
 #ifndef _ITTI_N11_MSG_H_
 #define _ITTI_N11_MSG_H_
 
-#include "bstrlib.h"
-#include "itti_msg.hpp"
 #include <string>
+
 #include "amf.hpp"
 #include "amf_profile.hpp"
+#include "bstrlib.h"
+#include "itti_msg.hpp"
 
 class itti_msg_n11 : public itti_msg {
  public:

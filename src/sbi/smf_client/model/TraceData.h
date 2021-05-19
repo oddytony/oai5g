@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * TraceData.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_TraceData_H_
 #define OAI_SMF_MODEL_TraceData_H_
-
 
 #include "../ModelBase.h"
 
@@ -28,103 +28,102 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  TraceData
-    : public ModelBase
-{
-public:
-    TraceData();
-    virtual ~TraceData();
+class TraceData : public ModelBase {
+ public:
+  TraceData();
+  virtual ~TraceData();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// TraceData members
+  /////////////////////////////////////////////
+  /// TraceData members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getTraceRef() const;
-    
-    void setTraceRef(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getTraceRef() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<TraceDepth> getTraceDepth() const;
-    
-    void setTraceDepth(const std::shared_ptr<TraceDepth>& value);
+  void setTraceRef(const utility::string_t& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getNeTypeList() const;
-    
-    void setNeTypeList(const utility::string_t& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<TraceDepth> getTraceDepth() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getEventList() const;
-    
-    void setEventList(const utility::string_t& value);
+  void setTraceDepth(const std::shared_ptr<TraceDepth>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getCollectionEntityIpv4Addr() const;
-    bool collectionEntityIpv4AddrIsSet() const;
-    void unsetCollectionEntityIpv4Addr();
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getNeTypeList() const;
 
-    void setCollectionEntityIpv4Addr(const utility::string_t& value);
+  void setNeTypeList(const utility::string_t& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getCollectionEntityIpv6Addr() const;
-    bool collectionEntityIpv6AddrIsSet() const;
-    void unsetCollectionEntityIpv6Addr();
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getEventList() const;
 
-    void setCollectionEntityIpv6Addr(const utility::string_t& value);
+  void setEventList(const utility::string_t& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getInterfaceList() const;
-    bool interfaceListIsSet() const;
-    void unsetInterfaceList();
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getCollectionEntityIpv4Addr() const;
+  bool collectionEntityIpv4AddrIsSet() const;
+  void unsetCollectionEntityIpv4Addr();
 
-    void setInterfaceList(const utility::string_t& value);
+  void setCollectionEntityIpv4Addr(const utility::string_t& value);
 
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getCollectionEntityIpv6Addr() const;
+  bool collectionEntityIpv6AddrIsSet() const;
+  void unsetCollectionEntityIpv6Addr();
 
-protected:
-    utility::string_t m_TraceRef;
-        std::shared_ptr<TraceDepth> m_TraceDepth;
-        utility::string_t m_NeTypeList;
-        utility::string_t m_EventList;
-        utility::string_t m_CollectionEntityIpv4Addr;
-    bool m_CollectionEntityIpv4AddrIsSet;
-    utility::string_t m_CollectionEntityIpv6Addr;
-    bool m_CollectionEntityIpv6AddrIsSet;
-    utility::string_t m_InterfaceList;
-    bool m_InterfaceListIsSet;
+  void setCollectionEntityIpv6Addr(const utility::string_t& value);
+
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getInterfaceList() const;
+  bool interfaceListIsSet() const;
+  void unsetInterfaceList();
+
+  void setInterfaceList(const utility::string_t& value);
+
+ protected:
+  utility::string_t m_TraceRef;
+  std::shared_ptr<TraceDepth> m_TraceDepth;
+  utility::string_t m_NeTypeList;
+  utility::string_t m_EventList;
+  utility::string_t m_CollectionEntityIpv4Addr;
+  bool m_CollectionEntityIpv4AddrIsSet;
+  utility::string_t m_CollectionEntityIpv6Addr;
+  bool m_CollectionEntityIpv6AddrIsSet;
+  utility::string_t m_InterfaceList;
+  bool m_InterfaceListIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_TraceData_H_ */

@@ -30,8 +30,8 @@
 #define _NAS_MM_PLAIN_HEADER_H_
 
 #include "ExtendedProtocolDiscriminator.hpp"
-#include "SecurityHeaderType.hpp"
 #include "NasMessageType.hpp"
+#include "SecurityHeaderType.hpp"
 
 namespace nas {
 

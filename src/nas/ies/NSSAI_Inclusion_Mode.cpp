@@ -27,6 +27,7 @@
  */
 
 #include "NSSAI_Inclusion_Mode.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 

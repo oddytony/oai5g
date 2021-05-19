@@ -29,11 +29,11 @@
 #ifndef _CORENETWORKASSISTANCEINFORMATION_H_
 #define _CORENETWORKASSISTANCEINFORMATION_H_
 
-#include "UEIdentityIndexValue.hpp"
 #include "DefaultPagingDRX.hpp"
-#include "PeriodicRegistrationUpdateTimer.hpp"
 #include "MICOModeIndication.hpp"
+#include "PeriodicRegistrationUpdateTimer.hpp"
 #include "TAI.hpp"
+#include "UEIdentityIndexValue.hpp"
 
 extern "C" {
 #include "Ngap_CoreNetworkAssistanceInformation.h"

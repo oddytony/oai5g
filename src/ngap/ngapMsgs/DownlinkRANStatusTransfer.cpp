@@ -20,6 +20,7 @@
  */
 
 #include "DownlinkRANStatusTransfer.hpp"
+
 #include <iostream>
 #include <vector>
 
@@ -91,8 +92,8 @@ void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
     ranStatusTransfer_TransparentContainer =
         new RANStatusTransferTransparentContainer();
   }
-  // Ngap_DRB_ID_t* dRB_id = (Ngap_DRB_ID_t*) calloc(1, sizeof(Ngap_DRB_ID_t));
-  // dRB_id                = &drb_id;
+  Ngap_DRB_ID_t* dRB_id = (Ngap_DRB_ID_t*) calloc(1, sizeof(Ngap_DRB_ID_t));
+  dRB_id                = &drb_id;
   COUNTValueForPDCP_SN18* UL_value =
       (COUNTValueForPDCP_SN18*) calloc(1, sizeof(COUNTValueForPDCP_SN18));
   UL_value->setvalue(ul_pcdp, ul_hfn_pdcp);
@@ -108,7 +109,7 @@ void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
   dRBStatusUL* UL = (dRBStatusUL*) calloc(1, sizeof(dRBStatusUL));
   UL->setdRBStatusUL(UL18);
   dRBSubjectItem* m_item = (dRBSubjectItem*) calloc(1, sizeof(dRBSubjectItem));
-  m_item->setdRBSubjectItem(&drb_id, UL, DL);
+  m_item->setdRBSubjectItem(dRB_id, UL, DL);
   dRBSubjectList* m_list = (dRBSubjectList*) calloc(1, sizeof(dRBSubjectList));
   m_list->setdRBSubjectItem(m_item, 1);
   ranStatusTransfer_TransparentContainer->setdRBSubject_list(m_list);

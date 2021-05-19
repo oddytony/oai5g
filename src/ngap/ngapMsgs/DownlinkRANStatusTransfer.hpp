@@ -22,17 +22,17 @@
 #ifndef _DOWNLINKRANSTATUSTRANSFER_H_
 #define _DOWNLINKRANSTATUSTRANSFER_H_
 #include "AMF-UE-NGAP-ID.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
 #include "MessageType.hpp"
+#include "RAN-UE-NGAP-ID.hpp"
 #include "RANStatusTransferTransparentContainer.hpp"
 #include "dRBStatusDL18.hpp"
 extern "C" {
-#include "Ngap_UplinkRANStatusTransfer.h"
-#include "Ngap_RANStatusTransfer-TransparentContainer.h"
+#include "Ngap_DRB-ID.h"
+#include "Ngap_InitiatingMessage.h"
 #include "Ngap_NGAP-PDU.h"
 #include "Ngap_ProtocolIE-Field.h"
-#include "Ngap_InitiatingMessage.h"
-#include "Ngap_DRB-ID.h"
+#include "Ngap_RANStatusTransfer-TransparentContainer.h"
+#include "Ngap_UplinkRANStatusTransfer.h"
 }
 namespace ngap {
 class DownlinkRANStatusTransfer {

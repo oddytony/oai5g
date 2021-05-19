@@ -29,13 +29,12 @@
 #ifndef _PDUSESSIONRESOURCESETUPUNSUCCESSFULTRANSFER_H_
 #define _PDUSESSIONRESOURCESETUPUNSUCCESSFULTRANSFER_H_
 
+#include "Cause.hpp"
 #include "NgapIEsStruct.hpp"
 
-#include "Cause.hpp"
-
 extern "C" {
-#include "Ngap_ProtocolIE-Field.h"
 #include "Ngap_PDUSessionResourceSetupUnsuccessfulTransfer.h"
+#include "Ngap_ProtocolIE-Field.h"
 }
 
 namespace ngap {

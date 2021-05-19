@@ -20,11 +20,12 @@
  */
 #include "string.hpp"
 
-#include <algorithm>
-#include <functional>
-#include <cctype>
-#include <locale>
 #include <stdarg.h>
+
+#include <algorithm>
+#include <cctype>
+#include <functional>
+#include <locale>
 
 template<class T>
 class Buffer {

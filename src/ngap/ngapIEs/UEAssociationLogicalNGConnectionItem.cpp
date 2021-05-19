@@ -89,6 +89,7 @@ bool UEAssociationLogicalNGConnectionItem::encode(
   amfUeNgapId->encode2AMF_UE_NGAP_ID(*item.aMF_UE_NGAP_ID);
   item.rAN_UE_NGAP_ID = new Ngap_RAN_UE_NGAP_ID_t();
   ranUeNgapId->encode2RAN_UE_NGAP_ID(*item.rAN_UE_NGAP_ID);
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -98,6 +99,7 @@ bool UEAssociationLogicalNGConnectionItem::encode(
   item.amfUeNgapId = amfUeNgapId;
   item.ranUeNgapId = new RAN_UE_NGAP_ID();
   item.ranUeNgapId = ranUeNgapId;
+  return true;
 }
 
 //------------------------------------------------------------------------------

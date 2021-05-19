@@ -26,6 +26,7 @@
  \email: contact@openairinterface.org
  */
 #include "EPS_NAS_Message_Container.hpp"
+
 #include "logger.hpp"
 using namespace nas;
 
@@ -93,22 +94,24 @@ int EPS_NAS_Message_Container::decodefrombuffer(
     uint8_t* buf, int len, bool is_option) {
   Logger::nas_mm().debug("Decoding EPS_NAS_Message_Container iei (0x%x)", *buf);
   int decoded_size = 0;
+  int result       = 0;
   if (is_option) {
     decoded_size++;
   }
   length = 0;
-  length |= *(buf + decoded_size);
-  decoded_size++;
-  length |= (*(buf + decoded_size)) << 8;
-  decoded_size++;
-  decode_bstring(&_value, length, (buf + decoded_size), len - decoded_size);
+  DECODE_U16(buf + decoded_size, length, decoded_size);
+  result =
+      decode_bstring(&_value, length, (buf + decoded_size), len - decoded_size);
   decoded_size += length;
-  for (int i = 0; i < length; i++) {
-    Logger::nas_mm().debug(
-        "Decoded EPS_NAS_Message_Container value (0x%x)",
-        (uint8_t) _value->data[i]);
+  if (result == length) {
+    for (int i = 0; i < length; i++) {
+      Logger::nas_mm().debug(
+          "Decoded EPS_NAS_Message_Container value (0x%x)",
+          (uint8_t) _value->data[i]);
+    }
   }
+
   Logger::nas_mm().debug(
-      "Decoded EPS_NAS_Message_Container len (%d)", decoded_size);
+      "Decoded EPS_NAS_Message_Container Length (%d)", decoded_size);
   return decoded_size;
 }

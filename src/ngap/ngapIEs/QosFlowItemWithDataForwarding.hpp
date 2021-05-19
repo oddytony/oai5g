@@ -28,8 +28,8 @@
 #ifndef _QOSFLOWITEMWITHDATAFORWARDING_H_
 #define _QOSFLOWITEMWITHDATAFORWARDING_H_
 
-#include "QosFlowLevelQosParameters.hpp"
 #include "QosFlowIdentifier.hpp"
+#include "QosFlowLevelQosParameters.hpp"
 extern "C" {
 #include "Ngap_QosFlowSetupResponseItemHOReqAck.h"
 }

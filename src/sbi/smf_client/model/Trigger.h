@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * Trigger.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_Trigger_H_
 #define OAI_SMF_MODEL_Trigger_H_
-
 
 #include "../ModelBase.h"
 
@@ -28,98 +28,97 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  Trigger
-    : public ModelBase
-{
-public:
-    Trigger();
-    virtual ~Trigger();
+class Trigger : public ModelBase {
+ public:
+  Trigger();
+  virtual ~Trigger();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// Trigger members
+  /////////////////////////////////////////////
+  /// Trigger members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<TriggerType> getTriggerType() const;
-    
-    void setTriggerType(const std::shared_ptr<TriggerType>& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<TriggerType> getTriggerType() const;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<TriggerCategory> getTriggerCategory() const;
-    
-    void setTriggerCategory(const std::shared_ptr<TriggerCategory>& value);
+  void setTriggerType(const std::shared_ptr<TriggerType>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t getTimeLimit() const;
-    bool timeLimitIsSet() const;
-    void unsetTimeLimit();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<TriggerCategory> getTriggerCategory() const;
 
-    void setTimeLimit(int32_t value);
+  void setTriggerCategory(const std::shared_ptr<TriggerCategory>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t getVolumeLimit() const;
-    bool volumeLimitIsSet() const;
-    void unsetVolumeLimit();
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t getTimeLimit() const;
+  bool timeLimitIsSet() const;
+  void unsetTimeLimit();
 
-    void setVolumeLimit(int32_t value);
+  void setTimeLimit(int32_t value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int64_t getVolumeLimit64() const;
-    bool volumeLimit64IsSet() const;
-    void unsetVolumeLimit64();
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t getVolumeLimit() const;
+  bool volumeLimitIsSet() const;
+  void unsetVolumeLimit();
 
-    void setVolumeLimit64(int64_t value);
+  void setVolumeLimit(int32_t value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t getMaxNumberOfccc() const;
-    bool maxNumberOfcccIsSet() const;
-    void unsetMaxNumberOfccc();
+  /// <summary>
+  ///
+  /// </summary>
+  int64_t getVolumeLimit64() const;
+  bool volumeLimit64IsSet() const;
+  void unsetVolumeLimit64();
 
-    void setMaxNumberOfccc(int32_t value);
+  void setVolumeLimit64(int64_t value);
 
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t getMaxNumberOfccc() const;
+  bool maxNumberOfcccIsSet() const;
+  void unsetMaxNumberOfccc();
 
-protected:
-    std::shared_ptr<TriggerType> m_TriggerType;
-        std::shared_ptr<TriggerCategory> m_TriggerCategory;
-        int32_t m_TimeLimit;
-    bool m_TimeLimitIsSet;
-    int32_t m_VolumeLimit;
-    bool m_VolumeLimitIsSet;
-    int64_t m_VolumeLimit64;
-    bool m_VolumeLimit64IsSet;
-    int32_t m_MaxNumberOfccc;
-    bool m_MaxNumberOfcccIsSet;
+  void setMaxNumberOfccc(int32_t value);
+
+ protected:
+  std::shared_ptr<TriggerType> m_TriggerType;
+  std::shared_ptr<TriggerCategory> m_TriggerCategory;
+  int32_t m_TimeLimit;
+  bool m_TimeLimitIsSet;
+  int32_t m_VolumeLimit;
+  bool m_VolumeLimitIsSet;
+  int64_t m_VolumeLimit64;
+  bool m_VolumeLimit64IsSet;
+  int32_t m_MaxNumberOfccc;
+  bool m_MaxNumberOfcccIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_Trigger_H_ */

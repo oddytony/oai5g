@@ -27,6 +27,7 @@
  */
 
 #include "PlmnId.hpp"
+
 #include "String2Value.hpp"
 
 extern "C" {
@@ -57,13 +58,16 @@ void PlmnId::setMccMnc(const std::string mcc, const std::string mnc) {
   int mncValue = fromString<int>(mnc);
 
   mcc_digit1 = mccValue / 100;
-  mcc_digit2 = (uint8_t) floor((double) (mccValue % 100) / 10);
+  mcc_digit2 = (mccValue - mcc_digit1 * 100) / 10;
   mcc_digit3 = mccValue % 10;
 
-  mnc_digit1 = (uint8_t) floor(((double) mncValue / 100));
-  if (!mnc_digit1) mnc_digit1 = 0xf;
-  mnc_digit2 = (uint8_t) floor((double) (mncValue % 100) / 10);
-  mnc_digit3 = mncValue % 10;
+  if (mncValue > 99) {
+    mnc_digit3 = mncValue / 100;
+  } else {
+    mnc_digit3 = 0xf;
+  }
+  mnc_digit1 = (uint8_t) floor((double) (mncValue % 100) / 10);
+  mnc_digit2 = mncValue % 10;
 }
 
 //------------------------------------------------------------------------------
@@ -75,10 +79,15 @@ void PlmnId::getMcc(std::string& mcc) {
 //------------------------------------------------------------------------------
 void PlmnId::getMnc(std::string& mnc) {
   int m_mnc = 0;
-  if (mnc_digit1 == 0xf)
-    m_mnc = mnc_digit2 * 10 + mnc_digit3;
-  else
-    m_mnc = mnc_digit1 * 100 + mnc_digit2 * 10 + mnc_digit3;
+  if (mnc_digit3 == 0xf) {
+    m_mnc = mnc_digit1 * 10 + mnc_digit2;
+    if (mnc_digit1 == 0) {
+      mnc = "0" + to_string(m_mnc);
+      return;
+    }
+  } else {
+    m_mnc = mnc_digit3 * 100 + mnc_digit1 * 10 + mnc_digit2;
+  }
   mnc = to_string(m_mnc);
 }
 
@@ -88,9 +97,9 @@ bool PlmnId::encode2octetstring(Ngap_PLMNIdentity_t& plmn) {
   uint8_t* buffer = (uint8_t*) calloc(1, 3 * sizeof(uint8_t));
   if (!buffer) return false;
 
-  buffer[0] = (mcc_digit1 & 0x0f) | ((mcc_digit2 & 0x0f) << 4);
-  buffer[1] = (mcc_digit3 & 0x0f) | ((mnc_digit1 & 0x0f) << 4);
-  buffer[2] = (mnc_digit2 & 0x0f) | ((mnc_digit3 & 0x0f) << 4);
+  buffer[0] = 0x00 | ((mcc_digit2 & 0x0f) << 4) | (mcc_digit1 & 0x0f);
+  buffer[1] = 0x00 | ((mnc_digit3 & 0x0f) << 4) | (mcc_digit3 & 0x0f);
+  buffer[2] = 0x00 | ((mnc_digit2 & 0x0f) << 4) | (mnc_digit1 & 0x0f);
   plmn.buf  = buffer;
 
   return true;
@@ -101,10 +110,11 @@ bool PlmnId::decodefromoctetstring(Ngap_PLMNIdentity_t& plmn) {
   if (!plmn.buf) return false;
   mcc_digit1 = plmn.buf[0] & 0x0f;
   mcc_digit2 = plmn.buf[0] >> 4;
+
   mcc_digit3 = plmn.buf[1] & 0x0f;
-  mnc_digit1 = plmn.buf[1] >> 4;
-  mnc_digit2 = plmn.buf[2] & 0x0f;
-  mnc_digit3 = plmn.buf[2] >> 4;
+  mnc_digit3 = plmn.buf[1] >> 4;
+  mnc_digit1 = plmn.buf[2] & 0x0f;
+  mnc_digit2 = plmn.buf[2] >> 4;
 
   return true;
 }

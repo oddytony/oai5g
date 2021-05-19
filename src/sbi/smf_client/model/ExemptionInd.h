@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,85 +13,82 @@
 /*
  * ExemptionInd.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_ExemptionInd_H_
 #define OAI_SMF_MODEL_ExemptionInd_H_
 
-
 #include "../ModelBase.h"
-
 
 namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  ExemptionInd
-    : public ModelBase
-{
-public:
-    ExemptionInd();
-    virtual ~ExemptionInd();
+class ExemptionInd : public ModelBase {
+ public:
+  ExemptionInd();
+  virtual ~ExemptionInd();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// ExemptionInd members
+  /////////////////////////////////////////////
+  /// ExemptionInd members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    bool isDnnCongestion() const;
-    bool dnnCongestionIsSet() const;
-    void unsetDnnCongestion();
+  /// <summary>
+  ///
+  /// </summary>
+  bool isDnnCongestion() const;
+  bool dnnCongestionIsSet() const;
+  void unsetDnnCongestion();
 
-    void setDnnCongestion(bool value);
+  void setDnnCongestion(bool value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    bool isSnssaiOnlyCongestion() const;
-    bool snssaiOnlyCongestionIsSet() const;
-    void unsetSnssaiOnlyCongestion();
+  /// <summary>
+  ///
+  /// </summary>
+  bool isSnssaiOnlyCongestion() const;
+  bool snssaiOnlyCongestionIsSet() const;
+  void unsetSnssaiOnlyCongestion();
 
-    void setSnssaiOnlyCongestion(bool value);
+  void setSnssaiOnlyCongestion(bool value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    bool isSnssaiDnnCongestion() const;
-    bool snssaiDnnCongestionIsSet() const;
-    void unsetSnssaiDnnCongestion();
+  /// <summary>
+  ///
+  /// </summary>
+  bool isSnssaiDnnCongestion() const;
+  bool snssaiDnnCongestionIsSet() const;
+  void unsetSnssaiDnnCongestion();
 
-    void setSnssaiDnnCongestion(bool value);
+  void setSnssaiDnnCongestion(bool value);
 
-
-protected:
-    bool m_DnnCongestion;
-    bool m_DnnCongestionIsSet;
-    bool m_SnssaiOnlyCongestion;
-    bool m_SnssaiOnlyCongestionIsSet;
-    bool m_SnssaiDnnCongestion;
-    bool m_SnssaiDnnCongestionIsSet;
+ protected:
+  bool m_DnnCongestion;
+  bool m_DnnCongestionIsSet;
+  bool m_SnssaiOnlyCongestion;
+  bool m_SnssaiOnlyCongestionIsSet;
+  bool m_SnssaiDnnCongestion;
+  bool m_SnssaiDnnCongestionIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_ExemptionInd_H_ */

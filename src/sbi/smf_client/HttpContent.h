@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -18,8 +19,6 @@
 #ifndef OAI_SMF_MODEL_HttpContent_H_
 #define OAI_SMF_MODEL_HttpContent_H_
 
-
-
 #include <memory>
 
 #include <cpprest/details/basic_types.h>
@@ -28,40 +27,40 @@ namespace oai {
 namespace smf {
 namespace model {
 
-class  HttpContent
-{
-public:
-    HttpContent();
-    virtual ~HttpContent();
+class HttpContent {
+ public:
+  HttpContent();
+  virtual ~HttpContent();
 
-    virtual utility::string_t getContentDisposition();
-    virtual void setContentDisposition( const utility::string_t& value );
+  virtual utility::string_t getContentDisposition();
+  virtual void setContentDisposition(const utility::string_t& value);
 
-    virtual utility::string_t getName();
-    virtual void setName( const utility::string_t& value );
+  virtual utility::string_t getName();
+  virtual void setName(const utility::string_t& value);
 
-    virtual utility::string_t getFileName();
-    virtual void setFileName( const utility::string_t& value );
+  virtual utility::string_t getFileName();
+  virtual void setFileName(const utility::string_t& value);
 
-    virtual utility::string_t getContentType();
-    virtual void setContentType( const utility::string_t& value );
+  virtual utility::string_t getContentType();
+  virtual void setContentType(const utility::string_t& value);
 
-    virtual std::shared_ptr<std::istream> getData();
-    virtual void setData( std::shared_ptr<std::istream> value );
+  virtual std::shared_ptr<std::istream> getData();
+  virtual void setData(std::shared_ptr<std::istream> value);
 
-    virtual void writeTo( std::ostream& stream );
+  virtual void writeTo(std::ostream& stream);
 
-protected:
-    // NOTE: no utility::string_t here because those strings can only contain ascii
-    utility::string_t m_ContentDisposition;
-    utility::string_t m_Name;
-    utility::string_t m_FileName;
-    utility::string_t m_ContentType;
-    std::shared_ptr<std::istream> m_Data;
+ protected:
+  // NOTE: no utility::string_t here because those strings can only contain
+  // ascii
+  utility::string_t m_ContentDisposition;
+  utility::string_t m_Name;
+  utility::string_t m_FileName;
+  utility::string_t m_ContentType;
+  std::shared_ptr<std::istream> m_Data;
 };
 
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_HttpContent_H_ */

@@ -18,9 +18,9 @@ namespace amf {
 namespace model {
 
 AuthenticationInfo::AuthenticationInfo() {
-  m_SupiOrSuci         = "";
-  m_ServingNetworkName = "";
-  //    m_ResynchronizationInfoIsSet = false;
+  m_SupiOrSuci                 = "";
+  m_ServingNetworkName         = "";
+  m_ResynchronizationInfoIsSet = false;
   //    m_Pei = "";
   //    m_PeiIsSet = false;
   //    m_TraceDataIsSet = false;
@@ -43,8 +43,8 @@ void to_json(nlohmann::json& j, const AuthenticationInfo& o) {
   j                       = nlohmann::json();
   j["supiOrSuci"]         = o.m_SupiOrSuci;
   j["servingNetworkName"] = o.m_ServingNetworkName;
-  //    if(o.resynchronizationInfoIsSet())
-  //        j["resynchronizationInfo"] = o.m_ResynchronizationInfo;
+  if (o.resynchronizationInfoIsSet())
+    j["resynchronizationInfo"] = o.m_ResynchronizationInfo;
   //    if(o.peiIsSet())
   //        j["pei"] = o.m_Pei;
   //    if(o.traceDataIsSet())
@@ -62,11 +62,11 @@ void to_json(nlohmann::json& j, const AuthenticationInfo& o) {
 void from_json(const nlohmann::json& j, AuthenticationInfo& o) {
   j.at("supiOrSuci").get_to(o.m_SupiOrSuci);
   j.at("servingNetworkName").get_to(o.m_ServingNetworkName);
-  //    if(j.find("resynchronizationInfo") != j.end())
-  //    {
-  //        j.at("resynchronizationInfo").get_to(o.m_ResynchronizationInfo);
-  //        o.m_ResynchronizationInfoIsSet = true;
-  //    }
+
+  if (j.find("resynchronizationInfo") != j.end()) {
+    j.at("resynchronizationInfo").get_to(o.m_ResynchronizationInfo);
+    o.m_ResynchronizationInfoIsSet = true;
+  }
   //    if(j.find("pei") != j.end())
   //    {
   //        j.at("pei").get_to(o.m_Pei);
@@ -111,6 +111,21 @@ std::string AuthenticationInfo::getServingNetworkName() const {
 void AuthenticationInfo::setServingNetworkName(std::string const& value) {
   m_ServingNetworkName = value;
 }
+ResynchronizationInfo AuthenticationInfo::getResynchronizationInfo() const {
+  return m_ResynchronizationInfo;
+}
+void AuthenticationInfo::setResynchronizationInfo(
+    ResynchronizationInfo const& value) {
+  m_ResynchronizationInfo      = value;
+  m_ResynchronizationInfoIsSet = true;
+}
+bool AuthenticationInfo::resynchronizationInfoIsSet() const {
+  return m_ResynchronizationInfoIsSet;
+}
+void AuthenticationInfo::unsetResynchronizationInfo() {
+  m_ResynchronizationInfoIsSet = false;
+}
+
 // ResynchronizationInfo AuthenticationInfo::getResynchronizationInfo() const
 //{
 //    return m_ResynchronizationInfo;

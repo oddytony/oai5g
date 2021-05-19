@@ -32,6 +32,7 @@
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
+
 #include <map>
 #include <memory>
 #include <nlohmann/json.hpp>
@@ -39,9 +40,9 @@
 #include <utility>
 #include <vector>
 
-#include "logger.hpp"
-#include "amf.hpp"
 #include "3gpp_29.510.h"
+#include "amf.hpp"
+#include "logger.hpp"
 
 namespace amf_application {
 

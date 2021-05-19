@@ -1,6 +1,7 @@
 /**
  * Nsmf_PDUSession
- * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+ * SMF PDU Session Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,12 +13,11 @@
 /*
  * SmContextCreatedData.h
  *
- * 
+ *
  */
 
 #ifndef OAI_SMF_MODEL_SmContextCreatedData_H_
 #define OAI_SMF_MODEL_SmContextCreatedData_H_
-
 
 #include "../ModelBase.h"
 
@@ -34,170 +34,170 @@ namespace oai {
 namespace smf {
 namespace model {
 
-
 /// <summary>
-/// 
+///
 /// </summary>
-class  SmContextCreatedData
-    : public ModelBase
-{
-public:
-    SmContextCreatedData();
-    virtual ~SmContextCreatedData();
+class SmContextCreatedData : public ModelBase {
+ public:
+  SmContextCreatedData();
+  virtual ~SmContextCreatedData();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
+  /////////////////////////////////////////////
+  /// ModelBase overrides
 
-    void validate() override;
+  void validate() override;
 
-    web::json::value toJson() const override;
-    void fromJson(const web::json::value& json) override;
+  web::json::value toJson() const override;
+  void fromJson(const web::json::value& json) override;
 
-    void toMultipart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) const override;
-    void fromMultiPart(std::shared_ptr<MultipartFormData> multipart, const utility::string_t& namePrefix) override;
+  void toMultipart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) const override;
+  void fromMultiPart(
+      std::shared_ptr<MultipartFormData> multipart,
+      const utility::string_t& namePrefix) override;
 
-    /////////////////////////////////////////////
-    /// SmContextCreatedData members
+  /////////////////////////////////////////////
+  /// SmContextCreatedData members
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getHSmfUri() const;
-    bool hSmfUriIsSet() const;
-    void unsetHSmfUri();
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getHSmfUri() const;
+  bool hSmfUriIsSet() const;
+  void unsetHSmfUri();
 
-    void setHSmfUri(const utility::string_t& value);
+  void setHSmfUri(const utility::string_t& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    int32_t getPduSessionId() const;
-    bool pduSessionIdIsSet() const;
-    void unsetPduSessionId();
+  /// <summary>
+  ///
+  /// </summary>
+  int32_t getPduSessionId() const;
+  bool pduSessionIdIsSet() const;
+  void unsetPduSessionId();
 
-    void setPduSessionId(int32_t value);
+  void setPduSessionId(int32_t value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<Snssai> getSNssai() const;
-    bool sNssaiIsSet() const;
-    void unsetSNssai();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<Snssai> getSNssai() const;
+  bool sNssaiIsSet() const;
+  void unsetSNssai();
 
-    void setSNssai(const std::shared_ptr<Snssai>& value);
+  void setSNssai(const std::shared_ptr<Snssai>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<UpCnxState> getUpCnxState() const;
-    bool upCnxStateIsSet() const;
-    void unsetUpCnxState();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<UpCnxState> getUpCnxState() const;
+  bool upCnxStateIsSet() const;
+  void unsetUpCnxState();
 
-    void setUpCnxState(const std::shared_ptr<UpCnxState>& value);
+  void setUpCnxState(const std::shared_ptr<UpCnxState>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<RefToBinaryData> getN2SmInfo() const;
-    bool n2SmInfoIsSet() const;
-    void unsetN2SmInfo();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<RefToBinaryData> getN2SmInfo() const;
+  bool n2SmInfoIsSet() const;
+  void unsetN2SmInfo();
 
-    void setN2SmInfo(const std::shared_ptr<RefToBinaryData>& value);
+  void setN2SmInfo(const std::shared_ptr<RefToBinaryData>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<N2SmInfoType> getN2SmInfoType() const;
-    bool n2SmInfoTypeIsSet() const;
-    void unsetN2SmInfoType();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<N2SmInfoType> getN2SmInfoType() const;
+  bool n2SmInfoTypeIsSet() const;
+  void unsetN2SmInfoType();
 
-    void setN2SmInfoType(const std::shared_ptr<N2SmInfoType>& value);
+  void setN2SmInfoType(const std::shared_ptr<N2SmInfoType>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::vector<std::shared_ptr<EbiArpMapping>>& getAllocatedEbiList();
-    bool allocatedEbiListIsSet() const;
-    void unsetAllocatedEbiList();
+  /// <summary>
+  ///
+  /// </summary>
+  std::vector<std::shared_ptr<EbiArpMapping>>& getAllocatedEbiList();
+  bool allocatedEbiListIsSet() const;
+  void unsetAllocatedEbiList();
 
-    void setAllocatedEbiList(const std::vector<std::shared_ptr<EbiArpMapping>>& value);
+  void setAllocatedEbiList(
+      const std::vector<std::shared_ptr<EbiArpMapping>>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    std::shared_ptr<HoState> getHoState() const;
-    bool hoStateIsSet() const;
-    void unsetHoState();
+  /// <summary>
+  ///
+  /// </summary>
+  std::shared_ptr<HoState> getHoState() const;
+  bool hoStateIsSet() const;
+  void unsetHoState();
 
-    void setHoState(const std::shared_ptr<HoState>& value);
+  void setHoState(const std::shared_ptr<HoState>& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getGpsi() const;
-    bool gpsiIsSet() const;
-    void unsetGpsi();
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getGpsi() const;
+  bool gpsiIsSet() const;
+  void unsetGpsi();
 
-    void setGpsi(const utility::string_t& value);
+  void setGpsi(const utility::string_t& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getSmfServiceInstanceId() const;
-    bool smfServiceInstanceIdIsSet() const;
-    void unsetSmfServiceInstanceId();
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getSmfServiceInstanceId() const;
+  bool smfServiceInstanceIdIsSet() const;
+  void unsetSmfServiceInstanceId();
 
-    void setSmfServiceInstanceId(const utility::string_t& value);
+  void setSmfServiceInstanceId(const utility::string_t& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::datetime getRecoveryTime() const;
-    bool recoveryTimeIsSet() const;
-    void unsetRecoveryTime();
+  /// <summary>
+  ///
+  /// </summary>
+  utility::datetime getRecoveryTime() const;
+  bool recoveryTimeIsSet() const;
+  void unsetRecoveryTime();
 
-    void setRecoveryTime(const utility::datetime& value);
+  void setRecoveryTime(const utility::datetime& value);
 
-    /// <summary>
-    /// 
-    /// </summary>
-    utility::string_t getSupportedFeatures() const;
-    bool supportedFeaturesIsSet() const;
-    void unsetSupportedFeatures();
+  /// <summary>
+  ///
+  /// </summary>
+  utility::string_t getSupportedFeatures() const;
+  bool supportedFeaturesIsSet() const;
+  void unsetSupportedFeatures();
 
-    void setSupportedFeatures(const utility::string_t& value);
+  void setSupportedFeatures(const utility::string_t& value);
 
-
-protected:
-    utility::string_t m_HSmfUri;
-    bool m_HSmfUriIsSet;
-    int32_t m_PduSessionId;
-    bool m_PduSessionIdIsSet;
-    std::shared_ptr<Snssai> m_SNssai;
-    bool m_SNssaiIsSet;
-    std::shared_ptr<UpCnxState> m_UpCnxState;
-    bool m_UpCnxStateIsSet;
-    std::shared_ptr<RefToBinaryData> m_N2SmInfo;
-    bool m_N2SmInfoIsSet;
-    std::shared_ptr<N2SmInfoType> m_N2SmInfoType;
-    bool m_N2SmInfoTypeIsSet;
-    std::vector<std::shared_ptr<EbiArpMapping>> m_AllocatedEbiList;
-    bool m_AllocatedEbiListIsSet;
-    std::shared_ptr<HoState> m_HoState;
-    bool m_HoStateIsSet;
-    utility::string_t m_Gpsi;
-    bool m_GpsiIsSet;
-    utility::string_t m_SmfServiceInstanceId;
-    bool m_SmfServiceInstanceIdIsSet;
-    utility::datetime m_RecoveryTime;
-    bool m_RecoveryTimeIsSet;
-    utility::string_t m_SupportedFeatures;
-    bool m_SupportedFeaturesIsSet;
+ protected:
+  utility::string_t m_HSmfUri;
+  bool m_HSmfUriIsSet;
+  int32_t m_PduSessionId;
+  bool m_PduSessionIdIsSet;
+  std::shared_ptr<Snssai> m_SNssai;
+  bool m_SNssaiIsSet;
+  std::shared_ptr<UpCnxState> m_UpCnxState;
+  bool m_UpCnxStateIsSet;
+  std::shared_ptr<RefToBinaryData> m_N2SmInfo;
+  bool m_N2SmInfoIsSet;
+  std::shared_ptr<N2SmInfoType> m_N2SmInfoType;
+  bool m_N2SmInfoTypeIsSet;
+  std::vector<std::shared_ptr<EbiArpMapping>> m_AllocatedEbiList;
+  bool m_AllocatedEbiListIsSet;
+  std::shared_ptr<HoState> m_HoState;
+  bool m_HoStateIsSet;
+  utility::string_t m_Gpsi;
+  bool m_GpsiIsSet;
+  utility::string_t m_SmfServiceInstanceId;
+  bool m_SmfServiceInstanceIdIsSet;
+  utility::datetime m_RecoveryTime;
+  bool m_RecoveryTimeIsSet;
+  utility::string_t m_SupportedFeatures;
+  bool m_SupportedFeaturesIsSet;
 };
 
-
-}
-}
-}
+}  // namespace model
+}  // namespace smf
+}  // namespace oai
 
 #endif /* OAI_SMF_MODEL_SmContextCreatedData_H_ */

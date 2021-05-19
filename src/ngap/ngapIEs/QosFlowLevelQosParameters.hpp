@@ -29,11 +29,11 @@
 #ifndef _QOSFLOWLEVELQOSPARAMETERS_H_
 #define _QOSFLOWLEVELQOSPARAMETERS_H_
 
-#include "QosCharacteristics.hpp"
+#include "AdditionalQosFlowInformation.hpp"
 #include "AllocationAndRetentionPriority.hpp"
 #include "GBR-QosInformation.hpp"
+#include "QosCharacteristics.hpp"
 #include "ReflectiveQosAttribute.hpp"
-#include "AdditionalQosFlowInformation.hpp"
 
 extern "C" {
 #include "Ngap_QosFlowLevelQosParameters.h"
