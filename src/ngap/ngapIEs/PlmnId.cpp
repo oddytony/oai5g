@@ -58,8 +58,7 @@ void PlmnId::setMccMnc(const std::string mcc, const std::string mnc) {
   int mncValue = fromString<int>(mnc);
 
   mcc_digit1 = mccValue / 100;
-  mcc_digit2 = (mccValue - mcc_digit1 * 100) /
-               10;
+  mcc_digit2 = (mccValue - mcc_digit1 * 100) / 10;
   mcc_digit3 = mccValue % 10;
 
   if (mncValue > 99) {
