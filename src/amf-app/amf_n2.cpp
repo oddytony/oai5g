@@ -529,14 +529,12 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
       itti_msg->rrc_cause = init_ue_msg.initUeMsg->getRRCEstablishmentCause();
     }
 
-#if 0
-    if(init_ue_msg.initUeMsg->getUeContextRequest() == -1){
+    if (init_ue_msg.initUeMsg->getUeContextRequest() == -1) {
       Logger::amf_n2().warn("IE UeContextRequest not present");
-      itti_msg->ueCtxReq = -1;//not present
-    }else{
+      itti_msg->ueCtxReq = -1;  // not present
+    } else {
       itti_msg->ueCtxReq = init_ue_msg.initUeMsg->getUeContextRequest();
     }
-#endif
 
     std::string _5g_s_tmsi;
     if (!init_ue_msg.initUeMsg->get5GS_TMSI(_5g_s_tmsi)) {

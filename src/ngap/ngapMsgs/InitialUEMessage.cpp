@@ -385,7 +385,11 @@ bool InitialUEMessageMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
 
 //------------------------------------------------------------------------------
 uint32_t InitialUEMessageMsg::getRanUENgapID() {
-  return ranUeNgapId->getRanUeNgapId();
+  if (ranUeNgapId) {
+    return ranUeNgapId->getRanUeNgapId();
+  } else {
+    return 0;
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -425,13 +429,20 @@ bool InitialUEMessageMsg::getUserLocationInfoNR(
 
 //------------------------------------------------------------------------------
 int InitialUEMessageMsg::getRRCEstablishmentCause() {
-  return rRCEstablishmentCause->getRRCEstablishmentCause();
+  if (rRCEstablishmentCause) {
+    return rRCEstablishmentCause->getRRCEstablishmentCause();
+  } else {
+    return -1;
+  }
 }
 
 //------------------------------------------------------------------------------
 int InitialUEMessageMsg::getUeContextRequest() {
-  cout << "testing 11.1" << endl;
-  return uEContextRequest->getUEContextRequest();
+  if (uEContextRequest) {
+    return uEContextRequest->getUEContextRequest();
+  } else {
+    return -1;
+  }
 }
 
 //------------------------------------------------------------------------------
