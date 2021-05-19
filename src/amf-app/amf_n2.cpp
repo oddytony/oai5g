@@ -708,7 +708,7 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
       0xe000);  // TODO: remove hardcoded value
   msg->setSecurityKey((uint8_t*) bdata(itti_msg.kgnb));
   msg->setNasPdu((uint8_t*) bdata(itti_msg.nas), blength(itti_msg.nas));
-  // TODO: get the allowed NSSAIs from conf file
+  // Allowed NSSAI
   std::vector<S_Nssai> list;
   for (auto p : amf_cfg.plmn_list) {
     for (auto s : p.slice_list) {
@@ -718,18 +718,11 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
       list.push_back(item);
     }
   }
-
-  //  std::vector<S_Nssai> list;
-  /*  S_Nssai item;
-    item.sst = "01";
-    item.sd  = "None";
-    list.push_back(item);
-  */
   msg->setAllowedNssai(list);
+
   bdestroy(itti_msg.nas);
   bdestroy(itti_msg.kgnb);
   if (itti_msg.is_sr or itti_msg.is_pdu_exist) {
-    // TODO: to add UEAggregateMaximumBitRate
     bstring ueCapability = gc.get()->ue_radio_cap_ind;
     uint8_t* uecap       = (uint8_t*) calloc(1, blength(ueCapability) + 1);
     memcpy(uecap, (uint8_t*) bdata(ueCapability), blength(ueCapability));
@@ -790,12 +783,16 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
       }
       list.push_back(item);
       msg->setPduSessionResourceSetupRequestList(list);
+
+      // UEAggregateMaximumBitRate
       msg->setUEAggregateMaxBitRate(
           0x08a7d8c0, 0x20989680);  // TODO: remove hardcoded value
+
+      // TODO: Mobility RestrictionList
     }
   }
 
-  uint8_t buffer[20000];
+  uint8_t buffer[20000];  // TODO: remove hardcoded value
   int encoded_size = msg->encode2buffer(buffer, 10000);
   bstring b        = blk2bstr(buffer, encoded_size);
   sctp_s_38412.sctp_send_msg(
