@@ -34,6 +34,7 @@ uint8_t multipart_parser(
   std::vector<mime_part> parts = {};
   sp.get_mime_parts(parts);
   uint8_t size = parts.size();
+
   // at least 2 parts for Json data and N1 (+ N2)
   if (size < 2) {
     return size;
@@ -44,8 +45,6 @@ uint8_t multipart_parser(
   bool is_ngap = false;
   if (size > 2) {
     n2sm = parts[2].body;
-  } else {
-    n2sm = "null";
   }
 
   return size;
