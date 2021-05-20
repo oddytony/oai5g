@@ -50,9 +50,13 @@ class UEContextReleaseCompleteMsg {
  public:
   void setMessageType();
   void setAmfUeNgapId(unsigned long id);
+  unsigned long getAmfUeNgapId() const;
   void setRanUeNgapId(uint32_t ran_ue_ngap_id);
+  uint32_t getRanUeNgapId() const;
   void setUserLocationInfoNR(struct NrCgi_s cig, struct Tai_s tai);
+  void getUserLocationInfoNR(struct NrCgi_s& cig, struct Tai_s& tai);
   int encode2buffer(uint8_t* buf, int buf_size);
+  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
 
  private:
   Ngap_NGAP_PDU_t* pdu;

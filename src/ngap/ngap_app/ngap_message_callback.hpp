@@ -263,6 +263,25 @@ int ngap_amf_handle_ue_context_release_complete(
     struct Ngap_NGAP_PDU* message_p) {
   Logger::ngap().debug(
       "Sending itti ue context release complete to TASK_AMF_N2");
+
+  UEContextReleaseCompleteMsg* ueCtxRelCmpl = new UEContextReleaseCompleteMsg();
+  if (!ueCtxRelCmpl->decodefrompdu(message_p)) {
+    Logger::ngap().error("Decoding UEContextReleaseComplete message error");
+    return -1;
+  }
+  itti_ue_context_release_complete* itti_msg =
+      new itti_ue_context_release_complete(TASK_NGAP, TASK_AMF_N2);
+  itti_msg->assoc_id     = assoc_id;
+  itti_msg->stream       = stream;
+  itti_msg->ueCtxRelCmpl = ueCtxRelCmpl;
+  std::shared_ptr<itti_ue_context_release_complete> i =
+      std::shared_ptr<itti_ue_context_release_complete>(itti_msg);
+  int ret = itti_inst->send_msg(i);
+  if (0 != ret) {
+    Logger::ngap().error(
+        "Could not send ITTI message %s to task TASK_AMF_N2",
+        i->get_msg_name());
+  }
   return 0;
 }
 

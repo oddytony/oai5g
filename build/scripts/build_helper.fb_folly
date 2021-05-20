@@ -49,6 +49,7 @@ install_fb_folly_from_source(){
   then
     if [[ "$OS_BASEDISTRO" == "fedora" ]]; then 
       $SUDO $INSTALLER install $OPTION \
+        $CMAKE \
         boost-devel \
         libevent-devel \
         double-conversion-devel \
@@ -63,6 +64,7 @@ install_fb_folly_from_source(){
       ret=$?;[[ $ret -ne 0 ]] && return $ret
     elif [[ $OS_DISTRO == "ubuntu" ]]; then
       $SUDO $INSTALLER install $OPTION \
+        $CMAKE \
         g++ \
         libevent-dev \
         libdouble-conversion-dev \
@@ -126,11 +128,7 @@ install_fb_folly_from_source(){
       git checkout -f v2019.11.11.00
     fi
     mkdir _build && cd _build
-    if [[ "$OS_BASEDISTRO" == "fedora" ]]; then
-      cmake3  ..
-    else
-      cmake  ..
-    fi
+    $CMAKE ..
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     make -j $(nproc)
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret

@@ -118,7 +118,7 @@ static const asn_ioc_cell_t
         //"&criticality", aioc__value, &asn_DEF_Ngap_Criticality,
         //&asn_VAL_9_Ngap_reject }, { "&Value", aioc__type,
         //&asn_DEF_Ngap_UPTransportLayerInformation }, { "&presence",
-        //aioc__value, &asn_DEF_Ngap_Presence, &asn_VAL_9_Ngap_optional },
+        // aioc__value, &asn_DEF_Ngap_Presence, &asn_VAL_9_Ngap_optional },
         {"&id", aioc__value, &asn_DEF_Ngap_ProtocolIE_ID,
          &asn_VAL_10_Ngap_id_DataForwardingNotPossible},
         {"&criticality", aioc__value, &asn_DEF_Ngap_Criticality,
