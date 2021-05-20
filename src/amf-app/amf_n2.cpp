@@ -536,14 +536,12 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
       itti_msg->rrc_cause = init_ue_msg.initUeMsg->getRRCEstablishmentCause();
     }
 
-#if 0
-    if(init_ue_msg.initUeMsg->getUeContextRequest() == -1){
+    if (init_ue_msg.initUeMsg->getUeContextRequest() == -1) {
       Logger::amf_n2().warn("IE UeContextRequest not present");
-      itti_msg->ueCtxReq = -1;//not present
-    }else{
+      itti_msg->ueCtxReq = -1;  // not present
+    } else {
       itti_msg->ueCtxReq = init_ue_msg.initUeMsg->getUeContextRequest();
     }
-#endif
 
     std::string _5g_s_tmsi;
     if (!init_ue_msg.initUeMsg->get5GS_TMSI(_5g_s_tmsi)) {
@@ -715,7 +713,7 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
       0xe000);  // TODO: remove hardcoded value
   msg->setSecurityKey((uint8_t*) bdata(itti_msg.kgnb));
   msg->setNasPdu((uint8_t*) bdata(itti_msg.nas), blength(itti_msg.nas));
-  // TODO: get the allowed NSSAIs from conf file
+  // Allowed NSSAI
   std::vector<S_Nssai> list;
   for (auto p : amf_cfg.plmn_list) {
     for (auto s : p.slice_list) {
@@ -725,26 +723,29 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
       list.push_back(item);
     }
   }
-
-  //  std::vector<S_Nssai> list;
-  /*  S_Nssai item;
-    item.sst = "01";
-    item.sd  = "None";
-    list.push_back(item);
-  */
   msg->setAllowedNssai(list);
+
   bdestroy(itti_msg.nas);
   bdestroy(itti_msg.kgnb);
-  if (itti_msg.is_sr) {
-    bstring ueCapability = gc.get()->ue_radio_cap_ind;
-    uint8_t* uecap       = (uint8_t*) calloc(1, blength(ueCapability) + 1);
-    memcpy(uecap, (uint8_t*) bdata(ueCapability), blength(ueCapability));
-    uecap[blength(ueCapability)] = '\0';
-    msg->setUERadioCapability(uecap, (size_t) blength(ueCapability));
-    free(uecap);
-    Logger::amf_n2().debug("Encoding parameters for Service Request");
+  if (itti_msg.is_sr or itti_msg.is_pdu_exist) {
+    // Set UE RAdio Capability if available
+    if (gc.get()->ue_radio_cap_ind) {
+      bstring ueCapability = gc.get()->ue_radio_cap_ind;
+      uint8_t* uecap       = (uint8_t*) calloc(1, blength(ueCapability) + 1);
+      memcpy(uecap, (uint8_t*) bdata(ueCapability), blength(ueCapability));
+      uecap[blength(ueCapability)] = '\0';
+      msg->setUERadioCapability(uecap, (size_t) blength(ueCapability));
+      free(uecap);
+    }
+
+    if (itti_msg.is_sr)
+      Logger::amf_n2().debug("Encoding parameters for Service Request");
+    else
+      Logger::amf_n2().debug(
+          "Encoding parameters for Initial Context Setup Request");
 
     if (itti_msg.is_pdu_exist) {
+      // TODO: with multiple PDU Sessions
       std::vector<PDUSessionResourceSetupRequestItem_t> list;
       PDUSessionResourceSetupRequestItem_t item;
       item.pduSessionId = itti_msg.pdu_session_id;
@@ -792,12 +793,16 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
       }
       list.push_back(item);
       msg->setPduSessionResourceSetupRequestList(list);
+
+      // UEAggregateMaximumBitRate
       msg->setUEAggregateMaxBitRate(
           0x08a7d8c0, 0x20989680);  // TODO: remove hardcoded value
+
+      // TODO: Mobility RestrictionList
     }
   }
 
-  uint8_t buffer[20000];
+  uint8_t buffer[20000];  // TODO: remove hardcoded value
   int encoded_size = msg->encode2buffer(buffer, 10000);
   bstring b        = blk2bstr(buffer, encoded_size);
   sctp_s_38412.sctp_send_msg(
