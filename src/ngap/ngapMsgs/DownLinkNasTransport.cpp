@@ -386,12 +386,18 @@ bool DownLinkNasTransportMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
 
 //------------------------------------------------------------------------------
 unsigned long DownLinkNasTransportMsg::getAmfUeNgapId() {
-  return amfUeNgapId->getAMF_UE_NGAP_ID();
+  if (amfUeNgapId)
+    return amfUeNgapId->getAMF_UE_NGAP_ID();
+  else
+    return 0;
 }
 
 //------------------------------------------------------------------------------
 uint32_t DownLinkNasTransportMsg::getRanUeNgapId() {
-  return ranUeNgapId->getRanUeNgapId();
+  if (ranUeNgapId)
+    return ranUeNgapId->getRanUeNgapId();
+  else
+    return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -403,7 +409,10 @@ bool DownLinkNasTransportMsg::getOldAmfName(std::string& name) {
 
 //------------------------------------------------------------------------------
 uint8_t DownLinkNasTransportMsg::getRanPagingPriority() {
-  return ranPagingPriority->getRANPagingPriority();
+  if (ranPagingPriority)
+    return ranPagingPriority->getRANPagingPriority();
+  else
+    return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -415,7 +424,10 @@ bool DownLinkNasTransportMsg::getNasPdu(uint8_t*& nas, size_t& sizeofnas) {
 
 //------------------------------------------------------------------------------
 uint8_t DownLinkNasTransportMsg::getIndex2Rat_Frequency_SelectionPriority() {
-  return indexToRFSP->getIndexToRFSP();
+  if (indexToRFSP)
+    return indexToRFSP->getIndexToRFSP();
+  else
+    return 0;
 }
 
 }  // namespace ngap

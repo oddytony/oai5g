@@ -71,9 +71,6 @@ extern void msg_str_2_msg_hex(std::string msg, bstring& b);
 extern void convert_string_2_hex(std::string& input, std::string& output);
 extern void print_buffer(
     const std::string app, const std::string commit, uint8_t* buf, int len);
-extern bool multipart_parser(
-    std::string input, std::string& jsonData, std::string& n1sm,
-    std::string& n2sm);
 extern unsigned char* format_string_as_hex(std::string str);
 extern char* bstring2charString(bstring b);
 
@@ -591,19 +588,11 @@ void amf_n11::curl_http_client(
       // free curl before returning
       curl_slist_free_all(headers);
       curl_easy_cleanup(curl);
-      // TODO: To be verified
-      psc.get()->smf_context_location =
-          "/nsmf-pdusession/v2/sm-contexts/1";  // try to fix bugs for
-                                                // no-response from SMF when
-                                                // requesting
-                                                // /nsmf-pdusession/v2/sm-contexts
-                                                // (first pdu session
-                                                // establishment request)
       return;
     }
 
     if (response.size() > 0) {
-      number_parts = multipart_parser(response, json_data_response, n1sm, n2sm);
+      number_parts = parser.parse(response, json_data_response, n1sm, n2sm);
     }
 
     if ((static_cast<http_response_codes_e>(httpCode) !=
@@ -673,7 +662,10 @@ void amf_n11::curl_http_client(
         } catch (nlohmann::json::exception& e) {
           Logger::amf_n11().warn(
               "Could not get Json content from the response");
+          curl_slist_free_all(headers);
+          curl_easy_cleanup(curl);
           // TODO:
+          return;
         }
 
         itti_n1n2_message_transfer_request* itti_msg =

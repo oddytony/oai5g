@@ -72,6 +72,25 @@ bool mime_parser::parse(const std::string& str) {
   return true;
 }
 
+//------------------------------------------------------------------------------
+uint8_t mime_parser::parse(
+    std::string input, std::string& jsonData, std::string& n1sm,
+    std::string& n2sm) {
+  if (!parse(input)) return 0;
+  uint8_t size = mime_parts.size();
+  if (size > 0) {
+    jsonData = mime_parts[0].body;
+  }
+  if (size > 1) {
+    n1sm = mime_parts[1].body;
+  }
+  if (size > 2) {
+    n2sm = mime_parts[2].body;
+  }
+  return size;
+}
+
+//------------------------------------------------------------------------------
 void mime_parser::get_mime_parts(std::vector<mime_part>& parts) const {
   for (auto it : mime_parts) {
     parts.push_back(it);
