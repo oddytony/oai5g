@@ -50,6 +50,10 @@ class mime_parser {
    */
   bool parse(const std::string& str);
 
+  uint8_t parse(
+      std::string input, std::string& jsonData, std::string& n1sm,
+      std::string& n2sm);
+
   /*
    * Get vector of Mime parts
    * @param [std::vector<mime_part> &] parts: store vector of Mime parts
