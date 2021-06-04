@@ -452,12 +452,17 @@ void amf_app::trigger_nf_registration_request() {
       std::make_shared<itti_n11_register_nf_instance_request>(
           TASK_AMF_APP, TASK_AMF_N11);
   itti_msg->profile = nf_instance_profile;
+
+  amf_n11_inst->register_nf_instance(itti_msg);
+  /*
+
   int ret           = itti_inst->send_msg(itti_msg);
   if (RETURNok != ret) {
     Logger::amf_app().error(
         "Could not send ITTI message %s to task TASK_AMF_N11",
         itti_msg->get_msg_name());
   }
+  */
 }
 
 //------------------------------------------------------------------------------

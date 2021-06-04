@@ -127,6 +127,18 @@ void amf_n11_task(void*) {
             dynamic_cast<itti_pdu_session_resource_setup_response*>(msg);
         amf_n11_inst->handle_itti_message(ref(*m));
       } break;
+        /*
+              case N11_REGISTER_NF_INSTANCE_REQUEST: {
+                  Logger::amf_n11().info(
+                      "Receive PDU Session Resource Setup Response, handling
+           ..."); itti_n11_register_nf_instance_request* m =
+                      dynamic_cast<itti_n11_register_nf_instance_request*>(msg);
+                amf_n11_inst->register_nf_instance(
+                    std::static_pointer_cast<itti_n11_register_nf_instance_request>(
+                        shared_msg));
+              } break;
+        */
+
       default: {
         Logger::amf_n11().info(
             "Receive unknown message type %d", msg->msg_type);
@@ -814,6 +826,79 @@ bool amf_n11::discover_smf(
   }
   curl_global_cleanup();
   return result;
+}
+
+//-----------------------------------------------------------------------------------------------------
+void amf_n11::register_nf_instance(
+    std::shared_ptr<itti_n11_register_nf_instance_request> msg) {
+  Logger::amf_n11().debug(
+      "Send NF Instance Registration to NRF (HTTP version %d)",
+      msg->http_version);
+  nlohmann::json json_data = {};
+  msg->profile.to_json(json_data);
+
+  std::string url =
+      std::string(inet_ntoa(*((struct in_addr*) &amf_cfg.nrf_addr.ipv4_addr))) +
+      ":" + std::to_string(amf_cfg.nrf_addr.port) + "/nnrf-nfm/" +
+      amf_cfg.nrf_addr.api_version + "/nf-instances/" +
+      msg->profile.get_nf_instance_id();
+
+  Logger::amf_n11().debug(
+      "Send NF Instance Registration to NRF, NRF URL %s", url.c_str());
+
+  std::string body = json_data.dump();
+  Logger::amf_n11().debug(
+      "Send NF Instance Registration to NRF, msg body: \n %s", body.c_str());
+
+  curl_global_init(CURL_GLOBAL_ALL);
+  CURL* curl = curl = curl_easy_init();
+
+  if (curl) {
+    CURLcode res               = {};
+    struct curl_slist* headers = nullptr;
+    // headers = curl_slist_append(headers, "charsets: utf-8");
+    headers = curl_slist_append(headers, "content-type: application/json");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, NRF_CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
+
+    // Response information.
+    long httpCode = {0};
+    std::unique_ptr<std::string> httpData(new std::string());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
+
+    res = curl_easy_perform(curl);
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+
+    Logger::amf_n11().debug(
+        "NFDiscovery, response from NRF, HTTP Code: %d", httpCode);
+
+    if (httpCode == 200) {
+      Logger::amf_n11().debug(
+          "NFRegistration, got successful response from NRF");
+
+      nlohmann::json response_data = {};
+      try {
+        response_data = nlohmann::json::parse(*httpData.get());
+      } catch (nlohmann::json::exception& e) {
+        Logger::amf_n11().warn(
+            "NFDiscovery, could not parse json from the NRF "
+            "response");
+      }
+      Logger::amf_n11().debug(
+          "NFDiscovery, response from NRF, json data: \n %s",
+          response_data.dump().c_str());
+
+      curl_slist_free_all(headers);
+      curl_easy_cleanup(curl);
+    }
+    curl_global_cleanup();
+  }
 }
 
 //-----------------------------------------------------------------------------------------------------
