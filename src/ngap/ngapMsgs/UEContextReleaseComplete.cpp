@@ -94,6 +94,7 @@ void UEContextReleaseCompleteMsg::setAmfUeNgapId(unsigned long id) {
 //------------------------------------------------------------------------------
 unsigned long UEContextReleaseCompleteMsg::getAmfUeNgapId() const {
   if (amfUeNgapId) return amfUeNgapId->getAMF_UE_NGAP_ID();
+  return (unsigned long) 0;
 }
 
 //------------------------------------------------------------------------------
