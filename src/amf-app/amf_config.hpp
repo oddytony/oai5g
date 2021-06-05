@@ -104,6 +104,8 @@
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_SMF_SELECTION "SMF_SELECTION"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_AUSF "EXTERNAL_AUSF"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_UDM "EXTERNAL_UDM"
+#define AMF_CONFIG_STRING_SUPPORT_FEATURES_USE_FQDN_DNS "USE_FQDN_DNS"
+#define AMF_CONFIG_STRING_FQDN_DNS "FQDN"
 
 using namespace libconfig;
 
@@ -196,6 +198,7 @@ class amf_config {
   bool enable_smf_selection;
   bool enable_external_ausf;
   bool enable_external_udm;
+  bool use_fqdn_dns;
 
   struct {
     struct in_addr ipv4_addr;

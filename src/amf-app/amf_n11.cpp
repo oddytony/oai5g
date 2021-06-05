@@ -127,17 +127,13 @@ void amf_n11_task(void*) {
             dynamic_cast<itti_pdu_session_resource_setup_response*>(msg);
         amf_n11_inst->handle_itti_message(ref(*m));
       } break;
-        /*
-              case N11_REGISTER_NF_INSTANCE_REQUEST: {
-                  Logger::amf_n11().info(
-                      "Receive PDU Session Resource Setup Response, handling
-           ..."); itti_n11_register_nf_instance_request* m =
-                      dynamic_cast<itti_n11_register_nf_instance_request*>(msg);
-                amf_n11_inst->register_nf_instance(
-                    std::static_pointer_cast<itti_n11_register_nf_instance_request>(
-                        shared_msg));
-              } break;
-        */
+      case N11_REGISTER_NF_INSTANCE_REQUEST: {
+        Logger::amf_n11().info(
+            "Receive Register NF Instance Request, handling ...");
+        itti_n11_register_nf_instance_request* m =
+            dynamic_cast<itti_n11_register_nf_instance_request*>(msg);
+        // TODO: Handle ITTI
+      } break;
 
       default: {
         Logger::amf_n11().info(
@@ -863,6 +859,7 @@ void amf_n11::register_nf_instance(
     curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, NRF_CURL_TIMEOUT_MS);
     curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
 
     // Response information.
     long httpCode = {0};
