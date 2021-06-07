@@ -431,13 +431,7 @@ check_install_amf_deps(){
   echo "Install distro libs"
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
   ret=$?;[[ $ret -ne 0 ]] && return $ret
-
-
-  if [ $var_ubuntu_18_04 -ne 0 ]; then 
-    install_boost_1_66 $1 $2
-    ret=$?;[[ $ret -ne 0 ]] && return $ret
-  fi
-  
+ 
   install_cpprestsdk_from_git $1 $2
   ret=$?;[[ $ret -ne 0 ]] && return $ret
   
@@ -457,6 +451,11 @@ check_install_amf_deps(){
   install_nlohmann_from_git $1 $2
   ret=$?;[[ $ret -ne 0 ]] && return $ret 
 
+  if [ $var_ubuntu_18_04 -ne 0 ]; then 
+    install_boost_1_66 $1 $2
+    ret=$?;[[ $ret -ne 0 ]] && return $ret
+  fi
+  
   $SUDO ldconfig
   return 0
 
