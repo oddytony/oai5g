@@ -35,6 +35,45 @@ source $THIS_SCRIPT_PATH/build_helper.fb_folly
 #-------------------------------------------------------------------------------
 #arg1 is force (0 or 1) (no interactive script)
 #arg2 is debug (0 or 1) (install debug libraries)
+install_boost_1_66() {
+  if [ $1 -eq 0 ]; then
+    read -p "Do you want to install Boost version 1.66.0 ? <y/N> " prompt
+    OPTION=""
+  else
+    prompt='y'
+    OPTION="-y"
+  fi
+  if [ $2 -eq 0 ]; then
+    debug=0
+  else
+    debug=1
+  fi
+
+  if [[ $prompt =~ [yY](es)* ]]
+  then
+    BOOST_URL=https://boostorg.jfrog.io/artifactory/main/release/1.66.0/source/boost_1_66_0.tar.bz2
+    echo "Install Boost from $BOOST_URL"
+    pushd $OPENAIRCN_DIR/build/ext
+    echo "Downloading Boost 1.66.0"
+    if [[ $OPTION =~ -[yY](es)* ]]
+    then
+      $SUDO rm -rf boost
+    fi
+
+    #git clone $GIT_URL
+    wget $BOOST_URL 
+    tar --bzip2 -xf boost_1_66_0.tar.bz2 
+    cp -r boost_1_66_0/boost /usr/include
+    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
+    popd
+  fi
+  return 0
+}
+
+
+#-------------------------------------------------------------------------------
+#arg1 is force (0 or 1) (no interactive script)
+#arg2 is debug (0 or 1) (install debug libraries)
 install_cpprestsdk_from_git() {
   if [ $1 -eq 0 ]; then
     read -p "Do you want to install C++ REST SDK ? <y/N> " prompt
@@ -315,9 +354,9 @@ check_install_amf_deps(){
     case "$(get_distribution_release)" in
       "ubuntu18.04")
       if [ $IS_CONTAINER -eq 0 ]; then
-        specific_packages="libconfig++-dev libasio-dev libboost-all-dev mysql-server"
+        specific_packages="libconfig++-dev mysql-server"
       else
-        specific_packages="libconfig++-dev libasio-dev libboost-all-dev"
+        specific_packages="libconfig++-dev"
       fi
         ;;
     esac
@@ -381,6 +420,9 @@ check_install_amf_deps(){
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
   ret=$?;[[ $ret -ne 0 ]] && return $ret
 
+  install_boost_1_66 $1 $2
+  ret=$?;[[ $ret -ne 0 ]] && return $ret
+  
   install_cpprestsdk_from_git $1 $2
   ret=$?;[[ $ret -ne 0 ]] && return $ret
   
