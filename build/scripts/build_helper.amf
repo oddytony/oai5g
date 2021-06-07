@@ -399,6 +399,7 @@ check_install_amf_deps(){
       net-tools \
       pkg-config \
       ninja-build \
+      wget \
       libasan2"
   elif [[ "$OS_BASEDISTRO" == "fedora" ]]; then
     PACKAGE_LIST="\
