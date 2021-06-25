@@ -375,7 +375,7 @@ class HtmlReport():
 	def buildSummaryFooter(self):
 		self.file.write('  </table>\n')
 		self.file.write('  <br>\n')
-		if self.nb_warnings > 0:
+		if len(self.warning_rows) > 0:
 			self.file.write('  <h3>Compilation Warnings Details</h3>\n')
 			self.file.write('  <button data-toggle="collapse" data-target="#oai-compilation-details">Details for Compilation Errors and Warnings </button>\n')
 			self.file.write('  <div id="oai-compilation-details" class="collapse">\n')

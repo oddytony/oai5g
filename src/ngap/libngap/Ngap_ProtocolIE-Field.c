@@ -73,30 +73,30 @@ static const asn_ioc_cell_t
 static const asn_ioc_set_t
     asn_IOS_Ngap_PDUSessionResourceModifyRequestTransferIEs_1[] = {
         {6, 4, asn_IOS_Ngap_PDUSessionResourceModifyRequestTransferIEs_1_rows}};
-static const long asn_VAL_7_Ngap_id_PDUSessionAggregateMaximumBitRate  = 130;
-static const long asn_VAL_7_Ngap_reject                                = 0;
-static const long asn_VAL_7_Ngap_optional                              = 0;
-static const long asn_VAL_8_Ngap_id_UL_NGU_UP_TNLInformation           = 139;
-static const long asn_VAL_8_Ngap_reject                                = 0;
-static const long asn_VAL_8_Ngap_mandatory                             = 2;
-//static const long asn_VAL_9_Ngap_id_AdditionalUL_NGU_UP_TNLInformation = 126;
-//static const long asn_VAL_9_Ngap_reject                                = 0;
-//static const long asn_VAL_9_Ngap_optional                              = 0;
-static const long asn_VAL_10_Ngap_id_DataForwardingNotPossible         = 127;
-static const long asn_VAL_10_Ngap_reject                               = 0;
-static const long asn_VAL_10_Ngap_optional                             = 0;
-static const long asn_VAL_11_Ngap_id_PDUSessionType                    = 134;
-static const long asn_VAL_11_Ngap_reject                               = 0;
-static const long asn_VAL_11_Ngap_mandatory                            = 2;
-static const long asn_VAL_12_Ngap_id_SecurityIndication                = 138;
-static const long asn_VAL_12_Ngap_reject                               = 0;
-static const long asn_VAL_12_Ngap_optional                             = 0;
-static const long asn_VAL_13_Ngap_id_NetworkInstance                   = 129;
-static const long asn_VAL_13_Ngap_reject                               = 0;
-static const long asn_VAL_13_Ngap_optional                             = 0;
-static const long asn_VAL_14_Ngap_id_QosFlowSetupRequestList           = 136;
-static const long asn_VAL_14_Ngap_reject                               = 0;
-static const long asn_VAL_14_Ngap_mandatory                            = 2;
+static const long asn_VAL_7_Ngap_id_PDUSessionAggregateMaximumBitRate = 130;
+static const long asn_VAL_7_Ngap_reject                               = 0;
+static const long asn_VAL_7_Ngap_optional                             = 0;
+static const long asn_VAL_8_Ngap_id_UL_NGU_UP_TNLInformation          = 139;
+static const long asn_VAL_8_Ngap_reject                               = 0;
+static const long asn_VAL_8_Ngap_mandatory                            = 2;
+// static const long asn_VAL_9_Ngap_id_AdditionalUL_NGU_UP_TNLInformation = 126;
+// static const long asn_VAL_9_Ngap_reject                                = 0;
+// static const long asn_VAL_9_Ngap_optional                              = 0;
+static const long asn_VAL_10_Ngap_id_DataForwardingNotPossible = 127;
+static const long asn_VAL_10_Ngap_reject                       = 0;
+static const long asn_VAL_10_Ngap_optional                     = 0;
+static const long asn_VAL_11_Ngap_id_PDUSessionType            = 134;
+static const long asn_VAL_11_Ngap_reject                       = 0;
+static const long asn_VAL_11_Ngap_mandatory                    = 2;
+static const long asn_VAL_12_Ngap_id_SecurityIndication        = 138;
+static const long asn_VAL_12_Ngap_reject                       = 0;
+static const long asn_VAL_12_Ngap_optional                     = 0;
+static const long asn_VAL_13_Ngap_id_NetworkInstance           = 129;
+static const long asn_VAL_13_Ngap_reject                       = 0;
+static const long asn_VAL_13_Ngap_optional                     = 0;
+static const long asn_VAL_14_Ngap_id_QosFlowSetupRequestList   = 136;
+static const long asn_VAL_14_Ngap_reject                       = 0;
+static const long asn_VAL_14_Ngap_mandatory                    = 2;
 static const asn_ioc_cell_t
     asn_IOS_Ngap_PDUSessionResourceSetupRequestTransferIEs_1_rows[] = {
         {"&id", aioc__value, &asn_DEF_Ngap_ProtocolIE_ID,
