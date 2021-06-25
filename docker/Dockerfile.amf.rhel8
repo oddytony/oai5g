@@ -59,15 +59,6 @@ RUN /bin/bash -c "if [[ -v NEEDED_GIT_PROXY ]]; then git config --global http.pr
 RUN git config --global https.postBuffer 123289600
 RUN git config --global http.sslverify false
 
-# cpprest package install
-RUN git clone https://github.com/Microsoft/cpprestsdk.git
-RUN cd cpprestsdk && \
-    git submodule update --init && \
-    mkdir build && cd build && \
-    cmake3 -G Ninja .. -DCMAKE_BUILD_TYPE=Release && \
-    ninja install && \
-    ldconfig -v
-
 # Copying source code
 WORKDIR /openair-amf/
 COPY . /openair-amf
