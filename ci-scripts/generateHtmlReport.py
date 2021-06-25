@@ -686,6 +686,11 @@ class HtmlReport():
 								linenumber = re.sub(':[0-9]*:',"", linenumber)
 								error_warning_status = re.sub(':',"", wordsList[1])
 								error_warning_msg = re.sub('^.*' + error_warning_status + ':', '', correctLine)
+
+								if nb_warnings == 0 and variant == 'docker':
+									self.warning_rows += '<tr><td colspan="4" align = "center" bgcolor = "LightGray"><b>Ubuntu 18</b></td></tr>\n'
+								if nb_warnings == 0 and variant == 'podman':
+									self.warning_rows += '<tr><td colspan="4" align = "center" bgcolor = "LightGray"><b>RHEL 8</b></td></tr>\n'
 								nb_warnings += 1
 								self.warning_rows += '<tr><td>' + filename + '</td><td>' + linenumber + '</td><td>' + error_warning_status + '</td><td>' + error_warning_msg + '</td></tr>\n'
 					logfile.close()
