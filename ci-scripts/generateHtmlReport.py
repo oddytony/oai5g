@@ -497,7 +497,7 @@ class HtmlReport():
 								cpprest_build_start = True
 							result = re.search('cpprestsdk installation complete', line)
 							if result is not None and cpprest_build_start:
-								fmt_build_status = True
+								cpprest_build_status = True
 							result = re.search('Starting to install fmt', line)
 							if result is not None:
 								fmt_build_start = True
