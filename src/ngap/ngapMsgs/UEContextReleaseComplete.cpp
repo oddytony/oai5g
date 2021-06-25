@@ -122,6 +122,7 @@ void UEContextReleaseCompleteMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
 //------------------------------------------------------------------------------
 uint32_t UEContextReleaseCompleteMsg::getRanUeNgapId() const {
   if (ranUeNgapId) return ranUeNgapId->getRanUeNgapId();
+  return (uint32_t) 0;
 }
 
 //------------------------------------------------------------------------------
