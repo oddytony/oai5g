@@ -375,7 +375,7 @@ class HtmlReport():
 	def buildSummaryFooter(self):
 		self.file.write('  </table>\n')
 		self.file.write('  <br>\n')
-		if self.nb_warnings > 0:
+		if len(self.warning_rows) > 0:
 			self.file.write('  <h3>Compilation Warnings Details</h3>\n')
 			self.file.write('  <button data-toggle="collapse" data-target="#oai-compilation-details">Details for Compilation Errors and Warnings </button>\n')
 			self.file.write('  <div id="oai-compilation-details" class="collapse">\n')
@@ -471,6 +471,8 @@ class HtmlReport():
 				pistache_build_status = False
 				json_build_start = False
 				json_build_status = False
+				cpprest_build_start = False
+				cpprest_build_status = False
 				base_image = False
 				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
 					for line in logfile:
@@ -487,33 +489,43 @@ class HtmlReport():
 							result = re.search('AMF deps installation successful', line)
 							if result is not None:
 								status = True
-							result = re.search('Install fmt from source', line)
+							result = re.search('distro libs installation complete', line)
 							if result is not None:
 								package_install = True
-								fmt_build_start = True
-							result = re.search('Installing: /usr/local/lib/pkgconfig/fmt.pc', line)
+							result = re.search('Starting to install cpprestsdk', line)
 							if result is not None:
+								cpprest_build_start = True
+							result = re.search('cpprestsdk installation complete', line)
+							if result is not None and cpprest_build_start:
+								cpprest_build_status = True
+							result = re.search('Starting to install fmt', line)
+							if result is not None:
+								fmt_build_start = True
+							result = re.search('fmt installation complete', line)
+							if result is not None and fmt_build_start:
 								fmt_build_status = True
-							result = re.search('Cloning into \'folly\'', line)
+							result = re.search('Starting to install folly', line)
 							if result is not None:
 								folly_build_start = True
-							result = re.search('Installing: /usr/local/lib/libfollybenchmark.a', line)
-							if result is not None:
+							result = re.search('folly installation complete', line)
+							if result is not None and folly_build_start:
 								folly_build_status = True
-							result = re.search('Install spdlog from', line)
+							result = re.search('Starting to install spdlog', line)
 							if result is not None:
 								spdlog_build_start = True
-							result = re.search('Install Pistache from', line)
-							if result is not None:
+							result = re.search('spdlog installation complete', line)
+							if result is not None and spdlog_build_start:
 								spdlog_build_status = True
-								pistache_build_start = True
-							result = re.search('Installing: /usr/local/lib/libpistache.a', line)
+							result = re.search('Starting to install pistache', line)
 							if result is not None:
+								pistache_build_start = True
+							result = re.search('pistache installation complete', line)
+							if result is not None and pistache_build_start:
 								pistache_build_status = True
-							result = re.search('Install Nlohmann Json', line)
+							result = re.search('Starting to install Nlohmann Json', line)
 							if result is not None:
 								json_build_status = True
-							result = re.search('Installing: /usr/local/lib/cmake/nlohmann_json/nlohmann_jsonTargets.cmake', line)
+							result = re.search('Nlohmann Json installation complete', line)
 							if result is not None:
 								json_build_status = True
 					logfile.close()
@@ -533,6 +545,12 @@ class HtmlReport():
 					cell_msg += '   ** Packages Installation: OK\n'
 				else:
 					cell_msg += '   ** Packages Installation: KO\n'
+				if base_image:
+					cell_msg += '   ** cpprestsdk Installation: N/A\n'
+				elif cpprest_build_status:
+					cell_msg += '   ** cpprestsdk Installation: OK\n'
+				else:
+					cell_msg += '   ** cpprestsdk Installation: KO\n'
 				if base_image:
 					cell_msg += '   ** fmt Installation: N/A\n'
 				elif fmt_build_status:
@@ -668,6 +686,11 @@ class HtmlReport():
 								linenumber = re.sub(':[0-9]*:',"", linenumber)
 								error_warning_status = re.sub(':',"", wordsList[1])
 								error_warning_msg = re.sub('^.*' + error_warning_status + ':', '', correctLine)
+
+								if nb_warnings == 0 and variant == 'docker':
+									self.warning_rows += '<tr><td colspan="4" align = "center" bgcolor = "LightGray"><b>Ubuntu 18</b></td></tr>\n'
+								if nb_warnings == 0 and variant == 'podman':
+									self.warning_rows += '<tr><td colspan="4" align = "center" bgcolor = "LightGray"><b>RHEL 8</b></td></tr>\n'
 								nb_warnings += 1
 								self.warning_rows += '<tr><td>' + filename + '</td><td>' + linenumber + '</td><td>' + error_warning_status + '</td><td>' + error_warning_msg + '</td></tr>\n'
 					logfile.close()

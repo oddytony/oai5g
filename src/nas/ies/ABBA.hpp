@@ -47,7 +47,7 @@ class ABBA {
  private:
   uint8_t _iei;
   uint8_t _length;
-  uint8_t _value[255];
+  uint8_t _value[256];
 };
 
 }  // namespace nas

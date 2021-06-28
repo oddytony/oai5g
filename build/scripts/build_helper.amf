@@ -36,6 +36,7 @@ source $THIS_SCRIPT_PATH/build_helper.fb_folly
 #arg1 is force (0 or 1) (no interactive script)
 #arg2 is debug (0 or 1) (install debug libraries)
 install_cpprestsdk_from_git() {
+  echo "Starting to install cpprestsdk"
   if [ $1 -eq 0 ]; then
     read -p "Do you want to install C++ REST SDK ? <y/N> " prompt
     OPTION="-y"
@@ -73,6 +74,7 @@ install_cpprestsdk_from_git() {
     $SUDO ldconfig -v
     popd
   fi
+  echo "cpprestsdk installation complete"
   return 0
 }
 
@@ -80,6 +82,7 @@ install_cpprestsdk_from_git() {
 #arg1 is force (0 or 1) (no interactive script)
 #arg2 is debug (0 or 1) (install debug libraries)
 install_fmt() {
+  echo "Starting to install fmt"
   if [ $1 -eq 0 ]; then
     read -p "Do you want to install open-source formatting library for C++ ? <y/N> " prompt
     OPTION=""
@@ -108,6 +111,7 @@ install_fmt() {
     cd /tmp
     rm -rf /tmp/fmt*
   fi
+  echo "fmt installation complete"
   return 0
 }
 
@@ -115,6 +119,7 @@ install_fmt() {
 #arg1 is force (0 or 1) (no interactive script)
 #arg2 is debug (0 or 1) (install debug libraries)
 install_spdlog_from_git() {
+  echo "Starting to install spdlog"
   if [ $1 -eq 0 ]; then
     read -p "Do you want to install spdlog ? <y/N> " prompt
     OPTION=""
@@ -147,6 +152,7 @@ install_spdlog_from_git() {
     sed -i '/#define SPDLOG_ENABLE_SYSLOG/s/^\/\///g' include/spdlog/tweakme.h
     popd
   fi
+  echo "spdlog installation complete"
   return 0
 }
 
@@ -154,6 +160,7 @@ install_spdlog_from_git() {
 #arg1 is force (0 or 1) (no interactive script)
 #arg2 is debug (0 or 1) (install debug libraries)
 install_pistache_from_git() {
+  echo "Starting to install pistache"
   if [ $1 -eq 0 ]; then
     read -p "Do you want to install Pistache ? <y/N> " prompt
     OPTION="-y"
@@ -196,6 +203,7 @@ install_pistache_from_git() {
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     popd
   fi
+  echo "pistache installation complete"
   return 0
 }
 
@@ -203,6 +211,7 @@ install_pistache_from_git() {
 #arg1 is force (0 or 1) (no interactive script)
 #arg2 is debug (0 or 1) (install debug libraries)
 install_nlohmann_from_git() {
+  echo "Starting to install Nlohmann Json"
   if [ $1 -eq 0 ]; then
     read -p "Do you want to install Nlohmann Json ? <y/N> " prompt
     OPTION=""
@@ -241,6 +250,7 @@ install_nlohmann_from_git() {
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     popd
   fi
+  echo "Nlohmann Json installation complete"
   return 0
 }
 
@@ -380,6 +390,7 @@ check_install_amf_deps(){
   echo "Install distro libs"
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
   ret=$?;[[ $ret -ne 0 ]] && return $ret
+  echo "distro libs installation complete"
 
   install_cpprestsdk_from_git $1 $2
   ret=$?;[[ $ret -ne 0 ]] && return $ret
