@@ -37,6 +37,7 @@ ENV TZ=Europe
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
     psmisc \
+    software-properties-common \
     git \
     vim \
   && rm -rf /var/lib/apt/lists/*
@@ -84,7 +85,8 @@ COPY --from=oai-amf-builder /openair-amf/scripts/entrypoint.sh entrypoint.sh
 WORKDIR /usr/lib/x86_64-linux-gnu
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libmysqlclient.so.20 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 .
-COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libboost_system.so.1.65.1 .
+COPY --from=oai-smf-builder /usr/lib/libboost_system.so.1.67.0 .
+COPY --from=oai-smf-builder /usr/lib/libboost_thread.so.1.67.0 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcpprest.so.2.10 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libssl.so.1.1 .

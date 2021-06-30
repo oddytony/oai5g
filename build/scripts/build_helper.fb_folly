@@ -67,6 +67,7 @@ install_fb_folly_from_source(){
         $CMAKE \
         g++ \
         libevent-dev \
+        libboost1.67-dev \
         libdouble-conversion-dev \
         libgoogle-glog-dev \
         libgflags-dev \
