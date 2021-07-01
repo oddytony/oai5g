@@ -85,9 +85,9 @@ COPY --from=oai-amf-builder /openair-amf/scripts/entrypoint.sh entrypoint.sh
 WORKDIR /usr/lib/x86_64-linux-gnu
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libmysqlclient.so.20 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 .
-COPY --from=oai-smf-builder /usr/lib/libboost_system.so.1.67.0 .
-COPY --from=oai-smf-builder /usr/lib/libboost_thread.so.1.67.0 .
-COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcpprest.so.2.10 .
+COPY --from=oai-amf-builder /usr/lib/libboost_system.so.1.67.0 .
+COPY --from=oai-amf-builder /usr/lib/libboost_thread.so.1.67.0 .
+#COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcpprest.so.2.10 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libssl.so.1.1 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/librtmp.so.1 .
