@@ -218,7 +218,7 @@ class itti_handover_required : public itti_msg_n2 {
   itti_handover_required(const task_id_t origin, const task_id_t destination)
       : itti_msg_n2(HANDOVER_REQUIRED, origin, destination) {}
   itti_handover_required(const itti_handover_required& i) : itti_msg_n2(i) {}
-  HandoverRequiredMsg* handvoerRequ;
+  HandoverRequiredMsg* handoverReq;
 };
 
 class itti_handover_request_Ack : public itti_msg_n2 {

@@ -543,7 +543,7 @@ int downlink_ue_associated_nappa_transport(
 int handover_cancel(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p) {
-  Logger::ngap().debug("Sending itti handover cancel to TASK_AMF_N2");
+  Logger::ngap().debug("Sending ITTI Handover Cancel to TASK_AMF_N2");
   return 0;
 }
 
@@ -551,18 +551,18 @@ int handover_cancel(
 int handover_preparation(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p) {
-  Logger::ngap().debug("Sending itti handover preparation to TASK_AMF_N2");
+  Logger::ngap().debug("Sending ITTI Handover Preparation to TASK_AMF_N2");
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
-  HandoverRequiredMsg* handoverrequired = new HandoverRequiredMsg();
-  if (!handoverrequired->decodefrompdu(message_p)) {
-    Logger::ngap().error("decoding HandoverRequired message error");
+  HandoverRequiredMsg* handover_required = new HandoverRequiredMsg();
+  if (!handover_required->decodefrompdu(message_p)) {
+    Logger::ngap().error("Decoding HandoverRequired message error");
     return -1;
   }
   itti_handover_required* itti_handover_requ =
       new itti_handover_required(TASK_NGAP, TASK_AMF_N2);
-  itti_handover_requ->assoc_id     = assoc_id;
-  itti_handover_requ->stream       = stream;
-  itti_handover_requ->handvoerRequ = handoverrequired;
+  itti_handover_requ->assoc_id    = assoc_id;
+  itti_handover_requ->stream      = stream;
+  itti_handover_requ->handoverReq = handover_required;
   std::shared_ptr<itti_handover_required> i =
       std::shared_ptr<itti_handover_required>(itti_handover_requ);
   int ret = itti_inst->send_msg(i);
@@ -578,11 +578,11 @@ int handover_preparation(
 int handover_notification(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p) {
-  Logger::ngap().debug("Sending itti handover Notification to TASK_AMF_N2");
+  Logger::ngap().debug("Sending ITTI Handover Notification to TASK_AMF_N2");
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   HandoverNotifyMsg* handoverNotify = new HandoverNotifyMsg();
   if (!handoverNotify->decodefrompdu(message_p)) {
-    Logger::ngap().error("decoding handoverNotify message error");
+    Logger::ngap().error("Decoding HandoverNotify message error");
     return -1;
   }
   itti_handover_notify* itti_handover_NOTIFY =
