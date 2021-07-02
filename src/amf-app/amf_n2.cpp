@@ -1046,7 +1046,7 @@ void amf_n2::handle_itti_message(
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
-  // TODO: Experimental procedure, to be testbed
+  // TODO: Experimental procedure, to be tested
   ncc++;  // TODO: to be verified
   unsigned long amf_ue_ngap_id = itti_msg.handoverReq->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handoverReq->getRanUeNgapId();
@@ -1232,7 +1232,7 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
-  // TODO: Experimental procedure, to be testbed
+  // TODO: Experimental procedure, to be tested
   unsigned long amf_ue_ngap_id = itti_msg.handoverrequestAck->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handoverrequestAck->getRanUeNgapId();
   AMF_TARGET_ran_id_global     = ran_ue_ngap_id;
@@ -1262,8 +1262,6 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   PDUSessionResourceHandoverRequestAckTransfer* PDUHandoverRequestAckTransfer =
       new PDUSessionResourceHandoverRequestAckTransfer();
   uint8_t buf[1024];
-  // cout << list[0].handoverRequestAcknowledgeTransfer.buf << endl;
-  // cout << list[0].handoverRequestAcknowledgeTransfer.size << endl;
 
   memcpy(
       buf, list[0].handoverRequestAcknowledgeTransfer.buf,
@@ -1280,14 +1278,15 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
     Logger::ngap().error("Decode GtpTunnel error");
     return;
   }
-  string n3_ip_address;
-  uint32_t teid;
-  n3_ip_address = gtptunnel->ip_address;
-  teid          = gtptunnel->gtp_teid;
+
+  string n3_ip_address = {};
+  uint32_t teid        = 0;
+  n3_ip_address        = gtptunnel->ip_address;
+  teid                 = gtptunnel->gtp_teid;
   std::vector<QosFlowLItemWithDataForwarding_t> QosFlowWithDataForwardinglist;
   PDUHandoverRequestAckTransfer->getqosFlowSetupResponseList(
       QosFlowWithDataForwardinglist);
-  long qosflowidentifiervalue;
+  long qosflowidentifiervalue = 0;
   qosflowidentifiervalue =
       (long) QosFlowWithDataForwardinglist[0].qosFlowIdentifier;
   Logger::ngap().debug("QFI %lu", qosflowidentifiervalue);
@@ -1362,14 +1361,15 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
+  // TODO: Experimental procedure, to be tested
   unsigned long amf_ue_ngap_id = itti_msg.handovernotify->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handovernotify->getRanUeNgapId();
   Logger::amf_n2().error(
-      "Handover notify ran_ue_ngap_id(0x%d) amf_ue_ngap_id(%d)", ran_ue_ngap_id,
-      amf_ue_ngap_id);
+      "Handover Notify ran_ue_ngap_id (0x%d) amf_ue_ngap_id (%lu)",
+      ran_ue_ngap_id, amf_ue_ngap_id);
   if (!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
     Logger::amf_n2().error(
-        "gNB with assoc_id(%d) is illegal", itti_msg.assoc_id);
+        "gNB with assoc_id (%d) is illegal", itti_msg.assoc_id);
     return;
   }
   NrCgi_t NR_CGI = {};
@@ -1385,7 +1385,8 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
   ueContextReleaseCommand->setUeNgapIdPair(amf_ue_ngap_id, ran_id_global);
   ueContextReleaseCommand->setCauseRadioNetwork(
       Ngap_CauseRadioNetwork_successful_handover);
-  uint8_t buffer[10240];
+
+  uint8_t buffer[10240]; //TODO: remove hardcoded value
   int encoded_size = ueContextReleaseCommand->encode2buffer(buffer, 10240);
   bstring b        = blk2bstr(buffer, encoded_size);
   std::shared_ptr<nas_context> nc =
@@ -1393,6 +1394,7 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
   std::shared_ptr<ue_ngap_context> ngc =
       ran_ue_id_2_ue_ngap_context(nc.get()->ran_ue_ngap_id);
   sctp_s_38412.sctp_send_msg(source_assoc_id, 0, &b);
+
   /*std::shared_ptr<nas_context> nc =
   amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id); string supi = "imsi-" +
   nc.get()->imsi; std::shared_ptr<pdu_session_context> psc =
@@ -1403,7 +1405,8 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
   std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i =
   std::shared_ptr<itti_nsmf_pdusession_update_sm_context>(itti_nsmf_msg);
   //int ret = itti_inst->send_msg(i);*/
-  std::shared_ptr<ue_ngap_context> unc;
+
+  std::shared_ptr<ue_ngap_context> unc = {};
   if (!is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
     Logger::amf_n2().debug(
         "Create a new ue ngap context with ran_ue_ngap_id(0x%x)",
@@ -1412,11 +1415,7 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
     set_ran_ue_ngap_id_2_ue_ngap_context(ran_ue_ngap_id, unc);
     unc.get()->gnb_assoc_id = ngc.get()->gnb_assoc_id;
   }
-  /*if (0 != ret)
-  {
-    Logger::ngap().error("Could not send ITTI message %s to task TASK_AMF_N11",
-  i->get_msg_name());
-  }*/
+
 }
 
 //------------------------------------------------------------------------------
