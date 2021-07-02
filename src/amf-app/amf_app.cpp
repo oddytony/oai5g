@@ -404,13 +404,9 @@ void amf_app::generate_amf_profile() {
   nf_service.nf_service_status = "REGISTERED";
   // IP Endpoint
   ip_endpoint_t endpoint = {};
-  std::vector<struct in_addr> addrs;
-  nf_instance_profile.get_nf_ipv4_addresses(addrs);
-  for (auto a : addrs) {
-    endpoint.ipv4_addresses.push_back(a);
-  }
-  endpoint.transport = "TCP";
-  endpoint.port      = amf_cfg.n11.port;
+  endpoint.ipv4_address  = amf_cfg.n11.addr4;
+  endpoint.transport     = "TCP";
+  endpoint.port          = amf_cfg.n11.port;
   nf_service.ip_endpoints.push_back(endpoint);
 
   nf_instance_profile.add_nf_service(nf_service);
