@@ -158,7 +158,7 @@ int ngap_amf_handle_initial_context_setup_response(
   }
   std::vector<PDUSessionResourceSetupResponseItem_t> list;
   if (!initCtxResp->getPduSessionResourceSetupResponseList(list)) {
-    Logger::ngap().error(
+    Logger::ngap().debug(
         "Decode PduSessionResourceSetupResponseList IE error or this IE is not "
         "available");
     return 0;
