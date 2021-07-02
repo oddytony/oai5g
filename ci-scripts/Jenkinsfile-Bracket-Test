@@ -46,6 +46,7 @@ def dsT_host_ip_addr = ""
 // Flags
 def scmEvent = false
 def upstreamEvent = false
+def deployed = true
 
 // Default tag  --> could be passed on by upstream job or by PR content
 def amfTag = params.amfTag
@@ -173,7 +174,7 @@ pipeline {
             }
             // Do docker logs to recover the configuration results
             try {
-              sh 'docker inspect --format=\'STATUS: {{.State.Health.Status}}\' cicd-oai-amf >> archives/amf_config.log'
+              sh 'docker inspect --format=\'STATUS: {{.State.Health.Status}}\' cicd-oai-amf > archives/amf_config.log'
             } catch (Exception e) {
               sh 'echo "STATUS: KO" >> archives/amf_config.log'
             }
@@ -188,6 +189,7 @@ pipeline {
         unsuccessful {
           script {
             sh 'echo "DEPLOYMENT: KO" > archives/deployment_status.log'
+            deployed = false
           }
         }
       }
@@ -252,10 +254,26 @@ pipeline {
   post {
     always {
       script {
+        // Get logs if deployment fails
+        if (deployed != true) {
+        sh 'mkdir -p archives/logs'
+        sh 'docker logs cicd-oai-amf > archives/logs/oai_amf.log'
+        }
         // Remove any leftover containers/networks
         sh 'python3 ./ci-scripts/routeCheck.py --mode=Delete --userName=' + dsT_host_user + ' --hostName=' + dsT_host
         dir('ci-scripts/dsTesterDockerCompose') {
           sh 'docker-compose down > ../../archives/compose_l_down.log 2>&1'
+        }
+        // Generating the HTML report
+        sh 'python3 ./ci-scripts/bracketTestHTMLReport.py --job_name=' + JOB_NAME + ' --job_id=' + BUILD_ID + ' --job_url=' + BUILD_URL
+
+        // Zipping all archived log files
+        sh "zip -r -qq cn5g_amf_docker_logs.zip archives DS-TEST-RESULTS"
+        if (fileExists('cn5g_amf_docker_logs.zip')) {
+          archiveArtifacts artifacts: 'cn5g_amf_docker_logs.zip'
+        }
+        if (fileExists('test_results_oai_amf_bt.html')) {
+          archiveArtifacts artifacts: 'test_results_oai_amf_bt.html'
         }
       }
     }
