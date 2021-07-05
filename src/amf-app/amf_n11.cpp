@@ -47,6 +47,7 @@
 #include "SmContextCreateData.h"
 #include "mime_parser.hpp"
 #include "ue_context.hpp"
+#include "fqdn.hpp"
 
 extern "C" {
 #include "dynamic_memory_check.h"
@@ -472,8 +473,26 @@ bool amf_n11::smf_selection_from_configuration(
     std::string& smf_addr, std::string& smf_api_version) {
   for (int i = 0; i < amf_cfg.smf_pool.size(); i++) {
     if (amf_cfg.smf_pool[i].selected) {
-      smf_addr = amf_cfg.smf_pool[i].ipv4 + ":" + amf_cfg.smf_pool[i].port;
-      smf_api_version = amf_cfg.smf_pool[i].version;
+      if (!amf_cfg.use_fqdn_dns) {
+        smf_addr = amf_cfg.smf_pool[i].ipv4 + ":" + amf_cfg.smf_pool[i].port;
+        smf_api_version = amf_cfg.smf_pool[i].version;
+        return true;
+      } else {
+        // resolve IP addr from a FQDN/DNS name
+        uint8_t addr_type = 0;
+        uint32_t smf_port = 0;
+        fqdn::resolve(
+            amf_cfg.smf_pool[i].fqdn, amf_cfg.smf_pool[i].ipv4, smf_port,
+            addr_type);
+        if (addr_type != 0) {  // IPv6: TODO
+          Logger::amf_n11().warn("Do not support IPv6 Addr for SMF");
+          return false;
+        } else {  // IPv4
+          smf_addr = amf_cfg.smf_pool[i].ipv4 + ":" + std::to_string(smf_port);
+          smf_api_version = "v1";  // TODO: get API version
+          return true;
+        }
+      }
       return true;
     }
   }

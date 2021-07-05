@@ -342,6 +342,8 @@ int amf_config::load(const std::string& config_file) {
       } else {
         std::string smf_fqdn = {};
         smf_addr_item.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, smf_fqdn);
+        smf_inst.fqdn = smf_fqdn;
+        /*
         uint8_t addr_type = 0;
         fqdn::resolve(smf_fqdn, smf_inst.ipv4, smf_port, addr_type);
         if (addr_type != 0) {  // IPv6: TODO
@@ -353,6 +355,7 @@ int amf_config::load(const std::string& config_file) {
           smf_inst.port    = std::to_string(smf_port);
           smf_inst.version = "v1";  // TODO: get API version
         }
+        */
       }
 
       smf_addr_item.lookupValue(
@@ -595,14 +598,12 @@ void amf_config::display() {
   if (!enable_smf_selection) {
     Logger::config().info("- SMF Pool.........: ");
     for (int i = 0; i < smf_pool.size(); i++) {
-      std::string selected;
-      if (smf_pool[i].selected)
-        selected = "true";
-      else
-        selected = "false";
+      std::string selected = smf_pool[i].selected ? "true" : "false";
+      std::string smf_info =
+          use_fqdn_dns ? smf_pool[i].fqdn : smf_pool[i].ipv4.c_str();
       Logger::config().info(
           "    SMF_INSTANCE_ID %d (%s:%s, version %s) is selected: %s",
-          smf_pool[i].id, smf_pool[i].ipv4.c_str(), smf_pool[i].port.c_str(),
+          smf_pool[i].id, smf_info.c_str(), smf_pool[i].port.c_str(),
           smf_pool[i].version.c_str(), selected.c_str());
     }
   }

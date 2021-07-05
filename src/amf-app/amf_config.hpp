@@ -168,6 +168,7 @@ typedef struct {
   std::string port;
   std::string version;
   bool selected;
+  std::string fqdn;
 } smf_inst_t;
 
 class amf_config {
