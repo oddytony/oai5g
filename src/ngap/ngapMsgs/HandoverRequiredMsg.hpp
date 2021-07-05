@@ -48,9 +48,8 @@ class HandoverRequiredMsg {
 
   int encode2buffer(uint8_t* buf, int buf_size);
   bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
-  unsigned long getAmfUeNgapId();  // return -1;(不存在)
-  uint32_t getRanUeNgapId();       // return -1;(不存在)
-
+  unsigned long getAmfUeNgapId();
+  uint32_t getRanUeNgapId();
   Ngap_HandoverType_t getHandoverType();
   Ngap_Cause_PR getChoiceOfCause();
   long getCauseValue();
@@ -63,7 +62,6 @@ class HandoverRequiredMsg {
  private:
   Ngap_NGAP_PDU_t* handoverRequiredPdu;
   Ngap_HandoverRequired_t* handoverRequiredIEs;
-  /***************** for decoding ****************/
   AMF_UE_NGAP_ID* amfUeNgapId;
   RAN_UE_NGAP_ID* ranUeNgapId;
   Ngap_HandoverType_t* handovertype;

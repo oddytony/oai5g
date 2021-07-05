@@ -55,7 +55,10 @@ HandoverRequestAck::HandoverRequestAck() {
 
 HandoverRequestAck::~HandoverRequestAck() {}
 unsigned long HandoverRequestAck::getAmfUeNgapId() {
-  return amfUeNgapId->getAMF_UE_NGAP_ID();
+  if (amfUeNgapId)
+    return amfUeNgapId->getAMF_UE_NGAP_ID();
+  else
+    return 0;
 }
 void HandoverRequestAck::setMessageType() {
   if (!handoverRequestAckPdu)
@@ -85,10 +88,15 @@ void HandoverRequestAck::setMessageType() {
   }
 }
 uint32_t HandoverRequestAck::getRanUeNgapId() {
-  return ranUeNgapId->getRanUeNgapId();
+  if (ranUeNgapId)
+    return ranUeNgapId->getRanUeNgapId();
+  else
+    return 0;
 }
 OCTET_STRING_t HandoverRequestAck::getTargetToSource_TransparentContainer() {
-  return *TargetToSource_TransparentContainer;
+  if (TargetToSource_TransparentContainer)
+    return *TargetToSource_TransparentContainer;
+  return OCTET_STRING_t();
 }
 
 bool HandoverRequestAck::getPDUSessionResourceAdmittedList(

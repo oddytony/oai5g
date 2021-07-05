@@ -52,31 +52,48 @@ HandoverRequiredMsg::HandoverRequiredMsg() {
 HandoverRequiredMsg::~HandoverRequiredMsg() {}
 
 unsigned long HandoverRequiredMsg::getAmfUeNgapId() {
-  return amfUeNgapId->getAMF_UE_NGAP_ID();
+  if (amfUeNgapId)
+    return amfUeNgapId->getAMF_UE_NGAP_ID();
+  else
+    return 0;
 }
 
 uint32_t HandoverRequiredMsg::getRanUeNgapId() {
-  return ranUeNgapId->getRanUeNgapId();
+  if (ranUeNgapId)
+    return ranUeNgapId->getRanUeNgapId();
+  else
+    return 0;
 }
 
 Ngap_HandoverType_t HandoverRequiredMsg::getHandoverType() {
-  return *handovertype;
+  if (handovertype)
+    return *handovertype;
+  else
+    Ngap_HandoverType_t();
 }
 Ngap_Cause_PR HandoverRequiredMsg::getChoiceOfCause() {
-  return cause->getChoiceOfCause();
+  if (cause)
+    return cause->getChoiceOfCause();
+  else
+    return Ngap_Cause_PR();
 }
 long HandoverRequiredMsg::getCauseValue() {
-  return cause->getValue();
+  if (cause)
+    return cause->getValue();
+  else
+    return 0;
 }
 void HandoverRequiredMsg::getGlobalRanNodeId(GlobalgNBId*& ptr) {
-  ptr->decodefromGlobalgNBId(
-      targetid->choice.targetRANNodeID->globalRANNodeID.choice.globalGNB_ID);
+  if (ptr)
+    ptr->decodefromGlobalgNBId(
+        targetid->choice.targetRANNodeID->globalRANNodeID.choice.globalGNB_ID);
 }
 void HandoverRequiredMsg::getTAI(TAI*& ptr) {
-  ptr->decodefromTAI(&(targetid->choice.targetRANNodeID->selectedTAI));
+  if (ptr) ptr->decodefromTAI(&(targetid->choice.targetRANNodeID->selectedTAI));
 }
 OCTET_STRING_t HandoverRequiredMsg::getSourceToTarget_TransparentContainer() {
-  return *SourceToTarget_TransparentContainer;
+  if (SourceToTarget_TransparentContainer)
+    return *SourceToTarget_TransparentContainer;
 }
 
 bool HandoverRequiredMsg::getPDUSessionResourceList(
@@ -103,7 +120,8 @@ bool HandoverRequiredMsg::getPDUSessionResourceList(
 }
 
 long HandoverRequiredMsg::getDirectForwardingPathAvailability() {
-  return *directforwardingPathAvailability;
+  if (directforwardingPathAvailability)
+    return *directforwardingPathAvailability;
 }
 
 bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {

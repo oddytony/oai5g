@@ -51,7 +51,10 @@ HandoverNotifyMsg::HandoverNotifyMsg() {
 
 HandoverNotifyMsg::~HandoverNotifyMsg(){};
 unsigned long HandoverNotifyMsg::getAmfUeNgapId() {
-  return amfUeNgapId->getAMF_UE_NGAP_ID();
+  if (amfUeNgapId)
+    return amfUeNgapId->getAMF_UE_NGAP_ID();
+  else
+    return 0;
 }
 int HandoverNotifyMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, handoverNotifyPdu);
@@ -185,10 +188,15 @@ void HandoverNotifyMsg::setUserLocationInfoNR(
   // free_wrapper((void**) &ie);
 }
 uint32_t HandoverNotifyMsg::getRanUeNgapId() {
-  return ranUeNgapId->getRanUeNgapId();
+  if (ranUeNgapId)
+    return ranUeNgapId->getRanUeNgapId();
+  else
+    return 0;
 }
 bool HandoverNotifyMsg::getUserLocationInfoNR(
     struct NrCgi_s& cig, struct Tai_s& tai) {
+  if (!userLocationInformation) return false;
+
   UserLocationInformationNR* informationNR;
   userLocationInformation->getInformation(informationNR);
   if (userLocationInformation->getChoiceOfUserLocationInformation() !=

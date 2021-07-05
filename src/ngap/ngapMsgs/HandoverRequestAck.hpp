@@ -65,7 +65,6 @@ class HandoverRequestAck {
  private:
   Ngap_NGAP_PDU_t* handoverRequestAckPdu;
   Ngap_HandoverRequestAcknowledge_t* handoverRequestAckIEs;
-  /***************** for decoding ****************/
   AMF_UE_NGAP_ID* amfUeNgapId;
   RAN_UE_NGAP_ID* ranUeNgapId;
   Ngap_HandoverType_t* handovertype;
