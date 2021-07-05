@@ -406,6 +406,7 @@ int amf_config::load(const std::string& config_file) {
     }
 
     // AUSF
+    // TODO: add FQDN option
     const Setting& ausf_cfg       = new_if_cfg[AMF_CONFIG_STRING_AUSF];
     struct in_addr ausf_ipv4_addr = {};
     unsigned int ausf_port        = {};
@@ -591,17 +592,19 @@ void amf_config::display() {
         "    API version ...........: %s", ausf_addr.api_version.c_str());
   }
 
-  Logger::config().info("- Remote SMF Pool.........: ");
-  for (int i = 0; i < smf_pool.size(); i++) {
-    std::string selected;
-    if (smf_pool[i].selected)
-      selected = "true";
-    else
-      selected = "false";
-    Logger::config().info(
-        "    SMF_INSTANCE_ID %d (%s:%s, version %s) is selected: %s",
-        smf_pool[i].id, smf_pool[i].ipv4.c_str(), smf_pool[i].port.c_str(),
-        smf_pool[i].version.c_str(), selected.c_str());
+  if (!enable_smf_selection) {
+    Logger::config().info("- SMF Pool.........: ");
+    for (int i = 0; i < smf_pool.size(); i++) {
+      std::string selected;
+      if (smf_pool[i].selected)
+        selected = "true";
+      else
+        selected = "false";
+      Logger::config().info(
+          "    SMF_INSTANCE_ID %d (%s:%s, version %s) is selected: %s",
+          smf_pool[i].id, smf_pool[i].ipv4.c_str(), smf_pool[i].port.c_str(),
+          smf_pool[i].version.c_str(), selected.c_str());
+    }
   }
 
   Logger::config().info("- Supported Features:");
