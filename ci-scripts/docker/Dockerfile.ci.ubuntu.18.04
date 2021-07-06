@@ -51,6 +51,7 @@ RUN apt-get update && \
       tzdata \
       psmisc \
       net-tools \
+      libconfig++-dev \
       bc \
       tshark \
       libconfig++9v5 \
@@ -65,8 +66,6 @@ COPY --from=oai-amf-builder /openair-amf/scripts/entrypoint.sh entrypoint.sh
 WORKDIR /usr/lib/x86_64-linux-gnu
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libmysqlclient.so.20 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 .
-COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libboost_system.so.1.65.1 .
-COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcpprest.so.2.10 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libssl.so.1.1 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/librtmp.so.1 .
@@ -87,6 +86,8 @@ COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libsqlite3.so.0 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libasan.so.4 .
 
 WORKDIR /usr/local/lib
+COPY --from=oai-amf-builder /usr/lib/libboost_system.so.1.67.0 .
+COPY --from=oai-amf-builder /usr/lib/libboost_thread.so.1.67.0 .
 COPY --from=oai-amf-builder /usr/local/lib/libpistache.so  .
 
 RUN ldconfig

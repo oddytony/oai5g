@@ -75,7 +75,8 @@ class amf_n11 {
   bool discover_smf(
       std::string& smf_addr, std::string& smf_api_version,
       const snssai_t snssai, const plmn_t plmn, const std::string dnn);
-
+  void register_nf_instance(
+      std::shared_ptr<itti_n11_register_nf_instance_request> msg);
   bool send_ue_authentication_request(
       oai::amf::model::AuthenticationInfo& auth_info,
       oai::amf::model::UEAuthenticationCtx& ue_auth_ctx, uint8_t http_version);

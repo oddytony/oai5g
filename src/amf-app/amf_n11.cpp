@@ -47,6 +47,7 @@
 #include "SmContextCreateData.h"
 #include "mime_parser.hpp"
 #include "ue_context.hpp"
+#include "fqdn.hpp"
 
 extern "C" {
 #include "dynamic_memory_check.h"
@@ -127,6 +128,14 @@ void amf_n11_task(void*) {
             dynamic_cast<itti_pdu_session_resource_setup_response*>(msg);
         amf_n11_inst->handle_itti_message(ref(*m));
       } break;
+      case N11_REGISTER_NF_INSTANCE_REQUEST: {
+        Logger::amf_n11().info(
+            "Receive Register NF Instance Request, handling ...");
+        itti_n11_register_nf_instance_request* m =
+            dynamic_cast<itti_n11_register_nf_instance_request*>(msg);
+        // TODO: Handle ITTI
+      } break;
+
       default: {
         Logger::amf_n11().info(
             "Receive unknown message type %d", msg->msg_type);
@@ -464,8 +473,26 @@ bool amf_n11::smf_selection_from_configuration(
     std::string& smf_addr, std::string& smf_api_version) {
   for (int i = 0; i < amf_cfg.smf_pool.size(); i++) {
     if (amf_cfg.smf_pool[i].selected) {
-      smf_addr = amf_cfg.smf_pool[i].ipv4 + ":" + amf_cfg.smf_pool[i].port;
-      smf_api_version = amf_cfg.smf_pool[i].version;
+      if (!amf_cfg.use_fqdn_dns) {
+        smf_addr = amf_cfg.smf_pool[i].ipv4 + ":" + amf_cfg.smf_pool[i].port;
+        smf_api_version = amf_cfg.smf_pool[i].version;
+        return true;
+      } else {
+        // resolve IP addr from a FQDN/DNS name
+        uint8_t addr_type = 0;
+        uint32_t smf_port = 0;
+        fqdn::resolve(
+            amf_cfg.smf_pool[i].fqdn, amf_cfg.smf_pool[i].ipv4, smf_port,
+            addr_type);
+        if (addr_type != 0) {  // IPv6: TODO
+          Logger::amf_n11().warn("Do not support IPv6 Addr for SMF");
+          return false;
+        } else {  // IPv4
+          smf_addr = amf_cfg.smf_pool[i].ipv4 + ":" + std::to_string(smf_port);
+          smf_api_version = "v1";  // TODO: get API version
+          return true;
+        }
+      }
       return true;
     }
   }
@@ -814,6 +841,80 @@ bool amf_n11::discover_smf(
   }
   curl_global_cleanup();
   return result;
+}
+
+//-----------------------------------------------------------------------------------------------------
+void amf_n11::register_nf_instance(
+    std::shared_ptr<itti_n11_register_nf_instance_request> msg) {
+  Logger::amf_n11().debug(
+      "Send NF Instance Registration to NRF (HTTP version %d)",
+      msg->http_version);
+  nlohmann::json json_data = {};
+  msg->profile.to_json(json_data);
+
+  std::string url =
+      std::string(inet_ntoa(*((struct in_addr*) &amf_cfg.nrf_addr.ipv4_addr))) +
+      ":" + std::to_string(amf_cfg.nrf_addr.port) + "/nnrf-nfm/" +
+      amf_cfg.nrf_addr.api_version + "/nf-instances/" +
+      msg->profile.get_nf_instance_id();
+
+  Logger::amf_n11().debug(
+      "Send NF Instance Registration to NRF, NRF URL %s", url.c_str());
+
+  std::string body = json_data.dump();
+  Logger::amf_n11().debug(
+      "Send NF Instance Registration to NRF, msg body: \n %s", body.c_str());
+
+  curl_global_init(CURL_GLOBAL_ALL);
+  CURL* curl = curl = curl_easy_init();
+
+  if (curl) {
+    CURLcode res               = {};
+    struct curl_slist* headers = nullptr;
+    // headers = curl_slist_append(headers, "charsets: utf-8");
+    headers = curl_slist_append(headers, "content-type: application/json");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, NRF_CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
+
+    // Response information.
+    long httpCode = {0};
+    std::unique_ptr<std::string> httpData(new std::string());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
+
+    res = curl_easy_perform(curl);
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+
+    Logger::amf_n11().debug(
+        "NFDiscovery, response from NRF, HTTP Code: %d", httpCode);
+
+    if (httpCode == 200) {
+      Logger::amf_n11().debug(
+          "NFRegistration, got successful response from NRF");
+
+      nlohmann::json response_data = {};
+      try {
+        response_data = nlohmann::json::parse(*httpData.get());
+      } catch (nlohmann::json::exception& e) {
+        Logger::amf_n11().warn(
+            "NFDiscovery, could not parse json from the NRF "
+            "response");
+      }
+      Logger::amf_n11().debug(
+          "NFDiscovery, response from NRF, json data: \n %s",
+          response_data.dump().c_str());
+
+      curl_slist_free_all(headers);
+      curl_easy_cleanup(curl);
+    }
+    curl_global_cleanup();
+  }
 }
 
 //-----------------------------------------------------------------------------------------------------

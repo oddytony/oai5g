@@ -34,11 +34,13 @@ ARG NEEDED_GIT_PROXY
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
-    psmisc \
-    git \
-    vim \
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes \
+      psmisc \
+      software-properties-common \
+      git \
+      vim \
   && rm -rf /var/lib/apt/lists/*
 
 # Some GIT configuration commands quite useful
@@ -63,16 +65,18 @@ RUN ./build_amf --clean --Verbose --build-type Release --jobs
 FROM ubuntu:bionic as oai-amf
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Paris
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # We install some debug tools for the moment in addition of mandatory libraries
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
-    tzdata \
-    psmisc \
-    net-tools \
-    bc \
-    tshark \
-    libconfig++9v5 \
-    libsctp1 \
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes \
+      tzdata \
+      psmisc \
+      net-tools \
+      libconfig++-dev \
+      bc \
+      tshark \
+      libconfig++9v5 \
+      libsctp1 \
   && rm -rf /var/lib/apt/lists/*
 
 # Copying executable and generated libraries
@@ -83,8 +87,6 @@ COPY --from=oai-amf-builder /openair-amf/scripts/entrypoint.sh entrypoint.sh
 WORKDIR /usr/lib/x86_64-linux-gnu
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libmysqlclient.so.20 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 .
-COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libboost_system.so.1.65.1 .
-COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcpprest.so.2.10 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libcurl-gnutls.so.4 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libssl.so.1.1 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/librtmp.so.1 .
@@ -105,6 +107,8 @@ COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libsqlite3.so.0 .
 COPY --from=oai-amf-builder /usr/lib/x86_64-linux-gnu/libasan.so.4 .
 
 WORKDIR /usr/local/lib
+COPY --from=oai-amf-builder /usr/lib/libboost_system.so.1.67.0 .
+COPY --from=oai-amf-builder /usr/lib/libboost_thread.so.1.67.0 .
 COPY --from=oai-amf-builder /usr/local/lib/libpistache.so  .
 
 RUN ldconfig
@@ -119,5 +123,4 @@ WORKDIR /openair-amf
 EXPOSE 80/tcp 9090/tcp 38412/sctp
 
 ENTRYPOINT ["/bin/bash","/openair-amf/bin/entrypoint.sh"]
-
 CMD ["/openair-amf/bin/oai_amf", "-c", "/openair-amf/etc/amf.conf", "-o"]
