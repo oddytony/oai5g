@@ -20,6 +20,7 @@
  */
 
 #include "HandoverRequiredMsg.hpp"
+#include "logger.hpp"
 extern "C" {
 #include "Ngap_NGAP-PDU.h"
 #include "asn_codecs.h"
@@ -69,28 +70,33 @@ Ngap_HandoverType_t HandoverRequiredMsg::getHandoverType() {
   if (handovertype)
     return *handovertype;
   else
-    Ngap_HandoverType_t();
+    return Ngap_HandoverType_t();
 }
+
 Ngap_Cause_PR HandoverRequiredMsg::getChoiceOfCause() {
   if (cause)
     return cause->getChoiceOfCause();
   else
     return Ngap_Cause_PR();
 }
+
 long HandoverRequiredMsg::getCauseValue() {
   if (cause)
     return cause->getValue();
   else
     return 0;
 }
+
 void HandoverRequiredMsg::getGlobalRanNodeId(GlobalgNBId*& ptr) {
   if (ptr)
     ptr->decodefromGlobalgNBId(
         targetid->choice.targetRANNodeID->globalRANNodeID.choice.globalGNB_ID);
 }
+
 void HandoverRequiredMsg::getTAI(TAI*& ptr) {
   if (ptr) ptr->decodefromTAI(&(targetid->choice.targetRANNodeID->selectedTAI));
 }
+
 OCTET_STRING_t HandoverRequiredMsg::getSourceToTarget_TransparentContainer() {
   if (SourceToTarget_TransparentContainer)
     return *SourceToTarget_TransparentContainer;
@@ -138,11 +144,11 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
       handoverRequiredIEs = &handoverRequiredPdu->choice.initiatingMessage
                                  ->value.choice.HandoverRequired;
     } else {
-      cout << "Check HandoverRequired message error!!!" << endl;
+      Logger::ngap().error("Check HandoverRequired message error!");
       return false;
     }
   } else {
-    cout << "HandoverRequired MessageType error!!!" << endl;
+    Logger::ngap().error("HandoverRequired MessageType error!");
     return false;
   }
   for (int i = 0; i < handoverRequiredIEs->protocolIEs.list.count; i++) {
@@ -156,11 +162,11 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
                   handoverRequiredIEs->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
-            cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -173,11 +179,11 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
                   handoverRequiredIEs->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
-            cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded ngap RAN_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded ngap RAN_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -190,7 +196,7 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           *handovertype = handoverRequiredIEs->protocolIEs.list.array[i]
                               ->value.choice.HandoverType;
         } else {
-          cout << "decoded ngap Handover Type IE error" << endl;
+          Logger::ngap().error("Decoded ngap Handover Type error");
           return false;
         }
       } break;
@@ -203,11 +209,11 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!cause->decodefromCause(
                   &handoverRequiredIEs->protocolIEs.list.array[i]
                        ->value.choice.Cause)) {
-            cout << "decoded ngap Cause IE error" << endl;
+            Logger::ngap().error("Decoded ngap Cause IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap Cause IE error" << endl;
+          Logger::ngap().error("Decoded ngap Cause IE error");
           return false;
         }
       } break;
@@ -220,7 +226,7 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           *targetid = handoverRequiredIEs->protocolIEs.list.array[i]
                           ->value.choice.TargetID;
         } else {
-          cout << "decoded ngap TargetID IE error" << endl;
+          Logger::ngap().error("Decoded ngap TargetID IE error");
           return false;
         }
       } break;
@@ -235,8 +241,8 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
               handoverRequiredIEs->protocolIEs.list.array[i]
                   ->value.choice.DirectForwardingPathAvailability;
         } else {
-          cout << "decoded ngap DirectForwardingPathAvailability IE error"
-               << endl;
+          Logger::ngap().error(
+              "Decoded ngap DirectForwardingPathAvailability IE error");
           return false;
         }
       } break;
@@ -249,12 +255,13 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!PDUSessionResourceList->decodefromPDUSessionResourceListHORqd(
                   &handoverRequiredIEs->protocolIEs.list.array[i]
                        ->value.choice.PDUSessionResourceListHORqd)) {
-            cout << "decoded ngap PDUSessionResourceSetupListCxtRes IE error"
-                 << endl;
+            Logger::ngap().error(
+                "Decoded ngap PDUSessionResourceSetupListCxtRes IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap PDUSessionResourceListHORqd IE error" << endl;
+          Logger::ngap().error(
+              "Decoded ngap PDUSessionResourceSetupListCxtRes IE error");
           return false;
         }
       } break;
@@ -269,13 +276,13 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
               handoverRequiredIEs->protocolIEs.list.array[i]
                   ->value.choice.SourceToTarget_TransparentContainer;
         } else {
-          cout << "decoded ngap SourceToTarget_TransparentContainer IE error"
-               << endl;
+          Logger::ngap().error(
+              "Decoded ngap SourceToTarget_TransparentContainer IE error");
           return false;
         }
       } break;
       default: {
-        cout << "decoded ngap message pdu error" << endl;
+        Logger::ngap().error("Decoded ngap message PDU error");
         return false;
       }
     }
@@ -288,7 +295,8 @@ int HandoverRequiredMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, handoverRequiredPdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, handoverRequiredPdu, buf, buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  // cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().error("er.encoded( %d )", er.encoded);
   return er.encoded;
 }
 

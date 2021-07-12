@@ -26,6 +26,7 @@
  \email: contact@openairinterface.org
  */
 #include "HandoverNotifyMsg.hpp"
+#include "logger.hpp"
 
 extern "C" {
 #include "asn_codecs.h"
@@ -56,6 +57,7 @@ unsigned long HandoverNotifyMsg::getAmfUeNgapId() {
   else
     return 0;
 }
+
 int HandoverNotifyMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, handoverNotifyPdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
@@ -63,7 +65,9 @@ int HandoverNotifyMsg::encode2buffer(uint8_t* buf, int buf_size) {
   cout << "er.encoded(" << er.encoded << ")" << endl;
   return er.encoded;
 }
+
 bool HandoverNotifyMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
+  if (!ngap_msg_pdu) return false;
   handoverNotifyPdu = ngap_msg_pdu;
 
   if (handoverNotifyPdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
@@ -77,11 +81,11 @@ bool HandoverNotifyMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
       handoverNotifyIEs = &handoverNotifyPdu->choice.initiatingMessage->value
                                .choice.HandoverNotify;
     } else {
-      cout << "Check HandoverNotify message error!!!" << endl;
+      Logger::ngap().error("Check HandoverNotify message error!");
       return false;
     }
   } else {
-    cout << "HandoverNotify MessageType error!!!" << endl;
+    Logger::ngap().error("HandoverNotify MessageType error!");
     return false;
   }
   for (int i = 0; i < handoverNotifyIEs->protocolIEs.list.count; i++) {
@@ -95,11 +99,11 @@ bool HandoverNotifyMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
                   handoverNotifyIEs->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
-            cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -112,11 +116,11 @@ bool HandoverNotifyMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
                   handoverNotifyIEs->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
-            cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded ngap RAN_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded ngap RAN_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -129,16 +133,17 @@ bool HandoverNotifyMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!userLocationInformation->decodefromUserLocationInformation(
                   &handoverNotifyIEs->protocolIEs.list.array[i]
                        ->value.choice.UserLocationInformation)) {
-            cout << "decoded ngap UserLocationInformation IE error" << endl;
+            Logger::ngap().error(
+                "Decoded ngap UserLocationInformation IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap UserLocationInformation IE error" << endl;
+          Logger::ngap().error("Decoded ngap UserLocationInformation IE error");
           return false;
         }
       } break;
       default: {
-        cout << "decoded ngap message pdu error" << endl;
+        Logger::ngap().error("Decoded NGAP message PDU error");
         return false;
       }
     }
@@ -178,13 +183,14 @@ void HandoverNotifyMsg::setUserLocationInfoNR(
   int ret = userLocationInformation->encodefromUserLocationInformation(
       &ie->value.choice.UserLocationInformation);
   if (!ret) {
-    cout << "encode UserLocationInformation IE error" << endl;
+    Logger::ngap().error("Encode UserLocationInformation IE error");
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&handoverNotifyIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode UserLocationInformation IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode UserLocationInformation IE error");
+
   // free_wrapper((void**) &ie);
 }
 uint32_t HandoverNotifyMsg::getRanUeNgapId() {
