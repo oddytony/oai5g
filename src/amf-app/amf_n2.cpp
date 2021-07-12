@@ -1108,9 +1108,10 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   string mcc, mnc;
   plmn->getMcc(mcc);
   plmn->getMnc(mnc);
-  printf(
+
+  Logger::amf_n2().debug(
       "Handover required: Target ID GlobalRanNodeID PLmn (mcc: %s, mnc: %s, "
-      "gnbid: %ld)\n",
+      "gnbid: %ld)",
       mcc.c_str(), mnc.c_str(), gnbid->getValue());
 
   TAI* tai = new TAI();
@@ -1121,14 +1122,14 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   string mccOfselectTAI, mncOfselectTAI;
   plmn->getMcc(mccOfselectTAI);
   plmn->getMnc(mncOfselectTAI);
-  printf(
-      "Handover required:Target ID  selectedTAI PLmn=mcc%s mnc%s tac=%x\n",
+  Logger::amf_n2().debug(
+      "Handover required:Target ID  selectedTAI PLmn=mcc%s mnc%s tac=%x",
       mccOfselectTAI.c_str(), mncOfselectTAI.c_str(), tac->getTac());
 
   std::vector<PDUSessionResourceItem_t> List_HORqd;
   if (!itti_msg.handoverReq->getPDUSessionResourceList(List_HORqd)) {
     Logger::ngap().error(
-        "Decoding HandoverRequiredMsg getPDUSessionResourceList IE  error");
+        "Decoding HandoverRequiredMsg getPDUSessionResourceList IE error");
     return;
   }
 
@@ -1386,7 +1387,7 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
   ueContextReleaseCommand->setCauseRadioNetwork(
       Ngap_CauseRadioNetwork_successful_handover);
 
-  uint8_t buffer[10240]; //TODO: remove hardcoded value
+  uint8_t buffer[10240];  // TODO: remove hardcoded value
   int encoded_size = ueContextReleaseCommand->encode2buffer(buffer, 10240);
   bstring b        = blk2bstr(buffer, encoded_size);
   std::shared_ptr<nas_context> nc =
@@ -1415,7 +1416,6 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
     set_ran_ue_ngap_id_2_ue_ngap_context(ran_ue_ngap_id, unc);
     unc.get()->gnb_assoc_id = ngc.get()->gnb_assoc_id;
   }
-
 }
 
 //------------------------------------------------------------------------------

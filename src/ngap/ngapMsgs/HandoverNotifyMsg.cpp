@@ -193,12 +193,14 @@ void HandoverNotifyMsg::setUserLocationInfoNR(
 
   // free_wrapper((void**) &ie);
 }
+
 uint32_t HandoverNotifyMsg::getRanUeNgapId() {
   if (ranUeNgapId)
     return ranUeNgapId->getRanUeNgapId();
   else
     return 0;
 }
+
 bool HandoverNotifyMsg::getUserLocationInfoNR(
     struct NrCgi_s& cig, struct Tai_s& tai) {
   if (!userLocationInformation) return false;
