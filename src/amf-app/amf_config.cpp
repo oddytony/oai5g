@@ -343,19 +343,6 @@ int amf_config::load(const std::string& config_file) {
         std::string smf_fqdn = {};
         smf_addr_item.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, smf_fqdn);
         smf_inst.fqdn = smf_fqdn;
-        /*
-        uint8_t addr_type = 0;
-        fqdn::resolve(smf_fqdn, smf_inst.ipv4, smf_port, addr_type);
-        if (addr_type != 0) {  // IPv6: TODO
-          throw("DO NOT SUPPORT IPV6 ADDR FOR SMF!");
-        } else {  // IPv4
-          IPV4_STR_ADDR_TO_INADDR(
-              util::trim(smf_inst.ipv4).c_str(), smf_ipv4_addr,
-              "BAD IPv4 ADDRESS FORMAT FOR SMF !");
-          smf_inst.port    = std::to_string(smf_port);
-          smf_inst.version = "v1";  // TODO: get API version
-        }
-        */
       }
 
       smf_addr_item.lookupValue(
@@ -557,12 +544,6 @@ void amf_config::display() {
       "- MySQL pass ..............: %s", auth_para.mysql_pass.c_str());
   Logger::config().info(
       "- MySQL DB ................: %s", auth_para.mysql_db.c_str());
-
-  /*  Logger::config().info(
-        "- operator key ............: %s", auth_para.operator_key.c_str());
-    Logger::config().info(
-        "- random ..................: %s", auth_para.random.c_str());
-  */
 
   Logger::config().info("- N2 Networking:");
   Logger::config().info("    Iface .................: %s", n2.if_name.c_str());
