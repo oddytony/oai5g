@@ -111,7 +111,7 @@ class HtmlReport():
 		buildSummary += '    </tr>\n'
 		if self.git_pull_request:
 			buildSummary += '	 <tr>\n'
-			buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-log-out"></span> Source Branch</td>\n'
+			buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-log-out"></span> Merge Request URL</td>\n'
 			buildSummary += '	   <td><a href="TEMPLATE_MERGE_REQUEST_LINK">TEMPLATE_MERGE_REQUEST_LINK</a></td>\n'
 			buildSummary += '	 </tr>\n'
 			buildSummary += '	 <tr>\n'
@@ -838,9 +838,11 @@ class HtmlReport():
 								else:
 									result = re.search('oai-amf *develop', line)
 							if result is not None:
-								result = re.search('ago  *([0-9A-Z]+)', line)
+								result = re.search('ago  *([0-9A-Z ]+)', line)
 								if result is not None:
 									size = result.group(1)
+									if variant == 'docker':
+										size = re.sub('MB', ' MB', size)
 									status = True
 					logfile.close()
 				if status:
