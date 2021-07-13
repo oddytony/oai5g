@@ -69,7 +69,6 @@ extern statistics stacs;
 extern void print_buffer(
     const std::string app, const std::string commit, uint8_t* buf, int len);
 
-uint32_t source_ran_id_global          = 0;
 sctp_assoc_id_t downlink_sctp_assoc_id = 0;
 sctp_assoc_id_t source_assoc_id        = 0;
 int ncc                                = 0;
@@ -1050,8 +1049,7 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   ncc++;  // TODO: to be verified
   unsigned long amf_ue_ngap_id = itti_msg.handoverReq->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handoverReq->getRanUeNgapId();
-  source_ran_id_global         = ran_ue_ngap_id;
-  source_assoc_id              = itti_msg.assoc_id;
+  source_assoc_id = itti_msg.assoc_id;
 
   std::shared_ptr<gnb_context> gc = {};
   if (!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
@@ -1305,7 +1303,7 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
       std::make_unique<HandoverCommandMsg>();
   handovercommand->setMessageType();
   handovercommand->setAmfUeNgapId(amf_ue_ngap_id);
-  handovercommand->setRanUeNgapId(source_ran_id_global);
+  handovercommand->setRanUeNgapId(unc.get()->ran_ue_ngap_id);
   handovercommand->setHandoverType(Ngap_HandoverType_intra5gs);
   std::shared_ptr<nas_context> nc =
       amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
@@ -1349,24 +1347,27 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   int encoded_size = handovercommand->encode2buffer(buffer, 10240);
   bstring b        = blk2bstr(buffer, encoded_size);
 
-  // Create/Update UE NGAP Context if necessary
-  // TO be verified
-  if (!is_ran_ue_id_2_ue_ngap_context(source_ran_id_global)) {
-    Logger::amf_n2().debug(
-        "Create a new ue ngap context with ran_ue_ngap_id(0x%x)",
-        source_ran_id_global);
-    unc = std::shared_ptr<ue_ngap_context>(new ue_ngap_context());
-    set_ran_ue_ngap_id_2_ue_ngap_context(source_ran_id_global, unc);
-    unc.get()->gnb_assoc_id = source_assoc_id;
-  } else {
-    unc                     = ran_ue_id_2_ue_ngap_context(source_ran_id_global);
-    unc.get()->gnb_assoc_id = source_assoc_id;
-  }
+  /*
+    // Create/Update UE NGAP Context if necessary
+    // TO be verified
+    if (!is_ran_ue_id_2_ue_ngap_context(unc.get()->ran_ue_ngap_id)) {
+      Logger::amf_n2().debug(
+          "Create a new ue ngap context with ran_ue_ngap_id(0x%x)",
+                  unc.get()->ran_ue_ngap_id);
+      unc = std::shared_ptr<ue_ngap_context>(new ue_ngap_context());
+      set_ran_ue_ngap_id_2_ue_ngap_context(unc.get()->ran_ue_ngap_id, unc);
+      unc.get()->gnb_assoc_id = source_assoc_id;
+    } else {
+      unc                     =
+    ran_ue_id_2_ue_ngap_context(unc.get()->ran_ue_ngap_id);
+      unc.get()->gnb_assoc_id = source_assoc_id;
+    }
+  */
 
   // std::shared_ptr<ue_ngap_context> ngc =
   // ran_ue_id_2_ue_ngap_context(nc.get()->ran_ue_ngap_id);
   // std::shared_ptr<ue_ngap_context> ngc =
-  // ran_ue_id_2_ue_ngap_context(source_ran_id_global);
+  // ran_ue_id_2_ue_ngap_context(unc.get()->ran_ue_ngap_id);
   // sctp_s_38412.sctp_send_msg(ngc.get()->gnb_assoc_id, 0, &b);
   sctp_s_38412.sctp_send_msg(unc.get()->gnb_assoc_id, 0, &b);
 }
@@ -1384,6 +1385,15 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
         "gNB with assoc_id (%d) is illegal", itti_msg.assoc_id);
     return;
   }
+
+  std::shared_ptr<ue_ngap_context> unc = {};
+  if (!is_amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id)) {
+    Logger::amf_n2().error(
+        "No UE NGAP context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+    return;
+  }
+  unc = amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id);
+
   NrCgi_t NR_CGI = {};
   Tai_t TAI      = {};
   if (!itti_msg.handovernotify->getUserLocationInfoNR(NR_CGI, TAI)) {
@@ -1395,7 +1405,7 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
       std::make_unique<UEContextReleaseCommandMsg>();
   ueContextReleaseCommand->setMessageType();
   ueContextReleaseCommand->setUeNgapIdPair(
-      amf_ue_ngap_id, source_ran_id_global);
+      amf_ue_ngap_id, unc.get()->ran_ue_ngap_id);
   ueContextReleaseCommand->setCauseRadioNetwork(
       Ngap_CauseRadioNetwork_successful_handover);
 
@@ -1419,15 +1429,17 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
   std::shared_ptr<itti_nsmf_pdusession_update_sm_context>(itti_nsmf_msg);
   //int ret = itti_inst->send_msg(i);*/
 
-  std::shared_ptr<ue_ngap_context> unc = {};
-  if (!is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
-    Logger::amf_n2().debug(
-        "Create a new ue ngap context with ran_ue_ngap_id(0x%x)",
-        ran_ue_ngap_id);
-    unc = std::shared_ptr<ue_ngap_context>(new ue_ngap_context());
-    set_ran_ue_ngap_id_2_ue_ngap_context(ran_ue_ngap_id, unc);
-    unc.get()->gnb_assoc_id = ngc.get()->gnb_assoc_id;
+  if (!is_amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id)) {
+    Logger::amf_n2().error(
+        "No UE NGAP context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+    return;
   }
+  unc                            = amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id);
+  unc.get()->ran_ue_ngap_id      = ran_ue_ngap_id;  // store new RAN ID
+  unc.get()->ran_ue_ngap_id_temp = 0;               // Clear target RAN ID
+  unc.get()->ng_ue_state         = NGAP_UE_CONNECTED;
+  unc.get()->gnb_assoc_id        = ngc.get()->gnb_assoc_id;
+  set_ran_ue_ngap_id_2_ue_ngap_context(ran_ue_ngap_id, unc);
 }
 
 //------------------------------------------------------------------------------
