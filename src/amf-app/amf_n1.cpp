@@ -84,7 +84,6 @@ extern statistics stacs;
 extern void convert_string_2_hex(std::string& input, std::string& output);
 extern unsigned char* format_string_as_hex(std::string str);
 
-extern int ncc;
 Sha256 ctx;
 random_state_t random_state;
 static uint8_t no_random_delta = 0;
@@ -210,7 +209,6 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
         uint32_t ulcount =
             secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
         Authentication_5gaka::derive_kgnb(0, 0x01, kamf, kgnb);
-        ncc = 1;
         print_buffer("amf_n1", "kamf", kamf, 32);
         // Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
         bstring kgnb_bs = blk2bstr(kgnb, 32);
@@ -2201,7 +2199,6 @@ void amf_n1::security_mode_complete_handle(
     uint8_t kgnb[32];
     uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
     Authentication_5gaka::derive_kgnb(0, 0x01, kamf, kgnb);
-    ncc = 1;
     print_buffer("amf_n1", "kamf", kamf, 32);
     // Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
     bstring kgnb_bs = blk2bstr(kgnb, 32);
