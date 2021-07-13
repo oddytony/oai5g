@@ -298,6 +298,7 @@ void amf_app::handle_itti_message(
   } else {
     unc = amf_n2_inst->ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
     unc.get()->amf_ue_ngap_id = amf_ue_ngap_id;
+    amf_n2_inst->set_amf_ue_ngap_id_2_ue_ngap_context(amf_ue_ngap_id, unc);
   }
 
   if (uc.get() == nullptr) {

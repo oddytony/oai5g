@@ -70,7 +70,6 @@ extern void print_buffer(
     const std::string app, const std::string commit, uint8_t* buf, int len);
 
 uint32_t source_ran_id_global          = 0;
-uint32_t target_ran_id_global          = 0;
 sctp_assoc_id_t downlink_sctp_assoc_id = 0;
 sctp_assoc_id_t source_assoc_id        = 0;
 int ncc                                = 0;
@@ -666,7 +665,8 @@ void amf_n2::handle_itti_message(itti_dl_nas_transport& dl_nas_transport) {
         "Illegal gNB with assoc id (0x%x)", unc.get()->gnb_assoc_id);
     return;
   }
-  unc.get()->amf_ue_ngap_id         = dl_nas_transport.amf_ue_ngap_id;
+  unc.get()->amf_ue_ngap_id = dl_nas_transport.amf_ue_ngap_id;
+  set_amf_ue_ngap_id_2_ue_ngap_context(unc.get()->amf_ue_ngap_id, unc);
   unc.get()->ng_ue_state            = NGAP_UE_CONNECTED;
   DownLinkNasTransportMsg* ngap_msg = new DownLinkNasTransportMsg();
   ngap_msg->setMessageType();
@@ -1236,7 +1236,6 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   // TODO: Experimental procedure, to be tested
   unsigned long amf_ue_ngap_id = itti_msg.handoverrequestAck->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handoverrequestAck->getRanUeNgapId();
-  target_ran_id_global         = ran_ue_ngap_id;
   Logger::amf_n2().error(
       "Handover Request Ack ran_ue_ngap_id (0x%d) amf_ue_ngap_id (%d)",
       ran_ue_ngap_id, amf_ue_ngap_id);
@@ -1248,6 +1247,15 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
     return;
   }
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
+
+  std::shared_ptr<ue_ngap_context> unc = {};
+  if (!is_amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id)) {
+    Logger::amf_n2().error(
+        "No UE NGAP context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+    return;
+  }
+  unc                            = amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id);
+  unc.get()->ran_ue_ngap_id_temp = ran_ue_ngap_id;  // store target RAN ID
 
   std::vector<PDUSessionResourceAdmittedItem_t> list;
   if (!itti_msg.handoverrequestAck->getPDUSessionResourceAdmittedList(list)) {
@@ -1340,7 +1348,9 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   uint8_t buffer[10240];
   int encoded_size = handovercommand->encode2buffer(buffer, 10240);
   bstring b        = blk2bstr(buffer, encoded_size);
-  std::shared_ptr<ue_ngap_context> unc;
+
+  // Create/Update UE NGAP Context if necessary
+  // TO be verified
   if (!is_ran_ue_id_2_ue_ngap_context(source_ran_id_global)) {
     Logger::amf_n2().debug(
         "Create a new ue ngap context with ran_ue_ngap_id(0x%x)",
@@ -1352,6 +1362,7 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
     unc                     = ran_ue_id_2_ue_ngap_context(source_ran_id_global);
     unc.get()->gnb_assoc_id = source_assoc_id;
   }
+
   // std::shared_ptr<ue_ngap_context> ngc =
   // ran_ue_id_2_ue_ngap_context(nc.get()->ran_ue_ngap_id);
   // std::shared_ptr<ue_ngap_context> ngc =
@@ -1429,6 +1440,15 @@ void amf_n2::handle_itti_message(itti_uplinkranstatsutransfer& itti_msg) {
         "gNB with assoc_id (%d) is illegal", itti_msg.assoc_id);
     return;
   }
+
+  std::shared_ptr<ue_ngap_context> unc = {};
+  if (!is_amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id)) {
+    Logger::amf_n2().error(
+        "No UE NGAP context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+    return;
+  }
+  unc = amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id);
+
   RANStatusTransferTransparentContainer* ran_status_transfer =
       (RANStatusTransferTransparentContainer*) calloc(
           1, sizeof(RANStatusTransferTransparentContainer));
@@ -1468,14 +1488,14 @@ void amf_n2::handle_itti_message(itti_uplinkranstatsutransfer& itti_msg) {
       std::make_unique<DownlinkRANStatusTransfer>();
   downLinkranstatustransfer->setmessagetype();
   downLinkranstatustransfer->setAmfUeNgapId(amf_ue_ngap_id);
-  downLinkranstatustransfer->setRanUeNgapId(target_ran_id_global);
+  downLinkranstatustransfer->setRanUeNgapId(unc.get()->ran_ue_ngap_id_temp);
   downLinkranstatustransfer->setRANStatusTransfer_TransparentContainer(
       amf_drb_id, amf_ul_pdcp, amf_hfn_ul_pdcp, amf_dl_pdcp, amf_hfn_dl_pdcp);
   uint8_t buffer[1024];
   int encode_size = downLinkranstatustransfer->encodetobuffer(buffer, 1024);
   bstring b       = blk2bstr(buffer, encode_size);
   // std::shared_ptr<ue_ngap_context> ngc =
-  // ran_ue_id_2_ue_ngap_context(target_ran_id_global);
+  // ran_ue_id_2_ue_ngap_context(unc.get()->ran_ue_ngap_id_temp );
   sctp_s_38412.sctp_send_msg(downlink_sctp_assoc_id, 0, &b);
 }
 
@@ -1497,12 +1517,32 @@ std::shared_ptr<ue_ngap_context> amf_n2::ran_ue_id_2_ue_ngap_context(
 //------------------------------------------------------------------------------
 void amf_n2::set_ran_ue_ngap_id_2_ue_ngap_context(
     const uint32_t& ran_ue_ngap_id, std::shared_ptr<ue_ngap_context> unc) {
-  std::shared_lock lock(m_ranid2uecontext);
+  std::unique_lock lock(m_ranid2uecontext);
   ranid2uecontext[ran_ue_ngap_id] = unc;
 }
 
 //------------------------------------------------------------------------------
-// internal analysis functions
+std::shared_ptr<ue_ngap_context> amf_n2::amf_ue_id_2_ue_ngap_context(
+    const unsigned long& amf_ue_ngap_id) const {
+  std::shared_lock lock(m_amfueid2uecontext);
+  return amfueid2uecontext.at(amf_ue_ngap_id);
+}
+
+//------------------------------------------------------------------------------
+bool amf_n2::is_amf_ue_id_2_ue_ngap_context(
+    const unsigned long& amf_ue_ngap_id) const {
+  std::shared_lock lock(m_amfueid2uecontext);
+  return bool{amfueid2uecontext.count(amf_ue_ngap_id) > 0};
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::set_amf_ue_ngap_id_2_ue_ngap_context(
+    const unsigned long& amf_ue_ngap_id, std::shared_ptr<ue_ngap_context> unc) {
+  std::unique_lock lock(m_amfueid2uecontext);
+  amfueid2uecontext[amf_ue_ngap_id] = unc;
+}
+
+//------------------------------------------------------------------------------
 bool amf_n2::verifyPlmn(vector<SupportedItem_t> list) {
   for (int i = 0; i < amf_cfg.plmn_list.size(); i++) {
     for (int j = 0; j < list.size(); j++) {

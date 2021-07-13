@@ -66,18 +66,29 @@ class amf_n2 : public ngap::ngap_app {
   bool verifyPlmn(std::vector<SupportedItem_t> list);
   std::vector<SupportedItem_t> get_common_plmn(
       std::vector<SupportedItem_t> list);
+
   std::shared_ptr<ue_ngap_context> ran_ue_id_2_ue_ngap_context(
       const uint32_t& ran_ue_ngap_id) const;
-
   bool is_ran_ue_id_2_ue_ngap_context(const uint32_t& ran_ue_ngap_id) const;
-
   void set_ran_ue_ngap_id_2_ue_ngap_context(
       const uint32_t& ran_ue_ngap_id, std::shared_ptr<ue_ngap_context> unc);
+
+  std::shared_ptr<ue_ngap_context> amf_ue_id_2_ue_ngap_context(
+      const unsigned long& amf_ue_ngap_id) const;
+  bool is_amf_ue_id_2_ue_ngap_context(
+      const unsigned long& amf_ue_ngap_id) const;
+  void set_amf_ue_ngap_id_2_ue_ngap_context(
+      const unsigned long& amf_ue_ngap_id,
+      std::shared_ptr<ue_ngap_context> unc);
 
  private:
   std::map<uint32_t, std::shared_ptr<ue_ngap_context>>
       ranid2uecontext;  // ran ue ngap id
   mutable std::shared_mutex m_ranid2uecontext;
+
+  std::map<unsigned long, std::shared_ptr<ue_ngap_context>>
+      amfueid2uecontext;  // amf ue id
+  mutable std::shared_mutex m_amfueid2uecontext;
 };
 
 }  // namespace amf_application

@@ -46,8 +46,9 @@ typedef enum {
 
 class ue_ngap_context {
  public:
-  uint32_t ran_ue_ngap_id;   // 32bits
-  long amf_ue_ngap_id : 40;  // 40bits
+  uint32_t ran_ue_ngap_id;       // 32bits
+  long amf_ue_ngap_id : 40;      // 40bits
+  uint32_t ran_ue_ngap_id_temp;  // 32bits, for HO
 
   sctp_stream_id_t sctp_stream_recv;  // used to decide which ue in gNB
   sctp_stream_id_t sctp_stream_send;  // used to decide which ue in gNB

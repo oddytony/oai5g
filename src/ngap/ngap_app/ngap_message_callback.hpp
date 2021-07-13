@@ -606,12 +606,11 @@ int handover_resource_allocation(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p) {
   Logger::ngap().debug(
-      "Sending itti handover resource allocation to TASK_AMF_N2");
-  /*receive handover request acknowedge*/
+      "Sending ITTI Handover Resource Allocation to TASK_AMF_N2");
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   HandoverRequestAck* handoverRequestAck = new HandoverRequestAck();
   if (!handoverRequestAck->decodefrompdu(message_p)) {
-    Logger::ngap().error("decoding handoverRequestAck message error");
+    Logger::ngap().error("Decoding Handover Request Acknowledge message error");
     return -1;
   }
   itti_handover_request_Ack* itti_handover_requ_Ack =
