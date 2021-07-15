@@ -1083,6 +1083,7 @@ void amf_n1::registration_request_handle(
           encrypt_alg, integrity_alg, security_cap_eea, security_cap_eia)) {
     Logger::amf_n1().warn("No Optional IE UESecurityCapability available");
   }
+
   nc.get()->ueSecurityCapEnc = encrypt_alg;
   nc.get()->ueSecurityCapInt = integrity_alg;
 
