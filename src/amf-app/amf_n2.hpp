@@ -58,10 +58,11 @@ class amf_n2 : public ngap::ngap_app {
   void handle_itti_message(itti_ue_radio_capability_indication& itti_msg);
   void handle_itti_message(itti_ue_context_release_command& itti_msg);
   void handle_itti_message(itti_pdu_session_resource_release_command& itti_msg);
-  void handle_itti_message(itti_handover_required& itti_msg);
+  bool handle_itti_message(itti_handover_required& itti_msg);
   void handle_itti_message(itti_handover_request_Ack& itti_msg);
   void handle_itti_message(itti_handover_notify& itti_msg);
   void handle_itti_message(itti_uplinkranstatsutransfer& itti_msg);
+  void send_handover_preparation_failure(const sctp_assoc_id_t& gnb_assoc_id);
 
   bool verifyPlmn(std::vector<SupportedItem_t> list);
   std::vector<SupportedItem_t> get_common_plmn(

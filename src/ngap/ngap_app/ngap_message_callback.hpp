@@ -959,8 +959,7 @@ ngap_message_decoded_callback messages_callback[][3] = {
     {overload_stop, overload_stop, overload_stop},    /*OverloadStop*/
     {paging, paging, paging},                         /*Paging*/
     {ngap_amf_handle_path_switch_request, ngap_amf_handle_path_switch_request,
-     ngap_amf_handle_path_switch_request},  //{ngap_amf_handle_path_switch_request,0,0},
-                                            ///*PathSwitchRequest*
+     ngap_amf_handle_path_switch_request}, /*PathSwitchRequest*/
     {pdu_session_resource_modify, pdu_session_resource_modify,
      pdu_session_resource_modify}, /*PDUSessionResourceModify*/
     {pdu_session_resource_modify_indication,

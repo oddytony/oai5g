@@ -169,7 +169,8 @@ void amf_n2_task(void* args_p) {
       case HANDOVER_REQUIRED: {
         Logger::amf_n2().info("Received HANDOVER_REQUIRED message,handling");
         itti_handover_required* m = dynamic_cast<itti_handover_required*>(msg);
-        amf_n2_inst->handle_itti_message(ref(*m));
+        if (!amf_n2_inst->handle_itti_message(ref(*m)))
+          amf_n2_inst->send_handover_preparation_failure(m->assoc_id);
       } break;
       case HANDOVER_REQUEST_ACK: {
         Logger::amf_n2().info("Received HANDOVER_REQUEST_ACK message,handling");
@@ -1041,7 +1042,7 @@ void amf_n2::handle_itti_message(
 }
 
 //------------------------------------------------------------------------------
-void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
+bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   // TODO: Experimental procedure, to be tested
   unsigned long amf_ue_ngap_id = itti_msg.handoverReq->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handoverReq->getRanUeNgapId();
@@ -1050,7 +1051,7 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   if (!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
     Logger::amf_n2().error(
         "gNB with assoc_id (%d) is illegal", itti_msg.assoc_id);
-    return;
+    return false;
   }
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
 
@@ -1058,34 +1059,32 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   if (!is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
     Logger::amf_n2().error(
         "No UE NGAP context with ran_ue_ngap_id (0x%x)", ran_ue_ngap_id);
-    return;
+    return false;
   }
-  unc                     = ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
-  unc.get()->gnb_assoc_id = itti_msg.assoc_id;
-  unc.get()->ncc++;
-  unc.get()->ng_ue_state = NGAP_UE_HANDOVER;
+  unc = ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
 
   if (unc.get()->amf_ue_ngap_id != amf_ue_ngap_id) {
     Logger::amf_n2().error(
         "The requested UE (amf_ue_ngap_id:0x%x) is not valid, existed UE "
         "with  amf_ue_ngap_id (0x%x)",
         amf_ue_ngap_id, unc.get()->amf_ue_ngap_id);
+    return false;
   }
 
   if (itti_msg.handoverReq->getHandoverType() != Ngap_HandoverType_intra5gs) {
     Logger::amf_n2().error("Handover Type is not supported");
-    return;
+    return false;
   }
 
   if (itti_msg.handoverReq->getChoiceOfCause() != Ngap_Cause_PR_radioNetwork) {
     Logger::amf_n2().error("CHOICE Cause Group is not supported");
-    return;
+    return false;
   }
 
   if (itti_msg.handoverReq->getCauseValue() !=
       Ngap_CauseRadioNetwork_handover_desirable_for_radio_reason) {
     Logger::amf_n2().error("Radio Network Layer Cause is not supported");
-    return;
+    return false;
   }
 
   if (itti_msg.handoverReq->getDirectForwardingPathAvailability() !=
@@ -1093,15 +1092,20 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
     Logger::amf_n2().error(
         "DirectForwardingPathAvailability must be "
         "Ngap_DirectForwardingPathAvailability_direct_path_available!");
-    return;
+    return false;
   }
+
+  unc.get()->gnb_assoc_id = itti_msg.assoc_id;
+  unc.get()->ncc++;
+  unc.get()->ng_ue_state = NGAP_UE_HANDOVER;
 
   GlobalgNBId* TargetGlobalgNBId = new GlobalgNBId();
   itti_msg.handoverReq->getGlobalRanNodeId(TargetGlobalgNBId);
   PlmnId* plmn  = new PlmnId();
   GNB_ID* gnbid = new GNB_ID();
   TargetGlobalgNBId->getGlobalgNBId(plmn, gnbid);
-  string mcc, mnc;
+  std::string mcc = {};
+  std::string mnc = {};
   plmn->getMcc(mcc);
   plmn->getMnc(mnc);
 
@@ -1126,7 +1130,7 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   if (!itti_msg.handoverReq->getPDUSessionResourceList(List_HORqd)) {
     Logger::ngap().error(
         "Decoding HandoverRequiredMsg getPDUSessionResourceList IE error");
-    return;
+    return false;
   }
 
   OCTET_STRING_t sourceTotarget;
@@ -1225,6 +1229,7 @@ void amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   gc_target                      = gnb_id_2_gnb_context(gnbid->getValue());
   unc.get()->target_gnb_assoc_id = gc_target.get()->sctp_assoc_id;
   sctp_s_38412.sctp_send_msg(gc_target.get()->sctp_assoc_id, 0, &b);
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -1508,6 +1513,13 @@ void amf_n2::handle_itti_message(itti_uplinkranstatsutransfer& itti_msg) {
   // std::shared_ptr<ue_ngap_context> ngc =
   // ran_ue_id_2_ue_ngap_context(unc.get()->target_ran_ue_ngap_id );
   sctp_s_38412.sctp_send_msg(unc.get()->target_gnb_assoc_id, 0, &b);
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::send_handover_preparation_failure(
+    const sctp_assoc_id_t& gnb_assoc_id) {
+  // TODO:
+  return;
 }
 
 // Context management functions
