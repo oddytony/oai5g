@@ -1082,14 +1082,14 @@ void amf_n1::registration_request_handle(
   if (!regReq->getUeSecurityCapability(
           encrypt_alg, integrity_alg, security_cap_eea, security_cap_eia)) {
     Logger::amf_n1().warn("No Optional IE UESecurityCapability available");
+    nc.get()->ueSecurityCaplen = regReq->ie_ue_security_capability->getLength();
   }
+
   nc.get()->ueSecurityCapEnc = encrypt_alg;
   nc.get()->ueSecurityCapInt = integrity_alg;
 
   nc.get()->ueSecurityCapEEA = security_cap_eea;
   nc.get()->ueSecurityCapEIA = security_cap_eia;
-
-  nc.get()->ueSecurityCaplen = regReq->ie_ue_security_capability->getLength();
 
   // Get Requested NSSAI (Optional IE), if provided
   std::vector<SNSSAI_t> requestedNssai = {};

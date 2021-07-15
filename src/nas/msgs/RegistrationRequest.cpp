@@ -35,32 +35,32 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 RegistrationRequest::RegistrationRequest() {
-  plain_header                   = NULL;
-  ie_5gsregistrationtype         = NULL;
-  ie_ngKSI                       = NULL;
-  ie_5gs_mobility_id             = NULL;
-  ie_non_current_native_nas_ksi  = NULL;
-  ie_5g_mm_capability            = NULL;
-  ie_ue_security_capability      = NULL;
-  ie_requested_NSSAI             = NULL;
-  ie_s1_ue_network_capability    = NULL;
-  ie_uplink_data_status          = NULL;
-  ie_last_visited_registered_TAI = NULL;
-  ie_PDU_session_status          = NULL;
-  ie_MICO_indicationl            = NULL;
-  ie_ue_status                   = NULL;
-  ie_additional_guti             = NULL;
-  ie_allowed_PDU_session_status  = NULL;
-  ie_ues_usage_setting           = NULL;
-  ie_5gs_drx_parameters          = NULL;
-  ie_eps_nas_message_container   = NULL;
-  ie_ladn_indication             = NULL;
-  ie_payload_container_type      = NULL;
-  ie_payload_container           = NULL;
-  ie_network_slicing_indication  = NULL;
-  ie_5gs_update_type             = NULL;
-  ie_nas_message_container       = NULL;
-  ie_eps_bearer_context_status   = NULL;
+  plain_header                   = nullptr;
+  ie_5gsregistrationtype         = nullptr;
+  ie_ngKSI                       = nullptr;
+  ie_5gs_mobility_id             = nullptr;
+  ie_non_current_native_nas_ksi  = nullptr;
+  ie_5g_mm_capability            = nullptr;
+  ie_ue_security_capability      = nullptr;
+  ie_requested_NSSAI             = nullptr;
+  ie_s1_ue_network_capability    = nullptr;
+  ie_uplink_data_status          = nullptr;
+  ie_last_visited_registered_TAI = nullptr;
+  ie_PDU_session_status          = nullptr;
+  ie_MICO_indicationl            = nullptr;
+  ie_ue_status                   = nullptr;
+  ie_additional_guti             = nullptr;
+  ie_allowed_PDU_session_status  = nullptr;
+  ie_ues_usage_setting           = nullptr;
+  ie_5gs_drx_parameters          = nullptr;
+  ie_eps_nas_message_container   = nullptr;
+  ie_ladn_indication             = nullptr;
+  ie_payload_container_type      = nullptr;
+  ie_payload_container           = nullptr;
+  ie_network_slicing_indication  = nullptr;
+  ie_5gs_update_type             = nullptr;
+  ie_nas_message_container       = nullptr;
+  ie_eps_bearer_context_status   = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -94,11 +94,11 @@ void RegistrationRequest::setngKSI(uint8_t tsc, uint8_t key_set_id) {
 //------------------------------------------------------------------------------
 uint8_t RegistrationRequest::getngKSI() {
   if (ie_ngKSI) {
-    uint8_t a = 0;
-    a = (ie_ngKSI->getTypeOfSecurityContext()) | ie_ngKSI->getasKeyIdentifier();
-    return a;
+    return (
+        (ie_ngKSI->getTypeOfSecurityContext()) |
+        ie_ngKSI->getasKeyIdentifier());
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -122,7 +122,7 @@ uint8_t RegistrationRequest::getMobilityIdentityType() {
   if (ie_5gs_mobility_id) {
     return ie_5gs_mobility_id->gettypeOfIdentity();
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -169,9 +169,9 @@ void RegistrationRequest::setAdditional_GUTI_SUCI_SUPI_format_IMSI(
 bool RegistrationRequest::getAdditionalGuti(nas::_5G_GUTI_t& guti) {
   if (ie_additional_guti) {
     ie_additional_guti->get5GGUTI(guti);
-    return 0;
+    return true;
   } else {
-    return -1;
+    return false;
   }
 }
 
@@ -203,7 +203,7 @@ uint8_t RegistrationRequest::getNonCurrentNativeNasKSI() {
          (ie_non_current_native_nas_ksi->getasKeyIdentifier());
     return a;
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -217,7 +217,7 @@ uint8_t RegistrationRequest::get5GMMCapability() {
   if (ie_5g_mm_capability)
     return ie_5g_mm_capability->getValue();
   else
-    return -1;
+    return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -239,7 +239,7 @@ bool RegistrationRequest::getUeSecurityCapability(uint8_t& ea, uint8_t& ia) {
     ea = ie_ue_security_capability->getEASel();
     ia = ie_ue_security_capability->getIASel();
   } else {
-    return -1;
+    return false;
   }
   return true;
 }
@@ -255,7 +255,7 @@ bool RegistrationRequest::getUeSecurityCapability(
       eia = ie_ue_security_capability->getEIASel();
     }
   } else {
-    return -1;
+    return false;
   }
   return true;
 }
@@ -272,7 +272,7 @@ bool RegistrationRequest::getRequestedNssai(
   if (ie_requested_NSSAI) {
     ie_requested_NSSAI->getValue(nssai);
   } else {
-    return -1;
+    return false;
   }
   return true;
 }
@@ -297,7 +297,7 @@ bool RegistrationRequest::getS1UeNetworkCapability(uint8_t& eea, uint8_t& eia) {
     eea = ie_s1_ue_network_capability->getEEASel();
     eia = ie_s1_ue_network_capability->getEIASel();
   } else {
-    return -1;
+    return false;
   }
   return true;
 }
@@ -312,7 +312,7 @@ uint16_t RegistrationRequest::getUplinkDataStatus() {
   if (ie_uplink_data_status) {
     return ie_uplink_data_status->getValue();
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -326,7 +326,7 @@ uint16_t RegistrationRequest::getPduSessionStatus() {
   if (ie_PDU_session_status) {
     return ie_PDU_session_status->getValue();
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -340,9 +340,9 @@ bool RegistrationRequest::getMicoIndication(uint8_t& sprti, uint8_t& raai) {
   if (ie_PDU_session_status) {
     sprti = ie_MICO_indicationl->getSPRTI();
     raai  = ie_MICO_indicationl->getRAAI();
-    return 0;
+    return true;
   } else {
-    return -1;
+    return false;
   }
 }
 
@@ -356,9 +356,9 @@ bool RegistrationRequest::getUeStatus(uint8_t& n1ModeReg, uint8_t& s1ModeReg) {
   if (ie_ue_status) {
     n1ModeReg = ie_ue_status->getN1();
     s1ModeReg = ie_ue_status->getS1();
-    return 0;
+    return true;
   } else {
-    return -1;
+    return false;
   }
 }
 
@@ -372,7 +372,7 @@ uint16_t RegistrationRequest::getAllowedPduSessionStatus() {
   if (ie_allowed_PDU_session_status) {
     return ie_allowed_PDU_session_status->getValue();
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -386,7 +386,7 @@ uint8_t RegistrationRequest::getUEsUsageSetting() {
   if (ie_ues_usage_setting) {
     return ie_ues_usage_setting->getValue();
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -400,7 +400,7 @@ uint8_t RegistrationRequest::get5GSDrxParameters() {
   if (ie_5gs_drx_parameters) {
     return ie_5gs_drx_parameters->getValue();
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -413,9 +413,9 @@ void RegistrationRequest::setEPS_NAS_Message_Container(bstring value) {
 bool RegistrationRequest::getEpsNasMessageContainer(bstring& epsNas) {
   if (ie_eps_nas_message_container) {
     ie_eps_nas_message_container->getValue(epsNas);
-    return 0;
+    return true;
   } else {
-    return -1;
+    return false;
   }
 }
 
@@ -429,7 +429,7 @@ bool RegistrationRequest::getLadnIndication(std::vector<bstring>& ladnValue) {
   if (ie_ladn_indication) {
     return ie_ladn_indication->getValue(ladnValue);
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -443,7 +443,7 @@ uint8_t RegistrationRequest::getPayloadContainerType() {
   if (ie_payload_container_type) {
     return ie_payload_container_type->getValue();
   } else {
-    return -1;
+    return 0;
   }
 }
 
@@ -458,9 +458,9 @@ bool RegistrationRequest::getPayloadContainer(
     std::vector<PayloadContainerEntry>& content) {
   if (ie_payload_container) {
     ie_payload_container->getValue(content);
-    return 0;
+    return true;
   } else {
-    return -1;
+    return false;
   }
 }
 
@@ -476,9 +476,9 @@ bool RegistrationRequest::getNetworkSlicingIndication(
   if (ie_network_slicing_indication) {
     dcni  = ie_network_slicing_indication->getDCNI();
     nssci = ie_network_slicing_indication->getNSSCI();
-    return 0;
+    return true;
   } else {
-    return -1;
+    return false;
   }
 }
 
@@ -498,9 +498,9 @@ bool RegistrationRequest::get5GSUpdateType(
     _5gs_pnb_ciot = ie_5gs_update_type->get_5GS_PNB_CIoT();
     ng_ran_rcu    = ie_5gs_update_type->getNG_RAN();
     sms_requested = ie_5gs_update_type->getSMS();
-    return 0;
+    return true;
   } else {
-    return -1;
+    return false;
   }
 }
 
@@ -513,9 +513,9 @@ void RegistrationRequest::setNAS_Message_Container(bstring value) {
 bool RegistrationRequest::getNasMessageContainer(bstring& nas) {
   if (ie_nas_message_container) {
     ie_nas_message_container->getValue(nas);
-    return 0;
+    return true;
   } else {
-    return -1;
+    return false;
   }
 }
 
@@ -529,7 +529,7 @@ uint16_t RegistrationRequest::getEpsBearerContextStatus() {
   if (ie_eps_bearer_context_status) {
     return ie_eps_bearer_context_status->getValue();
   } else {
-    return -1;
+    return 0;
   }
 }
 
