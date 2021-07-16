@@ -872,22 +872,22 @@ int uplink_ran_status_transfer(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p) {
   Logger::ngap().debug(
-      "Sending itti uplink ran status transfer to TASK_AMF_N2");
-  /*receive uplinkranstatustransfer*/
+      "Sending ITTI Uplink RAN Status Transfer to TASK_AMF_N2");
+
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   UplinkRANStatusTransfer* Uplinkranstatustransfer =
       new UplinkRANStatusTransfer();
   if (!Uplinkranstatustransfer->defromPDU(message_p)) {
-    Logger::ngap().error("Decoding Uplinkranstatustransfer message error");
+    Logger::ngap().error("Decoding Uplink RAN Status Transfer message error");
     return -1;
   }
-  itti_uplinkranstatsutransfer* itti_uplinkran_sta_tran =
-      new itti_uplinkranstatsutransfer(TASK_NGAP, TASK_AMF_N2);
+  itti_uplink_ran_status_transfer* itti_uplinkran_sta_tran =
+      new itti_uplink_ran_status_transfer(TASK_NGAP, TASK_AMF_N2);
   itti_uplinkran_sta_tran->assoc_id          = assoc_id;
   itti_uplinkran_sta_tran->stream            = stream;
   itti_uplinkran_sta_tran->uplinkrantransfer = Uplinkranstatustransfer;
-  std::shared_ptr<itti_uplinkranstatsutransfer> i =
-      std::shared_ptr<itti_uplinkranstatsutransfer>(itti_uplinkran_sta_tran);
+  std::shared_ptr<itti_uplink_ran_status_transfer> i =
+      std::shared_ptr<itti_uplink_ran_status_transfer>(itti_uplinkran_sta_tran);
   int ret = itti_inst->send_msg(i);
   if (0 != ret) {
     Logger::ngap().error(
