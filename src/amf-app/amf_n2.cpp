@@ -41,6 +41,7 @@
 #include "PduSessionResourceReleaseCommand.hpp"
 #include "PduSessionResourceSetupRequest.hpp"
 #include "UEContextReleaseCommand.hpp"
+#include "HandoverPreparationFailure.hpp"
 #include "amf_app.hpp"
 #include "amf_config.hpp"
 #include "amf_n1.hpp"
@@ -170,7 +171,9 @@ void amf_n2_task(void* args_p) {
         Logger::amf_n2().info("Received HANDOVER_REQUIRED message,handling");
         itti_handover_required* m = dynamic_cast<itti_handover_required*>(msg);
         if (!amf_n2_inst->handle_itti_message(ref(*m)))
-          amf_n2_inst->send_handover_preparation_failure(m->assoc_id);
+          amf_n2_inst->send_handover_preparation_failure(
+              m->handoverReq->getAmfUeNgapId(),
+              m->handoverReq->getRanUeNgapId(), m->assoc_id);
       } break;
       case HANDOVER_REQUEST_ACK: {
         Logger::amf_n2().info("Received HANDOVER_REQUEST_ACK message,handling");
@@ -1517,9 +1520,22 @@ void amf_n2::handle_itti_message(itti_uplinkranstatsutransfer& itti_msg) {
 
 //------------------------------------------------------------------------------
 void amf_n2::send_handover_preparation_failure(
+    const unsigned long amf_ue_ngap_id, const uint32_t ran_ue_ngap_id,
     const sctp_assoc_id_t& gnb_assoc_id) {
-  // TODO:
-  return;
+  // Create HandoverPreparationFailure message to be sent to target gNB
+  std::unique_ptr<HandoverPreparationFailure> hoPreparationFailure =
+      std::make_unique<HandoverPreparationFailure>();
+  hoPreparationFailure->setMessageType();
+  hoPreparationFailure->setAmfUeNgapId(amf_ue_ngap_id);
+  hoPreparationFailure->setRanUeNgapId(amf_ue_ngap_id);
+  hoPreparationFailure->setCause(Ngap_Cause_PR_NOTHING);
+
+  uint8_t buffer[BUFFER_SIZE_1024];
+  int encoded_size =
+      hoPreparationFailure->encode2buffer(buffer, BUFFER_SIZE_1024);
+  bstring b = blk2bstr(buffer, encoded_size);
+
+  sctp_s_38412.sctp_send_msg(gnb_assoc_id, 0, &b);
 }
 
 // Context management functions
