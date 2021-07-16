@@ -52,7 +52,6 @@ using namespace amf_application;
 
 extern itti_mw* itti_inst;
 extern amf_n1* amf_n1_inst;
-extern amf_n11* amf_n11_inst;
 extern amf_app* amf_app_inst;
 
 typedef int (*ngap_message_decoded_callback)(

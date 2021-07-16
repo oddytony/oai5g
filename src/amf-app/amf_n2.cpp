@@ -1126,22 +1126,14 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   plmn->getMcc(mccOfselectTAI);
   plmn->getMnc(mncOfselectTAI);
   Logger::amf_n2().debug(
-      "Handover required:Target ID  selectedTAI PLmn (mcc %s, mnc %s, tac %x)",
+      "Handover Required: Target ID selected TAI PLMN (mcc %s, mnc %s, tac %x)",
       mccOfselectTAI.c_str(), mncOfselectTAI.c_str(), tac->getTac());
-
-  std::vector<PDUSessionResourceItem_t> List_HORqd;
-  if (!itti_msg.handoverReq->getPDUSessionResourceList(List_HORqd)) {
-    Logger::ngap().error(
-        "Decoding HandoverRequiredMsg getPDUSessionResourceList IE error");
-    return false;
-  }
 
   OCTET_STRING_t sourceTotarget;
   sourceTotarget =
       itti_msg.handoverReq->getSourceToTarget_TransparentContainer();
 
   // TODO: T-AMF selection, for now use the same AMF
-  // TODO: Send PDU Session Update SM Context Request to SMF
 
   // Create HandoverRequest message to be sent to target gNB
   std::unique_ptr<HandoverRequest> handover_request =
@@ -1206,37 +1198,91 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
     Logger::amf_n2().warn("Error when retrieving the active PDU Sessions!");
   }
 
+  std::vector<PDUSessionResourceItem_t> pdu_session_resource_list;
+  if (!itti_msg.handoverReq->getPDUSessionResourceList(
+          pdu_session_resource_list)) {
+    Logger::ngap().warn(
+        "Decoding PDU Session Resource List IE error or IE missing");
+  }
+
   std::vector<PDUSessionResourceSetupRequestItem_t> list;
   PDUSessionResourceSetupRequestItem_t item = {};
 
-  if (pdu_sessions.size() > 0) {
-    for (auto pdu_session : pdu_sessions) {
-      if (pdu_session.get() != nullptr) {
-        item.pduSessionId      = pdu_session.get()->pdu_session_id;
-        item.s_nssai.sst       = pdu_session.get()->snssai.sST;
-        item.s_nssai.sd        = pdu_session.get()->snssai.sD;
-        item.pduSessionNAS_PDU = NULL;
-        bstring n2sm           = pdu_session.get()->n2sm;
-        if (blength(pdu_session.get()->n2sm) != 0) {
-          item.pduSessionResourceSetupRequestTransfer.buf =
-              (uint8_t*) bdata(pdu_session.get()->n2sm);
-          item.pduSessionResourceSetupRequestTransfer.size =
-              blength(pdu_session.get()->n2sm);
-        } else {
-          Logger::amf_n2().error("n2sm empty!");
-        }
-        list.push_back(item);
+  for (auto pdu_session_resource : pdu_session_resource_list) {
+    std::shared_ptr<pdu_session_context> psc = {};
+    if (amf_app_inst->find_pdu_session_context(
+            supi, pdu_session_resource.pduSessionId, psc)) {
+      item.pduSessionId      = psc.get()->pdu_session_id;
+      item.s_nssai.sst       = psc.get()->snssai.sST;
+      item.s_nssai.sd        = psc.get()->snssai.sD;
+      item.pduSessionNAS_PDU = nullptr;
+
+      item.pduSessionResourceSetupRequestTransfer.buf =
+          pdu_session_resource.HandoverRequiredTransfer.buf;
+      item.pduSessionResourceSetupRequestTransfer.size =
+          pdu_session_resource.HandoverRequiredTransfer.size;
+      list.push_back(item);
+
+      // Send PDUSessionUpdateSMContextRequest to SMF for each active PDU
+      // sessions
+      Logger::amf_n2().debug(
+          "Sending ITTI to trigger PDUSessionUpdateSMContextRequest to SMF to "
+          "task TASK_AMF_N11");
+      itti_nsmf_pdusession_update_sm_context* itti_msg =
+          new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
+      itti_msg->pdu_session_id = item.pduSessionId;
+      itti_msg->n2sm           = blk2bstr(
+          pdu_session_resource.HandoverRequiredTransfer.buf,
+          pdu_session_resource.HandoverRequiredTransfer.size);
+      itti_msg->is_n2sm_set    = true;
+      itti_msg->n2sm_info_type = "HANDOVER_REQUIRED";
+      itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
+      itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
+
+      std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i =
+          std::shared_ptr<itti_nsmf_pdusession_update_sm_context>(itti_msg);
+      int ret = itti_inst->send_msg(i);
+      if (0 != ret) {
+        Logger::ngap().error(
+            "Could not send ITTI message %s to task TASK_AMF_N11",
+            i->get_msg_name());
       }
     }
   }
+
+  /*
+  for (auto pdu_session : pdu_sessions) {
+    if (pdu_session.get() != nullptr) {
+      item.pduSessionId      = pdu_session.get()->pdu_session_id;
+      item.s_nssai.sst       = pdu_session.get()->snssai.sST;
+      item.s_nssai.sd        = pdu_session.get()->snssai.sD;
+      item.pduSessionNAS_PDU = NULL;
+      bstring n2sm           = pdu_session.get()->n2sm;
+      if (blength(pdu_session.get()->n2sm) != 0) {
+        item.pduSessionResourceSetupRequestTransfer.buf =
+            (uint8_t*) bdata(pdu_session.get()->n2sm);
+        item.pduSessionResourceSetupRequestTransfer.size =
+            blength(pdu_session.get()->n2sm);
+      } else {
+        Logger::amf_n2().error("n2sm empty!");
+      }
+      list.push_back(item);
+    }
+  }
+*/
+
+  // TODO: Handover Response supervision
+  // Wait until receiving all responses from SMFs before sending Handover
+  // Request to Target RAN
 
   handover_request->setPduSessionResourceSetupList(list);
   handover_request->setAllowedNSSAI(Allowed_Nssai);
   handover_request->setSourceToTarget_TransparentContainer(sourceTotarget);
   handover_request->setMobilityRestrictionList(m_plmnId);
   handover_request->setGUAMI(m_plmnId, m_aMFRegionID, m_aMFSetID, m_aMFPointer);
-  uint8_t buffer[20240];
-  int encoded_size = handover_request->encode2buffer(buffer, 20240);
+
+  uint8_t buffer[BUFFER_SIZE_2048];
+  int encoded_size = handover_request->encode2buffer(buffer, BUFFER_SIZE_2048);
   bstring b        = blk2bstr(buffer, encoded_size);
   std::shared_ptr<gnb_context> gc_target = {};
   gc_target                      = gnb_id_2_gnb_context(gnbid->getValue());
