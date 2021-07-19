@@ -94,10 +94,7 @@ void octet_stream_2_hex_stream(uint8_t* buf, int len, std::string& out) {
   printf("n1sm buffer: %s\n", out.c_str());
 }
 
-/****************************************************/
-/**  used to run NF(s) consumer, like smf_client ****/
-/***************************************************/
-
+//------------------------------------------------------------------------------
 void amf_n11_task(void*);
 //------------------------------------------------------------------------------
 void amf_n11_task(void*) {
@@ -583,6 +580,7 @@ void amf_n11::curl_http_client(
     Logger::amf_n11().debug("Response body %s", response.c_str());
 
     // Notify to the result if necessary
+    // TODO: Notify with the N3 information
     if (promise_id > 0) {
       amf_app_inst->trigger_process_response(promise_id, httpCode);
     }

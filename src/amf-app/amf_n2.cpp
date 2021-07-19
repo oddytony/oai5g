@@ -1236,7 +1236,6 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
       // Generate a promise and associate this promise to the curl handle
       uint32_t promise_id = amf_app_inst->generate_promise_id();
       Logger::amf_n2().debug("Promise ID generated %d", promise_id);
-      uint32_t* pid_ptr = &promise_id;
       boost::shared_ptr<boost::promise<uint32_t>> p =
           boost::make_shared<boost::promise<uint32_t>>();
       boost::shared_future<uint32_t> f = p->get_future();
@@ -1406,6 +1405,70 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   qosflowidentifiervalue =
       (long) QosFlowWithDataForwardinglist[0].qosFlowIdentifier;
   Logger::ngap().debug("QFI %lu", qosflowidentifiervalue);
+
+  // Send PDUSessionUpdateSMContextRequest to SMF for each active PDU sessions
+  std::map<uint32_t, boost::shared_future<GtpTunnel_t>> curl_responses;
+
+  for (auto pdu_session_resource : list) {
+    // Generate a promise and associate this promise to the curl handle
+    uint32_t promise_id = amf_app_inst->generate_promise_id();
+    Logger::amf_n2().debug("Promise ID generated %d", promise_id);
+
+    boost::shared_ptr<boost::promise<GtpTunnel_t>> p =
+        boost::make_shared<boost::promise<GtpTunnel_t>>();
+    boost::shared_future<GtpTunnel_t> f = p->get_future();
+    amf_app_inst->add_promise(promise_id, p);
+
+    curl_responses.emplace(promise_id, f);
+
+    Logger::amf_n2().debug(
+        "Sending ITTI to trigger PDUSessionUpdateSMContextRequest to SMF to "
+        "task TASK_AMF_N11");
+    itti_nsmf_pdusession_update_sm_context* itti_msg =
+        new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
+    itti_msg->pdu_session_id = pdu_session_resource.pduSessionId;
+    itti_msg->n2sm           = blk2bstr(
+        pdu_session_resource.handoverRequestAcknowledgeTransfer.buf,
+        pdu_session_resource.handoverRequestAcknowledgeTransfer.size);
+    itti_msg->is_n2sm_set    = true;
+    itti_msg->n2sm_info_type = "HANDOVER_REQ_ACK";
+    itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
+    itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
+    itti_msg->promise_id     = promise_id;
+
+    std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i =
+        std::shared_ptr<itti_nsmf_pdusession_update_sm_context>(itti_msg);
+    int ret = itti_inst->send_msg(i);
+    if (0 != ret) {
+      Logger::ngap().error(
+          "Could not send ITTI message %s to task TASK_AMF_N11",
+          i->get_msg_name());
+    }
+  }
+  // TODO: wait for response from SMF and transfer T-RAN N3 information/ or
+  // T-UPF to the source gNB
+
+  bool result = true;
+  while (!curl_responses.empty()) {
+    boost::future_status status;
+    // wait for timeout or ready
+    status = curl_responses.begin()->second.wait_for(
+        boost::chrono::milliseconds(FUTURE_STATUS_TIMEOUT_MS));
+    if (status == boost::future_status::ready) {
+      assert(curl_responses.begin()->second.is_ready());
+      assert(curl_responses.begin()->second.has_value());
+      assert(!curl_responses.begin()->second.has_exception());
+      // Wait for the result from APP and send reply to AMF
+      GtpTunnel_t gtp_info = curl_responses.begin()->second.get();
+      // TODO: process gtp_info
+      Logger::ngap().debug(
+          "Got result for promise ID %d", curl_responses.begin()->first);
+    } else {
+      result = true;
+    }
+    curl_responses.erase(curl_responses.begin());
+  }
+  // TODO: process result
 
   // send HandoverCommandMsg to Source gnb
   std::unique_ptr<HandoverCommandMsg> handovercommand =
