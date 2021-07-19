@@ -1368,9 +1368,9 @@ bool amf_n1::_5g_aka_confirmation_from_ausf(
   Logger::amf_n1().debug("_5g_aka_confirmation_from_ausf");
   std::string remoteUri = nc.get()->Href;
 
-  std::string msgBody;
-  std::string Response;
-  std::string resStar_string;
+  std::string msgBody        = {};
+  std::string response       = {};
+  std::string resStar_string = {};
 
   std::map<std::string, std::string>::iterator iter;
   iter = rand_record.find(nc.get()->imsi);
@@ -1396,12 +1396,12 @@ bool amf_n1::_5g_aka_confirmation_from_ausf(
   msgBody = confirmationdata_j.dump();
 
   // TODO: Should be updated
-  amf_n11_inst->curl_http_client(remoteUri, "PUT", msgBody, Response);
+  amf_n11_inst->curl_http_client(remoteUri, "PUT", msgBody, response);
 
   free_wrapper((void**) &resStar_s);
   try {
     ConfirmationDataResponse confirmationdataresponse;
-    nlohmann::json::parse(Response.c_str()).get_to(confirmationdataresponse);
+    nlohmann::json::parse(response.c_str()).get_to(confirmationdataresponse);
     unsigned char* kseaf_hex =
         format_string_as_hex(confirmationdataresponse.getKseaf());
     memcpy(nc.get()->_5g_av[0].kseaf, kseaf_hex, 32);
