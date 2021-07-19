@@ -104,10 +104,10 @@ void amf_n11_task(void*) {
     std::shared_ptr<itti_msg> shared_msg = itti_inst->receive_msg(task_id);
     auto* msg                            = shared_msg.get();
     switch (msg->msg_type) {
-      case SMF_SERVICES_CONSUMER: {
-        Logger::amf_n11().info("Running SMF_SERVICES_CONSUMER");
-        itti_smf_services_consumer* m =
-            dynamic_cast<itti_smf_services_consumer*>(msg);
+      case NSMF_PDU_SESSION_CREATE_SM_CTX: {
+        Logger::amf_n11().info("Running ITTI_SMF_PDU_SESSION_CREATE_SM_CTX");
+        itti_nsmf_pdusession_create_sm_context* m =
+            dynamic_cast<itti_nsmf_pdusession_create_sm_context*>(msg);
         amf_n11_inst->handle_itti_message(ref(*m));
       } break;
       case NSMF_PDU_SESSION_UPDATE_SM_CTX: {
@@ -117,7 +117,7 @@ void amf_n11_task(void*) {
             dynamic_cast<itti_nsmf_pdusession_update_sm_context*>(msg);
         amf_n11_inst->handle_itti_message(ref(*m));
       } break;
-      case PDU_SESS_RES_SET_RESP: {
+      case PDU_SESSION_RESOURCE_SETUP_RESPONSE: {
         Logger::amf_n11().info(
             "Receive PDU Session Resource Setup Response, handling ...");
         itti_pdu_session_resource_setup_response* m =
@@ -216,8 +216,8 @@ void amf_n11::handle_itti_message(
 }
 
 //------------------------------------------------------------------------------
-void amf_n11::handle_itti_message(itti_smf_services_consumer& smf) {
-  Logger::amf_n11().debug("Handle ITTI_SMF_SERVICES_CONSUMER");
+void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
+  Logger::amf_n11().debug("Handle SMF_PDU_SESSION_CREATE_SM_CTX");
   std::shared_ptr<nas_context> nc;
   nc               = amf_n1_inst->amf_ue_id_2_nas_context(smf.amf_ue_ngap_id);
   std::string supi = "imsi-" + nc.get()->imsi;

@@ -457,58 +457,6 @@ void amf_n1::nas_signalling_establishment_request_handle(
 
 //------------------------------------------------------------------------------
 void amf_n1::uplink_nas_msg_handle(
-    uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg) {
-  uint8_t* buf         = (uint8_t*) bdata(plain_msg);
-  uint8_t message_type = *(buf + 2);
-  switch (message_type) {
-    case AUTHENTICATION_RESPONSE: {
-      Logger::amf_n1().debug(
-          "Received authentication response message, handling...");
-      authentication_response_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
-    } break;
-    case AUTHENTICATION_FAILURE: {
-      Logger::amf_n1().debug(
-          "Received authentication failure message, handling...");
-      authentication_failure_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
-    } break;
-    case SECURITY_MODE_COMPLETE: {
-      Logger::amf_n1().debug(
-          "Received security mode complete message, handling...");
-      security_mode_complete_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
-    } break;
-    case SECURITY_MODE_REJECT: {
-      Logger::amf_n1().debug(
-          "Received security mode reject message, handling...");
-      security_mode_reject_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
-    } break;
-    case UL_NAS_TRANSPORT: {
-      Logger::amf_n1().debug("Received UL NAS transport message, handling...");
-      ul_nas_transport_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
-    } break;
-    case UE_INIT_DEREGISTER: {
-      Logger::amf_n1().debug(
-          "Received de-registration request message, handling...");
-      ue_initiate_de_registration_handle(
-          ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
-    } break;
-    case IDENTITY_RESPONSE: {
-      Logger::amf_n1().debug("received identity response message , handle ...");
-      identity_response_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
-    } break;
-    case REGISTRATION_COMPLETE: {
-      Logger::amf_n1().debug(
-          "Received registration complete message, handling...");
-      registration_complete_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
-      // TODO
-    } break;
-    default: {
-      // TODO:
-    }
-  }
-}
-
-//------------------------------------------------------------------------------
-void amf_n1::uplink_nas_msg_handle(
     uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg,
     plmn_t plmn) {
   uint8_t* buf         = (uint8_t*) bdata(plain_msg);
@@ -2583,10 +2531,8 @@ void amf_n1::ul_nas_transport_handle(
         Logger::amf_n1().error("Cannot decode Payload Container");
         return;
       }
-      // send_itti_to_smf_services_consumer(ran_ue_ngap_id, amf_ue_ngap_id,
-      // request_type, pdu_session_id, dnn, sm_msg);
-      itti_smf_services_consumer* itti_msg =
-          new itti_smf_services_consumer(TASK_AMF_N1, TASK_AMF_N11);
+      itti_nsmf_pdusession_create_sm_context* itti_msg =
+          new itti_nsmf_pdusession_create_sm_context(TASK_AMF_N1, TASK_AMF_N11);
       itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
       itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
       itti_msg->req_type       = request_type;
@@ -2595,8 +2541,8 @@ void amf_n1::ul_nas_transport_handle(
       itti_msg->sm_msg         = sm_msg;
       itti_msg->snssai.sST     = snssai.sst;
       itti_msg->snssai.sD      = std::to_string(snssai.sd);
-      std::shared_ptr<itti_smf_services_consumer> i =
-          std::shared_ptr<itti_smf_services_consumer>(itti_msg);
+      std::shared_ptr<itti_nsmf_pdusession_create_sm_context> i =
+          std::shared_ptr<itti_nsmf_pdusession_create_sm_context>(itti_msg);
       int ret = itti_inst->send_msg(i);
       if (0 != ret) {
         Logger::amf_n1().error(
@@ -2634,10 +2580,8 @@ void amf_n1::ul_nas_transport_handle(
         Logger::amf_n1().error("Cannot decode Payload Container");
         return;
       }
-      // send_itti_to_smf_services_consumer(ran_ue_ngap_id, amf_ue_ngap_id,
-      // request_type, pdu_session_id, dnn, sm_msg);
-      itti_smf_services_consumer* itti_msg =
-          new itti_smf_services_consumer(TASK_AMF_N1, TASK_AMF_N11);
+      itti_nsmf_pdusession_create_sm_context* itti_msg =
+          new itti_nsmf_pdusession_create_sm_context(TASK_AMF_N1, TASK_AMF_N11);
       itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
       itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
       itti_msg->req_type       = request_type;
@@ -2648,8 +2592,8 @@ void amf_n1::ul_nas_transport_handle(
       itti_msg->snssai.sD      = std::to_string(snssai.sd);
       itti_msg->plmn.mnc       = plmn.mnc;
       itti_msg->plmn.mcc       = plmn.mcc;
-      std::shared_ptr<itti_smf_services_consumer> i =
-          std::shared_ptr<itti_smf_services_consumer>(itti_msg);
+      std::shared_ptr<itti_nsmf_pdusession_create_sm_context> i =
+          std::shared_ptr<itti_nsmf_pdusession_create_sm_context>(itti_msg);
       int ret = itti_inst->send_msg(i);
       if (0 != ret) {
         Logger::amf_n1().error(
@@ -2658,28 +2602,6 @@ void amf_n1::ul_nas_transport_handle(
       }
 
     } break;
-  }
-}
-
-//------------------------------------------------------------------------------
-void amf_n1::send_itti_to_smf_services_consumer(
-    uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, uint8_t request_type,
-    uint8_t pdu_session_id, bstring dnn, bstring sm_msg) {
-  itti_smf_services_consumer* itti_msg =
-      new itti_smf_services_consumer(TASK_AMF_N1, TASK_AMF_N11);
-  itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
-  itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
-  itti_msg->req_type       = request_type;
-  itti_msg->pdu_sess_id    = pdu_session_id;
-  itti_msg->dnn            = dnn;
-  itti_msg->sm_msg         = sm_msg;
-  std::shared_ptr<itti_smf_services_consumer> i =
-      std::shared_ptr<itti_smf_services_consumer>(itti_msg);
-  int ret = itti_inst->send_msg(i);
-  if (0 != ret) {
-    Logger::amf_n1().error(
-        "Could not send ITTI message %s to task TASK_AMF_N11",
-        i->get_msg_name());
   }
 }
 
