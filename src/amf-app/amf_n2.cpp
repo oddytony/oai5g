@@ -1296,7 +1296,7 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   // TODO: Experimental procedure, to be tested
   unsigned long amf_ue_ngap_id = itti_msg.handoverrequestAck->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handoverrequestAck->getRanUeNgapId();
-  Logger::amf_n2().error(
+  Logger::amf_n2().debug(
       "Handover Request Ack ran_ue_ngap_id (0x%d) amf_ue_ngap_id (%d)",
       ran_ue_ngap_id, amf_ue_ngap_id);
 
@@ -1390,44 +1390,22 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   uptlinfo.gtp_teid    = teid;
   uptlinfo.ip_address  = n3_ip_address;
   handovercommandtransfer->setUPTransportLayerInformation(uptlinfo);
-  uint8_t buffer2[500];
-  int encoded_size2 =
+
+  uint8_t buffer_ho_cmd_transfer[BUFFER_SIZE_512];
+  int encoded_size =
       handovercommandtransfer->encodePDUSessionResourceHandoverCommandTransfer(
-          buffer2, 500);
-  OCTET_STRING_t OCT_handovercommandtransfer;
-  OCT_handovercommandtransfer.buf  = buffer2;
-  OCT_handovercommandtransfer.size = encoded_size2;
-  item.HandoverCommandTransfer     = OCT_handovercommandtransfer;
+          buffer_ho_cmd_transfer, BUFFER_SIZE_512);
+  item.HandoverCommandTransfer.buf  = buffer_ho_cmd_transfer;
+  item.HandoverCommandTransfer.size = encoded_size;
   handover_list.push_back(item);
+
   handovercommand->setPduSessionResourceHandoverList(handover_list);
   handovercommand->setTargetToSource_TransparentContainer(targetTosource);
-  // setPduSessionResourceHandoverList_PDYSessionID_handovercommandtransfer-end
+
   uint8_t buffer[BUFFER_SIZE_1024];
-  int encoded_size = handovercommand->encode2buffer(buffer, BUFFER_SIZE_1024);
-  bstring b        = blk2bstr(buffer, encoded_size);
+  encoded_size = handovercommand->encode2buffer(buffer, BUFFER_SIZE_1024);
+  bstring b    = blk2bstr(buffer, encoded_size);
 
-  /*
-    // Create/Update UE NGAP Context if necessary
-    // TO be verified
-    if (!is_ran_ue_id_2_ue_ngap_context(unc.get()->ran_ue_ngap_id)) {
-      Logger::amf_n2().debug(
-          "Create a new ue ngap context with ran_ue_ngap_id(0x%x)",
-                  unc.get()->ran_ue_ngap_id);
-      unc = std::shared_ptr<ue_ngap_context>(new ue_ngap_context());
-      set_ran_ue_ngap_id_2_ue_ngap_context(unc.get()->ran_ue_ngap_id, unc);
-      unc.get()->gnb_assoc_id = source_assoc_id;
-    } else {
-      unc                     =
-    ran_ue_id_2_ue_ngap_context(unc.get()->ran_ue_ngap_id);
-      unc.get()->gnb_assoc_id = source_assoc_id;
-    }
-  */
-
-  // std::shared_ptr<ue_ngap_context> ngc =
-  // ran_ue_id_2_ue_ngap_context(nc.get()->ran_ue_ngap_id);
-  // std::shared_ptr<ue_ngap_context> ngc =
-  // ran_ue_id_2_ue_ngap_context(unc.get()->ran_ue_ngap_id);
-  // sctp_s_38412.sctp_send_msg(ngc.get()->gnb_assoc_id, 0, &b);
   sctp_s_38412.sctp_send_msg(unc.get()->gnb_assoc_id, 0, &b);
 }
 

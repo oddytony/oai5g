@@ -2002,7 +2002,6 @@ bool amf_n1::start_security_mode_control_procedure(
     nc.get()->is_current_security_available = true;
   }
 
-  // SecurityModeCommand* smc = new SecurityModeCommand();
   std::unique_ptr<SecurityModeCommand> smc =
       std::make_unique<SecurityModeCommand>();
   smc->setHeader(PLAIN_5GS_MSG);

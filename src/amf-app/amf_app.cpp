@@ -205,6 +205,7 @@ void amf_app::set_supi_2_ue_context(
   supi2ue_ctx[supi] = uc;
 }
 
+//------------------------------------------------------------------------------
 bool amf_app::find_pdu_session_context(
     const string& supi, const std::uint8_t pdu_session_id,
     std::shared_ptr<pdu_session_context>& psc) {
@@ -215,6 +216,7 @@ bool amf_app::find_pdu_session_context(
   return true;
 }
 
+//------------------------------------------------------------------------------
 bool amf_app::get_pdu_sessions_context(
     const string& supi,
     std::vector<std::shared_ptr<pdu_session_context>>& sessions_ctx) {
