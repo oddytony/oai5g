@@ -52,6 +52,11 @@
 #include "logger.hpp"
 #include "sctp_server.hpp"
 
+#include <boost/chrono.hpp>
+#include <boost/chrono/chrono.hpp>
+#include <boost/chrono/duration.hpp>
+#include <boost/chrono/system_clocks.hpp>
+
 extern "C" {
 #include "dynamic_memory_check.h"
 }
@@ -1208,6 +1213,8 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   std::vector<PDUSessionResourceSetupRequestItem_t> list;
   PDUSessionResourceSetupRequestItem_t item = {};
 
+  std::map<uint32_t, boost::shared_future<uint32_t>> curl_responses;
+
   for (auto pdu_session_resource : pdu_session_resource_list) {
     std::shared_ptr<pdu_session_context> psc = {};
     if (amf_app_inst->find_pdu_session_context(
@@ -1225,6 +1232,18 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
 
       // Send PDUSessionUpdateSMContextRequest to SMF for each active PDU
       // sessions
+
+      // Generate a promise and associate this promise to the curl handle
+      uint32_t promise_id = amf_app_inst->generate_promise_id();
+      Logger::amf_n2().debug("Promise ID generated %d", promise_id);
+      uint32_t* pid_ptr = &promise_id;
+      boost::shared_ptr<boost::promise<uint32_t>> p =
+          boost::make_shared<boost::promise<uint32_t>>();
+      boost::shared_future<uint32_t> f = p->get_future();
+      amf_app_inst->add_promise(promise_id, p);
+
+      curl_responses.emplace(promise_id, f);
+
       Logger::amf_n2().debug(
           "Sending ITTI to trigger PDUSessionUpdateSMContextRequest to SMF to "
           "task TASK_AMF_N11");
@@ -1238,6 +1257,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
       itti_msg->n2sm_info_type = "HANDOVER_REQUIRED";
       itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
       itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
+      itti_msg->promise_id     = promise_id;
 
       std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i =
           std::shared_ptr<itti_nsmf_pdusession_update_sm_context>(itti_msg);
@@ -1273,8 +1293,35 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
 
   // TODO: Handover Response supervision
   // Wait until receiving all responses from SMFs before sending Handover
-  // Request to Target RAN
+  bool result = true;
+  while (!curl_responses.empty()) {
+    boost::future_status status;
+    // wait for timeout or ready
+    status = curl_responses.begin()->second.wait_for(
+        boost::chrono::milliseconds(FUTURE_STATUS_TIMEOUT_MS));
+    if (status == boost::future_status::ready) {
+      assert(curl_responses.begin()->second.is_ready());
+      assert(curl_responses.begin()->second.has_value());
+      assert(!curl_responses.begin()->second.has_exception());
+      // Wait for the result from APP and send reply to AMF
+      uint32_t response_code = curl_responses.begin()->second.get();
 
+      if (static_cast<http_response_codes_e>(response_code) ==
+          http_response_codes_e::HTTP_RESPONSE_CODE_200_OK) {
+        result = result && true;
+      } else {
+        result = false;
+      }
+      Logger::ngap().debug(
+          "Got result for promise ID %d", curl_responses.begin()->first);
+    } else {
+      result = true;
+    }
+    curl_responses.erase(curl_responses.begin());
+  }
+  // TODO: process result
+
+  // Request to Target RAN
   handover_request->setPduSessionResourceSetupList(list);
   handover_request->setAllowedNSSAI(Allowed_Nssai);
   handover_request->setSourceToTarget_TransparentContainer(sourceTotarget);

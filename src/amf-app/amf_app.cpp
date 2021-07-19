@@ -479,3 +479,30 @@ void amf_app::trigger_nf_deregistration() {
         itti_msg->get_msg_name());
   }
 }
+
+//---------------------------------------------------------------------------------------------
+void amf_app::add_promise(
+    uint32_t id, boost::shared_ptr<boost::promise<uint32_t>>& p) {
+  std::unique_lock lock(m_curl_handle_responses);
+  curl_handle_responses.emplace(id, p);
+}
+
+//---------------------------------------------------------------------------------------------
+void amf_app::remove_promise(uint32_t id) {
+  std::unique_lock lock(m_curl_handle_responses);
+  curl_handle_responses.erase(id);
+}
+
+//------------------------------------------------------------------------------
+void amf_app::trigger_process_response(uint32_t pid, uint32_t http_code) {
+  Logger::amf_app().debug(
+      "Trigger process response: Set promise with ID %u "
+      "to ready",
+      pid);
+  std::unique_lock lock(m_curl_handle_responses);
+  if (curl_handle_responses.count(pid) > 0) {
+    curl_handle_responses[pid]->set_value(http_code);
+    // Remove this promise from list
+    curl_handle_responses.erase(pid);
+  }
+}

@@ -82,6 +82,7 @@ class itti_nsmf_pdusession_update_sm_context : public itti_msg_n11 {
       const task_id_t origin, const task_id_t destination)
       : itti_msg_n11(NSMF_PDU_SESSION_UPDATE_SM_CTX, origin, destination) {
     is_n2sm_set = false;
+    promise_id  = 0;
   }
   itti_nsmf_pdusession_update_sm_context(
       const itti_nsmf_pdusession_update_sm_context& i)
@@ -90,6 +91,8 @@ class itti_nsmf_pdusession_update_sm_context : public itti_msg_n11 {
     n2sm           = i.n2sm;
     is_n2sm_set    = i.is_n2sm_set;
     n2sm_info_type = i.n2sm_info_type;
+    promise_id     = i.promise_id;
+    ;
   }
 
  public:
@@ -100,6 +103,7 @@ class itti_nsmf_pdusession_update_sm_context : public itti_msg_n11 {
   std::string n2sm_info_type;
   uint32_t ran_ue_ngap_id;
   long amf_ue_ngap_id;
+  uint32_t promise_id;
 };
 
 class itti_nsmf_pdusession_release_sm_context : public itti_msg_n11 {

@@ -212,7 +212,8 @@ void amf_n11::handle_itti_message(
   octet_stream_2_hex_stream(
       (uint8_t*) bdata(itti_msg.n2sm), blength(itti_msg.n2sm), n2SmMsg);
   curl_http_client(
-      remote_uri, json_part, "", n2SmMsg, supi, itti_msg.pdu_session_id);
+      remote_uri, json_part, "", n2SmMsg, supi, itti_msg.pdu_session_id,
+      itti_msg.promise_id);
 
   stacs.display();
 }
@@ -499,7 +500,8 @@ void amf_n11::handle_post_sm_context_response_error(
 //------------------------------------------------------------------------------
 void amf_n11::curl_http_client(
     std::string remoteUri, std::string jsonData, std::string n1SmMsg,
-    std::string n2SmMsg, std::string supi, uint8_t pdu_session_id) {
+    std::string n2SmMsg, std::string supi, uint8_t pdu_session_id,
+    uint32_t promise_id) {
   Logger::amf_n11().debug("Call SMF service: %s", remoteUri.c_str());
 
   uint8_t number_parts = 0;
@@ -579,6 +581,11 @@ void amf_n11::curl_http_client(
 
     Logger::amf_n11().debug("Get response with HTTP code (%d)", httpCode);
     Logger::amf_n11().debug("Response body %s", response.c_str());
+
+    // Notify to the result if necessary
+    if (promise_id > 0) {
+      amf_app_inst->trigger_process_response(promise_id, httpCode);
+    }
 
     if (static_cast<http_response_codes_e>(httpCode) ==
         http_response_codes_e::HTTP_RESPONSE_CODE_0) {
@@ -1008,7 +1015,7 @@ void amf_n11::curl_http_client(
 
       std::string cause = response_data["error"]["cause"];
       Logger::amf_n1().info("Call Network Function services failure");
-      Logger::amf_n1().info("Cause value: %s", cause.c_str());
+      Logger::amf_n11().info("Cause value: %s", cause.c_str());
     }
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);

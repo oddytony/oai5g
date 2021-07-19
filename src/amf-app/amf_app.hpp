@@ -40,6 +40,10 @@
 #include "itti_msg_amf_app.hpp"
 #include "ue_context.hpp"
 
+#include "uint_generator.hpp"
+#include <boost/thread.hpp>
+#include <boost/thread/future.hpp>
+
 using namespace config;
 
 static uint32_t amf_app_ue_ngap_id_generator = 1;
@@ -63,14 +67,6 @@ class amf_app {
   // itti handlers
   void handle_itti_message(itti_nas_signalling_establishment_request& itti_msg);
   void handle_itti_message(itti_n1n2_message_transfer_request& itti_msg);
-  // context management
-  std::map<long, std::shared_ptr<ue_context>> amf_ue_ngap_id2ue_ctx;
-  mutable std::shared_mutex m_amf_ue_ngap_id2ue_ctx;
-  std::map<std::string, std::shared_ptr<ue_context>> ue_ctx_key;
-  mutable std::shared_mutex m_ue_ctx_key;
-
-  std::map<std::string, std::shared_ptr<ue_context>> supi2ue_ctx;
-  mutable std::shared_mutex m_supi2ue_ctx;
 
   bool is_amf_ue_id_2_ue_context(const long& amf_ue_ngap_id) const;
   std::shared_ptr<ue_context> amf_ue_id_2_ue_context(
@@ -137,6 +133,47 @@ class amf_app {
    * @return void
    */
   void trigger_nf_deregistration();
+
+  /*
+   * Store the promise
+   * @param [uint32_t] pid: promise id
+   * @param [boost::shared_ptr<boost::promise<uint32_t>>&] p: promise
+   * @return void
+   */
+  void add_promise(
+      uint32_t pid, boost::shared_ptr<boost::promise<uint32_t>>& p);
+
+  /*
+   * Remove the promise
+   * @param [uint32_t] pid: promise id
+   * @return void
+   */
+  void remove_promise(uint32_t id);
+
+  /*
+   * Generate an unique value for promise id
+   * @param void
+   * @return generated promise id
+   */
+  static uint64_t generate_promise_id() {
+    return util::uint_uid_generator<uint64_t>::get_instance().get_uid();
+  }
+
+  void trigger_process_response(uint32_t pid, uint32_t http_code);
+
+ private:
+  // context management
+  std::map<long, std::shared_ptr<ue_context>> amf_ue_ngap_id2ue_ctx;
+  mutable std::shared_mutex m_amf_ue_ngap_id2ue_ctx;
+  std::map<std::string, std::shared_ptr<ue_context>> ue_ctx_key;
+  mutable std::shared_mutex m_ue_ctx_key;
+
+  std::map<std::string, std::shared_ptr<ue_context>> supi2ue_ctx;
+  mutable std::shared_mutex m_supi2ue_ctx;
+
+  mutable std::shared_mutex m_curl_handle_responses;
+  std::map<uint32_t, boost::shared_ptr<boost::promise<uint32_t>>>
+      curl_handle_responses;
 };
 
 }  // namespace amf_application
