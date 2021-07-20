@@ -111,7 +111,7 @@ class HtmlReport():
 		buildSummary += '    </tr>\n'
 		if self.git_pull_request:
 			buildSummary += '	 <tr>\n'
-			buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-log-out"></span> Source Branch</td>\n'
+			buildSummary += '      <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-log-out"></span> Merge Request URL</td>\n'
 			buildSummary += '	   <td><a href="TEMPLATE_MERGE_REQUEST_LINK">TEMPLATE_MERGE_REQUEST_LINK</a></td>\n'
 			buildSummary += '	 </tr>\n'
 			buildSummary += '	 <tr>\n'
@@ -158,7 +158,9 @@ class HtmlReport():
 		self.file.write(buildSummary)
 
 		cwd = os.getcwd()
-		for reportFile in glob.glob('./*results_oai_cn5g.html'):
+		for reportFile in glob.glob('./*results_oai_*.html'):
+			if reportFile == './test_results_oai_amf.html':
+				continue
 			newEpcReport = open(cwd + '/' + str(reportFile) + '.new', 'w')
 			buildSummaryDone = True
 			with open(cwd + '/' + str(reportFile), 'r') as originalEpcReport:
@@ -461,8 +463,6 @@ class HtmlReport():
 				section_end_pattern = 'build_amf --clean --Verbose --build-type Release --jobs'
 				section_status = False
 				package_install = False
-				fmt_build_start = False
-				fmt_build_status = False
 				folly_build_start = False
 				folly_build_status = False
 				spdlog_build_start = False
@@ -498,12 +498,6 @@ class HtmlReport():
 							result = re.search('cpprestsdk installation complete', line)
 							if result is not None and cpprest_build_start:
 								cpprest_build_status = True
-							result = re.search('Starting to install fmt', line)
-							if result is not None:
-								fmt_build_start = True
-							result = re.search('fmt installation complete', line)
-							if result is not None and fmt_build_start:
-								fmt_build_status = True
 							result = re.search('Starting to install folly', line)
 							if result is not None:
 								folly_build_start = True
@@ -551,12 +545,6 @@ class HtmlReport():
 					cell_msg += '   ** cpprestsdk Installation: OK\n'
 				else:
 					cell_msg += '   ** cpprestsdk Installation: KO\n'
-				if base_image:
-					cell_msg += '   ** fmt Installation: N/A\n'
-				elif fmt_build_status:
-					cell_msg += '   ** fmt Installation: OK\n'
-				else:
-					cell_msg += '   ** fmt Installation: KO\n'
 				if base_image:
 					cell_msg += '   ** folly Installation: N/A\n'
 				elif folly_build_status:
@@ -850,9 +838,11 @@ class HtmlReport():
 								else:
 									result = re.search('oai-amf *develop', line)
 							if result is not None:
-								result = re.search('ago  *([0-9A-Z]+)', line)
+								result = re.search('ago  *([0-9A-Z ]+)', line)
 								if result is not None:
 									size = result.group(1)
+									if variant == 'docker':
+										size = re.sub('MB', ' MB', size)
 									status = True
 					logfile.close()
 				if status:

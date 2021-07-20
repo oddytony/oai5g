@@ -40,6 +40,7 @@
 #include "logger.hpp"
 #include "string.hpp"
 #include "thread_sched.hpp"
+#include "fqdn.hpp"
 
 extern "C" {
 #include <arpa/inet.h>
@@ -79,6 +80,7 @@ amf_config::amf_config() {
   enable_smf_selection      = false;
   enable_external_ausf      = false;
   enable_external_udm       = false;
+  use_fqdn_dns              = false;
 
   struct {
     struct in_addr ipv4_addr;
@@ -104,6 +106,8 @@ int amf_config::load(const std::string& config_file) {
       "\nLoad AMF system configuration file(%s)", config_file.c_str());
   Config cfg;
   unsigned char buf_in6_addr[sizeof(struct in6_addr)];
+
+  // Config file
   try {
     cfg.readFile(config_file.c_str());
   } catch (const FileIOException& fioex) {
@@ -117,13 +121,18 @@ int amf_config::load(const std::string& config_file) {
         pex.getError());
     throw;
   }
+
   const Setting& root = cfg.getRoot();
+
+  // AMF config
   try {
     const Setting& amf_cfg = root[AMF_CONFIG_STRING_AMF_CONFIG];
   } catch (const SettingNotFoundException& nfex) {
     Logger::amf_app().error("%s : %s", nfex.what(), nfex.getPath());
     return -1;
   }
+
+  // Instance
   const Setting& amf_cfg = root[AMF_CONFIG_STRING_AMF_CONFIG];
   try {
     amf_cfg.lookupValue(AMF_CONFIG_STRING_INSTANCE_ID, instance);
@@ -131,6 +140,8 @@ int amf_config::load(const std::string& config_file) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
+
+  // Statistic Timer interval
   try {
     amf_cfg.lookupValue(
         AMF_CONFIG_STRING_STATISTICS_TIMER_INTERVAL, statistics_interval);
@@ -138,18 +149,24 @@ int amf_config::load(const std::string& config_file) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
+
+  // PID Dir
   try {
     amf_cfg.lookupValue(AMF_CONFIG_STRING_PID_DIRECTORY, pid_dir);
   } catch (const SettingNotFoundException& nfex) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
+
+  // AMF Name
   try {
     amf_cfg.lookupValue(AMF_CONFIG_STRING_AMF_NAME, AMF_Name);
   } catch (const SettingNotFoundException& nfex) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
+
+  // GUAMI
   try {
     const Setting& guami_cfg = amf_cfg[AMF_CONFIG_STRING_GUAMI];
     guami_cfg.lookupValue(AMF_CONFIG_STRING_MCC, guami.mcc);
@@ -161,6 +178,8 @@ int amf_config::load(const std::string& config_file) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
+
+  // GUAMI List
   try {
     const Setting& guami_list_cfg =
         amf_cfg[AMF_CONFIG_STRING_SERVED_GUAMI_LIST];
@@ -179,6 +198,8 @@ int amf_config::load(const std::string& config_file) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
+
+  // AMF Capacity
   try {
     amf_cfg.lookupValue(
         AMF_CONFIG_STRING_RELATIVE_AMF_CAPACITY, relativeAMFCapacity);
@@ -186,6 +207,8 @@ int amf_config::load(const std::string& config_file) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
+
+  // PLMN List
   try {
     const Setting& plmn_list_cfg = amf_cfg[AMF_CONFIG_STRING_PLMN_SUPPORT_LIST];
     int count                    = plmn_list_cfg.getLength();
@@ -211,13 +234,72 @@ int amf_config::load(const std::string& config_file) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
+
+  // Supported features
+  try {
+    const Setting& support_features =
+        amf_cfg[AMF_CONFIG_STRING_SUPPORT_FEATURES];
+    string opt;
+    support_features.lookupValue(
+        AMF_CONFIG_STRING_SUPPORT_FEATURES_NF_REGISTRATION, opt);
+    if (boost::iequals(opt, "yes")) {
+      enable_nf_registration = true;
+    } else {
+      enable_nf_registration = false;
+    }
+
+    support_features.lookupValue(
+        AMF_CONFIG_STRING_SUPPORT_FEATURES_SMF_SELECTION, opt);
+    if (boost::iequals(opt, "yes")) {
+      enable_smf_selection = true;
+    } else {
+      enable_smf_selection = false;
+    }
+
+    support_features.lookupValue(
+        AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_AUSF, opt);
+    if (boost::iequals(opt, "yes")) {
+      enable_external_ausf = true;
+    } else {
+      enable_external_ausf = false;
+    }
+
+    support_features.lookupValue(
+        AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_UDM, opt);
+    if (boost::iequals(opt, "yes")) {
+      enable_external_udm = true;
+    } else {
+      enable_external_udm = false;
+    }
+
+    support_features.lookupValue(
+        AMF_CONFIG_STRING_SUPPORT_FEATURES_USE_FQDN_DNS, opt);
+    if (boost::iequals(opt, "yes")) {
+      use_fqdn_dns = true;
+    } else {
+      use_fqdn_dns = false;
+    }
+
+  } catch (const SettingNotFoundException& nfex) {
+    Logger::amf_app().error(
+        "%s : %s, using defaults", nfex.what(), nfex.getPath());
+    return -1;
+  }
+
+  // Network interfaces
+  // TODO: should move SMF/NRF/AUSF out of this section
   try {
     const Setting& new_if_cfg = amf_cfg[AMF_CONFIG_STRING_INTERFACES];
+
+    // N2
     const Setting& n2_amf_cfg =
         new_if_cfg[AMF_CONFIG_STRING_INTERFACE_NGAP_AMF];
     load_interface(n2_amf_cfg, n2);
+
+    // N11
     const Setting& n11_cfg = new_if_cfg[AMF_CONFIG_STRING_INTERFACE_N11];
     load_interface(n11_cfg, n11);
+
     // SBI API VERSION
     if (!(n11_cfg.lookupValue(
             AMF_CONFIG_STRING_API_VERSION, sbi_api_version))) {
@@ -225,22 +307,47 @@ int amf_config::load(const std::string& config_file) {
       throw(AMF_CONFIG_STRING_API_VERSION "failed");
     }
 
+    // SMF
     const Setting& smf_addr_pool =
         n11_cfg[AMF_CONFIG_STRING_SMF_INSTANCES_POOL];
     int count = smf_addr_pool.getLength();
     for (int i = 0; i < count; i++) {
       const Setting& smf_addr_item = smf_addr_pool[i];
-      smf_inst_t smf_inst;
-      std::string selected;
+      smf_inst_t smf_inst          = {};
+      struct in_addr smf_ipv4_addr = {};
+      unsigned int smf_port        = {};
+      std::string smf_api_version  = {};
+      std::string selected         = {};
+
       smf_addr_item.lookupValue(AMF_CONFIG_STRING_SMF_INSTANCE_ID, smf_inst.id);
-      smf_addr_item.lookupValue(AMF_CONFIG_STRING_IPV4_ADDRESS, smf_inst.ipv4);
-      smf_addr_item.lookupValue(
-          AMF_CONFIG_STRING_SMF_INSTANCE_PORT, smf_inst.port);
-      smf_addr_item.lookupValue(
-          AMF_CONFIG_STRING_SMF_INSTANCE_VERSION, smf_inst.version);
+      if (!use_fqdn_dns) {
+        smf_addr_item.lookupValue(
+            AMF_CONFIG_STRING_IPV4_ADDRESS, smf_inst.ipv4);
+        IPV4_STR_ADDR_TO_INADDR(
+            util::trim(smf_inst.ipv4).c_str(), smf_ipv4_addr,
+            "BAD IPv4 ADDRESS FORMAT FOR SMF !");
+        if (!(smf_addr_item.lookupValue(
+                AMF_CONFIG_STRING_SMF_INSTANCE_PORT, smf_inst.port))) {
+          Logger::amf_app().error(AMF_CONFIG_STRING_SMF_INSTANCE_PORT "failed");
+          throw(AMF_CONFIG_STRING_SMF_INSTANCE_PORT "failed");
+        }
+        smf_addr_item.lookupValue(
+            AMF_CONFIG_STRING_SMF_INSTANCE_VERSION, smf_inst.version);
+        if (!(smf_addr_item.lookupValue(
+                AMF_CONFIG_STRING_SMF_INSTANCE_VERSION, smf_inst.version))) {
+          Logger::amf_app().error(AMF_CONFIG_STRING_SMF_INSTANCE_VERSION
+                                  "failed");
+          throw(AMF_CONFIG_STRING_SMF_INSTANCE_VERSION "failed");
+        }
+      } else {
+        std::string smf_fqdn = {};
+        smf_addr_item.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, smf_fqdn);
+        smf_inst.fqdn = smf_fqdn;
+      }
+
       smf_addr_item.lookupValue(
           AMF_CONFIG_STRING_SMF_INSTANCE_SELECTED, selected);
-      if (!selected.compare("true"))
+      if (boost::iequals(selected, "true"))
         smf_inst.selected = true;
       else
         smf_inst.selected = false;
@@ -248,35 +355,53 @@ int amf_config::load(const std::string& config_file) {
     }
 
     // NRF
-    const Setting& nrf_cfg = new_if_cfg[AMF_CONFIG_STRING_NRF];
-    struct in_addr nrf_ipv4_addr;
-    unsigned int nrf_port = 0;
-    std::string nrf_api_version;
-    string address;
-    nrf_cfg.lookupValue(AMF_CONFIG_STRING_NRF_IPV4_ADDRESS, address);
-    IPV4_STR_ADDR_TO_INADDR(
-        util::trim(address).c_str(), nrf_ipv4_addr,
-        "BAD IPv4 ADDRESS FORMAT FOR NRF !");
-    nrf_addr.ipv4_addr = nrf_ipv4_addr;
-    if (!(nrf_cfg.lookupValue(AMF_CONFIG_STRING_NRF_PORT, nrf_port))) {
-      Logger::amf_app().error(AMF_CONFIG_STRING_NRF_PORT "failed");
-      throw(AMF_CONFIG_STRING_NRF_PORT "failed");
-    }
-    nrf_addr.port = nrf_port;
+    const Setting& nrf_cfg       = new_if_cfg[AMF_CONFIG_STRING_NRF];
+    struct in_addr nrf_ipv4_addr = {};
+    unsigned int nrf_port        = 0;
+    std::string nrf_api_version  = {};
+    string address               = {};
 
-    if (!(nrf_cfg.lookupValue(
-            AMF_CONFIG_STRING_API_VERSION, nrf_api_version))) {
-      Logger::amf_app().error(AMF_CONFIG_STRING_API_VERSION "failed");
-      throw(AMF_CONFIG_STRING_API_VERSION "failed");
+    if (!use_fqdn_dns) {
+      nrf_cfg.lookupValue(AMF_CONFIG_STRING_NRF_IPV4_ADDRESS, address);
+      IPV4_STR_ADDR_TO_INADDR(
+          util::trim(address).c_str(), nrf_ipv4_addr,
+          "BAD IPv4 ADDRESS FORMAT FOR NRF !");
+      nrf_addr.ipv4_addr = nrf_ipv4_addr;
+      if (!(nrf_cfg.lookupValue(AMF_CONFIG_STRING_NRF_PORT, nrf_port))) {
+        Logger::amf_app().error(AMF_CONFIG_STRING_NRF_PORT "failed");
+        throw(AMF_CONFIG_STRING_NRF_PORT "failed");
+      }
+      nrf_addr.port = nrf_port;
+      if (!(nrf_cfg.lookupValue(
+              AMF_CONFIG_STRING_API_VERSION, nrf_api_version))) {
+        Logger::amf_app().error(AMF_CONFIG_STRING_API_VERSION "failed");
+        throw(AMF_CONFIG_STRING_API_VERSION "failed");
+      }
+      nrf_addr.api_version = nrf_api_version;
+    } else {
+      std::string nrf_fqdn = {};
+      nrf_cfg.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, nrf_fqdn);
+      uint8_t addr_type = {};
+      fqdn::resolve(nrf_fqdn, address, nrf_port, addr_type);
+      if (addr_type != 0) {  // IPv6: TODO
+        throw("DO NOT SUPPORT IPV6 ADDR FOR NRF!");
+      } else {  // IPv4
+        IPV4_STR_ADDR_TO_INADDR(
+            util::trim(address).c_str(), nrf_ipv4_addr,
+            "BAD IPv4 ADDRESS FORMAT FOR NRF !");
+        nrf_addr.ipv4_addr   = nrf_ipv4_addr;
+        nrf_addr.port        = nrf_port;
+        nrf_addr.api_version = "v1";  // TODO: get API version
+      }
     }
-    nrf_addr.api_version = nrf_api_version;
 
     // AUSF
-    const Setting& ausf_cfg = new_if_cfg[AMF_CONFIG_STRING_AUSF];
-    struct in_addr ausf_ipv4_addr;
-    unsigned int ausf_port = 0;
-    std::string ausf_api_version;
-    // string address;
+    // TODO: add FQDN option
+    const Setting& ausf_cfg       = new_if_cfg[AMF_CONFIG_STRING_AUSF];
+    struct in_addr ausf_ipv4_addr = {};
+    unsigned int ausf_port        = {};
+    std::string ausf_api_version  = {};
+
     ausf_cfg.lookupValue(AMF_CONFIG_STRING_IPV4_ADDRESS, address);
     IPV4_STR_ADDR_TO_INADDR(
         util::trim(address).c_str(), ausf_ipv4_addr,
@@ -300,6 +425,8 @@ int amf_config::load(const std::string& config_file) {
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
     return -1;
   }
+
+  // Emergency support
   try {
     const Setting& core_config = amf_cfg[AMF_CONFIG_STRING_CORE_CONFIGURATION];
     core_config.lookupValue(
@@ -309,6 +436,9 @@ int amf_config::load(const std::string& config_file) {
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
     return -1;
   }
+
+  // Authentication Info
+  // TODO: remove operator_key, random
   try {
     const Setting& auth = amf_cfg[AMF_CONFIG_STRING_AUTHENTICATION];
     auth.lookupValue(
@@ -324,6 +454,8 @@ int amf_config::load(const std::string& config_file) {
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
     return -1;
   }
+
+  // Integrity/Ciphering algorithms (NAS)
   try {
     const Setting& nas = amf_cfg[AMF_CONFIG_STRING_NAS];
     const Setting& intAlg =
@@ -364,47 +496,6 @@ int amf_config::load(const std::string& config_file) {
     return -1;
   }
 
-  try {
-    const Setting& support_features =
-        amf_cfg[AMF_CONFIG_STRING_SUPPORT_FEATURES];
-    string opt;
-    support_features.lookupValue(
-        AMF_CONFIG_STRING_SUPPORT_FEATURES_NF_REGISTRATION, opt);
-    if (boost::iequals(opt, "yes")) {
-      enable_nf_registration = true;
-    } else {
-      enable_nf_registration = false;
-    }
-
-    support_features.lookupValue(
-        AMF_CONFIG_STRING_SUPPORT_FEATURES_SMF_SELECTION, opt);
-    if (boost::iequals(opt, "yes")) {
-      enable_smf_selection = true;
-    } else {
-      enable_smf_selection = false;
-    }
-
-    support_features.lookupValue(
-        AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_AUSF, opt);
-    if (boost::iequals(opt, "yes")) {
-      enable_external_ausf = true;
-    } else {
-      enable_external_ausf = false;
-    }
-
-    support_features.lookupValue(
-        AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_UDM, opt);
-    if (boost::iequals(opt, "yes")) {
-      enable_external_udm = true;
-    } else {
-      enable_external_udm = false;
-    }
-
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::amf_app().error(
-        "%s : %s, using defaults", nfex.what(), nfex.getPath());
-    return -1;
-  }
   return 1;
 }
 
@@ -453,53 +544,49 @@ void amf_config::display() {
       "- MySQL pass ..............: %s", auth_para.mysql_pass.c_str());
   Logger::config().info(
       "- MySQL DB ................: %s", auth_para.mysql_db.c_str());
-  Logger::config().info(
-      "- operator key ............: %s", auth_para.operator_key.c_str());
-  Logger::config().info(
-      "- random ..................: %s", auth_para.random.c_str());
 
   Logger::config().info("- N2 Networking:");
-  Logger::config().info("    iface .................: %s", n2.if_name.c_str());
-  Logger::config().info("    ip ....................: %s", inet_ntoa(n2.addr4));
-  Logger::config().info("    port ..................: %d", n2.port);
+  Logger::config().info("    Iface .................: %s", n2.if_name.c_str());
+  Logger::config().info("    IP Addr ...............: %s", inet_ntoa(n2.addr4));
+  Logger::config().info("    Port ..................: %d", n2.port);
 
   Logger::config().info("- SBI Networking:");
-  Logger::config().info("    iface .................: %s", n11.if_name.c_str());
+  Logger::config().info("    Iface .................: %s", n11.if_name.c_str());
   Logger::config().info(
-      "    ip ....................: %s", inet_ntoa(n11.addr4));
-  Logger::config().info("    port ..................: %d", n11.port);
+      "    IP Addr ...............: %s", inet_ntoa(n11.addr4));
+  Logger::config().info("    Port ..................: %d", n11.port);
   Logger::config().info(
       "    API version............: %s", sbi_api_version.c_str());
 
   if (enable_nf_registration or enable_smf_selection) {
     Logger::config().info("- NRF:");
     Logger::config().info(
-        "    IP addr ...............: %s", inet_ntoa(nrf_addr.ipv4_addr));
+        "    IP Addr ...............: %s", inet_ntoa(nrf_addr.ipv4_addr));
     Logger::config().info("    Port ..................: %d", nrf_addr.port);
     Logger::config().info(
-        "    Api version ...........: %s", nrf_addr.api_version.c_str());
+        "    API version ...........: %s", nrf_addr.api_version.c_str());
   }
 
   if (enable_external_ausf) {
     Logger::config().info("- AUSF:");
     Logger::config().info(
-        "    IP addr ...............: %s", inet_ntoa(ausf_addr.ipv4_addr));
+        "    IP Addr ...............: %s", inet_ntoa(ausf_addr.ipv4_addr));
     Logger::config().info("    Port ..................: %d", ausf_addr.port);
     Logger::config().info(
-        "    Api version ...........: %s", ausf_addr.api_version.c_str());
+        "    API version ...........: %s", ausf_addr.api_version.c_str());
   }
 
-  Logger::config().info("- Remote SMF Pool.........: ");
-  for (int i = 0; i < smf_pool.size(); i++) {
-    std::string selected;
-    if (smf_pool[i].selected)
-      selected = "true";
-    else
-      selected = "false";
-    Logger::config().info(
-        "    SMF_INSTANCE_ID %d (%s:%s, version %s) is selected: %s",
-        smf_pool[i].id, smf_pool[i].ipv4.c_str(), smf_pool[i].port.c_str(),
-        smf_pool[i].version.c_str(), selected.c_str());
+  if (!enable_smf_selection) {
+    Logger::config().info("- SMF Pool.........: ");
+    for (int i = 0; i < smf_pool.size(); i++) {
+      std::string selected = smf_pool[i].selected ? "true" : "false";
+      std::string smf_info =
+          use_fqdn_dns ? smf_pool[i].fqdn : smf_pool[i].ipv4.c_str();
+      Logger::config().info(
+          "    SMF_INSTANCE_ID %d (%s:%s, version %s) is selected: %s",
+          smf_pool[i].id, smf_info.c_str(), smf_pool[i].port.c_str(),
+          smf_pool[i].version.c_str(), selected.c_str());
+    }
   }
 
   Logger::config().info("- Supported Features:");
@@ -511,6 +598,8 @@ void amf_config::display() {
       "    External AUSF .........: %s", enable_external_ausf ? "Yes" : "No");
   Logger::config().info(
       "    External UDM ..........: %s", enable_external_udm ? "Yes" : "No");
+  Logger::config().info(
+      "    Use FQDN ..............: %s", use_fqdn_dns ? "Yes" : "No");
 }
 
 //------------------------------------------------------------------------------

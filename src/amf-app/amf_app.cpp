@@ -417,13 +417,9 @@ void amf_app::generate_amf_profile() {
   nf_service.nf_service_status = "REGISTERED";
   // IP Endpoint
   ip_endpoint_t endpoint = {};
-  std::vector<struct in_addr> addrs;
-  nf_instance_profile.get_nf_ipv4_addresses(addrs);
-  for (auto a : addrs) {
-    endpoint.ipv4_addresses.push_back(a);
-  }
-  endpoint.transport = "TCP";
-  endpoint.port      = amf_cfg.n11.port;
+  endpoint.ipv4_address  = amf_cfg.n11.addr4;
+  endpoint.transport     = "TCP";
+  endpoint.port          = amf_cfg.n11.port;
   nf_service.ip_endpoints.push_back(endpoint);
 
   nf_instance_profile.add_nf_service(nf_service);
@@ -465,12 +461,17 @@ void amf_app::trigger_nf_registration_request() {
       std::make_shared<itti_n11_register_nf_instance_request>(
           TASK_AMF_APP, TASK_AMF_N11);
   itti_msg->profile = nf_instance_profile;
+
+  amf_n11_inst->register_nf_instance(itti_msg);
+  /*
+
   int ret           = itti_inst->send_msg(itti_msg);
   if (RETURNok != ret) {
     Logger::amf_app().error(
         "Could not send ITTI message %s to task TASK_AMF_N11",
         itti_msg->get_msg_name());
   }
+  */
 }
 
 //------------------------------------------------------------------------------

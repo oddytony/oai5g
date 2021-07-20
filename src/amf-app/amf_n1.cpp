@@ -437,7 +437,7 @@ void amf_n1::nas_signalling_establishment_request_handle(
 
     case SERVICE_REQUEST: {
       Logger::amf_n1().debug("Received service request message, handling...");
-      nc.get()->security_ctx->ul_count.seq_num = ulCount;
+      if (nc.get()) nc.get()->security_ctx->ul_count.seq_num = ulCount;
       service_request_handle(
           true, nc, ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
@@ -1028,14 +1028,14 @@ void amf_n1::registration_request_handle(
   if (!regReq->getUeSecurityCapability(
           encrypt_alg, integrity_alg, security_cap_eea, security_cap_eia)) {
     Logger::amf_n1().warn("No Optional IE UESecurityCapability available");
+    nc.get()->ueSecurityCaplen = regReq->ie_ue_security_capability->getLength();
   }
+
   nc.get()->ueSecurityCapEnc = encrypt_alg;
   nc.get()->ueSecurityCapInt = integrity_alg;
 
   nc.get()->ueSecurityCapEEA = security_cap_eea;
   nc.get()->ueSecurityCapEIA = security_cap_eia;
-
-  nc.get()->ueSecurityCaplen = regReq->ie_ue_security_capability->getLength();
 
   // Get Requested NSSAI (Optional IE), if provided
   std::vector<SNSSAI_t> requestedNssai = {};
