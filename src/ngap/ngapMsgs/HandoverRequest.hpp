@@ -81,7 +81,7 @@ class HandoverRequest {
  private:
   Ngap_NGAP_PDU_t* handoverRequestPdu;
   Ngap_HandoverRequest_t* handoverRequestIEs;
-  /***************** for decoding ****************/
+
   AMF_UE_NGAP_ID* amfUeNgapId;
   Ngap_HandoverType_t* handovertype;
   Cause* cause;

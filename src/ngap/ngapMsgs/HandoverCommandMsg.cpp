@@ -20,6 +20,8 @@
  */
 
 #include "HandoverCommandMsg.hpp"
+#include "logger.hpp"
+
 extern "C" {
 #include "Ngap_NGAP-PDU.h"
 #include "Ngap_PDUSessionResourceHandoverItem.h"
@@ -53,14 +55,15 @@ HandoverCommandMsg::HandoverCommandMsg() {
 HandoverCommandMsg::~HandoverCommandMsg() {}
 
 unsigned long HandoverCommandMsg::getAmfUeNgapId() {
-  return amfUeNgapId->getAMF_UE_NGAP_ID();
+  if (amfUeNgapId) return amfUeNgapId->getAMF_UE_NGAP_ID();
 }
 
 uint32_t HandoverCommandMsg::getRanUeNgapId() {
-  return ranUeNgapId->getRanUeNgapId();
+  if (ranUeNgapId) return ranUeNgapId->getRanUeNgapId();
 }
 
 bool HandoverCommandMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
+  if (!ngap_msg_pdu) return false;
   handoverCommandPdu = ngap_msg_pdu;
 
   if (handoverCommandPdu->present == Ngap_NGAP_PDU_PR_successfulOutcome) {
@@ -74,11 +77,11 @@ bool HandoverCommandMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
       handoverCommandIEs = &handoverCommandPdu->choice.successfulOutcome->value
                                 .choice.HandoverCommand;
     } else {
-      cout << "Check HandoverCommand message error!!!" << endl;
+      Logger::ngap().error("Check HandoverCommand message error");
       return false;
     }
   } else {
-    cout << "HandoverRequired MessageType error!!!" << endl;
+    Logger::ngap().error("HandoverRequired MessageType error");
     return false;
   }
   for (int i = 0; i < handoverCommandIEs->protocolIEs.list.count; i++) {
@@ -92,11 +95,11 @@ bool HandoverCommandMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
                   handoverCommandIEs->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
-            cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -109,11 +112,11 @@ bool HandoverCommandMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
                   handoverCommandIEs->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
-            cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded ngap RAN_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded ngap RAN_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -126,7 +129,7 @@ bool HandoverCommandMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           *ngap_handovertype = handoverCommandIEs->protocolIEs.list.array[i]
                                    ->value.choice.HandoverType;
         } else {
-          cout << "decoded ngap Handover Type IE error" << endl;
+          Logger::ngap().error("Decoded ngap Handover Type IE error");
           return false;
         }
       } break;
@@ -136,8 +139,8 @@ bool HandoverCommandMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
             handoverCommandIEs->protocolIEs.list.array[i]->value.present ==
                 Ngap_HandoverCommandIEs__value_PR_PDUSessionResourceHandoverList) {
         } else {
-          cout << "decoded ngap PDUSessionResourceHandoverList IE error"
-               << endl;
+          Logger::ngap().error(
+              "Decoded ngap PDUSessionResourceHandoverList IE error");
           return false;
         }
       } break;
@@ -147,8 +150,8 @@ bool HandoverCommandMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
             handoverCommandIEs->protocolIEs.list.array[i]->value.present ==
                 Ngap_HandoverCommandIEs__value_PR_PDUSessionResourceToReleaseListHOCmd) {
         } else {
-          cout << "decoded ngap PDUSessionResourceToReleaseListHOCmd IE error"
-               << endl;
+          Logger::ngap().error(
+              "Decoded ngap PDUSessionResourceToReleaseListHOCmd IE error");
           return false;
         }
       } break;
@@ -158,8 +161,8 @@ bool HandoverCommandMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
             handoverCommandIEs->protocolIEs.list.array[i]->value.present ==
                 Ngap_HandoverCommandIEs__value_PR_TargetToSource_TransparentContainer) {
         } else {
-          cout << "decoded ngap TargetToSource_TransparentContainer IE error"
-               << endl;
+          Logger::ngap().error(
+              "Decoded ngap TargetToSource_TransparentContainer IE error");
           return false;
         }
       } break;
@@ -169,12 +172,12 @@ bool HandoverCommandMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
             handoverCommandIEs->protocolIEs.list.array[i]->value.present ==
                 Ngap_HandoverCommandIEs__value_PR_CriticalityDiagnostics) {
         } else {
-          cout << "decoded ngap CriticalityDiagnostics IE error" << endl;
+          Logger::ngap().error("Decoded ngap CriticalityDiagnostics IE error");
           return false;
         }
       } break;
       default: {
-        cout << "decoded ngap message pdu error" << endl;
+        Logger::ngap().error("Decoded NGAP message PDU error");
         return false;
       }
     }
@@ -212,9 +215,8 @@ void HandoverCommandMsg::setMessageType() {
     handoverCommandIEs = &(handoverCommandPdu->choice.successfulOutcome->value
                                .choice.HandoverCommand);
   } else {
-    cout << "[warning] This information doesn't refer to HandoverCommand "
-            "Message!!!"
-         << endl;
+    Logger::ngap().warn(
+        "This information doesn't refer to HandoverCommand message");
   }
 }
 
@@ -230,13 +232,13 @@ void HandoverCommandMsg::setAmfUeNgapId(unsigned long id) {
 
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&handoverCommandIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error");
   // free_wrapper((void**) &ie);
 }
 
@@ -252,13 +254,14 @@ void HandoverCommandMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
 
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&handoverCommandIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error");
+
   // free_wrapper((void**) &ie);
 }
 
@@ -271,7 +274,8 @@ void HandoverCommandMsg::setHandoverType(long type) {
   ie->value.present = Ngap_HandoverCommandIEs__value_PR_HandoverType;
   ie->value.choice.HandoverType = type;
   int ret = ASN_SEQUENCE_ADD(&handoverCommandIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode HandoverType IE error" << endl;
+
+  if (ret != 0) Logger::ngap().error("Encode HandoverType IE error");
   // free_wrapper((void**) &ie);
 }
 
@@ -290,8 +294,10 @@ void HandoverCommandMsg::setPduSessionResourceHandoverList(
     item->pDUSessionID            = list[i].pduSessionId;
     item->handoverCommandTransfer = list[i].HandoverCommandTransfer;
     int ret = ASN_SEQUENCE_ADD(&PDUSessionResourceHandoverList->list, item);
+
     if (ret != 0)
-      cout << "encode PDUSessionResourceHandoverListItem IE error" << endl;
+      Logger::ngap().error(
+          "Encode PDUSessionResourceHandoverListItem IE error");
   }
 
   ie->id          = Ngap_ProtocolIE_ID_id_PDUSessionResourceHandoverList;
@@ -302,7 +308,8 @@ void HandoverCommandMsg::setPduSessionResourceHandoverList(
       *PDUSessionResourceHandoverList;
   int ret = ASN_SEQUENCE_ADD(&handoverCommandIEs->protocolIEs.list, ie);
   if (ret != 0)
-    cout << "encode PDUSessionResourceHandoverList IE error" << endl;
+    Logger::ngap().error("Encode PDUSessionResourceHandoverList IE error");
+
   // free_wrapper((void**) &item);
   // free_wrapper((void**) &ie);
 }
@@ -321,7 +328,7 @@ void HandoverCommandMsg::setTargetToSource_TransparentContainer(
       Ngap_HandoverCommandIEs__value_PR_TargetToSource_TransparentContainer;
   ie->value.choice.TargetToSource_TransparentContainer = targetTosource;
   int ret = ASN_SEQUENCE_ADD(&handoverCommandIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode HandoverType IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode HandoverType IE error");
   // free_wrapper((void**) &ie);
 }
 

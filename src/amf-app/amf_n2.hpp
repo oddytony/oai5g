@@ -58,26 +58,40 @@ class amf_n2 : public ngap::ngap_app {
   void handle_itti_message(itti_ue_radio_capability_indication& itti_msg);
   void handle_itti_message(itti_ue_context_release_command& itti_msg);
   void handle_itti_message(itti_pdu_session_resource_release_command& itti_msg);
-  void handle_itti_message(itti_handover_required& itti_msg);
+  bool handle_itti_message(itti_handover_required& itti_msg);
   void handle_itti_message(itti_handover_request_Ack& itti_msg);
   void handle_itti_message(itti_handover_notify& itti_msg);
-  void handle_itti_message(itti_uplinkranstatsutransfer& itti_msg);
+  void handle_itti_message(itti_uplink_ran_status_transfer& itti_msg);
+  void send_handover_preparation_failure(
+      const unsigned long amf_ue_ngap_id, const uint32_t ran_ue_ngap_id,
+      const sctp_assoc_id_t& gnb_assoc_id);
 
   bool verifyPlmn(std::vector<SupportedItem_t> list);
   std::vector<SupportedItem_t> get_common_plmn(
       std::vector<SupportedItem_t> list);
+
   std::shared_ptr<ue_ngap_context> ran_ue_id_2_ue_ngap_context(
       const uint32_t& ran_ue_ngap_id) const;
-
   bool is_ran_ue_id_2_ue_ngap_context(const uint32_t& ran_ue_ngap_id) const;
-
   void set_ran_ue_ngap_id_2_ue_ngap_context(
       const uint32_t& ran_ue_ngap_id, std::shared_ptr<ue_ngap_context> unc);
+
+  std::shared_ptr<ue_ngap_context> amf_ue_id_2_ue_ngap_context(
+      const unsigned long& amf_ue_ngap_id) const;
+  bool is_amf_ue_id_2_ue_ngap_context(
+      const unsigned long& amf_ue_ngap_id) const;
+  void set_amf_ue_ngap_id_2_ue_ngap_context(
+      const unsigned long& amf_ue_ngap_id,
+      std::shared_ptr<ue_ngap_context> unc);
 
  private:
   std::map<uint32_t, std::shared_ptr<ue_ngap_context>>
       ranid2uecontext;  // ran ue ngap id
   mutable std::shared_mutex m_ranid2uecontext;
+
+  std::map<unsigned long, std::shared_ptr<ue_ngap_context>>
+      amfueid2uecontext;  // amf ue id
+  mutable std::shared_mutex m_amfueid2uecontext;
 };
 
 }  // namespace amf_application

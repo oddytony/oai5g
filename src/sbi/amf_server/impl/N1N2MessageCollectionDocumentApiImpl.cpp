@@ -22,7 +22,6 @@ using namespace amf_application;
 extern void msg_str_2_msg_hex(std::string msg, bstring& b);
 extern void convert_string_2_hex(std::string& input, std::string& output);
 extern itti_mw* itti_inst;
-extern amf_n11* amf_n11_inst;
 extern amf_app* amf_app_inst;
 extern void print_buffer(
     const std::string app, const std::string commit, uint8_t* buf, int len);

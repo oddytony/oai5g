@@ -218,7 +218,7 @@ class itti_handover_required : public itti_msg_n2 {
   itti_handover_required(const task_id_t origin, const task_id_t destination)
       : itti_msg_n2(HANDOVER_REQUIRED, origin, destination) {}
   itti_handover_required(const itti_handover_required& i) : itti_msg_n2(i) {}
-  HandoverRequiredMsg* handvoerRequ;
+  HandoverRequiredMsg* handoverReq;
 };
 
 class itti_handover_request_Ack : public itti_msg_n2 {
@@ -238,12 +238,12 @@ class itti_handover_notify : public itti_msg_n2 {
   HandoverNotifyMsg* handovernotify;
 };
 
-class itti_uplinkranstatsutransfer : public itti_msg_n2 {
+class itti_uplink_ran_status_transfer : public itti_msg_n2 {
  public:
-  itti_uplinkranstatsutransfer(
+  itti_uplink_ran_status_transfer(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(UPLINKRANSTATUSTRANSFER, origin, destination) {}
-  itti_uplinkranstatsutransfer(const itti_uplinkranstatsutransfer& i)
+      : itti_msg_n2(UPLINK_RAN_STATUS_TRANSFER, origin, destination) {}
+  itti_uplink_ran_status_transfer(const itti_uplink_ran_status_transfer& i)
       : itti_msg_n2(i) {}
   UplinkRANStatusTransfer* uplinkrantransfer;
 };

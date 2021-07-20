@@ -52,7 +52,6 @@ using namespace amf_application;
 
 extern itti_mw* itti_inst;
 extern amf_n1* amf_n1_inst;
-extern amf_n11* amf_n11_inst;
 extern amf_app* amf_app_inst;
 
 typedef int (*ngap_message_decoded_callback)(
@@ -158,7 +157,7 @@ int ngap_amf_handle_initial_context_setup_response(
   }
   std::vector<PDUSessionResourceSetupResponseItem_t> list;
   if (!initCtxResp->getPduSessionResourceSetupResponseList(list)) {
-    Logger::ngap().error(
+    Logger::ngap().debug(
         "Decode PduSessionResourceSetupResponseList IE error or this IE is not "
         "available");
     return 0;
@@ -543,7 +542,7 @@ int downlink_ue_associated_nappa_transport(
 int handover_cancel(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p) {
-  Logger::ngap().debug("Sending itti handover cancel to TASK_AMF_N2");
+  Logger::ngap().debug("Sending ITTI Handover Cancel to TASK_AMF_N2");
   return 0;
 }
 
@@ -551,18 +550,18 @@ int handover_cancel(
 int handover_preparation(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p) {
-  Logger::ngap().debug("Sending itti handover preparation to TASK_AMF_N2");
+  Logger::ngap().debug("Sending ITTI Handover Preparation to TASK_AMF_N2");
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
-  HandoverRequiredMsg* handoverrequired = new HandoverRequiredMsg();
-  if (!handoverrequired->decodefrompdu(message_p)) {
-    Logger::ngap().error("decoding HandoverRequired message error");
+  HandoverRequiredMsg* handover_required = new HandoverRequiredMsg();
+  if (!handover_required->decodefrompdu(message_p)) {
+    Logger::ngap().error("Decoding HandoverRequired message error");
     return -1;
   }
   itti_handover_required* itti_handover_requ =
       new itti_handover_required(TASK_NGAP, TASK_AMF_N2);
-  itti_handover_requ->assoc_id     = assoc_id;
-  itti_handover_requ->stream       = stream;
-  itti_handover_requ->handvoerRequ = handoverrequired;
+  itti_handover_requ->assoc_id    = assoc_id;
+  itti_handover_requ->stream      = stream;
+  itti_handover_requ->handoverReq = handover_required;
   std::shared_ptr<itti_handover_required> i =
       std::shared_ptr<itti_handover_required>(itti_handover_requ);
   int ret = itti_inst->send_msg(i);
@@ -578,11 +577,11 @@ int handover_preparation(
 int handover_notification(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p) {
-  Logger::ngap().debug("Sending itti handover Notification to TASK_AMF_N2");
+  Logger::ngap().debug("Sending ITTI Handover Notification to TASK_AMF_N2");
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   HandoverNotifyMsg* handoverNotify = new HandoverNotifyMsg();
   if (!handoverNotify->decodefrompdu(message_p)) {
-    Logger::ngap().error("decoding handoverNotify message error");
+    Logger::ngap().error("Decoding HandoverNotify message error");
     return -1;
   }
   itti_handover_notify* itti_handover_NOTIFY =
@@ -606,12 +605,11 @@ int handover_resource_allocation(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p) {
   Logger::ngap().debug(
-      "Sending itti handover resource allocation to TASK_AMF_N2");
-  /*receive handover request acknowedge*/
+      "Sending ITTI Handover Resource Allocation to TASK_AMF_N2");
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   HandoverRequestAck* handoverRequestAck = new HandoverRequestAck();
   if (!handoverRequestAck->decodefrompdu(message_p)) {
-    Logger::ngap().error("decoding handoverRequestAck message error");
+    Logger::ngap().error("Decoding Handover Request Acknowledge message error");
     return -1;
   }
   itti_handover_request_Ack* itti_handover_requ_Ack =
@@ -873,22 +871,22 @@ int uplink_ran_status_transfer(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p) {
   Logger::ngap().debug(
-      "Sending itti uplink ran status transfer to TASK_AMF_N2");
-  /*receive uplinkranstatustransfer*/
+      "Sending ITTI Uplink RAN Status Transfer to TASK_AMF_N2");
+
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   UplinkRANStatusTransfer* Uplinkranstatustransfer =
       new UplinkRANStatusTransfer();
   if (!Uplinkranstatustransfer->defromPDU(message_p)) {
-    Logger::ngap().error("Decoding Uplinkranstatustransfer message error");
+    Logger::ngap().error("Decoding Uplink RAN Status Transfer message error");
     return -1;
   }
-  itti_uplinkranstatsutransfer* itti_uplinkran_sta_tran =
-      new itti_uplinkranstatsutransfer(TASK_NGAP, TASK_AMF_N2);
+  itti_uplink_ran_status_transfer* itti_uplinkran_sta_tran =
+      new itti_uplink_ran_status_transfer(TASK_NGAP, TASK_AMF_N2);
   itti_uplinkran_sta_tran->assoc_id          = assoc_id;
   itti_uplinkran_sta_tran->stream            = stream;
   itti_uplinkran_sta_tran->uplinkrantransfer = Uplinkranstatustransfer;
-  std::shared_ptr<itti_uplinkranstatsutransfer> i =
-      std::shared_ptr<itti_uplinkranstatsutransfer>(itti_uplinkran_sta_tran);
+  std::shared_ptr<itti_uplink_ran_status_transfer> i =
+      std::shared_ptr<itti_uplink_ran_status_transfer>(itti_uplinkran_sta_tran);
   int ret = itti_inst->send_msg(i);
   if (0 != ret) {
     Logger::ngap().error(
@@ -960,8 +958,7 @@ ngap_message_decoded_callback messages_callback[][3] = {
     {overload_stop, overload_stop, overload_stop},    /*OverloadStop*/
     {paging, paging, paging},                         /*Paging*/
     {ngap_amf_handle_path_switch_request, ngap_amf_handle_path_switch_request,
-     ngap_amf_handle_path_switch_request},  //{ngap_amf_handle_path_switch_request,0,0},
-                                            ///*PathSwitchRequest*
+     ngap_amf_handle_path_switch_request}, /*PathSwitchRequest*/
     {pdu_session_resource_modify, pdu_session_resource_modify,
      pdu_session_resource_modify}, /*PDUSessionResourceModify*/
     {pdu_session_resource_modify_indication,
