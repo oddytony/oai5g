@@ -67,7 +67,9 @@ pipeline {
       "Build RHEL8 AMF Image",
       "Static Code Analysis",
       "Code Formatting Checker",
-      "Test with DsTester"
+      "Bracket Test with DsTester",
+      "Test with DsTester on Docker environment",
+      "Test with DsTester on OC environment"
     ])
 
   }
