@@ -215,9 +215,17 @@ void amf_n11::handle_itti_message(
   pdu_session_update_request["n2SmInfoType"]          = itti_msg.n2sm_info_type;
   pdu_session_update_request["n2SmInfo"]["contentId"] = "n2msg";
   std::string json_part = pdu_session_update_request.dump();
-  std::string n2SmMsg;
+  std::string n2SmMsg   = {};
   octet_stream_2_hex_stream(
       (uint8_t*) bdata(itti_msg.n2sm), blength(itti_msg.n2sm), n2SmMsg);
+
+  // For N2 HO
+  if (itti_msg.n2sm_info_type.compare("HANDOVER_REQUIRED") == 0) {
+    pdu_session_update_request["hoState"] = "PREPARING";
+  } else if (itti_msg.n2sm_info_type.compare("HANDOVER_REQ_ACK") == 0) {
+    pdu_session_update_request["hoState"] = "PREPARED";
+  }
+
   curl_http_client(
       remote_uri, json_part, "", n2SmMsg, supi, itti_msg.pdu_session_id,
       itti_msg.promise_id);
@@ -579,12 +587,6 @@ void amf_n11::curl_http_client(
     Logger::amf_n11().debug("Get response with HTTP code (%d)", httpCode);
     Logger::amf_n11().debug("response body %s", response.c_str());
 
-    // Notify to the result if necessary
-    // TODO: Notify with the N3 information
-    if (promise_id > 0) {
-      amf_app_inst->trigger_process_response(promise_id, httpCode);
-    }
-
     if (static_cast<http_response_codes_e>(httpCode) ==
         http_response_codes_e::HTTP_RESPONSE_CODE_0) {
       // TODO: should be removed
@@ -593,6 +595,8 @@ void amf_n11::curl_http_client(
       // free curl before returning
       curl_slist_free_all(headers);
       curl_easy_cleanup(curl);
+      curl_global_cleanup();
+      free_wrapper((void**) &body_data);
       return;
     }
 
@@ -611,9 +615,12 @@ void amf_n11::curl_http_client(
         Logger::amf_n11().error("There's no content in the response");
         curl_slist_free_all(headers);
         curl_easy_cleanup(curl);
+        curl_global_cleanup();
+        free_wrapper((void**) &body_data);
         // TODO: send context response error
         return;
       }
+      // TODO: HO
 
       // Transfer N1 to gNB/UE if available
       if (number_parts > 1) {
@@ -668,7 +675,25 @@ void amf_n11::curl_http_client(
               "Could not get Json content from the response");
           curl_slist_free_all(headers);
           curl_easy_cleanup(curl);
+          curl_global_cleanup();
+          free_wrapper((void**) &body_data);
           // TODO:
+          return;
+        }
+
+        // For N2 HO
+        bool is_ho_procedure = false;
+        if (response_data.find("hoState") != response_data.end()) {
+          is_ho_procedure = true;
+        }
+        // Notify to the result
+        if ((promise_id > 0) and (is_ho_procedure)) {
+          amf_app_inst->trigger_process_response(
+              promise_id, n1sm);  // actually, N2 SM Info
+          curl_slist_free_all(headers);
+          curl_easy_cleanup(curl);
+          curl_global_cleanup();
+          free_wrapper((void**) &body_data);
           return;
         }
 

@@ -162,8 +162,8 @@ class amf_app {
   void trigger_process_response(uint32_t pid, uint32_t http_code);
 
   void add_promise(
-      uint32_t pid, boost::shared_ptr<boost::promise<GtpTunnel_t>>& p);
-  void trigger_process_response(uint32_t pid, GtpTunnel_t gtp_info);
+      uint32_t pid, boost::shared_ptr<boost::promise<std::string>>& p);
+  void trigger_process_response(uint32_t pid, std::string n2_sm);
 
  private:
   // context management
@@ -175,13 +175,9 @@ class amf_app {
   std::map<std::string, std::shared_ptr<ue_context>> supi2ue_ctx;
   mutable std::shared_mutex m_supi2ue_ctx;
 
-  mutable std::shared_mutex m_curl_handle_responses;
-  std::map<uint32_t, boost::shared_ptr<boost::promise<uint32_t>>>
-      curl_handle_responses;
-
-  mutable std::shared_mutex m_curl_handle_responses_gtp;
-  std::map<uint32_t, boost::shared_ptr<boost::promise<GtpTunnel_t>>>
-      curl_handle_responses_gtp;
+  mutable std::shared_mutex m_curl_handle_responses_n2_sm;
+  std::map<uint32_t, boost::shared_ptr<boost::promise<std::string>>>
+      curl_handle_responses_n2_sm;
 };
 
 }  // namespace amf_application

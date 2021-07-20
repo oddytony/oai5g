@@ -66,13 +66,11 @@ amf_app::amf_app(const amf_config& amf_cfg)
     : m_amf_ue_ngap_id2ue_ctx(),
       m_ue_ctx_key(),
       m_supi2ue_ctx(),
-      m_curl_handle_responses(),
-      m_curl_handle_responses_gtp() {
-  amf_ue_ngap_id2ue_ctx     = {};
-  ue_ctx_key                = {};
-  supi2ue_ctx               = {};
-  curl_handle_responses     = {};
-  curl_handle_responses_gtp = {};
+      m_curl_handle_responses_n2_sm() {
+  amf_ue_ngap_id2ue_ctx       = {};
+  ue_ctx_key                  = {};
+  supi2ue_ctx                 = {};
+  curl_handle_responses_n2_sm = {};
   Logger::amf_app().startup("Creating AMF application functionality layer");
   if (itti_inst->create_task(TASK_AMF_APP, amf_app_task, nullptr)) {
     Logger::amf_app().error("Cannot create task TASK_AMF_APP");
@@ -493,48 +491,21 @@ void amf_app::trigger_nf_deregistration() {
 
 //---------------------------------------------------------------------------------------------
 void amf_app::add_promise(
-    uint32_t id, boost::shared_ptr<boost::promise<uint32_t>>& p) {
-  std::unique_lock lock(m_curl_handle_responses);
-  curl_handle_responses.emplace(id, p);
-}
-
-//---------------------------------------------------------------------------------------------
-void amf_app::remove_promise(uint32_t id) {
-  std::unique_lock lock(m_curl_handle_responses);
-  curl_handle_responses.erase(id);
+    uint32_t id, boost::shared_ptr<boost::promise<std::string>>& p) {
+  std::unique_lock lock(m_curl_handle_responses_n2_sm);
+  curl_handle_responses_n2_sm.emplace(id, p);
 }
 
 //------------------------------------------------------------------------------
-void amf_app::trigger_process_response(uint32_t pid, uint32_t http_code) {
+void amf_app::trigger_process_response(uint32_t pid, std::string n2_sm) {
   Logger::amf_app().debug(
       "Trigger process response: Set promise with ID %u "
       "to ready",
       pid);
-  std::unique_lock lock(m_curl_handle_responses);
-  if (curl_handle_responses.count(pid) > 0) {
-    curl_handle_responses[pid]->set_value(http_code);
+  std::unique_lock lock(m_curl_handle_responses_n2_sm);
+  if (curl_handle_responses_n2_sm.count(pid) > 0) {
+    curl_handle_responses_n2_sm[pid]->set_value(n2_sm);
     // Remove this promise from list
-    curl_handle_responses.erase(pid);
-  }
-}
-
-//---------------------------------------------------------------------------------------------
-void amf_app::add_promise(
-    uint32_t id, boost::shared_ptr<boost::promise<GtpTunnel_t>>& p) {
-  std::unique_lock lock(m_curl_handle_responses_gtp);
-  curl_handle_responses_gtp.emplace(id, p);
-}
-
-//------------------------------------------------------------------------------
-void amf_app::trigger_process_response(uint32_t pid, GtpTunnel_t gtp_info) {
-  Logger::amf_app().debug(
-      "Trigger process response: Set promise with ID %u "
-      "to ready",
-      pid);
-  std::unique_lock lock(m_curl_handle_responses);
-  if (curl_handle_responses_gtp.count(pid) > 0) {
-    curl_handle_responses_gtp[pid]->set_value(gtp_info);
-    // Remove this promise from list
-    curl_handle_responses_gtp.erase(pid);
+    curl_handle_responses_n2_sm.erase(pid);
   }
 }

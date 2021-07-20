@@ -1213,35 +1213,35 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   std::vector<PDUSessionResourceSetupRequestItem_t> list;
   PDUSessionResourceSetupRequestItem_t item = {};
 
-  std::map<uint32_t, boost::shared_future<uint32_t>> curl_responses;
+  std::map<uint8_t, boost::shared_future<std::string>> curl_responses;
 
   for (auto pdu_session_resource : pdu_session_resource_list) {
     std::shared_ptr<pdu_session_context> psc = {};
     if (amf_app_inst->find_pdu_session_context(
             supi, pdu_session_resource.pduSessionId, psc)) {
-      item.pduSessionId      = psc.get()->pdu_session_id;
-      item.s_nssai.sst       = psc.get()->snssai.sST;
-      item.s_nssai.sd        = psc.get()->snssai.sD;
-      item.pduSessionNAS_PDU = nullptr;
+      /*      item.pduSessionId      = psc.get()->pdu_session_id;
+            item.s_nssai.sst       = psc.get()->snssai.sST;
+            item.s_nssai.sd        = psc.get()->snssai.sD;
+            item.pduSessionNAS_PDU = nullptr;
 
-      item.pduSessionResourceSetupRequestTransfer.buf =
-          pdu_session_resource.HandoverRequiredTransfer.buf;
-      item.pduSessionResourceSetupRequestTransfer.size =
-          pdu_session_resource.HandoverRequiredTransfer.size;
-      list.push_back(item);
-
+            item.pduSessionResourceSetupRequestTransfer.buf =
+                pdu_session_resource.HandoverRequiredTransfer.buf;
+            item.pduSessionResourceSetupRequestTransfer.size =
+                pdu_session_resource.HandoverRequiredTransfer.size;
+            list.push_back(item);
+      */
       // Send PDUSessionUpdateSMContextRequest to SMF for each active PDU
       // sessions
 
       // Generate a promise and associate this promise to the curl handle
       uint32_t promise_id = amf_app_inst->generate_promise_id();
       Logger::amf_n2().debug("Promise ID generated %d", promise_id);
-      boost::shared_ptr<boost::promise<uint32_t>> p =
-          boost::make_shared<boost::promise<uint32_t>>();
-      boost::shared_future<uint32_t> f = p->get_future();
+      boost::shared_ptr<boost::promise<std::string>> p =
+          boost::make_shared<boost::promise<std::string>>();
+      boost::shared_future<std::string> f = p->get_future();
       amf_app_inst->add_promise(promise_id, p);
 
-      curl_responses.emplace(promise_id, f);
+      curl_responses.emplace(psc.get()->pdu_session_id, f);
 
       Logger::amf_n2().debug(
           "Sending ITTI to trigger PDUSessionUpdateSMContextRequest to SMF to "
@@ -1269,27 +1269,6 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
     }
   }
 
-  /*
-  for (auto pdu_session : pdu_sessions) {
-    if (pdu_session.get() != nullptr) {
-      item.pduSessionId      = pdu_session.get()->pdu_session_id;
-      item.s_nssai.sst       = pdu_session.get()->snssai.sST;
-      item.s_nssai.sd        = pdu_session.get()->snssai.sD;
-      item.pduSessionNAS_PDU = NULL;
-      bstring n2sm           = pdu_session.get()->n2sm;
-      if (blength(pdu_session.get()->n2sm) != 0) {
-        item.pduSessionResourceSetupRequestTransfer.buf =
-            (uint8_t*) bdata(pdu_session.get()->n2sm);
-        item.pduSessionResourceSetupRequestTransfer.size =
-            blength(pdu_session.get()->n2sm);
-      } else {
-        Logger::amf_n2().error("n2sm empty!");
-      }
-      list.push_back(item);
-    }
-  }
-*/
-
   // TODO: Handover Response supervision
   // Wait until receiving all responses from SMFs before sending Handover
   bool result = true;
@@ -1303,16 +1282,33 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
       assert(curl_responses.begin()->second.has_value());
       assert(!curl_responses.begin()->second.has_exception());
       // Wait for the result from APP and send reply to AMF
-      uint32_t response_code = curl_responses.begin()->second.get();
-
-      if (static_cast<http_response_codes_e>(response_code) ==
-          http_response_codes_e::HTTP_RESPONSE_CODE_200_OK) {
+      std::string n2_sm = curl_responses.begin()->second.get();
+      Logger::ngap().debug(
+          "Got result for PDU Session ID %d", curl_responses.begin()->first);
+      if (n2_sm.size() > 0) {
         result = result && true;
+
+        std::shared_ptr<pdu_session_context> psc = {};
+        if (amf_app_inst->find_pdu_session_context(
+                supi, curl_responses.begin()->first, psc)) {
+          item.pduSessionId      = psc.get()->pdu_session_id;
+          item.s_nssai.sst       = psc.get()->snssai.sST;
+          item.s_nssai.sd        = psc.get()->snssai.sD;
+          item.pduSessionNAS_PDU = nullptr;
+          unsigned int data_len  = n2_sm.length();
+          unsigned char* data    = (unsigned char*) malloc(data_len + 1);
+          memset(data, 0, data_len + 1);
+          memcpy((void*) data, (void*) n2_sm.c_str(), data_len);
+          item.pduSessionResourceSetupRequestTransfer.buf  = data;
+          item.pduSessionResourceSetupRequestTransfer.size = data_len;
+          list.push_back(item);
+          // free memory
+          free_wrapper((void**) &data);
+        }
+
       } else {
         result = false;
       }
-      Logger::ngap().debug(
-          "Got result for promise ID %d", curl_responses.begin()->first);
     } else {
       result = true;
     }
@@ -1407,19 +1403,19 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   Logger::ngap().debug("QFI %lu", qosflowidentifiervalue);
 
   // Send PDUSessionUpdateSMContextRequest to SMF for each active PDU sessions
-  std::map<uint32_t, boost::shared_future<GtpTunnel_t>> curl_responses;
+  std::map<uint8_t, boost::shared_future<std::string>> curl_responses;
 
   for (auto pdu_session_resource : list) {
     // Generate a promise and associate this promise to the curl handle
     uint32_t promise_id = amf_app_inst->generate_promise_id();
     Logger::amf_n2().debug("Promise ID generated %d", promise_id);
 
-    boost::shared_ptr<boost::promise<GtpTunnel_t>> p =
-        boost::make_shared<boost::promise<GtpTunnel_t>>();
-    boost::shared_future<GtpTunnel_t> f = p->get_future();
+    boost::shared_ptr<boost::promise<std::string>> p =
+        boost::make_shared<boost::promise<std::string>>();
+    boost::shared_future<std::string> f = p->get_future();
     amf_app_inst->add_promise(promise_id, p);
 
-    curl_responses.emplace(promise_id, f);
+    curl_responses.emplace(pdu_session_resource.pduSessionId, f);
 
     Logger::amf_n2().debug(
         "Sending ITTI to trigger PDUSessionUpdateSMContextRequest to SMF to "
@@ -1445,30 +1441,6 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
           i->get_msg_name());
     }
   }
-  // TODO: wait for response from SMF and transfer T-RAN N3 information/ or
-  // T-UPF to the source gNB
-
-  bool result = true;
-  while (!curl_responses.empty()) {
-    boost::future_status status;
-    // wait for timeout or ready
-    status = curl_responses.begin()->second.wait_for(
-        boost::chrono::milliseconds(FUTURE_STATUS_TIMEOUT_MS));
-    if (status == boost::future_status::ready) {
-      assert(curl_responses.begin()->second.is_ready());
-      assert(curl_responses.begin()->second.has_value());
-      assert(!curl_responses.begin()->second.has_exception());
-      // Wait for the result from APP and send reply to AMF
-      GtpTunnel_t gtp_info = curl_responses.begin()->second.get();
-      // TODO: process gtp_info
-      Logger::ngap().debug(
-          "Got result for promise ID %d", curl_responses.begin()->first);
-    } else {
-      result = true;
-    }
-    curl_responses.erase(curl_responses.begin());
-  }
-  // TODO: process result
 
   // send HandoverCommandMsg to Source gnb
   std::unique_ptr<HandoverCommandMsg> handovercommand =
@@ -1482,39 +1454,80 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
 
   std::vector<PDUSessionResourceHandoverItem_t> handover_list;
   PDUSessionResourceHandoverItem_t item = {};
-  item.pduSessionId                     = list[0].pduSessionId;
-  // qosFLowtobeforwardedlist
-  std::vector<QosFlowToBeForwardedItem_t> forward_list;
-  QosFlowToBeForwardedItem_t forward_item;
-  forward_item.QFI = qosflowidentifiervalue;
-  forward_list.push_back(forward_item);
-  // set dlforwardingup_tnlinformation
-  // TransportLayerAddress *transportlayeraddress = new TransportLayerAddress();
-  // transportlayeraddress->setTransportLayerAddress(n3_ip_address);
-  // GtpTeid *gtpTeid = new GtpTeid();
-  // gtpTeid->setGtpTeid(teid);
-  PDUSessionResourceHandoverCommandTransfer* handovercommandtransfer =
-      new PDUSessionResourceHandoverCommandTransfer();
-  handovercommandtransfer->setQosFlowToBeForwardedList(forward_list);
-  GtpTunnel_t uptlinfo = {};
-  uptlinfo.gtp_teid    = teid;
-  uptlinfo.ip_address  = n3_ip_address;
-  handovercommandtransfer->setUPTransportLayerInformation(uptlinfo);
 
-  uint8_t buffer_ho_cmd_transfer[BUFFER_SIZE_512];
-  int encoded_size =
-      handovercommandtransfer->encodePDUSessionResourceHandoverCommandTransfer(
-          buffer_ho_cmd_transfer, BUFFER_SIZE_512);
-  item.HandoverCommandTransfer.buf  = buffer_ho_cmd_transfer;
-  item.HandoverCommandTransfer.size = encoded_size;
-  handover_list.push_back(item);
+  // TODO: wait for response from SMF and transfer T-RAN N3 information/ or
+  // T-UPF to the source gNB
+  bool result = true;
+  while (!curl_responses.empty()) {
+    boost::future_status status;
+    // wait for timeout or ready
+    status = curl_responses.begin()->second.wait_for(
+        boost::chrono::milliseconds(FUTURE_STATUS_TIMEOUT_MS));
+    if (status == boost::future_status::ready) {
+      assert(curl_responses.begin()->second.is_ready());
+      assert(curl_responses.begin()->second.has_value());
+      assert(!curl_responses.begin()->second.has_exception());
+      // Wait for the result from APP and send reply to AMF
+      std::string n2_sm = curl_responses.begin()->second.get();
+      Logger::ngap().debug(
+          "Got result for PDU Session ID %d", curl_responses.begin()->first);
+      if (n2_sm.size() > 0) {
+        result                = result && true;
+        item.pduSessionId     = curl_responses.begin()->first;
+        unsigned int data_len = n2_sm.length();
+        unsigned char* data   = (unsigned char*) malloc(data_len + 1);
+        memset(data, 0, data_len + 1);
+        memcpy((void*) data, (void*) n2_sm.c_str(), data_len);
+        item.HandoverCommandTransfer.buf  = data;
+        item.HandoverCommandTransfer.size = data_len;
+        handover_list.push_back(item);
+        // free memory
+        free_wrapper((void**) &data);
+
+      } else {
+        result = false;
+      }
+    } else {
+      result = true;
+    }
+    curl_responses.erase(curl_responses.begin());
+  }
+  /*
+    item.pduSessionId                     = list[0].pduSessionId;
+    // qosFLowtobeforwardedlist
+    std::vector<QosFlowToBeForwardedItem_t> forward_list;
+    QosFlowToBeForwardedItem_t forward_item;
+    forward_item.QFI = qosflowidentifiervalue;
+    forward_list.push_back(forward_item);
+    // set dlforwardingup_tnlinformation
+    // TransportLayerAddress *transportlayeraddress = new
+    TransportLayerAddress();
+    // transportlayeraddress->setTransportLayerAddress(n3_ip_address);
+    // GtpTeid *gtpTeid = new GtpTeid();
+    // gtpTeid->setGtpTeid(teid);
+    PDUSessionResourceHandoverCommandTransfer* handovercommandtransfer =
+        new PDUSessionResourceHandoverCommandTransfer();
+    handovercommandtransfer->setQosFlowToBeForwardedList(forward_list);
+    GtpTunnel_t uptlinfo = {};
+    uptlinfo.gtp_teid    = teid;
+    uptlinfo.ip_address  = n3_ip_address;
+    handovercommandtransfer->setUPTransportLayerInformation(uptlinfo);
+
+    uint8_t buffer_ho_cmd_transfer[BUFFER_SIZE_512];
+    int encoded_size =
+        handovercommandtransfer->encodePDUSessionResourceHandoverCommandTransfer(
+            buffer_ho_cmd_transfer, BUFFER_SIZE_512);
+    item.HandoverCommandTransfer.buf  = buffer_ho_cmd_transfer;
+    item.HandoverCommandTransfer.size = encoded_size;
+    handover_list.push_back(item);
+  */
 
   handovercommand->setPduSessionResourceHandoverList(handover_list);
   handovercommand->setTargetToSource_TransparentContainer(targetTosource);
 
   uint8_t buffer[BUFFER_SIZE_1024];
-  encoded_size = handovercommand->encode2buffer(buffer, BUFFER_SIZE_1024);
-  bstring b    = blk2bstr(buffer, encoded_size);
+  int encoded_size = handovercommand->encode2buffer(buffer, BUFFER_SIZE_1024);
+  bstring b        = blk2bstr(buffer, encoded_size);
 
   sctp_s_38412.sctp_send_msg(unc.get()->gnb_assoc_id, 0, &b);
 }
