@@ -45,7 +45,7 @@ Based on document **3GPP TS 23.501 V16.0.0 §6.2.1**.
 | 4      | Registration management                                             | :heavy_check_mark: |                                             |
 | 5      | Connection management                                               | :heavy_check_mark: |                                             |
 | 6      | Reachability management                                             | :x:                |                                             |
-| 7      | Mobility Management                                                 | :x:                |                                             |
+| 7      | Mobility Management                                                 | :heavy_check_mark: | (Experimental) Support N2 Handover          |
 | 8      | Lawful intercept (for AMF events and interface to LI System)        | :x:                |                                             |
 | 9      | Provide transport for SM messages between UE and SMF                | :heavy_check_mark: |                                             |
 | 10     | Transparent proxy for routing SM messages                           | :x:                |                                             |
