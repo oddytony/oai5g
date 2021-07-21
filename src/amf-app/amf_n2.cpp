@@ -1402,6 +1402,10 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
       (long) QosFlowWithDataForwardinglist[0].qosFlowIdentifier;
   Logger::ngap().debug("QFI %lu", qosflowidentifiervalue);
 
+  std::shared_ptr<nas_context> nc =
+      amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+  string supi = "imsi-" + nc.get()->imsi;
+
   // Send PDUSessionUpdateSMContextRequest to SMF for each active PDU sessions
   std::map<uint8_t, boost::shared_future<std::string>> curl_responses;
 
@@ -1449,8 +1453,6 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   handovercommand->setAmfUeNgapId(amf_ue_ngap_id);
   handovercommand->setRanUeNgapId(unc.get()->ran_ue_ngap_id);
   handovercommand->setHandoverType(Ngap_HandoverType_intra5gs);
-  std::shared_ptr<nas_context> nc =
-      amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
 
   std::vector<PDUSessionResourceHandoverItem_t> handover_list;
   PDUSessionResourceHandoverItem_t item = {};
@@ -1483,7 +1485,11 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
         handover_list.push_back(item);
         // free memory
         free_wrapper((void**) &data);
-
+        std::shared_ptr<pdu_session_context> psc = {};
+        if (amf_app_inst->find_pdu_session_context(
+                supi, item.pduSessionId, psc)) {
+          psc.get()->is_ho_accepted = true;
+        }
       } else {
         result = false;
       }
@@ -1562,6 +1568,84 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
     return;
   }
 
+  std::shared_ptr<nas_context> nc =
+      amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+  string supi = "imsi-" + nc.get()->imsi;
+
+  std::vector<std::shared_ptr<pdu_session_context>> sessions_ctx;
+
+  if (!amf_app_inst->get_pdu_sessions_context(supi, sessions_ctx)) {
+  }
+
+  // Send PDUSessionUpdateSMContextRequest to SMF for accepted PDU sessions
+  std::map<uint8_t, boost::shared_future<std::string>> curl_responses;
+
+  for (auto pdu_session : sessions_ctx) {
+    if (pdu_session.get()->is_ho_accepted) {
+      // Generate a promise and associate this promise to the curl handle
+      uint32_t promise_id = amf_app_inst->generate_promise_id();
+      Logger::amf_n2().debug("Promise ID generated %d", promise_id);
+
+      boost::shared_ptr<boost::promise<std::string>> p =
+          boost::make_shared<boost::promise<std::string>>();
+      boost::shared_future<std::string> f = p->get_future();
+      amf_app_inst->add_promise(promise_id, p);
+
+      curl_responses.emplace(pdu_session.get()->pdu_session_id, f);
+
+      Logger::amf_n2().debug(
+          "Sending ITTI to trigger PDUSessionUpdateSMContextRequest to SMF to "
+          "task TASK_AMF_N11");
+      itti_nsmf_pdusession_update_sm_context* itti_msg =
+          new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
+      itti_msg->pdu_session_id = pdu_session.get()->pdu_session_id;
+
+      // TODO: Secondary RAT Usage
+      itti_msg->n2sm           = blk2bstr("", 0);
+      itti_msg->is_n2sm_set    = true;
+      itti_msg->n2sm_info_type = "SECONDARY_RAT_USAGE";
+
+      itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
+      itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
+      itti_msg->promise_id     = promise_id;
+
+      std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i =
+          std::shared_ptr<itti_nsmf_pdusession_update_sm_context>(itti_msg);
+      int ret = itti_inst->send_msg(i);
+      if (0 != ret) {
+        Logger::ngap().error(
+            "Could not send ITTI message %s to task TASK_AMF_N11",
+            i->get_msg_name());
+      }
+    }
+  }
+
+  bool result = true;
+  while (!curl_responses.empty()) {
+    boost::future_status status;
+    // wait for timeout or ready
+    status = curl_responses.begin()->second.wait_for(
+        boost::chrono::milliseconds(FUTURE_STATUS_TIMEOUT_MS));
+    if (status == boost::future_status::ready) {
+      assert(curl_responses.begin()->second.is_ready());
+      assert(curl_responses.begin()->second.has_value());
+      assert(!curl_responses.begin()->second.has_exception());
+      // Wait for the result from APP and send reply to AMF
+      std::string pdu_session_id_str = curl_responses.begin()->second.get();
+      Logger::ngap().debug(
+          "Got result for PDU Session ID %d", curl_responses.begin()->first);
+      if (pdu_session_id_str.size() > 0) {
+        result = result && true;
+      } else {
+        result = false;
+      }
+    } else {
+      result = true;
+    }
+    curl_responses.erase(curl_responses.begin());
+  }
+
+  // Send UE Release Command to Source gNB
   std::unique_ptr<UEContextReleaseCommandMsg> ueContextReleaseCommand =
       std::make_unique<UEContextReleaseCommandMsg>();
   ueContextReleaseCommand->setMessageType();
@@ -1574,8 +1658,7 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
   int encoded_size =
       ueContextReleaseCommand->encode2buffer(buffer, BUFFER_SIZE_1024);
   bstring b = blk2bstr(buffer, encoded_size);
-  std::shared_ptr<nas_context> nc =
-      amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+
   sctp_s_38412.sctp_send_msg(unc.get()->gnb_assoc_id, 0, &b);
 
   /*std::shared_ptr<nas_context> nc =

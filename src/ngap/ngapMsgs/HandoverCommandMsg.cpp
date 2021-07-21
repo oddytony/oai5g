@@ -41,25 +41,31 @@ using namespace std;
 namespace ngap {
 
 HandoverCommandMsg::HandoverCommandMsg() {
-  amfUeNgapId                          = NULL;
-  ranUeNgapId                          = NULL;
-  ngap_handovertype                    = NULL;
-  NASSecurityParametersFromNGRAN       = NULL;
-  PDUSessionResourceHandoverList       = NULL;
-  PDUSessionResourceToReleaseListHOCmd = NULL;
-  TargetToSource_TransparentContainer  = NULL;
-  CriticalityDiagnostics               = NULL;
-  handoverCommandPdu                   = NULL;
-  handoverCommandIEs                   = NULL;
+  amfUeNgapId                          = nullptr;
+  ranUeNgapId                          = nullptr;
+  ngap_handovertype                    = nullptr;
+  NASSecurityParametersFromNGRAN       = nullptr;
+  PDUSessionResourceHandoverList       = nullptr;
+  PDUSessionResourceToReleaseListHOCmd = nullptr;
+  TargetToSource_TransparentContainer  = nullptr;
+  CriticalityDiagnostics               = nullptr;
+  handoverCommandPdu                   = nullptr;
+  handoverCommandIEs                   = nullptr;
 }
 HandoverCommandMsg::~HandoverCommandMsg() {}
 
 unsigned long HandoverCommandMsg::getAmfUeNgapId() {
-  if (amfUeNgapId) return amfUeNgapId->getAMF_UE_NGAP_ID();
+  if (amfUeNgapId)
+    return amfUeNgapId->getAMF_UE_NGAP_ID();
+  else
+    return 0;
 }
 
 uint32_t HandoverCommandMsg::getRanUeNgapId() {
-  if (ranUeNgapId) return ranUeNgapId->getRanUeNgapId();
+  if (ranUeNgapId)
+    return ranUeNgapId->getRanUeNgapId();
+  else
+    return 0;
 }
 
 bool HandoverCommandMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {

@@ -40,24 +40,27 @@ using namespace std;
 namespace ngap {
 
 HandoverRequest::HandoverRequest() {
-  amfUeNgapId                         = NULL;
-  handovertype                        = NULL;
-  cause                               = NULL;
-  ueAggregateMaximumBitRate           = NULL;
-  ueSecurityCapabilities              = NULL;
-  SecurityContext                     = NULL;
-  PDUSessionResourceSetupList         = NULL;
-  allowedNSSAI                        = NULL;
-  SourceToTarget_TransparentContainer = NULL;
-  mobilityrestrictionlist             = NULL;
-  guami                               = NULL;
-  handoverRequestPdu                  = NULL;
-  handoverRequestIEs                  = NULL;
+  amfUeNgapId                         = nullptr;
+  handovertype                        = nullptr;
+  cause                               = nullptr;
+  ueAggregateMaximumBitRate           = nullptr;
+  ueSecurityCapabilities              = nullptr;
+  SecurityContext                     = nullptr;
+  PDUSessionResourceSetupList         = nullptr;
+  allowedNSSAI                        = nullptr;
+  SourceToTarget_TransparentContainer = nullptr;
+  mobilityrestrictionlist             = nullptr;
+  guami                               = nullptr;
+  handoverRequestPdu                  = nullptr;
+  handoverRequestIEs                  = nullptr;
 }
 HandoverRequest::~HandoverRequest() {}
 
 unsigned long HandoverRequest::getAmfUeNgapId() {
-  if (amfUeNgapId) return amfUeNgapId->getAMF_UE_NGAP_ID();
+  if (amfUeNgapId)
+    return amfUeNgapId->getAMF_UE_NGAP_ID();
+  else
+    return 0;
 }
 
 /*bool HandoverRequest::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu)

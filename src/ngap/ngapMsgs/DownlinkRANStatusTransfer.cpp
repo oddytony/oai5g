@@ -30,14 +30,17 @@ extern "C" {
 
 using namespace std;
 namespace ngap {
+
 DownlinkRANStatusTransfer::DownlinkRANStatusTransfer() {
-  amfUeNgapId                            = NULL;
-  ranUeNgapId                            = NULL;
-  ranStatusTransfer_TransparentContainer = NULL;
-  DownlinkranstatustransferIEs           = NULL;
-  DownlinkranstatustransferPDU           = NULL;
+  amfUeNgapId                            = nullptr;
+  ranUeNgapId                            = nullptr;
+  ranStatusTransfer_TransparentContainer = nullptr;
+  DownlinkranstatustransferIEs           = nullptr;
+  DownlinkranstatustransferPDU           = nullptr;
 }
+
 DownlinkRANStatusTransfer::~DownlinkRANStatusTransfer() {}
+
 void DownlinkRANStatusTransfer::setAmfUeNgapId(unsigned long id) {
   if (!amfUeNgapId) amfUeNgapId = new AMF_UE_NGAP_ID();
   amfUeNgapId->setAMF_UE_NGAP_ID(id);
@@ -61,6 +64,7 @@ void DownlinkRANStatusTransfer::setAmfUeNgapId(unsigned long id) {
   if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
   // free_wrapper((void**) &ie);
 }
+
 void DownlinkRANStatusTransfer::setRanUeNgapId(uint32_t id) {
   if (!ranUeNgapId) ranUeNgapId = new RAN_UE_NGAP_ID();
   ranUeNgapId->setRanUeNgapId(id);
@@ -152,6 +156,7 @@ void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
    free_wrapper((void**) &ie);
    */
 }
+
 void DownlinkRANStatusTransfer::setmessagetype() {
   if (!DownlinkranstatustransferPDU) {
     DownlinkranstatustransferPDU =
@@ -180,6 +185,7 @@ void DownlinkRANStatusTransfer::setmessagetype() {
          << endl;
   }
 }
+
 int DownlinkRANStatusTransfer::encodetobuffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, DownlinkranstatustransferPDU);
   asn_enc_rval_t er = aper_encode_to_buffer(
