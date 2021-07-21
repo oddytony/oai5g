@@ -55,5 +55,7 @@ class pdu_session_context {
   snssai_t snssai;
   plmn_t plmn;
   std::string smf_context_location;
+  bool is_ho_accepted;
 };
+
 #endif

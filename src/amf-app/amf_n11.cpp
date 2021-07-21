@@ -224,6 +224,8 @@ void amf_n11::handle_itti_message(
     pdu_session_update_request["hoState"] = "PREPARING";
   } else if (itti_msg.n2sm_info_type.compare("HANDOVER_REQ_ACK") == 0) {
     pdu_session_update_request["hoState"] = "PREPARED";
+  } else if (itti_msg.n2sm_info_type.compare("SECONDARY_RAT_USAGE") == 0) {
+    pdu_session_update_request["hoState"] = "COMPLETED";
   }
 
   curl_http_client(
@@ -666,37 +668,45 @@ void amf_n11::curl_http_client(
         }
       }
 
+      try {
+        response_data = nlohmann::json::parse(json_data_response);
+      } catch (nlohmann::json::exception& e) {
+        Logger::amf_n11().warn("Could not get Json content from the response");
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
+        free_wrapper((void**) &body_data);
+        // TODO:
+        return;
+      }
+
+      // For N2 HO
+      bool is_ho_procedure       = false;
+      std::string promise_result = {};
+      if (response_data.find("hoState") != response_data.end()) {
+        is_ho_procedure = true;
+
+        std::string ho_state = {};
+        response_data.at("hoState").get_to(ho_state);
+        if (ho_state.compare("COMPLETED") == 0) {
+          if (response_data.find("pduSessionId") != response_data.end())
+            response_data.at("pduSessionId").get_to(promise_result);
+        } else if (number_parts > 1) {
+          promise_result = n1sm;  // actually, N2 SM Info
+        }
+      }
+      // Notify to the result
+      if ((promise_id > 0) and (is_ho_procedure)) {
+        amf_app_inst->trigger_process_response(promise_id, promise_result);
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
+        free_wrapper((void**) &body_data);
+        return;
+      }
+
       // Transfer N1/N2 to gNB/UE if available
       if (number_parts > 1) {
-        try {
-          response_data = nlohmann::json::parse(json_data_response);
-        } catch (nlohmann::json::exception& e) {
-          Logger::amf_n11().warn(
-              "Could not get Json content from the response");
-          curl_slist_free_all(headers);
-          curl_easy_cleanup(curl);
-          curl_global_cleanup();
-          free_wrapper((void**) &body_data);
-          // TODO:
-          return;
-        }
-
-        // For N2 HO
-        bool is_ho_procedure = false;
-        if (response_data.find("hoState") != response_data.end()) {
-          is_ho_procedure = true;
-        }
-        // Notify to the result
-        if ((promise_id > 0) and (is_ho_procedure)) {
-          amf_app_inst->trigger_process_response(
-              promise_id, n1sm);  // actually, N2 SM Info
-          curl_slist_free_all(headers);
-          curl_easy_cleanup(curl);
-          curl_global_cleanup();
-          free_wrapper((void**) &body_data);
-          return;
-        }
-
         itti_n1n2_message_transfer_request* itti_msg =
             new itti_n1n2_message_transfer_request(TASK_AMF_N11, TASK_AMF_APP);
 

@@ -100,6 +100,8 @@ void HandoverRequiredMsg::getTAI(TAI*& ptr) {
 OCTET_STRING_t HandoverRequiredMsg::getSourceToTarget_TransparentContainer() {
   if (SourceToTarget_TransparentContainer)
     return *SourceToTarget_TransparentContainer;
+  else
+    return OCTET_STRING_t();
 }
 
 bool HandoverRequiredMsg::getPDUSessionResourceList(
@@ -128,6 +130,8 @@ bool HandoverRequiredMsg::getPDUSessionResourceList(
 long HandoverRequiredMsg::getDirectForwardingPathAvailability() {
   if (directforwardingPathAvailability)
     return *directforwardingPathAvailability;
+  else
+    return 0;
 }
 
 bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {

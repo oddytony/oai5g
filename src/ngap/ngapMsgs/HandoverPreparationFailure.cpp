@@ -40,21 +40,27 @@ using namespace std;
 namespace ngap {
 
 HandoverPreparationFailure::HandoverPreparationFailure() {
-  amfUeNgapId             = NULL;
-  ranUeNgapId             = NULL;
-  cause                   = NULL;
-  hoPreparationFailureIEs = NULL;
-  CriticalityDiagnostics  = NULL;
+  amfUeNgapId             = nullptr;
+  ranUeNgapId             = nullptr;
+  cause                   = nullptr;
+  hoPreparationFailureIEs = nullptr;
+  CriticalityDiagnostics  = nullptr;
 }
 
 HandoverPreparationFailure::~HandoverPreparationFailure() {}
 
 unsigned long HandoverPreparationFailure::getAmfUeNgapId() const {
-  if (amfUeNgapId) return amfUeNgapId->getAMF_UE_NGAP_ID();
+  if (amfUeNgapId)
+    return amfUeNgapId->getAMF_UE_NGAP_ID();
+  else
+    return 0;
 }
 
 uint32_t HandoverPreparationFailure::getRanUeNgapId() const {
-  if (ranUeNgapId) return ranUeNgapId->getRanUeNgapId();
+  if (ranUeNgapId)
+    return ranUeNgapId->getRanUeNgapId();
+  else
+    return 0;
 }
 
 bool HandoverPreparationFailure::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
