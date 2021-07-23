@@ -147,7 +147,7 @@ pipeline {
           sh 'sed -e "s#AMF_IMAGE_TAG#' + amfTag + '#" ci-scripts/dsTesterDockerCompose/docker-compose.tplt > ci-scripts/dsTesterDockerCompose/docker-compose.yml'
           dir('ci-scripts/dsTesterDockerCompose') {
             sh 'docker-compose up -d  > ../../archives/compose_amf_up.log 2>&1'
-            sh 'sleep 60'
+            sh 'sleep 100'
             // Do a check on number of healthy containers
             // 2 == mysql + amf
             ret = sh returnStdout: true, script: 'docker-compose ps -a | grep -v unhealthy | grep -c healthy || true'

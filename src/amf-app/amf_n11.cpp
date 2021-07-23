@@ -1072,7 +1072,7 @@ void amf_n11::curl_http_client(
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 
     // get the response
-    std::string response           = *httpData.get();
+    response                       = *httpData.get();
     std::string json_data_response = {};
     std::string resMsg             = {};
     bool is_response_ok            = true;
