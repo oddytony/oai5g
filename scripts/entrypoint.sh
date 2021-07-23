@@ -4,6 +4,10 @@ set -euo pipefail
 
 CONFIG_DIR="/openair-amf/etc"
 
+# Default values
+EXTERNAL_AUSF=${EXTERNAL_AUSF:-no}
+EXTERNAL_UDM=${EXTERNAL_UDM:-no}
+
 for c in ${CONFIG_DIR}/*.conf; do
     # grep variable names (format: ${VAR}) from template to be rendered
     VARS=$(grep -oP '@[a-zA-Z0-9_]+@' ${c} | sort | uniq | xargs)

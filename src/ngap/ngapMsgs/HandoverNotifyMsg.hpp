@@ -48,8 +48,8 @@ class HandoverNotifyMsg {
   int encode2buffer(uint8_t* buf, int buf_size);
   bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
   void setUserLocationInfoNR(struct NrCgi_s cig, struct Tai_s tai);
-  unsigned long getAmfUeNgapId();  // return -1;
-  uint32_t getRanUeNgapId();       // return -1;
+  unsigned long getAmfUeNgapId();
+  uint32_t getRanUeNgapId();
   bool getUserLocationInfoNR(struct NrCgi_s& cig, struct Tai_s& tai);
 
  private:

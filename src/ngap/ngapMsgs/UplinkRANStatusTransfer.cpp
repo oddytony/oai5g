@@ -32,27 +32,38 @@
 
 using namespace std;
 namespace ngap {
+
 UplinkRANStatusTransfer::UplinkRANStatusTransfer() {
-  amfUeNgapId                            = NULL;
-  ranUeNgapId                            = NULL;
-  ranStatusTransfer_TransparentContainer = NULL;
+  amfUeNgapId                            = nullptr;
+  ranUeNgapId                            = nullptr;
+  ranStatusTransfer_TransparentContainer = nullptr;
   UplinkRANStatusTransferPDU             = nullptr;
   UplinkRANStatusTransferIEs             = nullptr;
 }
+
 UplinkRANStatusTransfer::~UplinkRANStatusTransfer() {}
+
 unsigned long UplinkRANStatusTransfer::getAmfUeNgapId() {
-  return amfUeNgapId->getAMF_UE_NGAP_ID();
+  if (amfUeNgapId)
+    return amfUeNgapId->getAMF_UE_NGAP_ID();
+  else
+    return 0;
 }
 
 uint32_t UplinkRANStatusTransfer::getRanUeNgapId() {
-  return ranUeNgapId->getRanUeNgapId();
+  if (ranUeNgapId)
+    return ranUeNgapId->getRanUeNgapId();
+  else
+    return 0;
 }
+
 void UplinkRANStatusTransfer::getRANStatusTransfer_TransparentContainer(
     RANStatusTransferTransparentContainer*&
         ranstatustransfer_transparentcontainer) {
   ranstatustransfer_transparentcontainer =
       ranStatusTransfer_TransparentContainer;
 }
+
 bool UplinkRANStatusTransfer::defromPDU(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   UplinkRANStatusTransferPDU = ngap_msg_pdu;
   if (UplinkRANStatusTransferPDU->present ==

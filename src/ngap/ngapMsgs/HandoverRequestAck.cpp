@@ -20,7 +20,7 @@
  */
 
 #include "HandoverRequestAck.hpp"
-
+#include "logger.hpp"
 #include "GTP-TEID.hpp"
 #include "String2Value.hpp"
 #include "TransportLayerAddress.hpp"
@@ -55,7 +55,10 @@ HandoverRequestAck::HandoverRequestAck() {
 
 HandoverRequestAck::~HandoverRequestAck() {}
 unsigned long HandoverRequestAck::getAmfUeNgapId() {
-  return amfUeNgapId->getAMF_UE_NGAP_ID();
+  if (amfUeNgapId)
+    return amfUeNgapId->getAMF_UE_NGAP_ID();
+  else
+    return 0;
 }
 void HandoverRequestAck::setMessageType() {
   if (!handoverRequestAckPdu)
@@ -79,16 +82,21 @@ void HandoverRequestAck::setMessageType() {
     handoverRequestAckIEs = &(handoverRequestAckPdu->choice.successfulOutcome
                                   ->value.choice.HandoverRequestAcknowledge);
   } else {
-    cout << "[warning] This information doesn't refer to HandoverRequest "
-            "Message!!!"
-         << endl;
+    Logger::ngap().warn(
+        "This information doesn't refer to HandoverRequest message");
   }
 }
+
 uint32_t HandoverRequestAck::getRanUeNgapId() {
-  return ranUeNgapId->getRanUeNgapId();
+  if (ranUeNgapId)
+    return ranUeNgapId->getRanUeNgapId();
+  else
+    return 0;
 }
 OCTET_STRING_t HandoverRequestAck::getTargetToSource_TransparentContainer() {
-  return *TargetToSource_TransparentContainer;
+  if (TargetToSource_TransparentContainer)
+    return *TargetToSource_TransparentContainer;
+  return OCTET_STRING_t();
 }
 
 bool HandoverRequestAck::getPDUSessionResourceAdmittedList(
@@ -114,6 +122,7 @@ bool HandoverRequestAck::getPDUSessionResourceAdmittedList(
 }
 
 bool HandoverRequestAck::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
+  if (!ngap_msg_pdu) return false;
   handoverRequestAckPdu = ngap_msg_pdu;
 
   if (handoverRequestAckPdu->present == Ngap_NGAP_PDU_PR_successfulOutcome) {
@@ -127,11 +136,11 @@ bool HandoverRequestAck::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
       handoverRequestAckIEs = &handoverRequestAckPdu->choice.successfulOutcome
                                    ->value.choice.HandoverRequestAcknowledge;
     } else {
-      cout << "Check handoverRequestAck message error!!!" << endl;
+      Logger::ngap().error("Check handoverRequestAck message error");
       return false;
     }
   } else {
-    cout << "handoverRequestAck MessageType error!!!" << endl;
+    Logger::ngap().error("handoverRequestAck MessageType error");
     return false;
   }
   for (int i = 0; i < handoverRequestAckIEs->protocolIEs.list.count; i++) {
@@ -145,11 +154,11 @@ bool HandoverRequestAck::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
                   handoverRequestAckIEs->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
-            cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -162,11 +171,11 @@ bool HandoverRequestAck::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
                   handoverRequestAckIEs->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
-            cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -180,13 +189,13 @@ bool HandoverRequestAck::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                    ->decodefromPDUSessionResourceAdmittedList(
                        &handoverRequestAckIEs->protocolIEs.list.array[i]
                             ->value.choice.PDUSessionResourceAdmittedList)) {
-            cout << "decoded ngap PDUSessionResourceAdmittedList IE error"
-                 << endl;
+            Logger::ngap().error(
+                "Decoded NGAP PDUSessionResourceAdmittedList IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap PDUSessionResourceAdmittedList Type IE error"
-               << endl;
+          Logger::ngap().error(
+              "Decoded NGAP PDUSessionResourceAdmittedList IE error");
           return false;
         }
       } break;
@@ -201,13 +210,14 @@ bool HandoverRequestAck::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
               handoverRequestAckIEs->protocolIEs.list.array[i]
                   ->value.choice.TargetToSource_TransparentContainer;
         } else {
-          cout << "decoded ngap TargetToSource_TransparentContainer IE error"
-               << endl;
+          Logger::ngap().error(
+              "Decoded NGAP TargetToSource_TransparentContainer IE error");
+
           return false;
         }
       } break;
       default: {
-        cout << "decoded ngap message pdu error" << endl;
+        Logger::ngap().error("Decoded NGAP Message PDU error");
         return false;
       }
     }

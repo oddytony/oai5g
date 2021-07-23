@@ -49,6 +49,10 @@
 #include <boost/thread.hpp>
 #include <boost/thread/future.hpp>
 
+#include "uint_generator.hpp"
+#include <boost/thread.hpp>
+#include <boost/thread/future.hpp>
+
 using namespace config;
 
 static uint32_t amf_app_ue_ngap_id_generator = 1;
@@ -79,8 +83,6 @@ class amf_app {
   // itti handlers
   void handle_itti_message(itti_nas_signalling_establishment_request& itti_msg);
   void handle_itti_message(itti_n1n2_message_transfer_request& itti_msg);
-
-  mutable std::shared_mutex m_amf_event_subscriptions;
 
   bool is_amf_ue_id_2_ue_context(const long& amf_ue_ngap_id) const;
   std::shared_ptr<ue_context> amf_ue_id_2_ue_context(
