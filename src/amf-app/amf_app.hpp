@@ -74,6 +74,8 @@ class amf_app {
       std::pair<evsub_id_t, amf_event_t>, std::shared_ptr<amf_subscription>>
       amf_event_subscriptions;
 
+  mutable std::shared_mutex m_amf_event_subscriptions;
+
  public:
   explicit amf_app(const amf_config& amf_cfg);
   amf_app(amf_app const&) = delete;
