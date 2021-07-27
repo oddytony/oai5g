@@ -18,9 +18,9 @@ namespace amf {
 namespace model {
 
 DnnUpfInfoItem::DnnUpfInfoItem() {
-  m_Dnn                  = "";
-  m_DnaiListIsSet        = false;
-  //m_PduSessionTypesIsSet = false;
+  m_Dnn           = "";
+  m_DnaiListIsSet = false;
+  // m_PduSessionTypesIsSet = false;
 }
 
 DnnUpfInfoItem::~DnnUpfInfoItem() {}
@@ -33,7 +33,7 @@ void to_json(nlohmann::json& j, const DnnUpfInfoItem& o) {
   j        = nlohmann::json();
   j["dnn"] = o.m_Dnn;
   if (o.dnaiListIsSet() || !o.m_DnaiList.empty()) j["dnaiList"] = o.m_DnaiList;
-  //if (o.pduSessionTypesIsSet() || !o.m_PduSessionTypes.empty())
+  // if (o.pduSessionTypesIsSet() || !o.m_PduSessionTypes.empty())
   //  j["pduSessionTypes"] = o.m_PduSessionTypes;
 }
 
@@ -43,7 +43,7 @@ void from_json(const nlohmann::json& j, DnnUpfInfoItem& o) {
     j.at("dnaiList").get_to(o.m_DnaiList);
     o.m_DnaiListIsSet = true;
   }
-  //if (j.find("pduSessionTypes") != j.end()) {
+  // if (j.find("pduSessionTypes") != j.end()) {
   //  j.at("pduSessionTypes").get_to(o.m_PduSessionTypes);
   //  o.m_PduSessionTypesIsSet = true;
   //}
@@ -68,18 +68,18 @@ bool DnnUpfInfoItem::dnaiListIsSet() const {
 void DnnUpfInfoItem::unsetDnaiList() {
   m_DnaiListIsSet = false;
 }
-//std::vector<PduSessionType>& DnnUpfInfoItem::getPduSessionTypes() {
+// std::vector<PduSessionType>& DnnUpfInfoItem::getPduSessionTypes() {
 //  return m_PduSessionTypes;
 //}
-//void DnnUpfInfoItem::setPduSessionTypes(
+// void DnnUpfInfoItem::setPduSessionTypes(
 //    std::vector<PduSessionType> const& value) {
 //  m_PduSessionTypes      = value;
 //  m_PduSessionTypesIsSet = true;
 //}
-//bool DnnUpfInfoItem::pduSessionTypesIsSet() const {
+// bool DnnUpfInfoItem::pduSessionTypesIsSet() const {
 //  return m_PduSessionTypesIsSet;
 //}
-//void DnnUpfInfoItem::unsetPduSessionTypes() {
+// void DnnUpfInfoItem::unsetPduSessionTypes() {
 //  m_PduSessionTypesIsSet = false;
 //}
 

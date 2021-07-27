@@ -78,7 +78,7 @@ class NFStatusNotifyApiImpl : public oai::amf::api::NFStatusNotifyApi {
 };
 
 }  // namespace api
-}  // namespace amf_server
+}  // namespace amf
 }  // namespace oai
 
 #endif

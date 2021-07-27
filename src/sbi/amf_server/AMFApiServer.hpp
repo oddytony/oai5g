@@ -31,7 +31,7 @@ class AMFApiServer {
   AMFApiServer(
       Pistache::Address address, amf_application::amf_app* amf_app_inst)
       : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address)) {
-    m_router = std::make_shared<Pistache::Rest::Router>();
+    m_router  = std::make_shared<Pistache::Rest::Router>();
     m_address = address.host() + ":" + (address.port()).toString();
     m_individualSubscriptionDocumentApiImpl =
         std::make_shared<IndividualSubscriptionDocumentApiImpl>(

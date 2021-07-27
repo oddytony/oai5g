@@ -407,17 +407,17 @@ evsub_id_t amf_app::handle_event_exposure_subscription(
   std::shared_ptr<amf_subscription> ss =
       std::shared_ptr<amf_subscription>(new amf_subscription());
   ss.get()->sub_id = evsub_id;
-  //if (msg->event_exposure.is_supi_is_set()) {
+  // if (msg->event_exposure.is_supi_is_set()) {
   //  supi64_t supi64 = amf_supi_to_u64(msg->event_exposure.get_supi());
   //  ss.get()->supi  = supi64;
   //}
-  //ss.get()->notif_id  = msg->event_exposure.get_notif_id();
-  //ss.get()->notif_uri = msg->event_exposure.get_notif_uri();
+  // ss.get()->notif_id  = msg->event_exposure.get_notif_id();
+  // ss.get()->notif_uri = msg->event_exposure.get_notif_uri();
 
-  //std::vector<event_subscription_t> event_subscriptions =
+  // std::vector<event_subscription_t> event_subscriptions =
   //    msg->event_exposure.get_event_subs();
   // store subscription
-  //for (auto i : event_subscriptions) {
+  // for (auto i : event_subscriptions) {
   //  ss.get()->ev_type = i.amf_event;
   //  add_event_subscription(evsub_id, i.amf_event, ss);
   //}
@@ -427,19 +427,18 @@ evsub_id_t amf_app::handle_event_exposure_subscription(
 //------------------------------------------------------------------------------
 bool amf_app::handle_nf_status_notification(
     std::shared_ptr<itti_sbi_notification_data>& msg,
-    oai::amf::model::ProblemDetails& problem_details,
-    uint8_t& http_code) {
+    oai::amf::model::ProblemDetails& problem_details, uint8_t& http_code) {
   Logger::amf_app().info(
       "Handle a NF status notification from NRF (HTTP version "
       "%d)",
       msg->http_version);
 
   data_notification_msg notification_msg = msg.get()->notification_msg;
-  std::string event_type = "";
-  //notification_msg.get_notification_event_type(event_type);
+  std::string event_type                 = "";
+  // notification_msg.get_notification_event_type(event_type);
   if (event_type.compare("NF_REGISTERED") == 0) {
     std::shared_ptr<nf_profile> profile = {};
-    //notification_msg.get_profile(profile);
+    // notification_msg.get_profile(profile);
     if (profile.get() != nullptr) {
       std::string nf_type = profile.get()->get_nf_type();
       if (nf_type.compare("UPF") == 0) {  // UPF
@@ -458,7 +457,7 @@ bool amf_app::handle_nf_status_notification(
         }
 
         bool found = false;
-        //for (auto node : amf_cfg.upfs) {
+        // for (auto node : amf_cfg.upfs) {
         //  if (node.u1.ipv4_address.s_addr == ipv4_addrs[0].s_addr) {
         //    found = false;
         //    break;
@@ -468,14 +467,14 @@ bool amf_app::handle_nf_status_notification(
           // Add a new UPF node
           Logger::amf_app().debug(
               "Add a new UPF node, Ipv4 Addr %s", inet_ntoa(ipv4_addrs[0]));
-          //pfcp::node_id_t n        = {};
-          //n.node_id_type           = pfcp::NODE_ID_TYPE_IPV4_ADDRESS;
-          //n.u1.ipv4_address.s_addr = ipv4_addrs[0].s_addr;
+          // pfcp::node_id_t n        = {};
+          // n.node_id_type           = pfcp::NODE_ID_TYPE_IPV4_ADDRESS;
+          // n.u1.ipv4_address.s_addr = ipv4_addrs[0].s_addr;
           // memcpy(&n.u1.ipv4_address, &ipv4_addrs[0], sizeof(struct in_addr));
-          //amf_cfg.upfs.push_back(n);
-          //upf_profile* upf_node_profile =
+          // amf_cfg.upfs.push_back(n);
+          // upf_profile* upf_node_profile =
           //    dynamic_cast<upf_profile*>(profile.get());
-          //start_upf_association(n, std::ref(*upf_node_profile));
+          // start_upf_association(n, std::ref(*upf_node_profile));
           // start_upf_association(n,
           // std::static_pointer_cast<upf_profile>(profile));
         } else {
@@ -506,7 +505,6 @@ bool amf_app::handle_nf_status_notification(
 
   return true;
 }
-
 
 //------------------------------------------------------------------------------
 void amf_app::generate_uuid() {

@@ -92,24 +92,24 @@ class NFProfile {
   /// <summary>
   ///
   /// </summary>
-  //std::vector<PlmnId>& getPlmnList();
-  //void setPlmnList(std::vector<PlmnId> const& value);
-  //bool plmnListIsSet() const;
-  //void unsetPlmnList();
+  // std::vector<PlmnId>& getPlmnList();
+  // void setPlmnList(std::vector<PlmnId> const& value);
+  // bool plmnListIsSet() const;
+  // void unsetPlmnList();
   /// <summary>
   ///
   /// </summary>
-  //std::vector<Snssai> getSNssais() const;
-  //void setSNssais(std::vector<Snssai> const& value);
-  //bool sNssaisIsSet() const;
-  //void unsetSNssais();
+  // std::vector<Snssai> getSNssais() const;
+  // void setSNssais(std::vector<Snssai> const& value);
+  // bool sNssaisIsSet() const;
+  // void unsetSNssais();
   /// <summary>
   ///
   /// </summary>
-  //std::vector<PlmnSnssai>& getPerPlmnSnssaiList();
-  //void setPerPlmnSnssaiList(std::vector<PlmnSnssai> const& value);
-  //bool perPlmnSnssaiListIsSet() const;
-  //void unsetPerPlmnSnssaiList();
+  // std::vector<PlmnSnssai>& getPerPlmnSnssaiList();
+  // void setPerPlmnSnssaiList(std::vector<PlmnSnssai> const& value);
+  // bool perPlmnSnssaiListIsSet() const;
+  // void unsetPerPlmnSnssaiList();
   /// <summary>
   ///
   /// </summary>
@@ -148,10 +148,10 @@ class NFProfile {
   /// <summary>
   ///
   /// </summary>
-  //std::vector<PlmnId>& getAllowedPlmns();
-  //void setAllowedPlmns(std::vector<PlmnId> const& value);
-  //bool allowedPlmnsIsSet() const;
-  //void unsetAllowedPlmns();
+  // std::vector<PlmnId>& getAllowedPlmns();
+  // void setAllowedPlmns(std::vector<PlmnId> const& value);
+  // bool allowedPlmnsIsSet() const;
+  // void unsetAllowedPlmns();
   /// <summary>
   ///
   /// </summary>
@@ -169,10 +169,10 @@ class NFProfile {
   /// <summary>
   ///
   /// </summary>
-  //std::vector<Snssai>& getAllowedNssais();
-  //void setAllowedNssais(std::vector<Snssai> const& value);
-  //bool allowedNssaisIsSet() const;
-  //void unsetAllowedNssais();
+  // std::vector<Snssai>& getAllowedNssais();
+  // void setAllowedNssais(std::vector<Snssai> const& value);
+  // bool allowedNssaisIsSet() const;
+  // void unsetAllowedNssais();
   /// <summary>
   ///
   /// </summary>
@@ -261,12 +261,12 @@ class NFProfile {
 
   int32_t m_HeartBeatTimer;
   bool m_HeartBeatTimerIsSet;
-  //std::vector<PlmnId> m_PlmnList;
-  //bool m_PlmnListIsSet;
-  //std::vector<Snssai> m_SNssais;
-  //bool m_SNssaisIsSet;
-  //std::vector<PlmnSnssai> m_PerPlmnSnssaiList;
-  //bool m_PerPlmnSnssaiListIsSet;
+  // std::vector<PlmnId> m_PlmnList;
+  // bool m_PlmnListIsSet;
+  // std::vector<Snssai> m_SNssais;
+  // bool m_SNssaisIsSet;
+  // std::vector<PlmnSnssai> m_PerPlmnSnssaiList;
+  // bool m_PerPlmnSnssaiListIsSet;
   std::vector<std::string> m_NsiList;
   bool m_NsiListIsSet;
   std::string m_Fqdn;
@@ -277,14 +277,14 @@ class NFProfile {
   bool m_Ipv4AddressesIsSet;
   std::vector<Ipv6Addr> m_Ipv6Addresses;
   bool m_Ipv6AddressesIsSet;
-  //std::vector<PlmnId> m_AllowedPlmns;
+  // std::vector<PlmnId> m_AllowedPlmns;
   // bool m_AllowedPlmnsIsSet;
   std::vector<std::string> m_AllowedNfTypes;
   bool m_AllowedNfTypesIsSet;
   std::vector<std::string> m_AllowedNfDomains;
   bool m_AllowedNfDomainsIsSet;
-  //std::vector<Snssai> m_AllowedNssais;
-  //bool m_AllowedNssaisIsSet;
+  // std::vector<Snssai> m_AllowedNssais;
+  // bool m_AllowedNssaisIsSet;
   int32_t m_Capacity;
   bool m_CapacityIsSet;
   int32_t m_Load;

@@ -17,7 +17,7 @@ namespace oai {
 namespace amf {
 namespace api {
 
-//using namespace oai::amf::helpers;
+// using namespace oai::amf::helpers;
 using namespace oai::amf::model;
 
 SubscriptionsCollectionApi::SubscriptionsCollectionApi(

@@ -26,7 +26,6 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 
-
 namespace oai {
 namespace amf {
 namespace model {

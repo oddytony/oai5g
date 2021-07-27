@@ -44,8 +44,8 @@ void xgpp_conv::data_notification_from_openapi(
       "Convert NotificationData (OpenAPI) to "
       "Data Notification Msg");
 
-  //dn_msg.set_notification_event_type(nd.getEvent());
-  //dn_msg.set_nf_instance_uri(nd.getNfInstanceUri());
+  // dn_msg.set_notification_event_type(nd.getEvent());
+  // dn_msg.set_nf_instance_uri(nd.getNfInstanceUri());
 
   std::shared_ptr<amf_application::nf_profile> p = {};
 
@@ -56,7 +56,7 @@ void xgpp_conv::data_notification_from_openapi(
   nlohmann::json pj = {};
   to_json(pj, nd.getNfProfile());
   p.get()->from_json(pj);
-  //dn_msg.set_profile(p);
+  // dn_msg.set_profile(p);
 }
 
 //------------------------------------------------------------------------------
@@ -75,28 +75,28 @@ void xgpp_conv::amf_event_exposure_notification_from_openapi(
     std::string supi_prefix = nee.getSupi().substr(0, pos);
     amf_string_to_supi(&supi, supi_str.c_str());
 
-    //eem.set_supi(supi);
-    //eem.set_supi_prefix(supi_prefix);
+    // eem.set_supi(supi);
+    // eem.set_supi_prefix(supi_prefix);
     Logger::amf_server().debug(
         "SUPI %s, SUPI Prefix %s, IMSI %s", nee.getSupi().c_str(),
         supi_prefix.c_str(), supi_str.c_str());
   }
 
   // PDU session ID
-  //if (nee.pduSeIdIsSet()) {
+  // if (nee.pduSeIdIsSet()) {
   //  Logger::amf_server().debug("PDU Session ID %d", nee.getPduSeId());
   //  eem.set_pdu_session_id(nee.getPduSeId());
   //}
 
-  //eem.set_notif_id(nee.getNotifId());    // NotifId
-  //eem.set_notif_uri(nee.getNotifUri());  // NotifUri
+  // eem.set_notif_id(nee.getNotifId());    // NotifId
+  // eem.set_notif_uri(nee.getNotifUri());  // NotifUri
 
   // EventSubscription: TODO
   event_subscription_t event_subscription = {};
   event_subscription.amf_event            = amf_event_t::AMF_EVENT_REACH_ST;
   std::vector<event_subscription_t> event_subscriptions = {};
   event_subscriptions.push_back(event_subscription);
-  //eem.set_event_subs(event_subscriptions);
+  // eem.set_event_subs(event_subscriptions);
 
   // std::vector<EventSubscription> eventSubscriptions;
   // for (auto it: nee.getEventSubs()){

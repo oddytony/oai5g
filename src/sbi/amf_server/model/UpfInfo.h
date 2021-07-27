@@ -73,10 +73,10 @@ class UpfInfo {
   /// <summary>
   ///
   /// </summary>
-  //std::vector<PduSessionType>& getPduSessionTypes();
-  //void setPduSessionTypes(std::vector<PduSessionType> const& value);
-  //bool pduSessionTypesIsSet() const;
-  //void unsetPduSessionTypes();
+  // std::vector<PduSessionType>& getPduSessionTypes();
+  // void setPduSessionTypes(std::vector<PduSessionType> const& value);
+  // bool pduSessionTypesIsSet() const;
+  // void unsetPduSessionTypes();
   /// <summary>
   ///
   /// </summary>
@@ -104,8 +104,8 @@ class UpfInfo {
   bool m_InterfaceUpfInfoListIsSet;
   bool m_IwkEpsInd;
   bool m_IwkEpsIndIsSet;
-  //std::vector<PduSessionType> m_PduSessionTypes;
-  //bool m_PduSessionTypesIsSet;
+  // std::vector<PduSessionType> m_PduSessionTypes;
+  // bool m_PduSessionTypesIsSet;
   AtsssCapability m_AtsssCapability;
   bool m_AtsssCapabilityIsSet;
   bool m_UeIpAddrInd;

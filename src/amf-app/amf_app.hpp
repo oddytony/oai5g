@@ -148,8 +148,7 @@ class amf_app {
    */
   bool handle_nf_status_notification(
       std::shared_ptr<itti_sbi_notification_data>& msg,
-      oai::amf::model::ProblemDetails& problem_details,
-      uint8_t& http_code);
+      oai::amf::model::ProblemDetails& problem_details, uint8_t& http_code);
 
   /*
    * Generate a random UUID for SMF instance

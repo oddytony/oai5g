@@ -56,10 +56,10 @@ class DnnUpfInfoItem {
   /// <summary>
   ///
   /// </summary>
-  //std::vector<PduSessionType>& getPduSessionTypes();
-  //void setPduSessionTypes(std::vector<PduSessionType> const& value);
-  //bool pduSessionTypesIsSet() const;
-  //void unsetPduSessionTypes();
+  // std::vector<PduSessionType>& getPduSessionTypes();
+  // void setPduSessionTypes(std::vector<PduSessionType> const& value);
+  // bool pduSessionTypesIsSet() const;
+  // void unsetPduSessionTypes();
 
   friend void to_json(nlohmann::json& j, const DnnUpfInfoItem& o);
   friend void from_json(const nlohmann::json& j, DnnUpfInfoItem& o);
@@ -69,8 +69,8 @@ class DnnUpfInfoItem {
 
   std::vector<std::string> m_DnaiList;
   bool m_DnaiListIsSet;
-  //std::vector<PduSessionType> m_PduSessionTypes;
-  //bool m_PduSessionTypesIsSet;
+  // std::vector<PduSessionType> m_PduSessionTypes;
+  // bool m_PduSessionTypesIsSet;
 };
 
 }  // namespace model

@@ -32,5 +32,5 @@ void to_json(nlohmann::json& j, const DddStatus& o) {
 void from_json(const nlohmann::json& j, DddStatus& o) {}
 
 }  // namespace model
-}  // namespace amfr
+}  // namespace amf
 }  // namespace oai

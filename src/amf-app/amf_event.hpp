@@ -60,7 +60,6 @@ class amf_event {
   bs2::connection subscribe_ue_reachability_status(
       const ue_reachability_status_sig_t::slot_type& sig);
 
-
  private:
   ue_reachability_status_sig_t
       ue_reachability_status;  // Signal for SM Context status update

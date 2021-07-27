@@ -36,7 +36,6 @@
 
 namespace amf {
 
-
 class event_exposure_msg {
  public:
   supi_t get_supi() const;

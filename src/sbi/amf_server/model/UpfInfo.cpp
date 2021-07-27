@@ -22,10 +22,10 @@ UpfInfo::UpfInfo() {
   m_InterfaceUpfInfoListIsSet = false;
   m_IwkEpsInd                 = false;
   m_IwkEpsIndIsSet            = false;
-  //m_PduSessionTypesIsSet      = false;
-  m_AtsssCapabilityIsSet      = false;
-  m_UeIpAddrInd               = false;
-  m_UeIpAddrIndIsSet          = false;
+  // m_PduSessionTypesIsSet      = false;
+  m_AtsssCapabilityIsSet = false;
+  m_UeIpAddrInd          = false;
+  m_UeIpAddrIndIsSet     = false;
 }
 
 UpfInfo::~UpfInfo() {}
@@ -42,7 +42,7 @@ void to_json(nlohmann::json& j, const UpfInfo& o) {
   if (o.interfaceUpfInfoListIsSet() || !o.m_InterfaceUpfInfoList.empty())
     j["interfaceUpfInfoList"] = o.m_InterfaceUpfInfoList;
   if (o.iwkEpsIndIsSet()) j["iwkEpsInd"] = o.m_IwkEpsInd;
-  //if (o.pduSessionTypesIsSet() || !o.m_PduSessionTypes.empty())
+  // if (o.pduSessionTypesIsSet() || !o.m_PduSessionTypes.empty())
   //  j["pduSessionTypes"] = o.m_PduSessionTypes;
   if (o.atsssCapabilityIsSet()) j["atsssCapability"] = o.m_AtsssCapability;
   if (o.ueIpAddrIndIsSet()) j["ueIpAddrInd"] = o.m_UeIpAddrInd;
@@ -62,7 +62,7 @@ void from_json(const nlohmann::json& j, UpfInfo& o) {
     j.at("iwkEpsInd").get_to(o.m_IwkEpsInd);
     o.m_IwkEpsIndIsSet = true;
   }
-  //if (j.find("pduSessionTypes") != j.end()) {
+  // if (j.find("pduSessionTypes") != j.end()) {
   //  j.at("pduSessionTypes").get_to(o.m_PduSessionTypes);
   //  o.m_PduSessionTypesIsSet = true;
   //}
@@ -123,17 +123,17 @@ bool UpfInfo::iwkEpsIndIsSet() const {
 void UpfInfo::unsetIwkEpsInd() {
   m_IwkEpsIndIsSet = false;
 }
-//std::vector<PduSessionType>& UpfInfo::getPduSessionTypes() {
+// std::vector<PduSessionType>& UpfInfo::getPduSessionTypes() {
 //  return m_PduSessionTypes;
 //}
-//void UpfInfo::setPduSessionTypes(std::vector<PduSessionType> const& value) {
+// void UpfInfo::setPduSessionTypes(std::vector<PduSessionType> const& value) {
 //  m_PduSessionTypes      = value;
 //  m_PduSessionTypesIsSet = true;
 //}
-//bool UpfInfo::pduSessionTypesIsSet() const {
+// bool UpfInfo::pduSessionTypesIsSet() const {
 //  return m_PduSessionTypesIsSet;
 //}
-//void UpfInfo::unsetPduSessionTypes() {
+// void UpfInfo::unsetPduSessionTypes() {
 //  m_PduSessionTypesIsSet = false;
 //}
 AtsssCapability UpfInfo::getAtsssCapability() const {

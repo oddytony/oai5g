@@ -18,25 +18,25 @@ namespace amf {
 namespace model {
 
 NFProfile::NFProfile() {
-  m_NfInstanceId                    = "";
-  m_NfInstanceName                  = "";
-  m_NfInstanceNameIsSet             = false;
-  m_HeartBeatTimer                  = 0;
-  m_HeartBeatTimerIsSet             = false;
-  //m_PlmnListIsSet                   = false;
-  //m_SNssaisIsSet                    = false;
-  //m_PerPlmnSnssaiListIsSet          = false;
-  m_NsiListIsSet                    = false;
-  m_Fqdn                            = "";
-  m_FqdnIsSet                       = false;
-  m_InterPlmnFqdn                   = "";
-  m_InterPlmnFqdnIsSet              = false;
-  m_Ipv4AddressesIsSet              = false;
-  m_Ipv6AddressesIsSet              = false;
-  //m_AllowedPlmnsIsSet               = false;
-  m_AllowedNfTypesIsSet             = false;
-  m_AllowedNfDomainsIsSet           = false;
-  //m_AllowedNssaisIsSet              = false;
+  m_NfInstanceId        = "";
+  m_NfInstanceName      = "";
+  m_NfInstanceNameIsSet = false;
+  m_HeartBeatTimer      = 0;
+  m_HeartBeatTimerIsSet = false;
+  // m_PlmnListIsSet                   = false;
+  // m_SNssaisIsSet                    = false;
+  // m_PerPlmnSnssaiListIsSet          = false;
+  m_NsiListIsSet       = false;
+  m_Fqdn               = "";
+  m_FqdnIsSet          = false;
+  m_InterPlmnFqdn      = "";
+  m_InterPlmnFqdnIsSet = false;
+  m_Ipv4AddressesIsSet = false;
+  m_Ipv6AddressesIsSet = false;
+  // m_AllowedPlmnsIsSet               = false;
+  m_AllowedNfTypesIsSet   = false;
+  m_AllowedNfDomainsIsSet = false;
+  // m_AllowedNssaisIsSet              = false;
   m_Priority                        = 0;
   m_PriorityIsSet                   = false;
   m_Capacity                        = 0;
@@ -72,9 +72,10 @@ void to_json(nlohmann::json& j, const NFProfile& o) {
   j["nfType"]   = o.m_NfType;
   j["nfStatus"] = o.m_NfStatus;
   if (o.heartBeatTimerIsSet()) j["heartBeatTimer"] = o.m_HeartBeatTimer;
-  //if (o.plmnListIsSet() || !o.m_PlmnList.empty()) j["plmnList"] = o.m_PlmnList;
-  //if (o.sNssaisIsSet() || !o.m_SNssais.empty()) j["sNssais"] = o.m_SNssais;
-  //if (o.perPlmnSnssaiListIsSet() || !o.m_PerPlmnSnssaiList.empty())
+  // if (o.plmnListIsSet() || !o.m_PlmnList.empty()) j["plmnList"] =
+  // o.m_PlmnList; if (o.sNssaisIsSet() || !o.m_SNssais.empty()) j["sNssais"] =
+  // o.m_SNssais; if (o.perPlmnSnssaiListIsSet() ||
+  // !o.m_PerPlmnSnssaiList.empty())
   // j["perPlmnSnssaiList"] = o.m_PerPlmnSnssaiList;
   if (o.nsiListIsSet() || !o.m_NsiList.empty()) j["nsiList"] = o.m_NsiList;
   if (o.fqdnIsSet()) j["fqdn"] = o.m_Fqdn;
@@ -83,13 +84,13 @@ void to_json(nlohmann::json& j, const NFProfile& o) {
     j["ipv4Addresses"] = o.m_Ipv4Addresses;
   if (o.ipv6AddressesIsSet() || !o.m_Ipv6Addresses.empty())
     j["ipv6Addresses"] = o.m_Ipv6Addresses;
-  //if (o.allowedPlmnsIsSet() || !o.m_AllowedPlmns.empty())
+  // if (o.allowedPlmnsIsSet() || !o.m_AllowedPlmns.empty())
   // j["allowedPlmns"] = o.m_AllowedPlmns;
   if (o.allowedNfTypesIsSet() || !o.m_AllowedNfTypes.empty())
     j["allowedNfTypes"] = o.m_AllowedNfTypes;
   if (o.allowedNfDomainsIsSet() || !o.m_AllowedNfDomains.empty())
     j["allowedNfDomains"] = o.m_AllowedNfDomains;
-  //if (o.allowedNssaisIsSet() || !o.m_AllowedNssais.empty())
+  // if (o.allowedNssaisIsSet() || !o.m_AllowedNssais.empty())
   //  j["allowedNssais"] = o.m_AllowedNssais;
   if (o.priorityIsSet()) j["priority"] = o.m_Priority;
   if (o.capacityIsSet()) j["capacity"] = o.m_Capacity;
@@ -120,15 +121,15 @@ void from_json(const nlohmann::json& j, NFProfile& o) {
     j.at("heartBeatTimer").get_to(o.m_HeartBeatTimer);
     o.m_HeartBeatTimerIsSet = true;
   }
-  //if (j.find("plmnList") != j.end()) {
+  // if (j.find("plmnList") != j.end()) {
   //  j.at("plmnList").get_to(o.m_PlmnList);
   //  o.m_PlmnListIsSet = true;
   //}
-  //if (j.find("sNssais") != j.end()) {
+  // if (j.find("sNssais") != j.end()) {
   //  j.at("sNssais").get_to(o.m_SNssais);
   //  o.m_SNssaisIsSet = true;
   //}
-  //if (j.find("perPlmnSnssaiList") != j.end()) {
+  // if (j.find("perPlmnSnssaiList") != j.end()) {
   //  j.at("perPlmnSnssaiList").get_to(o.m_PerPlmnSnssaiList);
   //  o.m_PerPlmnSnssaiListIsSet = true;
   //}
@@ -152,7 +153,7 @@ void from_json(const nlohmann::json& j, NFProfile& o) {
     j.at("ipv6Addresses").get_to(o.m_Ipv6Addresses);
     o.m_Ipv6AddressesIsSet = true;
   }
-  //if (j.find("allowedPlmns") != j.end()) {
+  // if (j.find("allowedPlmns") != j.end()) {
   //  j.at("allowedPlmns").get_to(o.m_AllowedPlmns);
   //  o.m_AllowedPlmnsIsSet = true;
   //}
@@ -164,7 +165,7 @@ void from_json(const nlohmann::json& j, NFProfile& o) {
     j.at("allowedNfDomains").get_to(o.m_AllowedNfDomains);
     o.m_AllowedNfDomainsIsSet = true;
   }
-  //if (j.find("allowedNssais") != j.end()) {
+  // if (j.find("allowedNssais") != j.end()) {
   // j.at("allowedNssais").get_to(o.m_AllowedNssais);
   //  o.m_AllowedNssaisIsSet = true;
   //}
@@ -259,43 +260,43 @@ bool NFProfile::heartBeatTimerIsSet() const {
 void NFProfile::unsetHeartBeatTimer() {
   m_HeartBeatTimerIsSet = false;
 }
-//std::vector<PlmnId>& NFProfile::getPlmnList() {
+// std::vector<PlmnId>& NFProfile::getPlmnList() {
 //  return m_PlmnList;
 //}
-//void NFProfile::setPlmnList(std::vector<PlmnId> const& value) {
+// void NFProfile::setPlmnList(std::vector<PlmnId> const& value) {
 //  m_PlmnList      = value;
 //  m_PlmnListIsSet = true;
 //}
-//bool NFProfile::plmnListIsSet() const {
+// bool NFProfile::plmnListIsSet() const {
 //  return m_PlmnListIsSet;
 //}
-//void NFProfile::unsetPlmnList() {
+// void NFProfile::unsetPlmnList() {
 //  m_PlmnListIsSet = false;
 //}
-//std::vector<Snssai> NFProfile::getSNssais() const {
+// std::vector<Snssai> NFProfile::getSNssais() const {
 //  return m_SNssais;//
 //}
-//void NFProfile::setSNssais(std::vector<Snssai> const& value) {
+// void NFProfile::setSNssais(std::vector<Snssai> const& value) {
 //  m_SNssais      = value;
 //  m_SNssaisIsSet = true;
 //}
-//bool NFProfile::sNssaisIsSet() const {
+// bool NFProfile::sNssaisIsSet() const {
 //  return m_SNssaisIsSet;
 //}
-//void NFProfile::unsetSNssais() {
+// void NFProfile::unsetSNssais() {
 //  m_SNssaisIsSet = false;
 //}
-//std::vector<PlmnSnssai>& NFProfile::getPerPlmnSnssaiList() {
+// std::vector<PlmnSnssai>& NFProfile::getPerPlmnSnssaiList() {
 //  return m_PerPlmnSnssaiList;
 //}
-//void NFProfile::setPerPlmnSnssaiList(std::vector<PlmnSnssai> const& value) {
+// void NFProfile::setPerPlmnSnssaiList(std::vector<PlmnSnssai> const& value) {
 //  m_PerPlmnSnssaiList      = value;
 //  m_PerPlmnSnssaiListIsSet = true;
 //}
-//bool NFProfile::perPlmnSnssaiListIsSet() const {
+// bool NFProfile::perPlmnSnssaiListIsSet() const {
 //  return m_PerPlmnSnssaiListIsSet;
 //}
-//void NFProfile::unsetPerPlmnSnssaiList() {
+// void NFProfile::unsetPerPlmnSnssaiList() {
 //  m_PerPlmnSnssaiListIsSet = false;
 //}
 std::vector<std::string>& NFProfile::getNsiList() {
@@ -363,17 +364,17 @@ bool NFProfile::ipv6AddressesIsSet() const {
 void NFProfile::unsetIpv6Addresses() {
   m_Ipv6AddressesIsSet = false;
 }
-//std::vector<PlmnId>& NFProfile::getAllowedPlmns() {
+// std::vector<PlmnId>& NFProfile::getAllowedPlmns() {
 //  return m_AllowedPlmns;
 //}
-//void NFProfile::setAllowedPlmns(std::vector<PlmnId> const& value) {
+// void NFProfile::setAllowedPlmns(std::vector<PlmnId> const& value) {
 //  m_AllowedPlmns      = value;
 //  m_AllowedPlmnsIsSet = true;
 //}
-//bool NFProfile::allowedPlmnsIsSet() const {
+// bool NFProfile::allowedPlmnsIsSet() const {
 //  return m_AllowedPlmnsIsSet;
 //}
-//void NFProfile::unsetAllowedPlmns() {
+// void NFProfile::unsetAllowedPlmns() {
 //  m_AllowedPlmnsIsSet = false;
 //}
 std::vector<std::string>& NFProfile::getAllowedNfTypes() {
@@ -402,17 +403,17 @@ bool NFProfile::allowedNfDomainsIsSet() const {
 void NFProfile::unsetAllowedNfDomains() {
   m_AllowedNfDomainsIsSet = false;
 }
-//std::vector<Snssai>& NFProfile::getAllowedNssais() {
+// std::vector<Snssai>& NFProfile::getAllowedNssais() {
 //  return m_AllowedNssais;
 //}
-//void NFProfile::setAllowedNssais(std::vector<Snssai> const& value) {
+// void NFProfile::setAllowedNssais(std::vector<Snssai> const& value) {
 //  m_AllowedNssais      = value;
 //  m_AllowedNssaisIsSet = true;
 //}
-//bool NFProfile::allowedNssaisIsSet() const {
+// bool NFProfile::allowedNssaisIsSet() const {
 //  return m_AllowedNssaisIsSet;
 //}
-//void NFProfile::unsetAllowedNssais() {
+// void NFProfile::unsetAllowedNssais() {
 //  m_AllowedNssaisIsSet = false;
 //}
 int32_t NFProfile::getPriority() const {

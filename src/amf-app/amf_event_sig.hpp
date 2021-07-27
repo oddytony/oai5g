@@ -41,9 +41,8 @@ namespace amf {
 // Signal for UE Reachability status
 // SCID, HTTP version
 typedef bs2::signal_type<
-    void(scid_t, uint8_t),
-    bs2::keywords::mutex_type<bs2::dummy_mutex>>::type ue_reachability_status_sig_t;
-
+    void(scid_t, uint8_t), bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
+    ue_reachability_status_sig_t;
 
 }  // namespace amf
 #endif
