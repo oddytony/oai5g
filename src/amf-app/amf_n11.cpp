@@ -606,6 +606,10 @@ void amf_n11::curl_http_client(
       number_parts = parser.parse(response, json_data_response, n1sm, n2sm);
     }
 
+    if (number_parts == 0) {
+      json_data_response = response;
+    }
+
     if ((static_cast<http_response_codes_e>(httpCode) !=
          http_response_codes_e::HTTP_RESPONSE_CODE_200_OK) &&
         (static_cast<http_response_codes_e>(httpCode) !=
@@ -710,6 +714,8 @@ void amf_n11::curl_http_client(
         itti_n1n2_message_transfer_request* itti_msg =
             new itti_n1n2_message_transfer_request(TASK_AMF_N11, TASK_AMF_APP);
 
+        itti_msg->is_n1sm_set = false;
+        itti_msg->is_n2sm_set = false;
         if (n1sm.size() > 0) {
           msg_str_2_msg_hex(n1sm, n1sm_hex);
           print_buffer(
