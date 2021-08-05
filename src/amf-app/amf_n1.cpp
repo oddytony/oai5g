@@ -1071,6 +1071,13 @@ void amf_n1::registration_request_handle(
     case PERIODIC_REGISTRATION_UPDATING: {
       Logger::amf_n1().error(
           "Network does not support periodic registration, reject ...");
+      /*      Logger::amf_n1().debug("Network handling periodic registration
+         ..."); if(is_messagecontainer)
+                run_periodic_registration_update_procedure(nc, nas_msg);
+            else
+                run_periodic_registration_update_procedure(nc,
+         pdu_session_status);
+       */
     } break;
 
     case EMERGENCY_REGISTRATION: {
@@ -2769,6 +2776,183 @@ void amf_n1::run_mobility_registration_update_procedure(
 
   std::shared_ptr<itti_initial_context_setup_request> i =
       std::shared_ptr<itti_initial_context_setup_request>(itti_msg);
+  int ret = itti_inst->send_msg(i);
+  if (0 != ret) {
+    Logger::amf_n1().error(
+        "Could not send ITTI message %s to task TASK_AMF_N2",
+        i->get_msg_name());
+  }
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::run_periodic_registration_update_procedure(
+    std::shared_ptr<nas_context> nc, uint16_t pdu_session_status) {
+  // encoding REGISTRATION ACCEPT
+  RegistrationAccept* regAccept = new RegistrationAccept();
+  regAccept->setHeader(PLAIN_5GS_MSG);
+  regAccept->set_5GS_Registration_Result(false, false, false, 0x01);
+  regAccept->set5G_GUTI(
+      amf_cfg.guami.mcc, amf_cfg.guami.mnc, amf_cfg.guami.regionID,
+      amf_cfg.guami.AmfSetID, amf_cfg.guami.AmfPointer, 0x264a34c0);
+  regAccept->setT3512_Value(0x5, 0x1e);
+
+  std::vector<p_tai_t> tai_list;
+  p_tai_t item0;
+  item0.type = 0x00;
+  nas_plmn_t plmn;
+  plmn.mcc = amf_cfg.plmn_list[0].mcc;
+  plmn.mnc = amf_cfg.plmn_list[0].mnc;
+  item0.plmn_list.push_back(plmn);
+  item0.tac_list.push_back(amf_cfg.plmn_list[0].tac);
+  tai_list.push_back(item0);
+  regAccept->setTaiList(tai_list);
+  //
+  //  std::vector<struct SNSSAI_s> nssai;
+  //  SNSSAI_t snssai;
+  //  snssai.sst = 0;
+  //  snssai.sd = -1;
+  //  snssai.mHplmnSst = -1;
+  //  snssai.mHplmnSd = -1;
+  //  nssai.push_back(snssai);
+  //  regAccept->setALLOWED_NSSAI(nssai);
+
+  if (pdu_session_status == 0x0000) {
+    regAccept->setPDU_session_status(0x0000);
+  } else {
+    regAccept->setPDU_session_status(pdu_session_status);
+    Logger::amf_n1().debug(
+        "setting pdu session status 0x%02x", htonl(pdu_session_status));
+    // serApt->setPDU_session_status(0x2000);
+  }
+
+  regAccept->set_5GS_Network_Feature_Support(0x01, 0x00);
+  uint8_t buffer[1024] = {0};
+  int encoded_size     = regAccept->encode2buffer(buffer, 1024);
+  print_buffer(
+      "amf_n1", "Registration-Accept Message Buffer", buffer, encoded_size);
+  if (!encoded_size) {
+    Logger::nas_mm().error("Encode Registration-Accept message error");
+    return;
+  } else {
+    delete regAccept;
+  }
+  nas_secu_ctx* secu = nc.get()->security_ctx;
+  // protect nas message
+  bstring protectedNas;
+  encode_nas_message_protected(
+      secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
+      buffer, encoded_size, protectedNas);
+
+  string supi = "imsi-" + nc.get()->imsi;
+  Logger::amf_n1().debug("Key for pdu session context SUPI (%s)", supi.c_str());
+  std::shared_ptr<pdu_session_context> psc;
+  /*  if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
+      psc = amf_n11_inst->supi_to_pdu_ctx(supi);
+    } else {
+      Logger::amf_n1().error("Cannot get pdu_session_context with SUPI (%s)",
+                             supi.c_str());
+    }
+  */
+
+  itti_dl_nas_transport* itti_msg =
+      new itti_dl_nas_transport(TASK_AMF_N1, TASK_AMF_N2);
+  itti_msg->ran_ue_ngap_id = nc.get()->ran_ue_ngap_id;
+  itti_msg->amf_ue_ngap_id = nc.get()->amf_ue_ngap_id;
+  itti_msg->nas            = protectedNas;
+  std::shared_ptr<itti_dl_nas_transport> i =
+      std::shared_ptr<itti_dl_nas_transport>(itti_msg);
+  int ret = itti_inst->send_msg(i);
+  if (0 != ret) {
+    Logger::amf_n1().error(
+        "Could not send ITTI message %s to task TASK_AMF_N2",
+        i->get_msg_name());
+  }
+}
+//------------------------------------------------------------------------------
+void amf_n1::run_periodic_registration_update_procedure(
+    std::shared_ptr<nas_context> nc, bstring& nas_msg) {
+  // decoding REGISTRATION request
+  RegistrationRequest* regReq = new RegistrationRequest();
+  regReq->decodefrombuffer(
+      nullptr, (uint8_t*) bdata(nas_msg), blength(nas_msg));
+  bdestroy(nas_msg);  // free buffer
+
+  // encoding REGISTRATION ACCEPT
+  RegistrationAccept* regAccept = new RegistrationAccept();
+  regAccept->setHeader(PLAIN_5GS_MSG);
+  regAccept->set_5GS_Registration_Result(false, false, false, 0x01);
+  regAccept->set5G_GUTI(
+      amf_cfg.guami.mcc, amf_cfg.guami.mnc, amf_cfg.guami.regionID,
+      amf_cfg.guami.AmfSetID, amf_cfg.guami.AmfPointer, 0x264a34c0);
+  regAccept->setT3512_Value(0x5, 0x1e);
+
+  std::vector<p_tai_t> tai_list;
+  p_tai_t item0;
+  item0.type = 0x00;
+  nas_plmn_t plmn;
+  plmn.mcc = amf_cfg.plmn_list[0].mcc;
+  plmn.mnc = amf_cfg.plmn_list[0].mnc;
+  item0.plmn_list.push_back(plmn);
+  item0.tac_list.push_back(amf_cfg.plmn_list[0].tac);
+  tai_list.push_back(item0);
+  regAccept->setTaiList(tai_list);
+  //
+  //  std::vector<struct SNSSAI_s> nssai;
+  //  SNSSAI_t snssai;
+  //  snssai.sst = 0;
+  //  snssai.sd = -1;
+  //  snssai.mHplmnSst = -1;
+  //  snssai.mHplmnSd = -1;
+  //  nssai.push_back(snssai);
+  //  regAccept->setALLOWED_NSSAI(nssai);
+
+  uint16_t pdu_session_status = 0xffff;
+  pdu_session_status          = regReq->getPduSessionStatus();
+  if (pdu_session_status == 0x0000) {
+    regAccept->setPDU_session_status(0x0000);
+  } else {
+    regAccept->setPDU_session_status(pdu_session_status);
+    Logger::amf_n1().debug(
+        "setting pdu session status 0x%02x", htonl(pdu_session_status));
+    // serApt->setPDU_session_status(0x2000);
+  }
+  delete regReq;
+
+  regAccept->set_5GS_Network_Feature_Support(0x01, 0x00);
+  uint8_t buffer[1024] = {0};
+  int encoded_size     = regAccept->encode2buffer(buffer, 1024);
+  print_buffer(
+      "amf_n1", "Registration-Accept Message Buffer", buffer, encoded_size);
+  if (!encoded_size) {
+    Logger::nas_mm().error("Encode Registration-Accept message error");
+    return;
+  } else {
+    delete regAccept;
+  }
+  nas_secu_ctx* secu = nc.get()->security_ctx;
+  // protect nas message
+  bstring protectedNas;
+  encode_nas_message_protected(
+      secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
+      buffer, encoded_size, protectedNas);
+
+  string supi = "imsi-" + nc.get()->imsi;
+  Logger::amf_n1().debug("Key for pdu session context SUPI (%s)", supi.c_str());
+  std::shared_ptr<pdu_session_context> psc;
+  /*  if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
+      psc = amf_n11_inst->supi_to_pdu_ctx(supi);
+    } else {
+      Logger::amf_n1().error("Cannot get pdu_session_context with SUPI (%s)",
+                             supi.c_str());
+    }
+  */
+  itti_dl_nas_transport* itti_msg =
+      new itti_dl_nas_transport(TASK_AMF_N1, TASK_AMF_N2);
+  itti_msg->ran_ue_ngap_id = nc.get()->ran_ue_ngap_id;
+  itti_msg->amf_ue_ngap_id = nc.get()->amf_ue_ngap_id;
+  itti_msg->nas            = protectedNas;
+  std::shared_ptr<itti_dl_nas_transport> i =
+      std::shared_ptr<itti_dl_nas_transport>(itti_msg);
   int ret = itti_inst->send_msg(i);
   if (0 != ret) {
     Logger::amf_n1().error(

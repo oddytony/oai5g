@@ -221,6 +221,17 @@ class itti_handover_required : public itti_msg_n2 {
   HandoverRequiredMsg* handoverReq;
 };
 
+class itti_paging : public itti_msg_n2 {
+ public:
+  itti_paging(const task_id_t origin, const task_id_t destination)
+      : itti_msg_n2(PAGING, origin, destination) {}
+  itti_paging(const itti_paging& i) : itti_msg_n2(i) {}
+
+ public:
+  uint32_t ran_ue_ngap_id;
+  long amf_ue_ngap_id;
+};
+
 class itti_handover_request_Ack : public itti_msg_n2 {
  public:
   itti_handover_request_Ack(const task_id_t origin, const task_id_t destination)

@@ -59,6 +59,12 @@ class ue_ngap_context {
   bool ueContextRequest;
   uint32_t s_tmsi_5g;
 
+  std ::string s_setid;
+  std ::string s_pointer;
+  std ::string s_tmsi;
+
+  Tai_t tai;
+
   // state management, ue status over the air
   ng_ue_state_t ng_ue_state;
   uint8_t ncc;  // Next Hop Chaining Counter

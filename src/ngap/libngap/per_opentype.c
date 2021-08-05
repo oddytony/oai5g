@@ -406,7 +406,6 @@ static asn_dec_rval_t aper_open_type_get_simple(
   ASN__STACK_OVERFLOW_CHECK(ctx);
 
   ASN_DEBUG("Getting open type %s...", td->name);
-  // printf("test0515 Getting open type %s...\n", td->name);
 
   do {
     chunk_bytes = aper_get_length(pd, -1, -1, &repeat);
@@ -433,8 +432,6 @@ static asn_dec_rval_t aper_open_type_get_simple(
 
   ASN_DEBUG(
       "Getting open type %s encoded in %ld bytes", td->name, (long) bufLen);
-  // printf("test0515 Getting open type %s encoded in %ld bytes\n", td->name,
-  //(long)bufLen);
 
   memset(&spd, 0, sizeof(spd));
   spd.buffer = buf;
