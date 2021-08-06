@@ -60,6 +60,11 @@ class PagingMsg {
 
   UEPagingIdentity* uePagingIdentity;
   TAIListForPaging* taIListForPaging;
+  // Paging DRX
+  // Paging Priority
+  // UE Radio Capability for Paging
+  // Paging Origin
+  // Assistance Data for Paging
 };
 
 }  // namespace ngap

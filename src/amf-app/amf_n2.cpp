@@ -242,28 +242,27 @@ void amf_n2::handle_itti_message(itti_paging& itti_msg) {
         "which's amf_ue_ngap_id (0x%x)",
         itti_msg.amf_ue_ngap_id, unc.get()->amf_ue_ngap_id);
   }
-  if (unc.get()->ng_ue_state != NGAP_UE_CONNECTED) {
-    Logger::amf_n2().error(
-        "Received NGAP UPLINK_NAS_TRANSPORT while UE in state != "
-        "NGAP_UE_CONNECTED");
+
+  if (unc.get()->ng_ue_state == NGAP_UE_CONNECTED) {
+    Logger::amf_n2().warn("Received NGAP PAGING while UE in CONNECTED MODE");
     // return;
   }
 
   PagingMsg paging_msg = {};
   paging_msg.setMessageType();
-  Logger::amf_n2().warn(" unc.get()->s_setid (%d)", unc.get()->s_setid);
-  Logger::amf_n2().warn(" unc.get()->s_pointer (%d)", unc.get()->s_pointer);
-  Logger::amf_n2().warn(" unc.get()->s_tmsi (%d)", unc.get()->s_tmsi);
+  Logger::amf_n2().debug(
+      " UE NGAP Context, s_setid (%d), s_pointer (%d), s_tmsi (%d)",
+      unc.get()->s_setid, unc.get()->s_pointer, unc.get()->s_tmsi);
   paging_msg.setUEPagingIdentity(
       unc.get()->s_setid, unc.get()->s_pointer, unc.get()->s_tmsi);
-  Logger::amf_n2().warn("==========================================");
-  std ::vector<struct Tai_s> list;
-  Tai_t tai_test;
-  tai_test.mcc = unc.get()->tai.mcc;
-  tai_test.mnc = unc.get()->tai.mnc;
-  tai_test.tac = unc.get()->tai.tac;
 
-  list.push_back(tai_test);
+  std ::vector<struct Tai_s> list;
+  Tai_t tai = {};
+  tai.mcc   = unc.get()->tai.mcc;
+  tai.mnc   = unc.get()->tai.mnc;
+  tai.tac   = unc.get()->tai.tac;
+
+  list.push_back(tai);
   paging_msg.setTAIListForPaging(list);
 
   uint8_t buffer[BUFFER_SIZE_512];
@@ -275,10 +274,8 @@ void amf_n2::handle_itti_message(itti_paging& itti_msg) {
 }
 
 //------------------------------------------------------------------------------
-void amf_n2::handle_itti_message(itti_new_sctp_association& new_assoc) {
-}  // handled in class ngap_app
+void amf_n2::handle_itti_message(itti_new_sctp_association& new_assoc) {}
 
-// NG_SETUP_REQUEST Handler
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
   Logger::amf_n2().debug(
@@ -547,6 +544,8 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
     return;
   }
 
+  if (!init_ue_msg.initUeMsg) return;
+
   // UE NGAP Context
   uint32_t ran_ue_ngap_id;
   if ((ran_ue_ngap_id = init_ue_msg.initUeMsg->getRanUENgapID()) == -1) {
@@ -581,8 +580,9 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
     Tai_t tai;
 
     if (init_ue_msg.initUeMsg->getUserLocationInfoNR(cgi, tai)) {
-      itti_msg->cgi = cgi;
-      itti_msg->tai = tai;
+      itti_msg->cgi  = cgi;
+      itti_msg->tai  = tai;
+      unc.get()->tai = tai;
     } else {
       Logger::amf_n2().error("Missing Mandatory IE UserLocationInfoNR");
       return;
@@ -610,6 +610,9 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
       itti_msg->is_5g_s_tmsi_present = true;
       itti_msg->_5g_s_tmsi           = _5g_s_tmsi;
       Logger::amf_n2().debug("5g_s_tmsi present");
+
+      init_ue_msg.initUeMsg->get5GS_TMSI(
+          unc.get()->s_setid, unc.get()->s_pointer, unc.get()->s_tmsi);
     }
 
     uint8_t* nas_buf;

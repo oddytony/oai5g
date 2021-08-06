@@ -214,14 +214,14 @@ void PagingMsg::setTAIListForPaging(const std::vector<struct Tai_s> list) {
 //------------------------------------------------------------------------------
 void PagingMsg::getTAIListForPaging(std::vector<struct Tai_s>& list) {
   if (!taIListForPaging) return;
-  TAI* tailist;
-  int sizeoftailist;
+  TAI* tailist      = nullptr;
+  int sizeoftailist = 0;
   taIListForPaging->getTAIListForPaging(tailist, sizeoftailist);
 
   for (int i = 0; i < sizeoftailist; i++) {
-    Tai_t tai;
-    PlmnId* plmnid;
-    TAC* tac;
+    Tai_t tai      = {};
+    PlmnId* plmnid = nullptr;
+    TAC* tac       = nullptr;
     tailist[i].getTAI(plmnid, tac);
     plmnid->getMcc(tai.mcc);
     plmnid->getMnc(tai.mnc);

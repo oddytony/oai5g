@@ -586,8 +586,8 @@ void amf_n11::curl_http_client(
     nlohmann::json response_data   = {};
     bstring n1sm_hex, n2sm_hex;
 
-    Logger::amf_n11().debug("Get response with HTTP code (%d)", httpCode);
-    Logger::amf_n11().debug("response body %s", response.c_str());
+    Logger::amf_n11().info("Get response with HTTP code (%d)", httpCode);
+    Logger::amf_n11().info("Response body %s", response.c_str());
 
     if (static_cast<http_response_codes_e>(httpCode) ==
         http_response_codes_e::HTTP_RESPONSE_CODE_0) {
@@ -609,6 +609,8 @@ void amf_n11::curl_http_client(
     if (number_parts == 0) {
       json_data_response = response;
     }
+
+    Logger::amf_n11().info("Json part %s", json_data_response.c_str());
 
     if ((static_cast<http_response_codes_e>(httpCode) !=
          http_response_codes_e::HTTP_RESPONSE_CODE_200_OK) &&
@@ -1104,10 +1106,6 @@ void amf_n11::curl_http_client(
       }
       Logger::amf_n11().debug("Error with response code %d", httpCode);
       return;
-    }
-
-    else {
-      response = *httpData.get();
     }
 
     if (!is_response_ok) {

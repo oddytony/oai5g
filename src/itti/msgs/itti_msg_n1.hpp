@@ -30,10 +30,15 @@ class itti_msg_n1 : public itti_msg {
   itti_msg_n1(
       const itti_msg_type_t msg_type, const task_id_t origin,
       const task_id_t destination)
-      : itti_msg(msg_type, origin, destination) {}
+      : itti_msg(msg_type, origin, destination),
+        amf_ue_ngap_id(0),
+        ran_ue_ngap_id(0) {
+    is_nas_signalling_estab_req = false;
+  }
   itti_msg_n1(const itti_msg_n1& i) : itti_msg(i) {
     is_nas_signalling_estab_req = i.is_nas_signalling_estab_req;
     ran_ue_ngap_id              = i.ran_ue_ngap_id;
+    amf_ue_ngap_id              = i.amf_ue_ngap_id;
   }
 
  public:
@@ -45,9 +50,19 @@ class itti_msg_n1 : public itti_msg {
 class itti_uplink_nas_data_ind : public itti_msg_n1 {
  public:
   itti_uplink_nas_data_ind(const task_id_t origin, const task_id_t destination)
-      : itti_msg_n1(UL_NAS_DATA_IND, origin, destination) {}
-  itti_uplink_nas_data_ind(const itti_uplink_nas_data_ind& i)
-      : itti_msg_n1(i) {}
+      : itti_msg_n1(UL_NAS_DATA_IND, origin, destination),
+        mcc(),
+        mnc(),
+        guti() {
+    is_guti_valid = false;
+  }
+  itti_uplink_nas_data_ind(const itti_uplink_nas_data_ind& i) : itti_msg_n1(i) {
+    nas_msg       = i.nas_msg;
+    mcc           = i.mcc;
+    mnc           = i.mnc;
+    is_guti_valid = i.is_guti_valid;
+    guti          = i.guti;
+  }
 
  public:
   bstring nas_msg;
@@ -61,9 +76,19 @@ class itti_downlink_nas_transfer : public itti_msg_n1 {
  public:
   itti_downlink_nas_transfer(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_n1(DOWNLINK_NAS_TRANSFER, origin, destination) {}
+      : itti_msg_n1(DOWNLINK_NAS_TRANSFER, origin, destination),
+        pdu_session_id(0),
+        n2sm_info_type() {
+    is_n2sm_set = false;
+  }
   itti_downlink_nas_transfer(const itti_downlink_nas_transfer& i)
-      : itti_msg_n1(i) {}
+      : itti_msg_n1(i) {
+    dl_nas         = i.dl_nas;
+    n2sm           = i.n2sm;
+    is_n2sm_set    = i.is_n2sm_set;
+    pdu_session_id = i.pdu_session_id;
+    n2sm_info_type = i.n2sm_info_type;
+  }
 
  public:
   bstring dl_nas;

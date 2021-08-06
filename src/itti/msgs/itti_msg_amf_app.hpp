@@ -34,7 +34,9 @@ class itti_msg_amf_app : public itti_msg {
   itti_msg_amf_app(
       const itti_msg_type_t msg_type, const task_id_t origin,
       const task_id_t destination)
-      : itti_msg(msg_type, origin, destination) {}
+      : itti_msg(msg_type, origin, destination),
+        ran_ue_ngap_id(0),
+        amf_ue_ngap_id(0) {}
 
   itti_msg_amf_app(const itti_msg_amf_app& i) : itti_msg(i) {
     ran_ue_ngap_id = i.ran_ue_ngap_id;
@@ -49,10 +51,25 @@ class itti_nas_signalling_establishment_request : public itti_msg_amf_app {
  public:
   itti_nas_signalling_establishment_request(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_amf_app(NAS_SIG_ESTAB_REQ, origin, destination) {}
+      : itti_msg_amf_app(NAS_SIG_ESTAB_REQ, origin, destination),
+        rrc_cause(0),
+        ueCtxReq(0),
+        cgi(),
+        tai(),
+        _5g_s_tmsi() {
+    is_5g_s_tmsi_present = false;
+  }
   itti_nas_signalling_establishment_request(
       const itti_nas_signalling_establishment_request& i)
-      : itti_msg_amf_app(i) {}
+      : itti_msg_amf_app(i) {
+    rrc_cause            = i.rrc_cause;
+    ueCtxReq             = i.ueCtxReq;
+    cgi                  = i.cgi;
+    tai                  = i.tai;
+    nas_buf              = i.nas_buf;
+    is_5g_s_tmsi_present = i.is_5g_s_tmsi_present;
+    _5g_s_tmsi           = i._5g_s_tmsi;
+  }
   int rrc_cause;
   int ueCtxReq;
   NrCgi_t cgi;
@@ -66,10 +83,24 @@ class itti_n1n2_message_transfer_request : public itti_msg_amf_app {
  public:
   itti_n1n2_message_transfer_request(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_amf_app(N1N2_MESSAGE_TRANSFER_REQ, origin, destination) {}
+      : itti_msg_amf_app(N1N2_MESSAGE_TRANSFER_REQ, origin, destination),
+        supi(),
+        pdu_session_id(0),
+        n2sm_info_type() {
+    is_n2sm_set = false;
+    is_n1sm_set = false;
+  }
   itti_n1n2_message_transfer_request(
       const itti_n1n2_message_transfer_request& i)
-      : itti_msg_amf_app(i) {}
+      : itti_msg_amf_app(i) {
+    supi           = i.supi;
+    n1sm           = i.n1sm;
+    n2sm           = i.n2sm;
+    is_n2sm_set    = i.is_n2sm_set;
+    is_n1sm_set    = i.is_n1sm_set;
+    pdu_session_id = i.pdu_session_id;
+    n2sm_info_type = i.n2sm_info_type;
+  }
 
   std::string supi;
   bstring n1sm;

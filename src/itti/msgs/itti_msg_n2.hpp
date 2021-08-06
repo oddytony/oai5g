@@ -43,7 +43,7 @@ class itti_msg_n2 : public itti_msg {
   itti_msg_n2(
       const itti_msg_type_t msg_type, const task_id_t origin,
       const task_id_t destination)
-      : itti_msg(msg_type, origin, destination) {}
+      : itti_msg(msg_type, origin, destination), assoc_id(), stream() {}
   itti_msg_n2(const itti_msg_n2& i) : itti_msg(i) {
     assoc_id = i.assoc_id;
     stream   = i.stream;
@@ -61,7 +61,9 @@ class itti_new_sctp_association : public itti_msg_n2 {
 class itti_ng_setup_request : public itti_msg_n2 {
  public:
   itti_ng_setup_request(const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(NG_SETUP_REQ, origin, destination) {}
+      : itti_msg_n2(NG_SETUP_REQ, origin, destination) {
+    ngSetupReq = nullptr;
+  }
   itti_ng_setup_request(const itti_ng_setup_request& i) : itti_msg_n2(i) {}
 
  public:
@@ -71,7 +73,9 @@ class itti_ng_setup_request : public itti_msg_n2 {
 class itti_ng_reset : public itti_msg_n2 {
  public:
   itti_ng_reset(const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(NG_RESET, origin, destination) {}
+      : itti_msg_n2(NG_RESET, origin, destination) {
+    ngReset = nullptr;
+  }
   itti_ng_reset(const itti_ng_reset& i) : itti_msg_n2(i) {}
 
  public:
@@ -88,7 +92,9 @@ class itti_ng_shutdown : public itti_msg_n2 {
 class itti_initial_ue_message : public itti_msg_n2 {
  public:
   itti_initial_ue_message(const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(INITIAL_UE_MSG, origin, destination) {}
+      : itti_msg_n2(INITIAL_UE_MSG, origin, destination) {
+    initUeMsg = nullptr;
+  }
   itti_initial_ue_message(const itti_initial_ue_message& i) : itti_msg_n2(i) {}
 
   InitialUEMessageMsg* initUeMsg;
@@ -97,7 +103,9 @@ class itti_initial_ue_message : public itti_msg_n2 {
 class itti_ul_nas_transport : public itti_msg_n2 {
  public:
   itti_ul_nas_transport(const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(ITTI_UL_NAS_TRANSPORT, origin, destination) {}
+      : itti_msg_n2(ITTI_UL_NAS_TRANSPORT, origin, destination) {
+    ulNas = nullptr;
+  }
   itti_ul_nas_transport(const itti_ul_nas_transport& i) : itti_msg_n2(i) {}
 
   UplinkNASTransportMsg* ulNas;
@@ -106,8 +114,14 @@ class itti_ul_nas_transport : public itti_msg_n2 {
 class itti_dl_nas_transport : public itti_msg_n2 {
  public:
   itti_dl_nas_transport(const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(ITTI_DL_NAS_TRANSPORT, origin, destination) {}
-  itti_dl_nas_transport(const itti_dl_nas_transport& i) : itti_msg_n2(i) {}
+      : itti_msg_n2(ITTI_DL_NAS_TRANSPORT, origin, destination),
+        ran_ue_ngap_id(0),
+        amf_ue_ngap_id(0) {}
+  itti_dl_nas_transport(const itti_dl_nas_transport& i) : itti_msg_n2(i) {
+    ran_ue_ngap_id = i.ran_ue_ngap_id;
+    amf_ue_ngap_id = i.amf_ue_ngap_id;
+    nas            = i.nas;
+  }
 
  public:
   uint32_t ran_ue_ngap_id;
@@ -119,12 +133,26 @@ class itti_initial_context_setup_request : public itti_msg_n2 {
  public:
   itti_initial_context_setup_request(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(INITIAL_CONTEXT_SETUP_REQUEST, origin, destination) {}
+      : itti_msg_n2(INITIAL_CONTEXT_SETUP_REQUEST, origin, destination),
+        ran_ue_ngap_id(0),
+        amf_ue_ngap_id(0),
+        pdu_session_id(0) {
+    is_sr            = false;
+    is_pdu_exist     = false;
+    isn2sm_avaliable = false;
+  }
   itti_initial_context_setup_request(
       const itti_initial_context_setup_request& i)
       : itti_msg_n2(i) {
-    is_pdu_exist     = false;
-    isn2sm_avaliable = false;
+    ran_ue_ngap_id   = i.ran_ue_ngap_id;
+    amf_ue_ngap_id   = i.amf_ue_ngap_id;
+    kgnb             = i.kgnb;
+    nas              = i.nas;
+    is_sr            = i.is_sr;
+    n2sm             = i.n2sm;
+    pdu_session_id   = i.pdu_session_id;
+    is_pdu_exist     = i.is_pdu_exist;
+    isn2sm_avaliable = i.isn2sm_avaliable;
   }
   uint32_t ran_ue_ngap_id;
   long amf_ue_ngap_id;
@@ -141,10 +169,19 @@ class itti_pdu_session_resource_setup_request : public itti_msg_n2 {
  public:
   itti_pdu_session_resource_setup_request(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(PDU_SESSION_RESOURCE_SETUP_REQUEST, origin, destination) {}
+      : itti_msg_n2(PDU_SESSION_RESOURCE_SETUP_REQUEST, origin, destination),
+        ran_ue_ngap_id(0),
+        amf_ue_ngap_id(0),
+        pdu_session_id(0) {}
   itti_pdu_session_resource_setup_request(
       const itti_pdu_session_resource_setup_request& i)
-      : itti_msg_n2(i) {}
+      : itti_msg_n2(i) {
+    nas            = i.nas;
+    n2sm           = i.n2sm;
+    ran_ue_ngap_id = i.ran_ue_ngap_id;
+    amf_ue_ngap_id = i.amf_ue_ngap_id;
+    pdu_session_id = i.pdu_session_id;
+  }
   bstring nas;
   bstring n2sm;
   uint32_t ran_ue_ngap_id;
@@ -156,11 +193,19 @@ class itti_pdu_session_resource_release_command : public itti_msg_n2 {
  public:
   itti_pdu_session_resource_release_command(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(PDU_SESSION_RESOURCE_RELEASE_COMMAND, origin, destination) {
-  }
+      : itti_msg_n2(PDU_SESSION_RESOURCE_RELEASE_COMMAND, origin, destination),
+        ran_ue_ngap_id(0),
+        amf_ue_ngap_id(0),
+        pdu_session_id(0) {}
   itti_pdu_session_resource_release_command(
       const itti_pdu_session_resource_release_command& i)
-      : itti_msg_n2(i) {}
+      : itti_msg_n2(i) {
+    nas            = i.nas;
+    n2sm           = i.n2sm;
+    ran_ue_ngap_id = i.ran_ue_ngap_id;
+    amf_ue_ngap_id = i.amf_ue_ngap_id;
+    pdu_session_id = i.pdu_session_id;
+  }
   bstring nas;
   bstring n2sm;
   uint32_t ran_ue_ngap_id;
@@ -172,7 +217,9 @@ class itti_ue_context_release_request : public itti_msg_n2 {
  public:
   itti_ue_context_release_request(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(UE_CONTEXT_RELEASE_REQUEST, origin, destination) {}
+      : itti_msg_n2(UE_CONTEXT_RELEASE_REQUEST, origin, destination) {
+    ueCtxRel = nullptr;
+  }
   itti_ue_context_release_request(const itti_ue_context_release_request& i)
       : itti_msg_n2(i) {}
   UEContextReleaseRequestMsg* ueCtxRel;
@@ -182,9 +229,16 @@ class itti_ue_context_release_command : public itti_msg_n2 {
  public:
   itti_ue_context_release_command(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(UE_CONTEXT_RELEASE_COMMAND, origin, destination) {}
-  itti_ue_context_release_command(const itti_dl_nas_transport& i)
-      : itti_msg_n2(i) {}
+      : itti_msg_n2(UE_CONTEXT_RELEASE_COMMAND, origin, destination),
+        ran_ue_ngap_id(0),
+        amf_ue_ngap_id(0),
+        cause() {}
+  itti_ue_context_release_command(const itti_ue_context_release_command& i)
+      : itti_msg_n2(i) {
+    ran_ue_ngap_id = i.ran_ue_ngap_id;
+    amf_ue_ngap_id = i.amf_ue_ngap_id;
+    cause          = i.cause;
+  }
 
  public:
   uint32_t ran_ue_ngap_id;
@@ -196,7 +250,9 @@ class itti_ue_context_release_complete : public itti_msg_n2 {
  public:
   itti_ue_context_release_complete(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(UE_CONTEXT_RELEASE_COMPLETE, origin, destination) {}
+      : itti_msg_n2(UE_CONTEXT_RELEASE_COMPLETE, origin, destination) {
+    ueCtxRelCmpl = nullptr;
+  }
   itti_ue_context_release_complete(const itti_ue_context_release_complete& i)
       : itti_msg_n2(i) {}
   UEContextReleaseCompleteMsg* ueCtxRelCmpl;
@@ -206,7 +262,9 @@ class itti_ue_radio_capability_indication : public itti_msg_n2 {
  public:
   itti_ue_radio_capability_indication(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(UE_RADIO_CAP_IND, origin, destination) {}
+      : itti_msg_n2(UE_RADIO_CAP_IND, origin, destination) {
+    ueRadioCap = nullptr;
+  }
   itti_ue_radio_capability_indication(
       const itti_ue_radio_capability_indication& i)
       : itti_msg_n2(i) {}
@@ -216,7 +274,9 @@ class itti_ue_radio_capability_indication : public itti_msg_n2 {
 class itti_handover_required : public itti_msg_n2 {
  public:
   itti_handover_required(const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(HANDOVER_REQUIRED, origin, destination) {}
+      : itti_msg_n2(HANDOVER_REQUIRED, origin, destination) {
+    handoverReq = nullptr;
+  }
   itti_handover_required(const itti_handover_required& i) : itti_msg_n2(i) {}
   HandoverRequiredMsg* handoverReq;
 };
@@ -235,7 +295,9 @@ class itti_paging : public itti_msg_n2 {
 class itti_handover_request_Ack : public itti_msg_n2 {
  public:
   itti_handover_request_Ack(const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(HANDOVER_REQUEST_ACK, origin, destination) {}
+      : itti_msg_n2(HANDOVER_REQUEST_ACK, origin, destination) {
+    handoverrequestAck = nullptr;
+  }
   itti_handover_request_Ack(const itti_handover_request_Ack& i)
       : itti_msg_n2(i) {}
   HandoverRequestAck* handoverrequestAck;
@@ -244,7 +306,9 @@ class itti_handover_request_Ack : public itti_msg_n2 {
 class itti_handover_notify : public itti_msg_n2 {
  public:
   itti_handover_notify(const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(HANDOVER_NOTIFY, origin, destination) {}
+      : itti_msg_n2(HANDOVER_NOTIFY, origin, destination) {
+    handovernotify = nullptr;
+  }
   itti_handover_notify(const itti_handover_notify& i) : itti_msg_n2(i) {}
   HandoverNotifyMsg* handovernotify;
 };
@@ -253,7 +317,9 @@ class itti_uplink_ran_status_transfer : public itti_msg_n2 {
  public:
   itti_uplink_ran_status_transfer(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_n2(UPLINK_RAN_STATUS_TRANSFER, origin, destination) {}
+      : itti_msg_n2(UPLINK_RAN_STATUS_TRANSFER, origin, destination) {
+    uplinkrantransfer = nullptr;
+  }
   itti_uplink_ran_status_transfer(const itti_uplink_ran_status_transfer& i)
       : itti_msg_n2(i) {}
   UplinkRANStatusTransfer* uplinkrantransfer;
