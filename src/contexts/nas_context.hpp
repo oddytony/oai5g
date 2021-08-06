@@ -56,6 +56,11 @@ static const std::vector<std::string> _5gmm_state_e2str = {
     "_5GMM_COMMON_PROCEDURE_INITIATED",
     "_5GMM_STATE_MAX"};
 
+typedef enum { CM_IDLE = 0, CM_CONNECTED } cm_state_t;
+
+static const std::vector<std::string> cm_state_e2str = {"CM_IDLE",
+                                                        "CM_CONNECTED"};
+
 class nas_context {
  public:
   nas_context();
@@ -64,7 +69,7 @@ class nas_context {
   bool is_stacs_available;
   long amf_ue_ngap_id;
   uint32_t ran_ue_ngap_id;
-  std::string nas_status;
+  cm_state_t nas_status;
   _5gmm_state_t _5gmm_state;
 
   // parameters from Registration request

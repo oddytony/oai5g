@@ -412,7 +412,7 @@ void amf_n1::nas_signalling_establishment_request_handle(
     set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
     nc.get()->ctx_avaliability_ind = false;
     // change UE connection status CM-IDLE -> CM-CONNECTED
-    nc.get()->nas_status      = "CM-CONNECTED";
+    nc.get()->nas_status      = CM_CONNECTED;
     nc.get()->amf_ue_ngap_id  = amf_ue_ngap_id;
     nc.get()->ran_ue_ngap_id  = ran_ue_ngap_id;
     nc.get()->serving_network = snn;
@@ -582,7 +582,7 @@ void amf_n1::identity_response_handle(
     nc.get()->ctx_avaliability_ind = false;
   }
   nc.get()->ctx_avaliability_ind         = true;
-  nc.get()->nas_status                   = "CM-CONNECTED";
+  nc.get()->nas_status                   = CM_CONNECTED;
   nc.get()->amf_ue_ngap_id               = amf_ue_ngap_id;
   nc.get()->ran_ue_ngap_id               = ran_ue_ngap_id;
   nc.get()->is_imsi_present              = true;
@@ -847,7 +847,7 @@ void amf_n1::registration_request_handle(
           set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
           nc.get()->ctx_avaliability_ind = false;
           // change UE connection status CM-IDLE -> CM-CONNECTED
-          nc.get()->nas_status      = "CM-CONNECTED";
+          nc.get()->nas_status      = CM_CONNECTED;
           nc.get()->amf_ue_ngap_id  = amf_ue_ngap_id;
           nc.get()->ran_ue_ngap_id  = ran_ue_ngap_id;
           nc.get()->serving_network = snn;
@@ -925,7 +925,7 @@ void amf_n1::registration_request_handle(
         set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
         nc.get()->ctx_avaliability_ind = false;
         // change UE connection status CM-IDLE -> CM-CONNECTED
-        nc.get()->nas_status                 = "CM-CONNECTED";
+        nc.get()->nas_status                 = CM_CONNECTED;
         nc.get()->amf_ue_ngap_id             = amf_ue_ngap_id;
         nc.get()->ran_ue_ngap_id             = ran_ue_ngap_id;
         nc.get()->serving_network            = snn;

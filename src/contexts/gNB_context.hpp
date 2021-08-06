@@ -45,10 +45,15 @@ extern "C" {
 using namespace sctp;
 using namespace ngap;
 
-enum amf_ng_gnb_state_s { NGAP_INIT, NGAP_RESETING, NGAP_READY, NGAP_SHUTDOWN };
+typedef enum {
+  NGAP_INIT,
+  NGAP_RESETING,
+  NGAP_READY,
+  NGAP_SHUTDOWN
+} amf_ng_gnb_state_t;
 class gnb_context {
  public:
-  enum amf_ng_gnb_state_s ng_state;
+  amf_ng_gnb_state_t ng_state;
 
   std::string gnb_name;
   long globalRanNodeId;

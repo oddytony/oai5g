@@ -243,10 +243,7 @@ void amf_n2::handle_itti_message(itti_paging& itti_msg) {
         itti_msg.amf_ue_ngap_id, unc.get()->amf_ue_ngap_id);
   }
 
-  if (unc.get()->ng_ue_state == NGAP_UE_CONNECTED) {
-    Logger::amf_n2().warn("Received NGAP PAGING while UE in CONNECTED MODE");
-    // return;
-  }
+  // TODO: check UE reachability status
 
   PagingMsg paging_msg = {};
   paging_msg.setMessageType();
@@ -746,15 +743,15 @@ void amf_n2::handle_itti_message(itti_dl_nas_transport& dl_nas_transport) {
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
-  std::shared_ptr<ue_ngap_context> unc;
+  std::shared_ptr<ue_ngap_context> unc = {};
   unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
   if (unc.get() == nullptr) {
     Logger::amf_n2().error(
         "Illegal UE with ran_ue_ngap_id (0x%x)", itti_msg.ran_ue_ngap_id);
     return;
   }
-  unc.get()->ncc = 1;
-  std::shared_ptr<gnb_context> gc;
+  unc.get()->ncc                  = 1;
+  std::shared_ptr<gnb_context> gc = {};
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
     Logger::amf_n2().error(
@@ -866,8 +863,8 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
     }
   }
 
-  uint8_t buffer[20000];  // TODO: remove hardcoded value
-  int encoded_size = msg->encode2buffer(buffer, 10000);
+  uint8_t buffer[BUFFER_SIZE_2048];
+  int encoded_size = msg->encode2buffer(buffer, BUFFER_SIZE_2048);
   bstring b        = blk2bstr(buffer, encoded_size);
   sctp_s_38412.sctp_send_msg(
       gc.get()->sctp_assoc_id, unc.get()->sctp_stream_send, &b);

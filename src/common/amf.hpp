@@ -29,6 +29,8 @@
 #define __AMF_HPP
 
 #include "3gpp_23.003.h"
+#include "3gpp_29.518.h"
+
 /*
 typedef struct {
   std::string mcc;

@@ -86,9 +86,11 @@ class itti_n1n2_message_transfer_request : public itti_msg_amf_app {
       : itti_msg_amf_app(N1N2_MESSAGE_TRANSFER_REQ, origin, destination),
         supi(),
         pdu_session_id(0),
-        n2sm_info_type() {
+        n2sm_info_type(),
+        ppi(0) {
     is_n2sm_set = false;
     is_n1sm_set = false;
+    is_ppi_set  = false;
   }
   itti_n1n2_message_transfer_request(
       const itti_n1n2_message_transfer_request& i)
@@ -100,6 +102,8 @@ class itti_n1n2_message_transfer_request : public itti_msg_amf_app {
     is_n1sm_set    = i.is_n1sm_set;
     pdu_session_id = i.pdu_session_id;
     n2sm_info_type = i.n2sm_info_type;
+    ppi            = i.ppi;
+    is_ppi_set     = i.is_ppi_set;
   }
 
   std::string supi;
@@ -109,6 +113,8 @@ class itti_n1n2_message_transfer_request : public itti_msg_amf_app {
   bool is_n1sm_set;
   uint8_t pdu_session_id;
   std::string n2sm_info_type;
+  bool is_ppi_set;
+  uint8_t ppi;
   // other parameters
 };
 

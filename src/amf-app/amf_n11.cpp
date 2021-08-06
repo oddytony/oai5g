@@ -494,6 +494,7 @@ void amf_n11::handle_post_sm_context_response_error(
   itti_msg->is_n2sm_set    = false;
   itti_msg->supi           = supi;
   itti_msg->pdu_session_id = pdu_session_id;
+  itti_msg->is_ppi_set     = false;
   std::shared_ptr<itti_n1n2_message_transfer_request> i =
       std::shared_ptr<itti_n1n2_message_transfer_request>(itti_msg);
   int ret = itti_inst->send_msg(i);
@@ -718,6 +719,8 @@ void amf_n11::curl_http_client(
 
         itti_msg->is_n1sm_set = false;
         itti_msg->is_n2sm_set = false;
+        itti_msg->is_ppi_set  = false;
+
         if (n1sm.size() > 0) {
           msg_str_2_msg_hex(n1sm, n1sm_hex);
           print_buffer(
