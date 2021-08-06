@@ -40,6 +40,9 @@ def dsT_host = ""
 def dsT_host_user = ""
 def dsT_host_ip_addr = ""
 
+// dsTester tag to use
+def dsTesterTag = params.DSTESTER_TAG
+
 // Flags
 def scmEvent = false
 def upstreamEvent = false
