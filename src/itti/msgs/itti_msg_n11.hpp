@@ -34,9 +34,7 @@ class itti_msg_n11 : public itti_msg {
   itti_msg_n11(
       const itti_msg_type_t msg_type, const task_id_t origin,
       const task_id_t destination)
-      : itti_msg(msg_type, origin, destination),
-        amf_ue_ngap_id(0),
-        ran_ue_ngap_id(0) {}
+      : itti_msg(msg_type, origin, destination) {}
   itti_msg_n11(const itti_msg_n11& i) : itti_msg(i) {
     ran_ue_ngap_id = i.ran_ue_ngap_id;
     amf_ue_ngap_id = i.amf_ue_ngap_id;
@@ -51,11 +49,7 @@ class itti_nsmf_pdusession_create_sm_context : public itti_msg_n11 {
  public:
   itti_nsmf_pdusession_create_sm_context(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_n11(NSMF_PDU_SESSION_CREATE_SM_CTX, origin, destination),
-        req_type(0),
-        pdu_sess_id(0),
-        snssai(),
-        plmn() {}
+      : itti_msg_n11(NSMF_PDU_SESSION_CREATE_SM_CTX, origin, destination) {}
   itti_nsmf_pdusession_create_sm_context(
       const itti_nsmf_pdusession_create_sm_context& i)
       : itti_msg_n11(i) {}
@@ -73,8 +67,8 @@ class itti_pdu_session_resource_setup_response : public itti_msg_n11 {
  public:
   itti_pdu_session_resource_setup_response(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_n11(PDU_SESSION_RESOURCE_SETUP_RESPONSE, origin, destination),
-        pdu_session_id(0) {}
+      : itti_msg_n11(PDU_SESSION_RESOURCE_SETUP_RESPONSE, origin, destination) {
+  }
   itti_pdu_session_resource_setup_response(
       const itti_pdu_session_resource_setup_response& i)
       : itti_msg_n11(i) {}
@@ -88,15 +82,9 @@ class itti_nsmf_pdusession_update_sm_context : public itti_msg_n11 {
  public:
   itti_nsmf_pdusession_update_sm_context(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_n11(NSMF_PDU_SESSION_UPDATE_SM_CTX, origin, destination),
-        supi(),
-        pdu_session_id(0),
-        is_n2sm_set(false),
-        n2sm_info_type(),
-        ran_ue_ngap_id(0),
-        amf_ue_ngap_id(0),
-        promise_id(0) {
+      : itti_msg_n11(NSMF_PDU_SESSION_UPDATE_SM_CTX, origin, destination) {
     is_n2sm_set = false;
+    promise_id  = 0;
   }
   itti_nsmf_pdusession_update_sm_context(
       const itti_nsmf_pdusession_update_sm_context& i)
@@ -123,8 +111,7 @@ class itti_nsmf_pdusession_release_sm_context : public itti_msg_n11 {
  public:
   itti_nsmf_pdusession_release_sm_context(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_n11(NSMF_PDU_SESSION_RELEASE_SM_CTX, origin, destination),
-        supi() {}
+      : itti_msg_n11(NSMF_PDU_SESSION_RELEASE_SM_CTX, origin, destination) {}
   itti_nsmf_pdusession_release_sm_context(
       const itti_nsmf_pdusession_release_sm_context& i)
       : itti_msg_n11(i) {
@@ -141,7 +128,6 @@ class itti_n11_register_nf_instance_request : public itti_msg_n11 {
   itti_n11_register_nf_instance_request(
       const task_id_t orig, const task_id_t dest)
       : itti_msg_n11(N11_REGISTER_NF_INSTANCE_REQUEST, orig, dest),
-        profile(),
         http_version(1) {}
   const char* get_msg_name() { return "N11_REGISTER_NF_INSTANCE_REQUEST"; };
 
@@ -155,9 +141,7 @@ class itti_n11_register_nf_instance_response : public itti_msg_n11 {
   itti_n11_register_nf_instance_response(
       const task_id_t orig, const task_id_t dest)
       : itti_msg_n11(N11_REGISTER_NF_INSTANCE_RESPONSE, orig, dest),
-        profile(),
-        http_version(1),
-        http_response_code(0) {}
+        http_version(1) {}
   const char* get_msg_name() { return "N11_REGISTER_NF_INSTANCE_RESPONSE"; };
 
   amf_application::amf_profile profile;
@@ -171,8 +155,7 @@ class itti_n11_update_nf_instance_request : public itti_msg_n11 {
   itti_n11_update_nf_instance_request(
       const task_id_t orig, const task_id_t dest)
       : itti_msg_n11(N11_UPDATE_NF_INSTANCE_REQUEST, orig, dest),
-        http_version(1),
-        smf_instance_id() {}
+        http_version(1) {}
   const char* get_msg_name() { return "N11_UPDATE_NF_INSTANCE_REQUEST"; };
 
   //  std::vector<oai::amf::model::PatchItem> patch_items;
@@ -186,9 +169,7 @@ class itti_n11_update_nf_instance_response : public itti_msg_n11 {
   itti_n11_update_nf_instance_response(
       const task_id_t orig, const task_id_t dest)
       : itti_msg_n11(N11_UPDATE_NF_INSTANCE_RESPONSE, orig, dest),
-        http_version(1),
-        amf_instance_id(),
-        http_response_code(0) {}
+        http_version(1) {}
   const char* get_msg_name() { return "N11_UPDATE_NF_INSTANCE_RESPONSE"; };
 
   uint8_t http_version;
@@ -200,9 +181,7 @@ class itti_n11_update_nf_instance_response : public itti_msg_n11 {
 class itti_n11_deregister_nf_instance : public itti_msg_n11 {
  public:
   itti_n11_deregister_nf_instance(const task_id_t orig, const task_id_t dest)
-      : itti_msg_n11(N11_DEREGISTER_NF_INSTANCE, orig, dest),
-        http_version(1),
-        amf_instance_id() {}
+      : itti_msg_n11(N11_DEREGISTER_NF_INSTANCE, orig, dest), http_version(1) {}
   const char* get_msg_name() { return "N11_DEREGISTER_NF_INSTANCE"; };
 
   uint8_t http_version;

@@ -34,9 +34,7 @@ class itti_msg_amf_app : public itti_msg {
   itti_msg_amf_app(
       const itti_msg_type_t msg_type, const task_id_t origin,
       const task_id_t destination)
-      : itti_msg(msg_type, origin, destination),
-        ran_ue_ngap_id(0),
-        amf_ue_ngap_id(0) {}
+      : itti_msg(msg_type, origin, destination) {}
 
   itti_msg_amf_app(const itti_msg_amf_app& i) : itti_msg(i) {
     ran_ue_ngap_id = i.ran_ue_ngap_id;
@@ -51,14 +49,7 @@ class itti_nas_signalling_establishment_request : public itti_msg_amf_app {
  public:
   itti_nas_signalling_establishment_request(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_amf_app(NAS_SIG_ESTAB_REQ, origin, destination),
-        rrc_cause(0),
-        ueCtxReq(0),
-        cgi(),
-        tai(),
-        _5g_s_tmsi() {
-    is_5g_s_tmsi_present = false;
-  }
+      : itti_msg_amf_app(NAS_SIG_ESTAB_REQ, origin, destination) {}
   itti_nas_signalling_establishment_request(
       const itti_nas_signalling_establishment_request& i)
       : itti_msg_amf_app(i) {}
@@ -75,15 +66,7 @@ class itti_n1n2_message_transfer_request : public itti_msg_amf_app {
  public:
   itti_n1n2_message_transfer_request(
       const task_id_t origin, const task_id_t destination)
-      : itti_msg_amf_app(N1N2_MESSAGE_TRANSFER_REQ, origin, destination),
-        supi(),
-        pdu_session_id(0),
-        n2sm_info_type(),
-        ppi(0) {
-    is_n2sm_set = false;
-    is_n1sm_set = false;
-    is_ppi_set  = false;
-  }
+      : itti_msg_amf_app(N1N2_MESSAGE_TRANSFER_REQ, origin, destination) {}
   itti_n1n2_message_transfer_request(
       const itti_n1n2_message_transfer_request& i)
       : itti_msg_amf_app(i) {}
