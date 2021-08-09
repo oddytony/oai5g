@@ -2847,15 +2847,6 @@ void amf_n1::run_periodic_registration_update_procedure(
   string supi = "imsi-" + nc.get()->imsi;
   Logger::amf_n1().debug("Key for pdu session context SUPI (%s)", supi.c_str());
 
-  std::shared_ptr<pdu_session_context> psc;
-  /*  if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
-      psc = amf_n11_inst->supi_to_pdu_ctx(supi);
-    } else {
-      Logger::amf_n1().error("Cannot get pdu_session_context with SUPI (%s)",
-                             supi.c_str());
-    }
-  */
-
   itti_dl_nas_transport* itti_msg =
       new itti_dl_nas_transport(TASK_AMF_N1, TASK_AMF_N2);
   itti_msg->ran_ue_ngap_id = nc.get()->ran_ue_ngap_id;
