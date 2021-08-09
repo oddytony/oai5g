@@ -120,6 +120,8 @@ void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(
     response_json["cause"] =
         n1_n2_message_transfer_cause_e2str[ATTEMPTING_TO_REACH_UE];
     code = Pistache::Http::Code::Accepted;
+  } else {
+    itti_msg->is_ppi_set = false;
   }
 
   // Send response to the NF Service Consumer (e.g., SMF)
