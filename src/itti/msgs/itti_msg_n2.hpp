@@ -143,17 +143,7 @@ class itti_initial_context_setup_request : public itti_msg_n2 {
   }
   itti_initial_context_setup_request(
       const itti_initial_context_setup_request& i)
-      : itti_msg_n2(i) {
-    ran_ue_ngap_id   = i.ran_ue_ngap_id;
-    amf_ue_ngap_id   = i.amf_ue_ngap_id;
-    kgnb             = i.kgnb;
-    nas              = i.nas;
-    is_sr            = i.is_sr;
-    n2sm             = i.n2sm;
-    pdu_session_id   = i.pdu_session_id;
-    is_pdu_exist     = i.is_pdu_exist;
-    isn2sm_avaliable = i.isn2sm_avaliable;
-  }
+      : itti_msg_n2(i) {}
   uint32_t ran_ue_ngap_id;
   long amf_ue_ngap_id;
   bstring kgnb;
@@ -175,13 +165,7 @@ class itti_pdu_session_resource_setup_request : public itti_msg_n2 {
         pdu_session_id(0) {}
   itti_pdu_session_resource_setup_request(
       const itti_pdu_session_resource_setup_request& i)
-      : itti_msg_n2(i) {
-    nas            = i.nas;
-    n2sm           = i.n2sm;
-    ran_ue_ngap_id = i.ran_ue_ngap_id;
-    amf_ue_ngap_id = i.amf_ue_ngap_id;
-    pdu_session_id = i.pdu_session_id;
-  }
+      : itti_msg_n2(i) {}
   bstring nas;
   bstring n2sm;
   uint32_t ran_ue_ngap_id;
@@ -199,13 +183,7 @@ class itti_pdu_session_resource_release_command : public itti_msg_n2 {
         pdu_session_id(0) {}
   itti_pdu_session_resource_release_command(
       const itti_pdu_session_resource_release_command& i)
-      : itti_msg_n2(i) {
-    nas            = i.nas;
-    n2sm           = i.n2sm;
-    ran_ue_ngap_id = i.ran_ue_ngap_id;
-    amf_ue_ngap_id = i.amf_ue_ngap_id;
-    pdu_session_id = i.pdu_session_id;
-  }
+      : itti_msg_n2(i) {}
   bstring nas;
   bstring n2sm;
   uint32_t ran_ue_ngap_id;
@@ -234,11 +212,7 @@ class itti_ue_context_release_command : public itti_msg_n2 {
         amf_ue_ngap_id(0),
         cause() {}
   itti_ue_context_release_command(const itti_ue_context_release_command& i)
-      : itti_msg_n2(i) {
-    ran_ue_ngap_id = i.ran_ue_ngap_id;
-    amf_ue_ngap_id = i.amf_ue_ngap_id;
-    cause          = i.cause;
-  }
+      : itti_msg_n2(i) {}
 
  public:
   uint32_t ran_ue_ngap_id;

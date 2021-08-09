@@ -61,15 +61,7 @@ class itti_nas_signalling_establishment_request : public itti_msg_amf_app {
   }
   itti_nas_signalling_establishment_request(
       const itti_nas_signalling_establishment_request& i)
-      : itti_msg_amf_app(i) {
-    rrc_cause            = i.rrc_cause;
-    ueCtxReq             = i.ueCtxReq;
-    cgi                  = i.cgi;
-    tai                  = i.tai;
-    nas_buf              = i.nas_buf;
-    is_5g_s_tmsi_present = i.is_5g_s_tmsi_present;
-    _5g_s_tmsi           = i._5g_s_tmsi;
-  }
+      : itti_msg_amf_app(i) {}
   int rrc_cause;
   int ueCtxReq;
   NrCgi_t cgi;
@@ -94,17 +86,7 @@ class itti_n1n2_message_transfer_request : public itti_msg_amf_app {
   }
   itti_n1n2_message_transfer_request(
       const itti_n1n2_message_transfer_request& i)
-      : itti_msg_amf_app(i) {
-    supi           = i.supi;
-    n1sm           = i.n1sm;
-    n2sm           = i.n2sm;
-    is_n2sm_set    = i.is_n2sm_set;
-    is_n1sm_set    = i.is_n1sm_set;
-    pdu_session_id = i.pdu_session_id;
-    n2sm_info_type = i.n2sm_info_type;
-    ppi            = i.ppi;
-    is_ppi_set     = i.is_ppi_set;
-  }
+      : itti_msg_amf_app(i) {}
 
   std::string supi;
   bstring n1sm;
