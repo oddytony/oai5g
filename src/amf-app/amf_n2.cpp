@@ -42,6 +42,7 @@
 #include "PduSessionResourceSetupRequest.hpp"
 #include "UEContextReleaseCommand.hpp"
 #include "HandoverPreparationFailure.hpp"
+#include "Paging.hpp"
 #include "amf_app.hpp"
 #include "amf_config.hpp"
 #include "amf_n1.hpp"
@@ -198,6 +199,11 @@ void amf_n2_task(void* args_p) {
             dynamic_cast<itti_uplink_ran_status_transfer*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
+      case PAGING: {
+        Logger::amf_n2().info("Received Paging message,handling");
+        itti_paging* m = dynamic_cast<itti_paging*>(msg);
+        amf_n2_inst->handle_itti_message(ref(*m));
+      } break;
       default:
         Logger::amf_n2().info("No handler for msg type %d", msg->msg_type);
     }
@@ -217,12 +223,56 @@ amf_n2::amf_n2(const std::string& address, const uint16_t port_num)
 //------------------------------------------------------------------------------
 amf_n2::~amf_n2() {}
 
-// NGAP Messages Handlers
 //------------------------------------------------------------------------------
-void amf_n2::handle_itti_message(itti_new_sctp_association& new_assoc) {
-}  // handled in class ngap_app
+void amf_n2::handle_itti_message(itti_paging& itti_msg) {
+  Logger::amf_n2().debug("Handling Paging message...");
 
-// NG_SETUP_REQUEST Handler
+  std::shared_ptr<ue_ngap_context> unc = {};
+
+  if (!is_ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id)) {
+    Logger::amf_n2().error(
+        "No UE NGAP context with ran_ue_ngap_id (%d)", itti_msg.ran_ue_ngap_id);
+    return;
+  }
+
+  unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
+  if (unc.get()->amf_ue_ngap_id != itti_msg.amf_ue_ngap_id) {
+    Logger::amf_n2().error(
+        "The requested UE (amf_ue_ngap_id: 0x%x) is not valid, existed UE "
+        "which's amf_ue_ngap_id (0x%x)",
+        itti_msg.amf_ue_ngap_id, unc.get()->amf_ue_ngap_id);
+  }
+
+  // TODO: check UE reachability status
+
+  PagingMsg paging_msg = {};
+  paging_msg.setMessageType();
+  Logger::amf_n2().debug(
+      " UE NGAP Context, s_setid (%d), s_pointer (%d), s_tmsi (%d)",
+      unc.get()->s_setid, unc.get()->s_pointer, unc.get()->s_tmsi);
+  paging_msg.setUEPagingIdentity(
+      unc.get()->s_setid, unc.get()->s_pointer, unc.get()->s_tmsi);
+
+  std ::vector<struct Tai_s> list;
+  Tai_t tai = {};
+  tai.mcc   = unc.get()->tai.mcc;
+  tai.mnc   = unc.get()->tai.mnc;
+  tai.tac   = unc.get()->tai.tac;
+
+  list.push_back(tai);
+  paging_msg.setTAIListForPaging(list);
+
+  uint8_t buffer[BUFFER_SIZE_512];
+  int encoded_size = paging_msg.encode2buffer(buffer, BUFFER_SIZE_512);
+  bstring b        = blk2bstr(buffer, encoded_size);
+
+  amf_n2_inst->sctp_s_38412.sctp_send_msg(
+      unc.get()->gnb_assoc_id, unc.get()->sctp_stream_send, &b);
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::handle_itti_message(itti_new_sctp_association& new_assoc) {}
+
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
   Logger::amf_n2().debug(
@@ -491,6 +541,8 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
     return;
   }
 
+  if (!init_ue_msg.initUeMsg) return;
+
   // UE NGAP Context
   uint32_t ran_ue_ngap_id;
   if ((ran_ue_ngap_id = init_ue_msg.initUeMsg->getRanUENgapID()) == -1) {
@@ -525,8 +577,9 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
     Tai_t tai;
 
     if (init_ue_msg.initUeMsg->getUserLocationInfoNR(cgi, tai)) {
-      itti_msg->cgi = cgi;
-      itti_msg->tai = tai;
+      itti_msg->cgi  = cgi;
+      itti_msg->tai  = tai;
+      unc.get()->tai = tai;
     } else {
       Logger::amf_n2().error("Missing Mandatory IE UserLocationInfoNR");
       return;
@@ -554,6 +607,9 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
       itti_msg->is_5g_s_tmsi_present = true;
       itti_msg->_5g_s_tmsi           = _5g_s_tmsi;
       Logger::amf_n2().debug("5g_s_tmsi present");
+
+      init_ue_msg.initUeMsg->get5GS_TMSI(
+          unc.get()->s_setid, unc.get()->s_pointer, unc.get()->s_tmsi);
     }
 
     uint8_t* nas_buf;
@@ -687,15 +743,15 @@ void amf_n2::handle_itti_message(itti_dl_nas_transport& dl_nas_transport) {
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
-  std::shared_ptr<ue_ngap_context> unc;
+  std::shared_ptr<ue_ngap_context> unc = {};
   unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
   if (unc.get() == nullptr) {
     Logger::amf_n2().error(
         "Illegal UE with ran_ue_ngap_id (0x%x)", itti_msg.ran_ue_ngap_id);
     return;
   }
-  unc.get()->ncc = 1;
-  std::shared_ptr<gnb_context> gc;
+  unc.get()->ncc                  = 1;
+  std::shared_ptr<gnb_context> gc = {};
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
     Logger::amf_n2().error(
@@ -807,8 +863,8 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
     }
   }
 
-  uint8_t buffer[20000];  // TODO: remove hardcoded value
-  int encoded_size = msg->encode2buffer(buffer, 10000);
+  uint8_t buffer[BUFFER_SIZE_2048];
+  int encoded_size = msg->encode2buffer(buffer, BUFFER_SIZE_2048);
   bstring b        = blk2bstr(buffer, encoded_size);
   sctp_s_38412.sctp_send_msg(
       gc.get()->sctp_assoc_id, unc.get()->sctp_stream_send, &b);

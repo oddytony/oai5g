@@ -1493,7 +1493,6 @@ asn_dec_rval_t SEQUENCE_decode_aper(
   }
 
   ASN_DEBUG("Decoding %s as SEQUENCE (APER)", td->name);
-  // printf("test0515 Decoding %s as SEQUENCE (APER)\n", td->name);
 
   /* Handle extensions */
   if (specs->first_extension < 0) {
@@ -1566,9 +1565,6 @@ asn_dec_rval_t SEQUENCE_decode_aper(
       ASN_DEBUG(
           "Member %s->%s is optional, p=%d (%d->%d)", td->name, elm->name,
           present, (int) opmd.nboff, (int) opmd.nbits);
-      // printf("test0515 Member %s->%s is optional, p=%d (%d->%d)\n",
-      //          td->name, elm->name, present,
-      //          (int)opmd.nboff, (int)opmd.nbits);
       if (present == 0) {
         /* This element is not present */
         if (elm->default_value_set) {
@@ -1587,7 +1583,6 @@ asn_dec_rval_t SEQUENCE_decode_aper(
 
     /* Fetch the member from the stream */
     ASN_DEBUG("Decoding member \"%s\" in %s", elm->name, td->name);
-    // printf("test0515 Decoding member \"%s\" in %s\n", elm->name, td->name);
 
     if (elm->flags & ATF_OPEN_TYPE) {
       rv = OPEN_TYPE_aper_get(opt_codec_ctx, td, st, elm, pd);

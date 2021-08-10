@@ -46,10 +46,41 @@ bool FiveGSTmsi::decodefrompdu(Ngap_FiveG_S_TMSI_t pdu) {
   amfSetid.getAMFSetID(setId);
   amfPointer.getAMFPointer(pointer);
   _5g_s_tmsi = setId + pointer + std::to_string(tmsi);
+  tmsi_value = std::to_string(tmsi);
   return true;
 }
 
 //------------------------------------------------------------------------------
 void FiveGSTmsi::getValue(std::string& tmsi) {
   tmsi = _5g_s_tmsi;
+}
+
+//------------------------------------------------------------------------------
+void FiveGSTmsi::getValue(
+    std::string& setid, std::string& pointer, std::string& tmsi) {
+  amfSetid.getAMFSetID(setid);
+  amfPointer.getAMFPointer(pointer);
+  tmsi = tmsi_value;
+}
+
+//------------------------------------------------------------------------------
+void FiveGSTmsi::setValue(
+    std::string& setid, std::string& pointer, std::string& tmsi) {
+  amfSetid.setAMFSetID(setid);
+  amfPointer.setAMFPointer(pointer);
+  _5g_s_tmsi = tmsi;
+}
+
+//------------------------------------------------------------------------------
+bool FiveGSTmsi::encode2pdu(Ngap_FiveG_S_TMSI_t* pdu) {
+  amfSetid.encode2bitstring(pdu->aMFSetID);
+  amfPointer.encode2bitstring(pdu->aMFPointer);
+
+  uint32_t tmsi        = (uint32_t) std::stol(_5g_s_tmsi);
+  uint8_t* buf         = (uint8_t*) malloc(sizeof(uint32_t));
+  *(uint32_t*) buf     = htonl(tmsi);
+  pdu->fiveG_TMSI.buf  = buf;
+  pdu->fiveG_TMSI.size = sizeof(uint32_t);
+
+  return true;
 }

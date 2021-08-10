@@ -37,7 +37,6 @@ include_directories(${SRC_TOP_DIR}/utils)
 include_directories(${SRC_TOP_DIR}/utils/bstr)
 
 add_library (CONTEXTS STATIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/gNB_context.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/nas_context.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/pdu_session_context.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ue_context.cpp

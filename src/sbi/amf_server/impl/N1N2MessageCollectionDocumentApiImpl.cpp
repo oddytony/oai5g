@@ -72,7 +72,11 @@ void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(
     Pistache::Http::ResponseWriter& response) {
   Logger::amf_server().debug(
       "Receive N1N2MessageTransfer Request, handling...");
-  response.send(Pistache::Http::Code::Ok, "OK");
+
+  nlohmann::json response_json = {};
+  response_json["cause"] =
+      n1_n2_message_transfer_cause_e2str[N1_N2_TRANSFER_INITIATED];
+  Pistache::Http::Code code = Pistache::Http::Code::Ok;
 
   std::string supi = ueContextId;
   Logger::amf_server().debug(
@@ -108,6 +112,22 @@ void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(
   itti_msg->is_n2sm_set = true;
   itti_msg->pdu_session_id =
       (uint8_t) n1N2MessageTransferReqData.getPduSessionId();
+
+  // For Paging
+  if (n1N2MessageTransferReqData.ppiIsSet()) {
+    itti_msg->is_ppi_set = true;
+    itti_msg->ppi        = n1N2MessageTransferReqData.getPpi();
+    response_json["cause"] =
+        n1_n2_message_transfer_cause_e2str[ATTEMPTING_TO_REACH_UE];
+    code = Pistache::Http::Code::Accepted;
+  } else {
+    itti_msg->is_ppi_set = false;
+  }
+
+  // Send response to the NF Service Consumer (e.g., SMF)
+  response.send(code, response_json.dump().c_str());
+
+  // Process N1N2 Message Transfer Request
   std::shared_ptr<itti_n1n2_message_transfer_request> i =
       std::shared_ptr<itti_n1n2_message_transfer_request>(itti_msg);
   int ret = itti_inst->send_msg(i);
