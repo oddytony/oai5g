@@ -33,7 +33,6 @@
 #include <ctype.h>
 #include <inttypes.h>
 #include "3gpp_29.500.h"
-#include "3gpp_24.501.h"
 #include "conversions.hpp"
 
 //------------------------------------------------------------------------------
