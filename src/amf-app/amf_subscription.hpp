@@ -34,7 +34,7 @@
 #include <vector>
 
 #include "3gpp_29.508.h"
-#include "common_root_types.h"
+#include "amf.hpp"
 #include "itti.hpp"
 
 namespace amf {
