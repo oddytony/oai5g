@@ -93,7 +93,7 @@ void xgpp_conv::amf_event_exposure_notification_from_openapi(
 
   // EventSubscription: TODO
   event_subscription_t event_subscription = {};
-  event_subscription.amf_event            = amf_event_t::AMF_EVENT_REACH_ST;
+  event_subscription.amf_event            = amf_event_t::REACHABILITY_REPORT;
   std::vector<event_subscription_t> event_subscriptions = {};
   event_subscriptions.push_back(event_subscription);
   // eem.set_event_subs(event_subscriptions);

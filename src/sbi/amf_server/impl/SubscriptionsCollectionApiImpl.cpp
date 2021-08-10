@@ -1,6 +1,6 @@
 /**
  * Namf_EventExposure
- * Session Management Event Exposure Service. © 2019, 3GPP Organizational
+ * Session Management Event Exposure Service. ï¿½ 2019, 3GPP Organizational
  * Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -36,7 +36,7 @@
 
 #include "logger.hpp"
 #include "amf_msg.hpp"
-#include "3gpp_29.508.h"
+#include "3gpp_29.518.h"
 #include "itti_msg_sbi.hpp"
 #include "amf_config.hpp"
 #include "3gpp_conversions.hpp"

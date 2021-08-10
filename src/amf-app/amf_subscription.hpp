@@ -33,7 +33,7 @@
 #include <utility>
 #include <vector>
 
-#include "3gpp_29.508.h"
+#include "3gpp_29.518.h"
 #include "amf.hpp"
 #include "itti.hpp"
 

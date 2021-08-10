@@ -30,7 +30,7 @@
 #define FILE_AMF_MSG_HPP_SEEN
 
 #include "amf.hpp"
-#include "3gpp_29.508.h"
+#include "3gpp_29.518.h"
 #include "pistache/http.h"
 #include "amf_profile.hpp"
 
