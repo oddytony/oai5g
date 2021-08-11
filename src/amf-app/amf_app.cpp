@@ -34,7 +34,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "3gpp_conversions.hpp"
+//#include "3gpp_conversions.hpp"
 #include "DLNASTransport.hpp"
 #include "amf_config.hpp"
 #include "amf_n1.hpp"

@@ -62,6 +62,6 @@ class amf_event {
 
  private:
   ue_reachability_status_sig_t
-      ue_reachability_status;  // Signal for SM Context status update
+      ue_reachability_status;  // Signal for UE Reachability Report
 };
 }  // namespace amf

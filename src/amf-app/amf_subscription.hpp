@@ -27,15 +27,8 @@
  \email: shivam.gandhi@kcl.ac.uk
  */
 
-#include <map>
-#include <memory>
-#include <shared_mutex>
-#include <utility>
-#include <vector>
-
 #include "3gpp_29.518.h"
 #include "amf.hpp"
-#include "itti.hpp"
 
 namespace amf {
 

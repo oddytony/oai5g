@@ -28,16 +28,10 @@
  */
 
 #include "amf_event.hpp"
-#include "itti.hpp"
 #include "amf_app.hpp"
-#include "smf_subscription.hpp"
-
-using namespace amf;
-extern amf::amf_app* amf_app_inst;
-extern itti_mw* itti_inst;
 
 //------------------------------------------------------------------------------
 bs2::connection amf_event::subscribe_ue_reachability_status(
     const ue_reachability_status_sig_t::slot_type& sig) {
-  return sm_context_status.connect(sig);
+  return ue_reachability_status.connect(sig);
 }

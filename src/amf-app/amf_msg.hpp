@@ -54,42 +54,25 @@ class event_exposure_msg {
   void set_event_subs(std::vector<event_subscription_t> const& value);
 
  private:
-  supi_t m_supi;
+  supi_t m_supi;  // Supi
   bool m_supi_is_set;
   std::string m_supi_prefix;
 
   std::string m_sub_id;  // m_SubId;
   bool m_sub_id_is_set;
-  std::string m_notif_uri;                         // m_NotifUri;
-  std::string m_notif_id;                          // m_NotifId;
-  std::vector<event_subscription_t> m_event_subs;  // m_EventSubs;
 
-  // NotificationMethod m_NotifMethod;
-  // bool m_NotifMethodIsSet;
-  // int32_t m_MaxReportNbr;
-  // bool m_MaxReportNbrIsSet;
-  // std::string m_Expiry;
-  // bool m_ExpiryIsSet;
-  // int32_t m_RepPeriod;
-  // bool m_RepPeriodIsSet;
-  // Guami m_Guami;
-  // bool m_GuamiIsSet;
-  // std::string m_ServiveName;
-  // bool m_ServiveNameIsSet;
-  // std::vector<std::string> m_AltNotifIpv4Addrs;
-  // bool m_AltNotifIpv4AddrsIsSet;
-  // std::vector<Ipv6Addr> m_AltNotifIpv6Addrs;
-  // bool m_AltNotifIpv6AddrsIsSet;
-  // bool m_AnyUeInd;
-  // bool m_AnyUeIndIsSet;
-  // std::string m_Gpsi;
-  // bool m_GpsiIsSet;
-  // std::string m_GroupId;
-  // bool m_GroupIdIsSet;
-  // bool m_ImmeRep;
-  // bool m_ImmeRepIsSet;
-  // std::string m_SupportedFeatures;
-  // bool m_SupportedFeaturesIsSet;
+  std::string m_notif_uri;  // eventNotifyUri
+
+  std::string m_notif_id;                          // notifyCorrelationId
+  std::vector<event_subscription_t> m_event_subs;  // eventList
+  //  nfId:
+  //  subsChangeNotifyUri:
+  //  subsChangeNotifyCorrelationId:
+  //  groupId:
+  //  gpsi:
+  //  pei:
+  //  anyUE:
+  //  options: AmfEventMode
 };
 
 class event_notification {
