@@ -60,8 +60,8 @@ class HandoverCommandMsg {
 
   int encode2buffer(uint8_t* buf, int buf_size);
   bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
-  unsigned long getAmfUeNgapId();  // return -1;
-  uint32_t getRanUeNgapId();       // return -1;
+  unsigned long getAmfUeNgapId();
+  uint32_t getRanUeNgapId();
   /*void getHandoverType(Ngap_HandoverType_t &handovertype);
   void getCause(Cause cause);
   void getTargetID(Ngap_TargetID_t targetID);
@@ -73,7 +73,6 @@ class HandoverCommandMsg {
  private:
   Ngap_NGAP_PDU_t* handoverCommandPdu;
   Ngap_HandoverCommand_t* handoverCommandIEs;
-  /***************** for decoding ****************/
   AMF_UE_NGAP_ID* amfUeNgapId;
   RAN_UE_NGAP_ID* ranUeNgapId;
   Ngap_HandoverType_t* ngap_handovertype;

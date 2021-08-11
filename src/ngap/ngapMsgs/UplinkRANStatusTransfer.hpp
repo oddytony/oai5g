@@ -43,8 +43,8 @@ class UplinkRANStatusTransfer {
  public:
   UplinkRANStatusTransfer();
   virtual ~UplinkRANStatusTransfer();
-  unsigned long getAmfUeNgapId();  // return -1;
-  uint32_t getRanUeNgapId();       // return -1;
+  unsigned long getAmfUeNgapId();
+  uint32_t getRanUeNgapId();
   void getRANStatusTransfer_TransparentContainer(
       RANStatusTransferTransparentContainer*&
           ranstatustransfer_transparentcontainer);

@@ -27,6 +27,7 @@
  */
 
 #include "InitialContextSetupFailure.hpp"
+#include "logger.hpp"
 
 extern "C" {
 #include "asn_codecs.h"
@@ -81,9 +82,9 @@ void InitialContextSetupFailureMsg::setMessageType() {
         &(initialContextSetupFailurePdu->choice.unsuccessfulOutcome->value
               .choice.InitialContextSetupFailure);
   } else {
-    cout << "[warning] This information doesn't refer to "
-            "InitialContextSetupFailure Message!!!"
-         << endl;
+    Logger::ngap().warn(
+        "This information doesn't refer to InitialContextSetupFailure "
+        "Message!");
   }
 }
 
@@ -102,13 +103,13 @@ void InitialContextSetupFailureMsg::setAmfUeNgapId(unsigned long id) {
 
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupFailureIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error");
   // free_wrapper((void**) &ie);
 }
 
@@ -127,13 +128,14 @@ void InitialContextSetupFailureMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
 
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupFailureIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error");
+
   // free_wrapper((void**) &ie);
 }
 
@@ -175,15 +177,15 @@ void InitialContextSetupFailureMsg::setPduSessionResourceFailedToSetupList(
           ->encode2PDUSessionResourceFailedToSetupListCxtFail(
               &ie->value.choice.PDUSessionResourceFailedToSetupListCxtFail);
   if (!ret) {
-    cout << "encode PDUSessionResourceFailedToSetupListCxtFail IE error"
-         << endl;
+    Logger::ngap().error(
+        "Encode PDUSessionResourceFailedToSetupListCxtFail IE error");
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupFailureIEs->protocolIEs.list, ie);
   if (ret != 0)
-    cout << "encode PDUSessionResourceFailedToSetupListCxtFail IE error"
-         << endl;
+    Logger::ngap().error(
+        "Encode PDUSessionResourceFailedToSetupListCxtFail IE error");
 }
 
 //------------------------------------------------------------------------------
@@ -192,7 +194,7 @@ int InitialContextSetupFailureMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, initialContextSetupFailurePdu, buf,
       buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().debug("er.encoded( %d )", er.encoded);
   return er.encoded;
 }
 
@@ -216,11 +218,11 @@ bool InitialContextSetupFailureMsg::decodefrompdu(
           &initialContextSetupFailurePdu->choice.unsuccessfulOutcome->value
                .choice.InitialContextSetupFailure;
     } else {
-      cout << "Check InitialContextSetupFailure message error!!!" << endl;
+      Logger::ngap().error("Check InitialContextSetupFailure message error!");
       return false;
     }
   } else {
-    cout << "MessageType error!!!" << endl;
+    Logger::ngap().error("MessageType error!");
     return false;
   }
   for (int i = 0; i < initialContextSetupFailureIEs->protocolIEs.list.count;
@@ -236,11 +238,11 @@ bool InitialContextSetupFailureMsg::decodefrompdu(
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
                   initialContextSetupFailureIEs->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
-            cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -254,11 +256,11 @@ bool InitialContextSetupFailureMsg::decodefrompdu(
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
                   initialContextSetupFailureIEs->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
-            cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -276,21 +278,22 @@ bool InitialContextSetupFailureMsg::decodefrompdu(
                             .array[i]
                             ->value.choice
                             .PDUSessionResourceFailedToSetupListCxtFail)) {
-            cout << "decoded ngap PDUSessionResourceFailedToSetupListCxtFail "
-                    "IE error"
-                 << endl;
+            Logger::ngap().error(
+                "Decoded NGAP PDUSessionResourceFailedToSetupListCxtFail IE "
+                "error");
             return false;
           }
         } else {
-          cout << "decoded ngap PDUSessionResourceFailedToSetupListCxtFail IE "
-                  "error!"
-               << endl;
+          Logger::ngap().error(
+              "Decoded NGAP PDUSessionResourceFailedToSetupListCxtFail IE "
+              "error");
           return false;
         }
       } break;
 
       default: {
-        cout << "decoded ngap message pdu error" << endl;
+        Logger::ngap().error("Decoded NGAP Message PDU error");
+
         return false;
       }
     }
@@ -307,7 +310,7 @@ unsigned long InitialContextSetupFailureMsg::getAmfUeNgapId() {
 
 //------------------------------------------------------------------------------
 uint32_t InitialContextSetupFailureMsg::getRanUeNgapId() {
-  if (!ranUeNgapId) return -1;
+  if (!ranUeNgapId) return 0;
   return ranUeNgapId->getRanUeNgapId();
 }
 

@@ -27,6 +27,7 @@
  */
 
 #include "NGReset.hpp"
+#include "logger.hpp"
 
 extern "C" {
 #include "Ngap_NGAP-PDU.h"
@@ -73,9 +74,7 @@ void NGResetMsg::setMessageType() {
     NgResetMessageTypeIE.encode2pdu(ngResetPdu);
     ngResetIEs = &(ngResetPdu->choice.initiatingMessage->value.choice.NGReset);
   } else {
-    cout << "[Warning] This information doesn't refer to NGReset "
-            "Message!!!"
-         << endl;
+    Logger::ngap().warn("This information doesn't refer to NGReset message!");
   }
 }
 
@@ -116,7 +115,7 @@ int NGResetMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, ngResetPdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, ngResetPdu, buf, buf_size);
-  printf("er.encoded(%ld)\n", er.encoded);
+  Logger::ngap().debug("er.encoded( %d )", er.encoded);
   return er.encoded;
 }
 
@@ -144,11 +143,11 @@ bool NGResetMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
               if (!cause->decodefromCause(
                       &ngResetIEs->protocolIEs.list.array[i]
                            ->value.choice.Cause)) {
-                cout << "Decoded NGAP Cause IE error" << endl;
+                Logger::ngap().error("Decoded NGAP Cause IE error");
                 return false;
               }
             } else {
-              cout << "Decoded NGAP Cause IE error" << endl;
+              Logger::ngap().error("Decoded NGAP Cause IE error");
               return false;
             }
           } break;
@@ -160,28 +159,28 @@ bool NGResetMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
               resetType = new ResetType();
               if (!resetType->decode(&ngResetIEs->protocolIEs.list.array[i]
                                           ->value.choice.ResetType)) {
-                cout << "Decoded NGAP ResetType IE error" << endl;
+                Logger::ngap().error("Decoded NGAP ResetType IE error");
                 return false;
               }
 
             } else {
-              cout << "Decoded NGAP ResetType IE error" << endl;
+              Logger::ngap().error("Decoded NGAP ResetType IE error");
               return false;
             }
           } break;
 
           default: {
-            cout << "Decoded NGAP message PDU error" << endl;
+            Logger::ngap().error("Decoded NGAP message PDU IE error");
             return false;
           }
         }
       }
     } else {
-      cout << "Check NGReset message error!!!";
+      Logger::ngap().error("Check NGReset message error!");
       return false;
     }
   } else {
-    cout << "Check NGReset message error!!!";
+    Logger::ngap().error("Check NGReset message error!");
     return false;
   }
   return true;

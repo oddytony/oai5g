@@ -40,6 +40,7 @@ using namespace std;
 
 namespace ngap {
 
+//------------------------------------------------------------------------------
 HandoverCommandMsg::HandoverCommandMsg() {
   amfUeNgapId                          = nullptr;
   ranUeNgapId                          = nullptr;
@@ -52,8 +53,11 @@ HandoverCommandMsg::HandoverCommandMsg() {
   handoverCommandPdu                   = nullptr;
   handoverCommandIEs                   = nullptr;
 }
+
+//------------------------------------------------------------------------------
 HandoverCommandMsg::~HandoverCommandMsg() {}
 
+//------------------------------------------------------------------------------
 unsigned long HandoverCommandMsg::getAmfUeNgapId() {
   if (amfUeNgapId)
     return amfUeNgapId->getAMF_UE_NGAP_ID();
@@ -61,6 +65,7 @@ unsigned long HandoverCommandMsg::getAmfUeNgapId() {
     return 0;
 }
 
+//------------------------------------------------------------------------------
 uint32_t HandoverCommandMsg::getRanUeNgapId() {
   if (ranUeNgapId)
     return ranUeNgapId->getRanUeNgapId();
@@ -68,6 +73,7 @@ uint32_t HandoverCommandMsg::getRanUeNgapId() {
     return 0;
 }
 
+//------------------------------------------------------------------------------
 bool HandoverCommandMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   if (!ngap_msg_pdu) return false;
   handoverCommandPdu = ngap_msg_pdu;
@@ -192,14 +198,16 @@ bool HandoverCommandMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   return true;
 }
 
+//------------------------------------------------------------------------------
 int HandoverCommandMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, handoverCommandPdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, handoverCommandPdu, buf, buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().debug("er.encoded( %d )", er.encoded);
   return er.encoded;
 }
 
+//------------------------------------------------------------------------------
 void HandoverCommandMsg::setMessageType() {
   if (!handoverCommandPdu)
     handoverCommandPdu = (Ngap_NGAP_PDU_t*) calloc(1, sizeof(Ngap_NGAP_PDU_t));
@@ -226,6 +234,7 @@ void HandoverCommandMsg::setMessageType() {
   }
 }
 
+//------------------------------------------------------------------------------
 void HandoverCommandMsg::setAmfUeNgapId(unsigned long id) {
   if (!amfUeNgapId) amfUeNgapId = new AMF_UE_NGAP_ID();
   amfUeNgapId->setAMF_UE_NGAP_ID(id);
@@ -248,6 +257,7 @@ void HandoverCommandMsg::setAmfUeNgapId(unsigned long id) {
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 void HandoverCommandMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
   if (!ranUeNgapId) ranUeNgapId = new RAN_UE_NGAP_ID();
   ranUeNgapId->setRanUeNgapId(ran_ue_ngap_id);
@@ -271,6 +281,7 @@ void HandoverCommandMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 void HandoverCommandMsg::setHandoverType(long type) {
   if (!ngap_handovertype) ngap_handovertype = new Ngap_HandoverType_t();
   Ngap_HandoverCommandIEs_t* ie =
@@ -285,6 +296,7 @@ void HandoverCommandMsg::setHandoverType(long type) {
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 void HandoverCommandMsg::setPduSessionResourceHandoverList(
     std::vector<PDUSessionResourceHandoverItem_t> list) {
   if (!PDUSessionResourceHandoverList)
@@ -320,6 +332,7 @@ void HandoverCommandMsg::setPduSessionResourceHandoverList(
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 void HandoverCommandMsg::setTargetToSource_TransparentContainer(
     OCTET_STRING_t targetTosource) {
   if (!TargetToSource_TransparentContainer)

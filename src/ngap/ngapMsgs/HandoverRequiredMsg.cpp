@@ -21,6 +21,8 @@
 
 #include "HandoverRequiredMsg.hpp"
 #include "logger.hpp"
+#include "TAI.hpp"
+
 extern "C" {
 #include "Ngap_NGAP-PDU.h"
 #include "asn_codecs.h"
@@ -32,12 +34,11 @@ extern "C" {
 #include <iostream>
 #include <vector>
 
-#include "TAI.hpp"
-
 using namespace std;
 
 namespace ngap {
 
+//------------------------------------------------------------------------------
 HandoverRequiredMsg::HandoverRequiredMsg() {
   amfUeNgapId                         = nullptr;
   ranUeNgapId                         = nullptr;
@@ -50,8 +51,11 @@ HandoverRequiredMsg::HandoverRequiredMsg() {
   handoverRequiredPdu                 = nullptr;
   handoverRequiredIEs                 = nullptr;
 }
+
+//------------------------------------------------------------------------------
 HandoverRequiredMsg::~HandoverRequiredMsg() {}
 
+//------------------------------------------------------------------------------
 unsigned long HandoverRequiredMsg::getAmfUeNgapId() {
   if (amfUeNgapId)
     return amfUeNgapId->getAMF_UE_NGAP_ID();
@@ -59,6 +63,7 @@ unsigned long HandoverRequiredMsg::getAmfUeNgapId() {
     return 0;
 }
 
+//------------------------------------------------------------------------------
 uint32_t HandoverRequiredMsg::getRanUeNgapId() {
   if (ranUeNgapId)
     return ranUeNgapId->getRanUeNgapId();
@@ -66,6 +71,7 @@ uint32_t HandoverRequiredMsg::getRanUeNgapId() {
     return 0;
 }
 
+//------------------------------------------------------------------------------
 Ngap_HandoverType_t HandoverRequiredMsg::getHandoverType() {
   if (handovertype)
     return *handovertype;
@@ -73,6 +79,7 @@ Ngap_HandoverType_t HandoverRequiredMsg::getHandoverType() {
     return Ngap_HandoverType_t();
 }
 
+//------------------------------------------------------------------------------
 Ngap_Cause_PR HandoverRequiredMsg::getChoiceOfCause() {
   if (cause)
     return cause->getChoiceOfCause();
@@ -80,6 +87,7 @@ Ngap_Cause_PR HandoverRequiredMsg::getChoiceOfCause() {
     return Ngap_Cause_PR();
 }
 
+//------------------------------------------------------------------------------
 long HandoverRequiredMsg::getCauseValue() {
   if (cause)
     return cause->getValue();
@@ -87,16 +95,19 @@ long HandoverRequiredMsg::getCauseValue() {
     return 0;
 }
 
+//------------------------------------------------------------------------------
 void HandoverRequiredMsg::getGlobalRanNodeId(GlobalgNBId*& ptr) {
   if (ptr)
     ptr->decodefromGlobalgNBId(
         targetid->choice.targetRANNodeID->globalRANNodeID.choice.globalGNB_ID);
 }
 
+//------------------------------------------------------------------------------
 void HandoverRequiredMsg::getTAI(TAI*& ptr) {
   if (ptr) ptr->decodefromTAI(&(targetid->choice.targetRANNodeID->selectedTAI));
 }
 
+//------------------------------------------------------------------------------
 OCTET_STRING_t HandoverRequiredMsg::getSourceToTarget_TransparentContainer() {
   if (SourceToTarget_TransparentContainer)
     return *SourceToTarget_TransparentContainer;
@@ -104,6 +115,7 @@ OCTET_STRING_t HandoverRequiredMsg::getSourceToTarget_TransparentContainer() {
     return OCTET_STRING_t();
 }
 
+//------------------------------------------------------------------------------
 bool HandoverRequiredMsg::getPDUSessionResourceList(
     std::vector<PDUSessionResourceItem_t>& list) {
   if (!PDUSessionResourceList) return false;
@@ -127,6 +139,7 @@ bool HandoverRequiredMsg::getPDUSessionResourceList(
   return true;
 }
 
+//------------------------------------------------------------------------------
 long HandoverRequiredMsg::getDirectForwardingPathAvailability() {
   if (directforwardingPathAvailability)
     return *directforwardingPathAvailability;
@@ -134,6 +147,7 @@ long HandoverRequiredMsg::getDirectForwardingPathAvailability() {
     return 0;
 }
 
+//------------------------------------------------------------------------------
 bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   handoverRequiredPdu = ngap_msg_pdu;
 
@@ -295,12 +309,12 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   return true;
 }
 
+//------------------------------------------------------------------------------
 int HandoverRequiredMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, handoverRequiredPdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, handoverRequiredPdu, buf, buf_size);
-  // cout << "er.encoded(" << er.encoded << ")" << endl;
-  Logger::ngap().error("er.encoded( %d )", er.encoded);
+  Logger::ngap().debug("er.encoded( %d )", er.encoded);
   return er.encoded;
 }
 

@@ -42,6 +42,8 @@ extern "C" {
 
 using namespace std;
 namespace ngap {
+
+//------------------------------------------------------------------------------
 HandoverNotifyMsg::HandoverNotifyMsg() {
   amfUeNgapId             = nullptr;
   ranUeNgapId             = nullptr;
@@ -50,7 +52,10 @@ HandoverNotifyMsg::HandoverNotifyMsg() {
   handoverNotifyIEs       = nullptr;
 }
 
+//------------------------------------------------------------------------------
 HandoverNotifyMsg::~HandoverNotifyMsg(){};
+
+//------------------------------------------------------------------------------
 unsigned long HandoverNotifyMsg::getAmfUeNgapId() {
   if (amfUeNgapId)
     return amfUeNgapId->getAMF_UE_NGAP_ID();
@@ -58,14 +63,16 @@ unsigned long HandoverNotifyMsg::getAmfUeNgapId() {
     return 0;
 }
 
+//------------------------------------------------------------------------------
 int HandoverNotifyMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, handoverNotifyPdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, handoverNotifyPdu, buf, buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().debug("er.encoded( %d )", er.encoded);
   return er.encoded;
 }
 
+//------------------------------------------------------------------------------
 bool HandoverNotifyMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   if (!ngap_msg_pdu) return false;
   handoverNotifyPdu = ngap_msg_pdu;
@@ -150,6 +157,8 @@ bool HandoverNotifyMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   }
   return true;
 }
+
+//------------------------------------------------------------------------------
 void HandoverNotifyMsg::setUserLocationInfoNR(
     struct NrCgi_s cig, struct Tai_s tai) {
   if (!userLocationInformation)
@@ -194,6 +203,7 @@ void HandoverNotifyMsg::setUserLocationInfoNR(
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 uint32_t HandoverNotifyMsg::getRanUeNgapId() {
   if (ranUeNgapId)
     return ranUeNgapId->getRanUeNgapId();
@@ -201,6 +211,7 @@ uint32_t HandoverNotifyMsg::getRanUeNgapId() {
     return 0;
 }
 
+//------------------------------------------------------------------------------
 bool HandoverNotifyMsg::getUserLocationInfoNR(
     struct NrCgi_s& cig, struct Tai_s& tai) {
   if (!userLocationInformation) return false;

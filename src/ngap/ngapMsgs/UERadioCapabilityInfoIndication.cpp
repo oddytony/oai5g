@@ -27,6 +27,7 @@
  */
 
 #include "UERadioCapabilityInfoIndication.hpp"
+#include "logger.hpp"
 
 extern "C" {
 #include "asn_codecs.h"
@@ -44,12 +45,12 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 UeRadioCapabilityInfoIndicationMsg::UeRadioCapabilityInfoIndicationMsg() {
-  ueRadioCapabilityInfoIndicationPdu = NULL;
-  ueRadioCapabilityInfoIndicationIEs = NULL;
-  amfUeNgapId                        = NULL;
-  ranUeNgapId                        = NULL;
-  ueRadioCapability                  = NULL;
-  ueRadioCapabilityForPaging         = NULL;
+  ueRadioCapabilityInfoIndicationPdu = nullptr;
+  ueRadioCapabilityInfoIndicationIEs = nullptr;
+  amfUeNgapId                        = nullptr;
+  ranUeNgapId                        = nullptr;
+  ueRadioCapability                  = nullptr;
+  ueRadioCapabilityForPaging         = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -83,9 +84,9 @@ void UeRadioCapabilityInfoIndicationMsg::setMessageType() {
         &(ueRadioCapabilityInfoIndicationPdu->choice.initiatingMessage->value
               .choice.UERadioCapabilityInfoIndication);
   } else {
-    cout << "[warning] This information doesn't refer to "
-            "UERadioCapabilityInfoIndication Message!!!"
-         << endl;
+    Logger::ngap().warn(
+        "This information doesn't refer to UERadioCapabilityInfoIndication "
+        "message!");
   }
 }
 
@@ -104,14 +105,14 @@ void UeRadioCapabilityInfoIndicationMsg::setAmfUeNgapId(unsigned long id) {
 
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode NGAP AMF_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &ueRadioCapabilityInfoIndicationIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP AMF_UE_NGAP_ID IE error");
   // free_wrapper((void**) &ie);
 }
 
@@ -131,14 +132,14 @@ void UeRadioCapabilityInfoIndicationMsg::setRanUeNgapId(
 
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode NGAP RAN_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &ueRadioCapabilityInfoIndicationIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP RAN_UE_NGAP_ID IE error");
   // free_wrapper((void**) &ie);
 }
 
@@ -160,14 +161,14 @@ void UeRadioCapabilityInfoIndicationMsg::setUERadioCapability(
   int ret = ueRadioCapability->encode2UERadioCapability(
       ie->value.choice.UERadioCapability);
   if (!ret) {
-    cout << "encode UERadioCapability IE error" << endl;
+    Logger::ngap().error("Encode NGAP UERadioCapability IE error");
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &ueRadioCapabilityInfoIndicationIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode UERadioCapability IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP UERadioCapability IE error");
   // free_wrapper((void**) &ie);
 }
 
@@ -176,8 +177,9 @@ void UeRadioCapabilityInfoIndicationMsg::setUERadioCapabilityForPaging(
     uint8_t* nr, size_t sizeofnr, uint8_t* eutra, size_t sizeofeutra) {
   if (!ueRadioCapabilityForPaging)
     ueRadioCapabilityForPaging = new UERadioCapabilityForPaging();
-  UERadioCapabilityForPagingOfNR* m_ueRadioCapabilityForPagingOfNR       = NULL;
-  UERadioCapabilityForPagingOfEUTRA* m_ueRadioCapabilityForPagingOfEUTRA = NULL;
+  UERadioCapabilityForPagingOfNR* m_ueRadioCapabilityForPagingOfNR = nullptr;
+  UERadioCapabilityForPagingOfEUTRA* m_ueRadioCapabilityForPagingOfEUTRA =
+      nullptr;
   if (nr && sizeofnr > 0) {
     m_ueRadioCapabilityForPagingOfNR = new UERadioCapabilityForPagingOfNR();
     m_ueRadioCapabilityForPagingOfNR->setUERadioCapabilityForPagingOfNR(
@@ -203,14 +205,15 @@ void UeRadioCapabilityInfoIndicationMsg::setUERadioCapabilityForPaging(
   int ret = ueRadioCapabilityForPaging->encode2UERadioCapabilityForPaging(
       &ie->value.choice.UERadioCapabilityForPaging);
   if (!ret) {
-    cout << "encode UERadioCapabilityForPaging IE error" << endl;
+    Logger::ngap().error("Encode NGAP UERadioCapabilityForPaging IE error");
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(
       &ueRadioCapabilityInfoIndicationIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode UERadioCapabilityForPaging IE error" << endl;
+  if (ret != 0)
+    Logger::ngap().error("Encode NGAP UERadioCapabilityForPaging IE error");
   // free_wrapper((void**) &ie);
 }
 
@@ -222,7 +225,7 @@ int UeRadioCapabilityInfoIndicationMsg::encode2buffer(
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, ueRadioCapabilityInfoIndicationPdu, buf,
       buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().debug("er.encoded (%d)", er.encoded);
   return er.encoded;
 }
 
@@ -247,11 +250,12 @@ bool UeRadioCapabilityInfoIndicationMsg::decodefrompdu(
           &ueRadioCapabilityInfoIndicationPdu->choice.initiatingMessage->value
                .choice.UERadioCapabilityInfoIndication;
     } else {
-      cout << "Check UERadioCapabilityInfoIndication message error!!!" << endl;
+      Logger::ngap().error(
+          "Check UERadioCapabilityInfoIndication message error!");
       return false;
     }
   } else {
-    cout << "MessageType error!!!" << endl;
+    Logger::ngap().error("MessageType error!");
     return false;
   }
   for (int i = 0;
@@ -267,11 +271,11 @@ bool UeRadioCapabilityInfoIndicationMsg::decodefrompdu(
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
                   ueRadioCapabilityInfoIndicationIEs->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
-            cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -285,11 +289,11 @@ bool UeRadioCapabilityInfoIndicationMsg::decodefrompdu(
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
                   ueRadioCapabilityInfoIndicationIEs->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
-            cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -303,11 +307,11 @@ bool UeRadioCapabilityInfoIndicationMsg::decodefrompdu(
           if (!ueRadioCapability->decodefromUERadioCapability(
                   ueRadioCapabilityInfoIndicationIEs->protocolIEs.list.array[i]
                       ->value.choice.UERadioCapability)) {
-            cout << "decoded ngap UERadioCapability IE error" << endl;
+            Logger::ngap().error("Decoded NGAP UERadioCapability IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap UERadioCapability IE error" << endl;
+          Logger::ngap().error("Decoded NGAP UERadioCapability IE error");
           return false;
         }
       } break;
@@ -322,16 +326,18 @@ bool UeRadioCapabilityInfoIndicationMsg::decodefrompdu(
                   &ueRadioCapabilityInfoIndicationIEs->protocolIEs.list
                        .array[i]
                        ->value.choice.UERadioCapabilityForPaging)) {
-            cout << "decoded ngap UERadioCapabilityForPaging IE error" << endl;
+            Logger::ngap().error(
+                "Decoded NGAP UERadioCapabilityForPaging IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap UERadioCapabilityForPaging IE error" << endl;
+          Logger::ngap().error(
+              "Decoded NGAP UERadioCapabilityForPaging IE error");
           return false;
         }
       } break;
       default: {
-        cout << "decoded ngap message pdu error" << endl;
+        Logger::ngap().error("Decoded NGAP message PDU error");
         return false;
       }
     }

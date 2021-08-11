@@ -46,13 +46,13 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 PduSessionResourceReleaseCommandMsg::PduSessionResourceReleaseCommandMsg() {
-  pduSessionResourceReleaseCommandPdu = NULL;
-  pduSessionResourceReleaseCommandIEs = NULL;
-  amfUeNgapId                         = NULL;
-  ranUeNgapId                         = NULL;
-  ranPagingPriority                   = NULL;
-  nasPdu                              = NULL;
-  pduSessionResourceToReleaseList     = NULL;
+  pduSessionResourceReleaseCommandPdu = nullptr;
+  pduSessionResourceReleaseCommandIEs = nullptr;
+  amfUeNgapId                         = nullptr;
+  ranUeNgapId                         = nullptr;
+  ranPagingPriority                   = nullptr;
+  nasPdu                              = nullptr;
+  pduSessionResourceToReleaseList     = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -431,7 +431,7 @@ unsigned long PduSessionResourceReleaseCommandMsg::getAmfUeNgapId() {
 
 //------------------------------------------------------------------------------
 uint32_t PduSessionResourceReleaseCommandMsg::getRanUeNgapId() {
-  if (!ranUeNgapId) return -1;
+  if (!ranUeNgapId) return 0;
   return ranUeNgapId->getRanUeNgapId();
 }
 
