@@ -75,7 +75,6 @@ class ngap_app : public sctp_application {
 
   void handle_sctp_shutdown(sctp_assoc_id_t assoc_id);
 
-  // gnb context management
   bool is_assoc_id_2_gnb_context(const sctp_assoc_id_t& assoc_id) const;
   void set_assoc_id_2_gnb_context(
       const sctp_assoc_id_t& assoc_id, std::shared_ptr<gnb_context> gc);
