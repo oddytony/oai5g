@@ -55,8 +55,10 @@ file(GLOB AMF_src_files
   ${CMAKE_CURRENT_SOURCE_DIR}/amf_n1.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/amf_n2.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/amf_n11.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/amf_event.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/amf_profile.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/amf_statistics.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/amf_statistics.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/mysql_db.cpp
   ${SRC_TOP_DIR}/nas/msgs/*.cpp
   ${SRC_TOP_DIR}/nas/ies/*.cpp
