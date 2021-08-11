@@ -43,8 +43,8 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 BroadcastPLMNItem::BroadcastPLMNItem() {
-  plmn        = NULL;
-  snssai      = NULL;
+  plmn        = nullptr;
+  snssai      = nullptr;
   numOfSnssai = 0;
 }
 
@@ -70,8 +70,9 @@ void BroadcastPLMNItem::getPlmnSliceSupportList(
 //------------------------------------------------------------------------------
 bool BroadcastPLMNItem::encode2BroadcastPLMNItem(
     Ngap_BroadcastPLMNItem_t* plmnItem) {
+  if (!plmn) return false;
+  if (!snssai) return false;
   if (!plmn->encode2octetstring(plmnItem->pLMNIdentity)) return false;
-  cout << "BroadcastPLMNItem::numOfSnssai	" << numOfSnssai << endl;
   for (int i = 0; i < numOfSnssai; i++) {
     Ngap_SliceSupportItem_t* slice =
         (Ngap_SliceSupportItem_t*) calloc(1, sizeof(Ngap_SliceSupportItem_t));
@@ -89,7 +90,7 @@ bool BroadcastPLMNItem::decodefromBroadcastPLMNItem(
   if (plmn == nullptr) plmn = new PlmnId();
   if (!plmn->decodefromoctetstring(pdu->pLMNIdentity)) return false;
   numOfSnssai = pdu->tAISliceSupportList.list.count;
-  snssai      = new S_NSSAI[numOfSnssai]();
+  if (snssai == nullptr) snssai = new S_NSSAI[numOfSnssai]();
   for (int i = 0; i < numOfSnssai; i++) {
     if (!snssai[i].decodefromS_NSSAI(
             &pdu->tAISliceSupportList.list.array[i]->s_NSSAI))

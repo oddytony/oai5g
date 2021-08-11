@@ -40,7 +40,7 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 AllowedNSSAI::AllowedNSSAI() {
-  snssai      = NULL;
+  snssai      = nullptr;
   numofSnssai = 0;
 }
 
@@ -66,7 +66,6 @@ bool AllowedNSSAI::getAllowedNSSAI(S_NSSAI*& m_snssai, int& m_numofsnssai) {
 
 //------------------------------------------------------------------------------
 bool AllowedNSSAI::encode2AllowedNSSAI(Ngap_AllowedNSSAI_t* allowedNssaiList) {
-  cout << "AllowedNSSAI::numOfSnssai	" << numofSnssai << endl;
   for (int i = 0; i < numofSnssai; i++) {
     Ngap_AllowedNSSAI_Item_t* allowednssaiitem =
         (Ngap_AllowedNSSAI_Item_t*) calloc(1, sizeof(Ngap_AllowedNSSAI_Item_t));

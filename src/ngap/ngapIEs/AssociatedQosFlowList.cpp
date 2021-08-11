@@ -35,7 +35,7 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 AssociatedQosFlowList::AssociatedQosFlowList() {
-  associatedQosFlowItem      = NULL;
+  associatedQosFlowItem      = nullptr;
   numofassociatedQosFlowItem = 0;
 }
 
@@ -65,6 +65,7 @@ bool AssociatedQosFlowList::encode2AssociatedQosFlowList(
     Ngap_AssociatedQosFlowItem_t* ie = (Ngap_AssociatedQosFlowItem_t*) calloc(
         1, sizeof(Ngap_AssociatedQosFlowItem_t));
     if (!ie) return false;
+    if (!associatedQosFlowItem) return false;
     if (!associatedQosFlowItem[i].encode2AssociatedQosFlowItem(ie))
       return false;
     if (ASN_SEQUENCE_ADD(&associatedQosFlowList.list, ie) != 0) return false;

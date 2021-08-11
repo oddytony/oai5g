@@ -35,8 +35,8 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 DLQoSFlowPerTNLInformation::DLQoSFlowPerTNLInformation() {
-  uPTransportLayerInformation = NULL;
-  associatedQosFlowList       = NULL;
+  uPTransportLayerInformation = nullptr;
+  associatedQosFlowList       = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -63,9 +63,11 @@ bool DLQoSFlowPerTNLInformation::getDLQoSFlowPerTNLInformation(
 //------------------------------------------------------------------------------
 bool DLQoSFlowPerTNLInformation::encode2DLQoSFlowPerTNLInformation(
     Ngap_QosFlowPerTNLInformation_t* qosFlowPerTNLInformation) {
+  if (!uPTransportLayerInformation) return false;
   if (!uPTransportLayerInformation->encode2UpTransportLayerInformation(
           qosFlowPerTNLInformation->uPTransportLayerInformation))
     return false;
+  if (!associatedQosFlowList) return false;
   if (!associatedQosFlowList->encode2AssociatedQosFlowList(
           qosFlowPerTNLInformation->associatedQosFlowList))
     return false;
