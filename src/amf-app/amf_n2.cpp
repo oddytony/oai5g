@@ -121,20 +121,20 @@ void amf_n2_task(void* args_p) {
       } break;
       case ITTI_DL_NAS_TRANSPORT: {
         Logger::amf_n2().info(
-            "Encoding DOWNLINK NAS TRANSPORT message, sending ");
+            "Encoding DOWNLINK NAS TRANSPORT message, sending");
         itti_dl_nas_transport* m = dynamic_cast<itti_dl_nas_transport*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
       case PDU_SESSION_RESOURCE_SETUP_REQUEST: {
         Logger::amf_n2().info(
-            "Encoding PDU SESSION RESOURCE SETUP REQUEST message, sending ");
+            "Encoding PDU SESSION RESOURCE SETUP REQUEST message, sending");
         itti_pdu_session_resource_setup_request* m =
             dynamic_cast<itti_pdu_session_resource_setup_request*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
       case INITIAL_CONTEXT_SETUP_REQUEST: {
         Logger::amf_n2().info(
-            "Encoding INITIAL CONTEXT SETUP REQUEST message, sending ");
+            "Encoding INITIAL CONTEXT SETUP REQUEST message, sending");
         itti_initial_context_setup_request* m =
             dynamic_cast<itti_initial_context_setup_request*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
@@ -174,7 +174,7 @@ void amf_n2_task(void* args_p) {
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
       case HANDOVER_REQUIRED: {
-        Logger::amf_n2().info("Received HANDOVER_REQUIRED message,handling");
+        Logger::amf_n2().info("Received HANDOVER_REQUIRED message, handling");
         itti_handover_required* m = dynamic_cast<itti_handover_required*>(msg);
         if (!amf_n2_inst->handle_itti_message(ref(*m)))
           amf_n2_inst->send_handover_preparation_failure(
@@ -182,25 +182,26 @@ void amf_n2_task(void* args_p) {
               m->handoverReq->getRanUeNgapId(), m->assoc_id);
       } break;
       case HANDOVER_REQUEST_ACK: {
-        Logger::amf_n2().info("Received HANDOVER_REQUEST_ACK message,handling");
+        Logger::amf_n2().info(
+            "Received HANDOVER_REQUEST_ACK message, handling");
         itti_handover_request_Ack* m =
             dynamic_cast<itti_handover_request_Ack*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
       case HANDOVER_NOTIFY: {
-        Logger::amf_n2().info("Received HANDOVER_NOTIFY message,handling");
+        Logger::amf_n2().info("Received HANDOVER_NOTIFY message, handling");
         itti_handover_notify* m = dynamic_cast<itti_handover_notify*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
       case UPLINK_RAN_STATUS_TRANSFER: {
         Logger::amf_n2().info(
-            "Received UPLINK_RAN_STATUS_TRANSFER message,handling");
+            "Received UPLINK_RAN_STATUS_TRANSFER message, handling");
         itti_uplink_ran_status_transfer* m =
             dynamic_cast<itti_uplink_ran_status_transfer*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
       case PAGING: {
-        Logger::amf_n2().info("Received Paging message,handling");
+        Logger::amf_n2().info("Received Paging message, handling");
         itti_paging* m = dynamic_cast<itti_paging*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
@@ -636,14 +637,14 @@ void amf_n2::handle_itti_message(itti_ul_nas_transport& ul_nas_transport) {
   std::shared_ptr<gnb_context> gc = {};
   if (!is_assoc_id_2_gnb_context(ul_nas_transport.assoc_id)) {
     Logger::amf_n2().error(
-        "gNB with assoc_id(%d) is illegal", ul_nas_transport.assoc_id);
+        "gNB with assoc_id (%d) is illegal", ul_nas_transport.assoc_id);
     return;
   }
   gc = assoc_id_2_gnb_context(ul_nas_transport.assoc_id);
   std::shared_ptr<ue_ngap_context> unc = {};
   if (!is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "UE with ran_ue_ngap_id(0x%x) is not attached to gnb with assoc_id "
+        "UE with ran_ue_ngap_id (0x%x) is not attached to gnb with assoc_id "
         "(%d)",
         ran_ue_ngap_id, ul_nas_transport.assoc_id);
     return;
@@ -1010,7 +1011,7 @@ void amf_n2::handle_itti_message(
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_ue_context_release_request& itti_msg) {
-  Logger::amf_n2().debug("Handling UE context release request ...");
+  Logger::amf_n2().debug("Handling UE Context Release Request ...");
   unsigned long amf_ue_ngap_id   = itti_msg.ueCtxRel->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id        = itti_msg.ueCtxRel->getRanUeNgapId();
   e_Ngap_CauseRadioNetwork cause = {};
@@ -1105,6 +1106,7 @@ void amf_n2::handle_itti_message(
 //------------------------------------------------------------------------------
 bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   // TODO: Experimental procedure, to be tested
+  Logger::amf_n2().debug("Handling Handover Required ...");
   unsigned long amf_ue_ngap_id = itti_msg.handoverReq->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handoverReq->getRanUeNgapId();
 
@@ -1389,6 +1391,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   // TODO: Experimental procedure, to be tested
+  Logger::amf_n2().debug("Handling Handover Request Ack ...");
   unsigned long amf_ue_ngap_id = itti_msg.handoverrequestAck->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handoverrequestAck->getRanUeNgapId();
   Logger::amf_n2().debug(
@@ -1594,6 +1597,7 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
   // TODO: Experimental procedure, to be tested
+  Logger::amf_n2().debug("Handling Handover Notify ...");
   unsigned long amf_ue_ngap_id = itti_msg.handovernotify->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handovernotify->getRanUeNgapId();
   Logger::amf_n2().debug(
@@ -1729,6 +1733,7 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_uplink_ran_status_transfer& itti_msg) {
+  Logger::amf_n2().debug("Handling Uplink RAN Status Transfer ...");
   unsigned long amf_ue_ngap_id = itti_msg.uplinkrantransfer->getAmfUeNgapId();
   Logger::amf_n2().error(
       "Uplink RAN Status Transfer amf_ue_ngap_id (%d)", amf_ue_ngap_id);
@@ -1815,7 +1820,6 @@ void amf_n2::send_handover_preparation_failure(
   sctp_s_38412.sctp_send_msg(gnb_assoc_id, 0, &b);
 }
 
-// Context management functions
 //------------------------------------------------------------------------------
 bool amf_n2::is_ran_ue_id_2_ue_ngap_context(
     const uint32_t& ran_ue_ngap_id) const {
