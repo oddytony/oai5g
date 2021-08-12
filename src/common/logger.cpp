@@ -68,7 +68,7 @@ void Logger::_init(
 
   m_async_cmd  = new _Logger("asnyc_c", m_sinks, ss.str().c_str());
   m_amf_app    = new _Logger("amf_app", m_sinks, ss.str().c_str());
-  m_config     = new _Logger("configurations", m_sinks, ss.str().c_str());
+  m_config     = new _Logger("config ", m_sinks, ss.str().c_str());
   m_system     = new _Logger("system ", m_sinks, ss.str().c_str());
   m_sctp       = new _Logger("sctp   ", m_sinks, ss.str().c_str());
   m_nas_mm     = new _Logger("nas_mm ", m_sinks, ss.str().c_str());
