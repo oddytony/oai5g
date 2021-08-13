@@ -243,7 +243,6 @@ asn_dec_rval_t NativeEnumerated_decode_aper(
   }
 
   ASN_DEBUG("Decoding %s as NativeEnumerated", td->name);
-  // printf("test0515 Decoding %s as NativeEnumerated\n", td->name);
 
   if (ct->flags & APC_EXTENSIBLE) {
     int inext = per_get_few_bits(pd, 1);
