@@ -226,7 +226,7 @@ amf_n2::~amf_n2() {}
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_paging& itti_msg) {
-  Logger::amf_n2().debug("Handling Paging message...");
+  Logger::amf_n2().debug("Handle Paging message...");
 
   std::shared_ptr<ue_ngap_context> unc = {};
 
@@ -276,6 +276,7 @@ void amf_n2::handle_itti_message(itti_new_sctp_association& new_assoc) {}
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
+  Logger::amf_n2().debug("Handle NG Setup Request...");
   Logger::amf_n2().debug(
       "Parameters: assoc_id %d, stream %d", itti_msg.assoc_id, itti_msg.stream);
 
@@ -416,6 +417,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_ng_reset& itti_msg) {
+  Logger::amf_n2().debug("Handle NG Reset...");
   Logger::amf_n2().debug(
       "Parameters: assoc_id %d, stream %d", itti_msg.assoc_id, itti_msg.stream);
 
@@ -464,6 +466,7 @@ void amf_n2::handle_itti_message(itti_ng_reset& itti_msg) {
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_ng_shutdown& itti_msg) {
+  Logger::amf_n2().debug("Handle NG Shutdown ...");
   std::shared_ptr<gnb_context> gc = {};
   if (!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
     Logger::amf_n2().error(
@@ -509,7 +512,9 @@ void amf_n2::handle_itti_message(itti_ng_shutdown& itti_msg) {
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
-  // create ngap-ue context and store in gNB context to store UE information in
+  Logger::amf_n2().debug("Handle Initial UE Message...");
+
+  // Create NGAP-UE context and store in gNB context to store UE information in
   // gNB, for example, here RAN UE NGAP ID and location information and RRC
   // Establishment Cause send NAS-PDU to NAS layer Get INITIAL_UE_MESSAGE IEs
 
@@ -632,6 +637,8 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_ul_nas_transport& ul_nas_transport) {
+  Logger::amf_n2().debug("Handle UL NAS Transport...");
+
   unsigned long amf_ue_ngap_id    = ul_nas_transport.ulNas->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id         = ul_nas_transport.ulNas->getRanUeNgapId();
   std::shared_ptr<gnb_context> gc = {};
@@ -706,6 +713,7 @@ void amf_n2::handle_itti_message(itti_ul_nas_transport& ul_nas_transport) {
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_dl_nas_transport& dl_nas_transport) {
+  Logger::amf_n2().debug("Handle DL NAS Transport ...");
   std::shared_ptr<ue_ngap_context> unc = {};
   unc = ran_ue_id_2_ue_ngap_context(dl_nas_transport.ran_ue_ngap_id);
   if (unc.get() == nullptr) {
@@ -739,6 +747,7 @@ void amf_n2::handle_itti_message(itti_dl_nas_transport& dl_nas_transport) {
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
+  Logger::amf_n2().debug("Handle Initial Context Setup Request ...");
   std::shared_ptr<ue_ngap_context> unc = {};
   unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
   if (unc.get() == nullptr) {
@@ -869,6 +878,7 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(
     itti_pdu_session_resource_setup_request& itti_msg) {
+  Logger::amf_n2().debug("Handle PDU Session Resource Setup Request ...");
   std::shared_ptr<ue_ngap_context> unc = {};
   unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
   if (unc.get() == nullptr) {
@@ -954,6 +964,8 @@ void amf_n2::handle_itti_message(
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(
     itti_pdu_session_resource_release_command& itti_msg) {
+  Logger::amf_n2().debug("Handle PDU Session Resource Release Command ...");
+
   std::shared_ptr<ue_ngap_context> unc = {};
   unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
   if (unc.get() == nullptr) {
@@ -1011,7 +1023,7 @@ void amf_n2::handle_itti_message(
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_ue_context_release_request& itti_msg) {
-  Logger::amf_n2().debug("Handling UE Context Release Request ...");
+  Logger::amf_n2().debug("Handle UE Context Release Request ...");
   unsigned long amf_ue_ngap_id   = itti_msg.ueCtxRel->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id        = itti_msg.ueCtxRel->getRanUeNgapId();
   e_Ngap_CauseRadioNetwork cause = {};
@@ -1071,7 +1083,7 @@ void amf_n2::handle_itti_message(itti_ue_context_release_command& itti_msg) {
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_ue_context_release_complete& itti_msg) {
-  Logger::amf_n2().debug("Handling UE Context Release Complete ...");
+  Logger::amf_n2().debug("Handle UE Context Release Complete ...");
   unsigned long amf_ue_ngap_id = itti_msg.ueCtxRelCmpl->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.ueCtxRelCmpl->getRanUeNgapId();
   // TODO: User Location Information IE
