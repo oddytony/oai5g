@@ -94,7 +94,6 @@ class Logger {
   static _Logger& amf_n1() { return *singleton().m_amf_n1; }
   static _Logger& amf_n11() { return *singleton().m_amf_n11; }
   static _Logger& amf_server() { return *singleton().m_amf_server; }
-  static _Logger& task_amf_n2() { return *singleton().m_task_amf_n2; }
 
  private:
   static Logger* m_singleton;
@@ -124,7 +123,6 @@ class Logger {
   _Logger* m_amf_n1;
   _Logger* m_amf_n11;
   _Logger* m_amf_server;
-  _Logger* m_task_amf_n2;
 };
 
 #endif

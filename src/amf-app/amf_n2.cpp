@@ -147,21 +147,21 @@ void amf_n2_task(void* args_p) {
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
       case UE_CONTEXT_RELEASE_COMMAND: {
-        Logger::task_amf_n2().info(
+        Logger::amf_n2().info(
             "Received UE_CONTEXT_RELEASE_COMMAND message, handling");
         itti_ue_context_release_command* m =
             dynamic_cast<itti_ue_context_release_command*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
       case UE_CONTEXT_RELEASE_COMPLETE: {
-        Logger::task_amf_n2().info(
+        Logger::amf_n2().info(
             "Received UE_CONTEXT_RELEASE_COMPLETE message, handling");
         itti_ue_context_release_complete* m =
             dynamic_cast<itti_ue_context_release_complete*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
       case PDU_SESSION_RESOURCE_RELEASE_COMMAND: {
-        Logger::task_amf_n2().info(
+        Logger::amf_n2().info(
             "Received PDU_SESSION_RESOURCE_RELEASE_COMMAND message, handling");
         itti_pdu_session_resource_release_command* m =
             dynamic_cast<itti_pdu_session_resource_release_command*>(msg);

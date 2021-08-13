@@ -66,19 +66,18 @@ void Logger::_init(
   std::stringstream ss;
   ss << "[%Y-%m-%dT%H:%M:%S.%f] [" << app << "] [%n] [%l] %v";
 
-  m_async_cmd   = new _Logger("asnyc_c", m_sinks, ss.str().c_str());
-  m_amf_app     = new _Logger("amf_app", m_sinks, ss.str().c_str());
-  m_config      = new _Logger("configurations", m_sinks, ss.str().c_str());
-  m_system      = new _Logger("system ", m_sinks, ss.str().c_str());
-  m_sctp        = new _Logger("sctp   ", m_sinks, ss.str().c_str());
-  m_nas_mm      = new _Logger("nas_mm ", m_sinks, ss.str().c_str());
-  m_ngap        = new _Logger("ngap   ", m_sinks, ss.str().c_str());
-  m_itti        = new _Logger("itti   ", m_sinks, ss.str().c_str());
-  m_amf_n2      = new _Logger("amf_n2 ", m_sinks, ss.str().c_str());
-  m_amf_n1      = new _Logger("amf_n1 ", m_sinks, ss.str().c_str());
-  m_amf_n11     = new _Logger("amf_n11", m_sinks, ss.str().c_str());
-  m_amf_server  = new _Logger("amf_server", m_sinks, ss.str().c_str());
-  m_task_amf_n2 = new _Logger("task_amf_n2", m_sinks, ss.str().c_str());
+  m_async_cmd  = new _Logger("asnyc_c", m_sinks, ss.str().c_str());
+  m_amf_app    = new _Logger("amf_app", m_sinks, ss.str().c_str());
+  m_config     = new _Logger("config ", m_sinks, ss.str().c_str());
+  m_system     = new _Logger("system ", m_sinks, ss.str().c_str());
+  m_sctp       = new _Logger("sctp   ", m_sinks, ss.str().c_str());
+  m_nas_mm     = new _Logger("nas_mm ", m_sinks, ss.str().c_str());
+  m_ngap       = new _Logger("ngap   ", m_sinks, ss.str().c_str());
+  m_itti       = new _Logger("itti   ", m_sinks, ss.str().c_str());
+  m_amf_n2     = new _Logger("amf_n2 ", m_sinks, ss.str().c_str());
+  m_amf_n1     = new _Logger("amf_n1 ", m_sinks, ss.str().c_str());
+  m_amf_n11    = new _Logger("amf_n11", m_sinks, ss.str().c_str());
+  m_amf_server = new _Logger("amf_sbi", m_sinks, ss.str().c_str());
 }
 
 //------------------------------------------------------------------------------
