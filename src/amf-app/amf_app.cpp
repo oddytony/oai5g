@@ -239,6 +239,8 @@ bool amf_app::get_pdu_sessions_context(
 void amf_app::handle_itti_message(
     itti_n1n2_message_transfer_request& itti_msg) {
   if (itti_msg.is_ppi_set) {  // Paging procedure
+    Logger::amf_app().info(
+        "Handle ITTI N1N2 Message Transfer Request for Paging");
     std::shared_ptr<itti_paging> i =
         std::make_shared<itti_paging>(TASK_AMF_APP, TASK_AMF_N2);
     i.get()->amf_ue_ngap_id = amf_n1_inst->supi2amfId.at(itti_msg.supi);
@@ -251,6 +253,7 @@ void amf_app::handle_itti_message(
           i->get_msg_name());
     }
   } else {
+    Logger::amf_app().info("Handle ITTI N1N2 Message Transfer Request");
     // Encode DL NAS TRANSPORT message(NAS message)
     DLNASTransport* dl = new DLNASTransport();
     dl->setHeader(PLAIN_5GS_MSG);
