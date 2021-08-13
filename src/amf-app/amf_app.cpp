@@ -238,6 +238,7 @@ bool amf_app::get_pdu_sessions_context(
 //------------------------------------------------------------------------------
 void amf_app::handle_itti_message(
     itti_n1n2_message_transfer_request& itti_msg) {
+  Logger::amf_app().error("Handle ITTI N1N2 Message Transfer Request");
   // Encode DL NAS TRANSPORT message(NAS message)
   DLNASTransport* dl = new DLNASTransport();
   dl->setHeader(PLAIN_5GS_MSG);
