@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -29,8 +29,10 @@
 
 #include <pistache/optional.h>
 
+#include "AmfUpdatedEventSubscription.h"
+//#include "OneOfarrayAmfUpdateEventOptionItem.h"
 #include "ProblemDetails.h"
-#include "SubscriptionData.h"
+#include "AmfUpdateEventOptionItem.h"
 #include <string>
 
 #include "amf_app.hpp"
@@ -40,21 +42,22 @@ namespace amf {
 namespace api {
 
 using namespace oai::amf::model;
+using namespace oai::amf::api;
 
 class IndividualSubscriptionDocumentApiImpl
-    : public oai::amf::api::IndividualSubscriptionDocumentApi {
+    : public IndividualSubscriptionDocumentApi {
  public:
-  IndividualSubscriptionDocumentApiImpl(
-      std::shared_ptr<Pistache::Rest::Router>,
+  explicit IndividualSubscriptionDocumentApiImpl(
+      const std::shared_ptr<Pistache::Rest::Router>&,
       amf_application::amf_app* amf_app_inst);
-  ~IndividualSubscriptionDocumentApiImpl() {}
+  ~IndividualSubscriptionDocumentApiImpl() override = default;
 
-  void a_mf_status_change_subscribe_modfy(
+  void delete_subscription(
       const std::string& subscriptionId,
-      const SubscriptionData& subscriptionData,
       Pistache::Http::ResponseWriter& response);
-  void a_mf_status_change_un_subscribe(
+  void modify_subscription(
       const std::string& subscriptionId,
+      const AmfUpdateEventOptionItem& amfUpdateEventOptionItem,
       Pistache::Http::ResponseWriter& response);
 
  private:
