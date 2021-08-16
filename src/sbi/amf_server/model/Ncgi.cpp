@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,30 +12,78 @@
  */
 
 #include "Ncgi.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 Ncgi::Ncgi() {
   m_NrCellId = "";
+  m_Nid      = "";
+  m_NidIsSet = false;
 }
 
-Ncgi::~Ncgi() {}
+void Ncgi::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw org::openapitools::server::helpers::ValidationException(msg.str());
+  }
+}
 
-void Ncgi::validate() {
-  // TODO: implement validation
+bool Ncgi::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool Ncgi::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success                  = true;
+  const std::string _pathPrefix = pathPrefix.empty() ? "Ncgi" : pathPrefix;
+
+  /* NrCellId */ {
+    const std::string& value           = m_NrCellId;
+    const std::string currentValuePath = _pathPrefix + ".nrCellId";
+  }
+
+  if (nidIsSet()) {
+    const std::string& value           = m_Nid;
+    const std::string currentValuePath = _pathPrefix + ".nid";
+  }
+
+  return success;
+}
+
+bool Ncgi::operator==(const Ncgi& rhs) const {
+  return
+
+      (getPlmnId() == rhs.getPlmnId()) &&
+
+      (getNrCellId() == rhs.getNrCellId()) &&
+
+      ((!nidIsSet() && !rhs.nidIsSet()) ||
+       (nidIsSet() && rhs.nidIsSet() && getNid() == rhs.getNid()))
+
+          ;
+}
+
+bool Ncgi::operator!=(const Ncgi& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const Ncgi& o) {
   j             = nlohmann::json();
   j["plmnId"]   = o.m_PlmnId;
   j["nrCellId"] = o.m_NrCellId;
+  if (o.nidIsSet()) j["nid"] = o.m_Nid;
 }
 
 void from_json(const nlohmann::json& j, Ncgi& o) {
   j.at("plmnId").get_to(o.m_PlmnId);
   j.at("nrCellId").get_to(o.m_NrCellId);
+  if (j.find("nid") != j.end()) {
+    j.at("nid").get_to(o.m_Nid);
+    o.m_NidIsSet = true;
+  }
 }
 
 PlmnId Ncgi::getPlmnId() const {
@@ -50,7 +98,18 @@ std::string Ncgi::getNrCellId() const {
 void Ncgi::setNrCellId(std::string const& value) {
   m_NrCellId = value;
 }
+std::string Ncgi::getNid() const {
+  return m_Nid;
+}
+void Ncgi::setNid(std::string const& value) {
+  m_Nid      = value;
+  m_NidIsSet = true;
+}
+bool Ncgi::nidIsSet() const {
+  return m_NidIsSet;
+}
+void Ncgi::unsetNid() {
+  m_NidIsSet = false;
+}
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

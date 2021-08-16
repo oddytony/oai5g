@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,20 +12,58 @@
  */
 
 #include "PlmnId.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 PlmnId::PlmnId() {
   m_Mcc = "";
   m_Mnc = "";
 }
 
-PlmnId::~PlmnId() {}
+void PlmnId::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw org::openapitools::server::helpers::ValidationException(msg.str());
+  }
+}
 
-void PlmnId::validate() {
-  // TODO: implement validation
+bool PlmnId::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool PlmnId::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success                  = true;
+  const std::string _pathPrefix = pathPrefix.empty() ? "PlmnId" : pathPrefix;
+
+  /* Mcc */ {
+    const std::string& value           = m_Mcc;
+    const std::string currentValuePath = _pathPrefix + ".mcc";
+  }
+
+  /* Mnc */ {
+    const std::string& value           = m_Mnc;
+    const std::string currentValuePath = _pathPrefix + ".mnc";
+  }
+
+  return success;
+}
+
+bool PlmnId::operator==(const PlmnId& rhs) const {
+  return
+
+      (getMcc() == rhs.getMcc()) &&
+
+      (getMnc() == rhs.getMnc())
+
+          ;
+}
+
+bool PlmnId::operator!=(const PlmnId& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const PlmnId& o) {
@@ -52,6 +90,4 @@ void PlmnId::setMnc(std::string const& value) {
   m_Mnc = value;
 }
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

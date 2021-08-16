@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,33 +12,136 @@
  */
 
 #include "ProblemDetails.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 ProblemDetails::ProblemDetails() {
-  m_Type                   = "";
-  m_TypeIsSet              = false;
-  m_Title                  = "";
-  m_TitleIsSet             = false;
-  m_Status                 = 0;
-  m_StatusIsSet            = false;
-  m_Detail                 = "";
-  m_DetailIsSet            = false;
-  m_Instance               = "";
-  m_InstanceIsSet          = false;
-  m_Cause                  = "";
-  m_CauseIsSet             = false;
-  m_InvalidParamsIsSet     = false;
-  m_SupportedFeatures      = "";
-  m_SupportedFeaturesIsSet = false;
+  m_Type                    = "";
+  m_TypeIsSet               = false;
+  m_Title                   = "";
+  m_TitleIsSet              = false;
+  m_Status                  = 0;
+  m_StatusIsSet             = false;
+  m_Detail                  = "";
+  m_DetailIsSet             = false;
+  m_Instance                = "";
+  m_InstanceIsSet           = false;
+  m_Cause                   = "";
+  m_CauseIsSet              = false;
+  m_InvalidParamsIsSet      = false;
+  m_SupportedFeatures       = "";
+  m_SupportedFeaturesIsSet  = false;
+  m_TargetScp               = "";
+  m_TargetScpIsSet          = false;
+  m_AccessTokenErrorIsSet   = false;
+  m_AccessTokenRequestIsSet = false;
+  m_NrfId                   = "";
+  m_NrfIdIsSet              = false;
 }
 
-ProblemDetails::~ProblemDetails() {}
+void ProblemDetails::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw org::openapitools::server::helpers::ValidationException(msg.str());
+  }
+}
 
-void ProblemDetails::validate() {
-  // TODO: implement validation
+bool ProblemDetails::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool ProblemDetails::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success = true;
+  const std::string _pathPrefix =
+      pathPrefix.empty() ? "ProblemDetails" : pathPrefix;
+
+  if (invalidParamsIsSet()) {
+    const std::vector<InvalidParam>& value = m_InvalidParams;
+    const std::string currentValuePath     = _pathPrefix + ".invalidParams";
+
+    if (value.size() < 1) {
+      success = false;
+      msg << currentValuePath << ": must have at least 1 elements;";
+    }
+    {  // Recursive validation of array elements
+      const std::string oldValuePath = currentValuePath;
+      int i                          = 0;
+      for (const InvalidParam& value : value) {
+        const std::string currentValuePath =
+            oldValuePath + "[" + std::to_string(i) + "]";
+
+        success =
+            value.validate(msg, currentValuePath + ".invalidParams") && success;
+
+        i++;
+      }
+    }
+  }
+
+  if (supportedFeaturesIsSet()) {
+    const std::string& value           = m_SupportedFeatures;
+    const std::string currentValuePath = _pathPrefix + ".supportedFeatures";
+  }
+
+  return success;
+}
+
+bool ProblemDetails::operator==(const ProblemDetails& rhs) const {
+  return
+
+      ((!typeIsSet() && !rhs.typeIsSet()) ||
+       (typeIsSet() && rhs.typeIsSet() && getType() == rhs.getType())) &&
+
+      ((!titleIsSet() && !rhs.titleIsSet()) ||
+       (titleIsSet() && rhs.titleIsSet() && getTitle() == rhs.getTitle())) &&
+
+      ((!statusIsSet() && !rhs.statusIsSet()) ||
+       (statusIsSet() && rhs.statusIsSet() &&
+        getStatus() == rhs.getStatus())) &&
+
+      ((!detailIsSet() && !rhs.detailIsSet()) ||
+       (detailIsSet() && rhs.detailIsSet() &&
+        getDetail() == rhs.getDetail())) &&
+
+      ((!instanceIsSet() && !rhs.instanceIsSet()) ||
+       (instanceIsSet() && rhs.instanceIsSet() &&
+        getInstance() == rhs.getInstance())) &&
+
+      ((!causeIsSet() && !rhs.causeIsSet()) ||
+       (causeIsSet() && rhs.causeIsSet() && getCause() == rhs.getCause())) &&
+
+      ((!invalidParamsIsSet() && !rhs.invalidParamsIsSet()) ||
+       (invalidParamsIsSet() && rhs.invalidParamsIsSet() &&
+        getInvalidParams() == rhs.getInvalidParams())) &&
+
+      ((!supportedFeaturesIsSet() && !rhs.supportedFeaturesIsSet()) ||
+       (supportedFeaturesIsSet() && rhs.supportedFeaturesIsSet() &&
+        getSupportedFeatures() == rhs.getSupportedFeatures())) &&
+
+      ((!targetScpIsSet() && !rhs.targetScpIsSet()) ||
+       (targetScpIsSet() && rhs.targetScpIsSet() &&
+        getTargetScp() == rhs.getTargetScp())) &&
+
+      ((!accessTokenErrorIsSet() && !rhs.accessTokenErrorIsSet()) ||
+       (accessTokenErrorIsSet() && rhs.accessTokenErrorIsSet() &&
+        getAccessTokenError() == rhs.getAccessTokenError())) &&
+
+      ((!accessTokenRequestIsSet() && !rhs.accessTokenRequestIsSet()) ||
+       (accessTokenRequestIsSet() && rhs.accessTokenRequestIsSet() &&
+        getAccessTokenRequest() == rhs.getAccessTokenRequest())) &&
+
+      ((!nrfIdIsSet() && !rhs.nrfIdIsSet()) ||
+       (nrfIdIsSet() && rhs.nrfIdIsSet() && getNrfId() == rhs.getNrfId()))
+
+          ;
+}
+
+bool ProblemDetails::operator!=(const ProblemDetails& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const ProblemDetails& o) {
@@ -49,9 +152,15 @@ void to_json(nlohmann::json& j, const ProblemDetails& o) {
   if (o.detailIsSet()) j["detail"] = o.m_Detail;
   if (o.instanceIsSet()) j["instance"] = o.m_Instance;
   if (o.causeIsSet()) j["cause"] = o.m_Cause;
-  if (o.invalidParamsIsSet()) j["invalidParams"] = o.m_InvalidParams;
+  if (o.invalidParamsIsSet() || !o.m_InvalidParams.empty())
+    j["invalidParams"] = o.m_InvalidParams;
   if (o.supportedFeaturesIsSet())
     j["supportedFeatures"] = o.m_SupportedFeatures;
+  if (o.targetScpIsSet()) j["targetScp"] = o.m_TargetScp;
+  if (o.accessTokenErrorIsSet()) j["accessTokenError"] = o.m_AccessTokenError;
+  if (o.accessTokenRequestIsSet())
+    j["accessTokenRequest"] = o.m_AccessTokenRequest;
+  if (o.nrfIdIsSet()) j["nrfId"] = o.m_NrfId;
 }
 
 void from_json(const nlohmann::json& j, ProblemDetails& o) {
@@ -86,6 +195,22 @@ void from_json(const nlohmann::json& j, ProblemDetails& o) {
   if (j.find("supportedFeatures") != j.end()) {
     j.at("supportedFeatures").get_to(o.m_SupportedFeatures);
     o.m_SupportedFeaturesIsSet = true;
+  }
+  if (j.find("targetScp") != j.end()) {
+    j.at("targetScp").get_to(o.m_TargetScp);
+    o.m_TargetScpIsSet = true;
+  }
+  if (j.find("accessTokenError") != j.end()) {
+    j.at("accessTokenError").get_to(o.m_AccessTokenError);
+    o.m_AccessTokenErrorIsSet = true;
+  }
+  if (j.find("accessTokenRequest") != j.end()) {
+    j.at("accessTokenRequest").get_to(o.m_AccessTokenRequest);
+    o.m_AccessTokenRequestIsSet = true;
+  }
+  if (j.find("nrfId") != j.end()) {
+    j.at("nrfId").get_to(o.m_NrfId);
+    o.m_NrfIdIsSet = true;
   }
 }
 
@@ -167,8 +292,12 @@ bool ProblemDetails::causeIsSet() const {
 void ProblemDetails::unsetCause() {
   m_CauseIsSet = false;
 }
-std::vector<InvalidParam>& ProblemDetails::getInvalidParams() {
+std::vector<InvalidParam> ProblemDetails::getInvalidParams() const {
   return m_InvalidParams;
+}
+void ProblemDetails::setInvalidParams(std::vector<InvalidParam> const& value) {
+  m_InvalidParams      = value;
+  m_InvalidParamsIsSet = true;
 }
 bool ProblemDetails::invalidParamsIsSet() const {
   return m_InvalidParamsIsSet;
@@ -189,7 +318,57 @@ bool ProblemDetails::supportedFeaturesIsSet() const {
 void ProblemDetails::unsetSupportedFeatures() {
   m_SupportedFeaturesIsSet = false;
 }
+std::string ProblemDetails::getTargetScp() const {
+  return m_TargetScp;
+}
+void ProblemDetails::setTargetScp(std::string const& value) {
+  m_TargetScp      = value;
+  m_TargetScpIsSet = true;
+}
+bool ProblemDetails::targetScpIsSet() const {
+  return m_TargetScpIsSet;
+}
+void ProblemDetails::unsetTargetScp() {
+  m_TargetScpIsSet = false;
+}
+AccessTokenErr ProblemDetails::getAccessTokenError() const {
+  return m_AccessTokenError;
+}
+void ProblemDetails::setAccessTokenError(AccessTokenErr const& value) {
+  m_AccessTokenError      = value;
+  m_AccessTokenErrorIsSet = true;
+}
+bool ProblemDetails::accessTokenErrorIsSet() const {
+  return m_AccessTokenErrorIsSet;
+}
+void ProblemDetails::unsetAccessTokenError() {
+  m_AccessTokenErrorIsSet = false;
+}
+AccessTokenReq ProblemDetails::getAccessTokenRequest() const {
+  return m_AccessTokenRequest;
+}
+void ProblemDetails::setAccessTokenRequest(AccessTokenReq const& value) {
+  m_AccessTokenRequest      = value;
+  m_AccessTokenRequestIsSet = true;
+}
+bool ProblemDetails::accessTokenRequestIsSet() const {
+  return m_AccessTokenRequestIsSet;
+}
+void ProblemDetails::unsetAccessTokenRequest() {
+  m_AccessTokenRequestIsSet = false;
+}
+std::string ProblemDetails::getNrfId() const {
+  return m_NrfId;
+}
+void ProblemDetails::setNrfId(std::string const& value) {
+  m_NrfId      = value;
+  m_NrfIdIsSet = true;
+}
+bool ProblemDetails::nrfIdIsSet() const {
+  return m_NrfIdIsSet;
+}
+void ProblemDetails::unsetNrfId() {
+  m_NrfIdIsSet = false;
+}
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

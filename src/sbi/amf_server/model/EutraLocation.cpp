@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,12 +12,15 @@
  */
 
 #include "EutraLocation.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 EutraLocation::EutraLocation() {
+  m_IgnoreEcgi                    = false;
+  m_IgnoreEcgiIsSet               = false;
   m_AgeOfLocationInformation      = 0;
   m_AgeOfLocationInformationIsSet = false;
   m_UeLocationTimestamp           = "";
@@ -27,18 +30,105 @@ EutraLocation::EutraLocation() {
   m_GeodeticInformation           = "";
   m_GeodeticInformationIsSet      = false;
   m_GlobalNgenbIdIsSet            = false;
+  m_GlobalENbIdIsSet              = false;
 }
 
-EutraLocation::~EutraLocation() {}
+void EutraLocation::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw org::openapitools::server::helpers::ValidationException(msg.str());
+  }
+}
 
-void EutraLocation::validate() {
-  // TODO: implement validation
+bool EutraLocation::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool EutraLocation::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success = true;
+  const std::string _pathPrefix =
+      pathPrefix.empty() ? "EutraLocation" : pathPrefix;
+
+  if (ageOfLocationInformationIsSet()) {
+    const int32_t& value = m_AgeOfLocationInformation;
+    const std::string currentValuePath =
+        _pathPrefix + ".ageOfLocationInformation";
+
+    if (value < 0) {
+      success = false;
+      msg << currentValuePath << ": must be greater than or equal to 0;";
+    }
+    if (value > 32767) {
+      success = false;
+      msg << currentValuePath << ": must be less than or equal to 32767;";
+    }
+  }
+
+  if (geographicalInformationIsSet()) {
+    const std::string& value = m_GeographicalInformation;
+    const std::string currentValuePath =
+        _pathPrefix + ".geographicalInformation";
+  }
+
+  if (geodeticInformationIsSet()) {
+    const std::string& value           = m_GeodeticInformation;
+    const std::string currentValuePath = _pathPrefix + ".geodeticInformation";
+  }
+
+  return success;
+}
+
+bool EutraLocation::operator==(const EutraLocation& rhs) const {
+  return
+
+      (getTai() == rhs.getTai()) &&
+
+      (getEcgi() == rhs.getEcgi()) &&
+
+      ((!ignoreEcgiIsSet() && !rhs.ignoreEcgiIsSet()) ||
+       (ignoreEcgiIsSet() && rhs.ignoreEcgiIsSet() &&
+        isIgnoreEcgi() == rhs.isIgnoreEcgi())) &&
+
+      ((!ageOfLocationInformationIsSet() &&
+        !rhs.ageOfLocationInformationIsSet()) ||
+       (ageOfLocationInformationIsSet() &&
+        rhs.ageOfLocationInformationIsSet() &&
+        getAgeOfLocationInformation() == rhs.getAgeOfLocationInformation())) &&
+
+      ((!ueLocationTimestampIsSet() && !rhs.ueLocationTimestampIsSet()) ||
+       (ueLocationTimestampIsSet() && rhs.ueLocationTimestampIsSet() &&
+        getUeLocationTimestamp() == rhs.getUeLocationTimestamp())) &&
+
+      ((!geographicalInformationIsSet() &&
+        !rhs.geographicalInformationIsSet()) ||
+       (geographicalInformationIsSet() && rhs.geographicalInformationIsSet() &&
+        getGeographicalInformation() == rhs.getGeographicalInformation())) &&
+
+      ((!geodeticInformationIsSet() && !rhs.geodeticInformationIsSet()) ||
+       (geodeticInformationIsSet() && rhs.geodeticInformationIsSet() &&
+        getGeodeticInformation() == rhs.getGeodeticInformation())) &&
+
+      ((!globalNgenbIdIsSet() && !rhs.globalNgenbIdIsSet()) ||
+       (globalNgenbIdIsSet() && rhs.globalNgenbIdIsSet() &&
+        getGlobalNgenbId() == rhs.getGlobalNgenbId())) &&
+
+      ((!globalENbIdIsSet() && !rhs.globalENbIdIsSet()) ||
+       (globalENbIdIsSet() && rhs.globalENbIdIsSet() &&
+        getGlobalENbId() == rhs.getGlobalENbId()))
+
+          ;
+}
+
+bool EutraLocation::operator!=(const EutraLocation& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const EutraLocation& o) {
   j         = nlohmann::json();
   j["tai"]  = o.m_Tai;
   j["ecgi"] = o.m_Ecgi;
+  if (o.ignoreEcgiIsSet()) j["ignoreEcgi"] = o.m_IgnoreEcgi;
   if (o.ageOfLocationInformationIsSet())
     j["ageOfLocationInformation"] = o.m_AgeOfLocationInformation;
   if (o.ueLocationTimestampIsSet())
@@ -48,11 +138,16 @@ void to_json(nlohmann::json& j, const EutraLocation& o) {
   if (o.geodeticInformationIsSet())
     j["geodeticInformation"] = o.m_GeodeticInformation;
   if (o.globalNgenbIdIsSet()) j["globalNgenbId"] = o.m_GlobalNgenbId;
+  if (o.globalENbIdIsSet()) j["globalENbId"] = o.m_GlobalENbId;
 }
 
 void from_json(const nlohmann::json& j, EutraLocation& o) {
   j.at("tai").get_to(o.m_Tai);
   j.at("ecgi").get_to(o.m_Ecgi);
+  if (j.find("ignoreEcgi") != j.end()) {
+    j.at("ignoreEcgi").get_to(o.m_IgnoreEcgi);
+    o.m_IgnoreEcgiIsSet = true;
+  }
   if (j.find("ageOfLocationInformation") != j.end()) {
     j.at("ageOfLocationInformation").get_to(o.m_AgeOfLocationInformation);
     o.m_AgeOfLocationInformationIsSet = true;
@@ -73,6 +168,10 @@ void from_json(const nlohmann::json& j, EutraLocation& o) {
     j.at("globalNgenbId").get_to(o.m_GlobalNgenbId);
     o.m_GlobalNgenbIdIsSet = true;
   }
+  if (j.find("globalENbId") != j.end()) {
+    j.at("globalENbId").get_to(o.m_GlobalENbId);
+    o.m_GlobalENbIdIsSet = true;
+  }
 }
 
 Tai EutraLocation::getTai() const {
@@ -86,6 +185,19 @@ Ecgi EutraLocation::getEcgi() const {
 }
 void EutraLocation::setEcgi(Ecgi const& value) {
   m_Ecgi = value;
+}
+bool EutraLocation::isIgnoreEcgi() const {
+  return m_IgnoreEcgi;
+}
+void EutraLocation::setIgnoreEcgi(bool const value) {
+  m_IgnoreEcgi      = value;
+  m_IgnoreEcgiIsSet = true;
+}
+bool EutraLocation::ignoreEcgiIsSet() const {
+  return m_IgnoreEcgiIsSet;
+}
+void EutraLocation::unsetIgnoreEcgi() {
+  m_IgnoreEcgiIsSet = false;
 }
 int32_t EutraLocation::getAgeOfLocationInformation() const {
   return m_AgeOfLocationInformation;
@@ -152,7 +264,18 @@ bool EutraLocation::globalNgenbIdIsSet() const {
 void EutraLocation::unsetGlobalNgenbId() {
   m_GlobalNgenbIdIsSet = false;
 }
+GlobalRanNodeId EutraLocation::getGlobalENbId() const {
+  return m_GlobalENbId;
+}
+void EutraLocation::setGlobalENbId(GlobalRanNodeId const& value) {
+  m_GlobalENbId      = value;
+  m_GlobalENbIdIsSet = true;
+}
+bool EutraLocation::globalENbIdIsSet() const {
+  return m_GlobalENbIdIsSet;
+}
+void EutraLocation::unsetGlobalENbId() {
+  m_GlobalENbIdIsSet = false;
+}
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

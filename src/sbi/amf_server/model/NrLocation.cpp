@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,10 +12,11 @@
  */
 
 #include "NrLocation.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 NrLocation::NrLocation() {
   m_AgeOfLocationInformation      = 0;
@@ -29,10 +30,87 @@ NrLocation::NrLocation() {
   m_GlobalGnbIdIsSet              = false;
 }
 
-NrLocation::~NrLocation() {}
+void NrLocation::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw org::openapitools::server::helpers::ValidationException(msg.str());
+  }
+}
 
-void NrLocation::validate() {
-  // TODO: implement validation
+bool NrLocation::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool NrLocation::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success = true;
+  const std::string _pathPrefix =
+      pathPrefix.empty() ? "NrLocation" : pathPrefix;
+
+  if (ageOfLocationInformationIsSet()) {
+    const int32_t& value = m_AgeOfLocationInformation;
+    const std::string currentValuePath =
+        _pathPrefix + ".ageOfLocationInformation";
+
+    if (value < 0) {
+      success = false;
+      msg << currentValuePath << ": must be greater than or equal to 0;";
+    }
+    if (value > 32767) {
+      success = false;
+      msg << currentValuePath << ": must be less than or equal to 32767;";
+    }
+  }
+
+  if (geographicalInformationIsSet()) {
+    const std::string& value = m_GeographicalInformation;
+    const std::string currentValuePath =
+        _pathPrefix + ".geographicalInformation";
+  }
+
+  if (geodeticInformationIsSet()) {
+    const std::string& value           = m_GeodeticInformation;
+    const std::string currentValuePath = _pathPrefix + ".geodeticInformation";
+  }
+
+  return success;
+}
+
+bool NrLocation::operator==(const NrLocation& rhs) const {
+  return
+
+      (getTai() == rhs.getTai()) &&
+
+      (getNcgi() == rhs.getNcgi()) &&
+
+      ((!ageOfLocationInformationIsSet() &&
+        !rhs.ageOfLocationInformationIsSet()) ||
+       (ageOfLocationInformationIsSet() &&
+        rhs.ageOfLocationInformationIsSet() &&
+        getAgeOfLocationInformation() == rhs.getAgeOfLocationInformation())) &&
+
+      ((!ueLocationTimestampIsSet() && !rhs.ueLocationTimestampIsSet()) ||
+       (ueLocationTimestampIsSet() && rhs.ueLocationTimestampIsSet() &&
+        getUeLocationTimestamp() == rhs.getUeLocationTimestamp())) &&
+
+      ((!geographicalInformationIsSet() &&
+        !rhs.geographicalInformationIsSet()) ||
+       (geographicalInformationIsSet() && rhs.geographicalInformationIsSet() &&
+        getGeographicalInformation() == rhs.getGeographicalInformation())) &&
+
+      ((!geodeticInformationIsSet() && !rhs.geodeticInformationIsSet()) ||
+       (geodeticInformationIsSet() && rhs.geodeticInformationIsSet() &&
+        getGeodeticInformation() == rhs.getGeodeticInformation())) &&
+
+      ((!globalGnbIdIsSet() && !rhs.globalGnbIdIsSet()) ||
+       (globalGnbIdIsSet() && rhs.globalGnbIdIsSet() &&
+        getGlobalGnbId() == rhs.getGlobalGnbId()))
+
+          ;
+}
+
+bool NrLocation::operator!=(const NrLocation& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const NrLocation& o) {
@@ -153,6 +231,4 @@ void NrLocation::unsetGlobalGnbId() {
   m_GlobalGnbIdIsSet = false;
 }
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

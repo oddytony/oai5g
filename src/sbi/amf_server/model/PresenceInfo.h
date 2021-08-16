@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -28,9 +28,7 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 
-namespace oai {
-namespace amf {
-namespace model {
+namespace oai::amf::model {
 
 /// <summary>
 ///
@@ -38,9 +36,22 @@ namespace model {
 class PresenceInfo {
  public:
   PresenceInfo();
-  virtual ~PresenceInfo();
+  virtual ~PresenceInfo() = default;
 
-  void validate();
+  /// <summary>
+  /// Validate the current data in the model. Throws a ValidationException on
+  /// failure.
+  /// </summary>
+  void validate() const;
+
+  /// <summary>
+  /// Validate the current data in the model. Returns false on error and writes
+  /// an error message into the given stringstream.
+  /// </summary>
+  bool validate(std::stringstream& msg) const;
+
+  bool operator==(const PresenceInfo& rhs) const;
+  bool operator!=(const PresenceInfo& rhs) const;
 
   /////////////////////////////////////////////
   /// PresenceInfo members
@@ -55,6 +66,13 @@ class PresenceInfo {
   /// <summary>
   ///
   /// </summary>
+  std::string getAdditionalPraId() const;
+  void setAdditionalPraId(std::string const& value);
+  bool additionalPraIdIsSet() const;
+  void unsetAdditionalPraId();
+  /// <summary>
+  ///
+  /// </summary>
   PresenceState getPresenceState() const;
   void setPresenceState(PresenceState const& value);
   bool presenceStateIsSet() const;
@@ -62,34 +80,51 @@ class PresenceInfo {
   /// <summary>
   ///
   /// </summary>
-  std::vector<Tai>& getTrackingAreaList();
+  std::vector<Tai> getTrackingAreaList() const;
+  void setTrackingAreaList(std::vector<Tai> const& value);
   bool trackingAreaListIsSet() const;
   void unsetTrackingAreaList();
   /// <summary>
   ///
   /// </summary>
-  std::vector<Ecgi>& getEcgiList();
+  std::vector<Ecgi> getEcgiList() const;
+  void setEcgiList(std::vector<Ecgi> const& value);
   bool ecgiListIsSet() const;
   void unsetEcgiList();
   /// <summary>
   ///
   /// </summary>
-  std::vector<Ncgi>& getNcgiList();
+  std::vector<Ncgi> getNcgiList() const;
+  void setNcgiList(std::vector<Ncgi> const& value);
   bool ncgiListIsSet() const;
   void unsetNcgiList();
   /// <summary>
   ///
   /// </summary>
-  std::vector<GlobalRanNodeId>& getGlobalRanNodeIdList();
+  std::vector<GlobalRanNodeId> getGlobalRanNodeIdList() const;
+  void setGlobalRanNodeIdList(std::vector<GlobalRanNodeId> const& value);
   bool globalRanNodeIdListIsSet() const;
   void unsetGlobalRanNodeIdList();
+  /// <summary>
+  ///
+  /// </summary>
+  std::vector<GlobalRanNodeId> getGlobaleNbIdList() const;
+  void setGlobaleNbIdList(std::vector<GlobalRanNodeId> const& value);
+  bool globaleNbIdListIsSet() const;
+  void unsetGlobaleNbIdList();
 
   friend void to_json(nlohmann::json& j, const PresenceInfo& o);
   friend void from_json(const nlohmann::json& j, PresenceInfo& o);
 
+  // Helper overload for validate. Used when one model stores another model and
+  // calls it's validate.
+  bool validate(std::stringstream& msg, const std::string& pathPrefix) const;
+
  protected:
   std::string m_PraId;
   bool m_PraIdIsSet;
+  std::string m_AdditionalPraId;
+  bool m_AdditionalPraIdIsSet;
   PresenceState m_PresenceState;
   bool m_PresenceStateIsSet;
   std::vector<Tai> m_TrackingAreaList;
@@ -100,10 +135,10 @@ class PresenceInfo {
   bool m_NcgiListIsSet;
   std::vector<GlobalRanNodeId> m_GlobalRanNodeIdList;
   bool m_GlobalRanNodeIdListIsSet;
+  std::vector<GlobalRanNodeId> m_GlobaleNbIdList;
+  bool m_GlobaleNbIdListIsSet;
 };
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model
 
 #endif /* PresenceInfo_H_ */

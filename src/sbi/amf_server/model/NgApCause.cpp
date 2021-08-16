@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,20 +12,68 @@
  */
 
 #include "NgApCause.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 NgApCause::NgApCause() {
   m_Group = 0;
   m_Value = 0;
 }
 
-NgApCause::~NgApCause() {}
+void NgApCause::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw org::openapitools::server::helpers::ValidationException(msg.str());
+  }
+}
 
-void NgApCause::validate() {
-  // TODO: implement validation
+bool NgApCause::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool NgApCause::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success                  = true;
+  const std::string _pathPrefix = pathPrefix.empty() ? "NgApCause" : pathPrefix;
+
+  /* Group */ {
+    const int32_t& value               = m_Group;
+    const std::string currentValuePath = _pathPrefix + ".group";
+
+    if (value < 0) {
+      success = false;
+      msg << currentValuePath << ": must be greater than or equal to 0;";
+    }
+  }
+
+  /* Value */ {
+    const int32_t& value               = m_Value;
+    const std::string currentValuePath = _pathPrefix + ".value";
+
+    if (value < 0) {
+      success = false;
+      msg << currentValuePath << ": must be greater than or equal to 0;";
+    }
+  }
+
+  return success;
+}
+
+bool NgApCause::operator==(const NgApCause& rhs) const {
+  return
+
+      (getGroup() == rhs.getGroup()) &&
+
+      (getValue() == rhs.getValue())
+
+          ;
+}
+
+bool NgApCause::operator!=(const NgApCause& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const NgApCause& o) {
@@ -52,6 +100,4 @@ void NgApCause::setValue(int32_t const value) {
   m_Value = value;
 }
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

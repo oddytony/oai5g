@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,20 +12,53 @@
  */
 
 #include "AmfEventArea.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 AmfEventArea::AmfEventArea() {
   m_PresenceInfoIsSet = false;
   m_LadnInfoIsSet     = false;
 }
 
-AmfEventArea::~AmfEventArea() {}
+void AmfEventArea::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw org::openapitools::server::helpers::ValidationException(msg.str());
+  }
+}
 
-void AmfEventArea::validate() {
-  // TODO: implement validation
+bool AmfEventArea::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool AmfEventArea::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success = true;
+  const std::string _pathPrefix =
+      pathPrefix.empty() ? "AmfEventArea" : pathPrefix;
+
+  return success;
+}
+
+bool AmfEventArea::operator==(const AmfEventArea& rhs) const {
+  return
+
+      ((!presenceInfoIsSet() && !rhs.presenceInfoIsSet()) ||
+       (presenceInfoIsSet() && rhs.presenceInfoIsSet() &&
+        getPresenceInfo() == rhs.getPresenceInfo())) &&
+
+      ((!ladnInfoIsSet() && !rhs.ladnInfoIsSet()) ||
+       (ladnInfoIsSet() && rhs.ladnInfoIsSet() &&
+        getLadnInfo() == rhs.getLadnInfo()))
+
+          ;
+}
+
+bool AmfEventArea::operator!=(const AmfEventArea& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const AmfEventArea& o) {
@@ -72,6 +105,4 @@ void AmfEventArea::unsetLadnInfo() {
   m_LadnInfoIsSet = false;
 }
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

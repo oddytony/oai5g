@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,10 +12,11 @@
  */
 
 #include "UserLocation.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 UserLocation::UserLocation() {
   m_EutraLocationIsSet = false;
@@ -23,10 +24,46 @@ UserLocation::UserLocation() {
   m_N3gaLocationIsSet  = false;
 }
 
-UserLocation::~UserLocation() {}
+void UserLocation::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw org::openapitools::server::helpers::ValidationException(msg.str());
+  }
+}
 
-void UserLocation::validate() {
-  // TODO: implement validation
+bool UserLocation::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool UserLocation::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success = true;
+  const std::string _pathPrefix =
+      pathPrefix.empty() ? "UserLocation" : pathPrefix;
+
+  return success;
+}
+
+bool UserLocation::operator==(const UserLocation& rhs) const {
+  return
+
+      ((!eutraLocationIsSet() && !rhs.eutraLocationIsSet()) ||
+       (eutraLocationIsSet() && rhs.eutraLocationIsSet() &&
+        getEutraLocation() == rhs.getEutraLocation())) &&
+
+      ((!nrLocationIsSet() && !rhs.nrLocationIsSet()) ||
+       (nrLocationIsSet() && rhs.nrLocationIsSet() &&
+        getNrLocation() == rhs.getNrLocation())) &&
+
+      ((!n3gaLocationIsSet() && !rhs.n3gaLocationIsSet()) ||
+       (n3gaLocationIsSet() && rhs.n3gaLocationIsSet() &&
+        getN3gaLocation() == rhs.getN3gaLocation()))
+
+          ;
+}
+
+bool UserLocation::operator!=(const UserLocation& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const UserLocation& o) {
@@ -91,6 +128,4 @@ void UserLocation::unsetN3gaLocation() {
   m_N3gaLocationIsSet = false;
 }
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

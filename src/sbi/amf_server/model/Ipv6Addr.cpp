@@ -1,7 +1,7 @@
 /**
  * Namf_EventExposure
- * Session Management Event Exposure Service. © 2019, 3GPP Organizational
- * Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
+ * AMF Event Exposure Service Â© 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
  *
@@ -12,17 +12,41 @@
  */
 
 #include "Ipv6Addr.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 Ipv6Addr::Ipv6Addr() {}
 
-Ipv6Addr::~Ipv6Addr() {}
+void Ipv6Addr::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw org::openapitools::server::helpers::ValidationException(msg.str());
+  }
+}
 
-void Ipv6Addr::validate() {
-  // TODO: implement validation
+bool Ipv6Addr::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool Ipv6Addr::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success                  = true;
+  const std::string _pathPrefix = pathPrefix.empty() ? "Ipv6Addr" : pathPrefix;
+
+  return success;
+}
+
+bool Ipv6Addr::operator==(const Ipv6Addr& rhs) const {
+  return true;  // TODO
+
+  ;
+}
+
+bool Ipv6Addr::operator!=(const Ipv6Addr& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const Ipv6Addr& o) {
@@ -31,6 +55,4 @@ void to_json(nlohmann::json& j, const Ipv6Addr& o) {
 
 void from_json(const nlohmann::json& j, Ipv6Addr& o) {}
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

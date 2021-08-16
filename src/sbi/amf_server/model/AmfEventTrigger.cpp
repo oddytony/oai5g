@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,17 +12,42 @@
  */
 
 #include "AmfEventTrigger.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 AmfEventTrigger::AmfEventTrigger() {}
 
-AmfEventTrigger::~AmfEventTrigger() {}
+void AmfEventTrigger::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw org::openapitools::server::helpers::ValidationException(msg.str());
+  }
+}
 
-void AmfEventTrigger::validate() {
-  // TODO: implement validation
+bool AmfEventTrigger::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool AmfEventTrigger::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success = true;
+  const std::string _pathPrefix =
+      pathPrefix.empty() ? "AmfEventTrigger" : pathPrefix;
+
+  return success;
+}
+
+bool AmfEventTrigger::operator==(const AmfEventTrigger& rhs) const {
+  return true;  // TODO
+
+  ;
+}
+
+bool AmfEventTrigger::operator!=(const AmfEventTrigger& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const AmfEventTrigger& o) {
@@ -31,6 +56,4 @@ void to_json(nlohmann::json& j, const AmfEventTrigger& o) {
 
 void from_json(const nlohmann::json& j, AmfEventTrigger& o) {}
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

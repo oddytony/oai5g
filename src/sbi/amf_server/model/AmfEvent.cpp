@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,10 +12,11 @@
  */
 
 #include "AmfEvent.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 AmfEvent::AmfEvent() {
   m_ImmediateFlag           = false;
@@ -26,18 +27,105 @@ AmfEvent::AmfEvent() {
   m_RefIdIsSet              = false;
 }
 
-AmfEvent::~AmfEvent() {}
+void AmfEvent::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw org::openapitools::server::helpers::ValidationException(msg.str());
+  }
+}
 
-void AmfEvent::validate() {
-  // TODO: implement validation
+bool AmfEvent::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool AmfEvent::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success                  = true;
+  const std::string _pathPrefix = pathPrefix.empty() ? "AmfEvent" : pathPrefix;
+
+  if (areaListIsSet()) {
+    const std::vector<AmfEventArea>& value = m_AreaList;
+    const std::string currentValuePath     = _pathPrefix + ".areaList";
+
+    if (value.size() < 1) {
+      success = false;
+      msg << currentValuePath << ": must have at least 1 elements;";
+    }
+    {  // Recursive validation of array elements
+      const std::string oldValuePath = currentValuePath;
+      int i                          = 0;
+      for (const AmfEventArea& value : value) {
+        const std::string currentValuePath =
+            oldValuePath + "[" + std::to_string(i) + "]";
+
+        success =
+            value.validate(msg, currentValuePath + ".areaList") && success;
+
+        i++;
+      }
+    }
+  }
+
+  if (locationFilterListIsSet()) {
+    const std::vector<LocationFilter>& value = m_LocationFilterList;
+    const std::string currentValuePath = _pathPrefix + ".locationFilterList";
+
+    if (value.size() < 1) {
+      success = false;
+      msg << currentValuePath << ": must have at least 1 elements;";
+    }
+    {  // Recursive validation of array elements
+      const std::string oldValuePath = currentValuePath;
+      int i                          = 0;
+      for (const LocationFilter& value : value) {
+        const std::string currentValuePath =
+            oldValuePath + "[" + std::to_string(i) + "]";
+
+        success =
+            value.validate(msg, currentValuePath + ".locationFilterList") &&
+            success;
+
+        i++;
+      }
+    }
+  }
+
+  return success;
+}
+
+bool AmfEvent::operator==(const AmfEvent& rhs) const {
+  return
+
+      ((getType() == rhs.getType()) &&
+
+       ((!immediateFlagIsSet() && !rhs.immediateFlagIsSet()) ||
+        (immediateFlagIsSet() && rhs.immediateFlagIsSet() &&
+         isImmediateFlag() == rhs.isImmediateFlag())) &&
+
+       ((!areaListIsSet() && !rhs.areaListIsSet()) ||
+        (areaListIsSet() && rhs.areaListIsSet() &&
+         getAreaList() == rhs.getAreaList())) &&
+
+       ((!locationFilterListIsSet() && !rhs.locationFilterListIsSet()) ||
+        (locationFilterListIsSet() && rhs.locationFilterListIsSet() &&
+         getLocationFilterList() == rhs.getLocationFilterList())) &&
+
+       ((!refIdIsSet() && !rhs.refIdIsSet()) ||
+        (refIdIsSet() && rhs.refIdIsSet() && getRefId() == rhs.getRefId())))
+
+          ;
+}
+
+bool AmfEvent::operator!=(const AmfEvent& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const AmfEvent& o) {
   j         = nlohmann::json();
   j["type"] = o.m_Type;
   if (o.immediateFlagIsSet()) j["immediateFlag"] = o.m_ImmediateFlag;
-  if (o.areaListIsSet()) j["areaList"] = o.m_AreaList;
-  if (o.locationFilterListIsSet())
+  if (o.areaListIsSet() || !o.m_AreaList.empty()) j["areaList"] = o.m_AreaList;
+  if (o.locationFilterListIsSet() || !o.m_LocationFilterList.empty())
     j["locationFilterList"] = o.m_LocationFilterList;
   if (o.refIdIsSet()) j["refId"] = o.m_RefId;
 }
@@ -81,8 +169,12 @@ bool AmfEvent::immediateFlagIsSet() const {
 void AmfEvent::unsetImmediateFlag() {
   m_ImmediateFlagIsSet = false;
 }
-std::vector<AmfEventArea>& AmfEvent::getAreaList() {
+std::vector<AmfEventArea> AmfEvent::getAreaList() const {
   return m_AreaList;
+}
+void AmfEvent::setAreaList(std::vector<AmfEventArea> const& value) {
+  m_AreaList      = value;
+  m_AreaListIsSet = true;
 }
 bool AmfEvent::areaListIsSet() const {
   return m_AreaListIsSet;
@@ -90,8 +182,12 @@ bool AmfEvent::areaListIsSet() const {
 void AmfEvent::unsetAreaList() {
   m_AreaListIsSet = false;
 }
-std::vector<LocationFilter>& AmfEvent::getLocationFilterList() {
+std::vector<LocationFilter> AmfEvent::getLocationFilterList() const {
   return m_LocationFilterList;
+}
+void AmfEvent::setLocationFilterList(std::vector<LocationFilter> const& value) {
+  m_LocationFilterList      = value;
+  m_LocationFilterListIsSet = true;
 }
 bool AmfEvent::locationFilterListIsSet() const {
   return m_LocationFilterListIsSet;
@@ -113,6 +209,4 @@ void AmfEvent::unsetRefId() {
   m_RefIdIsSet = false;
 }
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

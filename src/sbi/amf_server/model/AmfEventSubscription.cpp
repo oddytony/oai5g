@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,10 +12,11 @@
  */
 
 #include "AmfEventSubscription.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 AmfEventSubscription::AmfEventSubscription() {
   m_EventNotifyUri                     = "";
@@ -38,10 +39,116 @@ AmfEventSubscription::AmfEventSubscription() {
   m_OptionsIsSet                       = false;
 }
 
-AmfEventSubscription::~AmfEventSubscription() {}
+void AmfEventSubscription::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw org::openapitools::server::helpers::ValidationException(msg.str());
+  }
+}
 
-void AmfEventSubscription::validate() {
-  // TODO: implement validation
+bool AmfEventSubscription::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool AmfEventSubscription::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success = true;
+  const std::string _pathPrefix =
+      pathPrefix.empty() ? "AmfEventSubscription" : pathPrefix;
+
+  /* EventList */ {
+    const std::vector<AmfEvent>& value = m_EventList;
+    const std::string currentValuePath = _pathPrefix + ".eventList";
+
+    if (value.size() < 1) {
+      success = false;
+      msg << currentValuePath << ": must have at least 1 elements;";
+    }
+    {  // Recursive validation of array elements
+      const std::string oldValuePath = currentValuePath;
+      int i                          = 0;
+      for (const AmfEvent& value : value) {
+        const std::string currentValuePath =
+            oldValuePath + "[" + std::to_string(i) + "]";
+
+        success =
+            value.validate(msg, currentValuePath + ".eventList") && success;
+
+        i++;
+      }
+    }
+  }
+
+  if (supiIsSet()) {
+    const std::string& value           = m_Supi;
+    const std::string currentValuePath = _pathPrefix + ".supi";
+  }
+
+  if (groupIdIsSet()) {
+    const std::string& value           = m_GroupId;
+    const std::string currentValuePath = _pathPrefix + ".groupId";
+  }
+
+  if (gpsiIsSet()) {
+    const std::string& value           = m_Gpsi;
+    const std::string currentValuePath = _pathPrefix + ".gpsi";
+  }
+
+  if (peiIsSet()) {
+    const std::string& value           = m_Pei;
+    const std::string currentValuePath = _pathPrefix + ".pei";
+  }
+
+  return success;
+}
+
+bool AmfEventSubscription::operator==(const AmfEventSubscription& rhs) const {
+  return
+
+      (getEventList() == rhs.getEventList()) &&
+
+      (getEventNotifyUri() == rhs.getEventNotifyUri()) &&
+
+      (getNotifyCorrelationId() == rhs.getNotifyCorrelationId()) &&
+
+      (getNfId() == rhs.getNfId()) &&
+
+      ((!subsChangeNotifyUriIsSet() && !rhs.subsChangeNotifyUriIsSet()) ||
+       (subsChangeNotifyUriIsSet() && rhs.subsChangeNotifyUriIsSet() &&
+        getSubsChangeNotifyUri() == rhs.getSubsChangeNotifyUri())) &&
+
+      ((!subsChangeNotifyCorrelationIdIsSet() &&
+        !rhs.subsChangeNotifyCorrelationIdIsSet()) ||
+       (subsChangeNotifyCorrelationIdIsSet() &&
+        rhs.subsChangeNotifyCorrelationIdIsSet() &&
+        getSubsChangeNotifyCorrelationId() ==
+            rhs.getSubsChangeNotifyCorrelationId())) &&
+
+      ((!supiIsSet() && !rhs.supiIsSet()) ||
+       (supiIsSet() && rhs.supiIsSet() && getSupi() == rhs.getSupi())) &&
+
+      ((!groupIdIsSet() && !rhs.groupIdIsSet()) ||
+       (groupIdIsSet() && rhs.groupIdIsSet() &&
+        getGroupId() == rhs.getGroupId())) &&
+
+      ((!gpsiIsSet() && !rhs.gpsiIsSet()) ||
+       (gpsiIsSet() && rhs.gpsiIsSet() && getGpsi() == rhs.getGpsi())) &&
+
+      ((!peiIsSet() && !rhs.peiIsSet()) ||
+       (peiIsSet() && rhs.peiIsSet() && getPei() == rhs.getPei())) &&
+
+      ((!anyUEIsSet() && !rhs.anyUEIsSet()) ||
+       (anyUEIsSet() && rhs.anyUEIsSet() && isAnyUE() == rhs.isAnyUE())) &&
+
+      ((!optionsIsSet() && !rhs.optionsIsSet()) ||
+       (optionsIsSet() && rhs.optionsIsSet() &&
+        getOptions() == rhs.getOptions()))
+
+          ;
+}
+
+bool AmfEventSubscription::operator!=(const AmfEventSubscription& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const AmfEventSubscription& o) {
@@ -102,8 +209,11 @@ void from_json(const nlohmann::json& j, AmfEventSubscription& o) {
   }
 }
 
-std::vector<AmfEvent>& AmfEventSubscription::getEventList() {
+std::vector<AmfEvent> AmfEventSubscription::getEventList() const {
   return m_EventList;
+}
+void AmfEventSubscription::setEventList(std::vector<AmfEvent> const& value) {
+  m_EventList = value;
 }
 std::string AmfEventSubscription::getEventNotifyUri() const {
   return m_EventNotifyUri;
@@ -229,6 +339,4 @@ void AmfEventSubscription::unsetOptions() {
   m_OptionsIsSet = false;
 }
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model
