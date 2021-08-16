@@ -16,7 +16,7 @@
 
 namespace oai::amf::api {
 
-using namespace org::openapitools::server::helpers;
+using namespace oai::amf::helpers;
 using namespace oai::amf::model;
 
 SubscriptionsCollectionDocumentApiEventExposure::
@@ -52,7 +52,7 @@ SubscriptionsCollectionDocumentApiEventExposure::handleParsingException(
     throw ex;
   } catch (nlohmann::detail::exception& e) {
     return std::make_pair(Pistache::Http::Code::Bad_Request, e.what());
-  } catch (org::openapitools::server::helpers::ValidationException& e) {
+  } catch (oai::amf::helpers::ValidationException& e) {
     return std::make_pair(Pistache::Http::Code::Bad_Request, e.what());
   }
 }

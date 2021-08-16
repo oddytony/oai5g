@@ -23,7 +23,7 @@ _5GsUserStateInfo::_5GsUserStateInfo() {}
 void _5GsUserStateInfo::validate() const {
   std::stringstream msg;
   if (!validate(msg)) {
-    throw org::openapitools::server::helpers::ValidationException(msg.str());
+    throw oai::amf::helpers::ValidationException(msg.str());
   }
 }
 

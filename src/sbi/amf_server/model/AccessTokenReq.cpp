@@ -33,7 +33,7 @@ AccessTokenReq::AccessTokenReq() {
 void AccessTokenReq::validate() const {
   std::stringstream msg;
   if (!validate(msg)) {
-    throw org::openapitools::server::helpers::ValidationException(msg.str());
+    throw oai::amf::helpers::ValidationException(msg.str());
   }
 }
 

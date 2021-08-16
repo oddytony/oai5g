@@ -21,7 +21,7 @@ namespace oai {
 namespace amf {
 namespace api {
 
-using namespace org::openapitools::server::helpers;
+using namespace oai::amf::helpers;
 
 NonUEN2MessageNotificationIndividualSubscriptionDocumentApi::
     NonUEN2MessageNotificationIndividualSubscriptionDocumentApi(
