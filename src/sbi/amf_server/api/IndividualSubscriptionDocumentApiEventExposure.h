@@ -11,13 +11,13 @@
  * the class manually.
  */
 /*
- * SubscriptionsCollectionDocumentApiEventExposure.h
+ * IndividualSubscriptionDocumentApiEventExposure.h
  *
  *
  */
 
-#ifndef SubscriptionsCollectionDocumentApi_EventExposure_H_
-#define SubscriptionsCollectionDocumentApi_EventExposure_H_
+#ifndef IndividualSubscriptionDocumentApiEventExposure_H_
+#define IndividualSubscriptionDocumentApiEventExposure_H_
 
 #include <pistache/http.h>
 #include <pistache/router.h>
@@ -26,28 +26,38 @@
 
 #include <utility>
 
-#include "AmfCreateEventSubscription.h"
-#include "AmfCreatedEventSubscription.h"
+#include "AmfUpdatedEventSubscription.h"
+//#include "OneOfarrayAmfUpdateEventOptionItem.h"
 #include "ProblemDetails.h"
+//#include "SubscriptionData.h"
+#include "AmfUpdateEventOptionItem.h"
+#include <string>
 
-namespace oai::amf::api {
+namespace oai {
+namespace amf {
+namespace api {
 
-class SubscriptionsCollectionDocumentApiEventExposure {
+using namespace oai::amf::model;
+
+class IndividualSubscriptionDocumentApiEventExposure {
  public:
-  explicit SubscriptionsCollectionDocumentApiEventExposure(
+  explicit IndividualSubscriptionDocumentApiEventExposure(
       const std::shared_ptr<Pistache::Rest::Router>& rtr);
-  virtual ~SubscriptionsCollectionDocumentApiEventExposure() = default;
+  virtual ~IndividualSubscriptionDocumentApiEventExposure() = default;
   void init();
 
-  const std::string base = "/namf-evts/";
+  const std::string base = "/namf-comm/";
 
  private:
   void setupRoutes();
 
-  void create_subscription_handler(
+  void delete_subscription_handler(
       const Pistache::Rest::Request& request,
       Pistache::Http::ResponseWriter response);
-  void subscriptions_collection_document_api_default_handler(
+  void modify_subscription_handler(
+      const Pistache::Rest::Request& request,
+      Pistache::Http::ResponseWriter response);
+  void individual_subscription_document_api_default_handler(
       const Pistache::Rest::Request& request,
       Pistache::Http::ResponseWriter response);
 
@@ -69,18 +79,32 @@ class SubscriptionsCollectionDocumentApiEventExposure {
       const std::exception& ex) const noexcept;
 
   /// <summary>
-  /// Namf_EventExposure Subscribe service Operation
+  /// Namf_EventExposure Unsubscribe service Operation
   /// </summary>
   /// <remarks>
   ///
   /// </remarks>
-  /// <param name="amfCreateEventSubscription"></param>
-  virtual void create_subscription(
-      const oai::amf::model::AmfCreateEventSubscription&
-          amfCreateEventSubscription,
+  /// <param name="subscriptionId">Unique ID of the subscription to be
+  /// deleted</param>
+  virtual void delete_subscription(
+      const std::string& subscriptionId,
+      Pistache::Http::ResponseWriter& response) = 0;
+  /// <summary>
+  /// Namf_EventExposure Subscribe Modify service Operation
+  /// </summary>
+  /// <remarks>
+  ///
+  /// </remarks>
+  /// <param name="subscriptionId">Unique ID of the subscription to be
+  /// modified</param> <param name="AmfUpdateEventOptionItem"></param>
+  virtual void modify_subscription(
+      const std::string& subscriptionId,
+      const oai::amf::model::AmfUpdateEventOptionItem& amfUpdateEventOptionItem,
       Pistache::Http::ResponseWriter& response) = 0;
 };
 
-}  // namespace oai::amf::api
+}  // namespace api
+}  // namespace amf
+}  // namespace oai
 
-#endif /* SubscriptionsCollectionDocumentApiEventExposure_H_ */
+#endif /* IndividualSubscriptionDocumentApiEventExposure_H_ */

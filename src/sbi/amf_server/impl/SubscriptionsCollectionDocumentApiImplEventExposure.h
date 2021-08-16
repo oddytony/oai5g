@@ -32,21 +32,27 @@
 #include "AmfCreateEventSubscription.h"
 #include "AmfCreatedEventSubscription.h"
 #include "ProblemDetails.h"
+#include "amf_app.hpp"
 
 namespace oai::amf::api {
 
 using namespace oai::amf::model;
+using namespace oai::amf::api;
 
 class SubscriptionsCollectionDocumentApiImplEventExposure
     : public SubscriptionsCollectionDocumentApiEventExposure {
  public:
   explicit SubscriptionsCollectionDocumentApiImplEventExposure(
-      const std::shared_ptr<Pistache::Rest::Router>& rtr);
+      const std::shared_ptr<Pistache::Rest::Router>& rtr,
+      amf_application::amf_app* amf_app_inst);
   ~SubscriptionsCollectionDocumentApiImplEventExposure() override = default;
 
   void create_subscription(
       const AmfCreateEventSubscription& amfCreateEventSubscription,
       Pistache::Http::ResponseWriter& response);
+
+ private:
+  amf_application::amf_app* m_amf_app;
 };
 
 }  // namespace oai::amf::api

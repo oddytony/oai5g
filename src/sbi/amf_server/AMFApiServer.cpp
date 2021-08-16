@@ -9,6 +9,7 @@ void AMFApiServer::init(size_t thr) {
   opts.maxRequestSize(PISTACHE_SERVER_MAX_PAYLOAD);
   m_httpEndpoint->init(opts);
   m_individualSubscriptionDocumentApiImpl->init();
+  m_individualSubscriptionDocumentApiImplEventExposure->init();
   m_individualUeContextDocumentApiImpl->init();
   m_n1N2IndividualSubscriptionDocumentApiImpl->init();
   m_n1N2MessageCollectionDocumentApiImpl->init();
@@ -22,6 +23,9 @@ void AMFApiServer::init(size_t thr) {
 
 void AMFApiServer::start() {
   if (m_individualSubscriptionDocumentApiImpl != nullptr)
+    Logger::amf_server().debug(
+        "AMF handler for IndividualSubscriptionDocumentApiImpl");
+  if (m_individualSubscriptionDocumentApiImplEventExposure != nullptr)
     Logger::amf_server().debug(
         "AMF handler for IndividualSubscriptionDocumentApiImpl");
   if (m_individualUeContextDocumentApiImpl != nullptr)

@@ -1,6 +1,6 @@
 /**
- * Namf_EventExposure
- * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_Communication
+ * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -24,13 +24,8 @@
 #include <pistache/http_headers.h>
 #include <pistache/optional.h>
 
-#include <utility>
-
-#include "AmfUpdatedEventSubscription.h"
-//#include "OneOfarrayAmfUpdateEventOptionItem.h"
 #include "ProblemDetails.h"
-//#include "SubscriptionData.h"
-#include "AmfUpdateEventOptionItem.h"
+#include "SubscriptionData.h"
 #include <string>
 
 namespace oai {
@@ -41,9 +36,8 @@ using namespace oai::amf::model;
 
 class IndividualSubscriptionDocumentApi {
  public:
-  explicit IndividualSubscriptionDocumentApi(
-      const std::shared_ptr<Pistache::Rest::Router>& rtr);
-  virtual ~IndividualSubscriptionDocumentApi() = default;
+  IndividualSubscriptionDocumentApi(std::shared_ptr<Pistache::Rest::Router>);
+  virtual ~IndividualSubscriptionDocumentApi() {}
   void init();
 
   const std::string base = "/namf-comm/";
@@ -51,55 +45,41 @@ class IndividualSubscriptionDocumentApi {
  private:
   void setupRoutes();
 
-  void delete_subscription_handler(
+  void a_mf_status_change_subscribe_modfy_handler(
       const Pistache::Rest::Request& request,
       Pistache::Http::ResponseWriter response);
-  void modify_subscription_handler(
+  void a_mf_status_change_un_subscribe_handler(
       const Pistache::Rest::Request& request,
       Pistache::Http::ResponseWriter response);
   void individual_subscription_document_api_default_handler(
       const Pistache::Rest::Request& request,
       Pistache::Http::ResponseWriter response);
 
-  const std::shared_ptr<Pistache::Rest::Router> router;
+  std::shared_ptr<Pistache::Rest::Router> router;
 
   /// <summary>
-  /// Helper function to handle unexpected Exceptions during Parameter parsing
-  /// and validation. May be overriden to return custom error formats.
-  /// </summary>
-  virtual std::pair<Pistache::Http::Code, std::string> handleParsingException(
-      const std::exception& ex) const noexcept;
-
-  /// <summary>
-  /// Helper function to handle unexpected Exceptions during processing of the
-  /// request in handler functions. May be overriden to return custom error
-  /// formats.
-  /// </summary>
-  virtual std::pair<Pistache::Http::Code, std::string> handleOperationException(
-      const std::exception& ex) const noexcept;
-
-  /// <summary>
-  /// Namf_EventExposure Unsubscribe service Operation
+  /// Namf_Communication AMF Status Change Subscribe Modify service Operation
   /// </summary>
   /// <remarks>
   ///
   /// </remarks>
-  /// <param name="subscriptionId">Unique ID of the subscription to be
-  /// deleted</param>
-  virtual void delete_subscription(
+  /// <param name="subscriptionId">AMF Status Change Subscription
+  /// Identifier</param> <param name="subscriptionData"></param>
+  virtual void a_mf_status_change_subscribe_modfy(
       const std::string& subscriptionId,
+      const SubscriptionData& subscriptionData,
       Pistache::Http::ResponseWriter& response) = 0;
+
   /// <summary>
-  /// Namf_EventExposure Subscribe Modify service Operation
+  /// Namf_Communication AMF Status Change UnSubscribe service Operation
   /// </summary>
   /// <remarks>
   ///
   /// </remarks>
-  /// <param name="subscriptionId">Unique ID of the subscription to be
-  /// modified</param> <param name="AmfUpdateEventOptionItem"></param>
-  virtual void modify_subscription(
+  /// <param name="subscriptionId">AMF Status Change Subscription
+  /// Identifier</param>
+  virtual void a_mf_status_change_un_subscribe(
       const std::string& subscriptionId,
-      const oai::amf::model::AmfUpdateEventOptionItem& amfUpdateEventOptionItem,
       Pistache::Http::ResponseWriter& response) = 0;
 };
 

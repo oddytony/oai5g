@@ -21,8 +21,10 @@ using namespace oai::amf::model;
 
 SubscriptionsCollectionDocumentApiImplEventExposure::
     SubscriptionsCollectionDocumentApiImplEventExposure(
-        const std::shared_ptr<Pistache::Rest::Router>& rtr)
-    : SubscriptionsCollectionDocumentApiEventExposure(rtr) {}
+        const std::shared_ptr<Pistache::Rest::Router>& rtr,
+        amf_application::amf_app* amf_app_inst)
+    : SubscriptionsCollectionDocumentApiEventExposure(rtr),
+      m_amf_app(amf_app_inst) {}
 
 void SubscriptionsCollectionDocumentApiImplEventExposure::create_subscription(
     const AmfCreateEventSubscription& amfCreateEventSubscription,

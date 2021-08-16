@@ -25,8 +25,9 @@ using namespace org::openapitools::server::helpers;
 using namespace oai::amf::model;
 
 IndividualSubscriptionDocumentApi::IndividualSubscriptionDocumentApi(
-    const std::shared_ptr<Pistache::Rest::Router>& rtr)
-    : router(rtr) {}
+    std::shared_ptr<Pistache::Rest::Router> rtr) {
+  router = rtr;
+}
 
 void IndividualSubscriptionDocumentApi::init() {
   setupRoutes();
@@ -35,17 +36,19 @@ void IndividualSubscriptionDocumentApi::init() {
 void IndividualSubscriptionDocumentApi::setupRoutes() {
   using namespace Pistache::Rest;
 
+  Routes::Put(
+      *router,
+      base + amf_cfg.sbi_api_version + "/subscriptions/:subscriptionId",
+      Routes::bind(
+          &IndividualSubscriptionDocumentApi::
+              a_mf_status_change_subscribe_modfy_handler,
+          this));
   Routes::Delete(
       *router,
       base + amf_cfg.sbi_api_version + "/subscriptions/:subscriptionId",
       Routes::bind(
-          &IndividualSubscriptionDocumentApi::delete_subscription_handler,
-          this));
-  Routes::Patch(
-      *router,
-      base + amf_cfg.sbi_api_version + "/subscriptions/:subscriptionId",
-      Routes::bind(
-          &IndividualSubscriptionDocumentApi::modify_subscription_handler,
+          &IndividualSubscriptionDocumentApi::
+              a_mf_status_change_un_subscribe_handler,
           this));
 
   // Default handler, called when a route is not found
@@ -55,84 +58,47 @@ void IndividualSubscriptionDocumentApi::setupRoutes() {
       this));
 }
 
-std::pair<Pistache::Http::Code, std::string>
-IndividualSubscriptionDocumentApi::handleParsingException(
-    const std::exception& ex) const noexcept {
+void IndividualSubscriptionDocumentApi::
+    a_mf_status_change_subscribe_modfy_handler(
+        const Pistache::Rest::Request& request,
+        Pistache::Http::ResponseWriter response) {
+  // Getting the path params
+  auto subscriptionId = request.param(":subscriptionId").as<std::string>();
+
+  // Getting the body param
+
+  SubscriptionData subscriptionData;
+
   try {
-    throw ex;
+    nlohmann::json::parse(request.body()).get_to(subscriptionData);
+    this->a_mf_status_change_subscribe_modfy(
+        subscriptionId, subscriptionData, response);
   } catch (nlohmann::detail::exception& e) {
-    return std::make_pair(Pistache::Http::Code::Bad_Request, e.what());
-  } catch (org::openapitools::server::helpers::ValidationException& e) {
-    return std::make_pair(Pistache::Http::Code::Bad_Request, e.what());
+    // send a 400 error
+    response.send(Pistache::Http::Code::Bad_Request, e.what());
+    return;
+  } catch (std::exception& e) {
+    // send a 500 error
+    response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
+    return;
   }
 }
-
-std::pair<Pistache::Http::Code, std::string>
-IndividualSubscriptionDocumentApi::handleOperationException(
-    const std::exception& ex) const noexcept {
-  return std::make_pair(Pistache::Http::Code::Internal_Server_Error, ex.what());
-}
-
-void IndividualSubscriptionDocumentApi::delete_subscription_handler(
+void IndividualSubscriptionDocumentApi::a_mf_status_change_un_subscribe_handler(
     const Pistache::Rest::Request& request,
     Pistache::Http::ResponseWriter response) {
+  // Getting the path params
+  auto subscriptionId = request.param(":subscriptionId").as<std::string>();
+
   try {
-    // Getting the path params
-    auto subscriptionId = request.param(":subscriptionId").as<std::string>();
-
-    try {
-      this->delete_subscription(subscriptionId, response);
-    } catch (Pistache::Http::HttpError& e) {
-      response.send(static_cast<Pistache::Http::Code>(e.code()), e.what());
-      return;
-    } catch (std::exception& e) {
-      const std::pair<Pistache::Http::Code, std::string> errorInfo =
-          this->handleOperationException(e);
-      response.send(errorInfo.first, errorInfo.second);
-      return;
-    }
-
+    this->a_mf_status_change_un_subscribe(subscriptionId, response);
+  } catch (nlohmann::detail::exception& e) {
+    // send a 400 error
+    response.send(Pistache::Http::Code::Bad_Request, e.what());
+    return;
   } catch (std::exception& e) {
+    // send a 500 error
     response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
-  }
-}
-void IndividualSubscriptionDocumentApi::modify_subscription_handler(
-    const Pistache::Rest::Request& request,
-    Pistache::Http::ResponseWriter response) {
-  try {
-    // Getting the path params
-    auto subscriptionId = request.param(":subscriptionId").as<std::string>();
-
-    // Getting the body param
-
-    // UNKNOWN_BASE_TYPE uNKNOWNBASETYPE;
-
-    AmfUpdateEventOptionItem amfUpdateEventOptionItem;
-    // TODO:AmfUpdateEventSubscriptionItem
-
-    try {
-      nlohmann::json::parse(request.body()).get_to(amfUpdateEventOptionItem);
-      amfUpdateEventOptionItem.validate();
-    } catch (std::exception& e) {
-      const std::pair<Pistache::Http::Code, std::string> errorInfo =
-          this->handleParsingException(e);
-      response.send(errorInfo.first, errorInfo.second);
-      return;
-    }
-    /*
-        //TODO:AmfUpdateEventSubscriptionItem
-        try {
-            //this->modify_subscription(subscriptionId, uNKNOWNBASETYPE,
-       response); } catch (Pistache::Http::HttpError &e) {
-            response.send(static_cast<Pistache::Http::Code>(e.code()),
-       e.what()); return; } catch (std::exception &e) { const
-       std::pair<Pistache::Http::Code, std::string> errorInfo =
-       this->handleOperationException(e); response.send(errorInfo.first,
-       errorInfo.second); return;
-        }
-    */
-  } catch (std::exception& e) {
-    response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
+    return;
   }
 }
 

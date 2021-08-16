@@ -23,6 +23,7 @@
 #define FILE_3GPP_29_518_SEEN
 
 #include "amf.hpp"
+#include <vector>
 
 typedef enum amf_event_e {
   LOCATION_REPORT              = 1,

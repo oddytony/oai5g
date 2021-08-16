@@ -19,9 +19,6 @@ namespace oai::amf::api {
 using namespace org::openapitools::server::helpers;
 using namespace oai::amf::model;
 
-const std::string SubscriptionsCollectionDocumentApiEventExposure::base =
-    "/namf-evts/v1";
-
 SubscriptionsCollectionDocumentApiEventExposure::
     SubscriptionsCollectionDocumentApiEventExposure(
         const std::shared_ptr<Pistache::Rest::Router>& rtr)
