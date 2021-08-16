@@ -26,7 +26,7 @@
 using namespace std;
 namespace ngap {
 dRBSubjectList::dRBSubjectList() {
-  drbsubjectitem = NULL;
+  drbsubjectitem = nullptr;
   numofitem      = 0;
 }
 dRBSubjectList::~dRBSubjectList() {}
@@ -45,6 +45,8 @@ bool dRBSubjectList::encodefromdRBSubjectlist(
         (Ngap_DRBsSubjectToStatusTransferItem_t*) calloc(
             1, sizeof(Ngap_DRBsSubjectToStatusTransferItem_t));
     if (!ie) return false;
+
+    if (!drbsubjectitem) return false;
     if (!drbsubjectitem[i].encodedRBSubjectItem(ie)) {
       cout << "encodefromdRBSubjectlist error" << endl;
       return false;

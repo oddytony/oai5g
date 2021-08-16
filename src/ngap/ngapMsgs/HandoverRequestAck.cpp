@@ -41,6 +41,7 @@ using namespace std;
 
 namespace ngap {
 
+//------------------------------------------------------------------------------
 HandoverRequestAck::HandoverRequestAck() {
   amfUeNgapId                         = nullptr;
   ranUeNgapId                         = nullptr;
@@ -53,13 +54,18 @@ HandoverRequestAck::HandoverRequestAck() {
   handovertype                        = nullptr;
 }
 
+//------------------------------------------------------------------------------
 HandoverRequestAck::~HandoverRequestAck() {}
+
+//------------------------------------------------------------------------------
 unsigned long HandoverRequestAck::getAmfUeNgapId() {
   if (amfUeNgapId)
     return amfUeNgapId->getAMF_UE_NGAP_ID();
   else
     return 0;
 }
+
+//------------------------------------------------------------------------------
 void HandoverRequestAck::setMessageType() {
   if (!handoverRequestAckPdu)
     handoverRequestAckPdu =
@@ -87,18 +93,22 @@ void HandoverRequestAck::setMessageType() {
   }
 }
 
+//------------------------------------------------------------------------------
 uint32_t HandoverRequestAck::getRanUeNgapId() {
   if (ranUeNgapId)
     return ranUeNgapId->getRanUeNgapId();
   else
     return 0;
 }
+
+//------------------------------------------------------------------------------
 OCTET_STRING_t HandoverRequestAck::getTargetToSource_TransparentContainer() {
   if (TargetToSource_TransparentContainer)
     return *TargetToSource_TransparentContainer;
   return OCTET_STRING_t();
 }
 
+//------------------------------------------------------------------------------
 bool HandoverRequestAck::getPDUSessionResourceAdmittedList(
     std::vector<PDUSessionResourceAdmittedItem_t>& list) {
   if (!pduSessionResourceAdmittedList) return false;
@@ -121,6 +131,7 @@ bool HandoverRequestAck::getPDUSessionResourceAdmittedList(
   return true;
 }
 
+//------------------------------------------------------------------------------
 bool HandoverRequestAck::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   if (!ngap_msg_pdu) return false;
   handoverRequestAckPdu = ngap_msg_pdu;
@@ -226,14 +237,16 @@ bool HandoverRequestAck::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   return true;
 }
 
+//------------------------------------------------------------------------------
 int HandoverRequestAck::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, handoverRequestAckPdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, handoverRequestAckPdu, buf, buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().debug("er.encoded( %d )", er.encoded);
   return er.encoded;
 }
 
+//------------------------------------------------------------------------------
 /*	void HandoverRequestAck::setMessageType()
 {
         if (!handoverRequestAckPdu) handoverRequestAckPdu =

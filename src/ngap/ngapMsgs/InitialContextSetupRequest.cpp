@@ -27,6 +27,7 @@
  */
 
 #include "InitialContextSetupRequest.hpp"
+#include "logger.hpp"
 
 extern "C" {
 #include "asn_codecs.h"
@@ -44,20 +45,20 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 InitialContextSetupRequestMsg::InitialContextSetupRequestMsg() {
-  initialContextSetupRequestPdu      = NULL;
-  initialContextSetupRequestIEs      = NULL;
-  amfUeNgapId                        = NULL;
-  ranUeNgapId                        = NULL;
-  oldAmfName                         = NULL;
-  uEAggregateMaxBitRate              = NULL;
-  coreNetworkAssistanceInfo          = NULL;
-  guami                              = NULL;
-  pduSessionResourceSetupRequestList = NULL;
-  allowedNssai                       = NULL;
-  uESecurityCapabilities             = NULL;
-  securityKey                        = NULL;
-  nasPdu                             = NULL;
-  ueRadioCapability                  = NULL;
+  initialContextSetupRequestPdu      = nullptr;
+  initialContextSetupRequestIEs      = nullptr;
+  amfUeNgapId                        = nullptr;
+  ranUeNgapId                        = nullptr;
+  oldAmfName                         = nullptr;
+  uEAggregateMaxBitRate              = nullptr;
+  coreNetworkAssistanceInfo          = nullptr;
+  guami                              = nullptr;
+  pduSessionResourceSetupRequestList = nullptr;
+  allowedNssai                       = nullptr;
+  uESecurityCapabilities             = nullptr;
+  securityKey                        = nullptr;
+  nasPdu                             = nullptr;
+  ueRadioCapability                  = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -90,9 +91,9 @@ void InitialContextSetupRequestMsg::setMessageType() {
         &(initialContextSetupRequestPdu->choice.initiatingMessage->value.choice
               .InitialContextSetupRequest);
   } else {
-    cout << "[warning] This information doesn't refer to "
-            "InitialContextSetupRequest Message!!!"
-         << endl;
+    Logger::ngap().warn(
+        " This information doesn't refer to InitialContextSetupRequest "
+        "Message!");
   }
 }
 
@@ -111,13 +112,13 @@ void InitialContextSetupRequestMsg::setAmfUeNgapId(unsigned long id) {
 
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error!");
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error!");
   // free_wrapper((void**) &ie);
 }
 
@@ -136,13 +137,14 @@ void InitialContextSetupRequestMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
 
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error!");
+
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error!");
   // free_wrapper((void**) &ie);
 }
 
@@ -160,13 +162,14 @@ void InitialContextSetupRequestMsg::setOldAmfName(const std::string name) {
 
   int ret = oldAmfName->encode2AmfName(&ie->value.choice.AMFName);
   if (!ret) {
-    cout << "encode oldAmfName IE error" << endl;
+    Logger::ngap().error("Encode oldAmfName IE error!");
+
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode oldAmfName IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode oldAmfName IE error!");
   // free_wrapper((void**) &ie);
 }
 
@@ -190,13 +193,13 @@ void InitialContextSetupRequestMsg::setUEAggregateMaxBitRate(
   int ret = uEAggregateMaxBitRate->encode2UEAggregateMaxBitRate(
       ie->value.choice.UEAggregateMaximumBitRate);
   if (!ret) {
-    cout << "encode UEAggregateMaxBitRate IE error" << endl;
+    Logger::ngap().error("Encode UEAggregateMaxBitRate IE error!");
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode UEAggregateMaxBitRate IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode UEAggregateMaxBitRate IE error!");
   // free_wrapper((void**) &ie);
 }
 
@@ -240,14 +243,14 @@ void InitialContextSetupRequestMsg::setCoreNetworkAssistanceInfo(
   int ret = coreNetworkAssistanceInfo->encode2CoreNetworkAssistanceInfo(
       &ie->value.choice.CoreNetworkAssistanceInformation);
   if (!ret) {
-    cout << "encode CoreNetworkAssistanceInformation IE error" << endl;
+    Logger::ngap().error("Encode CoreNetworkAssistanceInformation IE error!");
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0)
-    cout << "encode CoreNetworkAssistanceInformation IE error" << endl;
+    Logger::ngap().error("Encode CoreNetworkAssistanceInformation IE error!");
   // free_wrapper((void**) &ie);
 }
 
@@ -288,14 +291,15 @@ void InitialContextSetupRequestMsg::setCoreNetworkAssistanceInfo(
   int ret = coreNetworkAssistanceInfo->encode2CoreNetworkAssistanceInfo(
       &ie->value.choice.CoreNetworkAssistanceInformation);
   if (!ret) {
-    cout << "encode CoreNetworkAssistanceInformation IE error" << endl;
+    Logger::ngap().error("Encode CoreNetworkAssistanceInformation IE error!");
+
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0)
-    cout << "encode CoreNetworkAssistanceInformation IE error" << endl;
+    Logger::ngap().error("Encode CoreNetworkAssistanceInformation IE error!");
   // free_wrapper((void**) &ie);
 }
 
@@ -324,13 +328,14 @@ void InitialContextSetupRequestMsg::setGuami(Guami_t value) {
 
   int ret = guami->encode2GUAMI(&ie->value.choice.GUAMI);
   if (!ret) {
-    cout << "encode GUAMI IE error" << endl;
+    Logger::ngap().error("Encode GUAMI IE error!");
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode GUAMI IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode GUAMI IE error!");
+
   // free_wrapper((void**) &ie);
 }
 
@@ -345,32 +350,22 @@ void InitialContextSetupRequestMsg::setPduSessionResourceSetupRequestList(
 
   for (int i = 0; i < list.size(); i++) {
     PDUSessionID* m_pDUSessionID = new PDUSessionID();
-    cout << "encoding pduSessionId" << endl;
     m_pDUSessionID->setPDUSessionID(list[i].pduSessionId);
-    cout << "encoding pduSessionId over" << endl;
-    NAS_PDU* m_nAS_PDU = NULL;
+    NAS_PDU* m_nAS_PDU = nullptr;
     if (list[i].pduSessionNAS_PDU) {
-      cout << "encoding nas-pdu" << endl;
       m_nAS_PDU = new NAS_PDU();
       m_nAS_PDU->setNasPdu(
           list[i].pduSessionNAS_PDU, list[i].sizeofpduSessionNAS_PDU);
-      cout << "encoding nas-pdu over" << endl;
     }
-    cout << "encoding s-nssai" << endl;
     S_NSSAI* m_s_NSSAI = new S_NSSAI();
     m_s_NSSAI->setSst(list[i].s_nssai.sst);
-    cout << "encoding s-nssai over" << endl;
     if (list[i].s_nssai.sd.size()) m_s_NSSAI->setSd(list[i].s_nssai.sd);
-    cout << "encoding over" << endl;
     m_pduSessionResourceSetupItemCxtReq[i].setPDUSessionResourceSetupItemCxtReq(
         m_pDUSessionID, m_nAS_PDU, m_s_NSSAI,
         list[i].pduSessionResourceSetupRequestTransfer);
   }
-
-  cout << "setPDUSessionResourceSetupListCxtReq" << endl;
   pduSessionResourceSetupRequestList->setPDUSessionResourceSetupListCxtReq(
       m_pduSessionResourceSetupItemCxtReq, list.size());
-  cout << "setPDUSessionResourceSetupListCxtReq over" << endl;
 
   Ngap_InitialContextSetupRequestIEs_t* ie =
       (Ngap_InitialContextSetupRequestIEs_t*) calloc(
@@ -380,20 +375,19 @@ void InitialContextSetupRequestMsg::setPduSessionResourceSetupRequestList(
   ie->value.present =
       Ngap_InitialContextSetupRequestIEs__value_PR_PDUSessionResourceSetupListCxtReq;
 
-  cout << "encode2PDUSessionResourceSetupListCxtReq" << endl;
   int ret = pduSessionResourceSetupRequestList
                 ->encode2PDUSessionResourceSetupListCxtReq(
                     &ie->value.choice.PDUSessionResourceSetupListCxtReq);
-  cout << "encode2PDUSessionResourceSetupListCxtReq over" << endl;
   if (!ret) {
-    cout << "encode PDUSessionResourceSetupListCxtReq IE error" << endl;
+    Logger::ngap().error("Encode PDUSessionResourceSetupListCxtReq IE error!");
+
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0)
-    cout << "encode PDUSessionResourceSetupListCxtReq IE error" << endl;
+    Logger::ngap().error("Encode PDUSessionResourceSetupListCxtReq IE error!");
   // free_wrapper((void**) &ie);
 }
 
@@ -418,13 +412,14 @@ void InitialContextSetupRequestMsg::setAllowedNssai(std::vector<S_Nssai> list) {
 
   int ret = allowedNssai->encode2AllowedNSSAI(&ie->value.choice.AllowedNSSAI);
   if (!ret) {
-    cout << "encode AllowedNSSAI IE error" << endl;
+    Logger::ngap().error("Encode AllowedNSSAI IE error!");
+
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode AllowedNSSAI IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode AllowedNSSAI IE error!");
   // free_wrapper((void**) &ie);
 }
 
@@ -450,13 +445,14 @@ void InitialContextSetupRequestMsg::setUESecurityCapability(
   int ret = uESecurityCapabilities->encode2UESecurityCapabilities(
       ie->value.choice.UESecurityCapabilities);
   if (!ret) {
-    cout << "encode UESecurityCapabilities IE error" << endl;
+    Logger::ngap().error("Encode UESecurityCapabilities IE error!");
+
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode UESecurityCapabilities IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode UESecurityCapabilities IE error!");
   // free_wrapper((void**) &ie);
 }
 
@@ -475,13 +471,14 @@ void InitialContextSetupRequestMsg::setSecurityKey(uint8_t* key) {
 
   int ret = securityKey->encode2bitstring(ie->value.choice.SecurityKey);
   if (!ret) {
-    cout << "encode SecurityKey IE error" << endl;
+    Logger::ngap().error("Encode SecurityKey IE error!");
+
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode SecurityKey IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode SecurityKey IE error!");
   // free_wrapper((void**) &ie);
 }
 
@@ -500,13 +497,14 @@ void InitialContextSetupRequestMsg::setNasPdu(uint8_t* nas, size_t sizeofnas) {
 
   int ret = nasPdu->encode2octetstring(ie->value.choice.NAS_PDU);
   if (!ret) {
-    cout << "encode NAS_PDU IE error" << endl;
+    Logger::ngap().error("Encode NAS PDU error!");
+
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode NAS_PDU IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NAS PDU error!");
   // free_wrapper((void**) &ie);
 }
 
@@ -528,13 +526,14 @@ void InitialContextSetupRequestMsg::setUERadioCapability(
   int ret = ueRadioCapability->encode2UERadioCapability(
       ie->value.choice.UERadioCapability);
   if (!ret) {
-    cout << "encode UERadioCapability IE error" << endl;
+    Logger::ngap().error("Encode UERadioCapability IE error!");
+
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode UERadioCapability IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode UERadioCapability IE error!");
   // free_wrapper((void**) &ie);
 }
 
@@ -544,7 +543,7 @@ int InitialContextSetupRequestMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, initialContextSetupRequestPdu, buf,
       buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().debug("er.encoded( %d )", er.encoded);
   return er.encoded;
 }
 
@@ -572,7 +571,7 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
       return false;
     }
   } else {
-    cout << "MessageType error!!!" << endl;
+    Logger::ngap().error("MessageType error!");
     return false;
   }
   for (int i = 0; i < initialContextSetupRequestIEs->protocolIEs.list.count;
@@ -588,11 +587,11 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
                   initialContextSetupRequestIEs->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
-            cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -606,11 +605,11 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
                   initialContextSetupRequestIEs->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
-            cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -624,11 +623,11 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
           if (!oldAmfName->decodefromAmfName(
                   &initialContextSetupRequestIEs->protocolIEs.list.array[i]
                        ->value.choice.AMFName)) {
-            cout << "decoded ngap OldAMFName IE error" << endl;
+            Logger::ngap().error("Decoded NGAP OldAMFName IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap OldAMFName IE error" << endl;
+          Logger::ngap().error("Decoded NGAP OldAMFName IE error");
           return false;
         }
       } break;
@@ -642,11 +641,13 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
           if (!uEAggregateMaxBitRate->decodefromUEAggregateMaxBitRate(
                   initialContextSetupRequestIEs->protocolIEs.list.array[i]
                       ->value.choice.UEAggregateMaximumBitRate)) {
-            cout << "decoded ngap UEAggregateMaximumBitRate IE error" << endl;
+            Logger::ngap().error(
+                "Decoded NGAP UEAggregateMaximumBitRate IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap UEAggregateMaximumBitRate IE error" << endl;
+          Logger::ngap().error(
+              "Decoded NGAP UEAggregateMaximumBitRate IE error");
           return false;
         }
       } break;
@@ -660,13 +661,13 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
           if (!coreNetworkAssistanceInfo->decodefromCoreNetworkAssistanceInfo(
                   &initialContextSetupRequestIEs->protocolIEs.list.array[i]
                        ->value.choice.CoreNetworkAssistanceInformation)) {
-            cout << "decoded ngap CoreNetworkAssistanceInformation IE error"
-                 << endl;
+            Logger::ngap().error(
+                "Decoded NGAP CoreNetworkAssistanceInformation IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap CoreNetworkAssistanceInformation IE error"
-               << endl;
+          Logger::ngap().error(
+              "Decoded NGAP CoreNetworkAssistanceInformation IE error");
           return false;
         }
       } break;
@@ -680,11 +681,12 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
           if (!guami->decodefromGUAMI(
                   &initialContextSetupRequestIEs->protocolIEs.list.array[i]
                        ->value.choice.GUAMI)) {
-            cout << "decoded ngap GUAMI IE error" << endl;
+            Logger::ngap().error("Decoded NGAP GUAMI IE error");
+
             return false;
           }
         } else {
-          cout << "decoded ngap GUAMI IE error" << endl;
+          Logger::ngap().error("Decoded NGAP GUAMI IE error");
           return false;
         }
       } break;
@@ -701,13 +703,13 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
                        &initialContextSetupRequestIEs->protocolIEs.list
                             .array[i]
                             ->value.choice.PDUSessionResourceSetupListCxtReq)) {
-            cout << "decoded ngap PDUSessionResourceSetupListCxtReq IE error"
-                 << endl;
+            Logger::ngap().error(
+                "Decoded NGAP PDUSessionResourceSetupListCxtReq IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap PDUSessionResourceSetupListCxtReq IE error"
-               << endl;
+          Logger::ngap().error(
+              "Decoded NGAP PDUSessionResourceSetupListCxtReq IE error");
           return false;
         }
       } break;
@@ -721,11 +723,11 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
           if (!allowedNssai->decodefromAllowedNSSAI(
                   &initialContextSetupRequestIEs->protocolIEs.list.array[i]
                        ->value.choice.AllowedNSSAI)) {
-            cout << "decoded ngap AllowedNSSAI IE error" << endl;
+            Logger::ngap().error("Decoded NGAP AllowedNSSAI IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap AllowedNSSAI IE error" << endl;
+          Logger::ngap().error("Decoded NGAP AllowedNSSAI IE error");
           return false;
         }
       } break;
@@ -739,11 +741,12 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
           if (!uESecurityCapabilities->decodefromUESecurityCapabilities(
                   initialContextSetupRequestIEs->protocolIEs.list.array[i]
                       ->value.choice.UESecurityCapabilities)) {
-            cout << "decoded ngap UESecurityCapabilities IE error" << endl;
+            Logger::ngap().error(
+                "Decoded NGAP UESecurityCapabilities IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap UESecurityCapabilities IE error" << endl;
+          Logger::ngap().error("Decoded NGAP UESecurityCapabilities IE error");
           return false;
         }
       } break;
@@ -757,11 +760,11 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
           if (!securityKey->decodefrombitstring(
                   initialContextSetupRequestIEs->protocolIEs.list.array[i]
                       ->value.choice.SecurityKey)) {
-            cout << "decoded ngap SecurityKey IE error" << endl;
+            Logger::ngap().error("Decoded NGAP SecurityKey IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap SecurityKey IE error" << endl;
+          Logger::ngap().error("Decoded NGAP SecurityKey IE error");
           return false;
         }
       } break;
@@ -775,17 +778,17 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
           if (!nasPdu->decodefromoctetstring(
                   initialContextSetupRequestIEs->protocolIEs.list.array[i]
                       ->value.choice.NAS_PDU)) {
-            cout << "decoded ngap NAS_PDU IE error" << endl;
+            Logger::ngap().error("Decoded NGAP NAS_PDU IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap NAS_PDU IE error" << endl;
+          Logger::ngap().error("Decoded NGAP NAS_PDU IE error");
           return false;
         }
       } break;
 
       default: {
-        cout << "decoded ngap message pdu error" << endl;
+        Logger::ngap().error("Decoded NGAP Message PDU error");
         return false;
       }
     }
@@ -802,7 +805,7 @@ unsigned long InitialContextSetupRequestMsg::getAmfUeNgapId() {
 
 //------------------------------------------------------------------------------
 uint32_t InitialContextSetupRequestMsg::getRanUeNgapId() {
-  if (!ranUeNgapId) return -1;
+  if (!ranUeNgapId) return 0;
   return ranUeNgapId->getRanUeNgapId();
 }
 

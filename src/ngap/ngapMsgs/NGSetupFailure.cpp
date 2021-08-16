@@ -27,6 +27,7 @@
  */
 
 #include "NGSetupFailure.hpp"
+#include "logger.hpp"
 
 extern "C" {
 #include "asn_codecs.h"
@@ -43,10 +44,10 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 NGSetupFailureMsg::NGSetupFailureMsg() {
-  ngSetupFailurePdu = NULL;
-  ngSetupFailureIEs = NULL;
-  cause             = NULL;
-  timeToWait        = NULL;
+  ngSetupFailurePdu = nullptr;
+  ngSetupFailureIEs = nullptr;
+  cause             = nullptr;
+  timeToWait        = nullptr;
   // criticalityDiagnostics = NULL;
 }
 
@@ -74,9 +75,8 @@ void NGSetupFailureMsg::setMessageType() {
     ngSetupFailureIEs = &(ngSetupFailurePdu->choice.unsuccessfulOutcome->value
                               .choice.NGSetupFailure);
   } else {
-    cout << "[warning] This information doesn't refer to NGSetupFailure "
-            "Message!!!"
-         << endl;
+    Logger::ngap().warn(
+        "This information doesn't refer to NGSetupFailure message!");
   }
 }
 
@@ -91,7 +91,7 @@ void NGSetupFailureMsg::addCauseIE() {
   cause->encode2Cause(&ie->value.choice.Cause);
 
   int ret = ASN_SEQUENCE_ADD(&ngSetupFailureIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode Cause IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP Cause IE error");
 }
 
 //------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ void NGSetupFailureMsg::addTimeToWaitIE() {
   timeToWait->encode2TimeToWait(&ie->value.choice.TimeToWait);
 
   int ret = ASN_SEQUENCE_ADD(&ngSetupFailureIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode TimeToWait IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP TimeToWait IE error");
 }
 
 //------------------------------------------------------------------------------
@@ -219,7 +219,7 @@ int NGSetupFailureMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, ngSetupFailurePdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, ngSetupFailurePdu, buf, buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().debug("er.encoded( %d )", er.encoded);
   return er.encoded;
 }
 
@@ -238,11 +238,11 @@ bool NGSetupFailureMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
       ngSetupFailureIEs = &ngSetupFailurePdu->choice.initiatingMessage->value
                                .choice.NGSetupFailure;
     } else {
-      cout << "Check NGSetupFailure message error!!!" << endl;
+      Logger::ngap().error("Check NGSetupFailure message error!");
       return false;
     }
   } else {
-    cout << "MessageType error!!!" << endl;
+    Logger::ngap().error("MessageType error!");
     return false;
   }
   for (int i = 0; i < ngSetupFailureIEs->protocolIEs.list.count; i++) {
@@ -256,11 +256,11 @@ bool NGSetupFailureMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!cause->decodefromCause(
                   &ngSetupFailureIEs->protocolIEs.list.array[i]
                        ->value.choice.Cause)) {
-            cout << "decoded ngap Cause IE error" << endl;
+            Logger::ngap().error("Decoded NGAP Cause IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap Cause IE error" << endl;
+          Logger::ngap().error("Decoded NGAP Cause IE error");
           return false;
         }
       } break;
@@ -273,19 +273,19 @@ bool NGSetupFailureMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!timeToWait->decodefromTimeToWait(
                   &ngSetupFailureIEs->protocolIEs.list.array[i]
                        ->value.choice.TimeToWait)) {
-            cout << "decoded ngap TimeToWait IE error" << endl;
+            Logger::ngap().error("Decoded NGAP TimeToWait IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap TimeToWait IE error" << endl;
+          Logger::ngap().error("Decoded NGAP TimeToWait IE error");
           return false;
         }
       } break;
       case Ngap_ProtocolIE_ID_id_CriticalityDiagnostics: {
-        cout << "decoded ngap: This is CriticalityDiagnostics IE" << endl;
+        Logger::ngap().debug("Decoded NGAP CriticalityDiagnostics IE ");
       } break;
       default: {
-        cout << "decoded ngap message pdu error" << endl;
+        Logger::ngap().error("Decoded NGAP message PDU error");
         return false;
       }
     }

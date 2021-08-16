@@ -35,7 +35,7 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 AssociatedQosFlowItem::AssociatedQosFlowItem() {
-  qosFlowIdentifier        = NULL;
+  qosFlowIdentifier        = nullptr;
   qosFlowMappingIndication = -1;
 }
 
@@ -74,6 +74,8 @@ bool AssociatedQosFlowItem::encode2AssociatedQosFlowItem(
         (long*) calloc(1, sizeof(long));
     *associatedQosFlowItem->qosFlowMappingIndication = qosFlowMappingIndication;
   }
+
+  if (!qosFlowIdentifier) return false;
   if (!qosFlowIdentifier->encode2QosFlowIdentifier(
           &associatedQosFlowItem->qosFlowIdentifier))
     return false;
