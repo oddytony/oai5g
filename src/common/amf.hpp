@@ -101,6 +101,7 @@ enum class http_response_codes_e {
 constexpr auto CURL_MIME_BOUNDARY = "----Boundary";
 #define CURL_TIMEOUT_MS 1000L
 
+#define BUFFER_SIZE_4096 4096
 #define BUFFER_SIZE_2048 2048
 #define BUFFER_SIZE_1024 1024
 #define BUFFER_SIZE_512 512
