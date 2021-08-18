@@ -1151,6 +1151,12 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
     return false;
   }
 
+  Logger::amf_n2().debug(
+      "Cause, Choice of Cause %d, Cause %ld",
+      (int) itti_msg.handoverReq->getChoiceOfCause(),
+      itti_msg.handoverReq->getCauseValue());
+
+  /*
   if (itti_msg.handoverReq->getChoiceOfCause() != Ngap_Cause_PR_radioNetwork) {
     Logger::amf_n2().error("CHOICE Cause Group is not supported");
     return false;
@@ -1169,6 +1175,11 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
         "Ngap_DirectForwardingPathAvailability_direct_path_available!");
     return false;
   }
+   */
+
+  Logger::amf_n2().debug(
+      "DirectForwardingPathAvailability %d",
+      itti_msg.handoverReq->getDirectForwardingPathAvailability());
 
   unc.get()->gnb_assoc_id = itti_msg.assoc_id;
   unc.get()->ncc++;
@@ -1194,7 +1205,8 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   PlmnId* plmnOfTAI = new PlmnId();
   TAC* tac          = new TAC();
   tai->getTAI(plmnOfTAI, tac);
-  string mccOfselectTAI, mncOfselectTAI;
+  string mccOfselectTAI = {};
+  string mncOfselectTAI = {};
   plmn->getMcc(mccOfselectTAI);
   plmn->getMnc(mncOfselectTAI);
   Logger::amf_n2().debug(

@@ -97,14 +97,25 @@ long HandoverRequiredMsg::getCauseValue() {
 
 //------------------------------------------------------------------------------
 void HandoverRequiredMsg::getGlobalRanNodeId(GlobalgNBId*& ptr) {
-  if (ptr)
-    ptr->decodefromGlobalgNBId(
-        targetid->choice.targetRANNodeID->globalRANNodeID.choice.globalGNB_ID);
+  if (ptr && targetid) {
+    if (targetid->present == Ngap_TargetID_PR_targeteNB_ID) {
+      if (targetid->choice.targetRANNodeID->globalRANNodeID.present ==
+          Ngap_GlobalRANNodeID_PR_globalGNB_ID) {
+        ptr->decodefromGlobalgNBId(targetid->choice.targetRANNodeID
+                                       ->globalRANNodeID.choice.globalGNB_ID);
+        return;
+      }
+    }
+  }
+  return;
 }
 
 //------------------------------------------------------------------------------
 void HandoverRequiredMsg::getTAI(TAI*& ptr) {
-  if (ptr) ptr->decodefromTAI(&(targetid->choice.targetRANNodeID->selectedTAI));
+  if (ptr) {
+    if (targetid->present == Ngap_TargetID_PR_targetRANNodeID)
+      ptr->decodefromTAI(&(targetid->choice.targetRANNodeID->selectedTAI));
+  }
 }
 
 //------------------------------------------------------------------------------
