@@ -98,7 +98,7 @@ long HandoverRequiredMsg::getCauseValue() {
 //------------------------------------------------------------------------------
 void HandoverRequiredMsg::getGlobalRanNodeId(GlobalgNBId*& ptr) {
   if (ptr && targetid) {
-    if (targetid->present == Ngap_TargetID_PR_targeteNB_ID) {
+    if (targetid->present == Ngap_TargetID_PR_targetRANNodeID) {
       if (targetid->choice.targetRANNodeID->globalRANNodeID.present ==
           Ngap_GlobalRANNodeID_PR_globalGNB_ID) {
         ptr->decodefromGlobalgNBId(targetid->choice.targetRANNodeID
