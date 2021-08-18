@@ -53,7 +53,13 @@ HandoverNotifyMsg::HandoverNotifyMsg() {
 }
 
 //------------------------------------------------------------------------------
-HandoverNotifyMsg::~HandoverNotifyMsg(){};
+HandoverNotifyMsg::~HandoverNotifyMsg() {
+  if (amfUeNgapId) free(amfUeNgapId);
+  if (ranUeNgapId) free(ranUeNgapId);
+  if (userLocationInformation) free(userLocationInformation);
+  if (handoverNotifyPdu) free(handoverNotifyPdu);
+  if (handoverNotifyIEs) free(handoverNotifyIEs);
+};
 
 //------------------------------------------------------------------------------
 unsigned long HandoverNotifyMsg::getAmfUeNgapId() {
@@ -106,11 +112,11 @@ bool HandoverNotifyMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
                   handoverNotifyIEs->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
-            Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
+            Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
+          Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -123,29 +129,33 @@ bool HandoverNotifyMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
                   handoverNotifyIEs->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
-            Logger::ngap().error("Decoded ngap RAN_UE_NGAP_ID IE error");
+            Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          Logger::ngap().error("Decoded ngap RAN_UE_NGAP_ID IE error");
+          Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
           return false;
         }
       } break;
       case Ngap_ProtocolIE_ID_id_UserLocationInformation: {
-        if (handoverNotifyIEs->protocolIEs.list.array[i]->criticality ==
-                Ngap_Criticality_ignore &&
-            handoverNotifyIEs->protocolIEs.list.array[i]->value.present ==
-                Ngap_HandoverNotifyIEs__value_PR_UserLocationInformation) {
+        // TODO: Temporarily disable Criticality check to be tested with dsTest
+        /*if (handoverNotifyIEs->protocolIEs.list.array[i]->criticality ==
+              Ngap_Criticality_ignore &&
+          handoverNotifyIEs->protocolIEs.list.array[i]->value.present ==
+              Ngap_HandoverNotifyIEs__value_PR_UserLocationInformation) {
+              */
+        if (handoverNotifyIEs->protocolIEs.list.array[i]->value.present ==
+            Ngap_HandoverNotifyIEs__value_PR_UserLocationInformation) {
           userLocationInformation = new UserLocationInformation();
           if (!userLocationInformation->decodefromUserLocationInformation(
                   &handoverNotifyIEs->protocolIEs.list.array[i]
                        ->value.choice.UserLocationInformation)) {
             Logger::ngap().error(
-                "Decoded ngap UserLocationInformation IE error");
+                "Decoded NGAP UserLocationInformation IE error");
             return false;
           }
         } else {
-          Logger::ngap().error("Decoded ngap UserLocationInformation IE error");
+          Logger::ngap().error("Decoded NGAP UserLocationInformation IE error");
           return false;
         }
       } break;
@@ -164,8 +174,6 @@ void HandoverNotifyMsg::setUserLocationInfoNR(
   if (!userLocationInformation)
     userLocationInformation = new UserLocationInformation();
 
-  // userLocationInformation->setInformation(UserLocationInformationEUTRA *
-  // informationEUTRA);
   UserLocationInformationNR* informationNR = new UserLocationInformationNR();
   NR_CGI* nR_CGI                           = new NR_CGI();
   PlmnId* plmnId_cgi                       = new PlmnId();
@@ -216,24 +224,32 @@ bool HandoverNotifyMsg::getUserLocationInfoNR(
     struct NrCgi_s& cig, struct Tai_s& tai) {
   if (!userLocationInformation) return false;
 
-  UserLocationInformationNR* informationNR;
+  UserLocationInformationNR* informationNR = nullptr;
   userLocationInformation->getInformation(informationNR);
+  if (!informationNR) return false;
+
   if (userLocationInformation->getChoiceOfUserLocationInformation() !=
       Ngap_UserLocationInformation_PR_userLocationInformationNR)
     return false;
-  NR_CGI* nR_CGI;
-  TAI* nR_TAI;
+
+  NR_CGI* nR_CGI = nullptr;
+  TAI* nR_TAI    = nullptr;
   informationNR->getInformationNR(nR_CGI, nR_TAI);
-  PlmnId* cgi_plmnId;
-  NRCellIdentity* nRCellIdentity;
+  if (!nR_CGI or !nR_TAI) return false;
+
+  PlmnId* cgi_plmnId             = nullptr;
+  NRCellIdentity* nRCellIdentity = nullptr;
   nR_CGI->getNR_CGI(cgi_plmnId, nRCellIdentity);
+  if (!cgi_plmnId or !nRCellIdentity) return false;
+
   cgi_plmnId->getMcc(cig.mcc);
   cgi_plmnId->getMnc(cig.mnc);
   cig.nrCellID = nRCellIdentity->getNRCellIdentity();
 
-  PlmnId* tai_plmnId;
-  TAC* tac;
+  PlmnId* tai_plmnId = nullptr;
+  TAC* tac           = nullptr;
   nR_TAI->getTAI(tai_plmnId, tac);
+  if (!tai_plmnId or !tac) return false;
   tai_plmnId->getMcc(tai.mcc);
   tai_plmnId->getMnc(tai.mnc);
   tai.tac = tac->getTac();
