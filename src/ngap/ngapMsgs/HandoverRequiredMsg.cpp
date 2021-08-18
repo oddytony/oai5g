@@ -131,15 +131,16 @@ bool HandoverRequiredMsg::getPDUSessionResourceList(
     std::vector<PDUSessionResourceItem_t>& list) {
   if (!PDUSessionResourceList) return false;
 
-  PDUSessionResourceItemHORqd* m_pduSessionResourceItemHORqd;
-  int num = 0;
+  PDUSessionResourceItemHORqd* m_pduSessionResourceItemHORqd = nullptr;
+  int num                                                    = 0;
   PDUSessionResourceList->getPDUSessionResourceListHORqd(
       m_pduSessionResourceItemHORqd, num);
+  if (!m_pduSessionResourceItemHORqd) return false;
 
   for (int i = 0; i < num; i++) {
-    PDUSessionResourceItem_t response;
+    PDUSessionResourceItem_t response = {};
 
-    PDUSessionID* m_pDUSessionID;
+    PDUSessionID* m_pDUSessionID = nullptr;
     m_pduSessionResourceItemHORqd[i].getPDUSessionResourceItemHORqd(
         m_pDUSessionID, response.HandoverRequiredTransfer);
     m_pDUSessionID->getPDUSessionID(response.pduSessionId);

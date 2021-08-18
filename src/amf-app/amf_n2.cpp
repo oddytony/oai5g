@@ -1233,6 +1233,8 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   handover_request->setUESecurityCapabilities(
       0xe000, 0xe000, 0xe000, 0xe000);  // TODO: remove hardcoded values
 
+  handover_request->setSourceToTarget_TransparentContainer(sourceTotarget);
+
   // Allowed NSSAI
   std::vector<S_NSSAI> Allowed_Nssai;
   for (int i = 0; i < amf_cfg.plmn_list.size(); i++) {
@@ -1244,7 +1246,9 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
       Allowed_Nssai.push_back(s_nssai);
     }
   }
+  handover_request->setAllowedNSSAI(Allowed_Nssai);
 
+  // GUAMI, PLMN
   Guami_t guami              = {};
   guami.mcc                  = amf_cfg.guami.mcc;
   guami.mnc                  = amf_cfg.guami.mnc;
@@ -1260,10 +1264,18 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   m_aMFSetID->setAMFSetID(guami.AmfSetID);
   m_aMFPointer->setAMFPointer(guami.AmfPointer);
 
+  handover_request->setMobilityRestrictionList(m_plmnId);
+  handover_request->setGUAMI(m_plmnId, m_aMFRegionID, m_aMFSetID, m_aMFPointer);
+
+  // Security context
   std::shared_ptr<nas_context> nc =
       amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
   nas_secu_ctx* secu = nc.get()->security_ctx;
-  uint8_t* kamf      = nc.get()->kamf[secu->vector_pointer];
+  if (!secu) {
+    Logger::amf_n1().error("No Security Context found");
+    return false;
+  }
+  uint8_t* kamf = nc.get()->kamf[secu->vector_pointer];
   uint8_t kgnb[32];
   uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
   Logger::amf_n1().debug("Uplink count (%d)", secu->ul_count.seq_num);
@@ -1288,9 +1300,6 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
     Logger::ngap().warn(
         "Decoding PDU Session Resource List IE error or IE missing");
   }
-
-  std::vector<PDUSessionResourceSetupRequestItem_t> list;
-  PDUSessionResourceSetupRequestItem_t item = {};
 
   std::map<uint8_t, boost::shared_future<std::string>> curl_responses;
 
@@ -1327,7 +1336,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
           "task TASK_AMF_N11");
       itti_nsmf_pdusession_update_sm_context* itti_msg =
           new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
-      itti_msg->pdu_session_id = item.pduSessionId;
+      itti_msg->pdu_session_id = pdu_session_resource.pduSessionId;
       itti_msg->n2sm           = blk2bstr(
           pdu_session_resource.HandoverRequiredTransfer.buf,
           pdu_session_resource.HandoverRequiredTransfer.size);
@@ -1350,6 +1359,8 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
 
   // TODO: Handover Response supervision
   // Wait until receiving all responses from SMFs before sending Handover
+  std::vector<PDUSessionResourceSetupRequestItem_t> list;
+
   bool result = true;
   while (!curl_responses.empty()) {
     boost::future_status status;
@@ -1370,12 +1381,13 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
         std::shared_ptr<pdu_session_context> psc = {};
         if (amf_app_inst->find_pdu_session_context(
                 supi, curl_responses.begin()->first, psc)) {
-          item.pduSessionId      = psc.get()->pdu_session_id;
-          item.s_nssai.sst       = psc.get()->snssai.sST;
-          item.s_nssai.sd        = psc.get()->snssai.sD;
-          item.pduSessionNAS_PDU = nullptr;
-          unsigned int data_len  = n2_sm.length();
-          unsigned char* data    = (unsigned char*) malloc(data_len + 1);
+          PDUSessionResourceSetupRequestItem_t item = {};
+          item.pduSessionId                         = psc.get()->pdu_session_id;
+          item.s_nssai.sst                          = psc.get()->snssai.sST;
+          item.s_nssai.sd                           = psc.get()->snssai.sD;
+          item.pduSessionNAS_PDU                    = nullptr;
+          unsigned int data_len                     = n2_sm.length();
+          unsigned char* data = (unsigned char*) malloc(data_len + 1);
           memset(data, 0, data_len + 1);
           memcpy((void*) data, (void*) n2_sm.c_str(), data_len);
           item.pduSessionResourceSetupRequestTransfer.buf  = data;
@@ -1397,10 +1409,6 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
 
   // Request to Target RAN
   handover_request->setPduSessionResourceSetupList(list);
-  handover_request->setAllowedNSSAI(Allowed_Nssai);
-  handover_request->setSourceToTarget_TransparentContainer(sourceTotarget);
-  handover_request->setMobilityRestrictionList(m_plmnId);
-  handover_request->setGUAMI(m_plmnId, m_aMFRegionID, m_aMFSetID, m_aMFPointer);
 
   uint8_t buffer[BUFFER_SIZE_2048];
   int encoded_size = handover_request->encode2buffer(buffer, BUFFER_SIZE_2048);
