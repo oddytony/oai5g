@@ -1117,7 +1117,6 @@ void amf_n2::handle_itti_message(
 
 //------------------------------------------------------------------------------
 bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
-  // TODO: Experimental procedure, to be tested
   Logger::amf_n2().debug("Handling Handover Required ...");
   unsigned long amf_ue_ngap_id = itti_msg.handoverReq->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handoverReq->getRanUeNgapId();
@@ -1159,28 +1158,6 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
       "Handover Required, Choice of Cause %d, Cause %ld",
       (int) itti_msg.handoverReq->getChoiceOfCause(),
       itti_msg.handoverReq->getCauseValue());
-
-  /*
-  if (itti_msg.handoverReq->getChoiceOfCause() != Ngap_Cause_PR_radioNetwork) {
-    Logger::amf_n2().error("CHOICE Cause Group is not supported");
-    return false;
-  }
-
-  if (itti_msg.handoverReq->getCauseValue() !=
-      Ngap_CauseRadioNetwork_handover_desirable_for_radio_reason) {
-    Logger::amf_n2().error("Radio Network Layer Cause is not supported");
-    return false;
-  }
-
-  if (itti_msg.handoverReq->getDirectForwardingPathAvailability() !=
-      Ngap_DirectForwardingPathAvailability_direct_path_available) {
-    Logger::amf_n2().error(
-        "DirectForwardingPathAvailability must be "
-        "Ngap_DirectForwardingPathAvailability_direct_path_available!");
-    return false;
-  }
-   */
-
   Logger::amf_n2().debug(
       "Handover Required, DirectForwardingPathAvailability %d",
       itti_msg.handoverReq->getDirectForwardingPathAvailability());
@@ -1451,41 +1428,6 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
 
   OCTET_STRING_t targetTosource =
       itti_msg.handoverrequestAck->getTargetToSource_TransparentContainer();
-  /*
-    PDUSessionResourceHandoverRequestAckTransfer* PDUHandoverRequestAckTransfer
-    = new PDUSessionResourceHandoverRequestAckTransfer(); uint8_t
-    buf[BUFFER_SIZE_1024];
-
-    memcpy(
-        buf, list[0].handoverRequestAcknowledgeTransfer.buf,
-        list[0].handoverRequestAcknowledgeTransfer.size);
-    if (!PDUHandoverRequestAckTransfer->decodefromHandoverRequestAckTransfer(
-            buf, list[0].handoverRequestAcknowledgeTransfer.size)) {
-      Logger::ngap().error("Decode Handover Request Acknowledge Transfer
-    error"); return;
-    }
-
-    GtpTunnel_t* gtpTunnel = new GtpTunnel_t();
-    if (!PDUHandoverRequestAckTransfer->getUpTransportLayerInformation2(
-            gtpTunnel)) {
-      Logger::ngap().error("Decode GTPTunnel error");
-      return;
-    }
-
-    string n3_ip_address = {};
-    uint32_t teid        = 0;
-    n3_ip_address        = gtpTunnel->ip_address;
-    teid                 = gtpTunnel->gtp_teid;
-    std::vector<QosFlowLItemWithDataForwarding_t> QosFlowWithDataForwardinglist;
-    PDUHandoverRequestAckTransfer->getqosFlowSetupResponseList(
-        QosFlowWithDataForwardinglist);
-    long qosflowidentifiervalue = 0;
-    //TODO: process QosFlowWithDataForwardinglist
-    qosflowidentifiervalue =
-        (long) QosFlowWithDataForwardinglist[0].qosFlowIdentifier;
-    Logger::ngap().debug("Handover Req Ack, QoS Flow Setup Response List, QFI
-    %lu", qosflowidentifiervalue);
-  */
 
   std::shared_ptr<nas_context> nc =
       amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
