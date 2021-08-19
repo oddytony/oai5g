@@ -1178,7 +1178,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   plmn->getMnc(mnc);
 
   Logger::amf_n2().debug(
-      "Handover Required, Target ID GlobalRanNodeID PLmn (MCC %s, MNC %s, "
+      "Handover Required, Target ID GlobalRanNodeID PLMN (MCC %s, MNC %s, "
       "gNBId 0x%x)",
       mcc.c_str(), mnc.c_str(), gnbid->getValue());
 
