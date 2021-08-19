@@ -172,7 +172,9 @@ int HandoverPreparationFailure::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, hoPreparationFailurePdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, hoPreparationFailurePdu, buf, buf_size);
-  Logger::ngap().debug("er.encoded( %d )", er.encoded);
+  Logger::ngap().debug(
+      "Encode Handover Preparation Failure to buffer, er.encoded( %d )",
+      er.encoded);
   return er.encoded;
 }
 
@@ -260,7 +262,7 @@ void HandoverPreparationFailure::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
 void HandoverPreparationFailure::setCause(
     Ngap_Cause_PR m_causePresent, long value)  //
 {
-  if (!cause) cause = new Cause;
+  if (!cause) cause = new Cause();
   Ngap_HandoverPreparationFailureIEs_t* ie =
       (Ngap_HandoverPreparationFailureIEs_t*) calloc(
           1, sizeof(Ngap_HandoverPreparationFailureIEs_t));

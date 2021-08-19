@@ -1131,7 +1131,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
 
   Logger::amf_n2().debug(
-      "Handover Required, gNB info (gNB Name: %s, globalRanNodeId %ld)",
+      "Handover Required, gNB info (gNB Name %s, globalRanNodeId 0x%x)",
       gc.get()->gnb_name.c_str(), gc.get()->globalRanNodeId);
 
   std::shared_ptr<ue_ngap_context> unc = {};
@@ -1144,7 +1144,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
 
   if (unc.get()->amf_ue_ngap_id != amf_ue_ngap_id) {
     Logger::amf_n2().error(
-        "The requested UE (amf_ue_ngap_id:0x%x) is not valid, existed UE "
+        "The requested UE (amf_ue_ngap_id 0x%x) is not valid, existed UE "
         "with  amf_ue_ngap_id (0x%x)",
         amf_ue_ngap_id, unc.get()->amf_ue_ngap_id);
     return false;
@@ -1156,7 +1156,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   }
 
   Logger::amf_n2().debug(
-      "Cause, Choice of Cause %d, Cause %ld",
+      "Handover Required, Choice of Cause %d, Cause %ld",
       (int) itti_msg.handoverReq->getChoiceOfCause(),
       itti_msg.handoverReq->getCauseValue());
 
@@ -1182,7 +1182,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
    */
 
   Logger::amf_n2().debug(
-      "DirectForwardingPathAvailability %d",
+      "Handover Required, DirectForwardingPathAvailability %d",
       itti_msg.handoverReq->getDirectForwardingPathAvailability());
 
   unc.get()->gnb_assoc_id = itti_msg.assoc_id;
@@ -1200,8 +1200,8 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   plmn->getMnc(mnc);
 
   Logger::amf_n2().debug(
-      "Handover Required: Target ID GlobalRanNodeID PLmn (mcc: %s, mnc: %s, "
-      "gnbid: %ld)",
+      "Handover Required, Target ID GlobalRanNodeID PLmn (MCC %s, MNC %s, "
+      "gNBId 0x%x)",
       mcc.c_str(), mnc.c_str(), gnbid->getValue());
 
   TAI* tai = new TAI();
@@ -1214,7 +1214,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   plmn->getMcc(mccOfselectTAI);
   plmn->getMnc(mncOfselectTAI);
   Logger::amf_n2().debug(
-      "Handover Required: Target ID selected TAI PLMN (mcc %s, mnc %s, tac %x)",
+      "Handover Required: Target ID selected TAI PLMN (MCC %s, MNC %s, TAC %x)",
       mccOfselectTAI.c_str(), mncOfselectTAI.c_str(), tac->getTac());
 
   OCTET_STRING_t sourceTotarget;
@@ -1282,7 +1282,8 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   uint8_t* kamf = nc.get()->kamf[secu->vector_pointer];
   uint8_t kgnb[32];
   uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
-  Logger::amf_n2().debug("Uplink count (%d)", secu->ul_count.seq_num);
+  Logger::amf_n2().debug(
+      "Handover Required, Uplink count (%d)", secu->ul_count.seq_num);
   uint8_t knh[32];
   Authentication_5gaka::handover_ncc_derive_knh(
       ulcount, 0x01, kamf, kgnb, knh, unc.get()->ncc);
@@ -1414,7 +1415,6 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
-  // TODO: Experimental procedure, to be tested
   Logger::amf_n2().debug("Handling Handover Request Ack ...");
   unsigned long amf_ue_ngap_id = itti_msg.handoverrequestAck->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handoverrequestAck->getRanUeNgapId();
@@ -1429,6 +1429,9 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
     return;
   }
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
+  Logger::amf_n2().debug(
+      "Handover Request Ack, gNB info (gNB Name %s, globalRanNodeId 0x%x)",
+      gc.get()->gnb_name.c_str(), gc.get()->globalRanNodeId);
 
   std::shared_ptr<ue_ngap_context> unc = {};
   if (!is_amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id)) {
@@ -1446,41 +1449,43 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
     return;
   }
 
-  OCTET_STRING_t targetTosource;
-  targetTosource =
+  OCTET_STRING_t targetTosource =
       itti_msg.handoverrequestAck->getTargetToSource_TransparentContainer();
+  /*
+    PDUSessionResourceHandoverRequestAckTransfer* PDUHandoverRequestAckTransfer
+    = new PDUSessionResourceHandoverRequestAckTransfer(); uint8_t
+    buf[BUFFER_SIZE_1024];
 
-  PDUSessionResourceHandoverRequestAckTransfer* PDUHandoverRequestAckTransfer =
-      new PDUSessionResourceHandoverRequestAckTransfer();
-  uint8_t buf[BUFFER_SIZE_1024];
+    memcpy(
+        buf, list[0].handoverRequestAcknowledgeTransfer.buf,
+        list[0].handoverRequestAcknowledgeTransfer.size);
+    if (!PDUHandoverRequestAckTransfer->decodefromHandoverRequestAckTransfer(
+            buf, list[0].handoverRequestAcknowledgeTransfer.size)) {
+      Logger::ngap().error("Decode Handover Request Acknowledge Transfer
+    error"); return;
+    }
 
-  memcpy(
-      buf, list[0].handoverRequestAcknowledgeTransfer.buf,
-      list[0].handoverRequestAcknowledgeTransfer.size);
-  if (!PDUHandoverRequestAckTransfer->decodefromHandoverRequestAckTransfer(
-          buf, list[0].handoverRequestAcknowledgeTransfer.size)) {
-    Logger::ngap().error("Decode Handover Request Acknowledge Transfer error");
-    return;
-  }
+    GtpTunnel_t* gtpTunnel = new GtpTunnel_t();
+    if (!PDUHandoverRequestAckTransfer->getUpTransportLayerInformation2(
+            gtpTunnel)) {
+      Logger::ngap().error("Decode GTPTunnel error");
+      return;
+    }
 
-  GtpTunnel_t* gtptunnel = new GtpTunnel_t();
-  if (!PDUHandoverRequestAckTransfer->getUpTransportLayerInformation2(
-          gtptunnel)) {
-    Logger::ngap().error("Decode GTPTunnel error");
-    return;
-  }
-
-  string n3_ip_address = {};
-  uint32_t teid        = 0;
-  n3_ip_address        = gtptunnel->ip_address;
-  teid                 = gtptunnel->gtp_teid;
-  std::vector<QosFlowLItemWithDataForwarding_t> QosFlowWithDataForwardinglist;
-  PDUHandoverRequestAckTransfer->getqosFlowSetupResponseList(
-      QosFlowWithDataForwardinglist);
-  long qosflowidentifiervalue = 0;
-  qosflowidentifiervalue =
-      (long) QosFlowWithDataForwardinglist[0].qosFlowIdentifier;
-  Logger::ngap().debug("QFI %lu", qosflowidentifiervalue);
+    string n3_ip_address = {};
+    uint32_t teid        = 0;
+    n3_ip_address        = gtpTunnel->ip_address;
+    teid                 = gtpTunnel->gtp_teid;
+    std::vector<QosFlowLItemWithDataForwarding_t> QosFlowWithDataForwardinglist;
+    PDUHandoverRequestAckTransfer->getqosFlowSetupResponseList(
+        QosFlowWithDataForwardinglist);
+    long qosflowidentifiervalue = 0;
+    //TODO: process QosFlowWithDataForwardinglist
+    qosflowidentifiervalue =
+        (long) QosFlowWithDataForwardinglist[0].qosFlowIdentifier;
+    Logger::ngap().debug("Handover Req Ack, QoS Flow Setup Response List, QFI
+    %lu", qosflowidentifiervalue);
+  */
 
   std::shared_ptr<nas_context> nc =
       amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
@@ -1528,7 +1533,7 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
     }
   }
 
-  // send HandoverCommandMsg to Source gnb
+  // send HandoverCommandMsg to Source gNB
   std::unique_ptr<HandoverCommandMsg> handovercommand =
       std::make_unique<HandoverCommandMsg>();
   handovercommand->setMessageType();
@@ -1580,35 +1585,6 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
     }
     curl_responses.erase(curl_responses.begin());
   }
-  /*
-    item.pduSessionId                     = list[0].pduSessionId;
-    // qosFLowtobeforwardedlist
-    std::vector<QosFlowToBeForwardedItem_t> forward_list;
-    QosFlowToBeForwardedItem_t forward_item;
-    forward_item.QFI = qosflowidentifiervalue;
-    forward_list.push_back(forward_item);
-    // set dlforwardingup_tnlinformation
-    // TransportLayerAddress *transportlayeraddress = new
-    TransportLayerAddress();
-    // transportlayeraddress->setTransportLayerAddress(n3_ip_address);
-    // GtpTeid *gtpTeid = new GtpTeid();
-    // gtpTeid->setGtpTeid(teid);
-    PDUSessionResourceHandoverCommandTransfer* handovercommandtransfer =
-        new PDUSessionResourceHandoverCommandTransfer();
-    handovercommandtransfer->setQosFlowToBeForwardedList(forward_list);
-    GtpTunnel_t uptlinfo = {};
-    uptlinfo.gtp_teid    = teid;
-    uptlinfo.ip_address  = n3_ip_address;
-    handovercommandtransfer->setUPTransportLayerInformation(uptlinfo);
-
-    uint8_t buffer_ho_cmd_transfer[BUFFER_SIZE_512];
-    int encoded_size =
-        handovercommandtransfer->encodePDUSessionResourceHandoverCommandTransfer(
-            buffer_ho_cmd_transfer, BUFFER_SIZE_512);
-    item.HandoverCommandTransfer.buf  = buffer_ho_cmd_transfer;
-    item.HandoverCommandTransfer.size = encoded_size;
-    handover_list.push_back(item);
-  */
 
   handovercommand->setPduSessionResourceHandoverList(handover_list);
   handovercommand->setTargetToSource_TransparentContainer(targetTosource);
@@ -1622,7 +1598,6 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
 
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
-  // TODO: Experimental procedure, to be tested
   Logger::amf_n2().info("Handle Handover Notify ...");
   unsigned long amf_ue_ngap_id = itti_msg.handovernotify->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handovernotify->getRanUeNgapId();
@@ -1638,7 +1613,7 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
   }
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
   Logger::amf_n2().debug(
-      "Handover Notify, gNB info (gNB Name: %s, globalRanNodeId %ld)",
+      "Handover Notify, gNB info (gNB Name: %s, globalRanNodeId 0x%x)",
       gc.get()->gnb_name.c_str(), gc.get()->globalRanNodeId);
 
   std::shared_ptr<ue_ngap_context> unc = {};

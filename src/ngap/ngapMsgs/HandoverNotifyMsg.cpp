@@ -74,7 +74,8 @@ int HandoverNotifyMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, handoverNotifyPdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, handoverNotifyPdu, buf, buf_size);
-  Logger::ngap().debug("er.encoded( %d )", er.encoded);
+  Logger::ngap().debug(
+      "Encode Handover Notify to buffer, er.encoded( %d )", er.encoded);
   return er.encoded;
 }
 

@@ -229,7 +229,8 @@ int HandoverRequest::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, handoverRequestPdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, handoverRequestPdu, buf, buf_size);
-  Logger::ngap().debug("er.encoded( %d )", er.encoded);
+  Logger::ngap().debug(
+      "Encode Handover Request to buffer, er.encoded( %d)", er.encoded);
   return er.encoded;
 }
 
@@ -302,7 +303,7 @@ void HandoverRequest::setHandoverType(long type)  // 0--intra5gs
 //------------------------------------------------------------------------------
 void HandoverRequest::setCause(Ngap_Cause_PR m_causePresent, long value)  //
 {
-  if (!cause) cause = new Cause;
+  if (!cause) cause = new Cause();
   Ngap_HandoverRequestIEs_t* ie =
       (Ngap_HandoverRequestIEs_t*) calloc(1, sizeof(Ngap_HandoverRequestIEs_t));
   ie->id            = Ngap_ProtocolIE_ID_id_Cause;

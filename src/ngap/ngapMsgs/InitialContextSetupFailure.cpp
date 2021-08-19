@@ -30,30 +30,37 @@
 #include "logger.hpp"
 
 extern "C" {
-#include "asn_codecs.h"
-#include "constr_TYPE.h"
-#include "constraints.h"
+//#include "asn_codecs.h"
+//#include "constr_TYPE.h"
+//#include "constraints.h"
 #include "dynamic_memory_check.h"
 #include "per_decoder.h"
 #include "per_encoder.h"
 }
 
 #include <iostream>
-using namespace std;
+// using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
 InitialContextSetupFailureMsg::InitialContextSetupFailureMsg() {
-  initialContextSetupFailurePdu              = NULL;
-  initialContextSetupFailureIEs              = NULL;
-  amfUeNgapId                                = NULL;
-  ranUeNgapId                                = NULL;
-  pduSessionResourceFailedToSetupFailureList = NULL;
+  initialContextSetupFailurePdu              = nullptr;
+  initialContextSetupFailureIEs              = nullptr;
+  amfUeNgapId                                = nullptr;
+  ranUeNgapId                                = nullptr;
+  pduSessionResourceFailedToSetupFailureList = nullptr;
 }
 
 //------------------------------------------------------------------------------
-InitialContextSetupFailureMsg::~InitialContextSetupFailureMsg() {}
+InitialContextSetupFailureMsg::~InitialContextSetupFailureMsg() {
+  if (initialContextSetupFailurePdu) free(initialContextSetupFailurePdu);
+  if (initialContextSetupFailureIEs) free(initialContextSetupFailureIEs);
+  if (amfUeNgapId) free(amfUeNgapId);
+  if (ranUeNgapId) free(ranUeNgapId);
+  if (pduSessionResourceFailedToSetupFailureList)
+    free(pduSessionResourceFailedToSetupFailureList);
+}
 
 //------------------------------------------------------------------------------
 void InitialContextSetupFailureMsg::setMessageType() {
@@ -199,7 +206,6 @@ int InitialContextSetupFailureMsg::encode2buffer(uint8_t* buf, int buf_size) {
 }
 
 //------------------------------------------------------------------------------
-// Decapsulation
 bool InitialContextSetupFailureMsg::decodefrompdu(
     Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   initialContextSetupFailurePdu = ngap_msg_pdu;

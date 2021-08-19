@@ -234,7 +234,7 @@ void amf_n11::handle_itti_message(
       remote_uri, json_part, "", n2SmMsg, supi, itti_msg.pdu_session_id,
       itti_msg.promise_id);
 
-  stacs.display();
+  // stacs.display();
 }
 
 //------------------------------------------------------------------------------
