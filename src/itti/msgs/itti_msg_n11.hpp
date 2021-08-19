@@ -105,6 +105,7 @@ class itti_nsmf_pdusession_update_sm_context : public itti_msg_n11 {
   uint32_t ran_ue_ngap_id;
   long amf_ue_ngap_id;
   uint32_t promise_id;
+  std::string ho_state;
 };
 
 class itti_nsmf_pdusession_release_sm_context : public itti_msg_n11 {

@@ -211,22 +211,25 @@ void amf_n11::handle_itti_message(
   Logger::amf_n11().debug("SMF URI: %s", remote_uri.c_str());
 
   nlohmann::json pdu_session_update_request = {};
-  // if (itti_msg.is_n2sm_set){
-  pdu_session_update_request["n2SmInfoType"]          = itti_msg.n2sm_info_type;
-  pdu_session_update_request["n2SmInfo"]["contentId"] = "n2msg";
-  std::string json_part = pdu_session_update_request.dump();
-  std::string n2SmMsg   = {};
-  octet_stream_2_hex_stream(
-      (uint8_t*) bdata(itti_msg.n2sm), blength(itti_msg.n2sm), n2SmMsg);
+  if (itti_msg.is_n2sm_set) {
+    pdu_session_update_request["n2SmInfoType"] = itti_msg.n2sm_info_type;
+    pdu_session_update_request["n2SmInfo"]["contentId"] = "n2msg";
+  }
 
   // For N2 HO
-  if (itti_msg.n2sm_info_type.compare("HANDOVER_REQUIRED") == 0) {
+  if (itti_msg.ho_state.compare("PREPARING") == 0) {
     pdu_session_update_request["hoState"] = "PREPARING";
-  } else if (itti_msg.n2sm_info_type.compare("HANDOVER_REQ_ACK") == 0) {
+  } else if (itti_msg.ho_state.compare("PREPARED") == 0) {
     pdu_session_update_request["hoState"] = "PREPARED";
-  } else if (itti_msg.n2sm_info_type.compare("SECONDARY_RAT_USAGE") == 0) {
+  } else if (itti_msg.ho_state.compare("COMPLETED") == 0) {
     pdu_session_update_request["hoState"] = "COMPLETED";
   }
+
+  std::string json_part = pdu_session_update_request.dump();
+
+  std::string n2SmMsg = {};
+  octet_stream_2_hex_stream(
+      (uint8_t*) bdata(itti_msg.n2sm), blength(itti_msg.n2sm), n2SmMsg);
 
   curl_http_client(
       remote_uri, json_part, "", n2SmMsg, supi, itti_msg.pdu_session_id,

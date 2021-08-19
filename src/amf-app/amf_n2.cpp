@@ -1333,6 +1333,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
           pdu_session_resource.HandoverRequiredTransfer.size);
       itti_msg->is_n2sm_set    = true;
       itti_msg->n2sm_info_type = "HANDOVER_REQUIRED";
+      itti_msg->ho_state       = "PREPARING";
       itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
       itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
       itti_msg->promise_id     = promise_id;
@@ -1512,6 +1513,7 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
         pdu_session_resource.handoverRequestAcknowledgeTransfer.size);
     itti_msg->is_n2sm_set    = true;
     itti_msg->n2sm_info_type = "HANDOVER_REQ_ACK";
+    itti_msg->ho_state       = "PREPARED";
     itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
     itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
     itti_msg->promise_id     = promise_id;
@@ -1621,7 +1623,7 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
 //------------------------------------------------------------------------------
 void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
   // TODO: Experimental procedure, to be tested
-  Logger::amf_n2().debug("Handling Handover Notify ...");
+  Logger::amf_n2().info("Handle Handover Notify ...");
   unsigned long amf_ue_ngap_id = itti_msg.handovernotify->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handovernotify->getRanUeNgapId();
   Logger::amf_n2().debug(
@@ -1661,6 +1663,7 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
   std::vector<std::shared_ptr<pdu_session_context>> sessions_ctx;
 
   if (!amf_app_inst->get_pdu_sessions_context(supi, sessions_ctx)) {
+    Logger::amf_n2().debug("No PDU Session Context found");
   }
 
   // Send PDUSessionUpdateSMContextRequest to SMF for accepted PDU sessions
@@ -1682,26 +1685,28 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
       Logger::amf_n2().debug(
           "Sending ITTI to trigger PDUSessionUpdateSMContextRequest to SMF to "
           "task TASK_AMF_N11");
-      itti_nsmf_pdusession_update_sm_context* itti_msg =
-          new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
-      itti_msg->pdu_session_id = pdu_session.get()->pdu_session_id;
+
+      std::shared_ptr<itti_nsmf_pdusession_update_sm_context> itti_n11_msg =
+          std::make_shared<itti_nsmf_pdusession_update_sm_context>(
+              TASK_NGAP, TASK_AMF_N11);
+
+      itti_n11_msg->pdu_session_id = pdu_session.get()->pdu_session_id;
 
       // TODO: Secondary RAT Usage
-      itti_msg->n2sm           = blk2bstr("", 0);
-      itti_msg->is_n2sm_set    = true;
-      itti_msg->n2sm_info_type = "SECONDARY_RAT_USAGE";
+      // itti_n11_msg->n2sm           = blk2bstr("Secondary RAT Usage", 19);
+      // itti_n11_msg->n2sm_info_type = "SECONDARY_RAT_USAGE";
+      itti_n11_msg->is_n2sm_set = false;
+      itti_n11_msg->ho_state    = "COMPLETED";
 
-      itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
-      itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
-      itti_msg->promise_id     = promise_id;
+      itti_n11_msg->amf_ue_ngap_id = amf_ue_ngap_id;
+      itti_n11_msg->ran_ue_ngap_id = ran_ue_ngap_id;
+      itti_n11_msg->promise_id     = promise_id;
 
-      std::shared_ptr<itti_nsmf_pdusession_update_sm_context> i =
-          std::shared_ptr<itti_nsmf_pdusession_update_sm_context>(itti_msg);
-      int ret = itti_inst->send_msg(i);
+      int ret = itti_inst->send_msg(itti_n11_msg);
       if (0 != ret) {
         Logger::ngap().error(
             "Could not send ITTI message %s to task TASK_AMF_N11",
-            i->get_msg_name());
+            itti_n11_msg->get_msg_name());
       }
     }
   }
@@ -1732,6 +1737,7 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
   }
 
   // Send UE Release Command to Source gNB
+  Logger::ngap().info("Send UE Release Command to source gNB");
   std::unique_ptr<UEContextReleaseCommandMsg> ueContextReleaseCommand =
       std::make_unique<UEContextReleaseCommandMsg>();
   ueContextReleaseCommand->setMessageType();
