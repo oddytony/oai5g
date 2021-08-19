@@ -1638,7 +1638,7 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
   }
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
   Logger::amf_n2().debug(
-      "Handover Required, gNB info (gNB Name: %s, globalRanNodeId %ld)",
+      "Handover Notify, gNB info (gNB Name: %s, globalRanNodeId %ld)",
       gc.get()->gnb_name.c_str(), gc.get()->globalRanNodeId);
 
   std::shared_ptr<ue_ngap_context> unc = {};

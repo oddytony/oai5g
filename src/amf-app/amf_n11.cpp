@@ -210,10 +210,13 @@ void amf_n11::handle_itti_message(
 
   Logger::amf_n11().debug("SMF URI: %s", remote_uri.c_str());
 
+  std::string n2SmMsg                       = {};
   nlohmann::json pdu_session_update_request = {};
   if (itti_msg.is_n2sm_set) {
     pdu_session_update_request["n2SmInfoType"] = itti_msg.n2sm_info_type;
     pdu_session_update_request["n2SmInfo"]["contentId"] = "n2msg";
+    octet_stream_2_hex_stream(
+        (uint8_t*) bdata(itti_msg.n2sm), blength(itti_msg.n2sm), n2SmMsg);
   }
 
   // For N2 HO
@@ -226,10 +229,6 @@ void amf_n11::handle_itti_message(
   }
 
   std::string json_part = pdu_session_update_request.dump();
-
-  std::string n2SmMsg = {};
-  octet_stream_2_hex_stream(
-      (uint8_t*) bdata(itti_msg.n2sm), blength(itti_msg.n2sm), n2SmMsg);
 
   curl_http_client(
       remote_uri, json_part, "", n2SmMsg, supi, itti_msg.pdu_session_id,
@@ -519,6 +518,7 @@ void amf_n11::curl_http_client(
   mime_parser parser                       = {};
   std::string body                         = {};
   std::shared_ptr<pdu_session_context> psc = {};
+  bool is_multipart                        = true;
 
   if (!amf_app_inst->find_pdu_session_context(supi, pdu_session_id, psc)) {
     Logger::amf_n11().warn(
@@ -540,6 +540,9 @@ void amf_n11::curl_http_client(
     parser.create_multipart_related_content(
         body, jsonData, CURL_MIME_BOUNDARY, n2SmMsg,
         multipart_related_content_part_e::NGAP);
+  } else {
+    body         = jsonData;
+    is_multipart = false;
   }
 
   Logger::amf_n11().debug(
@@ -556,9 +559,13 @@ void amf_n11::curl_http_client(
   if (curl) {
     CURLcode res               = {};
     struct curl_slist* headers = nullptr;
-
-    std::string content_type = "content-type: multipart/related; boundary=" +
-                               std::string(CURL_MIME_BOUNDARY);
+    std::string content_type   = {};
+    if (is_multipart) {
+      content_type = "content-type: multipart/related; boundary=" +
+                     std::string(CURL_MIME_BOUNDARY);
+    } else {
+      content_type = "content-type: application/json";
+    }
     headers = curl_slist_append(headers, content_type.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curl, CURLOPT_URL, remoteUri.c_str());
