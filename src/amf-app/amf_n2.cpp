@@ -862,7 +862,7 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
 
       // UEAggregateMaximumBitRate
       msg->setUEAggregateMaxBitRate(
-          0x08a7d8c0, 0x20989680);  // TODO: remove hardcoded value
+          UE_AGGREGATE_MAXIMUM_BIT_RATE_DL, UE_AGGREGATE_MAXIMUM_BIT_RATE_UL);
 
       // TODO: Mobility RestrictionList
     }
@@ -942,7 +942,8 @@ void amf_n2::handle_itti_message(
   item.pduSessionResourceSetupRequestTransfer.size = blength(itti_msg.n2sm);
   list.push_back(item);
   psrsr->setPduSessionResourceSetupRequestList(list);
-  psrsr->setUEAggregateMaxBitRate(0x08a7d8c0, 0x20989680);
+  psrsr->setUEAggregateMaxBitRate(
+      UE_AGGREGATE_MAXIMUM_BIT_RATE_DL, UE_AGGREGATE_MAXIMUM_BIT_RATE_UL);
   size_t buffer_size = BUFFER_SIZE_512;
   char* buffer       = (char*) calloc(1, buffer_size);
   int encoded_size   = 0;
@@ -1194,8 +1195,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
       "Handover Required: Target ID selected TAI PLMN (MCC %s, MNC %s, TAC %x)",
       mccOfselectTAI.c_str(), mncOfselectTAI.c_str(), tac->getTac());
 
-  OCTET_STRING_t sourceTotarget;
-  sourceTotarget =
+  OCTET_STRING_t sourceTotarget =
       itti_msg.handoverReq->getSourceToTarget_TransparentContainer();
 
   // TODO: T-AMF selection, for now use the same AMF
@@ -1210,7 +1210,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
       Ngap_Cause_PR_radioNetwork,
       Ngap_CauseRadioNetwork_handover_desirable_for_radio_reason);
   handover_request->setUEAggregateMaximumBitRate(
-      300000000, 100000000);  // TODO: remove hardcoded values
+      UE_AGGREGATE_MAXIMUM_BIT_RATE_DL, UE_AGGREGATE_MAXIMUM_BIT_RATE_UL);
   handover_request->setUESecurityCapabilities(
       0xe000, 0xe000, 0xe000, 0xe000);  // TODO: remove hardcoded values
 

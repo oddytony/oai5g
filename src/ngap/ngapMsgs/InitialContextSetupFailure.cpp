@@ -56,10 +56,10 @@ InitialContextSetupFailureMsg::InitialContextSetupFailureMsg() {
 InitialContextSetupFailureMsg::~InitialContextSetupFailureMsg() {
   if (initialContextSetupFailurePdu) free(initialContextSetupFailurePdu);
   if (initialContextSetupFailureIEs) free(initialContextSetupFailureIEs);
-  if (amfUeNgapId) free(amfUeNgapId);
-  if (ranUeNgapId) free(ranUeNgapId);
+  if (amfUeNgapId) delete (amfUeNgapId);
+  if (ranUeNgapId) delete (ranUeNgapId);
   if (pduSessionResourceFailedToSetupFailureList)
-    free(pduSessionResourceFailedToSetupFailureList);
+    delete (pduSessionResourceFailedToSetupFailureList);
 }
 
 //------------------------------------------------------------------------------

@@ -54,9 +54,9 @@ HandoverNotifyMsg::HandoverNotifyMsg() {
 
 //------------------------------------------------------------------------------
 HandoverNotifyMsg::~HandoverNotifyMsg() {
-  if (amfUeNgapId) free(amfUeNgapId);
-  if (ranUeNgapId) free(ranUeNgapId);
-  if (userLocationInformation) free(userLocationInformation);
+  if (amfUeNgapId) delete (amfUeNgapId);
+  if (ranUeNgapId) delete (ranUeNgapId);
+  if (userLocationInformation) delete (userLocationInformation);
   if (handoverNotifyPdu) free(handoverNotifyPdu);
   if (handoverNotifyIEs) free(handoverNotifyIEs);
 };
