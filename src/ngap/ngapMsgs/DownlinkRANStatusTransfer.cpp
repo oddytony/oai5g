@@ -104,7 +104,7 @@ void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
         new RANStatusTransferTransparentContainer();
   }
   Ngap_DRB_ID_t* dRB_id = (Ngap_DRB_ID_t*) calloc(1, sizeof(Ngap_DRB_ID_t));
-  dRB_id                = &drb_id;
+  *dRB_id               = drb_id;
   COUNTValueForPDCP_SN18* UL_value =
       (COUNTValueForPDCP_SN18*) calloc(1, sizeof(COUNTValueForPDCP_SN18));
   UL_value->setvalue(ul_pcdp, ul_hfn_pdcp);

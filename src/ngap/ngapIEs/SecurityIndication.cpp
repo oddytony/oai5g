@@ -89,9 +89,11 @@ bool SecurityIndication::encode2SecurityIndication(
 //------------------------------------------------------------------------------
 bool SecurityIndication::decodefromSecurityIndication(
     Ngap_SecurityIndication_t* securityIndication) {
-  integrityProtectionIndication = new IntegrityProtectionIndication();
-  confidentialityProtectionIndication =
-      new ConfidentialityProtectionIndication();
+  if (!integrityProtectionIndication)
+    integrityProtectionIndication = new IntegrityProtectionIndication();
+  if (!confidentialityProtectionIndication)
+    confidentialityProtectionIndication =
+        new ConfidentialityProtectionIndication();
 
   if (!integrityProtectionIndication->decodefromIntegrityProtectionIndication(
           securityIndication->integrityProtectionIndication))

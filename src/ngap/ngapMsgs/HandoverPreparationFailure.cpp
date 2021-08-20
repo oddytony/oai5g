@@ -45,6 +45,7 @@ HandoverPreparationFailure::HandoverPreparationFailure() {
   ranUeNgapId             = nullptr;
   cause                   = nullptr;
   hoPreparationFailureIEs = nullptr;
+  hoPreparationFailurePdu = nullptr;
   CriticalityDiagnostics  = nullptr;
 }
 

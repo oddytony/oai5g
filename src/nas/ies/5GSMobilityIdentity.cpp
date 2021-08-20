@@ -133,7 +133,7 @@ int _5GSMobilityIdentity::_5g_s_tmsi_encode2buffer(uint8_t* buf, int len) {
 //------------------------------------------------------------------------------
 int _5GSMobilityIdentity::_5g_s_tmsi_decodefrombuffer(uint8_t* buf, int len) {
   int decoded_size = 0;
-  _5g_s_tmsi       = (_5G_S_TMSI_t*) calloc(1, sizeof(_5G_S_TMSI_t));
+  if (!_5g_s_tmsi) _5g_s_tmsi = (_5G_S_TMSI_t*) calloc(1, sizeof(_5G_S_TMSI_t));
   decoded_size++;  // type of identity
   uint8_t octet = *(buf + decoded_size);
   decoded_size++;

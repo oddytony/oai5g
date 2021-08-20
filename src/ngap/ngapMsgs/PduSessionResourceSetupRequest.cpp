@@ -53,6 +53,7 @@ PduSessionResourceSetupRequestMsg::PduSessionResourceSetupRequestMsg() {
   nasPdu                             = nullptr;
   pduSessionResourceSetupRequestList = nullptr;
   uEAggregateMaxBitRate              = nullptr;
+  pduSessionAggregateMaximumBitRate  = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -78,6 +79,7 @@ void PduSessionResourceSetupRequestMsg::setUEAggregateMaxBitRate(
       ie->value.choice.UEAggregateMaximumBitRate);
   if (!ret) {
     Logger::ngap().error("Encode NGAP UEAggregateMaxBitRate IE error");
+    free_wrapper((void**) &ie);
     return;
   }
 

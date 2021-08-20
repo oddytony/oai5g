@@ -70,7 +70,7 @@ bool ServedGUAMIItem::encode2ServedGUAMIItem(
 
 //------------------------------------------------------------------------------
 bool ServedGUAMIItem::decodefromServedGUAMIItem(Ngap_ServedGUAMIItem* pdu) {
-  guamiGroup = new GUAMI();
+  if (!guamiGroup) guamiGroup = new GUAMI();
   if (!guamiGroup->decodefromGUAMI(&pdu->gUAMI)) return false;
   if (pdu->backupAMFName) {
     backupAMFNameIsSet = true;

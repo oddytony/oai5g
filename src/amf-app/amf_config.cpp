@@ -58,29 +58,32 @@ namespace config {
 
 //------------------------------------------------------------------------------
 amf_config::amf_config() {
-  nrf_addr.ipv4_addr.s_addr = INADDR_ANY;
-  nrf_addr.port             = 80;
-  nrf_addr.api_version      = "v1";
-  enable_nf_registration    = false;
-  enable_smf_selection      = false;
-  enable_external_ausf      = false;
-  enable_external_udm       = false;
-  instance                  = 0;
-  n2                        = {};
-  n11                       = {};
-  statistics_interval       = 0;
-  guami                     = {};
-  guami_list                = {};
-  relativeAMFCapacity       = 0;
-  plmn_list                 = {};
-  auth_conf auth_para       = {};
-  nas_cfg                   = {};
-  smf_pool                  = {};
-  enable_nf_registration    = false;
-  enable_smf_selection      = false;
-  enable_external_ausf      = false;
-  enable_external_udm       = false;
-  use_fqdn_dns              = false;
+  nrf_addr.ipv4_addr.s_addr  = INADDR_ANY;
+  nrf_addr.port              = 80;
+  nrf_addr.api_version       = "v1";
+  ausf_addr.ipv4_addr.s_addr = INADDR_ANY;
+  ausf_addr.port             = 80;
+  ausf_addr.api_version      = "v1";
+  enable_nf_registration     = false;
+  enable_smf_selection       = false;
+  enable_external_ausf       = false;
+  enable_external_udm        = false;
+  instance                   = 0;
+  n2                         = {};
+  n11                        = {};
+  statistics_interval        = 0;
+  guami                      = {};
+  guami_list                 = {};
+  relativeAMFCapacity        = 0;
+  plmn_list                  = {};
+  auth_conf auth_para        = {};
+  nas_cfg                    = {};
+  smf_pool                   = {};
+  enable_nf_registration     = false;
+  enable_smf_selection       = false;
+  enable_external_ausf       = false;
+  enable_external_udm        = false;
+  use_fqdn_dns               = false;
 
   struct {
     struct in_addr ipv4_addr;
