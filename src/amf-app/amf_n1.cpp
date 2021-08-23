@@ -1291,7 +1291,7 @@ bool amf_n1::get_authentication_vectors_from_ausf(
     Logger::amf_n1().debug("********* has auts *********");
     char* auts_s = (char*) malloc(auts_len * 2 + 1);
     // char *rand_s = (char *)malloc(RAND_LENGTH * 2 + 1);
-    memset(auts_s, 0, sizeof(auts_s));
+    memset(auts_s, 0, auts_len * 2);
     // memset(rand_s, 0, sizeof(rand_s));
     // uint8_t rand_value[RAND_LENGTH];
 

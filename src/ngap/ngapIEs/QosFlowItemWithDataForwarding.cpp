@@ -38,10 +38,7 @@ QosFlowItemWithDataForWarding::QosFlowItemWithDataForWarding() {
 QosFlowItemWithDataForWarding::~QosFlowItemWithDataForWarding() {}
 void QosFlowItemWithDataForWarding::getQosFlowItemWithDataForWarding(
     Ngap_QosFlowIdentifier_t& m_QosFlowIdentifier) {
-  if (!qosFlowIdentifier)
-    printf("qosFlowIdentifier null\n");
-  else
-    printf("qosFlowIdentifier \n");
+  if (!qosFlowIdentifier) return;
   if (qosFlowIdentifier->getQosFlowIdentifier(value)) {
     m_QosFlowIdentifier = (Ngap_QosFlowIdentifier_t) value;
   }
@@ -51,10 +48,8 @@ bool QosFlowItemWithDataForWarding::decodeformQosFlowItemWithDataForWarding(
   if (qosFlowIdentifier == nullptr) qosFlowIdentifier = new QosFlowIdentifier();
   if (!qosFlowIdentifier->decodefromQosFlowIdentifier(
           &(qosFlowItemWithDataForWarding->qosFlowIdentifier))) {
-    printf("false\n");
     return false;
   }
-  printf("true\n");
   return true;
 }
 }  // namespace ngap

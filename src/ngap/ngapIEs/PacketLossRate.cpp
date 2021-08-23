@@ -34,7 +34,9 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PacketLossRate::PacketLossRate() {}
+PacketLossRate::PacketLossRate() {
+  packetlossrate = 0;
+}
 
 //------------------------------------------------------------------------------
 PacketLossRate::~PacketLossRate() {}

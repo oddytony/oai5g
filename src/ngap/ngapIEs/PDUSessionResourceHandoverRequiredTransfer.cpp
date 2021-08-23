@@ -94,7 +94,7 @@ bool PDUSessionResourceHandoverRequiredTransfer::decodefromIE(
 bool PDUSessionResourceHandoverRequiredTransfer::
     getDirectForwardingPathAvailability(
         long* directForwardingPathAvailability) {
-  directForwardingPathAvailability = (long*) DirectForwardingPathAvailability;
+  *directForwardingPathAvailability = (long) *DirectForwardingPathAvailability;
   return true;
 }
 

@@ -24,6 +24,11 @@
 #include <iostream>
 #include <vector>
 using namespace std;
+
+extern "C" {
+#include "dynamic_memory_check.h"
+}
+
 namespace ngap {
 dRBSubjectList::dRBSubjectList() {
   drbsubjectitem = nullptr;
@@ -46,7 +51,10 @@ bool dRBSubjectList::encodefromdRBSubjectlist(
             1, sizeof(Ngap_DRBsSubjectToStatusTransferItem_t));
     if (!ie) return false;
 
-    if (!drbsubjectitem) return false;
+    if (!drbsubjectitem) {
+      free_wrapper((void**) &ie);
+      return false;
+    }
     if (!drbsubjectitem[i].encodedRBSubjectItem(ie)) {
       cout << "encodefromdRBSubjectlist error" << endl;
       return false;

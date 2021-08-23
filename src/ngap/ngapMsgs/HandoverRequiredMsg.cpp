@@ -97,14 +97,25 @@ long HandoverRequiredMsg::getCauseValue() {
 
 //------------------------------------------------------------------------------
 void HandoverRequiredMsg::getGlobalRanNodeId(GlobalgNBId*& ptr) {
-  if (ptr)
-    ptr->decodefromGlobalgNBId(
-        targetid->choice.targetRANNodeID->globalRANNodeID.choice.globalGNB_ID);
+  if (ptr && targetid) {
+    if (targetid->present == Ngap_TargetID_PR_targetRANNodeID) {
+      if (targetid->choice.targetRANNodeID->globalRANNodeID.present ==
+          Ngap_GlobalRANNodeID_PR_globalGNB_ID) {
+        ptr->decodefromGlobalgNBId(targetid->choice.targetRANNodeID
+                                       ->globalRANNodeID.choice.globalGNB_ID);
+        return;
+      }
+    }
+  }
+  return;
 }
 
 //------------------------------------------------------------------------------
 void HandoverRequiredMsg::getTAI(TAI*& ptr) {
-  if (ptr) ptr->decodefromTAI(&(targetid->choice.targetRANNodeID->selectedTAI));
+  if (ptr) {
+    if (targetid->present == Ngap_TargetID_PR_targetRANNodeID)
+      ptr->decodefromTAI(&(targetid->choice.targetRANNodeID->selectedTAI));
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -120,15 +131,16 @@ bool HandoverRequiredMsg::getPDUSessionResourceList(
     std::vector<PDUSessionResourceItem_t>& list) {
   if (!PDUSessionResourceList) return false;
 
-  PDUSessionResourceItemHORqd* m_pduSessionResourceItemHORqd;
-  int num = 0;
+  PDUSessionResourceItemHORqd* m_pduSessionResourceItemHORqd = nullptr;
+  int num                                                    = 0;
   PDUSessionResourceList->getPDUSessionResourceListHORqd(
       m_pduSessionResourceItemHORqd, num);
+  if (!m_pduSessionResourceItemHORqd) return false;
 
   for (int i = 0; i < num; i++) {
-    PDUSessionResourceItem_t response;
+    PDUSessionResourceItem_t response = {};
 
-    PDUSessionID* m_pDUSessionID;
+    PDUSessionID* m_pDUSessionID = nullptr;
     m_pduSessionResourceItemHORqd[i].getPDUSessionResourceItemHORqd(
         m_pDUSessionID, response.HandoverRequiredTransfer);
     m_pDUSessionID->getPDUSessionID(response.pduSessionId);
@@ -314,7 +326,8 @@ int HandoverRequiredMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, handoverRequiredPdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, handoverRequiredPdu, buf, buf_size);
-  Logger::ngap().debug("er.encoded( %d )", er.encoded);
+  Logger::ngap().debug(
+      "Encode Handover Required to buffer, er.encoded( %d)", er.encoded);
   return er.encoded;
 }
 
