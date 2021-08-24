@@ -365,6 +365,11 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
     itti_nsmf_pdusession_update_sm_context* itti_msg =
         new itti_nsmf_pdusession_update_sm_context(TASK_NGAP, TASK_AMF_N11);
     long amf_ue_ngap_id = pduresp->getAmfUeNgapId();
+    if (!amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
+      Logger::ngap().error(
+          "No UE NAS context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+      return -1;
+    }
     std::shared_ptr<nas_context> nct =
         amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
     itti_msg->supi           = "imsi-" + nct.get()->imsi;
@@ -421,6 +426,13 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
        not send ITTI message %s to task TASK_AMF_N2", i->get_msg_name());
        }*/
       long amf_ue_ngap_id = pduresp->getAmfUeNgapId();
+
+      if (!amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
+        Logger::ngap().error(
+            "No UE NAS context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+        return -1;
+      }
+
       std::shared_ptr<nas_context> nct =
           amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
       string supi = "imsi-" + nct.get()->imsi;
@@ -428,7 +440,7 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
       if (amf_app_inst->find_pdu_session_context(
               supi, list_fail[0].pduSessionId, psc)) {
         if (psc.get() == nullptr) {
-          Logger::amf_n1().error("Cannot get pdu_session_context");
+          Logger::ngap().error("Cannot get pdu_session_context");
           return -1;
         }
       }
