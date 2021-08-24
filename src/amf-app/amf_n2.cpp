@@ -287,6 +287,11 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
     return;
   }
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
+  if (!gc.get()) {
+    Logger::amf_n2().error(
+        "No existed gNB context with assoc_id(%d)", itti_msg.assoc_id);
+    return;
+  }
   if (gc.get()->ng_state == NGAP_RESETING ||
       gc.get()->ng_state == NGAP_SHUTDOWN) {
     Logger::amf_n2().warn(
@@ -429,6 +434,12 @@ void amf_n2::handle_itti_message(itti_ng_reset& itti_msg) {
   }
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
 
+  if (!gc.get()) {
+    Logger::amf_n2().error(
+        "No existed gNB context with assoc_id(%d)", itti_msg.assoc_id);
+    return;
+  }
+
   gc.get()->ng_state = NGAP_RESETING;
   // TODO: (8.7.4.2.2, NG Reset initiated by the NG-RAN node @3GPP TS 38.413
   // V16.0.0) the AMF shall release all allocated resources on NG related to the
@@ -474,6 +485,12 @@ void amf_n2::handle_itti_message(itti_ng_shutdown& itti_msg) {
     return;
   }
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
+
+  if (!gc.get()) {
+    Logger::amf_n2().error(
+        "No existed gNB context with assoc_id(%d)", itti_msg.assoc_id);
+    return;
+  }
 
   gc.get()->ng_state = NGAP_SHUTDOWN;
 
@@ -530,6 +547,12 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
 
   std::shared_ptr<gnb_context> gc = {};
   gc = assoc_id_2_gnb_context(init_ue_msg.assoc_id);
+  if (!gc.get()) {
+    Logger::amf_n2().error(
+        "No existed gNB context with assoc_id(%d)", init_ue_msg.assoc_id);
+    return;
+  }
+
   if (gc.get()->ng_state == NGAP_RESETING ||
       gc.get()->ng_state == NGAP_SHUTDOWN) {
     Logger::amf_n2().warn(
@@ -648,6 +671,13 @@ void amf_n2::handle_itti_message(itti_ul_nas_transport& ul_nas_transport) {
     return;
   }
   gc = assoc_id_2_gnb_context(ul_nas_transport.assoc_id);
+
+  if (!gc.get()) {
+    Logger::amf_n2().error(
+        "No existed gNB context with assoc_id(%d)", ul_nas_transport.assoc_id);
+    return;
+  }
+
   std::shared_ptr<ue_ngap_context> unc = {};
   if (!is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
     Logger::amf_n2().error(
@@ -728,6 +758,12 @@ void amf_n2::handle_itti_message(itti_dl_nas_transport& dl_nas_transport) {
     return;
   }
   std::shared_ptr<gnb_context> gc = {};
+  if (!is_assoc_id_2_gnb_context(unc.get()->gnb_assoc_id)) {
+    Logger::amf_n2().error(
+        "No existing gNG context with assoc_id (%d)", unc.get()->gnb_assoc_id);
+    return;
+  }
+
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
     Logger::amf_n2().error(
@@ -769,6 +805,11 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
   }
   unc.get()->ncc                  = 1;
   std::shared_ptr<gnb_context> gc = {};
+  if (!is_assoc_id_2_gnb_context(unc.get()->gnb_assoc_id)) {
+    Logger::amf_n2().error(
+        "No existing gNG context with assoc_id (%d)", unc.get()->gnb_assoc_id);
+    return;
+  }
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
     Logger::amf_n2().error(
@@ -907,6 +948,11 @@ void amf_n2::handle_itti_message(
     return;
   }
   std::shared_ptr<gnb_context> gc = {};
+  if (!is_assoc_id_2_gnb_context(unc.get()->gnb_assoc_id)) {
+    Logger::amf_n2().error(
+        "No existing gNG context with assoc_id (%d)", unc.get()->gnb_assoc_id);
+    return;
+  }
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
     Logger::amf_n2().error(
@@ -1001,6 +1047,11 @@ void amf_n2::handle_itti_message(
     return;
   }
   std::shared_ptr<gnb_context> gc = {};
+  if (!is_assoc_id_2_gnb_context(unc.get()->gnb_assoc_id)) {
+    Logger::amf_n2().error(
+        "No existing gNG context with assoc_id (%d)", unc.get()->gnb_assoc_id);
+    return;
+  }
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
     Logger::amf_n2().error(
@@ -1083,6 +1134,11 @@ void amf_n2::handle_itti_message(itti_ue_context_release_command& itti_msg) {
     return;
   }
   std::shared_ptr<gnb_context> gc = {};
+  if (!is_assoc_id_2_gnb_context(unc.get()->gnb_assoc_id)) {
+    Logger::amf_n2().error(
+        "No existing gNG context with assoc_id (%d)", unc.get()->gnb_assoc_id);
+    return;
+  }
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
     Logger::amf_n2().error(
@@ -1135,7 +1191,13 @@ void amf_n2::handle_itti_message(
         "No existed gNB context with assoc_id (%d)", itti_msg.assoc_id);
     return;
   }
-  gc                           = assoc_id_2_gnb_context(itti_msg.assoc_id);
+  gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
+
+  if (gc.get() == nullptr) {
+    Logger::amf_n2().error(
+        "Illegal gNB with assoc id (0x%x)", itti_msg.assoc_id);
+    return;
+  }
   unsigned long amf_ue_ngap_id = {0};
   itti_msg.ueRadioCap->getAmfUeNgapId(amf_ue_ngap_id);
   uint32_t ran_ue_ngap_id = {0};
@@ -1161,6 +1223,12 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
     return false;
   }
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
+
+  if (gc.get() == nullptr) {
+    Logger::amf_n2().error(
+        "Illegal gNB with assoc id (0x%x)", itti_msg.assoc_id);
+    return false;
+  }
 
   Logger::amf_n2().debug(
       "Handover Required, gNB info (gNB Name %s, globalRanNodeId 0x%x)",
@@ -1444,6 +1512,11 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
     return;
   }
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
+  if (gc.get() == nullptr) {
+    Logger::amf_n2().error(
+        "Illegal gNB with assoc id (0x%x)", itti_msg.assoc_id);
+    return;
+  }
   Logger::amf_n2().debug(
       "Handover Request Ack, gNB info (gNB Name %s, globalRanNodeId 0x%x)",
       gc.get()->gnb_name.c_str(), gc.get()->globalRanNodeId);
@@ -1598,6 +1671,11 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
     return;
   }
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
+  if (gc.get() == nullptr) {
+    Logger::amf_n2().error(
+        "Illegal gNB with assoc id (0x%x)", itti_msg.assoc_id);
+    return;
+  }
   Logger::amf_n2().debug(
       "Handover Notify, gNB info (gNB Name: %s, globalRanNodeId 0x%x)",
       gc.get()->gnb_name.c_str(), gc.get()->globalRanNodeId);
