@@ -163,12 +163,23 @@ void amf_n11::handle_itti_message(
   string ue_context_key = "app_ue_ranid_" + to_string(itti_msg.ran_ue_ngap_id) +
                           ":amfid_" + to_string(itti_msg.amf_ue_ngap_id);
   std::shared_ptr<ue_context> uc = {};
+  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
+    Logger::amf_n11().error(
+        "No UE context for %s exit", ue_context_key.c_str());
+    return;
+  }
+
   uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
 
   std::string supi = {};
   if (uc.get() != nullptr) {
     supi = uc->supi;
+  } else {
+    Logger::amf_n11().error(
+        "Could not find UE context with key %s", ue_context_key.c_str());
+    return;
   }
+
   Logger::amf_n11().debug(
       "Send PDU Session Update SM Context Request to SMF (SUPI %s, PDU Session "
       "ID %d)",
@@ -241,6 +252,12 @@ void amf_n11::handle_itti_message(
 void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
   Logger::amf_n11().debug("Handle ITTI SMF_PDU_SESSION_CREATE_SM_CTX");
 
+  if (!amf_n1_inst->is_amf_ue_id_2_nas_context(smf.amf_ue_ngap_id)) {
+    Logger::amf_n2().error(
+        "No UE NAS context with amf_ue_ngap_id (0x%x)", smf.amf_ue_ngap_id);
+    return;
+  }
+
   std::shared_ptr<nas_context> nc = {};
   nc               = amf_n1_inst->amf_ue_id_2_nas_context(smf.amf_ue_ngap_id);
   std::string supi = "imsi-" + nc.get()->imsi;
@@ -251,12 +268,30 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
   Logger::amf_n11().info(
       "Find ue_context in amf_app using UE Context Key: %s",
       ue_context_key.c_str());
+  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
+    Logger::amf_n11().error(
+        "No UE context for %s exit", ue_context_key.c_str());
+    return;
+  }
+
   uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+
+  if (!uc.get()) {
+    Logger::amf_n11().error(
+        "No UE context for %s exit", ue_context_key.c_str());
+    return;
+  }
+
   std::shared_ptr<pdu_session_context> psc = {};
   if (!uc.get()->find_pdu_session_context(smf.pdu_sess_id, psc)) {
     psc = std::shared_ptr<pdu_session_context>(new pdu_session_context());
     uc.get()->add_pdu_session_context(smf.pdu_sess_id, psc);
     Logger::amf_n11().debug("Create a PDU Session Context");
+  }
+
+  if (!psc.get()) {
+    Logger::amf_n11().error("No PDU Session Context found");
+    return;
   }
 
   psc.get()->amf_ue_ngap_id = nc.get()->amf_ue_ngap_id;

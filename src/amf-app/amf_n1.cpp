@@ -172,7 +172,14 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
     } else {
       string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
                               ":amfid_" + to_string(amf_ue_ngap_id);
-      std::shared_ptr<ue_context> uc;
+
+      if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
+        Logger::amf_n1().error(
+            "No UE context for %s exit", ue_context_key.c_str());
+        return;
+      }
+
+      std::shared_ptr<ue_context> uc = {};
       uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
       if (uc.get() == nullptr) {
         // TODO:
@@ -559,7 +566,7 @@ void amf_n1::identity_response_handle(
                           ":amfid_" + to_string(amf_ue_ngap_id);
 
   if (amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
-    std::shared_ptr<ue_context> uc;
+    std::shared_ptr<ue_context> uc = {};
     uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
     // Update UE context
     if (uc.get() != nullptr) {
@@ -571,7 +578,7 @@ void amf_n1::identity_response_handle(
     }
   }
 
-  std::shared_ptr<nas_context> nc;
+  std::shared_ptr<nas_context> nc = {};
   if (is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
     nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
     Logger::amf_n1().debug(
@@ -600,10 +607,15 @@ void amf_n1::service_request_handle(
     long amf_ue_ngap_id, bstring nas) {
   string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
                           ":amfid_" + to_string(amf_ue_ngap_id);
-  std::shared_ptr<ue_context> uc;
-  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
 
-  if (!nc.get() or (uc.get() == nullptr)) {
+  std::shared_ptr<ue_context> uc = {};
+  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
+    Logger::amf_n1().error("No UE context for %s exit", ue_context_key.c_str());
+  } else {
+    uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+  }
+
+  if (!nc.get() or !uc.get()) {
     Logger::amf_n1().debug(
         "Cannot find NAS/UE context, send Service Reject to UE");
     // service reject
@@ -827,10 +839,16 @@ void amf_n1::registration_request_handle(
   // Find UE context
   string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
                           ":amfid_" + to_string(amf_ue_ngap_id);
-  std::shared_ptr<ue_context> uc;
+  std::shared_ptr<ue_context> uc = {};
   Logger::amf_n1().info(
       "Try to find ue_context in amf_app using ran_amf_id (%s)",
       ue_context_key.c_str());
+
+  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
+    Logger::amf_n1().error("No UE context for %s exit", ue_context_key.c_str());
+    return;
+  }
+
   uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
 
   // Check 5gs Mobility Identity (Mandatory IE)
@@ -963,6 +981,13 @@ void amf_n1::registration_request_handle(
           amf_ue_ngap_id);
       // release ue_ngap_context and ue_context
       if (uc.get()) uc.reset();
+
+      if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
+        Logger::amf_n2().error(
+            "No UE NGAP context with ran_ue_ngap_id (%d)", ran_ue_ngap_id);
+        return;
+      }
+
       std::shared_ptr<ue_ngap_context> unc =
           amf_n2_inst->ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
       if (unc.get()) unc.reset();
@@ -2026,13 +2051,20 @@ void amf_n1::security_mode_complete_handle(
   string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
                           ":amfid_" + to_string(amf_ue_ngap_id);
   std::shared_ptr<ue_context> uc;
+  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
+    Logger::amf_n1().error("No UE context for %s exit", ue_context_key.c_str());
+    return;
+  }
+
   uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
   if (uc.get() == nullptr) {
     // TODO:
     Logger::amf_n1().error(
         "ue_context in amf_app using ran_amf_id (%s) does not existed!",
         ue_context_key.c_str());
+    return;
   }
+
   Logger::amf_n1().info(
       "Found ue_context (%p) in amf_app using ran_amf_id (%s)", uc.get(),
       ue_context_key.c_str());
@@ -2093,8 +2125,14 @@ void amf_n1::security_mode_complete_handle(
     return;
   }
 
-  std::shared_ptr<nas_context> nc;
-  nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
+  if (!is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
+    Logger::amf_n2().error(
+        "No UE NAS context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+    return;
+  }
+
+  std::shared_ptr<nas_context> nc = {};
+  nc                              = amf_ue_id_2_nas_context(amf_ue_ngap_id);
   Logger::amf_n1().info(
       "UE (IMSI %s, GUTI %s, current RAN ID %d, current AMF ID %d) has been "
       "registered to the network",
@@ -2724,6 +2762,11 @@ void amf_n1::run_mobility_registration_update_procedure(
   string ue_context_key = "app_ue_ranid_" + to_string(nc->ran_ue_ngap_id) +
                           ":amfid_" + to_string(nc->amf_ue_ngap_id);
   std::shared_ptr<ue_context> uc = {};
+  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
+    Logger::amf_n1().error("No UE context for %s exit", ue_context_key.c_str());
+    return;
+  }
+
   uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
 
   if (uc.get() == nullptr) {
@@ -2731,6 +2774,7 @@ void amf_n1::run_mobility_registration_update_procedure(
         "Cannot find the UE context with key %s", ue_context_key.c_str());
     return;
   }
+
   // get PDU session status
   std::vector<uint8_t> pdu_session_to_be_activated = {};
   std::bitset<16> pdu_session_status_bits((uint16_t) pdu_session_status);
