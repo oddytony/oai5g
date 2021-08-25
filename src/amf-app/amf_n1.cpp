@@ -2457,8 +2457,13 @@ bool amf_n1::nas_message_cipher_protected(
 
     case EA2_128_5G: {
       Logger::amf_n1().debug("Cipher protected with EA2_128_5G");
-      nas_algorithms::nas_stream_encrypt_nea2(
-          &stream_cipher, (uint8_t*) bdata(output_nas));
+
+      uint32_t len = stream_cipher.blength >> 3;
+      if ((stream_cipher.blength & 0x7) > 0) len += 1;
+      uint8_t* ciphered = (uint8_t*) malloc(len);
+      nas_algorithms::nas_stream_encrypt_nea2(&stream_cipher, ciphered);
+      output_nas = blk2bstr(ciphered, len);
+      free(ciphered);
     } break;
   }
   return true;
