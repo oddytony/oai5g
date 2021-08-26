@@ -347,7 +347,8 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
               (uint8_t*) bdata(recved_nas_msg) + 6, blength(recved_nas_msg) - 6,
               mac32)) {
         // IA0_5G
-        // TODO:
+        decoded_plain_msg = blk2bstr(
+            (uint8_t*) bdata(recved_nas_msg) + 7, blength(recved_nas_msg) - 7);
       } else {
         bool isMatched      = false;
         uint8_t* buf        = (uint8_t*) bdata(recved_nas_msg);
