@@ -376,7 +376,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
       }
     } break;
     default: {
-      Logger::amf_n1().error("unknown NAS msg type");
+      Logger::amf_n1().error("Unknown NAS Message Type");
       return;
     }
   }
