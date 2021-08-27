@@ -347,7 +347,8 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
               (uint8_t*) bdata(recved_nas_msg) + 6, blength(recved_nas_msg) - 6,
               mac32)) {
         // IA0_5G
-        // TODO:
+        decoded_plain_msg = blk2bstr(
+            (uint8_t*) bdata(recved_nas_msg) + 7, blength(recved_nas_msg) - 7);
       } else {
         bool isMatched      = false;
         uint8_t* buf        = (uint8_t*) bdata(recved_nas_msg);
@@ -375,7 +376,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
       }
     } break;
     default: {
-      Logger::amf_n1().error("unknown NAS msg type");
+      Logger::amf_n1().error("Unknown NAS Message Type");
       return;
     }
   }
@@ -2457,8 +2458,13 @@ bool amf_n1::nas_message_cipher_protected(
 
     case EA2_128_5G: {
       Logger::amf_n1().debug("Cipher protected with EA2_128_5G");
-      nas_algorithms::nas_stream_encrypt_nea2(
-          &stream_cipher, (uint8_t*) bdata(output_nas));
+
+      uint32_t len = stream_cipher.blength >> 3;
+      if ((stream_cipher.blength & 0x7) > 0) len += 1;
+      uint8_t* ciphered = (uint8_t*) malloc(len);
+      nas_algorithms::nas_stream_encrypt_nea2(&stream_cipher, ciphered);
+      output_nas = blk2bstr(ciphered, len);
+      free(ciphered);
     } break;
   }
   return true;
