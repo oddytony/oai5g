@@ -84,6 +84,7 @@ services:
             - AUSF_IPV4_ADDRESS=0.0.0.0
             - AUSF_PORT=80
             - AUSF_API_VERSION=v1
+            - AUSF_FQDN=localhost
         depends_on:
             - cicd_mysql
         networks:
