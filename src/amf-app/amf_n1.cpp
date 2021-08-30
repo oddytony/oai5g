@@ -367,16 +367,6 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
           Logger::amf_n1().error("Received message not integrity matched");
           return;
         }
-        /*else {
-          bstring ciphered = blk2bstr(buf + 7, buf_len - 7);
-          if (!nas_message_cipher_protected(
-                  nc.get()->security_ctx, NAS_MESSAGE_UPLINK, ciphered,
-                  decoded_plain_msg)) {
-            Logger::amf_n1().error("Decrypt NAS message failure");
-            return;
-          }
-        }
-        */
       }
 
       bstring ciphered = blk2bstr(
@@ -393,20 +383,6 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
       return;
     }
   }
-
-  // decoded_plain_msg = blk2bstr(
-  //    (uint8_t*) bdata(recved_nas_msg) + 7, blength(recved_nas_msg) - 7);
-
-  /*
-  bstring ciphered = blk2bstr(
-      (uint8_t*) bdata(recved_nas_msg) + 7, blength(recved_nas_msg) - 7);
-  if (!nas_message_cipher_protected(
-          nc.get()->security_ctx, NAS_MESSAGE_UPLINK, ciphered,
-          decoded_plain_msg)) {
-    Logger::amf_n1().error("Decrypt NAS message failure");
-    return;
-  }
-*/
 
   if (nas_data_ind.is_nas_signalling_estab_req) {
     Logger::amf_n1().debug("Received NAS signalling establishment request...");
@@ -538,7 +514,7 @@ void amf_n1::uplink_nas_msg_handle(
       // TODO
     } break;
     default: {
-      // TODO:
+      Logger::amf_n1().debug("Received Unknown message type, ignoring...");
     }
   }
 }
