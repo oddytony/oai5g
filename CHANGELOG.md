@@ -1,5 +1,13 @@
 # RELEASE NOTES: #
 
+## v1.2.0 -- September 2021 ##
+
+* AUSF connection
+* Fix NIA0, NEA2
+* Fix potential AMF crash with UE/NGAP/NAS context
+* Fix N2 Handover
+* Fix Paging procedures
+
 ## v1.1.0 -- July 2021 ##
 
 * Session Release
