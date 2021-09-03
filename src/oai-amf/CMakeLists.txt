@@ -212,6 +212,7 @@ endif()
 
 add_definitions("-DPACKAGE_VERSION=\"Branch: ${GIT_BRANCH} Abrev. Hash: ${GIT_COMMIT_HASH} Date: ${GIT_COMMIT_DATE}\"")
 add_definitions("-DPACKAGE_BUGREPORT=\"openaircn-user@lists.eurecom.fr\"")
+add_definitions("-DPACKAGE_NAME=\"AMF\"")
 
 ###############################################################################
 # Include CMake modules to find other library
