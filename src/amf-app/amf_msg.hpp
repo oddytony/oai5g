@@ -21,136 +21,80 @@
 
 /*! \file amf_msg.hpp
  \brief
- \author  Shivam Gandhi
- \company KCL
+ \author
+ \company
  \date 2021
- \email: shivam.gandhi@kcl.ac.uk
+ \email:
  */
 #ifndef FILE_AMF_MSG_HPP_SEEN
 #define FILE_AMF_MSG_HPP_SEEN
 
 #include "amf.hpp"
 #include "3gpp_29.518.h"
-#include "pistache/http.h"
 #include "amf_profile.hpp"
 
-namespace amf {
+namespace amf_application {
 
 class event_exposure_msg {
  public:
   supi_t get_supi() const;
   void set_supi(const supi_t& value);
   bool is_supi_is_set() const;
-  std::string get_supi_prefix() const;
-  void set_supi_prefix(const std::string& value);
+
   void set_sub_id(std::string const& value);
   std::string get_sub_id() const;
   bool is_sub_id_is_set() const;
-  void set_notif_uri(std::string const& value);
-  std::string get_notif_uri() const;
-  void set_notif_id(std::string const& value);
-  std::string get_notif_id() const;
-  std::vector<event_subscription_t> get_event_subs() const;
-  void set_event_subs(std::vector<event_subscription_t> const& value);
+
+  void set_notify_uri(std::string const& value);
+  std::string get_notify_uri() const;
+
+  void set_notify_correlation_id(std::string const& value);
+  std::string get_notify_correlation_id() const;
+
+  void set_nf_id(std::string const& value);
+  std::string get_nf_id() const;
+
+  std::vector<amf_event_t> get_event_subs() const;
+  void set_event_subs(std::vector<amf_event_t> const& value);
+
+  void set_any_ue(bool value);
 
  private:
-  supi_t m_supi;  // Supi
-  bool m_supi_is_set;
-  std::string m_supi_prefix;
-
   std::string m_sub_id;  // m_SubId;
   bool m_sub_id_is_set;
 
-  std::string m_notif_uri;  // eventNotifyUri
+  std::vector<amf_event_t> m_event_list;  // eventList, Mandatory
+  std::string m_notify_uri;               // eventNotifyUri, Mandatory
+  std::string m_notify_correlation_id;    // notifyCorrelationId, Mandatory
+  std::string m_nf_id;                    //  nfId, Mandatory
 
-  std::string m_notif_id;                          // notifyCorrelationId
-  std::vector<event_subscription_t> m_event_subs;  // eventList
-  //  nfId:
+  supi_t m_supi;  // Supi, Conditional
+  bool m_supi_is_set;
+  bool m_any_ue;  // anyUE, Conditional
+
   //  subsChangeNotifyUri:
   //  subsChangeNotifyCorrelationId:
   //  groupId:
   //  gpsi:
   //  pei:
-  //  anyUE:
   //  options: AmfEventMode
 };
 
 class event_notification {
  public:
-  void set_amf_event(const amf_event_t& ev);
-  amf_event_t get_amf_event() const;
-
-  void set_supi(const supi64_t& supi);
-  supi64_t get_supi() const;
-  bool is_supi_is_set() const;
-  // m_AdIpv4Addr
-  void set_ad_ipv4_addr(std::string const& value);
-  std::string get_ad_ipv4_addr() const;
-  bool is_ad_ipv4_addr_is_set() const;
-  // m_ReIpv4Addr
-  void set_re_ipv4_addr(std::string const& value);
-  std::string get_re_ipv4_addr() const;
-  bool is_re_ipv4_addr_is_set() const;
-
-  void set_notif_uri(std::string const& value);
-  std::string get_notif_uri() const;
-  void set_notif_id(std::string const& value);
-  std::string get_notif_id() const;
+  void set_notify_correlation_id(std::string const& value);
+  std::string get_notify_correlation_id() const;
+  void set_subs_change_notify_correlation_id(std::string const& value);
+  std::string get_subs_change_notify_correlation_id() const;
 
  private:
-  std::string m_notif_uri;  // m_NotifUri;
-  std::string m_notif_id;   // m_NotifId;
-
-  amf_event_t m_event;  // AmfEvent
-  // std::string m_TimeStamp;
-
-  supi64_t m_supi;
-  bool m_supi_is_set;
-
-  // for a UE IP address change
-  std::string m_ad_ipv4_addr;  // m_AdIpv4Addr
-  bool m_ad_ipv4_addr_is_set;  // m_AdIpv4AddrIsSet;
-  std::string m_re_ipv4_addr;  // m_ReIpv4Addr;
-  bool m_re_ipv4_addr_is_set;  // m_ReIpv4AddrIsSet;
-
-  // for a PLMN Change
-  // PlmnId m_PlmnId;
-  // bool m_PlmnIdIsSet;
-
-  // for an access type change
-  // AccessType m_AccType;
-  // bool m_AccTypeIsSet;
-
-  // std::string m_Gpsi;
-  // bool m_GpsiIsSet;
-  // std::string m_SourceDnai;
-  // bool m_SourceDnaiIsSet;
-  // std::string m_TargetDnai;
-  // bool m_TargetDnaiIsSet;
-  // DnaiChangeType m_DnaiChgType;
-  // bool m_DnaiChgTypeIsSet;
-  // std::string m_TargetUeIpv4Addr;
-  // bool m_TargetUeIpv4AddrIsSet;
-  // std::string m_SourceUeIpv4Addr;
-  // bool m_SourceUeIpv4AddrIsSet;
-  // Ipv6Prefix m_SourceUeIpv6Prefix;
-  // bool m_SourceUeIpv6PrefixIsSet;
-  // Ipv6Prefix m_TargetUeIpv6Prefix;
-  // bool m_TargetUeIpv6PrefixIsSet;
-  // RouteToLocation m_SourceTraRouting;
-  // bool m_SourceTraRoutingIsSet;
-  // RouteToLocation m_TargetTraRouting;
-  // bool m_TargetTraRoutingIsSet;
-  // std::string m_UeMac;
-  // bool m_UeMacIsSet;
-  // Ipv6Prefix m_AdIpv6Prefix;
-  // bool m_AdIpv6PrefixIsSet;
-  // Ipv6Prefix m_ReIpv6Prefix;
-  // bool m_ReIpv6PrefixIsSet;
-  // DddStatus m_DddStatus;
-  // bool m_DddStatusIsSet;
-  // std::string m_MaxWaitTime;
-  // bool m_MaxWaitTimeIsSet;
+  std::string m_notify_correlation_id;  // notifyCorrelationId
+  bool m_notify_correlation_is_set;
+  std::string
+      m_subs_change_notify_correlation_id;  // SubsChangeNotifyCorrelationId;
+  bool m_subs_change_notify_correlation_id_is_set;
+  // std::vector<AmfEventReport> m_report_list; //Report List
+  bool m_report_list_is_set;
 };
 
 class data_notification_msg {
@@ -169,6 +113,6 @@ class data_notification_msg {
   // std::vector<ChangeItem> m_ProfileChanges;
   // bool m_ProfileChangesIsSet;
 };
-}  // namespace amf
+}  // namespace amf_application
 
 #endif

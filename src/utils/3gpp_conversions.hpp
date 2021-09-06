@@ -19,32 +19,35 @@
  *      contact@openairinterface.org
  */
 
-/*! \file amf_subscription.hpp
+/*! \file 3gpp_conversions.hpp
  \brief
- \author  Shivam Gandhi
- \company KCL
- \date 2021
- \email: shivam.gandhi@kcl.ac.uk
+ \author
+ \company Eurecom
+ \email:
  */
 
-#include "3gpp_29.518.h"
-#include "amf.hpp"
+#ifndef FILE_3GPP_CONVERSIONS_HPP_SEEN
+#define FILE_3GPP_CONVERSIONS_HPP_SEEN
 
-namespace amf {
+#include "amf_msg.hpp"
+#include "AmfCreateEventSubscription.h"
+
+using namespace amf_application;
+using namespace oai::amf::model;
+namespace xgpp_conv {
 
 /*
- * Manage the Subscription Info
+ * Convert AmfCreatedEventSubscription from OpenAPI into Event Exposure Msg
+ * @param [const oai::amf::model::AmfCreatedEventSubscription&]
+ * event_subscription: AmfCreatedEventSubscription in OpenAPI
+ * @param [amf_application::event_exposure_msg&] event_exposure: Event Exposure
+ * Msg
+ * @return void
  */
-class amf_subscription {
- public:
-  amf_subscription() {}
+void amf_event_subscription_from_openapi(
+    const oai::amf::model::AmfCreateEventSubscription& event_subscription,
+    amf_application::event_exposure_msg& event_exposure);
 
- public:
-  evsub_id_t sub_id;
-  amf_event_type_t ev_type;
-  supi64_t supi;
-  std::string notif_id;
-  std::string notif_uri;
-};
+}  // namespace xgpp_conv
 
-}  // namespace amf
+#endif /* FILE_3GPP_CONVERSIONS_HPP_SEEN */

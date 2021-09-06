@@ -71,7 +71,8 @@ class amf_app {
 
   util::uint_generator<uint32_t> evsub_id_generator;
   std::map<
-      std::pair<evsub_id_t, amf_event_t>, std::shared_ptr<amf_subscription>>
+      std::pair<evsub_id_t, amf_event_type_t>,
+      std::shared_ptr<amf_subscription>>
       amf_event_subscriptions;
 
   mutable std::shared_mutex m_amf_event_subscriptions;
@@ -166,7 +167,8 @@ class amf_app {
    * @return void
    */
   void add_event_subscription(
-      evsub_id_t sub_id, amf_event_t ev, std::shared_ptr<amf_subscription> ss);
+      evsub_id_t sub_id, amf_event_type_t ev,
+      std::shared_ptr<amf_subscription> ss);
 
   /*
    * Get a list of subscription associated with a particular event
@@ -176,7 +178,7 @@ class amf_app {
    * @return void
    */
   void get_ee_subscriptions(
-      amf_event_t ev,
+      amf_event_type_t ev,
       std::vector<std::shared_ptr<amf_subscription>>& subscriptions);
 
   /*
@@ -199,7 +201,7 @@ class amf_app {
    * @return void
    */
   void get_ee_subscriptions(
-      amf_event_t ev, supi64_t supi,
+      amf_event_type_t ev, supi64_t supi,
       std::vector<std::shared_ptr<amf_subscription>>& subscriptions);
 
   /*

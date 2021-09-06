@@ -407,6 +407,7 @@ evsub_id_t amf_app::handle_event_exposure_subscription(
   std::shared_ptr<amf_subscription> ss =
       std::shared_ptr<amf_subscription>(new amf_subscription());
   ss.get()->sub_id = evsub_id;
+  // TODO:
   // if (msg->event_exposure.is_supi_is_set()) {
   //  supi64_t supi64 = amf_supi_to_u64(msg->event_exposure.get_supi());
   //  ss.get()->supi  = supi64;
@@ -513,7 +514,8 @@ void amf_app::generate_uuid() {
 
 //---------------------------------------------------------------------------------------------
 void amf_app::add_event_subscription(
-    evsub_id_t sub_id, amf_event_t ev, std::shared_ptr<amf_subscription> ss) {
+    evsub_id_t sub_id, amf_event_type_t ev,
+    std::shared_ptr<amf_subscription> ss) {
   Logger::amf_app().debug(
       "Add an Event subscription (Sub ID %d, Event %d)", sub_id, (uint8_t) ev);
   std::unique_lock lock(m_amf_event_subscriptions);
@@ -522,7 +524,7 @@ void amf_app::add_event_subscription(
 
 //---------------------------------------------------------------------------------------------
 void amf_app::get_ee_subscriptions(
-    amf_event_t ev,
+    amf_event_type_t ev,
     std::vector<std::shared_ptr<amf_subscription>>& subscriptions) {
   for (auto const& i : amf_event_subscriptions) {
     if ((uint8_t) std::get<1>(i.first) == (uint8_t) ev) {
@@ -547,7 +549,7 @@ void amf_app::get_ee_subscriptions(
 
 //---------------------------------------------------------------------------------------------
 void amf_app::get_ee_subscriptions(
-    amf_event_t ev, supi64_t supi,
+    amf_event_type_t ev, supi64_t supi,
     std::vector<std::shared_ptr<amf_subscription>>& subscriptions) {
   for (auto const& i : amf_event_subscriptions) {
     if ((i.first.second == ev) && (i.second->supi == supi)) {

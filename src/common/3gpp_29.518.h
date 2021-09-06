@@ -25,7 +25,8 @@
 #include "amf.hpp"
 #include <vector>
 
-typedef enum amf_event_e {
+typedef enum amf_event_type_e {
+  AMF_EVENT_UNKNOWN            = 0,
   LOCATION_REPORT              = 1,
   PRESENCE_IN_AOI_REPORT       = 2,
   TIMEZONE_REPORT              = 3,
@@ -38,9 +39,9 @@ typedef enum amf_event_e {
   SUBSCRIPTION_ID_CHANGE       = 10,
   SUBSCRIPTION_ID_ADDITION     = 11,
   LOSS_OF_CONNECTIVITY         = 12
-} amf_event_t;
+} amf_event_type_t;
 
-static const std::vector<std::string> amf_event_e2str = {
+static const std::vector<std::string> amf_event_type_e2str = {
     "AMF_EVENT_UNKNOWN",
     "LOCATION_REPORT",
     "PRESENCE_IN_AOI_REPORT",
@@ -65,12 +66,12 @@ static const std::vector<std::string> notification_method_e2str = {
     "NOTIFICATION_METHOD_UNKNOWN", "PERIODIC", "ONE_TIME",
     "ON_EVENT_DETECTION"};
 
-typedef struct event_subscription_s {
-  amf_event_t amf_event;
+typedef struct amf_event_s {
+  amf_event_type_t type;
   // immediateFlag:
   // areaList:
   // locationFilterList:
   // refId:
 
-} event_subscription_t;
+} amf_event_t;
 #endif

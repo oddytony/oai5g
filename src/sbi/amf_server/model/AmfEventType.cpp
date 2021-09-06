@@ -48,10 +48,22 @@ bool AmfEventType::operator!=(const AmfEventType& rhs) const {
   return !(*this == rhs);
 }
 
-void to_json(nlohmann::json& j, const AmfEventType& o) {
-  j = nlohmann::json();
+void AmfEventType::set_value(std::string value) {
+  this->value = value;
+}
+void AmfEventType::get_value(std::string& value) const {
+  value = this->value;
+}
+std::string AmfEventType::get_value() const {
+  return value;
 }
 
-void from_json(const nlohmann::json& j, AmfEventType& o) {}
+void to_json(nlohmann::json& j, const AmfEventType& o) {
+  j = o.get_value();
+}
+
+void from_json(const nlohmann::json& j, AmfEventType& o) {
+  o.set_value(j.get<std::string>());
+}
 
 }  // namespace oai::amf::model

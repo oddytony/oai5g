@@ -34,7 +34,7 @@
 #include "pistache/http.h"
 #include "amf_msg.hpp"
 
-using namespace amf;
+using namespace amf_application;
 
 class itti_sbi_msg : public itti_msg {
  public:
