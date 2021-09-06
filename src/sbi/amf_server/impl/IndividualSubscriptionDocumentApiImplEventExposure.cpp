@@ -29,9 +29,26 @@ IndividualSubscriptionDocumentApiImplEventExposure::
 void IndividualSubscriptionDocumentApiImplEventExposure::delete_subscription(
     const std::string& subscriptionId,
     Pistache::Http::ResponseWriter& response) {
-  response.send(
-      Pistache::Http::Code::Ok, "This API has not been implemented yet!\n");
+  Logger::amf_server().info(
+      "SubscriptionsCollectionDocumentApiImplEventExposure::delete_"
+      "subscription");
+
+  // Create a  message and store the necessary information
+  Logger::amf_server().debug(
+      "Delete a subscription with ID %s", subscriptionId.c_str());
+
+  if (m_amf_app->handle_event_exposure_delete(subscriptionId)) {
+    response.send(Pistache::Http::Code::No_Content);
+  } else {
+    // Send response
+    nlohmann::json json_data                        = {};
+    oai::amf::model::ProblemDetails problem_details = {};
+    problem_details.setCause("SUBSCRIPTION_NOT_FOUND");
+    to_json(json_data, problem_details);
+    response.send(Pistache::Http::Code::Not_Found, json_data.dump().c_str());
+  }
 }
+
 void IndividualSubscriptionDocumentApiImplEventExposure::modify_subscription(
     const std::string& subscriptionId,
     const AmfUpdateEventOptionItem& amfUpdateEventOptionItem,

@@ -141,6 +141,14 @@ class amf_app {
       std::shared_ptr<itti_sbi_event_exposure_request> msg);
 
   /*
+   * Handle Unsubscribe Request from an NF
+   * @param [const std::string&] subscription_id: Subscription ID
+   * @return true if the subscription is unsubscribed successfully, otherwise
+   * return false
+   */
+  bool handle_event_exposure_delete(const std::string& subscription_id);
+
+  /*
    * Handle NF status notification (e.g., when an UPF becomes available)
    * @param [std::shared_ptr<itti_sbi_notification_data>& ] msg: message
    * @param [oai::amf::model::ProblemDetails& ] problem_details
@@ -169,6 +177,13 @@ class amf_app {
   void add_event_subscription(
       evsub_id_t sub_id, amf_event_type_t ev,
       std::shared_ptr<amf_subscription> ss);
+
+  /*
+   * Remove an Event Subscription from the list
+   * @param [const evsub_id_t&] sub_id: Subscription ID
+   * @return bool
+   */
+  bool remove_event_subscription(evsub_id_t sub_id);
 
   /*
    * Get a list of subscription associated with a particular event

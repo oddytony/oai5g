@@ -77,7 +77,7 @@ void SubscriptionsCollectionDocumentApiImplEventExposure::create_subscription(
 
   response.headers().add<Pistache::Http::Header::ContentType>(
       Pistache::Http::Mime::MediaType("application/json"));
-  response.send(Pistache::Http::Code(201), json_data.dump().c_str());
+  response.send(Pistache::Http::Code::Created, json_data.dump().c_str());
 }
 
 }  // namespace api

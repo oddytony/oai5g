@@ -407,22 +407,41 @@ evsub_id_t amf_app::handle_event_exposure_subscription(
   std::shared_ptr<amf_subscription> ss =
       std::shared_ptr<amf_subscription>(new amf_subscription());
   ss.get()->sub_id = evsub_id;
-  // TODO:
-  // if (msg->event_exposure.is_supi_is_set()) {
-  //  supi64_t supi64 = amf_supi_to_u64(msg->event_exposure.get_supi());
-  //  ss.get()->supi  = supi64;
-  //}
-  // ss.get()->notif_id  = msg->event_exposure.get_notif_id();
-  // ss.get()->notif_uri = msg->event_exposure.get_notif_uri();
 
-  // std::vector<event_subscription_t> event_subscriptions =
-  //    msg->event_exposure.get_event_subs();
+  // TODO:
+  if (msg->event_exposure.is_supi_is_set()) {
+    supi64_t supi64 = amf_supi_to_u64(msg->event_exposure.get_supi());
+    ss.get()->supi  = supi64;
+  }
+  ss.get()->notify_correlation_id =
+      msg->event_exposure.get_notify_correlation_id();
+  ss.get()->notify_uri = msg->event_exposure.get_notify_uri();
+  ss.get()->nf_id      = msg->event_exposure.get_nf_id();
+
+  std::vector<amf_event_t> event_subscriptions =
+      msg->event_exposure.get_event_subs();
+
   // store subscription
-  // for (auto i : event_subscriptions) {
-  //  ss.get()->ev_type = i.amf_event;
-  //  add_event_subscription(evsub_id, i.amf_event, ss);
-  //}
+  for (auto i : event_subscriptions) {
+    ss.get()->ev_type = i.type;
+    add_event_subscription(evsub_id, i.type, ss);
+  }
   return evsub_id;
+}
+
+bool amf_app::handle_event_exposure_delete(const std::string& subscription_id) {
+  // verify Subscription ID
+  evsub_id_t sub_id = {};
+  try {
+    sub_id = std::stoi(subscription_id);
+  } catch (const std::exception& err) {
+    Logger::amf_app().warn(
+        "Received a Unsubscribe Request, couldn't find the corresponding "
+        "subscription");
+    return false;
+  }
+
+  return remove_event_subscription(sub_id);
 }
 
 //------------------------------------------------------------------------------
@@ -520,6 +539,26 @@ void amf_app::add_event_subscription(
       "Add an Event subscription (Sub ID %d, Event %d)", sub_id, (uint8_t) ev);
   std::unique_lock lock(m_amf_event_subscriptions);
   amf_event_subscriptions.emplace(std::make_pair(sub_id, ev), ss);
+}
+
+//---------------------------------------------------------------------------------------------
+bool amf_app::remove_event_subscription(evsub_id_t sub_id) {
+  Logger::amf_app().debug("Remove an Event subscription (Sub ID %d)", sub_id);
+  std::unique_lock lock(m_amf_event_subscriptions);
+  for (auto it = amf_event_subscriptions.cbegin();
+       it != amf_event_subscriptions.cend();) {
+    if ((uint8_t) std::get<0>(it->first) == (uint32_t) sub_id) {
+      Logger::amf_app().debug(
+          "Found an event subscription (Event ID %d)",
+          (uint8_t) std::get<0>(it->first));
+      amf_event_subscriptions.erase(it++);
+      // it = amf_event_subscriptions.erase(it)
+      return true;
+    } else {
+      ++it;
+    }
+  }
+  return false;
 }
 
 //---------------------------------------------------------------------------------------------
