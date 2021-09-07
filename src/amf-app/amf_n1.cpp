@@ -2811,23 +2811,41 @@ void amf_n1::get_5gmm_state(
 void amf_n1::handle_ue_reachability_status_change(
     std::string supi, uint8_t http_version) {
   Logger::amf_n1().debug(
-      "Send request to SBI to triger UE Reachability Status Notification (SUPI "
+      "Send request to SBI to triger UE Reachability Report (SUPI "
       "%s )",
       supi.c_str());
 
-  std::shared_ptr<itti_sbi_notify_subscribed_event> itti_msg =
-      std::make_shared<itti_sbi_notify_subscribed_event>(
-          TASK_AMF_N1, TASK_AMF_N11);
+  std::vector<std::shared_ptr<amf_subscription>> subscriptions = {};
+  amf_app_inst->get_ee_subscriptions(
+      amf_event_type_t::REACHABILITY_REPORT, subscriptions);
 
-  // TODO:
-  itti_msg->notif_id     = "";
-  itti_msg->http_version = 1;
+  if (subscriptions.size() > 0) {
+    // Send request to SBI to trigger the notification to the subscribed event
+    Logger::amf_app().debug(
+        "Send ITTI msg to AMF SBI to trigger the event notification");
 
-  // std::vector<amf_application::event_notification> event_notifs;
-  int ret = itti_inst->send_msg(itti_msg);
-  if (0 != ret) {
-    Logger::amf_n1().error(
-        "Could not send ITTI message %s to task TASK_AMF_N11",
-        itti_msg->get_msg_name());
+    std::shared_ptr<itti_sbi_notify_subscribed_event> itti_msg =
+        std::make_shared<itti_sbi_notify_subscribed_event>(
+            TASK_AMF_N1, TASK_AMF_N11);
+
+    // TODO:
+    // itti_msg->notif_id     = "";
+    itti_msg->http_version = 1;
+
+    for (auto i : subscriptions) {
+      event_notification ev_notif = {};
+      ev_notif.set_notify_correlation_id(i.get()->notify_correlation_id);
+      // ev_notif.set_subs_change_notify_correlation_id(i.get()->notify_uri);
+      amf_event_report_t report = {};
+      ev_notif.add_report(report);
+      itti_msg->event_notifs.push_back(ev_notif);
+    }
+
+    int ret = itti_inst->send_msg(itti_msg);
+    if (0 != ret) {
+      Logger::amf_n1().error(
+          "Could not send ITTI message %s to task TASK_AMF_N11",
+          itti_msg->get_msg_name());
+    }
   }
 }

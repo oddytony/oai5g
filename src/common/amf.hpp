@@ -150,4 +150,6 @@ typedef uint32_t evsub_id_t;
 #define INVALID_EVSUB_ID ((evsub_id_t) 0x00000000)
 #define UNASSIGNED_EVSUB_ID ((evsub_id_t) 0x00000000)
 
+constexpr uint64_t SECONDS_SINCE_FIRST_EPOCH = 2208988800;
+
 #endif

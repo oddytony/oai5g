@@ -140,6 +140,16 @@ std::string event_notification::get_subs_change_notify_correlation_id() const {
 }
 
 //-----------------------------------------------------------------------------
+void event_notification::add_report(const amf_event_report_t& report) {
+  m_report_list.push_back(report);
+}
+
+//-----------------------------------------------------------------------------
+std::vector<amf_event_report_t> event_notification::get_reports() const {
+  return m_report_list;
+}
+
+//-----------------------------------------------------------------------------
 void data_notification_msg::set_notification_event_type(
     const std::string& type) {
   notification_event_type = type;

@@ -86,6 +86,8 @@ class event_notification {
   std::string get_notify_correlation_id() const;
   void set_subs_change_notify_correlation_id(std::string const& value);
   std::string get_subs_change_notify_correlation_id() const;
+  void add_report(const amf_event_report_t& report);
+  std::vector<amf_event_report_t> get_reports() const;
 
  private:
   std::string m_notify_correlation_id;  // notifyCorrelationId
@@ -93,7 +95,7 @@ class event_notification {
   std::string
       m_subs_change_notify_correlation_id;  // SubsChangeNotifyCorrelationId;
   bool m_subs_change_notify_correlation_id_is_set;
-  // std::vector<AmfEventReport> m_report_list; //Report List
+  std::vector<amf_event_report_t> m_report_list;  // Report List
   bool m_report_list_is_set;
 };
 

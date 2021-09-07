@@ -44,7 +44,7 @@ class amf_subscription {
   amf_event_type_t ev_type;
   supi64_t supi;
   std::string notify_correlation_id;
-  std::string notify_uri;
+  std::string notify_uri;  // subsChangeNotifyUri ?
   std::string nf_id;
 };
 
