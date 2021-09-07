@@ -33,7 +33,7 @@ namespace bs2 = boost::signals2;
 #include "amf.hpp"
 #include "amf_event_sig.hpp"
 
-namespace amf {
+namespace amf_application {
 class amf_event {
  public:
   amf_event(){};
@@ -47,7 +47,7 @@ class amf_event {
 
   // class register/handle event
   friend class amf_app;
-  friend class amf_context;
+  friend class amf_n1;
   friend class amf_profile;
 
   /*
@@ -64,4 +64,4 @@ class amf_event {
   ue_reachability_status_sig_t
       ue_reachability_status;  // Signal for UE Reachability Report
 };
-}  // namespace amf
+}  // namespace amf_application

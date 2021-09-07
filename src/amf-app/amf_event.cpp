@@ -28,8 +28,7 @@
  */
 
 #include "amf_event.hpp"
-#include "amf_app.hpp"
-
+using namespace amf_application;
 //------------------------------------------------------------------------------
 bs2::connection amf_event::subscribe_ue_reachability_status(
     const ue_reachability_status_sig_t::slot_type& sig) {

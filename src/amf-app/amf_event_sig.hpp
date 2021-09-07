@@ -35,7 +35,7 @@
 
 namespace bs2 = boost::signals2;
 
-namespace amf {
+namespace amf_application {
 
 // Signal for UE Reachability Report
 // SUPI, HTTP version
@@ -44,5 +44,5 @@ typedef bs2::signal_type<
     bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
     ue_reachability_status_sig_t;
 
-}  // namespace amf
+}  // namespace amf_application
 #endif

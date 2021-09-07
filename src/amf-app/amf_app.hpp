@@ -59,8 +59,6 @@ static uint32_t amf_app_ue_ngap_id_generator = 1;
 
 namespace amf_application {
 
-using namespace amf;
-
 #define TASK_AMF_APP_PERIODIC_STATISTICS (0)
 
 class amf_app {

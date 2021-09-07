@@ -48,7 +48,6 @@ using namespace ngap;
 using namespace nas;
 using namespace amf_application;
 using namespace config;
-using namespace amf;
 
 extern void print_buffer(
     const std::string app, const std::string commit, uint8_t* buf, int len);

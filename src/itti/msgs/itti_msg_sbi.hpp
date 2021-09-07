@@ -93,4 +93,26 @@ class itti_sbi_notification_data : public itti_sbi_msg {
   uint8_t http_version;
 };
 
+//-----------------------------------------------------------------------------
+class itti_sbi_notify_subscribed_event : public itti_sbi_msg {
+ public:
+  itti_sbi_notify_subscribed_event(const task_id_t orig, const task_id_t dest)
+      : itti_sbi_msg(SBI_NOTIFY_SUBSCRIBED_EVENT, orig, dest),
+        notif_id(),
+        http_version() {}
+
+  itti_sbi_notify_subscribed_event(const itti_sbi_notify_subscribed_event& i)
+      : itti_sbi_msg(i), notif_id(i.notif_id), http_version(i.http_version) {}
+  itti_sbi_notify_subscribed_event(
+      const itti_sbi_notify_subscribed_event& i, const task_id_t orig,
+      const task_id_t dest)
+      : itti_sbi_msg(i, orig, dest),
+        notif_id(i.notif_id),
+        http_version(i.http_version) {}
+  const char* get_msg_name() { return "SBI_NOTIFY_SUBSCRIBED_EVENT"; };
+
+  std::string notif_id;
+  std::vector<amf_application::event_notification> event_notifs;
+  uint8_t http_version;
+};
 #endif /* ITTI_MSG_SBI_HPP_INCLUDED_ */

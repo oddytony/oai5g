@@ -30,7 +30,7 @@
 #include "3gpp_29.518.h"
 #include "amf.hpp"
 
-namespace amf {
+namespace amf_application {
 
 /*
  * Manage the Subscription Info
@@ -48,4 +48,4 @@ class amf_subscription {
   std::string nf_id;
 };
 
-}  // namespace amf
+}  // namespace amf_application

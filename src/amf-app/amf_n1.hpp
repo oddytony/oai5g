@@ -44,6 +44,7 @@
 #include "mysql_db.hpp"
 #include "nas_context.hpp"
 #include "pdu_session_context.hpp"
+#include "amf_event.hpp"
 
 namespace amf_application {
 
@@ -154,7 +155,10 @@ class amf_n1 {
   void set_5gmm_state(std::shared_ptr<nas_context> nc, _5gmm_state_t state);
   void get_5gmm_state(std::shared_ptr<nas_context> nc, _5gmm_state_t& state);
 
- private:  // nas message handlers
+  void handle_ue_reachability_status_change(
+      std::string supi, uint8_t http_version);
+
+ private:
   void ue_initiate_de_registration_handle(
       uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas);
   void registration_request_handle(
@@ -188,6 +192,10 @@ class amf_n1 {
   // response message
   void response_registration_reject_msg(
       uint8_t cause_value, uint32_t ran_ue_ngap_id, long amf_ue_ngap_id);
+
+  // for Event Handling
+  amf_event event_sub;
+  bs2::connection ee_ue_reachability_status_connection;
 };
 }  // namespace amf_application
 
