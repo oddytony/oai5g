@@ -46,7 +46,7 @@ class IndividualSubscriptionDocumentApiEventExposure {
   virtual ~IndividualSubscriptionDocumentApiEventExposure() = default;
   void init();
 
-  const std::string base = "/namf-comm/";
+  const std::string base = "/namf-evts/";
 
  private:
   void setupRoutes();

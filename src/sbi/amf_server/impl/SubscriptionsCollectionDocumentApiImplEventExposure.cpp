@@ -68,7 +68,7 @@ void SubscriptionsCollectionDocumentApiImplEventExposure::create_subscription(
     std::string location =
         std::string(inet_ntoa(*((struct in_addr*) &amf_cfg.n11.addr4))) + ":" +
         std::to_string(amf_cfg.n11.port) + base + amf_cfg.sbi_api_version +
-        "/namf_event-exposure/" + std::to_string(sub_id);
+        "/namf-evts/" + std::to_string(sub_id);
 
     json_data["subscriptionId"] = location;
     response.headers().add<Pistache::Http::Header::Location>(

@@ -33,7 +33,6 @@ void IndividualSubscriptionDocumentApiImplEventExposure::delete_subscription(
       "SubscriptionsCollectionDocumentApiImplEventExposure::delete_"
       "subscription");
 
-  // Create a  message and store the necessary information
   Logger::amf_server().debug(
       "Delete a subscription with ID %s", subscriptionId.c_str());
 
