@@ -2837,6 +2837,12 @@ void amf_n1::handle_ue_reachability_status_change(
       ev_notif.set_notify_correlation_id(i.get()->notify_correlation_id);
       // ev_notif.set_subs_change_notify_correlation_id(i.get()->notify_uri);
       amf_event_report_t report = {};
+      // TODO
+      report.m_type                = REACHABILITY_REPORT;
+      report.m_reachability_is_set = true;
+      report.m_reachability        = REACHABLE;  // TODO
+      report.m_supi_is_set         = true;
+      report.m_supi                = supi;
       ev_notif.add_report(report);
       itti_msg->event_notifs.push_back(ev_notif);
     }

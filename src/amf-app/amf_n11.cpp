@@ -474,6 +474,10 @@ void amf_n11::handle_itti_message(itti_sbi_notify_subscribed_event& itti_msg) {
       if (r.m_supi_is_set) {
         report["supi"] = r.m_supi;  // TODO
       }
+      if (r.m_reachability_is_set) {
+        report["reachability"] = r.m_reachability;
+      }
+
       // timestamp
       std::time_t time_epoch_ntp = std::time(nullptr);
       uint64_t tv_ntp            = time_epoch_ntp + SECONDS_SINCE_FIRST_EPOCH;
