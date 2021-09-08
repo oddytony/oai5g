@@ -27,6 +27,7 @@
  */
 
 #include "NGSetupResponse.hpp"
+#include "logger.hpp"
 
 extern "C" {
 #include "asn_codecs.h"
@@ -43,13 +44,13 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 NGSetupResponseMsg::NGSetupResponseMsg() {
-  ngSetupResponsePdu  = NULL;
-  ngSetupResponsIEs   = NULL;
-  amfName             = NULL;
-  servedGUAMIList     = NULL;
-  relativeAmfCapacity = NULL;
-  plmnSupportList     = NULL;
-  // criticalityDiagnostics = NULL;
+  ngSetupResponsePdu  = nullptr;
+  ngSetupResponsIEs   = nullptr;
+  amfName             = nullptr;
+  servedGUAMIList     = nullptr;
+  relativeAmfCapacity = nullptr;
+  plmnSupportList     = nullptr;
+  // criticalityDiagnostics = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -75,9 +76,8 @@ void NGSetupResponseMsg::setMessageType() {
     ngSetupResponsIEs = &(ngSetupResponsePdu->choice.successfulOutcome->value
                               .choice.NGSetupResponse);
   } else {
-    cout << "[warning] This information doesn't refer to NGSetupRespons "
-            "Message!!!"
-         << endl;
+    Logger::ngap().warn(
+        "This information doesn't refer to NGSetupRespons message!");
   }
 }
 
@@ -94,12 +94,12 @@ void NGSetupResponseMsg::setAMFName(const std::string name) {
 
   int ret = amfName->encode2AmfName(&ie->value.choice.AMFName);
   if (!ret) {
-    cout << "encode AmfName IE error" << endl;
+    Logger::ngap().error("Encode NGAP AMFName IE error");
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&ngSetupResponsIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode AmfName IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP AMFName IE error");
 }
 
 //------------------------------------------------------------------------------
@@ -139,7 +139,7 @@ void NGSetupResponseMsg::setGUAMIList(std::vector<struct GuamiItem_s> list) {
   servedGUAMIList->encode2ServedGUAMIList(&ie->value.choice.ServedGUAMIList);
 
   int ret = ASN_SEQUENCE_ADD(&ngSetupResponsIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode ServedGUAMIList IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP ServedGUAMIList IE error");
 }
 
 //------------------------------------------------------------------------------
@@ -157,7 +157,8 @@ void NGSetupResponseMsg::setRelativeAmfCapacity(long capacity) {
       &ie->value.choice.RelativeAMFCapacity);
 
   int ret = ASN_SEQUENCE_ADD(&ngSetupResponsIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode RelativeAMFCapacity IE error" << endl;
+  if (ret != 0)
+    Logger::ngap().error("Encode NGAP RelativeAMFCapacity IE error");
 }
 
 //------------------------------------------------------------------------------
@@ -192,7 +193,7 @@ void NGSetupResponseMsg::setPlmnSupportList(
   plmnSupportList->encode2PLMNSupportList(&ie->value.choice.PLMNSupportList);
 
   int ret = ASN_SEQUENCE_ADD(&ngSetupResponsIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode PLMNSupportList IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP PLMNSupportList IE error");
 }
 
 //------------------------------------------------------------------------------
@@ -200,7 +201,7 @@ int NGSetupResponseMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, ngSetupResponsePdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, ngSetupResponsePdu, buf, buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().debug("er.encoded (%d)", er.encoded);
   return er.encoded;
 }
 
@@ -220,13 +221,13 @@ bool NGSetupResponseMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
       ngSetupResponsIEs = &ngSetupResponsePdu->choice.successfulOutcome->value
                                .choice.NGSetupResponse;
     } else {
-      cout << "Check NGSetupResponse message error!!!" << endl;
+      Logger::ngap().error("Check NGSetupResponse message error");
       return false;
     }
   } else {
-    cout << "MessageType error!!!" << endl;
-    cout << "ngSetupResponsePdu->present == " << ngSetupResponsePdu->present
-         << endl;
+    Logger::ngap().error(
+        "MessageType error, ngSetupResponsePdu->present %d",
+        ngSetupResponsePdu->present);
     return false;
   }
   for (int i = 0; i < ngSetupResponsIEs->protocolIEs.list.count; i++) {
@@ -240,11 +241,11 @@ bool NGSetupResponseMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!amfName->decodefromAmfName(
                   &ngSetupResponsIEs->protocolIEs.list.array[i]
                        ->value.choice.AMFName)) {
-            cout << "decoded ngap AmfName IE error" << endl;
+            Logger::ngap().error("Decoded NGAP AMFName error");
             return false;
           }
         } else {
-          cout << "decoded ngap AmfName IE error" << endl;
+          Logger::ngap().error("Decoded NGAP AMFName error");
           return false;
         }
       } break;
@@ -257,11 +258,11 @@ bool NGSetupResponseMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!servedGUAMIList->decodefromServedGUAMIList(
                   &ngSetupResponsIEs->protocolIEs.list.array[i]
                        ->value.choice.ServedGUAMIList)) {
-            cout << "decoded ngap ServedGUAMIList IE error!" << endl;
+            Logger::ngap().error("Decoded NGAP ServedGUAMIList error");
             return false;
           }
         } else {
-          cout << "decoded ngap ServedGUAMIList IE error" << endl;
+          Logger::ngap().error("Decoded NGAP ServedGUAMIList error");
           return false;
         }
       } break;
@@ -274,11 +275,11 @@ bool NGSetupResponseMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!relativeAmfCapacity->decodefromRelativeAMFCapacity(
                   &ngSetupResponsIEs->protocolIEs.list.array[i]
                        ->value.choice.RelativeAMFCapacity)) {
-            cout << "decoded ngap RelativeAMFCapacity IE error" << endl;
+            Logger::ngap().error("Decoded NGAP RelativeAMFCapacity error");
             return false;
           }
         } else {
-          cout << "decoded ngap RelativeAMFCapacity IE error" << endl;
+          Logger::ngap().error("Decoded NGAP RelativeAMFCapacity error");
           return false;
         }
       } break;
@@ -291,19 +292,20 @@ bool NGSetupResponseMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!plmnSupportList->decodefromPLMNSupportList(
                   &ngSetupResponsIEs->protocolIEs.list.array[i]
                        ->value.choice.PLMNSupportList)) {
-            cout << "decoded ngap PLMNSupportList IE error" << endl;
+            Logger::ngap().error("Decoded NGAP PLMNSupportList error");
             return false;
           }
         } else {
-          cout << "decoded ngap PLMNSupportList IE error!" << endl;
+          Logger::ngap().error("Decoded NGAP PLMNSupportList error");
           return false;
         }
       } break;
       case Ngap_ProtocolIE_ID_id_CriticalityDiagnostics: {
         cout << "decoded ngap: This is CriticalityDiagnostics IE" << endl;
+        Logger::ngap().debug("Decoded NGAP CriticalityDiagnostics");
       } break;
       default: {
-        cout << "decoded ngap message pdu error" << endl;
+        Logger::ngap().error("Decoded NGAP Message PDU error");
         return false;
       }
     }

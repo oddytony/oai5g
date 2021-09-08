@@ -20,6 +20,7 @@
  */
 
 #include "DownlinkRANStatusTransfer.hpp"
+#include "logger.hpp"
 
 #include <iostream>
 #include <vector>
@@ -31,6 +32,7 @@ extern "C" {
 using namespace std;
 namespace ngap {
 
+//------------------------------------------------------------------------------
 DownlinkRANStatusTransfer::DownlinkRANStatusTransfer() {
   amfUeNgapId                            = nullptr;
   ranUeNgapId                            = nullptr;
@@ -39,8 +41,10 @@ DownlinkRANStatusTransfer::DownlinkRANStatusTransfer() {
   DownlinkranstatustransferPDU           = nullptr;
 }
 
+//------------------------------------------------------------------------------
 DownlinkRANStatusTransfer::~DownlinkRANStatusTransfer() {}
 
+//------------------------------------------------------------------------------
 void DownlinkRANStatusTransfer::setAmfUeNgapId(unsigned long id) {
   if (!amfUeNgapId) amfUeNgapId = new AMF_UE_NGAP_ID();
   amfUeNgapId->setAMF_UE_NGAP_ID(id);
@@ -55,16 +59,18 @@ void DownlinkRANStatusTransfer::setAmfUeNgapId(unsigned long id) {
 
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error");
+
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&DownlinkranstatustransferIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error");
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 void DownlinkRANStatusTransfer::setRanUeNgapId(uint32_t id) {
   if (!ranUeNgapId) ranUeNgapId = new RAN_UE_NGAP_ID();
   ranUeNgapId->setRanUeNgapId(id);
@@ -79,16 +85,17 @@ void DownlinkRANStatusTransfer::setRanUeNgapId(uint32_t id) {
 
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&DownlinkranstatustransferIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error");
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
     long drb_id, long ul_pcdp, long ul_hfn_pdcp, long dl_pcdp,
     long dl_hfn_pdcp) {
@@ -97,7 +104,7 @@ void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
         new RANStatusTransferTransparentContainer();
   }
   Ngap_DRB_ID_t* dRB_id = (Ngap_DRB_ID_t*) calloc(1, sizeof(Ngap_DRB_ID_t));
-  dRB_id                = &drb_id;
+  *dRB_id               = drb_id;
   COUNTValueForPDCP_SN18* UL_value =
       (COUNTValueForPDCP_SN18*) calloc(1, sizeof(COUNTValueForPDCP_SN18));
   UL_value->setvalue(ul_pcdp, ul_hfn_pdcp);
@@ -128,7 +135,8 @@ void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
                  ->encoderanstatustransfer_transparentcontainer(
                      &ie->value.choice.RANStatusTransfer_TransparentContainer);
   if (!ret) {
-    cout << "encode ranstatustransfer_transparentcontainer error" << endl;
+    Logger::ngap().error(
+        "Encode RANStatusTransfer_TransparentContainer IE error");
     // free_wrapper((void**) &dRB_id);
     free_wrapper((void**) &UL_value);
     free_wrapper((void**) &DL_value);
@@ -142,7 +150,8 @@ void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
   }
   if (ASN_SEQUENCE_ADD(&DownlinkranstatustransferIEs->protocolIEs.list, ie) !=
       0) {
-    cout << "encode ranstatustransfer_transparentcontainer error 2" << endl;
+    Logger::ngap().error(
+        "Encode ranstatustransfer_transparentcontainer IE error");
   }
   /* free_wrapper((void**) &dRB_id);
    free_wrapper((void**) &UL_value);
@@ -157,6 +166,7 @@ void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
    */
 }
 
+//------------------------------------------------------------------------------
 void DownlinkRANStatusTransfer::setmessagetype() {
   if (!DownlinkranstatustransferPDU) {
     DownlinkranstatustransferPDU =
@@ -180,18 +190,18 @@ void DownlinkRANStatusTransfer::setmessagetype() {
         &(DownlinkranstatustransferPDU->choice.initiatingMessage->value.choice
               .DownlinkRANStatusTransfer);
   } else {
-    cout << "[warning] This information doesn't refer to "
-            "downlinkranstatustransfer Message!!!"
-         << endl;
+    Logger::ngap().warn(
+        "This information doesn't refer to DownlinkRANStatusTransfer Message");
   }
 }
 
+//------------------------------------------------------------------------------
 int DownlinkRANStatusTransfer::encodetobuffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, DownlinkranstatustransferPDU);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, DownlinkranstatustransferPDU, buf,
       buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().debug("er.encoded( %d )", er.encoded);
   return er.encoded;
 }
 }  // namespace ngap

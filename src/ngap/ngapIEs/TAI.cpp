@@ -35,8 +35,8 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 TAI::TAI() {
-  plmnId = NULL;
-  tac    = NULL;
+  plmnId = nullptr;
+  tac    = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ bool TAI::decodefromTAI(Ngap_TAI_t* tai) {
 
 //------------------------------------------------------------------------------
 void TAI::getTAI(PlmnId*& m_plmnId, TAC*& m_tac) {
-  m_plmnId = plmnId;
-  m_tac    = tac;
+  if (plmnId) m_plmnId = plmnId;
+  if (tac) m_tac = tac;
 }
 }  // namespace ngap

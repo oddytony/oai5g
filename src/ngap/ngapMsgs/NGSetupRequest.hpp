@@ -70,7 +70,6 @@ class NGSetupRequestMsg {
   Ngap_NGAP_PDU_t* ngSetupRequestPdu;
   Ngap_NGSetupRequest_t* ngSetupRequestIEs;
 
-  /***************** for decoding ****************/
   GlobalRanNodeId* globalRanNodeId;
   RanNodeName* ranNodeName;
   SupportedTAList* supportedTAList;

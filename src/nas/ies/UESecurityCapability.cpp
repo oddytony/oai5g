@@ -36,6 +36,8 @@ UESecurityCapability::UESecurityCapability(uint8_t iei) {
   _iei      = iei;
   _5g_EASel = 0;
   _5g_IASel = 0;
+  EEASel    = 0;
+  EIASel    = 0;
   length    = 0;
 }
 
@@ -44,6 +46,8 @@ UESecurityCapability::UESecurityCapability() {
   _iei      = 0;
   _5g_EASel = 0;
   _5g_IASel = 0;
+  EEASel    = 0;
+  EIASel    = 0;
   length    = 0;
 }
 

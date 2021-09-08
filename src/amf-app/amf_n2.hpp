@@ -65,6 +65,7 @@ class amf_n2 : public ngap::ngap_app {
   void send_handover_preparation_failure(
       const unsigned long amf_ue_ngap_id, const uint32_t ran_ue_ngap_id,
       const sctp_assoc_id_t& gnb_assoc_id);
+  void handle_itti_message(itti_paging& itti_msg);
 
   bool verifyPlmn(std::vector<SupportedItem_t> list);
   std::vector<SupportedItem_t> get_common_plmn(

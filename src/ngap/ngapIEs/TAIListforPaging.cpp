@@ -19,14 +19,11 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
+#include "TAIListforPaging.hpp"
 
-#include "PacketLossRate.hpp"
+extern "C" {
+#include "Ngap_TAIListForPagingItem.h"
+}
 
 #include <iostream>
 using namespace std;
@@ -34,38 +31,50 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PacketLossRate::PacketLossRate() {
-  packetlossrate = 0;
+TAIListForPaging::TAIListForPaging() {
+  tai      = nullptr;
+  numOftai = 0;
 }
 
 //------------------------------------------------------------------------------
-PacketLossRate::~PacketLossRate() {}
-
-//------------------------------------------------------------------------------
-void PacketLossRate::setPacketLossRate(long value) {
-  packetlossrate = value;
+TAIListForPaging::~TAIListForPaging() {
+  if (!tai) delete[] tai;
 }
 
 //------------------------------------------------------------------------------
-bool PacketLossRate::getPacketLossRate(long& value) {
-  value = packetlossrate;
+bool TAIListForPaging::encode2TAIListForPaging(Ngap_TAIListForPaging_t* pdu) {
+  for (int i = 0; i < numOftai; i++) {
+    Ngap_TAIListForPagingItem_t* ta = (Ngap_TAIListForPagingItem_t*) calloc(
+        1, sizeof(Ngap_TAIListForPagingItem_t));
+    if (!tai[i].encode2TAI(&ta->tAI)) return false;
+    if (ASN_SEQUENCE_ADD(&pdu->list, ta) != 0) return false;
+  }
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool TAIListForPaging::decodefromTAIListForPaging(
+    Ngap_TAIListForPaging_t* pdu) {
+  numOftai = pdu->list.count;
+  if (numOftai < 0) return false;
+  tai = new TAI[numOftai];
+  for (int i = 0; i < numOftai; i++) {
+    if (!tai[i].decodefromTAI(&pdu->list.array[i]->tAI)) return false;
+  }
 
   return true;
 }
 
 //------------------------------------------------------------------------------
-bool PacketLossRate::encode2PacketLossRate(
-    Ngap_PacketLossRate_t* packetLossRate) {
-  *packetLossRate = packetlossrate;
-
-  return true;
+void TAIListForPaging::setTAIListForPaging(TAI* m_tai, int numOfItem) {
+  tai      = m_tai;
+  numOftai = numOfItem;
 }
 
 //------------------------------------------------------------------------------
-bool PacketLossRate::decodefromPacketLossRate(
-    Ngap_PacketLossRate_t* packetLossRate) {
-  packetlossrate = *packetLossRate;
-
-  return true;
+void TAIListForPaging::getTAIListForPaging(TAI*& m_tai, int& numOfItem) {
+  m_tai     = tai;
+  numOfItem = numOftai;
 }
+
 }  // namespace ngap

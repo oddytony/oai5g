@@ -54,8 +54,8 @@ class HandoverRequestAck {
   int encode2buffer(uint8_t* buf, int buf_size);
   bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
 
-  unsigned long getAmfUeNgapId();  // return -1;
-  uint32_t getRanUeNgapId();       // return -1;
+  unsigned long getAmfUeNgapId();
+  uint32_t getRanUeNgapId();
 
   void setMessageType();  // Initialize the PDU and populate the MessageType;
   OCTET_STRING_t getTargetToSource_TransparentContainer();

@@ -101,6 +101,7 @@ int CriticalityDiagnostics::encode2pdu(Ngap_NGSetupFailure_t* ngSetupFailure) {
     ie->value.choice.CriticalityDiagnostics.procedureCriticality =
         procedureCriticalityIE;
   }
+
   if (numberOfIEsCriticalityDiagnostics) {
     Ngap_CriticalityDiagnostics_IE_List_t* ieList =
         (Ngap_CriticalityDiagnostics_IE_List_t*) calloc(
@@ -109,8 +110,10 @@ int CriticalityDiagnostics::encode2pdu(Ngap_NGSetupFailure_t* ngSetupFailure) {
       Ngap_CriticalityDiagnostics_IE_Item_t* ieItem =
           (Ngap_CriticalityDiagnostics_IE_Item_t*) calloc(
               1, sizeof(Ngap_CriticalityDiagnostics_IE_Item_t));
-      iEsCriticalityDiagnostics[i].encode2pdu(ieItem);
-      ASN_SEQUENCE_ADD(&ieList->list, ieItem);
+      if (iEsCriticalityDiagnostics) {
+        iEsCriticalityDiagnostics[i].encode2pdu(ieItem);
+        ASN_SEQUENCE_ADD(&ieList->list, ieItem);
+      }
     }
     ie->value.choice.CriticalityDiagnostics.iEsCriticalityDiagnostics = ieList;
   }

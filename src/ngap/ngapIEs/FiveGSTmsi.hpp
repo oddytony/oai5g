@@ -47,9 +47,13 @@ class FiveGSTmsi {
  public:
   bool decodefrompdu(Ngap_FiveG_S_TMSI_t pdu);
   void getValue(std::string& value);
+  void getValue(std::string& setid, std::string& pointer, std::string& tmsi);
+  void setValue(std::string& setid, std::string& pointer, std::string& tmsi);
+  bool encode2pdu(Ngap_FiveG_S_TMSI_t* pdu);
 
  private:
   std::string _5g_s_tmsi;
+  std::string tmsi_value;
 
   AMFSetID amfSetid;
   AMFPointer amfPointer;

@@ -69,8 +69,6 @@ class NGSetupResponseMsg {
   Ngap_NGAP_PDU_t* ngSetupResponsePdu;
   Ngap_NGSetupResponse_t* ngSetupResponsIEs;
 
-  /***************** for decoding ****************/
-
   AmfName* amfName;
   ServedGUAMIList* servedGUAMIList;
   RelativeAMFCapacity* relativeAmfCapacity;

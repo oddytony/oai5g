@@ -39,20 +39,20 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 AmfName::AmfName() {
-  amfname = NULL;
+  amfname = nullptr;
 }
 
 //------------------------------------------------------------------------------
 AmfName::~AmfName() {
   free(amfname);
-  amfname = NULL;
+  amfname = nullptr;
 }
 
 //------------------------------------------------------------------------------
 void AmfName::setValue(const std::string m_amfName) {
   if (amfname) {
     free(amfname);
-    amfname = NULL;
+    amfname = nullptr;
   }
   amfname = (char*) calloc(1, m_amfName.size() + 1);
   memcpy(amfname, m_amfName.c_str(), m_amfName.size());
@@ -61,13 +61,14 @@ void AmfName::setValue(const std::string m_amfName) {
 
 //------------------------------------------------------------------------------
 void AmfName::getValue(std::string& m_amfName) {
-  m_amfName = amfname;
+  if (amfname) m_amfName = amfname;
 }
 
 //------------------------------------------------------------------------------
 bool AmfName::encode2AmfName(Ngap_AMFName_t* amfNameIe) {
-  if (OCTET_STRING_fromBuf(amfNameIe, amfname, strlen(amfname)) < 0)
-    return false;
+  if (amfname)
+    if (OCTET_STRING_fromBuf(amfNameIe, amfname, strlen(amfname)) < 0)
+      return false;
 
   return true;
 }

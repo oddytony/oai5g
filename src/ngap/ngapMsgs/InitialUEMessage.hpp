@@ -67,6 +67,8 @@ class InitialUEMessageMsg {
   int getRRCEstablishmentCause();
   int getUeContextRequest();
   bool get5GS_TMSI(std::string& _5g_s_tmsi);
+  bool get5GS_TMSI(
+      std ::string& setid, std ::string& pointer, std ::string& tmsi);
 
  private:
   Ngap_NGAP_PDU_t* initialUEMessagePdu;

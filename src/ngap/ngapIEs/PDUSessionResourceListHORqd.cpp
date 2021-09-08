@@ -67,8 +67,10 @@ bool PDUSessionResourceListHORqd::decodefromPDUSessionResourceListHORqd(
 }
 void PDUSessionResourceListHORqd::getPDUSessionResourceListHORqd(
     PDUSessionResourceItemHORqd*& m_pduSessionResourceItemHORqd, int& num) {
-  m_pduSessionResourceItemHORqd = pduSessionResourceItemHORqd;
-  num                           = numofpduSessionResourceItemHORqd;
+  if (pduSessionResourceItemHORqd) {
+    m_pduSessionResourceItemHORqd = pduSessionResourceItemHORqd;
+    num                           = numofpduSessionResourceItemHORqd;
+  }
 }
 
 }  // namespace ngap

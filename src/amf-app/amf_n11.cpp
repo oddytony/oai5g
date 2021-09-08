@@ -170,12 +170,23 @@ void amf_n11::handle_itti_message(
   string ue_context_key = "app_ue_ranid_" + to_string(itti_msg.ran_ue_ngap_id) +
                           ":amfid_" + to_string(itti_msg.amf_ue_ngap_id);
   std::shared_ptr<ue_context> uc = {};
+  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
+    Logger::amf_n11().error(
+        "No UE context for %s exit", ue_context_key.c_str());
+    return;
+  }
+
   uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
 
   std::string supi = {};
   if (uc.get() != nullptr) {
     supi = uc->supi;
+  } else {
+    Logger::amf_n11().error(
+        "Could not find UE context with key %s", ue_context_key.c_str());
+    return;
   }
+
   Logger::amf_n11().debug(
       "Send PDU Session Update SM Context Request to SMF (SUPI %s, PDU Session "
       "ID %d)",
@@ -217,34 +228,42 @@ void amf_n11::handle_itti_message(
 
   Logger::amf_n11().debug("SMF URI: %s", remote_uri.c_str());
 
+  std::string n2SmMsg                       = {};
   nlohmann::json pdu_session_update_request = {};
-  // if (itti_msg.is_n2sm_set){
-  pdu_session_update_request["n2SmInfoType"]          = itti_msg.n2sm_info_type;
-  pdu_session_update_request["n2SmInfo"]["contentId"] = "n2msg";
-  std::string json_part = pdu_session_update_request.dump();
-  std::string n2SmMsg   = {};
-  octet_stream_2_hex_stream(
-      (uint8_t*) bdata(itti_msg.n2sm), blength(itti_msg.n2sm), n2SmMsg);
+  if (itti_msg.is_n2sm_set) {
+    pdu_session_update_request["n2SmInfoType"] = itti_msg.n2sm_info_type;
+    pdu_session_update_request["n2SmInfo"]["contentId"] = "n2msg";
+    octet_stream_2_hex_stream(
+        (uint8_t*) bdata(itti_msg.n2sm), blength(itti_msg.n2sm), n2SmMsg);
+  }
 
   // For N2 HO
-  if (itti_msg.n2sm_info_type.compare("HANDOVER_REQUIRED") == 0) {
+  if (itti_msg.ho_state.compare("PREPARING") == 0) {
     pdu_session_update_request["hoState"] = "PREPARING";
-  } else if (itti_msg.n2sm_info_type.compare("HANDOVER_REQ_ACK") == 0) {
+  } else if (itti_msg.ho_state.compare("PREPARED") == 0) {
     pdu_session_update_request["hoState"] = "PREPARED";
-  } else if (itti_msg.n2sm_info_type.compare("SECONDARY_RAT_USAGE") == 0) {
+  } else if (itti_msg.ho_state.compare("COMPLETED") == 0) {
     pdu_session_update_request["hoState"] = "COMPLETED";
   }
+
+  std::string json_part = pdu_session_update_request.dump();
 
   curl_http_client(
       remote_uri, json_part, "", n2SmMsg, supi, itti_msg.pdu_session_id,
       itti_msg.promise_id);
 
-  stacs.display();
+  // stacs.display();
 }
 
 //------------------------------------------------------------------------------
 void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
   Logger::amf_n11().debug("Handle ITTI SMF_PDU_SESSION_CREATE_SM_CTX");
+
+  if (!amf_n1_inst->is_amf_ue_id_2_nas_context(smf.amf_ue_ngap_id)) {
+    Logger::amf_n2().error(
+        "No UE NAS context with amf_ue_ngap_id (0x%x)", smf.amf_ue_ngap_id);
+    return;
+  }
 
   std::shared_ptr<nas_context> nc = {};
   nc               = amf_n1_inst->amf_ue_id_2_nas_context(smf.amf_ue_ngap_id);
@@ -256,12 +275,30 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
   Logger::amf_n11().info(
       "Find ue_context in amf_app using UE Context Key: %s",
       ue_context_key.c_str());
+  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
+    Logger::amf_n11().error(
+        "No UE context for %s exit", ue_context_key.c_str());
+    return;
+  }
+
   uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+
+  if (!uc.get()) {
+    Logger::amf_n11().error(
+        "No UE context for %s exit", ue_context_key.c_str());
+    return;
+  }
+
   std::shared_ptr<pdu_session_context> psc = {};
   if (!uc.get()->find_pdu_session_context(smf.pdu_sess_id, psc)) {
     psc = std::shared_ptr<pdu_session_context>(new pdu_session_context());
     uc.get()->add_pdu_session_context(smf.pdu_sess_id, psc);
     Logger::amf_n11().debug("Create a PDU Session Context");
+  }
+
+  if (!psc.get()) {
+    Logger::amf_n11().error("No PDU Session Context found");
+    return;
   }
 
   psc.get()->amf_ue_ngap_id = nc.get()->amf_ue_ngap_id;
@@ -543,6 +580,7 @@ void amf_n11::handle_post_sm_context_response_error(
   itti_msg->is_n2sm_set    = false;
   itti_msg->supi           = supi;
   itti_msg->pdu_session_id = pdu_session_id;
+  itti_msg->is_ppi_set     = false;
   std::shared_ptr<itti_n1n2_message_transfer_request> i =
       std::shared_ptr<itti_n1n2_message_transfer_request>(itti_msg);
   int ret = itti_inst->send_msg(i);
@@ -564,6 +602,7 @@ void amf_n11::curl_http_client(
   mime_parser parser                       = {};
   std::string body                         = {};
   std::shared_ptr<pdu_session_context> psc = {};
+  bool is_multipart                        = true;
 
   if (!amf_app_inst->find_pdu_session_context(supi, pdu_session_id, psc)) {
     Logger::amf_n11().warn(
@@ -585,6 +624,9 @@ void amf_n11::curl_http_client(
     parser.create_multipart_related_content(
         body, jsonData, CURL_MIME_BOUNDARY, n2SmMsg,
         multipart_related_content_part_e::NGAP);
+  } else {
+    body         = jsonData;
+    is_multipart = false;
   }
 
   Logger::amf_n11().debug(
@@ -601,14 +643,18 @@ void amf_n11::curl_http_client(
   if (curl) {
     CURLcode res               = {};
     struct curl_slist* headers = nullptr;
-
-    std::string content_type = "content-type: multipart/related; boundary=" +
-                               std::string(CURL_MIME_BOUNDARY);
+    std::string content_type   = {};
+    if (is_multipart) {
+      content_type = "content-type: multipart/related; boundary=" +
+                     std::string(CURL_MIME_BOUNDARY);
+    } else {
+      content_type = "content-type: application/json";
+    }
     headers = curl_slist_append(headers, content_type.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curl, CURLOPT_URL, remoteUri.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, SMF_CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
     curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
 
     // Response information
@@ -635,8 +681,8 @@ void amf_n11::curl_http_client(
     nlohmann::json response_data   = {};
     bstring n1sm_hex, n2sm_hex;
 
-    Logger::amf_n11().debug("Get response with HTTP code (%d)", httpCode);
-    Logger::amf_n11().debug("response body %s", response.c_str());
+    Logger::amf_n11().info("Get response with HTTP code (%d)", httpCode);
+    Logger::amf_n11().info("Response body %s", response.c_str());
 
     if (static_cast<http_response_codes_e>(httpCode) ==
         http_response_codes_e::HTTP_RESPONSE_CODE_0) {
@@ -654,6 +700,12 @@ void amf_n11::curl_http_client(
     if (response.size() > 0) {
       number_parts = parser.parse(response, json_data_response, n1sm, n2sm);
     }
+
+    if (number_parts == 0) {
+      json_data_response = response;
+    }
+
+    Logger::amf_n11().info("Json part %s", json_data_response.c_str());
 
     if ((static_cast<http_response_codes_e>(httpCode) !=
          http_response_codes_e::HTTP_RESPONSE_CODE_200_OK) &&
@@ -759,6 +811,10 @@ void amf_n11::curl_http_client(
         itti_n1n2_message_transfer_request* itti_msg =
             new itti_n1n2_message_transfer_request(TASK_AMF_N11, TASK_AMF_APP);
 
+        itti_msg->is_n1sm_set = false;
+        itti_msg->is_n2sm_set = false;
+        itti_msg->is_ppi_set  = false;
+
         if (n1sm.size() > 0) {
           msg_str_2_msg_hex(n1sm, n1sm_hex);
           print_buffer(
@@ -826,7 +882,7 @@ bool amf_n11::discover_smf(
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, NRF_CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
     curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
 
     // Response information
@@ -937,7 +993,7 @@ void amf_n11::register_nf_instance(
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, NRF_CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
     curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
 
@@ -1012,7 +1068,7 @@ bool amf_n11::send_ue_authentication_request(
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, AUSF_CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
     curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
 
     if (http_version == 2) {
@@ -1147,10 +1203,6 @@ void amf_n11::curl_http_client(
       }
       Logger::amf_n11().debug("Error with response code %d", httpCode);
       return;
-    }
-
-    else {
-      response = *httpData.get();
     }
 
     if (!is_response_ok) {

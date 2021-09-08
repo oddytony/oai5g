@@ -58,29 +58,32 @@ namespace config {
 
 //------------------------------------------------------------------------------
 amf_config::amf_config() {
-  nrf_addr.ipv4_addr.s_addr = INADDR_ANY;
-  nrf_addr.port             = 80;
-  nrf_addr.api_version      = "v1";
-  enable_nf_registration    = false;
-  enable_smf_selection      = false;
-  enable_external_ausf      = false;
-  enable_external_udm       = false;
-  instance                  = 0;
-  n2                        = {};
-  n11                       = {};
-  statistics_interval       = 0;
-  guami                     = {};
-  guami_list                = {};
-  relativeAMFCapacity       = 0;
-  plmn_list                 = {};
-  auth_conf auth_para       = {};
-  nas_cfg                   = {};
-  smf_pool                  = {};
-  enable_nf_registration    = false;
-  enable_smf_selection      = false;
-  enable_external_ausf      = false;
-  enable_external_udm       = false;
-  use_fqdn_dns              = false;
+  nrf_addr.ipv4_addr.s_addr  = INADDR_ANY;
+  nrf_addr.port              = 80;
+  nrf_addr.api_version       = "v1";
+  ausf_addr.ipv4_addr.s_addr = INADDR_ANY;
+  ausf_addr.port             = 80;
+  ausf_addr.api_version      = "v1";
+  enable_nf_registration     = false;
+  enable_smf_selection       = false;
+  enable_external_ausf       = false;
+  enable_external_udm        = false;
+  instance                   = 0;
+  n2                         = {};
+  n11                        = {};
+  statistics_interval        = 0;
+  guami                      = {};
+  guami_list                 = {};
+  relativeAMFCapacity        = 0;
+  plmn_list                  = {};
+  auth_conf auth_para        = {};
+  nas_cfg                    = {};
+  smf_pool                   = {};
+  enable_nf_registration     = false;
+  enable_smf_selection       = false;
+  enable_external_ausf       = false;
+  enable_external_udm        = false;
+  use_fqdn_dns               = false;
 
   struct {
     struct in_addr ipv4_addr;
@@ -129,7 +132,7 @@ int amf_config::load(const std::string& config_file) {
     const Setting& amf_cfg = root[AMF_CONFIG_STRING_AMF_CONFIG];
   } catch (const SettingNotFoundException& nfex) {
     Logger::amf_app().error("%s : %s", nfex.what(), nfex.getPath());
-    return -1;
+    return RETURNerror;
   }
 
   // Instance
@@ -283,7 +286,7 @@ int amf_config::load(const std::string& config_file) {
   } catch (const SettingNotFoundException& nfex) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
-    return -1;
+    return RETURNerror;
   }
 
   // Network interfaces
@@ -396,34 +399,52 @@ int amf_config::load(const std::string& config_file) {
     }
 
     // AUSF
-    // TODO: add FQDN option
-    const Setting& ausf_cfg       = new_if_cfg[AMF_CONFIG_STRING_AUSF];
-    struct in_addr ausf_ipv4_addr = {};
-    unsigned int ausf_port        = {};
-    std::string ausf_api_version  = {};
+    if (enable_external_ausf) {
+      const Setting& ausf_cfg       = new_if_cfg[AMF_CONFIG_STRING_AUSF];
+      struct in_addr ausf_ipv4_addr = {};
+      unsigned int ausf_port        = {};
+      std::string ausf_api_version  = {};
 
-    ausf_cfg.lookupValue(AMF_CONFIG_STRING_IPV4_ADDRESS, address);
-    IPV4_STR_ADDR_TO_INADDR(
-        util::trim(address).c_str(), ausf_ipv4_addr,
-        "BAD IPv4 ADDRESS FORMAT FOR AUSF !");
-    ausf_addr.ipv4_addr = ausf_ipv4_addr;
-    if (!(ausf_cfg.lookupValue(AMF_CONFIG_STRING_PORT, ausf_port))) {
-      Logger::amf_app().error(AMF_CONFIG_STRING_PORT "failed");
-      throw(AMF_CONFIG_STRING_PORT "failed");
-    }
-    ausf_addr.port = ausf_port;
+      if (!use_fqdn_dns) {
+        ausf_cfg.lookupValue(AMF_CONFIG_STRING_IPV4_ADDRESS, address);
+        IPV4_STR_ADDR_TO_INADDR(
+            util::trim(address).c_str(), ausf_ipv4_addr,
+            "BAD IPv4 ADDRESS FORMAT FOR AUSF !");
+        ausf_addr.ipv4_addr = ausf_ipv4_addr;
+        if (!(ausf_cfg.lookupValue(AMF_CONFIG_STRING_PORT, ausf_port))) {
+          Logger::amf_app().error(AMF_CONFIG_STRING_PORT "failed");
+          throw(AMF_CONFIG_STRING_PORT "failed");
+        }
+        ausf_addr.port = ausf_port;
 
-    if (!(ausf_cfg.lookupValue(
-            AMF_CONFIG_STRING_API_VERSION, ausf_api_version))) {
-      Logger::amf_app().error(AMF_CONFIG_STRING_API_VERSION "failed");
-      throw(AMF_CONFIG_STRING_API_VERSION "failed");
+        if (!(ausf_cfg.lookupValue(
+                AMF_CONFIG_STRING_API_VERSION, ausf_api_version))) {
+          Logger::amf_app().error(AMF_CONFIG_STRING_API_VERSION "failed");
+          throw(AMF_CONFIG_STRING_API_VERSION "failed");
+        }
+        ausf_addr.api_version = ausf_api_version;
+      } else {
+        std::string ausf_fqdn = {};
+        ausf_cfg.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, ausf_fqdn);
+        uint8_t addr_type = {};
+        fqdn::resolve(ausf_fqdn, address, ausf_port, addr_type);
+        if (addr_type != 0) {  // IPv6: TODO
+          throw("DO NOT SUPPORT IPV6 ADDR FOR AUSF!");
+        } else {  // IPv4
+          IPV4_STR_ADDR_TO_INADDR(
+              util::trim(address).c_str(), ausf_ipv4_addr,
+              "BAD IPv4 ADDRESS FORMAT FOR AUSF !");
+          ausf_addr.ipv4_addr   = ausf_ipv4_addr;
+          ausf_addr.port        = ausf_port;
+          ausf_addr.api_version = "v1";  // TODO: get API version
+        }
+      }
     }
-    ausf_addr.api_version = ausf_api_version;
 
   } catch (const SettingNotFoundException& nfex) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
-    return -1;
+    return RETURNerror;
   }
 
   // Emergency support
@@ -434,7 +455,7 @@ int amf_config::load(const std::string& config_file) {
   } catch (const SettingNotFoundException& nfex) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
-    return -1;
+    return RETURNerror;
   }
 
   // Authentication Info
@@ -452,7 +473,7 @@ int amf_config::load(const std::string& config_file) {
   } catch (const SettingNotFoundException& nfex) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
-    return -1;
+    return RETURNerror;
   }
 
   // Integrity/Ciphering algorithms (NAS)
@@ -493,7 +514,7 @@ int amf_config::load(const std::string& config_file) {
   } catch (const SettingNotFoundException& nfex) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
-    return -1;
+    return RETURNerror;
   }
 
   return 1;
@@ -501,6 +522,8 @@ int amf_config::load(const std::string& config_file) {
 
 //------------------------------------------------------------------------------
 void amf_config::display() {
+  Logger::config().info(
+      "==== OAI-CN5G %s v%s ====", PACKAGE_NAME, PACKAGE_VERSION);
   Logger::config().info(
       "======================    AMF   =====================");
   Logger::config().info("Configuration AMF:");

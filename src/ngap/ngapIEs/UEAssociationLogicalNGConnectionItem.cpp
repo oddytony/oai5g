@@ -105,7 +105,7 @@ bool UEAssociationLogicalNGConnectionItem::encode(
 //------------------------------------------------------------------------------
 bool UEAssociationLogicalNGConnectionItem::decode(
     Ngap_UE_associatedLogicalNG_connectionItem_t* item) {
-  amfUeNgapId = new AMF_UE_NGAP_ID();
+  if (!amfUeNgapId) amfUeNgapId = new AMF_UE_NGAP_ID();
   if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(*item->aMF_UE_NGAP_ID)) {
     cout << "Decoded NGAP AMF_UE_NGAP_ID IE error" << endl;
     return false;

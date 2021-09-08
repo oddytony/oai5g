@@ -68,7 +68,7 @@ bool GlobalgNBId::decodefromGlobalgNBId(Ngap_GlobalGNB_ID_t* globalgnbid) {
 
 //------------------------------------------------------------------------------
 void GlobalgNBId::getGlobalgNBId(PlmnId*& plmn, GNB_ID*& gnbid) {
-  plmn  = plmnId;
-  gnbid = gNB_ID;
+  if (plmnId) plmn = plmnId;
+  if (gNB_ID) gnbid = gNB_ID;
 }
 }  // namespace ngap

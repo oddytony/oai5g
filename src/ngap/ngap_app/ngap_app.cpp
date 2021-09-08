@@ -85,7 +85,7 @@ void ngap_app::handle_sctp_new_association(
     sctp_stream_id_t outstreams) {
   Logger::ngap().debug(
       "Ready to handle new NGAP SCTP association (id: %d) request", assoc_id);
-  std::shared_ptr<gnb_context> gc;
+  std::shared_ptr<gnb_context> gc = {};
   if (!is_assoc_id_2_gnb_context(assoc_id)) {
     Logger::ngap().debug(
         "Create a new gNB context with assoc_id (%d)", assoc_id);
@@ -93,6 +93,10 @@ void ngap_app::handle_sctp_new_association(
     set_assoc_id_2_gnb_context(assoc_id, gc);
   } else {
     gc = assoc_id_2_gnb_context(assoc_id);
+    if (gc.get() == nullptr) {
+      Logger::amf_n2().error("Illegal gNB with assoc id (0x%x)", assoc_id);
+      return;
+    }
     if (gc.get()->ng_state == NGAP_RESETING ||
         gc.get()->ng_state == NGAP_SHUTDOWN) {
       Logger::ngap().warn(

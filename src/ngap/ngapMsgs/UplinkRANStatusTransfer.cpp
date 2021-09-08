@@ -27,12 +27,15 @@
  */
 #include "UplinkRANStatusTransfer.hpp"
 
+#include "logger.hpp"
+
 #include <iostream>
 #include <vector>
 
 using namespace std;
 namespace ngap {
 
+//------------------------------------------------------------------------------
 UplinkRANStatusTransfer::UplinkRANStatusTransfer() {
   amfUeNgapId                            = nullptr;
   ranUeNgapId                            = nullptr;
@@ -41,8 +44,10 @@ UplinkRANStatusTransfer::UplinkRANStatusTransfer() {
   UplinkRANStatusTransferIEs             = nullptr;
 }
 
+//------------------------------------------------------------------------------
 UplinkRANStatusTransfer::~UplinkRANStatusTransfer() {}
 
+//------------------------------------------------------------------------------
 unsigned long UplinkRANStatusTransfer::getAmfUeNgapId() {
   if (amfUeNgapId)
     return amfUeNgapId->getAMF_UE_NGAP_ID();
@@ -50,6 +55,7 @@ unsigned long UplinkRANStatusTransfer::getAmfUeNgapId() {
     return 0;
 }
 
+//------------------------------------------------------------------------------
 uint32_t UplinkRANStatusTransfer::getRanUeNgapId() {
   if (ranUeNgapId)
     return ranUeNgapId->getRanUeNgapId();
@@ -57,6 +63,7 @@ uint32_t UplinkRANStatusTransfer::getRanUeNgapId() {
     return 0;
 }
 
+//------------------------------------------------------------------------------
 void UplinkRANStatusTransfer::getRANStatusTransfer_TransparentContainer(
     RANStatusTransferTransparentContainer*&
         ranstatustransfer_transparentcontainer) {
@@ -64,6 +71,7 @@ void UplinkRANStatusTransfer::getRANStatusTransfer_TransparentContainer(
       ranStatusTransfer_TransparentContainer;
 }
 
+//------------------------------------------------------------------------------
 bool UplinkRANStatusTransfer::defromPDU(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   UplinkRANStatusTransferPDU = ngap_msg_pdu;
   if (UplinkRANStatusTransferPDU->present ==
@@ -79,11 +87,11 @@ bool UplinkRANStatusTransfer::defromPDU(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           &UplinkRANStatusTransferPDU->choice.initiatingMessage->value.choice
                .UplinkRANStatusTransfer;
     } else {
-      cout << "Check uplinkranstatustransfer message error!!!" << endl;
+      Logger::ngap().error("Check UplinkRANStatusTransfer message error");
       return false;
     }
   } else {
-    cout << "uplinkranstatustransfer message type error" << endl;
+    Logger::ngap().error("UplinkRANStatusTransfer message type error");
     return false;
   }
   for (int i = 0; i < UplinkRANStatusTransferIEs->protocolIEs.list.count; i++) {
@@ -98,11 +106,11 @@ bool UplinkRANStatusTransfer::defromPDU(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
                   UplinkRANStatusTransferIEs->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
-            cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap AMF_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -116,11 +124,11 @@ bool UplinkRANStatusTransfer::defromPDU(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
                   UplinkRANStatusTransferIEs->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
-            cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+            Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "decoded ngap RAN_UE_NGAP_ID IE error" << endl;
+          Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -137,20 +145,19 @@ bool UplinkRANStatusTransfer::defromPDU(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                        &UplinkRANStatusTransferIEs->protocolIEs.list.array[i]
                             ->value.choice
                             .RANStatusTransfer_TransparentContainer)) {
-            cout << "decoded ngap ranStatusTransfer_TransparentContainer error"
-                 << endl;
+            Logger::ngap().error(
+                "Decoded NGAP RANStatusTransfer_TransparentContainer IE error");
             return false;
           }
-          cout << "can get the buffer of RANStatusTransfer_TransparentContainer"
-               << endl;
+          Logger::ngap().error(
+              "Decoded NGAP RANStatusTransfer_TransparentContainer IE error");
         } else {
-          cout << "cann't get the buffer of "
-                  "RANStatusTransfer_TransparentContainer"
-               << endl;
+          Logger::ngap().error(
+              "Decoded NGAP RANStatusTransfer_TransparentContainer IE error");
         }
       } break;
       default: {
-        cout << "decoded ngap message pdu error" << endl;
+        Logger::ngap().error("Decoded NGAP message PDU error");
         return false;
       }
     }

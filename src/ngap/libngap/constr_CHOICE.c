@@ -1033,8 +1033,6 @@ asn_dec_rval_t CHOICE_decode_aper(
     if (value < 0) ASN__DECODE_STARVED;
     ASN_DEBUG(
         "CHOICE %s got index %d in range %d", td->name, value, ct->range_bits);
-    // printf("test0515 CHOICE %s got index %d in range %d\n", td->name, value,
-    // ct->range_bits);
     if (value > ct->upper_bound) ASN__DECODE_FAILED;
   } else {
     if (specs->ext_start == -1) ASN__DECODE_FAILED;
@@ -1059,7 +1057,6 @@ asn_dec_rval_t CHOICE_decode_aper(
     memb_ptr2 = &memb_ptr;
   }
   ASN_DEBUG("Discovered CHOICE %s encodes %s", td->name, elm->name);
-  // printf("test0515 Discovered CHOICE %s encodes %s\n", td->name, elm->name);
 
   if (ct && ct->range_bits >= 0) {
     rv = elm->type->op->aper_decoder(
@@ -1074,8 +1071,6 @@ asn_dec_rval_t CHOICE_decode_aper(
   if (rv.code != RC_OK) {
     ASN_DEBUG(
         "Failed to decode %s in %s (CHOICE) %d", elm->name, td->name, rv.code);
-    // printf("test0515 Failed to decode %s in %s (CHOICE) %d\n", elm->name,
-    // td->name, rv.code);
   }
   return rv;
 }

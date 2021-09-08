@@ -65,7 +65,6 @@ bool PDUSessionResourceHandoverRequestAckTransfer::
     // return false;
   }
   cout << "rc.consumed to decode = " << rc.consumed << endl;
-  cout << endl;
   dLForwardingUP_TNLInformation = new UpTransportLayerInformation();
   if (!dLForwardingUP_TNLInformation->decodefromUpTransportLayerInformation(
           *handoverRequestAcknowledegTransferIEs
