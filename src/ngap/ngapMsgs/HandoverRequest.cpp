@@ -39,6 +39,7 @@ using namespace std;
 
 namespace ngap {
 
+//------------------------------------------------------------------------------
 HandoverRequest::HandoverRequest() {
   amfUeNgapId                         = nullptr;
   handovertype                        = nullptr;
@@ -54,8 +55,11 @@ HandoverRequest::HandoverRequest() {
   handoverRequestPdu                  = nullptr;
   handoverRequestIEs                  = nullptr;
 }
+
+//------------------------------------------------------------------------------
 HandoverRequest::~HandoverRequest() {}
 
+//------------------------------------------------------------------------------
 unsigned long HandoverRequest::getAmfUeNgapId() {
   if (amfUeNgapId)
     return amfUeNgapId->getAMF_UE_NGAP_ID();
@@ -63,6 +67,7 @@ unsigned long HandoverRequest::getAmfUeNgapId() {
     return 0;
 }
 
+//------------------------------------------------------------------------------
 /*bool HandoverRequest::decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu)
 {
         handoverCommandPdu = ngap_msg_pdu;
@@ -219,14 +224,17 @@ error" << endl; return false;
         return true;
 }*/
 
+//------------------------------------------------------------------------------
 int HandoverRequest::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, handoverRequestPdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, handoverRequestPdu, buf, buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().debug(
+      "Encode Handover Request to buffer, er.encoded( %d)", er.encoded);
   return er.encoded;
 }
 
+//------------------------------------------------------------------------------
 void HandoverRequest::setMessageType() {
   if (!handoverRequestPdu)
     handoverRequestPdu = (Ngap_NGAP_PDU_t*) calloc(1, sizeof(Ngap_NGAP_PDU_t));
@@ -253,6 +261,7 @@ void HandoverRequest::setMessageType() {
   }
 }
 
+//------------------------------------------------------------------------------
 void HandoverRequest::setAmfUeNgapId(unsigned long id) {
   if (!amfUeNgapId) amfUeNgapId = new AMF_UE_NGAP_ID();
   amfUeNgapId->setAMF_UE_NGAP_ID(id);
@@ -276,6 +285,7 @@ void HandoverRequest::setAmfUeNgapId(unsigned long id) {
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 void HandoverRequest::setHandoverType(long type)  // 0--intra5gs
 {
   if (!handovertype) handovertype = new Ngap_HandoverType_t();
@@ -290,9 +300,10 @@ void HandoverRequest::setHandoverType(long type)  // 0--intra5gs
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 void HandoverRequest::setCause(Ngap_Cause_PR m_causePresent, long value)  //
 {
-  if (!cause) cause = new Cause;
+  if (!cause) cause = new Cause();
   Ngap_HandoverRequestIEs_t* ie =
       (Ngap_HandoverRequestIEs_t*) calloc(1, sizeof(Ngap_HandoverRequestIEs_t));
   ie->id            = Ngap_ProtocolIE_ID_id_Cause;
@@ -307,6 +318,7 @@ void HandoverRequest::setCause(Ngap_Cause_PR m_causePresent, long value)  //
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 void HandoverRequest::setUEAggregateMaximumBitRate(
     long bit_rate_downlink, long bit_rate_uplink) {
   if (!ueAggregateMaximumBitRate)
@@ -329,6 +341,8 @@ void HandoverRequest::setUEAggregateMaximumBitRate(
     Logger::ngap().error("Encode UEAggregateMaximumBitRate IE error");
   // free_wrapper((void**) &ie);
 }
+
+//------------------------------------------------------------------------------
 void HandoverRequest::setUESecurityCapabilities(
     uint16_t m_NR_EncryptionAlgs, uint16_t m_NR_IntegrityProtectionAlgs,
     uint16_t m_E_UTRA_EncryptionAlgs,
@@ -352,6 +366,7 @@ void HandoverRequest::setUESecurityCapabilities(
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 void HandoverRequest::setGUAMI(
     PlmnId* m_plmnId, AMFRegionID* m_aMFRegionID, AMFSetID* m_aMFSetID,
     AMFPointer* m_aMFPointer) {
@@ -370,6 +385,8 @@ void HandoverRequest::setGUAMI(
   if (ret != 0) Logger::ngap().error("Encode GUAMI IE error");
   // free_wrapper((void**) &ie);
 }
+
+//------------------------------------------------------------------------------
 void HandoverRequest::setAllowedNSSAI(std::vector<S_NSSAI> list) {
   if (!allowedNSSAI) allowedNSSAI = new Ngap_AllowedNSSAI_t();
 
@@ -395,6 +412,8 @@ void HandoverRequest::setAllowedNSSAI(std::vector<S_NSSAI> list) {
   if (ret != 0) Logger::ngap().error("Encode AllowedNSSAI IE error");
   // free_wrapper((void**) &ie);
 }
+
+//------------------------------------------------------------------------------
 void HandoverRequest::setSecurityContext(long count, uint8_t* buffer) {
   if (!SecurityContext) SecurityContext = new Ngap_SecurityContext_t();
 
@@ -414,6 +433,7 @@ void HandoverRequest::setSecurityContext(long count, uint8_t* buffer) {
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 void HandoverRequest::setPduSessionResourceSetupList(
     std::vector<PDUSessionResourceSetupRequestItem_t> list) {
   if (!PDUSessionResourceSetupList)
@@ -457,6 +477,7 @@ void HandoverRequest::setPduSessionResourceSetupList(
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 void HandoverRequest::setSourceToTarget_TransparentContainer(
     OCTET_STRING_t sourceTotarget) {
   if (!SourceToTarget_TransparentContainer)
@@ -475,6 +496,8 @@ void HandoverRequest::setSourceToTarget_TransparentContainer(
     Logger::ngap().error("Encode SourceToTarget_TransparentContainer IE error");
   // free_wrapper((void**) &ie);
 }
+
+//------------------------------------------------------------------------------
 void HandoverRequest::setMobilityRestrictionList(PlmnId* m_plmnId) {
   if (!mobilityrestrictionlist) {
     mobilityrestrictionlist = new MobilityRestrictionList();

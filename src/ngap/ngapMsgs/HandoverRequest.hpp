@@ -76,7 +76,7 @@ class HandoverRequest {
   void setMobilityRestrictionList(PlmnId* m_plmnId);
   int encode2buffer(uint8_t* buf, int buf_size);
   // bool decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu);
-  unsigned long getAmfUeNgapId();  // return -1;
+  unsigned long getAmfUeNgapId();
 
  private:
   Ngap_NGAP_PDU_t* handoverRequestPdu;

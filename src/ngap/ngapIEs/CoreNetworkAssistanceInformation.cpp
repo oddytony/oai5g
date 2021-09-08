@@ -78,12 +78,15 @@ void CoreNetworkAssistanceInfo::setCoreNetworkAssistanceInfo(
 //------------------------------------------------------------------------------
 bool CoreNetworkAssistanceInfo::encode2CoreNetworkAssistanceInfo(
     Ngap_CoreNetworkAssistanceInformation_t* coreNetworkAssistanceInformation) {
+  if (!ueIdentityIndexValue) return false;
   if (!ueIdentityIndexValue->encode2UEIdentityIndexValue(
           &coreNetworkAssistanceInformation->uEIdentityIndexValue))
     return false;
+  if (!periodicRegUpdateTimer) return false;
   if (!periodicRegUpdateTimer->encode2PeriodicRegistrationUpdateTimer(
           &coreNetworkAssistanceInformation->periodicRegistrationUpdateTimer))
     return false;
+  if (!tai) return false;
   for (int i = 0; i < numoftai; i++) {
     Ngap_TAIListForInactiveItem_t* taiListForInactiveItem =
         (Ngap_TAIListForInactiveItem_t*) calloc(
@@ -129,7 +132,7 @@ bool CoreNetworkAssistanceInfo::decodefromCoreNetworkAssistanceInfo(
           &coreNetworkAssistanceInformation->periodicRegistrationUpdateTimer))
     return false;
   numoftai = coreNetworkAssistanceInformation->tAIListForInactive.list.count;
-  tai      = new TAI[numoftai]();
+  if (tai == nullptr) tai = new TAI[numoftai]();
   for (int i = 0; i < numoftai; i++) {
     if (!tai[i].decodefromTAI(
             &coreNetworkAssistanceInformation->tAIListForInactive.list.array[i]
@@ -137,13 +140,13 @@ bool CoreNetworkAssistanceInfo::decodefromCoreNetworkAssistanceInfo(
       return false;
   }
   if (coreNetworkAssistanceInformation->uESpecificDRX) {
-    pagingDRX = new DefaultPagingDRX();
+    if (pagingDRX == nullptr) pagingDRX = new DefaultPagingDRX();
     if (!pagingDRX->decodefromDefaultPagingDRX(
             *(coreNetworkAssistanceInformation->uESpecificDRX)))
       return false;
   }
   if (coreNetworkAssistanceInformation->mICOModeIndication) {
-    micoModeInd = new MICOModeIndication();
+    if (micoModeInd == nullptr) micoModeInd = new MICOModeIndication();
     if (!micoModeInd->decodefromMICOModeIndication(
             coreNetworkAssistanceInformation->mICOModeIndication))
       return false;

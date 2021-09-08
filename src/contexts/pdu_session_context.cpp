@@ -44,6 +44,7 @@ pdu_session_context::pdu_session_context() {
   smf_available    = false;
   snssai           = {};
   plmn             = {};
+  is_ho_accepted   = false;
 }
 
 //------------------------------------------------------------------------------

@@ -39,16 +39,20 @@ using namespace std;
 
 namespace ngap {
 
+//------------------------------------------------------------------------------
 HandoverPreparationFailure::HandoverPreparationFailure() {
   amfUeNgapId             = nullptr;
   ranUeNgapId             = nullptr;
   cause                   = nullptr;
   hoPreparationFailureIEs = nullptr;
+  hoPreparationFailurePdu = nullptr;
   CriticalityDiagnostics  = nullptr;
 }
 
+//------------------------------------------------------------------------------
 HandoverPreparationFailure::~HandoverPreparationFailure() {}
 
+//------------------------------------------------------------------------------
 unsigned long HandoverPreparationFailure::getAmfUeNgapId() const {
   if (amfUeNgapId)
     return amfUeNgapId->getAMF_UE_NGAP_ID();
@@ -56,6 +60,7 @@ unsigned long HandoverPreparationFailure::getAmfUeNgapId() const {
     return 0;
 }
 
+//------------------------------------------------------------------------------
 uint32_t HandoverPreparationFailure::getRanUeNgapId() const {
   if (ranUeNgapId)
     return ranUeNgapId->getRanUeNgapId();
@@ -63,6 +68,7 @@ uint32_t HandoverPreparationFailure::getRanUeNgapId() const {
     return 0;
 }
 
+//------------------------------------------------------------------------------
 bool HandoverPreparationFailure::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   if (!ngap_msg_pdu) return false;
   hoPreparationFailurePdu = ngap_msg_pdu;
@@ -162,14 +168,18 @@ bool HandoverPreparationFailure::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   return true;
 }
 
+//------------------------------------------------------------------------------
 int HandoverPreparationFailure::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, hoPreparationFailurePdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, hoPreparationFailurePdu, buf, buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().debug(
+      "Encode Handover Preparation Failure to buffer, er.encoded( %d )",
+      er.encoded);
   return er.encoded;
 }
 
+//------------------------------------------------------------------------------
 void HandoverPreparationFailure::setMessageType() {
   if (!hoPreparationFailurePdu)
     hoPreparationFailurePdu =
@@ -198,6 +208,7 @@ void HandoverPreparationFailure::setMessageType() {
   }
 }
 
+//------------------------------------------------------------------------------
 void HandoverPreparationFailure::setAmfUeNgapId(unsigned long id) {
   if (!amfUeNgapId) amfUeNgapId = new AMF_UE_NGAP_ID();
   amfUeNgapId->setAMF_UE_NGAP_ID(id);
@@ -222,6 +233,7 @@ void HandoverPreparationFailure::setAmfUeNgapId(unsigned long id) {
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 void HandoverPreparationFailure::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
   if (!ranUeNgapId) ranUeNgapId = new RAN_UE_NGAP_ID();
   ranUeNgapId->setRanUeNgapId(ran_ue_ngap_id);
@@ -247,10 +259,11 @@ void HandoverPreparationFailure::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 void HandoverPreparationFailure::setCause(
     Ngap_Cause_PR m_causePresent, long value)  //
 {
-  if (!cause) cause = new Cause;
+  if (!cause) cause = new Cause();
   Ngap_HandoverPreparationFailureIEs_t* ie =
       (Ngap_HandoverPreparationFailureIEs_t*) calloc(
           1, sizeof(Ngap_HandoverPreparationFailureIEs_t));
@@ -266,6 +279,7 @@ void HandoverPreparationFailure::setCause(
   // free_wrapper((void**) &ie);
 }
 
+//------------------------------------------------------------------------------
 Ngap_Cause_PR HandoverPreparationFailure::getChoiceOfCause() const {
   if (cause)
     return cause->getChoiceOfCause();

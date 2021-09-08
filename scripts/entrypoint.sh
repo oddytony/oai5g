@@ -7,6 +7,12 @@ CONFIG_DIR="/openair-amf/etc"
 # Default values
 EXTERNAL_AUSF=${EXTERNAL_AUSF:-no}
 EXTERNAL_UDM=${EXTERNAL_UDM:-no}
+if [[ ${USE_FQDN_DNS} == "yes" ]];then
+    SMF_IPV4_ADDR_0=${SMF_IPV4_ADDR_0:-0.0.0.0}
+    SMF_IPV4_ADDR_1=${SMF_IPV4_ADDR_1:-0.0.0.0}
+    NRF_IPV4_ADDRESS=${NRF_IPV4_ADDRESS:-0.0.0.0}
+    AUSF_IPV4_ADDRESS=${AUSF_IPV4_ADDRESS:-0.0.0.0}
+fi
 
 for c in ${CONFIG_DIR}/*.conf; do
     # grep variable names (format: ${VAR}) from template to be rendered

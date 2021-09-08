@@ -321,7 +321,6 @@ asn_dec_rval_t NativeInteger_decode_aper(
 
   (void) opt_codec_ctx;
   ASN_DEBUG("Decoding NativeInteger %s (APER)", td->name);
-  // printf("test0515 Decoding NativeInteger %s (APER)\n", td->name);
 
   if (!native) {
     native = (long*) (*sptr = CALLOC(1, sizeof(*native)));

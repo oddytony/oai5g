@@ -28,6 +28,8 @@
 
 #include "UEContextReleaseRequest.hpp"
 
+#include "logger.hpp"
+
 #include <iostream>
 extern "C" {
 #include "asn_codecs.h"
@@ -79,12 +81,12 @@ void UEContextReleaseRequestMsg::setAmfUeNgapId(unsigned long id) {
   ie->value.present = Ngap_UEContextReleaseRequest_IEs__value_PR_AMF_UE_NGAP_ID;
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode NGAP AMF_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
     return;
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP AMF_UE_NGAP_ID IE error");
   // free_wrapper((void**) &ie);
 }
 
@@ -100,12 +102,12 @@ void UEContextReleaseRequestMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
   ie->value.present = Ngap_UEContextReleaseRequest_IEs__value_PR_RAN_UE_NGAP_ID;
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode NGAP RAN_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
     return;
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP RAN_UE_NGAP_ID IE error");
   // free_wrapper((void**) &ie);
 }
 
@@ -137,7 +139,7 @@ int UEContextReleaseRequestMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, pdu);
   asn_enc_rval_t er =
       aper_encode_to_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL, pdu, buf, buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().debug("er.encoded (%d)", er.encoded);
   return er.encoded;
 }
 
@@ -154,12 +156,13 @@ bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
       ies =
           &pdu->choice.initiatingMessage->value.choice.UEContextReleaseRequest;
     } else {
-      cout << "Check UEContextReleaseRequest message error" << endl;
+      Logger::ngap().error("Check UEContextReleaseRequest message error");
       return false;
     }
   } else {
-    cout << "typeOfMessage of UEContextReleaseRequest is not initiatingMessage"
-         << endl;
+    Logger::ngap().error(
+        "TypeOfMessage of UEContextReleaseRequest is not initiatingMessage");
+
     return false;
   }
   for (int i = 0; i < ies->protocolIEs.list.count; i++) {
@@ -173,11 +176,11 @@ bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
                   ies->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
-            cout << "decode AMF_UE_NGAP_ID error" << endl;
+            Logger::ngap().error("Decode NGAP AMF_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "IE AMF_UE_NGAP_ID is not correct" << endl;
+          Logger::ngap().error("Decode NGAP AMF_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -190,11 +193,11 @@ bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
                   ies->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
-            cout << "decode RAN_UE_NGAP_ID error" << endl;
+            Logger::ngap().error("Decode NGAP RAN_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "IE RAN_UE_NGAP_ID is not correct" << endl;
+          Logger::ngap().error("Decode NGAP RAN_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -206,11 +209,11 @@ bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           causeValue = new Cause();
           if (!causeValue->decodefromCause(
                   &ies->protocolIEs.list.array[i]->value.choice.Cause)) {
-            cout << "decode Cause error" << endl;
+            Logger::ngap().error("Decode NGAP Cause IE error");
             return false;
           }
         } else {
-          cout << "IE Cause is not correct" << endl;
+          Logger::ngap().error("Decode NGAP Cause IE error");
           return false;
         }
       } break;
@@ -223,7 +226,7 @@ bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
 bool UEContextReleaseRequestMsg::getCauseRadioNetwork(
     e_Ngap_CauseRadioNetwork& causeRadioNetwork) {
   if (causeValue->getValue() < 0) {
-    cout << "Get Cause value from UEContextReleaseRequest Error!!!" << endl;
+    Logger::ngap().error("Get Cause value from UEContextReleaseRequest Error");
     return false;
   }
   causeRadioNetwork = (e_Ngap_CauseRadioNetwork) causeValue->getValue();

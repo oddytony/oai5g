@@ -28,6 +28,8 @@
 
 #include "UEContextReleaseCommand.hpp"
 
+#include "logger.hpp"
+
 #include <iostream>
 extern "C" {
 #include "Ngap_UE-NGAP-ID-pair.h"
@@ -85,12 +87,13 @@ void UEContextReleaseCommandMsg::setAmfUeNgapId(unsigned long id) {
   int ret                              = amfUeNgapId->encode2AMF_UE_NGAP_ID(
       ie->value.choice.UE_NGAP_IDs.choice.aMF_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode NGAP AMF_UE_NGAP_ID IE error");
+
     free_wrapper((void**) &ie);
     return;
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode UE_NGAP_IDs IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP AMF_UE_NGAP_ID IE error");
   // free_wrapper((void**) &ie);
 }
 
@@ -113,19 +116,19 @@ void UEContextReleaseCommandMsg::setUeNgapIdPair(
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(
       ie->value.choice.UE_NGAP_IDs.choice.uE_NGAP_ID_pair->aMF_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode NGAP AMF_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
     return;
   }
   ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(
       ie->value.choice.UE_NGAP_IDs.choice.uE_NGAP_ID_pair->rAN_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode NGAP RAN_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
     return;
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode UE_NGAP_IDs IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP RAN_UE_NGAP_ID IE error");
   // free_wrapper((void**) &ie);
 }
 
@@ -155,7 +158,7 @@ void UEContextReleaseCommandMsg::addCauseIE() {
   ie->value.present = Ngap_UEContextReleaseCommand_IEs__value_PR_Cause;
   causeValue->encode2Cause(&ie->value.choice.Cause);
   int ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode Cause IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP Cause IE error");
 }
 
 //------------------------------------------------------------------------------
@@ -163,7 +166,7 @@ int UEContextReleaseCommandMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, pdu);
   asn_enc_rval_t er =
       aper_encode_to_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL, pdu, buf, buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().debug("er.encoded (%d)", er.encoded);
   return er.encoded;
 }
 

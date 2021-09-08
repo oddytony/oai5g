@@ -34,6 +34,7 @@ class itti_msg_n1 : public itti_msg {
   itti_msg_n1(const itti_msg_n1& i) : itti_msg(i) {
     is_nas_signalling_estab_req = i.is_nas_signalling_estab_req;
     ran_ue_ngap_id              = i.ran_ue_ngap_id;
+    amf_ue_ngap_id              = i.amf_ue_ngap_id;
   }
 
  public:

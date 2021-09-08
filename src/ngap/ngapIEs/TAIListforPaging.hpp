@@ -19,44 +19,32 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang Du, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-#ifndef _UPLINKRANSTATUSTRANSFER_H_
-#define _UPLINKRANSTATUSTRANSFER_H_
-#include "AMF-UE-NGAP-ID.hpp"
-#include "NgapIEsStruct.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
-#include "RANStatusTransferTransparentContainer.hpp"
+#ifndef _TAILISTFORPAGING_H_
+#define _TAILISTFORPAGING_H_
+
+#include "TAI.hpp"
+
 extern "C" {
-#include "Ngap_InitiatingMessage.h"
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
-#include "Ngap_RANStatusTransfer-TransparentContainer.h"
-#include "Ngap_UplinkRANStatusTransfer.h"
+#include "Ngap_TAIListForPaging.h"
 }
+
 namespace ngap {
-class UplinkRANStatusTransfer {
+
+class TAIListForPaging {
  public:
-  UplinkRANStatusTransfer();
-  virtual ~UplinkRANStatusTransfer();
-  unsigned long getAmfUeNgapId();
-  uint32_t getRanUeNgapId();
-  void getRANStatusTransfer_TransparentContainer(
-      RANStatusTransferTransparentContainer*&
-          ranstatustransfer_transparentcontainer);
-  bool defromPDU(Ngap_NGAP_PDU_t* ngap_msg_pdu);
+  TAIListForPaging();
+  virtual ~TAIListForPaging();
+
+  void setTAIListForPaging(TAI* m_tai, int numOfItem);
+  void getTAIListForPaging(TAI*& m_tai, int& numOfItem);
+  bool encode2TAIListForPaging(Ngap_TAIListForPaging_t* pdu);
+  bool decodefromTAIListForPaging(Ngap_TAIListForPaging_t* pdu);
 
  private:
-  Ngap_NGAP_PDU_t* UplinkRANStatusTransferPDU;
-  Ngap_UplinkRANStatusTransfer_t* UplinkRANStatusTransferIEs;
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
-  RANStatusTransferTransparentContainer* ranStatusTransfer_TransparentContainer;
+  TAI* tai;
+  int numOftai;
 };
+
 }  // namespace ngap
 
 #endif

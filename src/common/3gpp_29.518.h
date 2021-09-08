@@ -129,4 +129,23 @@ typedef struct amf_event_report_s {
            // bool m_r_5gsUserStateListIsSet;
   */
 } amf_event_report_t;
+
+enum n1_n2_message_transfer_cause_e {
+  ATTEMPTING_TO_REACH_UE            = 1,
+  N1_N2_TRANSFER_INITIATED          = 2,
+  WAITING_FOR_ASYNCHRONOUS_TRANSFER = 3,
+  UE_NOT_RESPONDING                 = 4,
+  N1_MSG_NOT_TRANSFERRED            = 5,
+  UE_NOT_REACHABLE_FOR_SESSION      = 6
+};
+
+static const std::vector<std::string> n1_n2_message_transfer_cause_e2str = {
+    "UNKNOWN ERROR",
+    "ATTEMPTING_TO_REACH_UE",
+    "N1_N2_TRANSFER_INITIATED",
+    "WAITING_FOR_ASYNCHRONOUS_TRANSFER",
+    "UE_NOT_RESPONDING",
+    "N1_MSG_NOT_TRANSFERRED",
+    "UE_NOT_REACHABLE_FOR_SESSION"};
+
 #endif

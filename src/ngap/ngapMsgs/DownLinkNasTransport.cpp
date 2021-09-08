@@ -45,14 +45,14 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 DownLinkNasTransportMsg::DownLinkNasTransportMsg() {
-  downLinkNasTransportPdu = NULL;
-  downLinkNasTransportIEs = NULL;
-  amfUeNgapId             = NULL;
-  ranUeNgapId             = NULL;
-  oldAmfName              = NULL;
-  ranPagingPriority       = NULL;
-  nasPdu                  = NULL;
-  indexToRFSP             = NULL;
+  downLinkNasTransportPdu = nullptr;
+  downLinkNasTransportIEs = nullptr;
+  amfUeNgapId             = nullptr;
+  ranUeNgapId             = nullptr;
+  oldAmfName              = nullptr;
+  ranPagingPriority       = nullptr;
+  nasPdu                  = nullptr;
+  indexToRFSP             = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -241,7 +241,7 @@ int DownLinkNasTransportMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, downLinkNasTransportPdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, downLinkNasTransportPdu, buf, buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().debug("er.encoded( %d )", er.encoded);
   return er.encoded;
 }
 

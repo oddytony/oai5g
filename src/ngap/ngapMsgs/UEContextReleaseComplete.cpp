@@ -28,6 +28,8 @@
 
 #include "UEContextReleaseComplete.hpp"
 
+#include "logger.hpp"
+
 #include <iostream>
 #include <memory>
 
@@ -82,12 +84,12 @@ void UEContextReleaseCompleteMsg::setAmfUeNgapId(unsigned long id) {
       Ngap_UEContextReleaseComplete_IEs__value_PR_AMF_UE_NGAP_ID;
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode NGAP AMF_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
     return;
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode AMF_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP AMF_UE_NGAP_ID IE error");
   // free_wrapper((void**) &ie);
 }
 
@@ -110,12 +112,12 @@ void UEContextReleaseCompleteMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
       Ngap_UEContextReleaseComplete_IEs__value_PR_RAN_UE_NGAP_ID;
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
-    cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+    Logger::ngap().error("Encode NGAP RAN_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
     return;
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode RAN_UE_NGAP_ID IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP RAN_UE_NGAP_ID IE error");
   // free_wrapper((void**) &ie);
 }
 
@@ -161,12 +163,13 @@ void UEContextReleaseCompleteMsg::setUserLocationInfoNR(
   int ret = userLocationInformation->encodefromUserLocationInformation(
       &ie->value.choice.UserLocationInformation);
   if (!ret) {
-    cout << "encode UserLocationInformation IE error" << endl;
+    Logger::ngap().error("Encode NGAP UserLocationInformation IE error");
     free_wrapper((void**) &ie);
     return;
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode UserLocationInformation IE error" << endl;
+  if (ret != 0)
+    Logger::ngap().error("Encode NGAP UserLocationInformation IE error");
   // free_wrapper((void**) &ie);
 }
 
@@ -209,7 +212,7 @@ int UEContextReleaseCompleteMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, pdu);
   asn_enc_rval_t er =
       aper_encode_to_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL, pdu, buf, buf_size);
-  cout << "er.encoded(" << er.encoded << ")" << endl;
+  Logger::ngap().debug("er.encoded (%d)", er.encoded);
   return er.encoded;
 }
 
@@ -226,12 +229,13 @@ bool UEContextReleaseCompleteMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
       ies =
           &pdu->choice.successfulOutcome->value.choice.UEContextReleaseComplete;
     } else {
-      cout << "Check UEContextReleaseComplete message error" << endl;
+      Logger::ngap().error("Check UEContextReleaseComplete message error");
       return false;
     }
   } else {
-    cout << "typeOfMessage of UEContextReleaseComplete is not SuccessfulOutcome"
-         << endl;
+    Logger::ngap().error(
+        "TypeOfMessage of UEContextReleaseComplete is not SuccessfulOutcome");
+
     return false;
   }
   // TODO
@@ -247,11 +251,11 @@ bool UEContextReleaseCompleteMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
                   ies->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
-            cout << "decode AMF_UE_NGAP_ID error" << endl;
+            Logger::ngap().error("Decode NGAP AMF_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "IE AMF_UE_NGAP_ID is not correct" << endl;
+          Logger::ngap().error("Decode NGAP AMF_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -264,11 +268,11 @@ bool UEContextReleaseCompleteMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
           if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
                   ies->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
-            cout << "decode RAN_UE_NGAP_ID error" << endl;
+            Logger::ngap().error("Decode NGAP RAN_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          cout << "IE RAN_UE_NGAP_ID is not correct" << endl;
+          Logger::ngap().error("Decode NGAP RAN_UE_NGAP_ID IE error");
           return false;
         }
       } break;

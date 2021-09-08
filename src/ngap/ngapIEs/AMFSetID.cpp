@@ -70,7 +70,6 @@ bool AMFSetID::encode2bitstring(Ngap_AMFSetID_t& amfsetid) {
 //------------------------------------------------------------------------------
 bool AMFSetID::decodefrombitstring(Ngap_AMFSetID_t& amfsetid) {
   if (!amfsetid.buf) return false;
-  printf("test for amfsetid\n");
   for (int i = 0; i < amfsetid.size; i++) {
     printf("%x ", amfsetid.buf[i]);
   }

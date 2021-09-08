@@ -53,11 +53,17 @@ class ue_ngap_context {
   sctp_stream_id_t sctp_stream_recv;  // used to decide which ue in gNB
   sctp_stream_id_t sctp_stream_send;  // used to decide which ue in gNB
 
-  sctp_assoc_id_t gnb_assoc_id;  // to find which gnb this UE belongs to
-  sctp_assoc_id_t target_gnb_assoc_id;
+  sctp_assoc_id_t gnb_assoc_id;         // to find which gnb this UE belongs to
+  sctp_assoc_id_t target_gnb_assoc_id;  // for HO
 
   bool ueContextRequest;
   uint32_t s_tmsi_5g;
+
+  std ::string s_setid;
+  std ::string s_pointer;
+  std ::string s_tmsi;
+
+  Tai_t tai;
 
   // state management, ue status over the air
   ng_ue_state_t ng_ue_state;

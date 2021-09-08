@@ -27,6 +27,7 @@
  */
 
 #include "NGSetupRequest.hpp"
+#include "logger.hpp"
 
 extern "C" {
 #include "Ngap_NGAP-PDU.h"
@@ -47,13 +48,13 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 NGSetupRequestMsg::NGSetupRequestMsg() {
-  ngSetupRequestPdu = NULL;
-  ngSetupRequestIEs = NULL;
+  ngSetupRequestPdu = nullptr;
+  ngSetupRequestIEs = nullptr;
 
-  globalRanNodeId  = NULL;
-  ranNodeName      = NULL;
-  supportedTAList  = NULL;
-  defaultPagingDrx = NULL;
+  globalRanNodeId  = nullptr;
+  ranNodeName      = nullptr;
+  supportedTAList  = nullptr;
+  defaultPagingDrx = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -79,9 +80,8 @@ void NGSetupRequestMsg::setMessageType() {
     ngSetupRequestIEs = &(ngSetupRequestPdu->choice.initiatingMessage->value
                               .choice.NGSetupRequest);
   } else {
-    cout << "[warning] This information doesn't refer to NGSetupRequest "
-            "Message!!!"
-         << endl;
+    Logger::ngap().warn(
+        "This information doesn't refer to NGSetupRequest message!");
   }
 }
 
@@ -108,12 +108,12 @@ void NGSetupRequestMsg::setGlobalRanNodeID(
   int ret = globalRanNodeIdIE.encode2GlobalRANNodeID(
       &ie->value.choice.GlobalRANNodeID);
   if (!ret) {
-    cout << "encode GlobalRANNodeID IE error" << endl;
+    Logger::ngap().error("Encode NGAP GlobalRANNodeID IE error");
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&ngSetupRequestIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode GlobalRANNodeID IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP GlobalRANNodeID IE error");
 }
 
 //------------------------------------------------------------------------------
@@ -129,19 +129,19 @@ void NGSetupRequestMsg::setRanNodeName(const std::string ranNodeName) {
 
   int ret = ranNodeNameIE.encode2RanNodeName(&ie->value.choice.RANNodeName);
   if (!ret) {
-    cout << "encode RanNodeName IE error" << endl;
+    Logger::ngap().error("Encode NGAP RANNodeName IE error");
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&ngSetupRequestIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode RANNodeName IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode NGAP RANNodeName IE error");
 }
 
 //------------------------------------------------------------------------------
 void NGSetupRequestMsg::setSupportedTAList(
     const std::vector<struct SupportedItem_s> list) {
   if (list.size() == 0) {
-    cout << "[Warning] Setup failed, vector is empty!!!" << endl;
+    Logger::ngap().warn("Setup failed, vector is empty");
     return;
   }
 
@@ -181,12 +181,12 @@ void NGSetupRequestMsg::setSupportedTAList(
   int ret = supportedTAListIE.encode2SupportedTAList(
       &ie->value.choice.SupportedTAList);
   if (!ret) {
-    cout << "encode SupportedTAList IE error" << endl;
+    Logger::ngap().error("Encode SupportedTAList IE error");
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&ngSetupRequestIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode SupportedTAList IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode SupportedTAList IE error");
 }
 
 //------------------------------------------------------------------------------
@@ -203,13 +203,13 @@ void NGSetupRequestMsg::setDefaultPagingDRX(e_Ngap_PagingDRX value) {
   int ret =
       defaultPagingDRXIE.encode2DefaultPagingDRX(ie->value.choice.PagingDRX);
   if (!ret) {
-    cout << "encode DefaultPagingDRX IE error" << endl;
+    Logger::ngap().error("Encode DefaultPagingDRX IE error");
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&ngSetupRequestIEs->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode DefaultPagingDRX IE error" << endl;
+  if (ret != 0) Logger::ngap().error("Encode DefaultPagingDRX IE error");
   // free_wrapper((void**) &ie);
 }
 
@@ -218,7 +218,7 @@ int NGSetupRequestMsg::encode2buffer(uint8_t* buf, int buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, ngSetupRequestPdu);
   asn_enc_rval_t er = aper_encode_to_buffer(
       &asn_DEF_Ngap_NGAP_PDU, NULL, ngSetupRequestPdu, buf, buf_size);
-  printf("er.encoded(%ld)\n", er.encoded);
+  Logger::ngap().debug("er.encoded( %d )", er.encoded);
   return er.encoded;
 }
 
@@ -247,11 +247,11 @@ bool NGSetupRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
               if (!globalRanNodeId->decodefromGlobalRANNodeID(
                       &ngSetupRequestIEs->protocolIEs.list.array[i]
                            ->value.choice.GlobalRANNodeID)) {
-                cout << "Decoded NGAP GlobalRanNodeId IE error!" << endl;
+                Logger::ngap().error("Decoded NGAP GlobalRanNodeId IE error");
                 return false;
               }
             } else {
-              cout << "Decoded NGAP GlobalRanNodeId IE error" << endl;
+              Logger::ngap().error("Decoded NGAP GlobalRanNodeId IE error");
               return false;
             }
           } break;
@@ -264,11 +264,11 @@ bool NGSetupRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
               if (!ranNodeName->decodefromRanNodeName(
                       &ngSetupRequestIEs->protocolIEs.list.array[i]
                            ->value.choice.RANNodeName)) {
-                cout << "Decoded NGAP RanNodeName IE error" << endl;
+                Logger::ngap().error("Decoded NGAP RanNodeName IE error");
                 return false;
               }
             } else {
-              cout << "Decoded NGAP RanNodeName IE error" << endl;
+              Logger::ngap().error("Decoded NGAP RanNodeName IE error");
               return false;
             }
           } break;
@@ -281,11 +281,11 @@ bool NGSetupRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
               if (!supportedTAList->decodefromSupportedTAList(
                       &ngSetupRequestIEs->protocolIEs.list.array[i]
                            ->value.choice.SupportedTAList)) {
-                cout << "Decoded NGAP SupportedTAList IE error" << endl;
+                Logger::ngap().error("Decoded NGAP SupportedTAList IE error");
                 return false;
               }
             } else {
-              cout << "Decoded NGAP SupportedTAList IE error" << endl;
+              Logger::ngap().error("Decoded NGAP SupportedTAList IE error");
               return false;
             }
           } break;
@@ -298,26 +298,26 @@ bool NGSetupRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
               if (!defaultPagingDrx->decodefromDefaultPagingDRX(
                       ngSetupRequestIEs->protocolIEs.list.array[i]
                           ->value.choice.PagingDRX)) {
-                cout << "Decoded NGAP DefaultPagingDRX IE error" << endl;
+                Logger::ngap().error("Decoded NGAP DefaultPagingDRX IE error");
                 return false;
               }
             } else {
-              cout << "Decoded NGAP DefaultPagingDRX IE error" << endl;
+              Logger::ngap().error("Decoded NGAP DefaultPagingDRX IE error");
               return false;
             }
           } break;
           default: {
-            cout << "Decoded NGAP message PDU error" << endl;
+            Logger::ngap().error("Decoded NGAP message PDU error");
             return false;
           }
         }
       }
     } else {
-      cout << "Check NGSetupRequest message error!!!";
+      Logger::ngap().error("Check NGSetupRequest message error");
       return false;
     }
   } else {
-    cout << "Check NGSetupRequest message error!!!";
+    Logger::ngap().error("Check NGSetupRequest message error");
     return false;
   }
   return true;

@@ -34,13 +34,10 @@
 #include "stdio.h"
 
 // for CURL
-#define SMF_CURL_TIMEOUT_MS 100L
-#define SMF_NUMBER_RETRIES 3
 constexpr auto CURL_MIME_BOUNDARY = "----Boundary";
-#define NRF_CURL_TIMEOUT_MS 100L
-#define AUSF_CURL_TIMEOUT_MS 100L
-#define CURL_TIMEOUT_MS 100L
+#define CURL_TIMEOUT_MS 1000L
 
+#define BUFFER_SIZE_4096 4096
 #define BUFFER_SIZE_2048 2048
 #define BUFFER_SIZE_1024 1024
 #define BUFFER_SIZE_512 512
@@ -56,5 +53,8 @@ typedef uint32_t evsub_id_t;
 #define UNASSIGNED_EVSUB_ID ((evsub_id_t) 0x00000000)
 
 constexpr uint64_t SECONDS_SINCE_FIRST_EPOCH = 2208988800;
+
+#define UE_AGGREGATE_MAXIMUM_BIT_RATE_DL 300000000
+#define UE_AGGREGATE_MAXIMUM_BIT_RATE_UL 200000000
 
 #endif
