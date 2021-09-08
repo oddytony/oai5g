@@ -13,6 +13,9 @@
 
 #include "SubscriptionsCollectionDocumentApiEventExposure.h"
 #include "Helpers.h"
+#include "amf_config.hpp"
+
+extern config::amf_config amf_cfg;
 
 namespace oai::amf::api {
 
@@ -32,7 +35,7 @@ void SubscriptionsCollectionDocumentApiEventExposure::setupRoutes() {
   using namespace Pistache::Rest;
 
   Routes::Post(
-      *router, base + "/subscriptions",
+      *router, base + amf_cfg.sbi_api_version + "/subscriptions",
       Routes::bind(
           &SubscriptionsCollectionDocumentApiEventExposure::
               create_subscription_handler,

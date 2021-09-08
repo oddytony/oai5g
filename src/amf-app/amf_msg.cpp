@@ -35,12 +35,12 @@ using namespace amf_application;
  */
 
 //-----------------------------------------------------------------------------
-supi_t event_exposure_msg::get_supi() const {
+std::string event_exposure_msg::get_supi() const {
   return m_supi;
 }
 
 //-----------------------------------------------------------------------------
-void event_exposure_msg::set_supi(const supi_t& value) {
+void event_exposure_msg::set_supi(const std::string& value) {
   m_supi        = value;
   m_supi_is_set = true;
 }
@@ -109,6 +109,10 @@ void event_exposure_msg::set_event_subs(std::vector<amf_event_t> const& value) {
   }
 }
 
+//-----------------------------------------------------------------------------
+void event_exposure_msg::add_event_sub(amf_event_t const& value) {
+  m_event_list.push_back(value);
+}
 //-----------------------------------------------------------------------------
 void event_exposure_msg::set_any_ue(bool value) {
   m_any_ue = value;

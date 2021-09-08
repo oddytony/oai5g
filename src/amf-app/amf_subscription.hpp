@@ -35,14 +35,25 @@ namespace amf_application {
 /*
  * Manage the Subscription Info
  */
+
 class amf_subscription {
  public:
-  amf_subscription() {}
+  amf_subscription()
+      : sub_id(),
+        ev_type(),
+        supi(),
+        notify_correlation_id(),
+        notify_uri(),
+        nf_id() {
+    supi_is_set = false;
+  }
+  void display();
 
  public:
   evsub_id_t sub_id;
   amf_event_type_t ev_type;
-  supi64_t supi;
+  bool supi_is_set;
+  std::string supi;
   std::string notify_correlation_id;
   std::string notify_uri;  // subsChangeNotifyUri ?
   std::string nf_id;

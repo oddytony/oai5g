@@ -19,42 +19,27 @@
  *      contact@openairinterface.org
  */
 
-/*! \file amf.hpp
+/*! \file amf_subscription.cpp
  \brief
- \date 2020
- \email: contact@openairinterface.org
+ \author
+ \company
+ \date 2021
+ \email:
  */
 
-#ifndef __AMF_HPP
-#define __AMF_HPP
+#include "amf_subscription.hpp"
+#include "logger.hpp"
+#include "3gpp_conversions.hpp"
 
-#include "3gpp_23.003.h"
-#include "string.h"
-#include "inttypes.h"
-#include "stdio.h"
+using namespace amf_application;
 
-// for CURL
-#define SMF_CURL_TIMEOUT_MS 100L
-#define SMF_NUMBER_RETRIES 3
-constexpr auto CURL_MIME_BOUNDARY = "----Boundary";
-#define NRF_CURL_TIMEOUT_MS 100L
-#define AUSF_CURL_TIMEOUT_MS 100L
-#define CURL_TIMEOUT_MS 100L
-
-#define BUFFER_SIZE_2048 2048
-#define BUFFER_SIZE_1024 1024
-#define BUFFER_SIZE_512 512
-#define BUFFER_SIZE_256 256
-
-#define FUTURE_STATUS_TIMEOUT_MS 100
-
-// Event Subscription IDs)
-typedef uint32_t evsub_id_t;
-#define EVSUB_ID_FMT "0x%" PRIx32
-#define EVSUB_ID_SCAN_FMT SCNx32
-#define INVALID_EVSUB_ID ((evsub_id_t) 0x00000000)
-#define UNASSIGNED_EVSUB_ID ((evsub_id_t) 0x00000000)
-
-constexpr uint64_t SECONDS_SINCE_FIRST_EPOCH = 2208988800;
-
-#endif
+void amf_subscription::display() {
+  Logger::amf_app().debug("Subscription info");
+  Logger::amf_app().debug("\tSubscription ID: %d", (uint32_t) sub_id);
+  Logger::amf_app().debug(
+      "\tEvent type: %s", xgpp_conv::amf_event_type_to_string(ev_type).c_str());
+  if (supi_is_set) Logger::amf_app().debug("\tSUPI: %s", supi.c_str());
+  Logger::amf_app().debug(
+      "\tNotify Correlation ID: %s", notify_correlation_id.c_str());
+  Logger::amf_app().debug("\tNF ID: %s", nf_id.c_str());
+};

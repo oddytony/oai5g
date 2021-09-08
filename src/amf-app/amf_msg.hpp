@@ -37,8 +37,8 @@ namespace amf_application {
 
 class event_exposure_msg {
  public:
-  supi_t get_supi() const;
-  void set_supi(const supi_t& value);
+  std::string get_supi() const;
+  void set_supi(const std::string& value);
   bool is_supi_is_set() const;
 
   void set_sub_id(std::string const& value);
@@ -56,6 +56,7 @@ class event_exposure_msg {
 
   std::vector<amf_event_t> get_event_subs() const;
   void set_event_subs(std::vector<amf_event_t> const& value);
+  void add_event_sub(amf_event_t const& value);
 
   void set_any_ue(bool value);
 
@@ -68,7 +69,8 @@ class event_exposure_msg {
   std::string m_notify_correlation_id;    // notifyCorrelationId, Mandatory
   std::string m_nf_id;                    //  nfId, Mandatory
 
-  supi_t m_supi;  // Supi, Conditional
+  // supi_t m_supi;  // Supi, Conditional
+  std::string m_supi;
   bool m_supi_is_set;
   bool m_any_ue;  // anyUE, Conditional
 

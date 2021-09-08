@@ -42,7 +42,7 @@ void SubscriptionsCollectionDocumentApiImplEventExposure::create_subscription(
 
   // Create a  message and store the necessary information
   Logger::amf_server().debug(
-      "Create a Event Exposure message and store the necessary information");
+      "Create an Event Exposure message and store the necessary information");
 
   amf_application::event_exposure_msg event_exposure = {};
 

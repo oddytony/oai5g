@@ -403,27 +403,25 @@ evsub_id_t amf_app::handle_event_exposure_subscription(
   // map (subscription id, info)
   evsub_id_t evsub_id = generate_ev_subscription_id();
 
-  std::shared_ptr<amf_subscription> ss =
-      std::shared_ptr<amf_subscription>(new amf_subscription());
-  ss.get()->sub_id = evsub_id;
-
-  // TODO:
-  if (msg->event_exposure.is_supi_is_set()) {
-    supi64_t supi64 = amf_supi_to_u64(msg->event_exposure.get_supi());
-    ss.get()->supi  = supi64;
-  }
-  ss.get()->notify_correlation_id =
-      msg->event_exposure.get_notify_correlation_id();
-  ss.get()->notify_uri = msg->event_exposure.get_notify_uri();
-  ss.get()->nf_id      = msg->event_exposure.get_nf_id();
-
   std::vector<amf_event_t> event_subscriptions =
       msg->event_exposure.get_event_subs();
 
   // store subscription
   for (auto i : event_subscriptions) {
-    ss.get()->ev_type = i.type;
+    std::shared_ptr<amf_subscription> ss = std::make_shared<amf_subscription>();
+    ss.get()->sub_id                     = evsub_id;
+    // TODO:
+    if (msg->event_exposure.is_supi_is_set()) {
+      ss.get()->supi        = msg->event_exposure.get_supi();
+      ss.get()->supi_is_set = true;
+    }
+    ss.get()->notify_correlation_id =
+        msg->event_exposure.get_notify_correlation_id();
+    ss.get()->notify_uri = msg->event_exposure.get_notify_uri();
+    ss.get()->nf_id      = msg->event_exposure.get_nf_id();
+    ss.get()->ev_type    = i.type;
     add_event_subscription(evsub_id, i.type, ss);
+    ss.get()->display();
   }
   return evsub_id;
 }
@@ -587,7 +585,7 @@ void amf_app::get_ee_subscriptions(
 
 //---------------------------------------------------------------------------------------------
 void amf_app::get_ee_subscriptions(
-    amf_event_type_t ev, supi64_t supi,
+    amf_event_type_t ev, std::string& supi,
     std::vector<std::shared_ptr<amf_subscription>>& subscriptions) {
   for (auto const& i : amf_event_subscriptions) {
     if ((i.first.second == ev) && (i.second->supi == supi)) {

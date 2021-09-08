@@ -31,6 +31,7 @@
 
 #include "amf_msg.hpp"
 #include "AmfCreateEventSubscription.h"
+#include "3gpp_29.518.h"
 
 using namespace amf_application;
 using namespace oai::amf::model;
@@ -48,6 +49,7 @@ void amf_event_subscription_from_openapi(
     const oai::amf::model::AmfCreateEventSubscription& event_subscription,
     amf_application::event_exposure_msg& event_exposure);
 
+std::string amf_event_type_to_string(amf_event_type_t type);
 }  // namespace xgpp_conv
 
 #endif /* FILE_3GPP_CONVERSIONS_HPP_SEEN */

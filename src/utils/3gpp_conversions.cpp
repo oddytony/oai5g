@@ -66,12 +66,13 @@ void xgpp_conv::amf_event_subscription_from_openapi(
     } else {
       ev.type = amf_event_type_e::AMF_EVENT_UNKNOWN;
     }
+    event_exposure.add_event_sub(ev);
   }
 
   if (event_subscription.getSubscription().supiIsSet()) {
-    supi_t supi          = {};
-    std::string supi_str = event_subscription.getSubscription().getSupi();
-    amf_string_to_supi(&supi, supi_str.c_str());
+    // supi_t supi          = {};
+    std::string supi = event_subscription.getSubscription().getSupi();
+    // amf_string_to_supi(&supi, supi_str.c_str());
     event_exposure.set_supi(supi);
   }
 
@@ -82,4 +83,13 @@ void xgpp_conv::amf_event_subscription_from_openapi(
   }
 
   // TODO:
+}
+
+std::string xgpp_conv::amf_event_type_to_string(amf_event_type_t type) {
+  uint8_t t = (uint8_t) type;
+  if ((t > 0) and (t <= 12)) {
+    return amf_event_type_e2str.at(t);
+  } else {
+    return amf_event_type_e2str.at(0);
+  }
 }

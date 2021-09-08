@@ -208,13 +208,13 @@ class amf_app {
   /*
    * Get a list of subscription associated with a particular event
    * @param [amf_event_t] ev: Event type
-   * @param [supi64_t] supi: SUPI
+   * @param [std::string&] supi: SUPI
    * @param [std::vector<std::shared_ptr<amf_subscription>>&] subscriptions:
    * store the list of the subscription associated with this event type
    * @return void
    */
   void get_ee_subscriptions(
-      amf_event_type_t ev, supi64_t supi,
+      amf_event_type_t ev, std::string& supi,
       std::vector<std::shared_ptr<amf_subscription>>& subscriptions);
 
   /*

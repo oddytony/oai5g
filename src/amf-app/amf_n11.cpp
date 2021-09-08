@@ -33,6 +33,7 @@
 #include <nlohmann/json.hpp>
 
 #include "3gpp_ts24501.hpp"
+#include "3gpp_29.500.h"
 #include "amf.hpp"
 #include "amf_app.hpp"
 #include "amf_config.hpp"

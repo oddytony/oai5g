@@ -61,6 +61,7 @@ file(GLOB AMF_src_files
   ${CMAKE_CURRENT_SOURCE_DIR}/amf_statistics.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/mysql_db.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/amf_msg.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/amf_subscription.cpp
   ${SRC_TOP_DIR}/nas/msgs/*.cpp
   ${SRC_TOP_DIR}/nas/ies/*.cpp
   ${SRC_TOP_DIR}/nas/utils/*.c
