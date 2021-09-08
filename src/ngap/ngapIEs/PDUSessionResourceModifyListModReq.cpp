@@ -49,8 +49,6 @@ void PDUSessionResourceModifyListModReq::setPDUSessionResourceModifyListModReq(
 //------------------------------------------------------------------------------
 bool PDUSessionResourceModifyListModReq::
     encode2PDUSessionResourceModifyListModReq(
-        // Ngap_PDUSessionResourceModifyListModReq_t*
-        // pduSessionResourceSetupListSUReq
         Ngap_PDUSessionResourceModifyListModReq_t&
             m_pduSessionResourceModifyListModReq) {
   for (auto pdu : pduSessionResourceModifyListModReq) {
@@ -64,19 +62,7 @@ bool PDUSessionResourceModifyListModReq::
         0)
       return false;
   }
-  /*
-  for (int i = 0; i < numberofPDUSessions; i++) {
-    Ngap_PDUSessionResourceSetupItemSUReq_t* request =
-        (Ngap_PDUSessionResourceSetupItemSUReq_t*) calloc(
-            1, sizeof(Ngap_PDUSessionResourceSetupItemSUReq_t));
-    if (!request) return false;
-    if (!pduSessionResourceModifyItemModReq[i]
-             .encode2PDUSessionResourceSetupItemSUReq(request))
-      return false;
-    if (ASN_SEQUENCE_ADD(&pduSessionResourceSetupListSUReq->list, request) != 0)
-      return false;
-  }
-*/
+
   return true;
 }
 
@@ -86,9 +72,6 @@ bool PDUSessionResourceModifyListModReq::
         Ngap_PDUSessionResourceModifyListModReq_t&
             pduSessionResourceSetupListSUReq) {
   uint32_t numberofPDUSessions = pduSessionResourceSetupListSUReq.list.count;
-
-  // pduSessionResourceModifyItemModReq = new PDUSessionResourceSetupItemSUReq
-  //    [numberofPDUSessions]();
 
   for (int i = 0; i < numberofPDUSessions; i++) {
     PDUSessionResourceModifyItemModReq pduSessionResourceModifyItemModReq = {};

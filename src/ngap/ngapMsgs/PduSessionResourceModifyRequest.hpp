@@ -39,6 +39,7 @@
 
 extern "C" {
 #include "Ngap_InitialContextSetupRequest.h"
+#include "Ngap_PDUSessionResourceModifyRequest.h"
 #include "Ngap_NGAP-PDU.h"
 #include "Ngap_ProtocolIE-Field.h"
 }
@@ -56,11 +57,9 @@ class PduSessionResourceModifyRequestMsg {
   void setRanPagingPriority(uint8_t priority);
   void setNasPdu(uint8_t* nas, size_t sizeofnas);
 
-  void setPduSessionResourceSetupRequestList(
-      std::vector<PDUSessionResourceSetupRequestItem_t> list);
-  void setPduSessionAggregateMaximumBitRate(
-      long bit_rate_downlink, long bit_rate_uplink);
-  void setUEAggregateMaxBitRate(long bit_rate_downlink, long bit_rate_uplink);
+  void setPduSessionResourceModifyRequestList(
+      std::vector<PDUSessionResourceModifyRequestItem_t> list);
+
   int encode2buffer(uint8_t* buf, int buf_size);
   void encode2buffer_new(char* buf, int& encoded_size);
 
@@ -69,18 +68,17 @@ class PduSessionResourceModifyRequestMsg {
   uint32_t getRanUeNgapId();
   int getRanPagingPriority();
   bool getNasPdu(uint8_t*& nas, size_t& sizeofnas);
-  bool getPduSessionResourceSetupRequestList(
-      std::vector<PDUSessionResourceSetupRequestItem_t>& list);
-
+  bool getPduSessionResourceModifyRequestList(
+      std::vector<PDUSessionResourceModifyRequestItem_t>& list);
 
  private:
-  Ngap_NGAP_PDU_t* pduSessionResourceSetupRequestPdu;
-  Ngap_PDUSessionResourceSetupRequest_t* pduSessionResourceSetupRequestIEs;
+  Ngap_NGAP_PDU_t* pduSessionResourceModifyRequestPdu;
+  Ngap_PDUSessionResourceModifyRequest_t* pduSessionResourceModifyRequestIEs;
 
   AMF_UE_NGAP_ID amfUeNgapId;            // Mandatory
   RAN_UE_NGAP_ID ranUeNgapId;            // Mandatory
   RANPagingPriority* ranPagingPriority;  // Optional
-  PDUSessionResourceModifyListModReq* pduSessionResourceModifyListModReq;
+  PDUSessionResourceModifyListModReq* pduSessionResourceModifyList;
 };
 
 }  // namespace ngap
