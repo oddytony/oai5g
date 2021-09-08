@@ -55,7 +55,7 @@ bool NAS_PDU::decodefromoctetstring(Ngap_NAS_PDU_t& m_naspdu) {
 }
 
 //------------------------------------------------------------------------------
-bool NAS_PDU::getNasPdu(uint8_t*& buffer, size_t& size) {
+bool NAS_PDU::getNasPdu(uint8_t*& buffer, size_t& size) const {
   buffer = (uint8_t*) naspdubuffer;
   size   = buffersize;
   if (!naspdubuffer) return false;
