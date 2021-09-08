@@ -49,7 +49,6 @@ class amf_subscription {
   }
   void display();
 
- public:
   evsub_id_t sub_id;
   amf_event_type_t ev_type;
   bool supi_is_set;
