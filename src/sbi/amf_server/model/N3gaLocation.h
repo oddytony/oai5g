@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -21,11 +21,14 @@
 
 #include "Tai.h"
 #include <string>
+#include "TnapId.h"
+#include "Ipv6Addr.h"
+#include "TwapId.h"
+#include "LineType.h"
+#include "HfcNodeId.h"
 #include <nlohmann/json.hpp>
 
-namespace oai {
-namespace amf {
-namespace model {
+namespace oai::amf::model {
 
 /// <summary>
 ///
@@ -33,9 +36,22 @@ namespace model {
 class N3gaLocation {
  public:
   N3gaLocation();
-  virtual ~N3gaLocation();
+  virtual ~N3gaLocation() = default;
 
-  void validate();
+  /// <summary>
+  /// Validate the current data in the model. Throws a ValidationException on
+  /// failure.
+  /// </summary>
+  void validate() const;
+
+  /// <summary>
+  /// Validate the current data in the model. Returns false on error and writes
+  /// an error message into the given stringstream.
+  /// </summary>
+  bool validate(std::stringstream& msg) const;
+
+  bool operator==(const N3gaLocation& rhs) const;
+  bool operator!=(const N3gaLocation& rhs) const;
 
   /////////////////////////////////////////////
   /// N3gaLocation members
@@ -64,8 +80,8 @@ class N3gaLocation {
   /// <summary>
   ///
   /// </summary>
-  std::string getUeIpv6Addr() const;
-  void setUeIpv6Addr(std::string const& value);
+  Ipv6Addr getUeIpv6Addr() const;
+  void setUeIpv6Addr(Ipv6Addr const& value);
   bool ueIpv6AddrIsSet() const;
   void unsetUeIpv6Addr();
   /// <summary>
@@ -75,6 +91,48 @@ class N3gaLocation {
   void setPortNumber(int32_t const value);
   bool portNumberIsSet() const;
   void unsetPortNumber();
+  /// <summary>
+  ///
+  /// </summary>
+  TnapId getTnapId() const;
+  void setTnapId(TnapId const& value);
+  bool tnapIdIsSet() const;
+  void unsetTnapId();
+  /// <summary>
+  ///
+  /// </summary>
+  TwapId getTwapId() const;
+  void setTwapId(TwapId const& value);
+  bool twapIdIsSet() const;
+  void unsetTwapId();
+  /// <summary>
+  ///
+  /// </summary>
+  HfcNodeId getHfcNodeId() const;
+  void setHfcNodeId(HfcNodeId const& value);
+  bool hfcNodeIdIsSet() const;
+  void unsetHfcNodeId();
+  /// <summary>
+  ///
+  /// </summary>
+  std::string getGli() const;
+  void setGli(std::string const& value);
+  bool gliIsSet() const;
+  void unsetGli();
+  /// <summary>
+  ///
+  /// </summary>
+  LineType getW5gbanLineType() const;
+  void setW5gbanLineType(LineType const& value);
+  bool w5gbanLineTypeIsSet() const;
+  void unsetW5gbanLineType();
+  /// <summary>
+  ///
+  /// </summary>
+  std::string getGci() const;
+  void setGci(std::string const& value);
+  bool gciIsSet() const;
+  void unsetGci();
 
   friend void to_json(nlohmann::json& j, const N3gaLocation& o);
   friend void from_json(const nlohmann::json& j, N3gaLocation& o);
@@ -86,14 +144,28 @@ class N3gaLocation {
   bool m_N3IwfIdIsSet;
   std::string m_UeIpv4Addr;
   bool m_UeIpv4AddrIsSet;
-  std::string m_UeIpv6Addr;
+  Ipv6Addr m_UeIpv6Addr;
   bool m_UeIpv6AddrIsSet;
   int32_t m_PortNumber;
   bool m_PortNumberIsSet;
+  TnapId m_TnapId;
+  bool m_TnapIdIsSet;
+  TwapId m_TwapId;
+  bool m_TwapIdIsSet;
+  HfcNodeId m_HfcNodeId;
+  bool m_HfcNodeIdIsSet;
+  std::string m_Gli;
+  bool m_GliIsSet;
+  LineType m_W5gbanLineType;
+  bool m_W5gbanLineTypeIsSet;
+  std::string m_Gci;
+  bool m_GciIsSet;
+
+  // Helper overload for validate. Used when one model stores another model and
+  // calls it's validate.
+  bool validate(std::stringstream& msg, const std::string& pathPrefix) const;
 };
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model
 
 #endif /* N3gaLocation_H_ */

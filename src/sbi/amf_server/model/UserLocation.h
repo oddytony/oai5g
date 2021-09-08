@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -24,9 +24,7 @@
 #include "N3gaLocation.h"
 #include <nlohmann/json.hpp>
 
-namespace oai {
-namespace amf {
-namespace model {
+namespace oai::amf::model {
 
 /// <summary>
 ///
@@ -34,9 +32,22 @@ namespace model {
 class UserLocation {
  public:
   UserLocation();
-  virtual ~UserLocation();
+  virtual ~UserLocation() = default;
 
-  void validate();
+  /// <summary>
+  /// Validate the current data in the model. Throws a ValidationException on
+  /// failure.
+  /// </summary>
+  void validate() const;
+
+  /// <summary>
+  /// Validate the current data in the model. Returns false on error and writes
+  /// an error message into the given stringstream.
+  /// </summary>
+  bool validate(std::stringstream& msg) const;
+
+  bool operator==(const UserLocation& rhs) const;
+  bool operator!=(const UserLocation& rhs) const;
 
   /////////////////////////////////////////////
   /// UserLocation members
@@ -73,10 +84,12 @@ class UserLocation {
   bool m_NrLocationIsSet;
   N3gaLocation m_N3gaLocation;
   bool m_N3gaLocationIsSet;
+
+  // Helper overload for validate. Used when one model stores another model and
+  // calls it's validate.
+  bool validate(std::stringstream& msg, const std::string& pathPrefix) const;
 };
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model
 
 #endif /* UserLocation_H_ */

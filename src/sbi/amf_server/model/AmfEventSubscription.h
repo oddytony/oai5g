@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -25,9 +25,7 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 
-namespace oai {
-namespace amf {
-namespace model {
+namespace oai::amf::model {
 
 /// <summary>
 ///
@@ -35,9 +33,22 @@ namespace model {
 class AmfEventSubscription {
  public:
   AmfEventSubscription();
-  virtual ~AmfEventSubscription();
+  virtual ~AmfEventSubscription() = default;
 
-  void validate();
+  /// <summary>
+  /// Validate the current data in the model. Throws a ValidationException on
+  /// failure.
+  /// </summary>
+  void validate() const;
+
+  /// <summary>
+  /// Validate the current data in the model. Returns false on error and writes
+  /// an error message into the given stringstream.
+  /// </summary>
+  bool validate(std::stringstream& msg) const;
+
+  bool operator==(const AmfEventSubscription& rhs) const;
+  bool operator!=(const AmfEventSubscription& rhs) const;
 
   /////////////////////////////////////////////
   /// AmfEventSubscription members
@@ -45,7 +56,8 @@ class AmfEventSubscription {
   /// <summary>
   ///
   /// </summary>
-  std::vector<AmfEvent>& getEventList();
+  std::vector<AmfEvent> getEventList() const;
+  void setEventList(std::vector<AmfEvent> const& value);
   /// <summary>
   ///
   /// </summary>
@@ -146,10 +158,12 @@ class AmfEventSubscription {
   bool m_AnyUEIsSet;
   AmfEventMode m_Options;
   bool m_OptionsIsSet;
+
+  // Helper overload for validate. Used when one model stores another model and
+  // calls it's validate.
+  bool validate(std::stringstream& msg, const std::string& pathPrefix) const;
 };
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model
 
 #endif /* AmfEventSubscription_H_ */

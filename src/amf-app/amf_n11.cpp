@@ -33,6 +33,7 @@
 #include <nlohmann/json.hpp>
 
 #include "3gpp_ts24501.hpp"
+#include "3gpp_29.500.h"
 #include "amf.hpp"
 #include "amf_app.hpp"
 #include "amf_config.hpp"
@@ -132,7 +133,13 @@ void amf_n11_task(void*) {
             dynamic_cast<itti_n11_register_nf_instance_request*>(msg);
         // TODO: Handle ITTI
       } break;
-
+      case SBI_NOTIFY_SUBSCRIBED_EVENT: {
+        Logger::amf_n11().info(
+            "Receive Notify Subscribed Event Request, handling ...");
+        itti_sbi_notify_subscribed_event* m =
+            dynamic_cast<itti_sbi_notify_subscribed_event*>(msg);
+        amf_n11_inst->handle_itti_message(ref(*m));
+      } break;
       default: {
         Logger::amf_n11().info(
             "Receive unknown message type %d", msg->msg_type);
@@ -485,7 +492,49 @@ void amf_n11::handle_itti_message(
       remote_uri, json_part, "", "", itti_msg.supi, psc.get()->pdu_session_id);
 }
 
-// SMF selection
+//------------------------------------------------------------------------------
+void amf_n11::handle_itti_message(itti_sbi_notify_subscribed_event& itti_msg) {
+  Logger::amf_n11().debug(
+      "Send notification for the subscribed event to the subscription");
+
+  for (auto i : itti_msg.event_notifs) {
+    // Fill the json part
+    nlohmann::json json_data         = {};
+    json_data["notifyCorrelationId"] = i.get_notify_correlation_id();
+    auto report_lists                = nlohmann::json::array();
+    nlohmann::json report            = {};
+
+    std::vector<amf_event_report_t> reports = i.get_reports();
+
+    for (auto r : reports) {
+      report["type"] = amf_event_type_e2str.at(static_cast<uint8_t>(r.m_type));
+      report["state"]["active"] = "TRUE";
+      if (r.m_supi_is_set) {
+        report["supi"] = r.m_supi;  // TODO
+      }
+      if (r.m_reachability_is_set) {
+        report["reachability"] = r.m_reachability;
+      }
+
+      // timestamp
+      std::time_t time_epoch_ntp = std::time(nullptr);
+      uint64_t tv_ntp            = time_epoch_ntp + SECONDS_SINCE_FIRST_EPOCH;
+      report["timeStamp"]        = std::to_string(tv_ntp);
+      report_lists.push_back(report);
+    }
+
+    json_data["reportList"] = report_lists;
+
+    std::string body = json_data.dump();
+    std::string response_data;
+
+    std::string url = i.get_notify_correlation_id();
+    curl_http_client(url, "POST", body, response_data);
+    // TODO: process the response
+  }
+  return;
+}
+
 //------------------------------------------------------------------------------
 bool amf_n11::smf_selection_from_configuration(
     std::string& smf_addr, std::string& smf_api_version) {

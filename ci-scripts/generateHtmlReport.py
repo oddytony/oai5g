@@ -648,6 +648,8 @@ class HtmlReport():
 			logFileName = 'amf_' + variant + '_image_build.log'
 			nb_errors = 0
 			nb_warnings = 0
+			added_separator = False
+
 			if os.path.isfile(cwd + '/archives/' + logFileName):
 				if nfType == 'AMF':
 					section_start_pattern = 'build_amf --clean --Verbose --build-type Release --jobs'
@@ -667,6 +669,9 @@ class HtmlReport():
 								nb_errors += 1
 							result = re.search('warning:', line)
 							if result is not None:
+								nb_warnings += 1
+							result = re.search('error:|warning:', line)
+							if result is not None:
 								correctLine = re.sub("^.*/openair-amf","/openair-amf",line.strip())
 								wordsList = correctLine.split(None,2)
 								filename = re.sub(":[0-9]*:[0-9]*:","", wordsList[0])
@@ -675,11 +680,12 @@ class HtmlReport():
 								error_warning_status = re.sub(':',"", wordsList[1])
 								error_warning_msg = re.sub('^.*' + error_warning_status + ':', '', correctLine)
 
-								if nb_warnings == 0 and variant == 'docker':
+								if not added_separator and variant == 'docker':
 									self.warning_rows += '<tr><td colspan="4" align = "center" bgcolor = "LightGray"><b>Ubuntu 18</b></td></tr>\n'
-								if nb_warnings == 0 and variant == 'podman':
+									added_separator = True
+								if not added_separator and variant == 'podman':
 									self.warning_rows += '<tr><td colspan="4" align = "center" bgcolor = "LightGray"><b>RHEL 8</b></td></tr>\n'
-								nb_warnings += 1
+									added_separator = True
 								self.warning_rows += '<tr><td>' + filename + '</td><td>' + linenumber + '</td><td>' + error_warning_status + '</td><td>' + error_warning_msg + '</td></tr>\n'
 					logfile.close()
 				if nb_warnings == 0 and nb_errors == 0:

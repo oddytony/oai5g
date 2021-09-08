@@ -34,6 +34,7 @@
 #include <iostream>
 #include <stdexcept>
 
+//#include "3gpp_conversions.hpp"
 #include "DLNASTransport.hpp"
 #include "amf_config.hpp"
 #include "amf_n1.hpp"
@@ -236,6 +237,11 @@ bool amf_app::get_pdu_sessions_context(
 }
 
 //------------------------------------------------------------------------------
+evsub_id_t amf_app::generate_ev_subscription_id() {
+  return evsub_id_generator.get_uid();
+}
+
+//------------------------------------------------------------------------------
 void amf_app::handle_itti_message(
     itti_n1n2_message_transfer_request& itti_msg) {
   if (itti_msg.is_ppi_set) {  // Paging procedure
@@ -403,8 +409,136 @@ bool amf_app::generate_5g_guti(
 }
 
 //------------------------------------------------------------------------------
+evsub_id_t amf_app::handle_event_exposure_subscription(
+    std::shared_ptr<itti_sbi_event_exposure_request> msg) {
+  Logger::amf_app().info(
+      "Handle an Event Exposure Subscription Request from a NF (HTTP version "
+      "%d)",
+      msg->http_version);
+
+  // Generate a subscription ID Id and store the corresponding information in a
+  // map (subscription id, info)
+  evsub_id_t evsub_id = generate_ev_subscription_id();
+
+  std::vector<amf_event_t> event_subscriptions =
+      msg->event_exposure.get_event_subs();
+
+  // store subscription
+  for (auto i : event_subscriptions) {
+    std::shared_ptr<amf_subscription> ss = std::make_shared<amf_subscription>();
+    ss.get()->sub_id                     = evsub_id;
+    // TODO:
+    if (msg->event_exposure.is_supi_is_set()) {
+      ss.get()->supi        = msg->event_exposure.get_supi();
+      ss.get()->supi_is_set = true;
+    }
+    ss.get()->notify_correlation_id =
+        msg->event_exposure.get_notify_correlation_id();
+    ss.get()->notify_uri = msg->event_exposure.get_notify_uri();
+    ss.get()->nf_id      = msg->event_exposure.get_nf_id();
+    ss.get()->ev_type    = i.type;
+    add_event_subscription(evsub_id, i.type, ss);
+    ss.get()->display();
+  }
+  return evsub_id;
+}
+
+bool amf_app::handle_event_exposure_delete(const std::string& subscription_id) {
+  // verify Subscription ID
+  evsub_id_t sub_id = {};
+  try {
+    sub_id = std::stoi(subscription_id);
+  } catch (const std::exception& err) {
+    Logger::amf_app().warn(
+        "Received a Unsubscribe Request, couldn't find the corresponding "
+        "subscription");
+    return false;
+  }
+
+  return remove_event_subscription(sub_id);
+}
+
+//------------------------------------------------------------------------------
+bool amf_app::handle_nf_status_notification(
+    std::shared_ptr<itti_sbi_notification_data>& msg,
+    oai::amf::model::ProblemDetails& problem_details, uint8_t& http_code) {
+  Logger::amf_app().info(
+      "Handle a NF status notification from NRF (HTTP version "
+      "%d)",
+      msg->http_version);
+  // TODO
+  return true;
+}
+
+//------------------------------------------------------------------------------
 void amf_app::generate_uuid() {
   amf_instance_id = to_string(boost::uuids::random_generator()());
+}
+
+//---------------------------------------------------------------------------------------------
+void amf_app::add_event_subscription(
+    evsub_id_t sub_id, amf_event_type_t ev,
+    std::shared_ptr<amf_subscription> ss) {
+  Logger::amf_app().debug(
+      "Add an Event subscription (Sub ID %d, Event %d)", sub_id, (uint8_t) ev);
+  std::unique_lock lock(m_amf_event_subscriptions);
+  amf_event_subscriptions.emplace(std::make_pair(sub_id, ev), ss);
+}
+
+//---------------------------------------------------------------------------------------------
+bool amf_app::remove_event_subscription(evsub_id_t sub_id) {
+  Logger::amf_app().debug("Remove an Event subscription (Sub ID %d)", sub_id);
+  std::unique_lock lock(m_amf_event_subscriptions);
+  for (auto it = amf_event_subscriptions.cbegin();
+       it != amf_event_subscriptions.cend();) {
+    if ((uint8_t) std::get<0>(it->first) == (uint32_t) sub_id) {
+      Logger::amf_app().debug(
+          "Found an event subscription (Event ID %d)",
+          (uint8_t) std::get<0>(it->first));
+      amf_event_subscriptions.erase(it++);
+      // it = amf_event_subscriptions.erase(it)
+      return true;
+    } else {
+      ++it;
+    }
+  }
+  return false;
+}
+
+//---------------------------------------------------------------------------------------------
+void amf_app::get_ee_subscriptions(
+    amf_event_type_t ev,
+    std::vector<std::shared_ptr<amf_subscription>>& subscriptions) {
+  for (auto const& i : amf_event_subscriptions) {
+    if ((uint8_t) std::get<1>(i.first) == (uint8_t) ev) {
+      Logger::amf_app().debug(
+          "Found an event subscription (Event ID %d, Event %d)",
+          (uint8_t) std::get<0>(i.first), (uint8_t) ev);
+      subscriptions.push_back(i.second);
+    }
+  }
+}
+
+//---------------------------------------------------------------------------------------------
+void amf_app::get_ee_subscriptions(
+    evsub_id_t sub_id,
+    std::vector<std::shared_ptr<amf_subscription>>& subscriptions) {
+  for (auto const& i : amf_event_subscriptions) {
+    if (i.first.first == sub_id) {
+      subscriptions.push_back(i.second);
+    }
+  }
+}
+
+//---------------------------------------------------------------------------------------------
+void amf_app::get_ee_subscriptions(
+    amf_event_type_t ev, std::string& supi,
+    std::vector<std::shared_ptr<amf_subscription>>& subscriptions) {
+  for (auto const& i : amf_event_subscriptions) {
+    if ((i.first.second == ev) && (i.second->supi == supi)) {
+      subscriptions.push_back(i.second);
+    }
+  }
 }
 
 //---------------------------------------------------------------------------------------------

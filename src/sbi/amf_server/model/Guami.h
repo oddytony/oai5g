@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -19,13 +19,11 @@
 #ifndef Guami_H_
 #define Guami_H_
 
+#include "PlmnIdNid.h"
 #include <string>
-#include "PlmnId.h"
 #include <nlohmann/json.hpp>
 
-namespace oai {
-namespace amf {
-namespace model {
+namespace oai::amf::model {
 
 /// <summary>
 ///
@@ -33,9 +31,22 @@ namespace model {
 class Guami {
  public:
   Guami();
-  virtual ~Guami();
+  virtual ~Guami() = default;
 
-  void validate();
+  /// <summary>
+  /// Validate the current data in the model. Throws a ValidationException on
+  /// failure.
+  /// </summary>
+  void validate() const;
+
+  /// <summary>
+  /// Validate the current data in the model. Returns false on error and writes
+  /// an error message into the given stringstream.
+  /// </summary>
+  bool validate(std::stringstream& msg) const;
+
+  bool operator==(const Guami& rhs) const;
+  bool operator!=(const Guami& rhs) const;
 
   /////////////////////////////////////////////
   /// Guami members
@@ -43,8 +54,8 @@ class Guami {
   /// <summary>
   ///
   /// </summary>
-  PlmnId getPlmnId() const;
-  void setPlmnId(PlmnId const& value);
+  PlmnIdNid getPlmnId() const;
+  void setPlmnId(PlmnIdNid const& value);
   /// <summary>
   ///
   /// </summary>
@@ -55,13 +66,15 @@ class Guami {
   friend void from_json(const nlohmann::json& j, Guami& o);
 
  protected:
-  PlmnId m_PlmnId;
+  PlmnIdNid m_PlmnId;
 
   std::string m_AmfId;
+
+  // Helper overload for validate. Used when one model stores another model and
+  // calls it's validate.
+  bool validate(std::stringstream& msg, const std::string& pathPrefix) const;
 };
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model
 
 #endif /* Guami_H_ */

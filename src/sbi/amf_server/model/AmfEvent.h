@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -25,19 +25,30 @@
 #include "AmfEventType.h"
 #include <nlohmann/json.hpp>
 
-namespace oai {
-namespace amf {
-namespace model {
-
+namespace oai::amf::model {
+using namespace oai::amf::model;
 /// <summary>
 ///
 /// </summary>
 class AmfEvent {
  public:
   AmfEvent();
-  virtual ~AmfEvent();
+  virtual ~AmfEvent() = default;
 
-  void validate();
+  /// <summary>
+  /// Validate the current data in the model. Throws a ValidationException on
+  /// failure.
+  /// </summary>
+  void validate() const;
+
+  /// <summary>
+  /// Validate the current data in the model. Returns false on error and writes
+  /// an error message into the given stringstream.
+  /// </summary>
+  bool validate(std::stringstream& msg) const;
+
+  bool operator==(const AmfEvent& rhs) const;
+  bool operator!=(const AmfEvent& rhs) const;
 
   /////////////////////////////////////////////
   /// AmfEvent members
@@ -57,13 +68,15 @@ class AmfEvent {
   /// <summary>
   ///
   /// </summary>
-  std::vector<AmfEventArea>& getAreaList();
+  std::vector<AmfEventArea> getAreaList() const;
+  void setAreaList(std::vector<AmfEventArea> const& value);
   bool areaListIsSet() const;
   void unsetAreaList();
   /// <summary>
   ///
   /// </summary>
-  std::vector<LocationFilter>& getLocationFilterList();
+  std::vector<LocationFilter> getLocationFilterList() const;
+  void setLocationFilterList(std::vector<LocationFilter> const& value);
   bool locationFilterListIsSet() const;
   void unsetLocationFilterList();
   /// <summary>
@@ -76,6 +89,10 @@ class AmfEvent {
 
   friend void to_json(nlohmann::json& j, const AmfEvent& o);
   friend void from_json(const nlohmann::json& j, AmfEvent& o);
+
+  // Helper overload for validate. Used when one model stores another model and
+  // calls it's validate.
+  bool validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
  protected:
   AmfEventType m_Type;
@@ -90,8 +107,6 @@ class AmfEvent {
   bool m_RefIdIsSet;
 };
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model
 
 #endif /* AmfEvent_H_ */
