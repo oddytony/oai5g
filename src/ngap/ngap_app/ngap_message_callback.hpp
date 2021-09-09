@@ -483,8 +483,6 @@ int ngap_amf_handle_pdu_session_resource_modify_response(
     return -1;
   }
 
-  // TODO:for PDUSessionResourceFailedToModifyListModRes
-
   // Transfer pduSessionResourceModifyResponseTransfer to SMF
   std::vector<PDUSessionResourceModifyResponseItem_t> list;
   if (!response_msg->getPduSessionResourceModifyResponseList(list)) {
@@ -511,7 +509,7 @@ int ngap_amf_handle_pdu_session_resource_modify_response(
     itti_msg->pdu_session_id = response_item.pduSessionId;
     itti_msg->n2sm           = n2sm;
     itti_msg->is_n2sm_set    = true;
-    itti_msg->n2sm_info_type = "PDU_RES_REL_RSP";
+    itti_msg->n2sm_info_type = "PDU_RES_MOD_RSP";
     itti_msg->amf_ue_ngap_id = response_msg->getAmfUeNgapId();
     itti_msg->ran_ue_ngap_id = response_msg->getRanUeNgapId();
 
@@ -522,6 +520,8 @@ int ngap_amf_handle_pdu_session_resource_modify_response(
           itti_msg->get_msg_name());
     }
   }
+
+  // TODO:for PDUSessionResourceFailedToModifyListModRes
 
   return 0;
 }
