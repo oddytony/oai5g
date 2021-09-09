@@ -106,6 +106,7 @@ typedef struct {
   uint8_t pduSessionId;
   uint8_t* pduSessionNAS_PDU;
   size_t sizeofpduSessionNAS_PDU;
+  S_Nssai s_nssai;
   OCTET_STRING_t pduSessionResourceModifyRequestTransfer;
 } PDUSessionResourceModifyRequestItem_t;
 

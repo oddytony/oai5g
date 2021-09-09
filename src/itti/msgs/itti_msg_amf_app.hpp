@@ -67,9 +67,13 @@ class itti_n1n2_message_transfer_request : public itti_msg_amf_app {
   itti_n1n2_message_transfer_request(
       const task_id_t origin, const task_id_t destination)
       : itti_msg_amf_app(N1N2_MESSAGE_TRANSFER_REQ, origin, destination) {
-    is_n2sm_set = false;
-    is_n1sm_set = false;
-    is_ppi_set  = false;
+    is_n2sm_set    = false;
+    is_n1sm_set    = false;
+    is_ppi_set     = false;
+    supi           = {};
+    n2sm_info_type = {};
+    pdu_session_id = 0;
+    ppi            = 0;
   }
   itti_n1n2_message_transfer_request(
       const itti_n1n2_message_transfer_request& i)

@@ -112,6 +112,11 @@ void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(
   itti_msg->is_n2sm_set = true;
   itti_msg->pdu_session_id =
       (uint8_t) n1N2MessageTransferReqData.getPduSessionId();
+  itti_msg->n2sm_info_type = n1N2MessageTransferReqData.getN2InfoContainer()
+                                 .getSmInfo()
+                                 .getN2InfoContent()
+                                 .getNgapIeType()
+                                 .get_value();
 
   // For Paging
   if (n1N2MessageTransferReqData.ppiIsSet()) {

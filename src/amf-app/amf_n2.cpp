@@ -40,6 +40,7 @@
 #include "PDUSessionResourceHandoverCommandTransfer.hpp"
 #include "PduSessionResourceReleaseCommand.hpp"
 #include "PduSessionResourceSetupRequest.hpp"
+#include "PduSessionResourceModifyRequest.hpp"
 #include "UEContextReleaseCommand.hpp"
 #include "HandoverPreparationFailure.hpp"
 #include "Paging.hpp"
@@ -130,6 +131,13 @@ void amf_n2_task(void* args_p) {
             "Encoding PDU SESSION RESOURCE SETUP REQUEST message, sending");
         itti_pdu_session_resource_setup_request* m =
             dynamic_cast<itti_pdu_session_resource_setup_request*>(msg);
+        amf_n2_inst->handle_itti_message(ref(*m));
+      } break;
+      case PDU_SESSION_RESOURCE_MODIFY_REQUEST: {
+        Logger::amf_n2().info(
+            "Received PDU_SESSION_RESOURCE_MODIFY_REQUEST message, handling");
+        itti_pdu_session_resource_modify_request* m =
+            dynamic_cast<itti_pdu_session_resource_modify_request*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
       case INITIAL_CONTEXT_SETUP_REQUEST: {
@@ -1025,6 +1033,81 @@ void amf_n2::handle_itti_message(
   sctp_s_38412.sctp_send_msg(
       gc.get()->sctp_assoc_id, unc.get()->sctp_stream_send, &b);
   // free memory
+  free_wrapper((void**) &buffer);
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::handle_itti_message(
+    itti_pdu_session_resource_modify_request& itti_msg) {
+  Logger::amf_n2().debug("Handle PDU Session Resource Modify Request ...");
+
+  if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id)) {
+    Logger::amf_n2().error(
+        "No UE NGAP context with ran_ue_ngap_id (%d)", itti_msg.ran_ue_ngap_id);
+    return;
+  }
+
+  std::shared_ptr<ue_ngap_context> unc = {};
+  unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
+  if (unc.get() == nullptr) {
+    Logger::amf_n2().error(
+        "Illegal UE with ran_ue_ngap_id (0x%x)", itti_msg.ran_ue_ngap_id);
+    return;
+  }
+  std::shared_ptr<gnb_context> gc = {};
+  if (!is_assoc_id_2_gnb_context(unc.get()->gnb_assoc_id)) {
+    Logger::amf_n2().error(
+        "No existing gNG context with assoc_id (%d)", unc.get()->gnb_assoc_id);
+    return;
+  }
+  gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
+  if (gc.get() == nullptr) {
+    Logger::amf_n2().error(
+        "Illegal gNB with assoc id (0x%x)", unc.get()->gnb_assoc_id);
+    return;
+  }
+
+  std::unique_ptr<PduSessionResourceModifyRequestMsg> modify_request_msg =
+      std::make_unique<PduSessionResourceModifyRequestMsg>();
+
+  modify_request_msg->setAmfUeNgapId(itti_msg.amf_ue_ngap_id);
+  modify_request_msg->setRanUeNgapId(itti_msg.ran_ue_ngap_id);
+
+  std::vector<PDUSessionResourceModifyRequestItem_t> list;
+  PDUSessionResourceModifyRequestItem_t item = {};
+  item.pduSessionId                          = itti_msg.pdu_session_id;
+
+  item.pduSessionResourceModifyRequestTransfer.buf =
+      (uint8_t*) bdata(itti_msg.n2sm);
+  item.pduSessionResourceModifyRequestTransfer.size = blength(itti_msg.n2sm);
+  item.s_nssai.sd                                   = itti_msg.s_NSSAI.getSd();
+  item.s_nssai.sst                                  = itti_msg.s_NSSAI.getSst();
+
+  uint8_t* nas_pdu = (uint8_t*) calloc(1, blength(itti_msg.nas) + 1);
+  memcpy(nas_pdu, (uint8_t*) bdata(itti_msg.nas), blength(itti_msg.nas));
+  nas_pdu[blength(itti_msg.nas)] = '\0';
+  item.pduSessionNAS_PDU         = nas_pdu;
+  item.sizeofpduSessionNAS_PDU   = blength(itti_msg.nas);
+  list.push_back(item);
+
+  modify_request_msg->setPduSessionResourceModifyRequestList(list);
+
+  size_t buffer_size = BUFFER_SIZE_512;
+  char* buffer       = (char*) calloc(1, buffer_size);
+  int encoded_size   = 0;
+
+  modify_request_msg->encode2buffer_new(buffer, encoded_size);
+#if DEBUG_IS_ON
+  Logger::amf_n2().debug("N2 SM buffer data: ");
+  for (int i = 0; i < encoded_size; i++) printf("%02x ", (char) buffer[i]);
+#endif
+  Logger::amf_n2().debug(" (%d bytes) \n", encoded_size);
+
+  bstring b = blk2bstr(buffer, encoded_size);
+  sctp_s_38412.sctp_send_msg(
+      gc.get()->sctp_assoc_id, unc.get()->sctp_stream_send, &b);
+  // free memory
+  free_wrapper((void**) &nas_pdu);
   free_wrapper((void**) &buffer);
 }
 

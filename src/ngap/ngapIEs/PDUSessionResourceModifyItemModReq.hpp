@@ -31,6 +31,7 @@
 
 #include "NAS-PDU.hpp"
 #include "PDUSessionID.hpp"
+#include "S-NSSAI.hpp"
 
 extern "C" {
 #include "Ngap_PDUSessionResourceModifyItemModReq.h"
@@ -45,10 +46,12 @@ class PDUSessionResourceModifyItemModReq {
 
   void setPDUSessionResourceModifyItemModReq(
       const PDUSessionID& m_pDUSessionID, const NAS_PDU& m_nAS_PDU,
-      const OCTET_STRING_t m_pDUSessionResourceModifyRequestTransfer);
+      const OCTET_STRING_t m_pDUSessionResourceModifyRequestTransfer,
+      const S_NSSAI& m_s_NSSAI);
   void getPDUSessionResourceModifyItemModReq(
       PDUSessionID& m_pDUSessionID, NAS_PDU& m_nAS_PDU,
-      OCTET_STRING_t& m_pDUSessionResourceModifyRequestTransfer);
+      OCTET_STRING_t& m_pDUSessionResourceModifyRequestTransfer,
+      S_NSSAI& m_s_NSSAI);
 
   bool encode2PDUSessionResourceModifyItemModReq(
       Ngap_PDUSessionResourceModifyItemModReq_t&
@@ -61,6 +64,7 @@ class PDUSessionResourceModifyItemModReq {
   PDUSessionID pDUSessionID;
   NAS_PDU* nAS_PDU;  // Optional
   OCTET_STRING_t pDUSessionResourceModifyRequestTransfer;
+  S_NSSAI* s_NSSAI;  // Optional
 };
 
 }  // namespace ngap

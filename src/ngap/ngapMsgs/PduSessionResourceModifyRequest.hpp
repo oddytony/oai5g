@@ -31,7 +31,6 @@
 
 #include "AMF-UE-NGAP-ID.hpp"
 #include "MessageType.hpp"
-#include "NAS-PDU.hpp"
 #include "NgapIEsStruct.hpp"
 #include "PDUSessionResourceModifyListModReq.hpp"
 #include "RAN-UE-NGAP-ID.hpp"

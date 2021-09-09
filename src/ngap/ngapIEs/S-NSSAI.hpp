@@ -48,14 +48,16 @@ class S_NSSAI {
   bool sDEncode2OctetString(Ngap_SD_t*);
   bool sDdecodefromOctetString(Ngap_SD_t*);
   void setSst(const std::string charSst);
-  void getSst(std::string& charSst);
+  void getSst(std::string& charSst) const;
+  std::string getSst() const;
   void setSd(const std::string charSd);
-  bool getSd(std::string& s_nssaiSd);
+  bool getSd(std::string& s_nssaiSd) const;
+  std::string getSd() const;
   bool encode2S_NSSAI(Ngap_S_NSSAI_t*);
   bool decodefromS_NSSAI(Ngap_S_NSSAI_t*);
 
  private:
-  uint8_t sst;  // mandotory  OCTET_STRING(SIZE(1))
+  uint8_t sst;  // mandatory  OCTET_STRING(SIZE(1))
   uint32_t sd;  // OCTET_STRING(SIZE(3))
   bool sdIsSet;
 };

@@ -27,6 +27,7 @@
  */
 
 #include "PduSessionResourceModifyRequest.hpp"
+#include "amf.hpp"
 #include "logger.hpp"
 
 extern "C" {
@@ -45,14 +46,32 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 PduSessionResourceModifyRequestMsg::PduSessionResourceModifyRequestMsg() {
-  pduSessionResourceModifyRequestPdu = nullptr;
-  pduSessionResourceModifyRequestIEs = nullptr;
-  ranPagingPriority                  = nullptr;
-  pduSessionResourceModifyList       = nullptr;
+  // Set Message Type
+  pduSessionResourceModifyRequestPdu =
+      (Ngap_NGAP_PDU_t*) calloc(1, sizeof(Ngap_NGAP_PDU_t));
+
+  MessageType pdu = {};
+  pdu.setProcedureCode(Ngap_ProcedureCode_id_PDUSessionResourceModify);
+
+  pdu.setTypeOfMessage(Ngap_NGAP_PDU_PR_initiatingMessage);
+  pdu.setCriticality(Ngap_Criticality_reject);
+  pdu.setValuePresent(
+      Ngap_InitiatingMessage__value_PR_PDUSessionResourceModifyRequest);
+  pdu.encode2pdu(pduSessionResourceModifyRequestPdu);
+  pduSessionResourceModifyRequestIEs =
+      &(pduSessionResourceModifyRequestPdu->choice.initiatingMessage->value
+            .choice.PDUSessionResourceModifyRequest);
+
+  ranPagingPriority            = nullptr;
+  pduSessionResourceModifyList = nullptr;
 }
 
 //------------------------------------------------------------------------------
-PduSessionResourceModifyRequestMsg::~PduSessionResourceModifyRequestMsg() {}
+PduSessionResourceModifyRequestMsg::~PduSessionResourceModifyRequestMsg() {
+  if (pduSessionResourceModifyRequestPdu)
+    free(pduSessionResourceModifyRequestPdu);
+  // TODO:
+}
 
 //------------------------------------------------------------------------------
 void PduSessionResourceModifyRequestMsg::setMessageType() {
@@ -159,9 +178,6 @@ void PduSessionResourceModifyRequestMsg::setPduSessionResourceModifyRequestList(
   if (!pduSessionResourceModifyList)
     pduSessionResourceModifyList = new PDUSessionResourceModifyListModReq();
 
-  // PDUSessionResourceModifyItemModReq* m_pduSessionResourceModifyItemModReq =
-  //    new PDUSessionResourceModifyItemModReq[list.size()]();
-
   std::vector<PDUSessionResourceModifyItemModReq>
       m_pduSessionResourceModifyItemModReq;
 
@@ -173,12 +189,15 @@ void PduSessionResourceModifyRequestMsg::setPduSessionResourceModifyRequestList(
       m_nAS_PDU.setNasPdu(
           list[i].pduSessionNAS_PDU, list[i].sizeofpduSessionNAS_PDU);
     }
+    S_NSSAI s_NSSAI = {};
+    s_NSSAI.setSd(list[i].s_nssai.sd);
+    s_NSSAI.setSst(list[i].s_nssai.sst);
 
     PDUSessionResourceModifyItemModReq item = {};
 
     item.setPDUSessionResourceModifyItemModReq(
         m_pDUSessionID, m_nAS_PDU,
-        list[i].pduSessionResourceModifyRequestTransfer);
+        list[i].pduSessionResourceModifyRequestTransfer, s_NSSAI);
     m_pduSessionResourceModifyItemModReq.push_back(item);
   }
 
@@ -230,7 +249,7 @@ int PduSessionResourceModifyRequestMsg::encode2buffer(
 //------------------------------------------------------------------------------
 void PduSessionResourceModifyRequestMsg::encode2buffer_new(
     char* buf, int& encoded_size) {
-  char* buffer = (char*) calloc(1, 1024);  // TODO: remove hardcoded value
+  char* buffer = (char*) calloc(1, BUFFER_SIZE_1024);
   asn_fprint(
       stderr, &asn_DEF_Ngap_NGAP_PDU, pduSessionResourceModifyRequestPdu);
   encoded_size = aper_encode_to_new_buffer(
@@ -391,18 +410,21 @@ bool PduSessionResourceModifyRequestMsg::getPduSessionResourceModifyRequestList(
   for (int i = 0; i < m_pduSessionResourceModifyItemModReq.size(); i++) {
     PDUSessionResourceModifyRequestItem_t request;
 
-    PDUSessionID m_pDUSessionID;
-    NAS_PDU m_nAS_PDU;
+    PDUSessionID m_pDUSessionID = {};
+    NAS_PDU m_nAS_PDU           = {};
+    S_NSSAI s_NSSAI             = {};
 
     m_pduSessionResourceModifyItemModReq[i]
         .getPDUSessionResourceModifyItemModReq(
             m_pDUSessionID, m_nAS_PDU,
-            request.pduSessionResourceModifyRequestTransfer);
+            request.pduSessionResourceModifyRequestTransfer, s_NSSAI);
 
     m_pDUSessionID.getPDUSessionID(request.pduSessionId);
 
     m_nAS_PDU.getNasPdu(
         request.pduSessionNAS_PDU, request.sizeofpduSessionNAS_PDU);
+    s_NSSAI.getSd(request.s_nssai.sd);
+    s_NSSAI.getSst(request.s_nssai.sst);
     list.push_back(request);
   }
 

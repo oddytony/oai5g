@@ -44,7 +44,8 @@ PDUSessionResourceModifyItemModReq::~PDUSessionResourceModifyItemModReq() {}
 //------------------------------------------------------------------------------
 void PDUSessionResourceModifyItemModReq::setPDUSessionResourceModifyItemModReq(
     const PDUSessionID& m_pDUSessionID, const NAS_PDU& m_nAS_PDU,
-    const OCTET_STRING_t m_pDUSessionResourceModifyRequestTransfer) {
+    const OCTET_STRING_t m_pDUSessionResourceModifyRequestTransfer,
+    const S_NSSAI& m_s_NSSAI) {
   pDUSessionID     = m_pDUSessionID;
   uint8_t* nas_buf = nullptr;
   size_t nas_len   = 0;
@@ -53,6 +54,8 @@ void PDUSessionResourceModifyItemModReq::setPDUSessionResourceModifyItemModReq(
   nAS_PDU->setNasPdu(nas_buf, nas_len);
   pDUSessionResourceModifyRequestTransfer =
       m_pDUSessionResourceModifyRequestTransfer;
+  s_NSSAI->setSd(m_s_NSSAI.getSd());
+  s_NSSAI->setSst(m_s_NSSAI.getSst());
 }
 
 //------------------------------------------------------------------------------
@@ -107,11 +110,13 @@ bool PDUSessionResourceModifyItemModReq::
 //------------------------------------------------------------------------------
 void PDUSessionResourceModifyItemModReq::getPDUSessionResourceModifyItemModReq(
     PDUSessionID& m_pDUSessionID, NAS_PDU& m_nAS_PDU,
-    OCTET_STRING_t& m_pDUSessionResourceModifyRequestTransfer) {
+    OCTET_STRING_t& m_pDUSessionResourceModifyRequestTransfer,
+    S_NSSAI& m_s_NSSAI) {
   m_pDUSessionID = pDUSessionID;
   m_nAS_PDU      = *nAS_PDU;
   m_pDUSessionResourceModifyRequestTransfer =
       pDUSessionResourceModifyRequestTransfer;
+  m_s_NSSAI = *s_NSSAI;
 }
 
 }  // namespace ngap
