@@ -736,11 +736,10 @@ int ngap_amf_handle_path_switch_request(
 }
 
 //------------------------------------------------------------------------------
-int pdu_session_resource_modify(
+int ngap_amf_handle_pdu_session_resource_modify_response(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p) {
-  Logger::ngap().debug(
-      "Sending ITTI PDU Session Resource Modify to TASK_AMF_N2");
+  Logger::ngap().debug("Handle PDU Session Resource Modify Response");
   return 0;
 }
 
@@ -970,8 +969,8 @@ ngap_message_decoded_callback messages_callback[][3] = {
     {paging, paging, paging},                         /*Paging*/
     {ngap_amf_handle_path_switch_request, ngap_amf_handle_path_switch_request,
      ngap_amf_handle_path_switch_request}, /*PathSwitchRequest*/
-    {pdu_session_resource_modify, pdu_session_resource_modify,
-     pdu_session_resource_modify}, /*PDUSessionResourceModify*/
+    {0, ngap_amf_handle_pdu_session_resource_modify_response,
+     0}, /*PDUSessionResourceModify*/
     {pdu_session_resource_modify_indication,
      pdu_session_resource_modify_indication,
      pdu_session_resource_modify_indication}, /*PDUSessionResourceModifyIndication*/
