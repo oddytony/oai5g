@@ -522,7 +522,7 @@ int ngap_amf_handle_pdu_session_resource_modify_response(
   }
 
   // TODO:for PDUSessionResourceFailedToModifyListModRes
-
+  // TODO: process User Location Information if available
   return 0;
 }
 
