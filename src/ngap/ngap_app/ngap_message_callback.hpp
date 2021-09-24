@@ -35,6 +35,7 @@
 #include "PDUSessionResourceSetupUnsuccessfulTransfer.hpp"
 #include "PduSessionResourceReleaseResponse.hpp"
 #include "PduSessionResourceSetupResponse.hpp"
+#include "PduSessionResourceModifyResponse.hpp"
 #include "amf_app.hpp"
 #include "amf_n1.hpp"
 #include "amf_n11.hpp"
@@ -284,6 +285,7 @@ int ngap_amf_handle_ue_context_release_complete(
   return 0;
 }
 
+//------------------------------------------------------------------------------
 int ngap_amf_handle_pdu_session_resource_release_response(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p) {
@@ -463,6 +465,64 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
       return 0;
     }
   }
+  return 0;
+}
+
+//------------------------------------------------------------------------------
+int ngap_amf_handle_pdu_session_resource_modify_response(
+    const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
+    struct Ngap_NGAP_PDU* message_p) {
+  Logger::ngap().debug("Handle PDU Session Resource Modify Response");
+
+  std::unique_ptr<PduSessionResourceModifyResponseMsg> response_msg =
+      std::make_unique<PduSessionResourceModifyResponseMsg>();
+
+  if (!response_msg->decodefrompdu(message_p)) {
+    Logger::ngap().error(
+        "Decoding PduSessionResourceModifyResponseMsg message error");
+    return -1;
+  }
+
+  // Transfer pduSessionResourceModifyResponseTransfer to SMF
+  std::vector<PDUSessionResourceModifyResponseItem_t> list;
+  if (!response_msg->getPduSessionResourceModifyResponseList(list)) {
+    Logger::ngap().error(
+        "Decoding PduSessionResourceModifyResponseMsg "
+        "getPduSessionResourceModifyResponseList IE error");
+    return -1;
+  }
+
+  for (auto response_item : list) {
+    uint8_t buf[BUFFER_SIZE_512];
+    memcpy(
+        buf, response_item.pduSessionResourceModifyResponseTransfer.buf,
+        response_item.pduSessionResourceModifyResponseTransfer.size);
+    bstring n2sm = blk2bstr(
+        buf, response_item.pduSessionResourceModifyResponseTransfer.size);
+    Logger::ngap().debug(
+        "Sending ITTI PDUSessionResourceModifyResponseTransfer to "
+        "TASK_AMF_N11");
+
+    std::shared_ptr<itti_nsmf_pdusession_update_sm_context> itti_msg =
+        std::make_shared<itti_nsmf_pdusession_update_sm_context>(
+            TASK_NGAP, TASK_AMF_N11);
+    itti_msg->pdu_session_id = response_item.pduSessionId;
+    itti_msg->n2sm           = n2sm;
+    itti_msg->is_n2sm_set    = true;
+    itti_msg->n2sm_info_type = "PDU_RES_MOD_RSP";
+    itti_msg->amf_ue_ngap_id = response_msg->getAmfUeNgapId();
+    itti_msg->ran_ue_ngap_id = response_msg->getRanUeNgapId();
+
+    int ret = itti_inst->send_msg(itti_msg);
+    if (0 != ret) {
+      Logger::ngap().error(
+          "Could not send ITTI message %s to task TASK_AMF_N11",
+          itti_msg->get_msg_name());
+    }
+  }
+
+  // TODO:for PDUSessionResourceFailedToModifyListModRes
+  // TODO: process User Location Information if available
   return 0;
 }
 
@@ -736,15 +796,6 @@ int ngap_amf_handle_path_switch_request(
 }
 
 //------------------------------------------------------------------------------
-int pdu_session_resource_modify(
-    const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
-    struct Ngap_NGAP_PDU* message_p) {
-  Logger::ngap().debug(
-      "Sending ITTI PDU Session Resource Modify to TASK_AMF_N2");
-  return 0;
-}
-
-//------------------------------------------------------------------------------
 int pdu_session_resource_modify_indication(
     const sctp_assoc_id_t assoc_id, const sctp_stream_id_t stream,
     struct Ngap_NGAP_PDU* message_p) {
@@ -970,8 +1021,8 @@ ngap_message_decoded_callback messages_callback[][3] = {
     {paging, paging, paging},                         /*Paging*/
     {ngap_amf_handle_path_switch_request, ngap_amf_handle_path_switch_request,
      ngap_amf_handle_path_switch_request}, /*PathSwitchRequest*/
-    {pdu_session_resource_modify, pdu_session_resource_modify,
-     pdu_session_resource_modify}, /*PDUSessionResourceModify*/
+    {0, ngap_amf_handle_pdu_session_resource_modify_response,
+     0}, /*PDUSessionResourceModify*/
     {pdu_session_resource_modify_indication,
      pdu_session_resource_modify_indication,
      pdu_session_resource_modify_indication}, /*PDUSessionResourceModifyIndication*/

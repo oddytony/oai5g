@@ -21,33 +21,46 @@
 
 /*! \file
  \brief
- \author  Keliang DU, BUPT
- \date 2020
+ \author
+ \date
  \email: contact@openairinterface.org
  */
 
-#ifndef _NAS_PDU_H_
-#define _NAS_PDU_H_
+#ifndef _PDU_SESSION_RESOURCE_MODIFY_ITEM_MOD_RES_H_
+#define _PDU_SESSION_RESOURCE_MODIFY_ITEM_MOD_RES_H_
+
+#include "NAS-PDU.hpp"
+#include "PDUSessionID.hpp"
+#include "S-NSSAI.hpp"
 
 extern "C" {
-#include "Ngap_NAS-PDU.h"
+#include "Ngap_PDUSessionResourceModifyItemModRes.h"
 }
 
 namespace ngap {
 
-class NAS_PDU {
+class PDUSessionResourceModifyItemModRes {
  public:
-  NAS_PDU();
-  virtual ~NAS_PDU();
+  PDUSessionResourceModifyItemModRes();
+  virtual ~PDUSessionResourceModifyItemModRes();
 
-  bool encode2octetstring(Ngap_NAS_PDU_t&);
-  bool decodefromoctetstring(Ngap_NAS_PDU_t&);
-  bool getNasPdu(uint8_t*& buffer, size_t& size) const;
-  void setNasPdu(uint8_t* buffer, size_t size);
+  void setPDUSessionResourceModifyItemModRes(
+      const PDUSessionID& m_pDUSessionID,
+      const OCTET_STRING_t m_pDUSessionResourceModifyResponseTransfer);
+  void getPDUSessionResourceModifyItemModRes(
+      PDUSessionID& m_pDUSessionID,
+      OCTET_STRING_t& m_pDUSessionResourceModifyResponseTransfer);
+
+  bool encode2PDUSessionResourceModifyItemModRes(
+      Ngap_PDUSessionResourceModifyItemModRes_t&
+          pduSessionResourceModifyItemModRes);
+  bool decodefromPDUSessionResourceModifyItemModRes(
+      Ngap_PDUSessionResourceModifyItemModRes_t&
+          pduSessionResourceModifyItemModRes);
 
  private:
-  char* naspdubuffer;
-  size_t buffersize;
+  PDUSessionID pDUSessionID;
+  OCTET_STRING_t pDUSessionResourceModifyResponseTransfer;  // Optional
 };
 
 }  // namespace ngap

@@ -155,8 +155,8 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
       protected_nas);
 
   if (itti_msg.is_n2sm_set) {
+    // PDU Session Resource Release Command
     if (itti_msg.n2sm_info_type.compare("PDU_RES_REL_CMD") == 0) {
-      // PDU SESSION RESOURCE RELEASE COMMAND
       itti_pdu_session_resource_release_command* release_command =
           new itti_pdu_session_resource_release_command(
               TASK_AMF_N1, TASK_AMF_N2);
@@ -174,6 +174,46 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
             "Could not send ITTI message %s to task TASK_AMF_N2",
             i->get_msg_name());
       }
+      // PDU Session Resource Modify Request
+    } else if (itti_msg.n2sm_info_type.compare("PDU_RES_MOD_REQ") == 0) {
+      std::shared_ptr<itti_pdu_session_resource_modify_request>
+          itti_modify_request_msg =
+              std::make_shared<itti_pdu_session_resource_modify_request>(
+                  TASK_AMF_N1, TASK_AMF_N2);
+      itti_modify_request_msg->nas            = protected_nas;
+      itti_modify_request_msg->n2sm           = itti_msg.n2sm;
+      itti_modify_request_msg->amf_ue_ngap_id = amf_ue_ngap_id;
+      itti_modify_request_msg->ran_ue_ngap_id = ran_ue_ngap_id;
+      itti_modify_request_msg->pdu_session_id = itti_msg.pdu_session_id;
+
+      // Get NSSAI
+      std::shared_ptr<nas_context> nc = {};
+      if (!is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
+        Logger::amf_n1().warn(
+            "No existed NAS context for UE with amf_ue_ngap_id (0x%x)",
+            amf_ue_ngap_id);
+        return;
+      }
+      nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
+
+      std::shared_ptr<pdu_session_context> psc = {};
+      if (!amf_app_inst->find_pdu_session_context(
+              nc->imsi, itti_msg.pdu_session_id, psc)) {
+        Logger::amf_n1().error(
+            "Cannot get pdu_session_context with SUPI (%s)", nc->imsi.c_str());
+        return;
+      }
+
+      itti_modify_request_msg->s_NSSAI.setSd(psc->snssai.sD);
+      itti_modify_request_msg->s_NSSAI.setSst(std::to_string(psc->snssai.sST));
+
+      int ret = itti_inst->send_msg(itti_modify_request_msg);
+      if (0 != ret) {
+        Logger::amf_n1().error(
+            "Could not send ITTI message %s to task TASK_AMF_N2",
+            itti_modify_request_msg->get_msg_name());
+      }
+
     } else {
       string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
                               ":amfid_" + to_string(amf_ue_ngap_id);

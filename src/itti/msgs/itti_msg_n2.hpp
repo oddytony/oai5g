@@ -160,6 +160,22 @@ class itti_pdu_session_resource_setup_request : public itti_msg_n2 {
   uint8_t pdu_session_id;
 };
 
+class itti_pdu_session_resource_modify_request : public itti_msg_n2 {
+ public:
+  itti_pdu_session_resource_modify_request(
+      const task_id_t origin, const task_id_t destination)
+      : itti_msg_n2(PDU_SESSION_RESOURCE_MODIFY_REQUEST, origin, destination) {}
+  itti_pdu_session_resource_modify_request(
+      const itti_pdu_session_resource_modify_request& i)
+      : itti_msg_n2(i) {}
+  bstring nas;
+  bstring n2sm;
+  uint32_t ran_ue_ngap_id;
+  long amf_ue_ngap_id;
+  uint8_t pdu_session_id;
+  S_NSSAI s_NSSAI;
+};
+
 class itti_pdu_session_resource_release_command : public itti_msg_n2 {
  public:
   itti_pdu_session_resource_release_command(

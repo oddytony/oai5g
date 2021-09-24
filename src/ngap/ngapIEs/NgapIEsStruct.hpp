@@ -102,6 +102,20 @@ typedef struct {
   OCTET_STRING_t pduSessionResourceSetupRequestTransfer;
 } PDUSessionResourceSetupRequestItem_t;
 
+typedef struct {
+  uint8_t pduSessionId;
+  uint8_t* pduSessionNAS_PDU;
+  size_t sizeofpduSessionNAS_PDU;
+  S_Nssai s_nssai;
+  OCTET_STRING_t pduSessionResourceModifyRequestTransfer;
+} PDUSessionResourceModifyRequestItem_t;
+
+typedef struct {
+  uint8_t pduSessionId;
+  OCTET_STRING_t pduSessionResourceModifyResponseTransfer;
+  OCTET_STRING_t pduSessionResourceModifyUnsuccessfulTransfer;
+} PDUSessionResourceModifyResponseItem_t;
+
 // section 9.2.1.3 PDU Session Resource Release Command (3GPP TS 38.413 V16.0.0
 // (2019-12))
 typedef struct {

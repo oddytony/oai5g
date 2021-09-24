@@ -86,8 +86,13 @@ void S_NSSAI::setSst(const std::string charSst) {
 }
 
 //------------------------------------------------------------------------------
-void S_NSSAI::getSst(std::string& charSst) {
+void S_NSSAI::getSst(std::string& charSst) const {
   charSst = to_string((int) sst);
+}
+
+//------------------------------------------------------------------------------
+std::string S_NSSAI::getSst() const {
+  return to_string((int) sst);
 }
 
 //------------------------------------------------------------------------------
@@ -97,7 +102,7 @@ void S_NSSAI::setSd(const std::string charSd) {
 }
 
 //------------------------------------------------------------------------------
-bool S_NSSAI::getSd(std::string& s_nssaiSd) {
+bool S_NSSAI::getSd(std::string& s_nssaiSd) const {
   if (sdIsSet) {
     s_nssaiSd = to_string(sd);
   } else
@@ -106,6 +111,13 @@ bool S_NSSAI::getSd(std::string& s_nssaiSd) {
   return sdIsSet;
 }
 
+//------------------------------------------------------------------------------
+std::string S_NSSAI::getSd() const {
+  if (sdIsSet) {
+    return to_string(sd);
+  } else
+    return "None";
+}
 //------------------------------------------------------------------------------
 bool S_NSSAI::encode2S_NSSAI(Ngap_S_NSSAI_t* s_NSSAI) {
   if (!sSTEncode2OctetString(s_NSSAI->sST)) return false;

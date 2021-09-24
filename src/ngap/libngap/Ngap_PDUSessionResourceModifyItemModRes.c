@@ -53,8 +53,8 @@ asn_TYPE_member_t asn_MBR_Ngap_PDUSessionResourceModifyItemModRes_1[] = {
      0,
      0, /* No default value */
      "pDUSessionID"},
-    {ATF_POINTER,
-     2,
+    {ATF_NOFLAGS,
+     0,
      offsetof(
          struct Ngap_PDUSessionResourceModifyItemModRes,
          pDUSessionResourceModifyResponseTransfer),
@@ -80,8 +80,7 @@ asn_TYPE_member_t asn_MBR_Ngap_PDUSessionResourceModifyItemModRes_1[] = {
      0, /* No default value */
      "iE-Extensions"},
 };
-static const int asn_MAP_Ngap_PDUSessionResourceModifyItemModRes_oms_1[] = {1,
-                                                                            2};
+static const int asn_MAP_Ngap_PDUSessionResourceModifyItemModRes_oms_1[] = {2};
 static const ber_tlv_tag_t
     asn_DEF_Ngap_PDUSessionResourceModifyItemModRes_tags_1[] = {
         (ASN_TAG_CLASS_UNIVERSAL | (16 << 2))};
@@ -100,7 +99,7 @@ asn_SEQUENCE_specifics_t
         3, /* Count of tags in the map */
         asn_MAP_Ngap_PDUSessionResourceModifyItemModRes_oms_1, /* Optional
                                                                   members */
-        2,
+        1,
         0, /* Root/Additions */
         3, /* First extension addition */
 };
