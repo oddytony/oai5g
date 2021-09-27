@@ -30,6 +30,7 @@
 #include <thread>
 
 #include "AMFApiServer.hpp"
+#include "amf-http2-server.hpp"
 #include "amf_app.hpp"
 #include "amf_config.hpp"
 #include "amf_module_from_config.hpp"
@@ -43,11 +44,6 @@
 #include "pistache/http.h"
 #include "pistache/router.h"
 
-extern void hexStr2Byte(const char* src, unsigned char* dest, int len);
-extern void print_buffer(
-    const std::string app, const std::string commit, uint8_t* buf, int len);
-extern void ue_gnb_simulator();
-
 using namespace config;
 using namespace amf_application;
 
@@ -56,6 +52,38 @@ amf_modules modules;
 itti_mw* itti_inst    = nullptr;
 amf_app* amf_app_inst = nullptr;
 statistics stacs;
+
+AMFApiServer* amf_api_server_1     = nullptr;
+amf_http2_server* amf_api_server_2 = nullptr;
+
+//------------------------------------------------------------------------------
+void my_app_signal_handler(int s) {
+  std::cout << "Caught signal " << s << std::endl;
+  Logger::system().startup("exiting");
+  itti_inst->send_terminate_msg(TASK_AMF_APP);
+  itti_inst->wait_tasks_end();
+  std::cout << "Freeing Allocated memory..." << std::endl;
+
+  if (amf_api_server_1) {
+    amf_api_server_1->shutdown();
+    delete amf_api_server_1;
+    amf_api_server_1 = nullptr;
+  }
+  if (amf_api_server_2) {
+    amf_api_server_2->stop();
+    delete amf_api_server_2;
+    amf_api_server_2 = nullptr;
+  }
+  std::cout << "AMF API Server memory done." << std::endl;
+  if (itti_inst) delete itti_inst;
+  itti_inst = nullptr;
+  std::cout << "ITTI memory done." << std::endl;
+  if (amf_app_inst) delete amf_app_inst;
+  amf_app_inst = nullptr;
+  std::cout << "AMF APP memory done." << std::endl;
+  std::cout << "Freeing Allocated memory done" << std::endl;
+  exit(0);
+}
 
 //------------------------------------------------------------------------------
 int main(int argc, char** argv) {
@@ -69,6 +97,12 @@ int main(int argc, char** argv) {
   Logger::init("AMF", Options::getlogStdout(), Options::getlogRotFilelog());
   Logger::amf_app().startup("Options parsed!");
 
+  struct sigaction sigIntHandler;
+  sigIntHandler.sa_handler = my_app_signal_handler;
+  sigemptyset(&sigIntHandler.sa_mask);
+  sigIntHandler.sa_flags = 0;
+  sigaction(SIGINT, &sigIntHandler, NULL);
+
   amf_cfg.load(Options::getlibconfigConfig());
   amf_cfg.display();
   modules.load(Options::getlibconfigConfig());
@@ -81,14 +115,24 @@ int main(int argc, char** argv) {
   amf_app_inst->allRegistredModulesInit(modules);
 
   Logger::amf_app().debug("Initiating AMF server endpoints");
+  // AMF HTTP1 server
   Pistache::Address addr(
       std::string(inet_ntoa(*((struct in_addr*) &amf_cfg.n11.addr4))),
       Pistache::Port(amf_cfg.n11.port));
-  AMFApiServer amfApiServer(addr, amf_app_inst);
-  amfApiServer.init(2);
-  std::thread amf_api_manager(&AMFApiServer::start, amfApiServer);
+  amf_api_server_1 = new AMFApiServer(addr, amf_app_inst);
+  amf_api_server_1->init(2);
+  std::thread amf_http1_manager(&AMFApiServer::start, amf_api_server_1);
 
-  Logger::amf_app().debug("Initiating Done!");
+  // AMF HTTP2 server
+  amf_api_server_2 = new amf_http2_server(
+      conv::toString(amf_cfg.n11.addr4), amf_cfg.sbi_http2_port, amf_app_inst);
+  amf_api_server_2->init(1);
+  std::thread amf_http2_manager(&amf_http2_server::start, amf_api_server_2);
+
+  // amf_http1_manager.join();
+  // amf_http2_manager.join();
+
+  Logger::amf_app().debug("Initiation Done!");
   pause();
   return 0;
 }

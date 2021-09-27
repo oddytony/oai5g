@@ -13,8 +13,8 @@
 
 #include "SubscriptionsCollectionDocumentApiImplEventExposure.h"
 #include "amf_msg.hpp"
-#include "3gpp_conversions.hpp"
 #include "amf_config.hpp"
+#include "3gpp_conversions.hpp"
 
 extern amf_config amf_cfg;
 

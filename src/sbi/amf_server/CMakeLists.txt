@@ -41,6 +41,7 @@ include_directories(${SRC_TOP_DIR}/sbi/amf_server/impl)
 include_directories(${SRC_TOP_DIR}/sbi/amf_server/model)
 
 file(GLOB AMF_API_SERVER_src_files
+    ${AMF_API_SERVER_DIR}/amf-http2-server.cpp
     ${AMF_API_SERVER_DIR}/AMFApiServer.cpp
     ${AMF_API_SERVER_DIR}/model/*.cpp
     ${AMF_API_SERVER_DIR}/api/*.cpp

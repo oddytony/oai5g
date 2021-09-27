@@ -57,4 +57,7 @@ constexpr uint64_t SECONDS_SINCE_FIRST_EPOCH = 2208988800;
 #define UE_AGGREGATE_MAXIMUM_BIT_RATE_DL 300000000
 #define UE_AGGREGATE_MAXIMUM_BIT_RATE_UL 200000000
 
+#define NAMF_COMMUNICATION_BASE "/namf-comm/"
+#define NAMF_COMMUNICATION_N1N2_MESSAGE_TRANSFER_URL                           \
+  "/ue-contexts/{}/n1-n2-messages"  // context id
 #endif

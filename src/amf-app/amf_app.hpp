@@ -38,16 +38,11 @@
 #include "amf_profile.hpp"
 #include "itti.hpp"
 #include "itti_msg_amf_app.hpp"
-#include "itti_msg_sbi.hpp"
 #include "ue_context.hpp"
 #include "amf_subscription.hpp"
-#include "ProblemDetails.h"
-#include "uint_generator.hpp"
+#include "itti_msg_sbi.hpp"
 #include "amf_msg.hpp"
-
-#include "uint_generator.hpp"
-#include <boost/thread.hpp>
-#include <boost/thread/future.hpp>
+#include "ProblemDetails.h"
 
 #include "uint_generator.hpp"
 #include <boost/thread.hpp>
@@ -270,7 +265,6 @@ class amf_app {
   void trigger_process_response(uint32_t pid, std::string n2_sm);
 
  private:
-  // context management
   std::map<long, std::shared_ptr<ue_context>> amf_ue_ngap_id2ue_ctx;
   mutable std::shared_mutex m_amf_ue_ngap_id2ue_ctx;
   std::map<std::string, std::shared_ptr<ue_context>> ue_ctx_key;
