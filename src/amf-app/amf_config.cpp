@@ -593,6 +593,7 @@ void amf_config::display() {
   Logger::config().info(
       "    IP Addr ...............: %s", inet_ntoa(n11.addr4));
   Logger::config().info("    Port ..................: %d", n11.port);
+  Logger::config().info("    HTTP2 port ............: %d", sbi_http2_port);
   Logger::config().info(
       "    API version............: %s", sbi_api_version.c_str());
 

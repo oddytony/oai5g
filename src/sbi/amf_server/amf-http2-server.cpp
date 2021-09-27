@@ -53,10 +53,9 @@ void amf_http2_server::start() {
   boost::system::error_code ec;
 
   Logger::amf_server().info("HTTP2 server started");
-  // n1_n2_message_transfer request
+  // n1_n2_message_transfer request (URI: /ue-contexts/{}/n1-n2-messages)
   server.handle(
-      NAMF_COMMUNICATION_BASE + amf_cfg.sbi_api_version +
-          NAMF_COMMUNICATION_N1N2_MESSAGE_TRANSFER_URL,
+      NAMF_COMMUNICATION_BASE + amf_cfg.sbi_api_version + "/ue-contexts/",
       [&](const request& request, const response& res) {
         request.on_data([&](const uint8_t* data, std::size_t len) {
           if (len > 0) {
@@ -77,7 +76,6 @@ void amf_http2_server::start() {
               res.end();
               return;
             }
-
             std::string ue_context_id = split_result[split_result.size() - 2];
             Logger::amf_server().info(
                 "ue_context_id %s", ue_context_id.c_str());
