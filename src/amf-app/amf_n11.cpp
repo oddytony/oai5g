@@ -786,6 +786,8 @@ void amf_n11::curl_http_client(
       std::string header_response = *httpHeaderData.get();
       std::string CRLF            = "\r\n";
       std::size_t location_pos    = header_response.find("Location");
+      if (location_pos == std::string::npos)
+        location_pos = header_response.find("location");
 
       if (location_pos != std::string::npos) {
         std::size_t crlf_pos = header_response.find(CRLF, location_pos);
