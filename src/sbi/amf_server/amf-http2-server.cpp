@@ -190,8 +190,6 @@ void amf_http2_server::n1_n2_message_transfer_handler(
       n1sm_str.substr(0, n1sm_str.length()), n1sm);  // TODO: verify n1sm_length
 
   bstring n2sm;
-  Logger::amf_server().debug(
-      "n2sm size in amf_server(%d)", blength(psc.get()->n2sm));
   if (!n2sm_str.empty()) {
     conv::msg_str_2_msg_hex(n2sm_str, n2sm);
     psc.get()->n2sm             = n2sm;
