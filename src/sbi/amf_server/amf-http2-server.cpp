@@ -217,6 +217,11 @@ void amf_http2_server::n1_n2_message_transfer_handler(
 
   itti_msg->pdu_session_id =
       (uint8_t) n1N2MessageTransferReqData.getPduSessionId();
+  itti_msg->n2sm_info_type = n1N2MessageTransferReqData.getN2InfoContainer()
+                                 .getSmInfo()
+                                 .getN2InfoContent()
+                                 .getNgapIeType()
+                                 .get_value();
 
   // For Paging
   if (n1N2MessageTransferReqData.ppiIsSet()) {
