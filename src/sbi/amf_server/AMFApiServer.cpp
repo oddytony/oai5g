@@ -64,7 +64,7 @@ void AMFApiServer::start() {
         "AMF handler for SubscriptionsCollectionDocumentApiImplEventExposure");
 
   m_httpEndpoint->setHandler(m_router->handler());
-  m_httpEndpoint->serve();
+  m_httpEndpoint->serveThreaded();
 }
 void AMFApiServer::shutdown() {
   m_httpEndpoint->shutdown();

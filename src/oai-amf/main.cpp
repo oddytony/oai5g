@@ -121,13 +121,14 @@ int main(int argc, char** argv) {
       Pistache::Port(amf_cfg.n11.port));
   amf_api_server_1 = new AMFApiServer(addr, amf_app_inst);
   amf_api_server_1->init(2);
-  std::thread amf_http1_manager(&AMFApiServer::start, amf_api_server_1);
-
+  // std::thread amf_http1_manager(&AMFApiServer::start, amf_api_server_1);
+  amf_api_server_1->start();
   // AMF HTTP2 server
   amf_api_server_2 = new amf_http2_server(
       conv::toString(amf_cfg.n11.addr4), amf_cfg.sbi_http2_port, amf_app_inst);
-  amf_api_server_2->init(1);
-  std::thread amf_http2_manager(&amf_http2_server::start, amf_api_server_2);
+  // amf_api_server_2->init(1);
+  // std::thread amf_http2_manager(&amf_http2_server::start, amf_api_server_2);
+  amf_api_server_2->start();
 
   // amf_http1_manager.join();
   // amf_http2_manager.join();
