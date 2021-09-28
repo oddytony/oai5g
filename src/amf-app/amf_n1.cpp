@@ -111,6 +111,13 @@ void amf_n1_task(void*) {
             dynamic_cast<itti_downlink_nas_transfer*>(msg);
         amf_n1_inst->handle_itti_message(ref(*m));
       } break;
+      case TERMINATE: {
+        if (itti_msg_terminate* terminate =
+                dynamic_cast<itti_msg_terminate*>(msg)) {
+          Logger::amf_n1().info("Received terminate message");
+          return;
+        }
+      } break;
       default:
         Logger::amf_n1().error("No handler for msg type %d", msg->msg_type);
     }

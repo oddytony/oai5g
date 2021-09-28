@@ -123,7 +123,7 @@ void amf_app_task(void*) {
         amf_app_inst->handle_itti_message(ref(*m));
       } break;
 
-      case TIME_OUT:
+      case TIME_OUT: {
         if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
           switch (to->arg1_user) {
             case TASK_AMF_APP_PERIODIC_STATISTICS:
@@ -138,7 +138,14 @@ void amf_app_task(void*) {
                   to->arg1_user);
           }
         }
-        break;
+      } break;
+      case TERMINATE: {
+        if (itti_msg_terminate* terminate =
+                dynamic_cast<itti_msg_terminate*>(msg)) {
+          Logger::amf_n2().info("Received terminate message");
+          return;
+        }
+      } break;
       default:
         Logger::amf_app().info("no handler for msg type %d", msg->msg_type);
     }

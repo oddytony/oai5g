@@ -213,6 +213,13 @@ void amf_n2_task(void* args_p) {
         itti_paging* m = dynamic_cast<itti_paging*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
+      case TERMINATE: {
+        if (itti_msg_terminate* terminate =
+                dynamic_cast<itti_msg_terminate*>(msg)) {
+          Logger::amf_n2().info("Received terminate message");
+          return;
+        }
+      } break;
       default:
         Logger::amf_n2().info("No handler for msg type %d", msg->msg_type);
     }

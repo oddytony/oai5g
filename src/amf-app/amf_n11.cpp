@@ -136,6 +136,13 @@ void amf_n11_task(void*) {
             dynamic_cast<itti_sbi_notify_subscribed_event*>(msg);
         amf_n11_inst->handle_itti_message(ref(*m));
       } break;
+      case TERMINATE: {
+        if (itti_msg_terminate* terminate =
+                dynamic_cast<itti_msg_terminate*>(msg)) {
+          Logger::amf_n11().info("Received terminate message");
+          return;
+        }
+      } break;
       default: {
         Logger::amf_n11().info(
             "Receive unknown message type %d", msg->msg_type);
