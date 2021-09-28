@@ -103,6 +103,7 @@ int main(int argc, char** argv) {
   Logger::init("AMF", Options::getlogStdout(), Options::getlogRotFilelog());
   Logger::amf_app().startup("Options parsed!");
 
+  // TODO: to be optimized
   struct sigaction sigIntHandler;
   sigIntHandler.sa_handler = amf_signal_handler;
   sigemptyset(&sigIntHandler.sa_mask);
@@ -132,7 +133,7 @@ int main(int argc, char** argv) {
   // AMF HTTP2 server
   amf_api_server_2 = new amf_http2_server(
       conv::toString(amf_cfg.n11.addr4), amf_cfg.sbi_http2_port, amf_app_inst);
-  // amf_api_server_2->init(1);
+  amf_api_server_2->init(1);
   // std::thread amf_http2_manager(&amf_http2_server::start, amf_api_server_2);
   amf_api_server_2->start();
 
