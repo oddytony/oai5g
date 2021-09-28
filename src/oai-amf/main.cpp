@@ -57,13 +57,19 @@ AMFApiServer* amf_api_server_1     = nullptr;
 amf_http2_server* amf_api_server_2 = nullptr;
 
 //------------------------------------------------------------------------------
-void my_app_signal_handler(int s) {
+void amf_signal_handler(int s) {
   std::cout << "Caught signal " << s << std::endl;
   Logger::system().startup("exiting");
-  itti_inst->send_terminate_msg(TASK_AMF_APP);
-  itti_inst->wait_tasks_end();
+  if (itti_inst) {
+    itti_inst->send_terminate_msg(TASK_AMF_APP);
+    itti_inst->wait_tasks_end();
+  }
   std::cout << "Freeing Allocated memory..." << std::endl;
-
+  if (amf_app_inst) {
+    delete amf_app_inst;
+    amf_app_inst = nullptr;
+    std::cout << "AMF APP memory done." << std::endl;
+  }
   if (amf_api_server_1) {
     amf_api_server_1->shutdown();
     delete amf_api_server_1;
@@ -75,14 +81,14 @@ void my_app_signal_handler(int s) {
     amf_api_server_2 = nullptr;
   }
   std::cout << "AMF API Server memory done." << std::endl;
-  if (itti_inst) delete itti_inst;
-  itti_inst = nullptr;
-  std::cout << "ITTI memory done." << std::endl;
-  if (amf_app_inst) delete amf_app_inst;
-  amf_app_inst = nullptr;
-  std::cout << "AMF APP memory done." << std::endl;
+
+  if (itti_inst) {
+    delete itti_inst;
+    itti_inst = nullptr;
+    std::cout << "ITTI memory done." << std::endl;
+  }
   std::cout << "Freeing Allocated memory done" << std::endl;
-  exit(0);
+  exit(s);
 }
 
 //------------------------------------------------------------------------------
@@ -98,7 +104,7 @@ int main(int argc, char** argv) {
   Logger::amf_app().startup("Options parsed!");
 
   struct sigaction sigIntHandler;
-  sigIntHandler.sa_handler = my_app_signal_handler;
+  sigIntHandler.sa_handler = amf_signal_handler;
   sigemptyset(&sigIntHandler.sa_mask);
   sigIntHandler.sa_flags = 0;
   sigaction(SIGINT, &sigIntHandler, NULL);
