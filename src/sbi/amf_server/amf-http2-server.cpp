@@ -132,7 +132,7 @@ void amf_http2_server::start() {
                     res, parts[2].body);
             } catch (nlohmann::detail::exception& e) {
               Logger::amf_server().warn(
-                  "Can not parse the json data (error: %s)!", e.what());
+                  "Cannot parse the JSON data (error: %s)!", e.what());
               res.write_head(static_cast<uint32_t>(
                   http_response_codes_e::HTTP_RESPONSE_CODE_BAD_REQUEST));
               res.end();
@@ -177,7 +177,7 @@ void amf_http2_server::n1_n2_message_transfer_handler(
   if (!m_amf_app->find_pdu_session_context(
           supi, (uint8_t) n1N2MessageTransferReqData.getPduSessionId(), psc)) {
     Logger::amf_server().error(
-        "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
+        "Cannot get PDU Session Context with SUPI (%s)", supi.c_str());
     // Send response to the NF Service Consumer (e.g., SMF)
     res.write_head(static_cast<uint32_t>(
         http_response_codes_e::HTTP_RESPONSE_CODE_BAD_REQUEST));
