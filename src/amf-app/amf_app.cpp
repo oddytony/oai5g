@@ -34,7 +34,6 @@
 #include <iostream>
 #include <stdexcept>
 
-//#include "3gpp_conversions.hpp"
 #include "DLNASTransport.hpp"
 #include "amf_config.hpp"
 #include "amf_n1.hpp"
@@ -43,14 +42,13 @@
 #include "amf_statistics.hpp"
 #include "itti.hpp"
 #include "ngap_app.hpp"
+#include "comUt.hpp"
 
 using namespace ngap;
 using namespace nas;
 using namespace amf_application;
 using namespace config;
 
-extern void print_buffer(
-    const std::string app, const std::string commit, uint8_t* buf, int len);
 extern amf_app* amf_app_inst;
 extern itti_mw* itti_inst;
 amf_n2* amf_n2_inst   = nullptr;
@@ -89,7 +87,7 @@ amf_app::amf_app(const amf_config& amf_cfg)
   }
 
   // Register to NRF
-  if (amf_cfg.enable_nf_registration) register_to_nrf();
+  if (amf_cfg.support_features.enable_nf_registration) register_to_nrf();
 
   timer_id_t tid = itti_inst->timer_setup(
       amf_cfg.statistics_interval, 0, TASK_AMF_APP,
@@ -125,7 +123,7 @@ void amf_app_task(void*) {
         amf_app_inst->handle_itti_message(ref(*m));
       } break;
 
-      case TIME_OUT:
+      case TIME_OUT: {
         if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
           switch (to->arg1_user) {
             case TASK_AMF_APP_PERIODIC_STATISTICS:
@@ -140,7 +138,14 @@ void amf_app_task(void*) {
                   to->arg1_user);
           }
         }
-        break;
+      } break;
+      case TERMINATE: {
+        if (itti_msg_terminate* terminate =
+                dynamic_cast<itti_msg_terminate*>(msg)) {
+          Logger::amf_n2().info("Received terminate message");
+          return;
+        }
+      } break;
       default:
         Logger::amf_app().info("no handler for msg type %d", msg->msg_type);
     }
@@ -270,7 +275,7 @@ void amf_app::handle_itti_message(
 
     uint8_t nas[BUFFER_SIZE_1024];
     int encoded_size = dl->encode2buffer(nas, BUFFER_SIZE_1024);
-    print_buffer("amf_app", "n1n2 transfer", nas, encoded_size);
+    comUt::print_buffer("amf_app", "n1n2 transfer", nas, encoded_size);
     bstring dl_nas = blk2bstr(nas, encoded_size);
 
     itti_downlink_nas_transfer* dl_msg =

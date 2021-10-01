@@ -355,4 +355,4 @@ IF(STATIC_LINKING)
 ENDIF(STATIC_LINKING)   
 
 target_link_libraries(amf ${ASAN}  
-      -Wl,--start-group 3GPP_COMMON_TYPES AMF CONTEXTS AMF_SCTP AMF_SECU_5GAKA AMF_SECU_NAS AMF_UTILS AMF_SBI_CLIENT AMF_SBI_SERVER config++ sctp pthread ${NETTLE_LIBRARIES} ${MySQL_LIBRARY} ${CRYPTO_LIBRARIES} ${OPENSSL_LIBRARIES} boost_system boost_thread boost_chrono ssl crypt cpprest gmp pistache curl)
+      -Wl,--start-group 3GPP_COMMON_TYPES AMF CONTEXTS AMF_SCTP AMF_SECU_5GAKA AMF_SECU_NAS AMF_UTILS AMF_SBI_CLIENT AMF_SBI_SERVER config++ sctp pthread ${NETTLE_LIBRARIES} ${MySQL_LIBRARY} ${CRYPTO_LIBRARIES} ${OPENSSL_LIBRARIES} nghttp2_asio boost_system boost_thread boost_chrono ssl crypt cpprest gmp pistache curl)

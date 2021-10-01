@@ -70,11 +70,11 @@ class amf_n11 {
   void curl_http_client(
       std::string remoteUri, std::string jsonData, std::string n1SmMsg,
       std::string n2SmMsg, std::string supi, uint8_t pdu_session_id,
-      uint32_t promise_id = 0);
+      uint8_t http_version = 1, uint32_t promise_id = 0);
 
   void curl_http_client(
       std::string remoteUri, std::string Method, std::string msgBody,
-      std::string& response);
+      std::string& response, uint8_t http_version = 1);
 
   bool discover_smf(
       std::string& smf_addr, std::string& smf_api_version,

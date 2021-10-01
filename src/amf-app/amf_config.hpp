@@ -51,6 +51,7 @@
 #define AMF_CONFIG_STRING_IPV4_ADDRESS "IPV4_ADDRESS"
 #define AMF_CONFIG_STRING_PORT "PORT"
 #define AMF_CONFIG_STRING_PPID "PPID"
+#define AMF_CONFIG_STRING_SBI_HTTP2_PORT "HTTP2_PORT"
 
 #define AMF_CONFIG_STRING_INTERFACE_N11 "N11"
 #define AMF_CONFIG_STRING_SMF_INSTANCES_POOL "SMF_INSTANCES_POOL"
@@ -105,6 +106,8 @@
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_AUSF "EXTERNAL_AUSF"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_UDM "EXTERNAL_UDM"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_USE_FQDN_DNS "USE_FQDN_DNS"
+#define AMF_CONFIG_STRING_SUPPORT_FEATURES_USE_HTTP2 "USE_HTTP2"
+
 #define AMF_CONFIG_STRING_FQDN_DNS "FQDN"
 
 using namespace libconfig;
@@ -166,6 +169,7 @@ typedef struct {
   int id;
   std::string ipv4;
   std::string port;
+  uint32_t http2_port;
   std::string version;
   bool selected;
   std::string fqdn;
@@ -185,6 +189,8 @@ class amf_config {
   interface_cfg_t n11;
   itti_cfg_t itti;
   std::string sbi_api_version;
+  unsigned int sbi_http2_port;
+
   unsigned int statistics_interval;
   std::string AMF_Name;
   guami_t guami;
@@ -195,11 +201,15 @@ class amf_config {
   auth_conf auth_para;
   nas_conf_t nas_cfg;
   std::vector<smf_inst_t> smf_pool;
-  bool enable_nf_registration;
-  bool enable_smf_selection;
-  bool enable_external_ausf;
-  bool enable_external_udm;
-  bool use_fqdn_dns;
+
+  struct {
+    bool enable_nf_registration;
+    bool enable_smf_selection;
+    bool enable_external_ausf;
+    bool enable_external_udm;
+    bool use_fqdn_dns;
+    bool use_http2;
+  } support_features;
 
   struct {
     struct in_addr ipv4_addr;

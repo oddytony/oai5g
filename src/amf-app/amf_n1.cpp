@@ -62,6 +62,7 @@
 #include "logger.hpp"
 #include "nas_algorithms.hpp"
 #include "sha256.hpp"
+#include "comUt.hpp"
 
 extern "C" {
 #include "bstrlib.h"
@@ -81,8 +82,6 @@ extern amf_config amf_cfg;
 extern amf_app* amf_app_inst;
 extern amf_n2* amf_n2_inst;
 extern statistics stacs;
-extern void convert_string_2_hex(std::string& input, std::string& output);
-extern unsigned char* format_string_as_hex(std::string str);
 
 Sha256 ctx;
 random_state_t random_state;
@@ -111,6 +110,13 @@ void amf_n1_task(void*) {
         itti_downlink_nas_transfer* m =
             dynamic_cast<itti_downlink_nas_transfer*>(msg);
         amf_n1_inst->handle_itti_message(ref(*m));
+      } break;
+      case TERMINATE: {
+        if (itti_msg_terminate* terminate =
+                dynamic_cast<itti_msg_terminate*>(msg)) {
+          Logger::amf_n1().info("Received terminate message");
+          return;
+        }
       } break;
       default:
         Logger::amf_n1().error("No handler for msg type %d", msg->msg_type);
@@ -261,7 +267,7 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
         uint32_t ulcount =
             secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
         Authentication_5gaka::derive_kgnb(0, 0x01, kamf, kgnb);
-        print_buffer("amf_n1", "kamf", kamf, 32);
+        comUt::print_buffer("amf_n1", "kamf", kamf, 32);
         // Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
         bstring kgnb_bs = blk2bstr(kgnb, 32);
 
@@ -431,7 +437,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
 
   if (nas_data_ind.is_nas_signalling_estab_req) {
     Logger::amf_n1().debug("Received NAS signalling establishment request...");
-    print_buffer(
+    comUt::print_buffer(
         "amf_n1", "Decoded plain NAS Message buffer",
         (uint8_t*) bdata(decoded_plain_msg), blength(decoded_plain_msg));
     nas_signalling_establishment_request_handle(
@@ -439,7 +445,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
         decoded_plain_msg, snn, ulCount);
   } else {
     Logger::amf_n1().debug("Received uplink NAS message...");
-    print_buffer(
+    comUt::print_buffer(
         "amf_n1", "Decoded NAS message buffer",
         (uint8_t*) bdata(decoded_plain_msg), blength(decoded_plain_msg));
     uplink_nas_msg_handle(
@@ -803,7 +809,7 @@ void amf_n1::service_request_handle(
     uint8_t kgnb[32];
     uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
     Logger::amf_n1().debug("uplink count(%d)", secu->ul_count.seq_num);
-    print_buffer("amf_n1", "kamf", kamf, 32);
+    comUt::print_buffer("amf_n1", "kamf", kamf, 32);
     Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
     bstring kgnb_bs = blk2bstr(kgnb, 32);
 
@@ -852,7 +858,7 @@ void amf_n1::service_request_handle(
     uint8_t kgnb[32];
     uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
     Logger::amf_n1().debug("uplink count(%d)", secu->ul_count.seq_num);
-    print_buffer("amf_n1", "kamf", kamf, 32);
+    comUt::print_buffer("amf_n1", "kamf", kamf, 32);
     Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
     bstring kgnb_bs = blk2bstr(kgnb, 32);
     itti_initial_context_setup_request* itti_msg =
@@ -1255,7 +1261,7 @@ void amf_n1::response_registration_reject_msg(
   registrationRej->set_5GMM_Cause(cause_value);
   uint8_t buffer[BUFFER_SIZE_1024] = {0};
   int encoded_size = registrationRej->encode2buffer(buffer, BUFFER_SIZE_1024);
-  print_buffer(
+  comUt::print_buffer(
       "amf_n1", "Registration-Reject message buffer", buffer, encoded_size);
   if (!encoded_size) {
     Logger::nas_mm().error("Encode Registration-Reject message error");
@@ -1339,7 +1345,7 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
 // locally)
 bool amf_n1::auth_vectors_generator(std::shared_ptr<nas_context>& nc) {
   Logger::amf_n1().debug("Start to generate authentication vectors");
-  if (amf_cfg.enable_external_ausf) {
+  if (amf_cfg.support_features.enable_external_ausf) {
     // get authentication vectors from AUSF
     if (!get_authentication_vectors_from_ausf(nc)) return false;
   } else {
@@ -1383,7 +1389,8 @@ bool amf_n1::get_authentication_vectors_from_ausf(
     }
 
     authenticationinfo_auts = auts_s;
-    print_buffer("amf_n1", "********** ausf ***********", auts_value, auts_len);
+    comUt::print_buffer(
+        "amf_n1", "********** ausf ***********", auts_value, auts_len);
     Logger::amf_n1().info("********** ausf_s (%s) ***********", auts_s);
     // generate_random(rand_value, RAND_LENGTH);
     std::map<std::string, std::string>::iterator iter;
@@ -1402,8 +1409,8 @@ bool amf_n1::get_authentication_vectors_from_ausf(
     //    sprintf(&rand_s[i*2],"%02X",rand_value[i]);
     //    }
     //    authenticationinfo_rand = rand_s;
-    //    print_buffer("amf_n1", "********** rand  ***********", rand_value,
-    //    RAND_LENGTH);
+    //    comUt::print_buffer("amf_n1", "********** rand  ***********",
+    //    rand_value, RAND_LENGTH);
 
     resynchronizationInfo.setAuts(authenticationinfo_auts);
     resynchronizationInfo.setRand(authenticationinfo_rand);
@@ -1414,24 +1421,25 @@ bool amf_n1::get_authentication_vectors_from_ausf(
 
   if (amf_n11_inst->send_ue_authentication_request(
           authenticationinfo, ueauthenticationctx, 1)) {
-    unsigned char* r5gauthdata_rand =
-        format_string_as_hex(ueauthenticationctx.getR5gAuthData().getRand());
+    unsigned char* r5gauthdata_rand = conv::format_string_as_hex(
+        ueauthenticationctx.getR5gAuthData().getRand());
     memcpy(nc.get()->_5g_av[0].rand, r5gauthdata_rand, 16);
     rand_record[nc.get()->imsi] =
         ueauthenticationctx.getR5gAuthData().getRand();
-    print_buffer("amf_n1", "5G AV: rand", nc.get()->_5g_av[0].rand, 16);
+    comUt::print_buffer("amf_n1", "5G AV: rand", nc.get()->_5g_av[0].rand, 16);
     free_wrapper((void**) &r5gauthdata_rand);
 
-    unsigned char* r5gauthdata_autn =
-        format_string_as_hex(ueauthenticationctx.getR5gAuthData().getAutn());
+    unsigned char* r5gauthdata_autn = conv::format_string_as_hex(
+        ueauthenticationctx.getR5gAuthData().getAutn());
     memcpy(nc.get()->_5g_av[0].autn, r5gauthdata_autn, 16);
-    print_buffer("amf_n1", "5G AV: autn", nc.get()->_5g_av[0].autn, 16);
+    comUt::print_buffer("amf_n1", "5G AV: autn", nc.get()->_5g_av[0].autn, 16);
     free_wrapper((void**) &r5gauthdata_autn);
 
-    unsigned char* r5gauthdata_hxresstar = format_string_as_hex(
+    unsigned char* r5gauthdata_hxresstar = conv::format_string_as_hex(
         ueauthenticationctx.getR5gAuthData().getHxresStar());
     memcpy(nc.get()->_5g_av[0].hxresStar, r5gauthdata_hxresstar, 16);
-    print_buffer("amf_n1", "5G AV: hxres*", nc.get()->_5g_av[0].hxresStar, 16);
+    comUt::print_buffer(
+        "amf_n1", "5G AV: hxres*", nc.get()->_5g_av[0].hxresStar, 16);
     free_wrapper((void**) &r5gauthdata_hxresstar);
 
     std::map<std::string, LinksValueSchema>::iterator iter;
@@ -1474,7 +1482,7 @@ bool amf_n1::_5g_aka_confirmation_from_ausf(
     sprintf(&resStar_s[i * 2], "%02X", resStar_value[i]);
   }
   resStar_string = resStar_s;
-  print_buffer(
+  comUt::print_buffer(
       "amf_n1", "********** resStar  ***********", resStar_value, resStar_len);
   Logger::amf_n1().info("********** resStar_s (%s) ***********", resStar_s);
 
@@ -1493,9 +1501,10 @@ bool amf_n1::_5g_aka_confirmation_from_ausf(
     ConfirmationDataResponse confirmationdataresponse;
     nlohmann::json::parse(response.c_str()).get_to(confirmationdataresponse);
     unsigned char* kseaf_hex =
-        format_string_as_hex(confirmationdataresponse.getKseaf());
+        conv::format_string_as_hex(confirmationdataresponse.getKseaf());
     memcpy(nc.get()->_5g_av[0].kseaf, kseaf_hex, 32);
-    print_buffer("amf_n1", "5G AV: kseaf", nc.get()->_5g_av[0].kseaf, 32);
+    comUt::print_buffer(
+        "amf_n1", "5G AV: kseaf", nc.get()->_5g_av[0].kseaf, 32);
     free_wrapper((void**) &kseaf_hex);
 
     Logger::amf_n1().debug("Deriving kamf");
@@ -1503,7 +1512,7 @@ bool amf_n1::_5g_aka_confirmation_from_ausf(
       Authentication_5gaka::derive_kamf(
           nc.get()->imsi, nc.get()->_5g_av[i].kseaf, nc.get()->kamf[i],
           0x0000);  // second parameter: abba
-      print_buffer("amf_n1", "kamf", nc.get()->kamf[i], 32);
+      comUt::print_buffer("amf_n1", "kamf", nc.get()->kamf[i], 32);
     }
   } catch (nlohmann::json::exception& e) {
     Logger::amf_n1().info("Could not get Json content from AUSF response");
@@ -1535,11 +1544,11 @@ bool amf_n1::authentication_vectors_generator_in_ausf(
     Authentication_5gaka::derive_kseaf(
         nc.get()->serving_network, nc.get()->_5g_he_av[i].kausf, kseaf);
     memcpy(nc.get()->_5g_av[i].kseaf, kseaf, 32);
-    // print_buffer("amf_n1", "5G AV: rand", nc.get()->_5g_av[i].rand, 16);
-    // print_buffer("amf_n1", "5G AV: autn", nc.get()->_5g_av[i].autn, 16);
-    // print_buffer("amf_n1", "5G AV: kseaf", nc.get()->_5g_av[i].kseaf, 32);
-    // print_buffer("amf_n1", "5G AV: hxres*", nc.get()->_5g_av[i].hxresStar,
-    // 16);
+    // comUt::print_buffer("amf_n1", "5G AV: rand", nc.get()->_5g_av[i].rand,
+    // 16); comUt::print_buffer("amf_n1", "5G AV: autn",
+    // nc.get()->_5g_av[i].autn, 16); comUt::print_buffer("amf_n1", "5G AV:
+    // kseaf", nc.get()->_5g_av[i].kseaf, 32); comUt::print_buffer("amf_n1", "5G
+    // AV: hxres*", nc.get()->_5g_av[i].hxresStar, 16);
   }
   return true;
 }
@@ -1576,7 +1585,7 @@ bool amf_n1::authentication_vectors_generator_in_udm(
       sqn = mysql_resp.sqn;
       for (int i = 0; i < MAX_5GS_AUTH_VECTORS; i++) {
         generate_random(vector[i].rand, RAND_LENGTH);
-        print_buffer(
+        comUt::print_buffer(
             "amf_n1", "Generated random rand (5G HE AV)", vector[i].rand, 16);
         generate_5g_he_av_in_udm(
             mysql_resp.opc, nc.get()->imsi, mysql_resp.key, sqn,
@@ -1590,11 +1599,12 @@ bool amf_n1::authentication_vectors_generator_in_udm(
       Logger::amf_n1().debug(
           "Receive information from MySQL with IMSI %s",
           nc.get()->imsi.c_str());
-      // print_buffer("amf_n1", "Received from MYSQL: rand", mysql_resp.rand,
-      // 16); print_buffer("amf_n1", "Received from MYSQL: opc", mysql_resp.opc,
-      // 16); print_buffer("amf_n1", "Received from MYSQL: key", mysql_resp.key,
-      // 16); print_buffer("amf_n1", "Received from MYSQL: sqn", mysql_resp.sqn,
-      // 6);
+      // comUt::print_buffer("amf_n1", "Received from MYSQL: rand",
+      // mysql_resp.rand, 16); comUt::print_buffer("amf_n1", "Received from
+      // MYSQL: opc", mysql_resp.opc, 16); comUt::print_buffer("amf_n1",
+      // "Received from MYSQL: key", mysql_resp.key, 16);
+      // comUt::print_buffer("amf_n1", "Received from MYSQL: sqn",
+      // mysql_resp.sqn, 6);
       for (int i = 0; i < MAX_5GS_AUTH_VECTORS; i++) {
         generate_random(vector[i].rand, RAND_LENGTH);
         sqn = mysql_resp.sqn;
@@ -1631,9 +1641,9 @@ void amf_n1::test_generate_5g_he_av_in_udm(
   Authentication_5gaka::f1(
       opc, key, vector.rand, sqn, amf,
       mac_a);  // to compute MAC, Figure 7, ts33.102
-  print_buffer("amf_n1", "sqn^ak", sqnak, 6);
-  print_buffer("amf_n1", "rand", vector.rand, 16);
-  print_buffer("amf_n1", "mac_a", mac_a, 8);
+  comUt::print_buffer("amf_n1", "sqn^ak", sqnak, 6);
+  comUt::print_buffer("amf_n1", "rand", vector.rand, 16);
+  comUt::print_buffer("amf_n1", "mac_a", mac_a, 8);
   annex_a_4_33501(
       ck, ik, vector.xres, vector.rand, serving_network, vector.xresStar);
   Authentication_5gaka::generate_autn(
@@ -1691,23 +1701,23 @@ void amf_n1::generate_5g_he_av_in_udm(
   Authentication_5gaka::f1(
       opc, key, vector.rand, sqn, amf,
       mac_a);  // to compute MAC, Figure 7, ts33.102
-  // print_buffer("amf_n1", "Result For F1-Alg: mac_a", mac_a, 8);
+  // comUt::print_buffer("amf_n1", "Result For F1-Alg: mac_a", mac_a, 8);
   Authentication_5gaka::f2345(
       opc, key, vector.rand, vector.xres, ck, ik,
       ak);  // to compute XRES, CK, IK, AK
   annex_a_4_33501(
       ck, ik, vector.xres, vector.rand, serving_network, vector.xresStar);
-  // print_buffer("amf_n1", "Result For KDF: xres*(5G HE AV)", vector.xresStar,
-  // 16);
+  // comUt::print_buffer("amf_n1", "Result For KDF: xres*(5G HE AV)",
+  // vector.xresStar, 16);
   Authentication_5gaka::generate_autn(
       sqn, ak, amf, mac_a,
       vector.autn);  // generate AUTN
-  // print_buffer("amf_n1", "Generated autn(5G HE AV)", vector.autn, 16);
+  // comUt::print_buffer("amf_n1", "Generated autn(5G HE AV)", vector.autn, 16);
   Authentication_5gaka::derive_kausf(
       ck, ik, serving_network, sqn, ak,
       vector.kausf);  // derive Kausf
-  // print_buffer("amf_n1", "Result For KDF: Kausf(5G HE AV)", vector.kausf,
-  // 32);
+  // comUt::print_buffer("amf_n1", "Result For KDF: Kausf(5G HE AV)",
+  // vector.kausf, 32);
   Logger::amf_n1().debug("Generate_5g_he_av_in_udm finished!");
   // ue_authentication_simulator(vector.rand, vector.autn);
   return;
@@ -1744,7 +1754,7 @@ void amf_n1::annex_a_4_33501(
   for (int i = 0; i < 8; i++) oldS[24 + i] = input[i];
   oldS[32] = 0x00;
   oldS[33] = 0x08;
-  print_buffer("amf_n1", "Input string: ", S, 31 + netName.size);
+  comUt::print_buffer("amf_n1", "Input string: ", S, 31 + netName.size);
   uint8_t key[32];
   memcpy(&key[0], ck, 16);
   memcpy(&key[16], ik, 16);  // KEY
@@ -1752,7 +1762,7 @@ void amf_n1::annex_a_4_33501(
   uint8_t out[32];
   Authentication_5gaka::kdf(key, 32, S, 31 + netName.size, out, 32);
   for (int i = 0; i < 16; i++) output[i] = out[16 + i];
-  print_buffer("amf_n1", "XRES*(new)", out, 32);
+  comUt::print_buffer("amf_n1", "XRES*(new)", out, 32);
 }
 
 //------------------------------------------------------------------------------
@@ -1820,7 +1830,7 @@ bool amf_n1::start_authentication_procedure(
   }
 
   bstring b = blk2bstr(buffer, encoded_size);
-  print_buffer(
+  comUt::print_buffer(
       "amf_n1", "Authentication-Request message buffer", (uint8_t*) bdata(b),
       blength(b));
   Logger::amf_n1().debug("amf_ue_ngap_id 0x%x", nc.get()->amf_ue_ngap_id);
@@ -1883,7 +1893,7 @@ void amf_n1::authentication_response_handle(
     Logger::amf_n1().warn(
         "Cannot receive AuthenticationResponseParameter (RES*)");
   } else {
-    if (amf_cfg.enable_external_ausf) {
+    if (amf_cfg.support_features.enable_external_ausf) {
       // std::string data = bdata(resStar);
       if (!_5g_aka_confirmation_from_ausf(nc, resStar)) isAuthOk = false;
     } else {
@@ -1901,16 +1911,17 @@ void amf_n1::authentication_response_handle(
       sha256((unsigned char*) inputstring, 16 + blength(resStar), sha256Out);
       uint8_t hres[16];
       for (int i = 0; i < 16; i++) hres[i] = (uint8_t) sha256Out[i];
-      print_buffer(
+      comUt::print_buffer(
           "amf_n1", "Received RES* From Authentication-Response", res, 16);
-      print_buffer(
+      comUt::print_buffer(
           "amf_n1", "Stored XRES* in 5G HE AV",
           nc.get()->_5g_he_av[secu_index].xresStar, 16);
-      print_buffer(
+      comUt::print_buffer(
           "amf_n1", "Stored XRES in 5G HE AV",
           nc.get()->_5g_he_av[secu_index].xres, 8);
-      print_buffer("amf_n1", "Computed HRES* from RES*", hres, 16);
-      print_buffer("amf_n1", "Computed HXRES* from XRES*", hxresStar, 16);
+      comUt::print_buffer("amf_n1", "Computed HRES* from RES*", hres, 16);
+      comUt::print_buffer(
+          "amf_n1", "Computed HXRES* from XRES*", hxresStar, 16);
       for (int i = 0; i < 16; i++) {
         if (hxresStar[i] != hres[i]) isAuthOk = false;
       }
@@ -2065,13 +2076,13 @@ bool amf_n1::start_security_mode_control_procedure(
   smc->setAdditional_5G_Security_Information(true, false);
   uint8_t buffer[1024];
   int encoded_size = smc->encode2buffer(buffer, 1024);
-  print_buffer(
+  comUt::print_buffer(
       "amf_n1", "Security-Mode-Command message buffer", buffer, encoded_size);
   bstring intProtctedNas;
   encode_nas_message_protected(
       secu_ctx, security_context_is_new, INTEGRITY_PROTECTED_WITH_NEW_SECU_CTX,
       NAS_MESSAGE_DOWNLINK, buffer, encoded_size, intProtctedNas);
-  print_buffer(
+  comUt::print_buffer(
       "amf_n1", "Encrypted Security-Mode-Command message buffer",
       (uint8_t*) bdata(intProtctedNas), blength(intProtctedNas));
   itti_send_dl_nas_buffer_to_task_n2(
@@ -2175,7 +2186,7 @@ void amf_n1::security_mode_complete_handle(
   regAccept->setT3512_Value(0x5, 0x1e);
   uint8_t buffer[BUFFER_SIZE_1024] = {0};
   int encoded_size = regAccept->encode2buffer(buffer, BUFFER_SIZE_1024);
-  print_buffer(
+  comUt::print_buffer(
       "amf_n1", "Registration-Accept message buffer", buffer, encoded_size);
   if (!encoded_size) {
     Logger::nas_mm().error("Encode Registration-Accept message error");
@@ -2249,7 +2260,7 @@ void amf_n1::security_mode_complete_handle(
     uint8_t kgnb[32];
     uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
     Authentication_5gaka::derive_kgnb(0, 0x01, kamf, kgnb);
-    print_buffer("amf_n1", "kamf", kamf, 32);
+    comUt::print_buffer("amf_n1", "kamf", kamf, 32);
     // Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
     bstring kgnb_bs = blk2bstr(kgnb, 32);
 
@@ -2416,7 +2427,7 @@ bool amf_n1::nas_message_integrity_protected(
   nas_stream_cipher_t stream_cipher = {0};
   uint8_t mac[4];
   stream_cipher.key = nsc->knas_int;
-  print_buffer(
+  comUt::print_buffer(
       "amf_n1", "Parameters for NIA: knas_int", nsc->knas_int,
       AUTH_KNAS_INT_SIZE);
   stream_cipher.key_length = AUTH_KNAS_INT_SIZE;
@@ -2433,7 +2444,7 @@ bool amf_n1::nas_message_integrity_protected(
   stream_cipher.direction = direction;  // "1" for downlink
   Logger::amf_n1().debug("Parameters for NIA, direction: 0x%x", direction);
   stream_cipher.message = (uint8_t*) input_nas;
-  print_buffer(
+  comUt::print_buffer(
       "amf_n1", "Parameters for NIA, message: ", input_nas, input_nas_len);
   stream_cipher.blength = input_nas_len * 8;
 
@@ -2446,7 +2457,7 @@ bool amf_n1::nas_message_integrity_protected(
     case IA1_128_5G: {
       Logger::amf_n1().debug("Integrity with algorithms: 128-5G-IA1");
       nas_algorithms::nas_stream_encrypt_nia1(&stream_cipher, mac);
-      print_buffer("amf_n1", "Result for NIA1, mac: ", mac, 4);
+      comUt::print_buffer("amf_n1", "Result for NIA1, mac: ", mac, 4);
       mac32 = ntohl(*((uint32_t*) mac));
       Logger::amf_n1().debug("Result for NIA1, mac32: 0x%x", mac32);
       return true;
@@ -2455,7 +2466,7 @@ bool amf_n1::nas_message_integrity_protected(
     case IA2_128_5G: {
       Logger::amf_n1().debug("Integrity with algorithms: 128-5G-IA2");
       nas_algorithms::nas_stream_encrypt_nia2(&stream_cipher, mac);
-      print_buffer("amf_n1", "Result for NIA2, mac: ", mac, 4);
+      comUt::print_buffer("amf_n1", "Result for NIA2, mac: ", mac, 4);
       mac32 = ntohl(*((uint32_t*) mac));
       Logger::amf_n1().debug("Result for NIA2, mac32: 0x%x", mac32);
       return true;
@@ -2501,7 +2512,8 @@ bool amf_n1::nas_message_cipher_protected(
       Logger::amf_n1().debug("stream_cipher.blength %d", stream_cipher.blength);
       Logger::amf_n1().debug(
           "stream_cipher.message %x", stream_cipher.message[0]);
-      print_buffer("amf_n1", "stream_cipher.key ", stream_cipher.key, 16);
+      comUt::print_buffer(
+          "amf_n1", "stream_cipher.key ", stream_cipher.key, 16);
       Logger::amf_n1().debug("stream_cipher.count %x", stream_cipher.count);
 
       uint8_t* ciphered =
@@ -2574,7 +2586,7 @@ void amf_n1::ue_initiate_de_registration_handle(
   uint8_t buffer[BUFFER_SIZE_512] = {0};
   int encoded_size = deregAccept->encode2buffer(buffer, BUFFER_SIZE_512);
 
-  print_buffer(
+  comUt::print_buffer(
       "amf_n1", "De-registration Accept message buffer", buffer, encoded_size);
   if (encoded_size < 1) {
     Logger::nas_mm().error("Encode De-registration Accept message error!");
@@ -2631,7 +2643,7 @@ void amf_n1::ul_nas_transport_handle(
   } else {
     dnn = bfromcstr("default");
   }
-  print_buffer(
+  comUt::print_buffer(
       "amf_n1", "Decoded DNN bitstring", (uint8_t*) bdata(dnn), blength(dnn));
   switch (payload_type) {
     case N1_SM_INFORMATION: {
@@ -2680,7 +2692,7 @@ void amf_n1::ul_nas_transport_handle(
   } else {
     dnn = bfromcstr("default");
   }
-  print_buffer(
+  comUt::print_buffer(
       "amf_n1", "Decoded DNN bitstring", (uint8_t*) bdata(dnn), blength(dnn));
   switch (payload_type) {
     case N1_SM_INFORMATION: {
@@ -2721,37 +2733,37 @@ void amf_n1::dump_nas_message(uint8_t* buf, int len) {
 
 //------------------------------------------------------------------------------
 void amf_n1::ue_authentication_simulator(uint8_t* rand, uint8_t* autn) {
-  print_buffer("amf_n1", "[ue] received rand", rand, 16);
-  print_buffer("amf_n1", "[ue] received autn", autn, 16);
+  comUt::print_buffer("amf_n1", "[ue] received rand", rand, 16);
+  comUt::print_buffer("amf_n1", "[ue] received autn", autn, 16);
   uint8_t opc[16]        = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
                      0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
   uint8_t key[16]        = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
                      0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff};
   string serving_network = "5G:mnc011.mcc460.3gppnetwork.org";
-  print_buffer("amf_n1", "[ue] local opc", opc, 16);
-  print_buffer("amf_n1", "[ue] local key", key, 16);
+  comUt::print_buffer("amf_n1", "[ue] local opc", opc, 16);
+  comUt::print_buffer("amf_n1", "[ue] local key", key, 16);
   uint8_t res[8], resStar[16];
   uint8_t ck[16], ik[16], ak[6];
   Authentication_5gaka::f2345(
       opc, key, rand, res, ck, ik,
       ak);  // to compute XRES, CK, IK, AK
-  print_buffer("amf_n1", "[ue] Result for f2345: res", res, 8);
-  print_buffer("amf_n1", "[ue] Result for f2345: ck", ck, 16);
-  print_buffer("amf_n1", "[ue] Result for f2345: ik", ik, 16);
-  print_buffer("amf_n1", "[ue] Result for f2345: ak", ak, 6);
+  comUt::print_buffer("amf_n1", "[ue] Result for f2345: res", res, 8);
+  comUt::print_buffer("amf_n1", "[ue] Result for f2345: ck", ck, 16);
+  comUt::print_buffer("amf_n1", "[ue] Result for f2345: ik", ik, 16);
+  comUt::print_buffer("amf_n1", "[ue] Result for f2345: ak", ak, 6);
   annex_a_4_33501(ck, ik, res, rand, serving_network, resStar);
-  print_buffer("amf_n1", "[ue] computed RES*", resStar, 16);
+  comUt::print_buffer("amf_n1", "[ue] computed RES*", resStar, 16);
   uint8_t sqn[6];
   for (int i = 0; i < 6; i++) sqn[i] = ak[i] ^ autn[i];
-  print_buffer("amf_n1", "[ue] sqn", sqn, 6);
+  comUt::print_buffer("amf_n1", "[ue] sqn", sqn, 6);
   uint8_t amf[2];
   amf[0] = autn[6];
   amf[1] = autn[7];
   Logger::amf_n1().debug("[ue] amf 0x%x%x", amf[0], amf[1]);
   uint8_t mac_s[8];
   Authentication_5gaka::f1(opc, key, rand, sqn, amf, mac_s);
-  print_buffer("amf_n1", "[ue] mas_s", mac_s, 8);
-  print_buffer("amf_n1", "[ue] mas_a", autn + 8, 8);
+  comUt::print_buffer("amf_n1", "[ue] mas_s", mac_s, 8);
+  comUt::print_buffer("amf_n1", "[ue] mas_a", autn + 8, 8);
 }
 
 //------------------------------------------------------------------------------
@@ -2804,7 +2816,7 @@ void amf_n1::run_mobility_registration_update_procedure(
   regAccept->set_5GS_Network_Feature_Support(0x00, 0x00);
   uint8_t buffer[1024] = {0};
   int encoded_size     = regAccept->encode2buffer(buffer, 1024);
-  print_buffer(
+  comUt::print_buffer(
       "amf_n1", "Registration-Accept Message Buffer", buffer, encoded_size);
   if (!encoded_size) {
     Logger::nas_mm().error("Encode Registration-Accept message error");
@@ -2865,7 +2877,7 @@ void amf_n1::run_mobility_registration_update_procedure(
   uint8_t kgnb[32];
   uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
   Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
-  print_buffer("amf_n1", "kamf", kamf, 32);
+  comUt::print_buffer("amf_n1", "kamf", kamf, 32);
   bstring kgnb_bs = blk2bstr(kgnb, 32);
   itti_initial_context_setup_request* itti_msg =
       new itti_initial_context_setup_request(TASK_AMF_N1, TASK_AMF_N2);
@@ -2936,7 +2948,7 @@ void amf_n1::run_periodic_registration_update_procedure(
   regAccept->set_5GS_Network_Feature_Support(0x01, 0x00);
   uint8_t buffer[BUFFER_SIZE_1024] = {0};
   int encoded_size = regAccept->encode2buffer(buffer, BUFFER_SIZE_1024);
-  print_buffer(
+  comUt::print_buffer(
       "amf_n1", "Registration-Accept Message Buffer", buffer, encoded_size);
   if (!encoded_size) {
     Logger::nas_mm().error("Encode Registration-Accept message error");
@@ -3023,7 +3035,7 @@ void amf_n1::run_periodic_registration_update_procedure(
   regAccept->set_5GS_Network_Feature_Support(0x01, 0x00);
   uint8_t buffer[BUFFER_SIZE_1024] = {0};
   int encoded_size = regAccept->encode2buffer(buffer, BUFFER_SIZE_1024);
-  print_buffer(
+  comUt::print_buffer(
       "amf_n1", "Registration-Accept Message Buffer", buffer, encoded_size);
   if (!encoded_size) {
     Logger::nas_mm().error("Encode Registration-Accept message error");
