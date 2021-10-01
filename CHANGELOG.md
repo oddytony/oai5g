@@ -3,6 +3,9 @@
 ## v1.2.0 -- September 2021 ##
 
 * AUSF connection
+* Support PDU Session Resource Modify procedure
+* Support HTTP2
+* Support AMF Event Exposure Services
 * Fix NIA0, NEA2
 * Fix potential AMF crash with UE/NGAP/NAS context
 * Fix N2 Handover
