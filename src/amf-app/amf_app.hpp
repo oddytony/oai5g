@@ -39,6 +39,10 @@
 #include "itti.hpp"
 #include "itti_msg_amf_app.hpp"
 #include "ue_context.hpp"
+#include "amf_subscription.hpp"
+#include "itti_msg_sbi.hpp"
+#include "amf_msg.hpp"
+#include "ProblemDetails.h"
 
 #include "uint_generator.hpp"
 #include <boost/thread.hpp>
@@ -57,6 +61,14 @@ class amf_app {
   amf_profile nf_instance_profile;  // AMF profile
   std::string amf_instance_id;      // AMF instance id
   timer_id_t timer_nrf_heartbeat;
+
+  util::uint_generator<uint32_t> evsub_id_generator;
+  std::map<
+      std::pair<evsub_id_t, amf_event_type_t>,
+      std::shared_ptr<amf_subscription>>
+      amf_event_subscriptions;
+
+  mutable std::shared_mutex m_amf_event_subscriptions;
 
  public:
   explicit amf_app(const amf_config& amf_cfg);
@@ -100,6 +112,13 @@ class amf_app {
       uint32_t& tmsi);
 
   /*
+   * Generate an Event Exposure Subscription ID
+   * @param [void]
+   * @return the generated reference
+   */
+  evsub_id_t generate_ev_subscription_id();
+
+  /*
    * Trigger NF instance registration to NRF
    * @param [void]
    * @return void
@@ -107,11 +126,91 @@ class amf_app {
   void register_to_nrf();
 
   /*
+   * Handle Event Exposure Msg from NF
+   * @param [std::shared_ptr<itti_sbi_event_exposure_request>&] Request message
+   * @return [evsub_id_t] ID of the created subscription
+   */
+  evsub_id_t handle_event_exposure_subscription(
+      std::shared_ptr<itti_sbi_event_exposure_request> msg);
+
+  /*
+   * Handle Unsubscribe Request from an NF
+   * @param [const std::string&] subscription_id: Subscription ID
+   * @return true if the subscription is unsubscribed successfully, otherwise
+   * return false
+   */
+  bool handle_event_exposure_delete(const std::string& subscription_id);
+
+  /*
+   * Handle NF status notification (e.g., when an UPF becomes available)
+   * @param [std::shared_ptr<itti_sbi_notification_data>& ] msg: message
+   * @param [oai::amf::model::ProblemDetails& ] problem_details
+   * @param [uint8_t&] http_code
+   * @return true if handle sucessfully, otherwise return false
+   */
+  bool handle_nf_status_notification(
+      std::shared_ptr<itti_sbi_notification_data>& msg,
+      oai::amf::model::ProblemDetails& problem_details, uint8_t& http_code);
+
+  /*
    * Generate a random UUID for SMF instance
    * @param [void]
    * @return void
    */
   void generate_uuid();
+
+  /*
+   * Add an Event Subscription to the list
+   * @param [const evsub_id_t&] sub_id: Subscription ID
+   * @param [amf_event_t] ev: Event type
+   * @param [std::shared_ptr<amf_subscription>] ss: a shared pointer stored
+   * information of the subscription
+   * @return void
+   */
+  void add_event_subscription(
+      evsub_id_t sub_id, amf_event_type_t ev,
+      std::shared_ptr<amf_subscription> ss);
+
+  /*
+   * Remove an Event Subscription from the list
+   * @param [const evsub_id_t&] sub_id: Subscription ID
+   * @return bool
+   */
+  bool remove_event_subscription(evsub_id_t sub_id);
+
+  /*
+   * Get a list of subscription associated with a particular event
+   * @param [amf_event_t] ev: Event type
+   * @param [std::vector<std::shared_ptr<amf_subscription>>&] subscriptions:
+   * store the list of the subscription associated with this event type
+   * @return void
+   */
+  void get_ee_subscriptions(
+      amf_event_type_t ev,
+      std::vector<std::shared_ptr<amf_subscription>>& subscriptions);
+
+  /*
+   * Get a list of subscription associated with a particular event
+   * @param [evsub_id_t] sub_id: Subscription ID
+   * @param [std::vector<std::shared_ptr<amf_subscription>>&] subscriptions:
+   * store the list of the subscription associated with this event type
+   * @return void
+   */
+  void get_ee_subscriptions(
+      evsub_id_t sub_id,
+      std::vector<std::shared_ptr<amf_subscription>>& subscriptions);
+
+  /*
+   * Get a list of subscription associated with a particular event
+   * @param [amf_event_t] ev: Event type
+   * @param [std::string&] supi: SUPI
+   * @param [std::vector<std::shared_ptr<amf_subscription>>&] subscriptions:
+   * store the list of the subscription associated with this event type
+   * @return void
+   */
+  void get_ee_subscriptions(
+      amf_event_type_t ev, std::string& supi,
+      std::vector<std::shared_ptr<amf_subscription>>& subscriptions);
 
   /*
    * Generate a SMF profile for this instance
@@ -166,7 +265,6 @@ class amf_app {
   void trigger_process_response(uint32_t pid, std::string n2_sm);
 
  private:
-  // context management
   std::map<long, std::shared_ptr<ue_context>> amf_ue_ngap_id2ue_ctx;
   mutable std::shared_mutex m_amf_ue_ngap_id2ue_ctx;
   std::map<std::string, std::shared_ptr<ue_context>> ue_ctx_key;

@@ -29,73 +29,9 @@
 #define __AMF_HPP
 
 #include "3gpp_23.003.h"
-#include "3gpp_29.518.h"
-
-/*
-typedef struct {
-  std::string mcc;
-  std::string mnc;
-  uint32_t tac;
-} plmn_t;
-
-typedef struct s_nssai  // section 28.4, TS23.003
-{
-  uint8_t sST;
-  //uint32_t sD:24;
-  std::string sD;
-  s_nssai(const uint8_t &sst, const std::string sd)
-      :
-      sST(sst),
-      sD(sd) {
-  }
-  s_nssai()
-      :
-      sST(),
-      sD() {
-  }
-  s_nssai(const s_nssai &p)
-      :
-      sST(p.sST),
-      sD(p.sD) {
-  }
-  bool operator==(const struct s_nssai &s) const {
-    if ((s.sST == this->sST) && (s.sD.compare(this->sD) == 0)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-} snssai_t;
-*/
-
-// SMF + AMF + 3GPP TS 29.571 (Common data)
-enum class http_response_codes_e {
-  HTTP_RESPONSE_CODE_0                      = 0,
-  HTTP_RESPONSE_CODE_200_OK                 = 200,
-  HTTP_RESPONSE_CODE_201_CREATED            = 201,
-  HTTP_RESPONSE_CODE_202_ACCEPTED           = 202,
-  HTTP_RESPONSE_CODE_204_UPDATED            = 204,
-  HTTP_RESPONSE_CODE_BAD_REQUEST            = 400,
-  HTTP_RESPONSE_CODE_UNAUTHORIZED           = 401,
-  HTTP_RESPONSE_CODE_FORBIDDEN              = 403,
-  HTTP_RESPONSE_CODE_NOT_FOUND              = 404,
-  HTTP_RESPONSE_CODE_METHOD_NOT_ALLOWED     = 405,
-  HTTP_RESPONSE_CODE_REQUEST_TIMEOUT        = 408,
-  HTTP_RESPONSE_CODE_406_NOT_ACCEPTED       = 406,
-  HTTP_RESPONSE_CODE_CONFLICT               = 409,
-  HTTP_RESPONSE_CODE_GONE                   = 410,
-  HTTP_RESPONSE_CODE_LENGTH_REQUIRED        = 411,
-  HTTP_RESPONSE_CODE_PRECONDITION_FAILED    = 412,
-  HTTP_RESPONSE_CODE_PAYLOAD_TOO_LARGE      = 413,
-  HTTP_RESPONSE_CODE_URI_TOO_LONG           = 414,
-  HTTP_RESPONSE_CODE_UNSUPPORTED_MEDIA_TYPE = 415,
-  HTTP_RESPONSE_CODE_TOO_MANY_REQUESTS      = 429,
-  HTTP_RESPONSE_CODE_INTERNAL_SERVER_ERROR  = 500,
-  HTTP_RESPONSE_CODE_NOT_IMPLEMENTED        = 501,
-  HTTP_RESPONSE_CODE_SERVICE_UNAVAILABLE    = 503,
-  HTTP_RESPONSE_CODE_GATEWAY_TIMEOUT        = 504
-};
+#include "string.h"
+#include "inttypes.h"
+#include "stdio.h"
 
 // for CURL
 constexpr auto CURL_MIME_BOUNDARY = "----Boundary";
@@ -109,7 +45,19 @@ constexpr auto CURL_MIME_BOUNDARY = "----Boundary";
 
 #define FUTURE_STATUS_TIMEOUT_MS 100
 
+// Event Subscription IDs)
+typedef uint32_t evsub_id_t;
+#define EVSUB_ID_FMT "0x%" PRIx32
+#define EVSUB_ID_SCAN_FMT SCNx32
+#define INVALID_EVSUB_ID ((evsub_id_t) 0x00000000)
+#define UNASSIGNED_EVSUB_ID ((evsub_id_t) 0x00000000)
+
+constexpr uint64_t SECONDS_SINCE_FIRST_EPOCH = 2208988800;
+
 #define UE_AGGREGATE_MAXIMUM_BIT_RATE_DL 300000000
 #define UE_AGGREGATE_MAXIMUM_BIT_RATE_UL 200000000
 
+#define NAMF_COMMUNICATION_BASE "/namf-comm/"
+#define NAMF_COMMUNICATION_N1N2_MESSAGE_TRANSFER_URL                           \
+  "/ue-contexts/{}/n1-n2-messages"  // context id
 #endif

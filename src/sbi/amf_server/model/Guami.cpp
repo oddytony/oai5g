@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,19 +12,52 @@
  */
 
 #include "Guami.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 Guami::Guami() {
   m_AmfId = "";
 }
 
-Guami::~Guami() {}
+void Guami::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw oai::amf::helpers::ValidationException(msg.str());
+  }
+}
 
-void Guami::validate() {
-  // TODO: implement validation
+bool Guami::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool Guami::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success                  = true;
+  const std::string _pathPrefix = pathPrefix.empty() ? "Guami" : pathPrefix;
+
+  /* AmfId */ {
+    const std::string& value           = m_AmfId;
+    const std::string currentValuePath = _pathPrefix + ".amfId";
+  }
+
+  return success;
+}
+
+bool Guami::operator==(const Guami& rhs) const {
+  return
+
+      (getPlmnId() == rhs.getPlmnId()) &&
+
+      (getAmfId() == rhs.getAmfId())
+
+          ;
+}
+
+bool Guami::operator!=(const Guami& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const Guami& o) {
@@ -38,10 +71,10 @@ void from_json(const nlohmann::json& j, Guami& o) {
   j.at("amfId").get_to(o.m_AmfId);
 }
 
-PlmnId Guami::getPlmnId() const {
+PlmnIdNid Guami::getPlmnId() const {
   return m_PlmnId;
 }
-void Guami::setPlmnId(PlmnId const& value) {
+void Guami::setPlmnId(PlmnIdNid const& value) {
   m_PlmnId = value;
 }
 std::string Guami::getAmfId() const {
@@ -51,6 +84,4 @@ void Guami::setAmfId(std::string const& value) {
   m_AmfId = value;
 }
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

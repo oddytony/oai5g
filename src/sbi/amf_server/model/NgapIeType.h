@@ -35,6 +35,8 @@ class NgapIeType {
 
   void validate();
 
+  std::string get_value() const;
+  void set_value(std::string v);
   /////////////////////////////////////////////
   /// NgapIeType members
 
@@ -42,6 +44,7 @@ class NgapIeType {
   friend void from_json(const nlohmann::json& j, NgapIeType& o);
 
  protected:
+  std::string value;
 };
 
 }  // namespace model

@@ -17,14 +17,13 @@
 #include "amf_app.hpp"
 #include "amf_n11.hpp"
 #include "pdu_session_context.hpp"
+#include "conversions.hpp"
+#include "comUt.hpp"
+
 using namespace amf_application;
 
-extern void msg_str_2_msg_hex(std::string msg, bstring& b);
-extern void convert_string_2_hex(std::string& input, std::string& output);
 extern itti_mw* itti_inst;
 extern amf_app* amf_app_inst;
-extern void print_buffer(
-    const std::string app, const std::string commit, uint8_t* buf, int len);
 
 namespace oai {
 namespace amf {
@@ -56,8 +55,8 @@ void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(
       "Receive N1N2MessageTransfer Request, handling...");
 
   bstring n1sm;
-  msg_str_2_msg_hex(n1sm_str, n1sm);
-  print_buffer(
+  conv::msg_str_2_msg_hex(n1sm_str, n1sm);
+  comUt::print_buffer(
       "amf_server", "Received N1 SM", (uint8_t*) bdata(n1sm), blength(n1sm));
   response.send(
       Pistache::Http::Code::Ok,
@@ -90,11 +89,11 @@ void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(
   }
 
   bstring n1sm;
-  msg_str_2_msg_hex(
+  conv::msg_str_2_msg_hex(
       n1sm_str.substr(0, n1sm_str.length()), n1sm);  // TODO: verify n1sm_length
 
   bstring n2sm;
-  msg_str_2_msg_hex(n2sm_str, n2sm);
+  conv::msg_str_2_msg_hex(n2sm_str, n2sm);
 
   psc.get()->n1sm             = n1sm;
   psc.get()->isn1sm_avaliable = true;
@@ -112,6 +111,11 @@ void N1N2MessageCollectionDocumentApiImpl::n1_n2_message_transfer(
   itti_msg->is_n2sm_set = true;
   itti_msg->pdu_session_id =
       (uint8_t) n1N2MessageTransferReqData.getPduSessionId();
+  itti_msg->n2sm_info_type = n1N2MessageTransferReqData.getN2InfoContainer()
+                                 .getSmInfo()
+                                 .getN2InfoContent()
+                                 .getNgapIeType()
+                                 .get_value();
 
   // For Paging
   if (n1N2MessageTransferReqData.ppiIsSet()) {

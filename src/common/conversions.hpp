@@ -33,6 +33,14 @@
 
 #include <string>
 
+#include <iostream>
+
+#include "bstrlib.h"
+
+extern "C" {
+#include "dynamic_memory_check.h"
+}
+
 /* Used to format an uint32_t containing an ipv4 address */
 #define IN_ADDR_FMT "%u.%u.%u.%u"
 #define PRI_IN_ADDR(aDDRESS)                                                   \
@@ -55,5 +63,11 @@ class conv {
       const uint8_t digit1, const uint8_t digit2, const uint8_t digit3);
   static std::string mncToString(
       const uint8_t digit1, const uint8_t digit2, const uint8_t digit3);
+
+  static void msg_str_2_msg_hex(std::string msg, bstring& b);
+  static char* bstring2charString(bstring b);
+  static unsigned char* format_string_as_hex(std::string str);
+  static void convert_string_2_hex(
+      std::string& input_str, std::string& output_str);
 };
 #endif /* FILE_CONVERSIONS_HPP_SEEN */

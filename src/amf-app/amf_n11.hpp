@@ -36,6 +36,7 @@
 #include "AuthenticationInfo.h"
 #include "UEAuthenticationCtx.h"
 #include "itti_msg_n11.hpp"
+#include "itti_msg_sbi.hpp"
 #include "pdu_session_context.hpp"
 
 namespace amf_application {
@@ -53,6 +54,8 @@ class amf_n11 {
   void handle_itti_message(itti_nsmf_pdusession_update_sm_context& itti_msg);
   void handle_itti_message(itti_nsmf_pdusession_release_sm_context& itti_msg);
   void handle_itti_message(itti_pdu_session_resource_setup_response& itti_msg);
+  void handle_itti_message(itti_sbi_notify_subscribed_event& itti_msg);
+
   void send_pdu_session_update_sm_context_request(
       std::string supi, std::shared_ptr<pdu_session_context> psc,
       std::string smf_addr, bstring sm_msg, std::string dnn);
@@ -67,11 +70,11 @@ class amf_n11 {
   void curl_http_client(
       std::string remoteUri, std::string jsonData, std::string n1SmMsg,
       std::string n2SmMsg, std::string supi, uint8_t pdu_session_id,
-      uint32_t promise_id = 0);
+      uint8_t http_version = 1, uint32_t promise_id = 0);
 
   void curl_http_client(
       std::string remoteUri, std::string Method, std::string msgBody,
-      std::string& response);
+      std::string& response, uint8_t http_version = 1);
 
   bool discover_smf(
       std::string& smf_addr, std::string& smf_api_version,

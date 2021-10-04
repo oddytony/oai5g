@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -23,9 +23,7 @@
 #include "PlmnId.h"
 #include <nlohmann/json.hpp>
 
-namespace oai {
-namespace amf {
-namespace model {
+namespace oai::amf::model {
 
 /// <summary>
 ///
@@ -33,9 +31,22 @@ namespace model {
 class Tai {
  public:
   Tai();
-  virtual ~Tai();
+  virtual ~Tai() = default;
 
-  void validate();
+  /// <summary>
+  /// Validate the current data in the model. Throws a ValidationException on
+  /// failure.
+  /// </summary>
+  void validate() const;
+
+  /// <summary>
+  /// Validate the current data in the model. Returns false on error and writes
+  /// an error message into the given stringstream.
+  /// </summary>
+  bool validate(std::stringstream& msg) const;
+
+  bool operator==(const Tai& rhs) const;
+  bool operator!=(const Tai& rhs) const;
 
   /////////////////////////////////////////////
   /// Tai members
@@ -50,18 +61,30 @@ class Tai {
   /// </summary>
   std::string getTac() const;
   void setTac(std::string const& value);
+  /// <summary>
+  ///
+  /// </summary>
+  std::string getNid() const;
+  void setNid(std::string const& value);
+  bool nidIsSet() const;
+  void unsetNid();
 
   friend void to_json(nlohmann::json& j, const Tai& o);
   friend void from_json(const nlohmann::json& j, Tai& o);
+
+  // Helper overload for validate. Used when one model stores another model and
+  // calls it's validate.
+  bool validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
  protected:
   PlmnId m_PlmnId;
 
   std::string m_Tac;
+
+  std::string m_Nid;
+  bool m_NidIsSet;
 };
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model
 
 #endif /* Tai_H_ */

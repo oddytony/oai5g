@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -23,9 +23,7 @@
 #include "LadnInfo.h"
 #include <nlohmann/json.hpp>
 
-namespace oai {
-namespace amf {
-namespace model {
+namespace oai::amf::model {
 
 /// <summary>
 ///
@@ -33,9 +31,22 @@ namespace model {
 class AmfEventArea {
  public:
   AmfEventArea();
-  virtual ~AmfEventArea();
+  virtual ~AmfEventArea() = default;
 
-  void validate();
+  /// <summary>
+  /// Validate the current data in the model. Throws a ValidationException on
+  /// failure.
+  /// </summary>
+  void validate() const;
+
+  /// <summary>
+  /// Validate the current data in the model. Returns false on error and writes
+  /// an error message into the given stringstream.
+  /// </summary>
+  bool validate(std::stringstream& msg) const;
+
+  bool operator==(const AmfEventArea& rhs) const;
+  bool operator!=(const AmfEventArea& rhs) const;
 
   /////////////////////////////////////////////
   /// AmfEventArea members
@@ -57,6 +68,9 @@ class AmfEventArea {
 
   friend void to_json(nlohmann::json& j, const AmfEventArea& o);
   friend void from_json(const nlohmann::json& j, AmfEventArea& o);
+  // Helper overload for validate. Used when one model stores another model and
+  // calls it's validate.
+  bool validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
  protected:
   PresenceInfo m_PresenceInfo;
@@ -65,8 +79,6 @@ class AmfEventArea {
   bool m_LadnInfoIsSet;
 };
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model
 
 #endif /* AmfEventArea_H_ */

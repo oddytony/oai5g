@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,30 +12,78 @@
  */
 
 #include "Ecgi.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 Ecgi::Ecgi() {
   m_EutraCellId = "";
+  m_Nid         = "";
+  m_NidIsSet    = false;
 }
 
-Ecgi::~Ecgi() {}
+void Ecgi::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw oai::amf::helpers::ValidationException(msg.str());
+  }
+}
 
-void Ecgi::validate() {
-  // TODO: implement validation
+bool Ecgi::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool Ecgi::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success                  = true;
+  const std::string _pathPrefix = pathPrefix.empty() ? "Ecgi" : pathPrefix;
+
+  /* EutraCellId */ {
+    const std::string& value           = m_EutraCellId;
+    const std::string currentValuePath = _pathPrefix + ".eutraCellId";
+  }
+
+  if (nidIsSet()) {
+    const std::string& value           = m_Nid;
+    const std::string currentValuePath = _pathPrefix + ".nid";
+  }
+
+  return success;
+}
+
+bool Ecgi::operator==(const Ecgi& rhs) const {
+  return
+
+      (getPlmnId() == rhs.getPlmnId()) &&
+
+      (getEutraCellId() == rhs.getEutraCellId()) &&
+
+      ((!nidIsSet() && !rhs.nidIsSet()) ||
+       (nidIsSet() && rhs.nidIsSet() && getNid() == rhs.getNid()))
+
+          ;
+}
+
+bool Ecgi::operator!=(const Ecgi& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const Ecgi& o) {
   j                = nlohmann::json();
   j["plmnId"]      = o.m_PlmnId;
   j["eutraCellId"] = o.m_EutraCellId;
+  if (o.nidIsSet()) j["nid"] = o.m_Nid;
 }
 
 void from_json(const nlohmann::json& j, Ecgi& o) {
   j.at("plmnId").get_to(o.m_PlmnId);
   j.at("eutraCellId").get_to(o.m_EutraCellId);
+  if (j.find("nid") != j.end()) {
+    j.at("nid").get_to(o.m_Nid);
+    o.m_NidIsSet = true;
+  }
 }
 
 PlmnId Ecgi::getPlmnId() const {
@@ -50,7 +98,18 @@ std::string Ecgi::getEutraCellId() const {
 void Ecgi::setEutraCellId(std::string const& value) {
   m_EutraCellId = value;
 }
+std::string Ecgi::getNid() const {
+  return m_Nid;
+}
+void Ecgi::setNid(std::string const& value) {
+  m_Nid      = value;
+  m_NidIsSet = true;
+}
+bool Ecgi::nidIsSet() const {
+  return m_NidIsSet;
+}
+void Ecgi::unsetNid() {
+  m_NidIsSet = false;
+}
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,10 +12,11 @@
  */
 
 #include "InvalidParam.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 InvalidParam::InvalidParam() {
   m_Param       = "";
@@ -23,10 +24,39 @@ InvalidParam::InvalidParam() {
   m_ReasonIsSet = false;
 }
 
-InvalidParam::~InvalidParam() {}
+void InvalidParam::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw oai::amf::helpers::ValidationException(msg.str());
+  }
+}
 
-void InvalidParam::validate() {
-  // TODO: implement validation
+bool InvalidParam::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool InvalidParam::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success = true;
+  const std::string _pathPrefix =
+      pathPrefix.empty() ? "InvalidParam" : pathPrefix;
+
+  return success;
+}
+
+bool InvalidParam::operator==(const InvalidParam& rhs) const {
+  return
+
+      (getParam() == rhs.getParam()) &&
+
+      ((!reasonIsSet() && !rhs.reasonIsSet()) ||
+       (reasonIsSet() && rhs.reasonIsSet() && getReason() == rhs.getReason()))
+
+          ;
+}
+
+bool InvalidParam::operator!=(const InvalidParam& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const InvalidParam& o) {
@@ -63,6 +93,4 @@ void InvalidParam::unsetReason() {
   m_ReasonIsSet = false;
 }
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

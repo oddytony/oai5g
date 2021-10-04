@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,10 +12,11 @@
  */
 
 #include "AmfEventMode.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 AmfEventMode::AmfEventMode() {
   m_MaxReports      = 0;
@@ -24,10 +25,43 @@ AmfEventMode::AmfEventMode() {
   m_ExpiryIsSet     = false;
 }
 
-AmfEventMode::~AmfEventMode() {}
+void AmfEventMode::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw oai::amf::helpers::ValidationException(msg.str());
+  }
+}
 
-void AmfEventMode::validate() {
-  // TODO: implement validation
+bool AmfEventMode::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool AmfEventMode::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success = true;
+  const std::string _pathPrefix =
+      pathPrefix.empty() ? "AmfEventMode" : pathPrefix;
+
+  return success;
+}
+
+bool AmfEventMode::operator==(const AmfEventMode& rhs) const {
+  return
+
+      (getTrigger() == rhs.getTrigger()) &&
+
+      ((!maxReportsIsSet() && !rhs.maxReportsIsSet()) ||
+       (maxReportsIsSet() && rhs.maxReportsIsSet() &&
+        getMaxReports() == rhs.getMaxReports())) &&
+
+      ((!expiryIsSet() && !rhs.expiryIsSet()) ||
+       (expiryIsSet() && rhs.expiryIsSet() && getExpiry() == rhs.getExpiry()))
+
+          ;
+}
+
+bool AmfEventMode::operator!=(const AmfEventMode& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const AmfEventMode& o) {
@@ -82,6 +116,4 @@ void AmfEventMode::unsetExpiry() {
   m_ExpiryIsSet = false;
 }
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

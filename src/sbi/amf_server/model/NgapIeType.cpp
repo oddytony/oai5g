@@ -25,11 +25,22 @@ void NgapIeType::validate() {
   // TODO: implement validation
 }
 
-void to_json(nlohmann::json& j, const NgapIeType& o) {
-  j = nlohmann::json();
+std::string NgapIeType::get_value() const {
+  return value;
 }
 
-void from_json(const nlohmann::json& j, NgapIeType& o) {}
+void NgapIeType::set_value(std::string v) {
+  value = v;
+}
+
+void to_json(nlohmann::json& j, const NgapIeType& o) {
+  j = nlohmann::json();
+  j = o.get_value();
+}
+
+void from_json(const nlohmann::json& j, NgapIeType& o) {
+  o.set_value(j.get<std::string>());
+}
 
 }  // namespace model
 }  // namespace amf

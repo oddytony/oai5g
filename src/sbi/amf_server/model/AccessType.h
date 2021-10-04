@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -21,9 +21,7 @@
 
 #include <nlohmann/json.hpp>
 
-namespace oai {
-namespace amf {
-namespace model {
+namespace oai::amf::model {
 
 /// <summary>
 ///
@@ -31,21 +29,50 @@ namespace model {
 class AccessType {
  public:
   AccessType();
-  virtual ~AccessType();
+  virtual ~AccessType() = default;
 
-  void validate();
+  enum class eAccessType {
+    // To have a valid default value.
+    // Avoiding nameclashes with user defined
+    // enum values
+    INVALID_VALUE_OPENAPI_GENERATED = 0,
+    _3GPP_ACCESS,
+    NON_3GPP_ACCESS
+  };
+
+  /// <summary>
+  /// Validate the current data in the model. Throws a ValidationException on
+  /// failure.
+  /// </summary>
+  void validate() const;
+
+  /// <summary>
+  /// Validate the current data in the model. Returns false on error and writes
+  /// an error message into the given stringstream.
+  /// </summary>
+  bool validate(std::stringstream& msg) const;
+
+  bool operator==(const AccessType& rhs) const;
+  bool operator!=(const AccessType& rhs) const;
 
   /////////////////////////////////////////////
   /// AccessType members
 
+  AccessType::eAccessType getValue() const;
+  void setValue(AccessType::eAccessType value);
+
   friend void to_json(nlohmann::json& j, const AccessType& o);
   friend void from_json(const nlohmann::json& j, AccessType& o);
 
+  // Helper overload for validate. Used when one model stores another model and
+  // calls it's validate.
+  bool validate(std::stringstream& msg, const std::string& pathPrefix) const;
+
  protected:
+  AccessType::eAccessType m_value =
+      AccessType::eAccessType::INVALID_VALUE_OPENAPI_GENERATED;
 };
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model
 
 #endif /* AccessType_H_ */

@@ -8,6 +8,7 @@
 #endif
 
 #include "IndividualSubscriptionDocumentApiImpl.h"
+#include "IndividualSubscriptionDocumentApiImplEventExposure.h"
 #include "IndividualUeContextDocumentApiImpl.h"
 #include "N1N2IndividualSubscriptionDocumentApiImpl.h"
 #include "N1N2MessageCollectionDocumentApiImpl.h"
@@ -16,6 +17,7 @@
 #include "NonUEN2MessagesCollectionDocumentApiImpl.h"
 #include "NonUEN2MessagesSubscriptionsCollectionDocumentApiImpl.h"
 #include "SubscriptionsCollectionDocumentApiImpl.h"
+#include "SubscriptionsCollectionDocumentApiImplEventExposure.h"
 
 #define PISTACHE_SERVER_THREADS 2
 #define PISTACHE_SERVER_MAX_PAYLOAD 32768
@@ -29,9 +31,13 @@ class AMFApiServer {
   AMFApiServer(
       Pistache::Address address, amf_application::amf_app* amf_app_inst)
       : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address)) {
-    m_router = std::make_shared<Pistache::Rest::Router>();
+    m_router  = std::make_shared<Pistache::Rest::Router>();
+    m_address = address.host() + ":" + (address.port()).toString();
     m_individualSubscriptionDocumentApiImpl =
         std::make_shared<IndividualSubscriptionDocumentApiImpl>(
+            m_router, amf_app_inst);
+    m_individualSubscriptionDocumentApiImplEventExposure =
+        std::make_shared<IndividualSubscriptionDocumentApiImplEventExposure>(
             m_router, amf_app_inst);
     m_individualUeContextDocumentApiImpl =
         std::make_shared<IndividualUeContextDocumentApiImpl>(
@@ -59,6 +65,9 @@ class AMFApiServer {
     m_subscriptionsCollectionDocumentApiImpl =
         std::make_shared<SubscriptionsCollectionDocumentApiImpl>(
             m_router, amf_app_inst);
+    m_subscriptionsCollectionDocumentApiImplEventExposure =
+        std::make_shared<SubscriptionsCollectionDocumentApiImplEventExposure>(
+            m_router, amf_app_inst);
   }
 
   void init(size_t thr = 1);
@@ -70,6 +79,8 @@ class AMFApiServer {
   std::shared_ptr<Pistache::Rest::Router> m_router;
   std::shared_ptr<IndividualSubscriptionDocumentApiImpl>
       m_individualSubscriptionDocumentApiImpl;
+  std::shared_ptr<IndividualSubscriptionDocumentApiImplEventExposure>
+      m_individualSubscriptionDocumentApiImplEventExposure;
   std::shared_ptr<IndividualUeContextDocumentApiImpl>
       m_individualUeContextDocumentApiImpl;
   std::shared_ptr<N1N2IndividualSubscriptionDocumentApiImpl>
@@ -88,4 +99,8 @@ class AMFApiServer {
       m_nonUEN2MessagesSubscriptionsCollectionDocumentApiImpl;
   std::shared_ptr<SubscriptionsCollectionDocumentApiImpl>
       m_subscriptionsCollectionDocumentApiImpl;
+  std::shared_ptr<SubscriptionsCollectionDocumentApiImplEventExposure>
+      m_subscriptionsCollectionDocumentApiImplEventExposure;
+
+  std::string m_address;
 };

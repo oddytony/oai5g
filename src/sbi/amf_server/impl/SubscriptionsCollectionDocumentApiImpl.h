@@ -39,9 +39,10 @@ namespace amf {
 namespace api {
 
 using namespace oai::amf::model;
+using namespace oai::amf::api;
 
 class SubscriptionsCollectionDocumentApiImpl
-    : public oai::amf::api::SubscriptionsCollectionDocumentApi {
+    : public SubscriptionsCollectionDocumentApi {
  public:
   SubscriptionsCollectionDocumentApiImpl(
       std::shared_ptr<Pistache::Rest::Router>,

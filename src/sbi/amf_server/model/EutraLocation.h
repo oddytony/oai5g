@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -25,9 +25,7 @@
 #include "GlobalRanNodeId.h"
 #include <nlohmann/json.hpp>
 
-namespace oai {
-namespace amf {
-namespace model {
+namespace oai::amf::model {
 
 /// <summary>
 ///
@@ -35,9 +33,22 @@ namespace model {
 class EutraLocation {
  public:
   EutraLocation();
-  virtual ~EutraLocation();
+  virtual ~EutraLocation() = default;
 
-  void validate();
+  /// <summary>
+  /// Validate the current data in the model. Throws a ValidationException on
+  /// failure.
+  /// </summary>
+  void validate() const;
+
+  /// <summary>
+  /// Validate the current data in the model. Returns false on error and writes
+  /// an error message into the given stringstream.
+  /// </summary>
+  bool validate(std::stringstream& msg) const;
+
+  bool operator==(const EutraLocation& rhs) const;
+  bool operator!=(const EutraLocation& rhs) const;
 
   /////////////////////////////////////////////
   /// EutraLocation members
@@ -52,6 +63,13 @@ class EutraLocation {
   /// </summary>
   Ecgi getEcgi() const;
   void setEcgi(Ecgi const& value);
+  /// <summary>
+  ///
+  /// </summary>
+  bool isIgnoreEcgi() const;
+  void setIgnoreEcgi(bool const value);
+  bool ignoreEcgiIsSet() const;
+  void unsetIgnoreEcgi();
   /// <summary>
   ///
   /// </summary>
@@ -87,6 +105,13 @@ class EutraLocation {
   void setGlobalNgenbId(GlobalRanNodeId const& value);
   bool globalNgenbIdIsSet() const;
   void unsetGlobalNgenbId();
+  /// <summary>
+  ///
+  /// </summary>
+  GlobalRanNodeId getGlobalENbId() const;
+  void setGlobalENbId(GlobalRanNodeId const& value);
+  bool globalENbIdIsSet() const;
+  void unsetGlobalENbId();
 
   friend void to_json(nlohmann::json& j, const EutraLocation& o);
   friend void from_json(const nlohmann::json& j, EutraLocation& o);
@@ -96,6 +121,8 @@ class EutraLocation {
 
   Ecgi m_Ecgi;
 
+  bool m_IgnoreEcgi;
+  bool m_IgnoreEcgiIsSet;
   int32_t m_AgeOfLocationInformation;
   bool m_AgeOfLocationInformationIsSet;
   std::string m_UeLocationTimestamp;
@@ -106,10 +133,14 @@ class EutraLocation {
   bool m_GeodeticInformationIsSet;
   GlobalRanNodeId m_GlobalNgenbId;
   bool m_GlobalNgenbIdIsSet;
+  GlobalRanNodeId m_GlobalENbId;
+  bool m_GlobalENbIdIsSet;
+
+  // Helper overload for validate. Used when one model stores another model and
+  // calls it's validate.
+  bool validate(std::stringstream& msg, const std::string& pathPrefix) const;
 };
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model
 
 #endif /* EutraLocation_H_ */

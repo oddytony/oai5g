@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -12,42 +12,225 @@
  */
 
 #include "PresenceInfo.h"
+#include "Helpers.h"
 
-namespace oai {
-namespace amf {
-namespace model {
+#include <sstream>
+
+namespace oai::amf::model {
 
 PresenceInfo::PresenceInfo() {
   m_PraId                    = "";
   m_PraIdIsSet               = false;
+  m_AdditionalPraId          = "";
+  m_AdditionalPraIdIsSet     = false;
   m_PresenceStateIsSet       = false;
   m_TrackingAreaListIsSet    = false;
   m_EcgiListIsSet            = false;
   m_NcgiListIsSet            = false;
   m_GlobalRanNodeIdListIsSet = false;
+  m_GlobaleNbIdListIsSet     = false;
 }
 
-PresenceInfo::~PresenceInfo() {}
+void PresenceInfo::validate() const {
+  std::stringstream msg;
+  if (!validate(msg)) {
+    throw oai::amf::helpers::ValidationException(msg.str());
+  }
+}
 
-void PresenceInfo::validate() {
-  // TODO: implement validation
+bool PresenceInfo::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool PresenceInfo::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success = true;
+  const std::string _pathPrefix =
+      pathPrefix.empty() ? "PresenceInfo" : pathPrefix;
+
+  if (trackingAreaListIsSet()) {
+    const std::vector<Tai>& value      = m_TrackingAreaList;
+    const std::string currentValuePath = _pathPrefix + ".trackingAreaList";
+
+    if (value.size() < 1) {
+      success = false;
+      msg << currentValuePath << ": must have at least 1 elements;";
+    }
+    {  // Recursive validation of array elements
+      const std::string oldValuePath = currentValuePath;
+      int i                          = 0;
+      for (const Tai& value : value) {
+        const std::string currentValuePath =
+            oldValuePath + "[" + std::to_string(i) + "]";
+
+        success = value.validate(msg, currentValuePath + ".trackingAreaList") &&
+                  success;
+
+        i++;
+      }
+    }
+  }
+
+  if (ecgiListIsSet()) {
+    const std::vector<Ecgi>& value     = m_EcgiList;
+    const std::string currentValuePath = _pathPrefix + ".ecgiList";
+
+    if (value.size() < 1) {
+      success = false;
+      msg << currentValuePath << ": must have at least 1 elements;";
+    }
+    {  // Recursive validation of array elements
+      const std::string oldValuePath = currentValuePath;
+      int i                          = 0;
+      for (const Ecgi& value : value) {
+        const std::string currentValuePath =
+            oldValuePath + "[" + std::to_string(i) + "]";
+
+        success =
+            value.validate(msg, currentValuePath + ".ecgiList") && success;
+
+        i++;
+      }
+    }
+  }
+
+  if (ncgiListIsSet()) {
+    const std::vector<Ncgi>& value     = m_NcgiList;
+    const std::string currentValuePath = _pathPrefix + ".ncgiList";
+
+    if (value.size() < 1) {
+      success = false;
+      msg << currentValuePath << ": must have at least 1 elements;";
+    }
+    {  // Recursive validation of array elements
+      const std::string oldValuePath = currentValuePath;
+      int i                          = 0;
+      for (const Ncgi& value : value) {
+        const std::string currentValuePath =
+            oldValuePath + "[" + std::to_string(i) + "]";
+
+        success =
+            value.validate(msg, currentValuePath + ".ncgiList") && success;
+
+        i++;
+      }
+    }
+  }
+
+  if (globalRanNodeIdListIsSet()) {
+    const std::vector<GlobalRanNodeId>& value = m_GlobalRanNodeIdList;
+    const std::string currentValuePath = _pathPrefix + ".globalRanNodeIdList";
+
+    if (value.size() < 1) {
+      success = false;
+      msg << currentValuePath << ": must have at least 1 elements;";
+    }
+    {  // Recursive validation of array elements
+      const std::string oldValuePath = currentValuePath;
+      int i                          = 0;
+      for (const GlobalRanNodeId& value : value) {
+        const std::string currentValuePath =
+            oldValuePath + "[" + std::to_string(i) + "]";
+
+        success =
+            value.validate(msg, currentValuePath + ".globalRanNodeIdList") &&
+            success;
+
+        i++;
+      }
+    }
+  }
+
+  if (globaleNbIdListIsSet()) {
+    const std::vector<GlobalRanNodeId>& value = m_GlobaleNbIdList;
+    const std::string currentValuePath = _pathPrefix + ".globaleNbIdList";
+
+    if (value.size() < 1) {
+      success = false;
+      msg << currentValuePath << ": must have at least 1 elements;";
+    }
+    {  // Recursive validation of array elements
+      const std::string oldValuePath = currentValuePath;
+      int i                          = 0;
+      for (const GlobalRanNodeId& value : value) {
+        const std::string currentValuePath =
+            oldValuePath + "[" + std::to_string(i) + "]";
+
+        success = value.validate(msg, currentValuePath + ".globaleNbIdList") &&
+                  success;
+
+        i++;
+      }
+    }
+  }
+
+  return success;
+}
+
+bool PresenceInfo::operator==(const PresenceInfo& rhs) const {
+  return
+
+      ((!praIdIsSet() && !rhs.praIdIsSet()) ||
+       (praIdIsSet() && rhs.praIdIsSet() && getPraId() == rhs.getPraId())) &&
+
+      ((!additionalPraIdIsSet() && !rhs.additionalPraIdIsSet()) ||
+       (additionalPraIdIsSet() && rhs.additionalPraIdIsSet() &&
+        getAdditionalPraId() == rhs.getAdditionalPraId())) &&
+
+      ((!presenceStateIsSet() && !rhs.presenceStateIsSet()) ||
+       (presenceStateIsSet() && rhs.presenceStateIsSet() &&
+        getPresenceState() == rhs.getPresenceState())) &&
+
+      ((!trackingAreaListIsSet() && !rhs.trackingAreaListIsSet()) ||
+       (trackingAreaListIsSet() && rhs.trackingAreaListIsSet() &&
+        getTrackingAreaList() == rhs.getTrackingAreaList())) &&
+
+      ((!ecgiListIsSet() && !rhs.ecgiListIsSet()) ||
+       (ecgiListIsSet() && rhs.ecgiListIsSet() &&
+        getEcgiList() == rhs.getEcgiList())) &&
+
+      ((!ncgiListIsSet() && !rhs.ncgiListIsSet()) ||
+       (ncgiListIsSet() && rhs.ncgiListIsSet() &&
+        getNcgiList() == rhs.getNcgiList())) &&
+
+      ((!globalRanNodeIdListIsSet() && !rhs.globalRanNodeIdListIsSet()) ||
+       (globalRanNodeIdListIsSet() && rhs.globalRanNodeIdListIsSet() &&
+        getGlobalRanNodeIdList() == rhs.getGlobalRanNodeIdList())) &&
+
+      ((!globaleNbIdListIsSet() && !rhs.globaleNbIdListIsSet()) ||
+       (globaleNbIdListIsSet() && rhs.globaleNbIdListIsSet() &&
+        getGlobaleNbIdList() == rhs.getGlobaleNbIdList()))
+
+          ;
+}
+
+bool PresenceInfo::operator!=(const PresenceInfo& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const PresenceInfo& o) {
   j = nlohmann::json();
   if (o.praIdIsSet()) j["praId"] = o.m_PraId;
+  if (o.additionalPraIdIsSet()) j["additionalPraId"] = o.m_AdditionalPraId;
   if (o.presenceStateIsSet()) j["presenceState"] = o.m_PresenceState;
-  if (o.trackingAreaListIsSet()) j["trackingAreaList"] = o.m_TrackingAreaList;
-  if (o.ecgiListIsSet()) j["ecgiList"] = o.m_EcgiList;
-  if (o.ncgiListIsSet()) j["ncgiList"] = o.m_NcgiList;
-  if (o.globalRanNodeIdListIsSet())
+  if (o.trackingAreaListIsSet() || !o.m_TrackingAreaList.empty())
+    j["trackingAreaList"] = o.m_TrackingAreaList;
+  if (o.ecgiListIsSet() || !o.m_EcgiList.empty()) j["ecgiList"] = o.m_EcgiList;
+  if (o.ncgiListIsSet() || !o.m_NcgiList.empty()) j["ncgiList"] = o.m_NcgiList;
+  if (o.globalRanNodeIdListIsSet() || !o.m_GlobalRanNodeIdList.empty())
     j["globalRanNodeIdList"] = o.m_GlobalRanNodeIdList;
+  if (o.globaleNbIdListIsSet() || !o.m_GlobaleNbIdList.empty())
+    j["globaleNbIdList"] = o.m_GlobaleNbIdList;
 }
 
 void from_json(const nlohmann::json& j, PresenceInfo& o) {
   if (j.find("praId") != j.end()) {
     j.at("praId").get_to(o.m_PraId);
     o.m_PraIdIsSet = true;
+  }
+  if (j.find("additionalPraId") != j.end()) {
+    j.at("additionalPraId").get_to(o.m_AdditionalPraId);
+    o.m_AdditionalPraIdIsSet = true;
   }
   if (j.find("presenceState") != j.end()) {
     j.at("presenceState").get_to(o.m_PresenceState);
@@ -69,6 +252,10 @@ void from_json(const nlohmann::json& j, PresenceInfo& o) {
     j.at("globalRanNodeIdList").get_to(o.m_GlobalRanNodeIdList);
     o.m_GlobalRanNodeIdListIsSet = true;
   }
+  if (j.find("globaleNbIdList") != j.end()) {
+    j.at("globaleNbIdList").get_to(o.m_GlobaleNbIdList);
+    o.m_GlobaleNbIdListIsSet = true;
+  }
 }
 
 std::string PresenceInfo::getPraId() const {
@@ -84,6 +271,19 @@ bool PresenceInfo::praIdIsSet() const {
 void PresenceInfo::unsetPraId() {
   m_PraIdIsSet = false;
 }
+std::string PresenceInfo::getAdditionalPraId() const {
+  return m_AdditionalPraId;
+}
+void PresenceInfo::setAdditionalPraId(std::string const& value) {
+  m_AdditionalPraId      = value;
+  m_AdditionalPraIdIsSet = true;
+}
+bool PresenceInfo::additionalPraIdIsSet() const {
+  return m_AdditionalPraIdIsSet;
+}
+void PresenceInfo::unsetAdditionalPraId() {
+  m_AdditionalPraIdIsSet = false;
+}
 PresenceState PresenceInfo::getPresenceState() const {
   return m_PresenceState;
 }
@@ -97,8 +297,12 @@ bool PresenceInfo::presenceStateIsSet() const {
 void PresenceInfo::unsetPresenceState() {
   m_PresenceStateIsSet = false;
 }
-std::vector<Tai>& PresenceInfo::getTrackingAreaList() {
+std::vector<Tai> PresenceInfo::getTrackingAreaList() const {
   return m_TrackingAreaList;
+}
+void PresenceInfo::setTrackingAreaList(std::vector<Tai> const& value) {
+  m_TrackingAreaList      = value;
+  m_TrackingAreaListIsSet = true;
 }
 bool PresenceInfo::trackingAreaListIsSet() const {
   return m_TrackingAreaListIsSet;
@@ -106,8 +310,12 @@ bool PresenceInfo::trackingAreaListIsSet() const {
 void PresenceInfo::unsetTrackingAreaList() {
   m_TrackingAreaListIsSet = false;
 }
-std::vector<Ecgi>& PresenceInfo::getEcgiList() {
+std::vector<Ecgi> PresenceInfo::getEcgiList() const {
   return m_EcgiList;
+}
+void PresenceInfo::setEcgiList(std::vector<Ecgi> const& value) {
+  m_EcgiList      = value;
+  m_EcgiListIsSet = true;
 }
 bool PresenceInfo::ecgiListIsSet() const {
   return m_EcgiListIsSet;
@@ -115,8 +323,12 @@ bool PresenceInfo::ecgiListIsSet() const {
 void PresenceInfo::unsetEcgiList() {
   m_EcgiListIsSet = false;
 }
-std::vector<Ncgi>& PresenceInfo::getNcgiList() {
+std::vector<Ncgi> PresenceInfo::getNcgiList() const {
   return m_NcgiList;
+}
+void PresenceInfo::setNcgiList(std::vector<Ncgi> const& value) {
+  m_NcgiList      = value;
+  m_NcgiListIsSet = true;
 }
 bool PresenceInfo::ncgiListIsSet() const {
   return m_NcgiListIsSet;
@@ -124,8 +336,13 @@ bool PresenceInfo::ncgiListIsSet() const {
 void PresenceInfo::unsetNcgiList() {
   m_NcgiListIsSet = false;
 }
-std::vector<GlobalRanNodeId>& PresenceInfo::getGlobalRanNodeIdList() {
+std::vector<GlobalRanNodeId> PresenceInfo::getGlobalRanNodeIdList() const {
   return m_GlobalRanNodeIdList;
+}
+void PresenceInfo::setGlobalRanNodeIdList(
+    std::vector<GlobalRanNodeId> const& value) {
+  m_GlobalRanNodeIdList      = value;
+  m_GlobalRanNodeIdListIsSet = true;
 }
 bool PresenceInfo::globalRanNodeIdListIsSet() const {
   return m_GlobalRanNodeIdListIsSet;
@@ -133,7 +350,19 @@ bool PresenceInfo::globalRanNodeIdListIsSet() const {
 void PresenceInfo::unsetGlobalRanNodeIdList() {
   m_GlobalRanNodeIdListIsSet = false;
 }
+std::vector<GlobalRanNodeId> PresenceInfo::getGlobaleNbIdList() const {
+  return m_GlobaleNbIdList;
+}
+void PresenceInfo::setGlobaleNbIdList(
+    std::vector<GlobalRanNodeId> const& value) {
+  m_GlobaleNbIdList      = value;
+  m_GlobaleNbIdListIsSet = true;
+}
+bool PresenceInfo::globaleNbIdListIsSet() const {
+  return m_GlobaleNbIdListIsSet;
+}
+void PresenceInfo::unsetGlobaleNbIdList() {
+  m_GlobaleNbIdListIsSet = false;
+}
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model

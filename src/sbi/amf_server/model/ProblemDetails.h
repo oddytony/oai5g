@@ -1,6 +1,6 @@
 /**
- * Namf_Communication
- * AMF Communication Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
+ * Namf_EventExposure
+ * AMF Event Exposure Service © 2019, 3GPP Organizational Partners (ARIB, ATIS,
  * CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved.
  *
  * The version of the OpenAPI document: 1.1.0.alpha-1
@@ -21,12 +21,12 @@
 
 #include <string>
 #include "InvalidParam.h"
+#include "AccessTokenErr.h"
+#include "AccessTokenReq.h"
 #include <vector>
 #include <nlohmann/json.hpp>
 
-namespace oai {
-namespace amf {
-namespace model {
+namespace oai::amf::model {
 
 /// <summary>
 ///
@@ -34,9 +34,22 @@ namespace model {
 class ProblemDetails {
  public:
   ProblemDetails();
-  virtual ~ProblemDetails();
+  virtual ~ProblemDetails() = default;
 
-  void validate();
+  /// <summary>
+  /// Validate the current data in the model. Throws a ValidationException on
+  /// failure.
+  /// </summary>
+  void validate() const;
+
+  /// <summary>
+  /// Validate the current data in the model. Returns false on error and writes
+  /// an error message into the given stringstream.
+  /// </summary>
+  bool validate(std::stringstream& msg) const;
+
+  bool operator==(const ProblemDetails& rhs) const;
+  bool operator!=(const ProblemDetails& rhs) const;
 
   /////////////////////////////////////////////
   /// ProblemDetails members
@@ -86,7 +99,8 @@ class ProblemDetails {
   /// <summary>
   ///
   /// </summary>
-  std::vector<InvalidParam>& getInvalidParams();
+  std::vector<InvalidParam> getInvalidParams() const;
+  void setInvalidParams(std::vector<InvalidParam> const& value);
   bool invalidParamsIsSet() const;
   void unsetInvalidParams();
   /// <summary>
@@ -96,6 +110,34 @@ class ProblemDetails {
   void setSupportedFeatures(std::string const& value);
   bool supportedFeaturesIsSet() const;
   void unsetSupportedFeatures();
+  /// <summary>
+  ///
+  /// </summary>
+  std::string getTargetScp() const;
+  void setTargetScp(std::string const& value);
+  bool targetScpIsSet() const;
+  void unsetTargetScp();
+  /// <summary>
+  ///
+  /// </summary>
+  AccessTokenErr getAccessTokenError() const;
+  void setAccessTokenError(AccessTokenErr const& value);
+  bool accessTokenErrorIsSet() const;
+  void unsetAccessTokenError();
+  /// <summary>
+  ///
+  /// </summary>
+  AccessTokenReq getAccessTokenRequest() const;
+  void setAccessTokenRequest(AccessTokenReq const& value);
+  bool accessTokenRequestIsSet() const;
+  void unsetAccessTokenRequest();
+  /// <summary>
+  ///
+  /// </summary>
+  std::string getNrfId() const;
+  void setNrfId(std::string const& value);
+  bool nrfIdIsSet() const;
+  void unsetNrfId();
 
   friend void to_json(nlohmann::json& j, const ProblemDetails& o);
   friend void from_json(const nlohmann::json& j, ProblemDetails& o);
@@ -117,10 +159,20 @@ class ProblemDetails {
   bool m_InvalidParamsIsSet;
   std::string m_SupportedFeatures;
   bool m_SupportedFeaturesIsSet;
+  std::string m_TargetScp;
+  bool m_TargetScpIsSet;
+  AccessTokenErr m_AccessTokenError;
+  bool m_AccessTokenErrorIsSet;
+  AccessTokenReq m_AccessTokenRequest;
+  bool m_AccessTokenRequestIsSet;
+  std::string m_NrfId;
+  bool m_NrfIdIsSet;
+
+  // Helper overload for validate. Used when one model stores another model and
+  // calls it's validate.
+  bool validate(std::stringstream& msg, const std::string& pathPrefix) const;
 };
 
-}  // namespace model
-}  // namespace amf
-}  // namespace oai
+}  // namespace oai::amf::model
 
 #endif /* ProblemDetails_H_ */
