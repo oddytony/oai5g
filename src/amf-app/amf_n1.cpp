@@ -1924,7 +1924,7 @@ void amf_n1::authentication_response_handle(
       uint8_t* hxresStar = nc.get()->_5g_av[secu_index].hxresStar;
       // Calculate HRES* from received RES*, then compare with XRES stored in
       // nas_context
-      if (!hxresStar) {
+      if (hxresStar) {
         uint8_t inputstring[32];
         uint8_t* res = (uint8_t*) bdata(resStar);
         Logger::amf_n1().debug("Start to calculate HRES* from received RES*");
