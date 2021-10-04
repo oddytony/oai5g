@@ -154,6 +154,11 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
     return;
   }
   nas_secu_ctx* secu = nc.get()->security_ctx;
+  if (!secu) {
+    Logger::amf_n1().error("No Security Context found");
+    return;
+  }
+
   bstring protected_nas;
   encode_nas_message_protected(
       secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
@@ -388,7 +393,11 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
           "NAS message");
       if (nc.get() == nullptr) {
         Logger::amf_n1().debug(
-            "Abnormal condition: no existed nas_context. exit...");
+            "Abnormal condition: NAS context does not exist ...");
+        return;
+      }
+      if (!nc.get()->security_ctx) {
+        Logger::amf_n1().error("No Security Context found");
         return;
       }
 
@@ -507,7 +516,12 @@ void amf_n1::nas_signalling_establishment_request_handle(
 
     case SERVICE_REQUEST: {
       Logger::amf_n1().debug("Received service request message, handling...");
-      if (nc.get()) nc.get()->security_ctx->ul_count.seq_num = ulCount;
+      if (!nc.get()->security_ctx) {
+        Logger::amf_n1().error("No Security Context found");
+        return;
+      }
+      if (nc.get() && nc.get()->security_ctx)
+        nc.get()->security_ctx->ul_count.seq_num = ulCount;
       service_request_handle(
           true, nc, ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
@@ -705,7 +719,10 @@ void amf_n1::service_request_handle(
 
   set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
   nas_secu_ctx* secu = nc.get()->security_ctx;
-
+  if (!secu) {
+    Logger::amf_n1().error("No Security Context found");
+    return;
+  }
   std::unique_ptr<ServiceRequest> serReq = std::make_unique<ServiceRequest>();
   serReq->decodefrombuffer(nullptr, (uint8_t*) bdata(nas), blength(nas));
   bdestroy(nas);
@@ -987,7 +1004,8 @@ void amf_n1::registration_request_handle(
         supi2ranId[("imsi-" + nc.get()->imsi)]  = ran_ue_ngap_id;
         nc.get()->is_auth_vectors_present       = false;
         nc.get()->is_current_security_available = false;
-        nc.get()->security_ctx->sc_type = SECURITY_CTX_TYPE_NOT_AVAILABLE;
+        if (nc.get()->security_ctx)
+          nc.get()->security_ctx->sc_type = SECURITY_CTX_TYPE_NOT_AVAILABLE;
       } else {
         Logger::amf_n1().debug(
             "No existing nas_context with amf_ue_ngap_id(0x%x) --> Create new "
@@ -1036,7 +1054,8 @@ void amf_n1::registration_request_handle(
       // test  5g guti //
       nc.get()->is_auth_vectors_present       = false;
       nc.get()->is_current_security_available = false;
-      nc.get()->security_ctx->sc_type         = SECURITY_CTX_TYPE_NOT_AVAILABLE;
+      if (nc.get()->security_ctx)
+        nc.get()->security_ctx->sc_type = SECURITY_CTX_TYPE_NOT_AVAILABLE;
     } else {
       Logger::amf_n1().error("No nas_context with GUTI (%s)", guti.c_str());
       response_registration_reject_msg(
@@ -1898,32 +1917,39 @@ void amf_n1::authentication_response_handle(
       if (!_5g_aka_confirmation_from_ausf(nc, resStar)) isAuthOk = false;
     } else {
       // Get stored XRES*
-      int secu_index     = nc.get()->security_ctx->vector_pointer;
+      int secu_index = 0;
+      if (nc.get()->security_ctx)
+        secu_index = nc.get()->security_ctx->vector_pointer;
+
       uint8_t* hxresStar = nc.get()->_5g_av[secu_index].hxresStar;
       // Calculate HRES* from received RES*, then compare with XRES stored in
       // nas_context
-      uint8_t inputstring[32];
-      uint8_t* res = (uint8_t*) bdata(resStar);
-      Logger::amf_n1().debug("Start to calculate HRES* from received RES*");
-      memcpy(&inputstring[0], nc.get()->_5g_av[secu_index].rand, 16);
-      memcpy(&inputstring[16], res, blength(resStar));
-      unsigned char sha256Out[Sha256::DIGEST_SIZE];
-      sha256((unsigned char*) inputstring, 16 + blength(resStar), sha256Out);
-      uint8_t hres[16];
-      for (int i = 0; i < 16; i++) hres[i] = (uint8_t) sha256Out[i];
-      comUt::print_buffer(
-          "amf_n1", "Received RES* From Authentication-Response", res, 16);
-      comUt::print_buffer(
-          "amf_n1", "Stored XRES* in 5G HE AV",
-          nc.get()->_5g_he_av[secu_index].xresStar, 16);
-      comUt::print_buffer(
-          "amf_n1", "Stored XRES in 5G HE AV",
-          nc.get()->_5g_he_av[secu_index].xres, 8);
-      comUt::print_buffer("amf_n1", "Computed HRES* from RES*", hres, 16);
-      comUt::print_buffer(
-          "amf_n1", "Computed HXRES* from XRES*", hxresStar, 16);
-      for (int i = 0; i < 16; i++) {
-        if (hxresStar[i] != hres[i]) isAuthOk = false;
+      if (!hxresStar) {
+        uint8_t inputstring[32];
+        uint8_t* res = (uint8_t*) bdata(resStar);
+        Logger::amf_n1().debug("Start to calculate HRES* from received RES*");
+        memcpy(&inputstring[0], nc.get()->_5g_av[secu_index].rand, 16);
+        memcpy(&inputstring[16], res, blength(resStar));
+        unsigned char sha256Out[Sha256::DIGEST_SIZE];
+        sha256((unsigned char*) inputstring, 16 + blength(resStar), sha256Out);
+        uint8_t hres[16];
+        for (int i = 0; i < 16; i++) hres[i] = (uint8_t) sha256Out[i];
+        comUt::print_buffer(
+            "amf_n1", "Received RES* From Authentication-Response", res, 16);
+        comUt::print_buffer(
+            "amf_n1", "Stored XRES* in 5G HE AV",
+            nc.get()->_5g_he_av[secu_index].xresStar, 16);
+        comUt::print_buffer(
+            "amf_n1", "Stored XRES in 5G HE AV",
+            nc.get()->_5g_he_av[secu_index].xres, 8);
+        comUt::print_buffer("amf_n1", "Computed HRES* from RES*", hres, 16);
+        comUt::print_buffer(
+            "amf_n1", "Computed HXRES* from XRES*", hxresStar, 16);
+        for (int i = 0; i < 16; i++) {
+          if (hxresStar[i] != hres[i]) isAuthOk = false;
+        }
+      } else {
+        isAuthOk = false;
       }
     }
   }
@@ -2013,8 +2039,14 @@ bool amf_n1::start_security_mode_control_procedure(
   // decide which ea/ia alg used by UE, which is supported by network
   security_data_t* data = (security_data_t*) calloc(1, sizeof(security_data_t));
   nas_secu_ctx* secu_ctx = nc.get()->security_ctx;
-  if (!data)
+  if (!data) {
     Logger::amf_n1().error("Cannot allocate memory for security_data_t");
+    return false;
+  }
+  if (!secu_ctx) {
+    Logger::amf_n1().error("No Security Context found");
+    return false;
+  }
 
   if (secu_ctx->sc_type == SECURITY_CTX_TYPE_NOT_AVAILABLE &&
       nc.get()->is_common_procedure_for_security_mode_control_running) {
@@ -2222,6 +2254,10 @@ void amf_n1::security_mode_complete_handle(
   set_guti_2_nas_context(guti, nc);
   nc.get()->is_common_procedure_for_security_mode_control_running = false;
   nas_secu_ctx* secu = nc.get()->security_ctx;
+  if (!secu) {
+    Logger::amf_n1().error("No Security Context found");
+    return;
+  }
   // protect nas message
   bstring protectedNas;
   encode_nas_message_protected(
@@ -2824,6 +2860,10 @@ void amf_n1::run_mobility_registration_update_procedure(
   }
 
   nas_secu_ctx* secu = nc.get()->security_ctx;
+  if (!secu) {
+    Logger::amf_n1().error("No Security Context found");
+    return;
+  }
   // protect nas message
   bstring protectedNas;
   encode_nas_message_protected(
@@ -3043,6 +3083,10 @@ void amf_n1::run_periodic_registration_update_procedure(
   }
 
   nas_secu_ctx* secu = nc.get()->security_ctx;
+  if (!secu) {
+    Logger::amf_n1().error("No Security Context found");
+    return;
+  }
   // protect nas message
   bstring protectedNas;
   encode_nas_message_protected(
