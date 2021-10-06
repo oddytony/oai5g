@@ -400,7 +400,6 @@ uint32_t InitialUEMessageMsg::getRanUENgapID() {
 //------------------------------------------------------------------------------
 bool InitialUEMessageMsg::getNasPdu(uint8_t*& nas, size_t& sizeofnas) {
   if (!nasPdu->getNasPdu(nas, sizeofnas)) return false;
-
   return true;
 }
 
