@@ -68,6 +68,7 @@ class ue_context {
   NrCgi_t cgi;
   Tai_t tai;
   std::string supi;
+  uint32_t tmsi;
   // pdu session id <-> pdu_session_contex: map stores all pdu sessions for this
   // UE
   std::map<std::uint8_t, std::shared_ptr<pdu_session_context>> pdu_sessions;

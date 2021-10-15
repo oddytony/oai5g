@@ -58,7 +58,6 @@ extern amf_config amf_cfg;
 extern statistics stacs;
 
 void amf_app_task(void*);
-uint32_t golbal_tmsi = 1;
 
 //------------------------------------------------------------------------------
 amf_app::amf_app(const amf_config& amf_cfg)
@@ -395,6 +394,11 @@ void amf_app::handle_post_sm_context_response_error_400() {
 }
 
 //------------------------------------------------------------------------------
+uint32_t amf_app::generate_tmsi() {
+  return tmsi_generator.get_uid();
+}
+
+//------------------------------------------------------------------------------
 bool amf_app::generate_5g_guti(
     uint32_t ranid, long amfid, string& mcc, string& mnc, uint32_t& tmsi) {
   string ue_context_key =
@@ -404,12 +408,12 @@ bool amf_app::generate_5g_guti(
         "No UE context for ran_amf_id %s, exit", ue_context_key.c_str());
     return false;
   }
-  std::shared_ptr<ue_context> uc;
-  uc   = ran_amf_id_2_ue_context(ue_context_key);
-  mcc  = uc.get()->tai.mcc;
-  mnc  = uc.get()->tai.mnc;
-  tmsi = golbal_tmsi;
-  golbal_tmsi++;
+  std::shared_ptr<ue_context> uc = {};
+  uc                             = ran_amf_id_2_ue_context(ue_context_key);
+  mcc                            = uc.get()->tai.mcc;
+  mnc                            = uc.get()->tai.mnc;
+  tmsi                           = generate_tmsi();
+  uc.get()->tmsi                 = tmsi;
   return true;
 }
 

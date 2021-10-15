@@ -70,6 +70,8 @@ class amf_app {
 
   mutable std::shared_mutex m_amf_event_subscriptions;
 
+  util::uint_generator<uint32_t> tmsi_generator;
+
  public:
   explicit amf_app(const amf_config& amf_cfg);
   amf_app(amf_app const&) = delete;
@@ -107,6 +109,7 @@ class amf_app {
   // SMF Client response handlers
   void handle_post_sm_context_response_error_400();
   // others
+  uint32_t generate_tmsi();
   bool generate_5g_guti(
       uint32_t ranid, long amfid, std::string& mcc, std::string& mnc,
       uint32_t& tmsi);

@@ -796,21 +796,8 @@ void amf_n1::service_request_handle(
   }
 
   std::vector<uint8_t> pdu_session_to_be_activated = {};
-  std::bitset<16> pdu_session_status_bits(pdu_session_status);
-
-  for (int i = 0; i < 15; i++) {
-    if (pdu_session_status_bits.test(i)) {
-      if (i <= 7)
-        pdu_session_to_be_activated.push_back(8 + i);
-      else if (i > 8)
-        pdu_session_to_be_activated.push_back(i - 8);
-    }
-  }
-
-  if (pdu_session_to_be_activated.size() > 0) {
-    for (auto i : pdu_session_to_be_activated)
-      Logger::amf_n1().debug("PDU session to be activated %d", i);
-  }
+  get_pdu_session_to_be_activated(
+      pdu_session_status, pdu_session_to_be_activated);
 
   // No PDU Sessions To Be Activated
   if (pdu_session_to_be_activated.size() == 0) {
@@ -1163,23 +1150,21 @@ void amf_n1::registration_request_handle(
   bool is_messagecontainer = regReq->getNasMessageContainer(nas_msg);
 
   // Store NAS information into nas_context
-  // Run different registration procedure
+  // Run the corresponding registration procedure
   switch (reg_type) {
     case INITIAL_REGISTRATION: {
-      run_initial_registration_procedure();  // IEs?
       run_registration_procedure(nc);
     } break;
 
     case MOBILITY_REGISTRATION_UPDATING: {
       // TODO: check if the List Of PDU Sessions To Be Activated is available
-      // regReq->getPduSessionStatus()
-      Logger::amf_n1().debug("Network handling mobility registration ...");
+      Logger::amf_n1().debug("Handling Mobility Registration Update...");
       run_mobility_registration_update_procedure(
           nc, regReq->getUplinkDataStatus(), regReq->getPduSessionStatus());
     } break;
 
     case PERIODIC_REGISTRATION_UPDATING: {
-      Logger::amf_n1().debug("Network handling periodic registration...");
+      Logger::amf_n1().debug("Handling Periodic Registration Update...");
       if (is_messagecontainer)
         run_periodic_registration_update_procedure(nc, nas_msg);
       else
@@ -2169,15 +2154,14 @@ void amf_n1::security_mode_complete_handle(
       "Found ue_context (%p) in amf_app using ran_amf_id (%s)", uc.get(),
       ue_context_key.c_str());
 
-  // encoding REGISTRATION ACCEPT
-  // RegistrationAccept* regAccept = new RegistrationAccept();
-  std::unique_ptr<RegistrationAccept> regAccept =
-      std::make_unique<RegistrationAccept>();
-  regAccept->setHeader(PLAIN_5GS_MSG);
-  regAccept->set_5GS_Registration_Result(false, false, false, 0x01);
-  std::string mcc;
-  std::string mnc;
-  uint32_t tmsi = 0;
+  // Encoding REGISTRATION ACCEPT
+  std::shared_ptr<RegistrationAccept> regAccept =
+      std::make_shared<RegistrationAccept>();
+  initialize_registration_accept(regAccept);
+
+  std::string mcc = {};
+  std::string mnc = {};
+  uint32_t tmsi   = 0;
   if (!amf_app_inst->generate_5g_guti(
           ran_ue_ngap_id, amf_ue_ngap_id, mcc, mnc, tmsi)) {
     Logger::amf_n1().error("Generate 5G GUTI error! exit");
@@ -2187,26 +2171,6 @@ void amf_n1::security_mode_complete_handle(
   regAccept->set5G_GUTI(
       mcc, mnc, amf_cfg.guami.regionID, amf_cfg.guami.AmfSetID,
       amf_cfg.guami.AmfPointer, tmsi);
-
-  std::vector<p_tai_t> tai_list = {};
-  p_tai_t item0                 = {};
-  item0.type                    = 0x00;
-  nas_plmn_t plmn;
-  plmn.mcc = amf_cfg.plmn_list[0].mcc;
-  plmn.mnc = amf_cfg.plmn_list[0].mnc;
-  item0.plmn_list.push_back(plmn);
-  item0.tac_list.push_back(amf_cfg.plmn_list[0].tac);
-  tai_list.push_back(item0);
-  regAccept->setTaiList(tai_list);
-
-  std::vector<struct SNSSAI_s> nssai = {};
-  SNSSAI_t snssai                    = {};
-  snssai.sst                         = 1;
-  snssai.sd                          = -1;
-  snssai.mHplmnSst                   = -1;
-  snssai.mHplmnSd                    = -1;
-  nssai.push_back(snssai);
-  regAccept->setALLOWED_NSSAI(nssai);
 
   std::string guti = mcc + mnc + amf_cfg.guami.regionID +
                      amf_cfg.guami.AmfSetID + amf_cfg.guami.AmfPointer +
@@ -2575,9 +2539,6 @@ bool amf_n1::nas_message_cipher_protected(
 }
 
 //------------------------------------------------------------------------------
-void amf_n1::run_initial_registration_procedure() {}
-
-//------------------------------------------------------------------------------
 void amf_n1::ue_initiate_de_registration_handle(
     uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas) {
   Logger::amf_n1().debug("Handling UE-initiated De-registration Request");
@@ -2815,63 +2776,15 @@ void amf_n1::sha256(
 void amf_n1::run_mobility_registration_update_procedure(
     std::shared_ptr<nas_context> nc, uint16_t uplink_data_status,
     uint16_t pdu_session_status) {
-  // encoding REGISTRATION ACCEPT
-  std::unique_ptr<RegistrationAccept> regAccept =
-      std::make_unique<RegistrationAccept>();
-  regAccept->setHeader(PLAIN_5GS_MSG);
-  regAccept->set_5GS_Registration_Result(false, false, false, 0x01);
-  regAccept->set5G_GUTI(
-      amf_cfg.guami.mcc, amf_cfg.guami.mnc, amf_cfg.guami.regionID,
-      amf_cfg.guami.AmfSetID, amf_cfg.guami.AmfPointer, 0x264a34c0);
-  regAccept->setT3512_Value(0x5, 0x1e);
 
-  std::vector<p_tai_t> tai_list;
-  p_tai_t item0;
-  item0.type = 0x00;
-  nas_plmn_t plmn;
-  plmn.mcc = amf_cfg.plmn_list[0].mcc;
-  plmn.mnc = amf_cfg.plmn_list[0].mnc;
-  item0.plmn_list.push_back(plmn);
-  item0.tac_list.push_back(amf_cfg.plmn_list[0].tac);
-  tai_list.push_back(item0);
-  regAccept->setTaiList(tai_list);
-
-  std::vector<struct SNSSAI_s> nssai;
-  SNSSAI_t snssai;
-  snssai.sst       = 0;
-  snssai.sd        = -1;
-  snssai.mHplmnSst = -1;
-  snssai.mHplmnSd  = -1;
-  nssai.push_back(snssai);
-  regAccept->setALLOWED_NSSAI(nssai);
-
-  // std::string guti = amf_cfg.guami.mcc + amf_cfg.guami.mnc +
-  // amf_cfg.guami.regionID + amf_cfg.guami.AmfSetID + amf_cfg.guami.AmfPointer
-  // + "0001";
-
+  // Encoding REGISTRATION ACCEPT
+  std::shared_ptr<RegistrationAccept> regAccept =
+      std::make_shared<RegistrationAccept>();
+  initialize_registration_accept(regAccept);
   regAccept->set_5GS_Network_Feature_Support(0x00, 0x00);
-  uint8_t buffer[1024] = {0};
-  int encoded_size     = regAccept->encode2buffer(buffer, 1024);
-  comUt::print_buffer(
-      "amf_n1", "Registration-Accept Message Buffer", buffer, encoded_size);
-  if (!encoded_size) {
-    Logger::nas_mm().error("Encode Registration-Accept message error");
-    return;
-  }
-
-  nas_secu_ctx* secu = nc.get()->security_ctx;
-  if (!secu) {
-    Logger::amf_n1().error("No Security Context found");
-    return;
-  }
-  // protect nas message
-  bstring protectedNas;
-  encode_nas_message_protected(
-      secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
-      buffer, encoded_size, protectedNas);
 
   string supi = "imsi-" + nc.get()->imsi;
-  Logger::amf_n1().debug("Key for pdu session context SUPI (%s)", supi.c_str());
+  Logger::amf_n1().debug("Key for PDU Session Context SUPI (%s)", supi.c_str());
   std::shared_ptr<pdu_session_context> psc = {};
   string ue_context_key = "app_ue_ranid_" + to_string(nc->ran_ue_ngap_id) +
                           ":amfid_" + to_string(nc->amf_ue_ngap_id);
@@ -2889,23 +2802,35 @@ void amf_n1::run_mobility_registration_update_procedure(
     return;
   }
 
+  regAccept->set5G_GUTI(
+      amf_cfg.guami.mcc, amf_cfg.guami.mnc, amf_cfg.guami.regionID,
+      amf_cfg.guami.AmfSetID, amf_cfg.guami.AmfPointer, uc.get()->tmsi);
+
+  uint8_t buffer[BUFFER_SIZE_1024] = {0};
+  int encoded_size = regAccept->encode2buffer(buffer, BUFFER_SIZE_1024);
+  comUt::print_buffer(
+      "amf_n1", "Registration-Accept Message Buffer", buffer, encoded_size);
+  if (!encoded_size) {
+    Logger::nas_mm().error("Encode Registration-Accept message error");
+    return;
+  }
+
+  nas_secu_ctx* secu = nc.get()->security_ctx;
+  if (!secu) {
+    Logger::amf_n1().error("No Security Context found");
+    return;
+  }
+
+  // protect nas message
+  bstring protectedNas;
+  encode_nas_message_protected(
+      secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
+      buffer, encoded_size, protectedNas);
+
   // get PDU session status
   std::vector<uint8_t> pdu_session_to_be_activated = {};
-  std::bitset<16> pdu_session_status_bits((uint16_t) pdu_session_status);
-
-  for (int i = 0; i < 15; i++) {
-    if (pdu_session_status_bits.test(i)) {
-      if (i <= 7)
-        pdu_session_to_be_activated.push_back(8 + i);
-      else if (i > 8)
-        pdu_session_to_be_activated.push_back(i - 8);
-    }
-  }
-
-  if (pdu_session_to_be_activated.size() > 0) {
-    for (auto i : pdu_session_to_be_activated)
-      Logger::amf_n1().debug("PDU session to be activated %d", i);
-  }
+  get_pdu_session_to_be_activated(
+      pdu_session_status, pdu_session_to_be_activated);
 
   if (pdu_session_to_be_activated.size() > 0) {
     // get PDU session context for 1 PDU session for now
@@ -2914,6 +2839,11 @@ void amf_n1::run_mobility_registration_update_procedure(
   }
 
   uint8_t* kamf = nc.get()->kamf[secu->vector_pointer];
+  if (!kamf) {
+    Logger::amf_n1().error("No Kamf found");
+    return;
+  }
+
   uint8_t kgnb[32];
   uint32_t ulcount = secu->ul_count.seq_num | (secu->ul_count.overflow << 8);
   Authentication_5gaka::derive_kgnb(ulcount, 0x01, kamf, kgnb);
@@ -2946,43 +2876,40 @@ void amf_n1::run_mobility_registration_update_procedure(
 void amf_n1::run_periodic_registration_update_procedure(
     std::shared_ptr<nas_context> nc, uint16_t pdu_session_status) {
   // Experimental procedure
-  // encoding REGISTRATION ACCEPT
-  std::unique_ptr<RegistrationAccept> regAccept =
-      std::make_unique<RegistrationAccept>();
-  regAccept->setHeader(PLAIN_5GS_MSG);
-  regAccept->set_5GS_Registration_Result(false, false, false, 0x01);
+  // Encoding REGISTRATION ACCEPT
+  std::shared_ptr<RegistrationAccept> regAccept =
+      std::make_shared<RegistrationAccept>();
+  initialize_registration_accept(regAccept);
+
+  string supi = "imsi-" + nc.get()->imsi;
+  Logger::amf_n1().debug("Key for PDU Session Context SUPI (%s)", supi.c_str());
+
+  string ue_context_key = "app_ue_ranid_" + to_string(nc->ran_ue_ngap_id) +
+                          ":amfid_" + to_string(nc->amf_ue_ngap_id);
+  std::shared_ptr<ue_context> uc = {};
+  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
+    Logger::amf_n1().error("No UE context for %s exit", ue_context_key.c_str());
+    return;
+  }
+
+  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+
+  if (uc.get() == nullptr) {
+    Logger::amf_n1().warn(
+        "Cannot find the UE context with key %s", ue_context_key.c_str());
+    return;
+  }
+
   regAccept->set5G_GUTI(
       amf_cfg.guami.mcc, amf_cfg.guami.mnc, amf_cfg.guami.regionID,
-      amf_cfg.guami.AmfSetID, amf_cfg.guami.AmfPointer, 0x264a34c0);
-  regAccept->setT3512_Value(0x5, 0x1e);
-
-  std::vector<p_tai_t> tai_list;
-  p_tai_t item0   = {};
-  item0.type      = 0x00;
-  nas_plmn_t plmn = {};
-  plmn.mcc        = amf_cfg.plmn_list[0].mcc;
-  plmn.mnc        = amf_cfg.plmn_list[0].mnc;
-  item0.plmn_list.push_back(plmn);
-  item0.tac_list.push_back(amf_cfg.plmn_list[0].tac);
-  tai_list.push_back(item0);
-  regAccept->setTaiList(tai_list);
-  //
-  //  std::vector<struct SNSSAI_s> nssai;
-  //  SNSSAI_t snssai;
-  //  snssai.sst = 0;
-  //  snssai.sd = -1;
-  //  snssai.mHplmnSst = -1;
-  //  snssai.mHplmnSd = -1;
-  //  nssai.push_back(snssai);
-  //  regAccept->setALLOWED_NSSAI(nssai);
+      amf_cfg.guami.AmfSetID, amf_cfg.guami.AmfPointer, uc.get()->tmsi);
 
   if (pdu_session_status == 0x0000) {
     regAccept->setPDU_session_status(0x0000);
   } else {
     regAccept->setPDU_session_status(pdu_session_status);
     Logger::amf_n1().debug(
-        "Setting PDU Session Status 0x%02x", htonl(pdu_session_status));
-    // serApt->setPDU_session_status(0x2000);
+        "PDU Session Status 0x%02x", htonl(pdu_session_status));
   }
 
   regAccept->set_5GS_Network_Feature_Support(0x01, 0x00);
@@ -2996,14 +2923,15 @@ void amf_n1::run_periodic_registration_update_procedure(
   }
 
   nas_secu_ctx* secu = nc.get()->security_ctx;
-  // protect nas message
+  if (!secu) {
+    Logger::amf_n1().error("No Security Context found");
+    return;
+  }
+
   bstring protectedNas;
   encode_nas_message_protected(
       secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
       buffer, encoded_size, protectedNas);
-
-  string supi = "imsi-" + nc.get()->imsi;
-  Logger::amf_n1().debug("Key for pdu session context SUPI (%s)", supi.c_str());
 
   itti_dl_nas_transport* itti_msg =
       new itti_dl_nas_transport(TASK_AMF_N1, TASK_AMF_N2);
@@ -3031,35 +2959,33 @@ void amf_n1::run_periodic_registration_update_procedure(
       nullptr, (uint8_t*) bdata(nas_msg), blength(nas_msg));
   bdestroy(nas_msg);  // free buffer
 
-  // encoding REGISTRATION ACCEPT
-  std::unique_ptr<RegistrationAccept> regAccept =
-      std::make_unique<RegistrationAccept>();
-  regAccept->setHeader(PLAIN_5GS_MSG);
-  regAccept->set_5GS_Registration_Result(false, false, false, 0x01);
+  // Encoding REGISTRATION ACCEPT
+  std::shared_ptr<RegistrationAccept> regAccept =
+      std::make_shared<RegistrationAccept>();
+  initialize_registration_accept(regAccept);
+
+  string supi = "imsi-" + nc.get()->imsi;
+  Logger::amf_n1().debug("Key for PDU Session Context SUPI (%s)", supi.c_str());
+
+  string ue_context_key = "app_ue_ranid_" + to_string(nc->ran_ue_ngap_id) +
+                          ":amfid_" + to_string(nc->amf_ue_ngap_id);
+  std::shared_ptr<ue_context> uc = {};
+  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
+    Logger::amf_n1().error("No UE context for %s exit", ue_context_key.c_str());
+    return;
+  }
+
+  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+
+  if (uc.get() == nullptr) {
+    Logger::amf_n1().warn(
+        "Cannot find the UE context with key %s", ue_context_key.c_str());
+    return;
+  }
+
   regAccept->set5G_GUTI(
       amf_cfg.guami.mcc, amf_cfg.guami.mnc, amf_cfg.guami.regionID,
-      amf_cfg.guami.AmfSetID, amf_cfg.guami.AmfPointer, 0x264a34c0);
-  regAccept->setT3512_Value(0x5, 0x1e);
-
-  std::vector<p_tai_t> tai_list;
-  p_tai_t item0   = {};
-  item0.type      = 0x00;
-  nas_plmn_t plmn = {};
-  plmn.mcc        = amf_cfg.plmn_list[0].mcc;
-  plmn.mnc        = amf_cfg.plmn_list[0].mnc;
-  item0.plmn_list.push_back(plmn);
-  item0.tac_list.push_back(amf_cfg.plmn_list[0].tac);
-  tai_list.push_back(item0);
-  regAccept->setTaiList(tai_list);
-  //
-  //  std::vector<struct SNSSAI_s> nssai;
-  //  SNSSAI_t snssai;
-  //  snssai.sst = 0;
-  //  snssai.sd = -1;
-  //  snssai.mHplmnSst = -1;
-  //  snssai.mHplmnSd = -1;
-  //  nssai.push_back(snssai);
-  //  regAccept->setALLOWED_NSSAI(nssai);
+      amf_cfg.guami.AmfSetID, amf_cfg.guami.AmfPointer, uc.get()->tmsi);
 
   uint16_t pdu_session_status = 0xffff;
   pdu_session_status          = regReq->getPduSessionStatus();
@@ -3068,8 +2994,7 @@ void amf_n1::run_periodic_registration_update_procedure(
   } else {
     regAccept->setPDU_session_status(pdu_session_status);
     Logger::amf_n1().debug(
-        "setting pdu session status 0x%02x", htonl(pdu_session_status));
-    // serApt->setPDU_session_status(0x2000);
+        "PDU Session Status 0x%02x", htonl(pdu_session_status));
   }
 
   regAccept->set_5GS_Network_Feature_Support(0x01, 0x00);
@@ -3087,22 +3012,12 @@ void amf_n1::run_periodic_registration_update_procedure(
     Logger::amf_n1().error("No Security Context found");
     return;
   }
-  // protect nas message
+
   bstring protectedNas;
   encode_nas_message_protected(
       secu, false, INTEGRITY_PROTECTED_AND_CIPHERED, NAS_MESSAGE_DOWNLINK,
       buffer, encoded_size, protectedNas);
 
-  string supi = "imsi-" + nc.get()->imsi;
-  Logger::amf_n1().debug("Key for pdu session context SUPI (%s)", supi.c_str());
-  std::shared_ptr<pdu_session_context> psc;
-  /*  if (amf_n11_inst->is_supi_to_pdu_ctx(supi)) {
-      psc = amf_n11_inst->supi_to_pdu_ctx(supi);
-    } else {
-      Logger::amf_n1().error("Cannot get pdu_session_context with SUPI (%s)",
-                             supi.c_str());
-    }
-  */
   itti_dl_nas_transport* itti_msg =
       new itti_dl_nas_transport(TASK_AMF_N1, TASK_AMF_N2);
   itti_msg->ran_ue_ngap_id = nc.get()->ran_ue_ngap_id;
@@ -3182,4 +3097,64 @@ void amf_n1::handle_ue_reachability_status_change(
           itti_msg->get_msg_name());
     }
   }
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::get_pdu_session_to_be_activated(
+    uint16_t pdu_session_status,
+    std::vector<uint8_t>& pdu_session_to_be_activated) {
+  std::bitset<16> pdu_session_status_bits(pdu_session_status);
+
+  for (int i = 0; i < 15; i++) {
+    if (pdu_session_status_bits.test(i)) {
+      if (i <= 7)
+        pdu_session_to_be_activated.push_back(8 + i);
+      else if (i > 8)
+        pdu_session_to_be_activated.push_back(i - 8);
+    }
+  }
+
+  if (pdu_session_to_be_activated.size() > 0) {
+    for (auto i : pdu_session_to_be_activated)
+      Logger::amf_n1().debug("PDU session to be activated %d", i);
+  }
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::initialize_registration_accept(
+    std::shared_ptr<nas::RegistrationAccept>& registration_accept) {
+  registration_accept->setHeader(PLAIN_5GS_MSG);
+  registration_accept->set_5GS_Registration_Result(
+      false, false, false, 0x01);                  // 3GPP Access
+  registration_accept->setT3512_Value(0x5, 0x1e);  // TODO
+
+  std::vector<p_tai_t> tai_list;
+  for (auto p : amf_cfg.plmn_list) {
+    p_tai_t item    = {};
+    item.type       = 0x00;
+    nas_plmn_t plmn = {};
+    plmn.mcc        = p.mcc;
+    plmn.mnc        = p.mnc;
+    item.plmn_list.push_back(plmn);
+    item.tac_list.push_back(p.tac);
+    tai_list.push_back(item);
+  }
+  registration_accept->setTaiList(tai_list);
+
+  std::vector<struct SNSSAI_s> nssai;
+  for (auto p : amf_cfg.plmn_list) {
+    for (auto s : p.slice_list) {
+      SNSSAI_t snssai = {};
+      try {
+        snssai.sst = std::stoi(s.sST);
+        snssai.sd  = std::stoi(s.sD);
+      } catch (const std::exception& err) {
+        Logger::amf_n1().warn("Invalid SST/SD");
+        return;
+      }
+      nssai.push_back(snssai);
+    }
+  }
+  registration_accept->setALLOWED_NSSAI(nssai);
+  return;
 }
