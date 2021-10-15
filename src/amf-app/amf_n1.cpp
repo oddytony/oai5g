@@ -2155,8 +2155,7 @@ void amf_n1::security_mode_complete_handle(
       ue_context_key.c_str());
 
   // Encoding REGISTRATION ACCEPT
-  std::shared_ptr<RegistrationAccept> regAccept =
-      std::make_shared<RegistrationAccept>();
+  auto regAccept = std::make_unique<RegistrationAccept>();
   initialize_registration_accept(regAccept);
 
   std::string mcc = {};
@@ -2776,10 +2775,8 @@ void amf_n1::sha256(
 void amf_n1::run_mobility_registration_update_procedure(
     std::shared_ptr<nas_context> nc, uint16_t uplink_data_status,
     uint16_t pdu_session_status) {
-
   // Encoding REGISTRATION ACCEPT
-  std::shared_ptr<RegistrationAccept> regAccept =
-      std::make_shared<RegistrationAccept>();
+  auto regAccept = std::make_unique<RegistrationAccept>();
   initialize_registration_accept(regAccept);
   regAccept->set_5GS_Network_Feature_Support(0x00, 0x00);
 
@@ -2877,8 +2874,7 @@ void amf_n1::run_periodic_registration_update_procedure(
     std::shared_ptr<nas_context> nc, uint16_t pdu_session_status) {
   // Experimental procedure
   // Encoding REGISTRATION ACCEPT
-  std::shared_ptr<RegistrationAccept> regAccept =
-      std::make_shared<RegistrationAccept>();
+  auto regAccept = std::make_unique<RegistrationAccept>();
   initialize_registration_accept(regAccept);
 
   string supi = "imsi-" + nc.get()->imsi;
@@ -2960,8 +2956,7 @@ void amf_n1::run_periodic_registration_update_procedure(
   bdestroy(nas_msg);  // free buffer
 
   // Encoding REGISTRATION ACCEPT
-  std::shared_ptr<RegistrationAccept> regAccept =
-      std::make_shared<RegistrationAccept>();
+  auto regAccept = std::make_unique<RegistrationAccept>();
   initialize_registration_accept(regAccept);
 
   string supi = "imsi-" + nc.get()->imsi;
@@ -3122,7 +3117,7 @@ void amf_n1::get_pdu_session_to_be_activated(
 
 //------------------------------------------------------------------------------
 void amf_n1::initialize_registration_accept(
-    std::shared_ptr<nas::RegistrationAccept>& registration_accept) {
+    std::unique_ptr<nas::RegistrationAccept>& registration_accept) {
   registration_accept->setHeader(PLAIN_5GS_MSG);
   registration_accept->set_5GS_Registration_Result(
       false, false, false, 0x01);                  // 3GPP Access

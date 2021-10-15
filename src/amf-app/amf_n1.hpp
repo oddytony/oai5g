@@ -168,7 +168,7 @@ class amf_n1 {
       uint16_t pdu_session_status,
       std::vector<uint8_t>& pdu_session_to_be_activated);
   void initialize_registration_accept(
-      std::shared_ptr<nas::RegistrationAccept>& registration_accept);
+      std::unique_ptr<nas::RegistrationAccept>& registration_accept);
 
  private:
   void ue_initiate_de_registration_handle(
