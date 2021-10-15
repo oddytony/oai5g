@@ -67,6 +67,8 @@
 
 #define AMF_CONFIG_STRING_AUSF "AUSF"
 
+#define AMF_CONFIG_STRING_NSSF "NSSF"
+
 #define AMF_CONFIG_STRING_SCHED_PARAMS "SCHED_PARAMS"
 #define AMF_CONFIG_STRING_THREAD_RD_CPU_ID "CPU_ID"
 #define AMF_CONFIG_STRING_THREAD_RD_SCHED_POLICY "SCHED_POLICY"
@@ -102,6 +104,7 @@
   "ORDERED_SUPPORTED_CIPHERING_ALGORITHM_LIST"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES "SUPPORT_FEATURES"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_NF_REGISTRATION "NF_REGISTRATION"
+#define AMF_CONFIG_STRING_SUPPORT_FEATURES_NRF_SELECTION "NRF_SELECTION"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_SMF_SELECTION "SMF_SELECTION"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_AUSF "EXTERNAL_AUSF"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_UDM "EXTERNAL_UDM"
@@ -204,6 +207,7 @@ class amf_config {
 
   struct {
     bool enable_nf_registration;
+    bool enable_nrf_selection;
     bool enable_smf_selection;
     bool enable_external_ausf;
     bool enable_external_udm;
@@ -222,6 +226,12 @@ class amf_config {
     unsigned int port;
     std::string api_version;
   } ausf_addr;
+
+  struct {
+    struct in_addr ipv4_addr;
+    unsigned int port;
+    std::string api_version;
+  } nssf_addr;
 };
 
 }  // namespace config
