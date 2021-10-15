@@ -39,6 +39,10 @@
 #include "itti_msg_sbi.hpp"
 #include "pdu_session_context.hpp"
 
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+
 namespace amf_application {
 
 class amf_n11 {
@@ -76,11 +80,19 @@ class amf_n11 {
       std::string remoteUri, std::string Method, std::string msgBody,
       std::string& response, uint8_t http_version = 1);
 
-  bool discover_smf(
+  bool discover_smf_from_nsi_info(
       std::string& smf_addr, std::string& smf_api_version,
       const snssai_t snssai, const plmn_t plmn, const std::string dnn);
+
+  bool discover_smf(
+      std::string& smf_addr, std::string& smf_api_version,
+      const snssai_t snssai, const plmn_t plmn, const std::string dnn,
+      const std::string& nrf_addr = {}, const std::string& nrf_port = {},
+      const std::string& nrf_api_version = {});
+
   void register_nf_instance(
       std::shared_ptr<itti_n11_register_nf_instance_request> msg);
+
   bool send_ue_authentication_request(
       oai::amf::model::AuthenticationInfo& auth_info,
       oai::amf::model::UEAuthenticationCtx& ue_auth_ctx, uint8_t http_version);
