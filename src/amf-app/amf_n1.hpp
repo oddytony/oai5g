@@ -45,6 +45,7 @@
 #include "nas_context.hpp"
 #include "pdu_session_context.hpp"
 #include "amf_event.hpp"
+#include "RegistrationAccept.hpp"
 
 namespace amf_application {
 
@@ -102,7 +103,6 @@ class amf_n1 {
   // procedures
   // specific procedures running logic
   void run_registration_procedure(std::shared_ptr<nas_context>& nc);
-  void run_initial_registration_procedure();
   void run_mobility_registration_update_procedure(
       std::shared_ptr<nas_context> nc, uint16_t uplink_data_status,
       uint16_t pdu_session_status);
@@ -163,6 +163,12 @@ class amf_n1 {
 
   void handle_ue_reachability_status_change(
       std::string supi, uint8_t http_version);
+
+  void get_pdu_session_to_be_activated(
+      uint16_t pdu_session_status,
+      std::vector<uint8_t>& pdu_session_to_be_activated);
+  void initialize_registration_accept(
+      std::unique_ptr<nas::RegistrationAccept>& registration_accept);
 
  private:
   void ue_initiate_de_registration_handle(
