@@ -135,6 +135,7 @@
 #define _5GMM_CAUSE_SYNCH_FAILURE 0b00010101
 #define _5GMM_CAUSE_IMPLICITLY_DE_REGISTERED 10
 #define _5GMM_CAUSE_UE_IDENTITY_CANNOT_BE_DERIVED 9
+#define _5GMM_CAUSE_NGKSI_ALREADY_IN_USE 0b01000111  // 71
 // A.5 Causes related to invalid messages
 //------------------------------------------------------------------------------
 #define _5GMM_CAUSE_SEMANTICALLY_INCORRECT 95
