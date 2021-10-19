@@ -330,7 +330,14 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
   std::string smf_addr        = {};
   std::string smf_api_version = {};
   if (!psc.get()->smf_available) {
-    if (amf_cfg.support_features.enable_smf_selection) {
+    if (amf_cfg.support_features.enable_nrf_selection) {
+      if (!discover_smf_from_nsi_info(
+              smf_addr, smf_api_version, psc.get()->snssai, psc.get()->plmn,
+              psc.get()->dnn)) {
+        Logger::amf_n11().error("NRF Selection, no NRF candidate is available");
+        return;
+      }
+    } else if (amf_cfg.support_features.enable_smf_selection) {
       // use NRF to find suitable SMF based on snssai, plmn and dnn
       if (!discover_smf(
               smf_addr, smf_api_version, psc.get()->snssai, psc.get()->plmn,
@@ -892,11 +899,134 @@ void amf_n11::curl_http_client(
   curl_global_cleanup();
   free_wrapper((void**) &body_data);
 }
+//-----------------------------------------------------------------------------------------------------
+bool amf_n11::discover_smf_from_nsi_info(
+    std::string& smf_addr, std::string& smf_api_version, const snssai_t snssai,
+    const plmn_t plmn, const std::string dnn) {
+  Logger::amf_n11().debug(
+      "Send NS Selection to NSSF to discover the appropriate NRF");
+
+  bool result                 = true;
+  std::string nrf_addr        = {};
+  std::string nrf_port        = {};
+  std::string nrf_api_version = {};
+
+  uint8_t http_version = 1;
+  if (amf_cfg.support_features.use_http2) http_version = 2;
+
+  // Get NSI information from NSSF
+  nlohmann::json slice_info  = {};
+  nlohmann::json snssai_info = {};
+  snssai_info["sst"]         = snssai.sST;
+  if (!snssai.sD.empty()) snssai_info["sd"] = snssai.sD;
+  slice_info["sNssai"]            = snssai_info;
+  slice_info["roamingIndication"] = "NON_ROAMING";
+  // ToDo Add TAI
+
+  std::string url = std::string(inet_ntoa(
+                        *((struct in_addr*) &amf_cfg.nssf_addr.ipv4_addr))) +
+                    ":" + std::to_string(amf_cfg.nssf_addr.port) +
+                    "/nnssf-nsselection/" + amf_cfg.nssf_addr.api_version +
+                    "/network-slice-information?nf-type=AMF&nf-id=abc&slice-"
+                    "info-request-for-pdu-session=" +
+                    slice_info.dump();
+
+  curl_global_init(CURL_GLOBAL_ALL);
+  CURL* curl = curl = curl_easy_init();
+  if (curl) {
+    CURLcode res               = {};
+    struct curl_slist* headers = nullptr;
+    // headers = curl_slist_append(headers, "charsets: utf-8");
+    headers = curl_slist_append(headers, "content-type: application/json");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
+
+    if (http_version == 2) {
+      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+      // we use a self-signed test server, skip verification during debugging
+      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+      curl_easy_setopt(
+          curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE);
+    }
+
+    // Response information
+    long httpCode = {0};
+    std::unique_ptr<std::string> httpData(new std::string());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
+    // curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
+    // curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
+
+    res = curl_easy_perform(curl);
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+
+    Logger::amf_n11().debug(
+        "NS Selection, response from NSSF, HTTP Code: %d", httpCode);
+
+    if (httpCode == 200) {
+      Logger::amf_n11().debug(
+          "NS Selection, got successful response from NSSF");
+
+      nlohmann::json response_data = {};
+      try {
+        response_data = nlohmann::json::parse(*httpData.get());
+      } catch (nlohmann::json::exception& e) {
+        Logger::amf_n11().warn(
+            "NS Selection, could not parse json from the NRF "
+            "response");
+      }
+      Logger::amf_n11().debug(
+          "NS Selection, response from NSSF, json data: \n %s",
+          response_data.dump().c_str());
+
+      // Process data to obtain NRF info
+      if (response_data.find("nsiInformation") != response_data.end()) {
+        std::string nrf_id = response_data["nsiInformation"]["nrfId"];
+        std::string nsi_id = response_data["nsiInformation"]["nsiId"];
+
+        std::vector<std::string> split_result;
+        boost::split(split_result, nrf_id, boost::is_any_of("/"));
+        nrf_api_version = split_result[split_result.size() - 2].c_str();
+
+        std::string nrf_endpoint =
+            split_result[split_result.size() - 4].c_str();
+        std::vector<std::string> split_nrf_endpoint;
+        boost::split(split_nrf_endpoint, nrf_endpoint, boost::is_any_of(":"));
+        nrf_port = split_nrf_endpoint[split_nrf_endpoint.size() - 1].c_str();
+        nrf_addr = split_nrf_endpoint[split_nrf_endpoint.size() - 2].c_str();
+      }
+    } else {
+      Logger::amf_n11().warn("NS Selection, could not get response from NSSF");
+      result = false;
+    }
+
+    Logger::amf_n11().debug(
+        "NS Selection, NRF Addr: %s, NRF Port: %s, NRF Api Version: %s",
+        nrf_addr.c_str(), nrf_port.c_str(), nrf_api_version.c_str());
+
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+  }
+  curl_global_cleanup();
+  if (!result) return result;
+
+  Logger::amf_n11().debug("NSI Inforation is successfully retrieved from NSSF");
+  if (!discover_smf(
+          smf_addr, smf_api_version, snssai, plmn, dnn, nrf_addr, nrf_port,
+          nrf_api_version))
+    return false;
+  return true;
+}
 
 //-----------------------------------------------------------------------------------------------------
 bool amf_n11::discover_smf(
     std::string& smf_addr, std::string& smf_api_version, const snssai_t snssai,
-    const plmn_t plmn, const std::string dnn) {
+    const plmn_t plmn, const std::string dnn, const std::string& nrf_addr,
+    const std::string& nrf_port, const std::string& nrf_api_version) {
   Logger::amf_n11().debug(
       "Send NFDiscovery to NRF to discover the available SMFs");
   bool result = true;
@@ -905,12 +1035,17 @@ bool amf_n11::discover_smf(
   if (amf_cfg.support_features.use_http2) http_version = 2;
 
   nlohmann::json json_data = {};
+  std::string url          = {};
   // TODO: remove hardcoded values
-  std::string url =
-      std::string(inet_ntoa(*((struct in_addr*) &amf_cfg.nrf_addr.ipv4_addr))) +
-      ":" + std::to_string(amf_cfg.nrf_addr.port) + "/nnrf-disc/" +
-      amf_cfg.nrf_addr.api_version +
-      "/nf-instances?target-nf-type=SMF&requester-nf-type=AMF";
+  if (!nrf_addr.empty() & !nrf_port.empty() & !nrf_api_version.empty()) {
+    url = nrf_addr + ":" + nrf_port + "/nnrf-disc/" + nrf_api_version +
+          "/nf-instances?target-nf-type=SMF&requester-nf-type=AMF";
+  } else
+    url = std::string(
+              inet_ntoa(*((struct in_addr*) &amf_cfg.nrf_addr.ipv4_addr))) +
+          ":" + std::to_string(amf_cfg.nrf_addr.port) + "/nnrf-disc/" +
+          amf_cfg.nrf_addr.api_version +
+          "/nf-instances?target-nf-type=SMF&requester-nf-type=AMF";
 
   curl_global_init(CURL_GLOBAL_ALL);
   CURL* curl = curl = curl_easy_init();
