@@ -2010,6 +2010,27 @@ void amf_n1::authentication_failure_handle(
       }
       // authentication_failure_synch_failure_handle(nc, auts);
     } break;
+    case _5GMM_CAUSE_NGKSI_ALREADY_IN_USE: {
+      Logger::amf_n1().debug(
+          "ngKSI already in use, select a new ngKSI and restart the "
+          "authentication procedure!");
+      // select new ngKSI and resend Authentication Request
+      ngksi_t ngksi =
+          (nc.get()->ngKsi + 1) % (NGKSI_MAX_VALUE + 1);  // To be verified
+      nc.get()->ngKsi = ngksi;
+      int vindex      = nc.get()->security_ctx->vector_pointer;
+      if (!start_authentication_procedure(nc, vindex, nc.get()->ngKsi)) {
+        Logger::amf_n1().error(
+            "Start authentication procedure failure, reject...");
+        Logger::amf_n1().error("Ran_ue_ngap_id 0x%x", nc.get()->ran_ue_ngap_id);
+        response_registration_reject_msg(
+            _5GMM_CAUSE_INVALID_MANDATORY_INFO, nc.get()->ran_ue_ngap_id,
+            nc.get()->amf_ue_ngap_id);
+      } else {
+        // update mm state -> COMMON-PROCEDURE-INITIATED
+      }
+
+    } break;
   }
 }
 
