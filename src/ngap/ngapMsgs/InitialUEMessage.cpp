@@ -389,11 +389,12 @@ bool InitialUEMessageMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
 }
 
 //------------------------------------------------------------------------------
-uint32_t InitialUEMessageMsg::getRanUENgapID() {
+bool InitialUEMessageMsg::getRanUENgapID(uint32_t& value) {
   if (ranUeNgapId) {
-    return ranUeNgapId->getRanUeNgapId();
+    value = ranUeNgapId->getRanUeNgapId();
+    return true;
   } else {
-    return 0;
+    return false;
   }
 }
 

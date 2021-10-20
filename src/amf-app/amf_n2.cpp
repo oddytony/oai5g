@@ -584,7 +584,7 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
 
   // UE NGAP Context
   uint32_t ran_ue_ngap_id = 0;
-  if ((ran_ue_ngap_id = init_ue_msg.initUeMsg->getRanUENgapID()) == 0) {
+  if (!init_ue_msg.initUeMsg->getRanUENgapID(ran_ue_ngap_id)) {
     Logger::amf_n2().error("Missing Mandatory IE (RanUeNgapId)");
     return;
   }
