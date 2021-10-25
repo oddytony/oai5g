@@ -1422,9 +1422,11 @@ bool amf_n1::get_authentication_vectors_from_ausf(
     free_wrapper((void**) &auts_s);
     //    free_wrapper((void**) &rand_s);
   }
+  uint8_t http_version = 1;
+  if (amf_cfg.support_features.use_http2) http_version = 2;
 
   if (amf_n11_inst->send_ue_authentication_request(
-          authenticationinfo, ueauthenticationctx, 1)) {
+          authenticationinfo, ueauthenticationctx, http_version)) {
     unsigned char* r5gauthdata_rand = conv::format_string_as_hex(
         ueauthenticationctx.getR5gAuthData().getRand());
     memcpy(nc.get()->_5g_av[0].rand, r5gauthdata_rand, 16);
@@ -1451,7 +1453,7 @@ bool amf_n1::get_authentication_vectors_from_ausf(
 
     if (iter != ueauthenticationctx.getLinks().end()) {
       nc.get()->Href = iter->second.getHref();
-      Logger::amf_n1().info("Links is: ", nc.get()->Href);
+      Logger::amf_n1().info("Links is: %s", nc.get()->Href.c_str());
     } else {
       Logger::amf_n1().error("Not found 5G_AKA");
     }
@@ -1498,7 +1500,11 @@ bool amf_n1::_5g_aka_confirmation_from_ausf(
   msgBody = confirmationdata_j.dump();
 
   // TODO: Should be updated
-  amf_n11_inst->curl_http_client(remoteUri, "PUT", msgBody, response);
+  uint8_t http_version = 1;
+  if (amf_cfg.support_features.use_http2) http_version = 2;
+
+  amf_n11_inst->curl_http_client(
+      remoteUri, "PUT", msgBody, response, http_version);
 
   free_wrapper((void**) &resStar_s);
   try {
