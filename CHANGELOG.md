@@ -1,5 +1,11 @@
 # RELEASE NOTES: #
 
+## v1.2.1 -- October 2021 ##
+
+* Fix build issue
+* Tentative fix for ngKSI already in use
+* Initial implementation for Mobility registration update
+
 ## v1.2.0 -- September 2021 ##
 
 * AUSF connection
