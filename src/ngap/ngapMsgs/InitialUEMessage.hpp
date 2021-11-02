@@ -61,7 +61,7 @@ class InitialUEMessageMsg {
   int encode2buffer(uint8_t* buf, int buf_size);
   // Decapsulation
   bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
-  uint32_t getRanUENgapID();
+  bool getRanUENgapID(uint32_t& value);
   bool getNasPdu(uint8_t*& nas, size_t& sizeofnas);
   bool getUserLocationInfoNR(struct NrCgi_s& cig, struct Tai_s& tai);
   int getRRCEstablishmentCause();
