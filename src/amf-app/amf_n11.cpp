@@ -252,7 +252,7 @@ void amf_n11::handle_itti_message(
   std::string json_part = pdu_session_update_request.dump();
 
   uint8_t http_version = 1;
-  if (amf_cfg.support_features.use_http2) http_version = 2;
+  // if (amf_cfg.support_features.use_http2) http_version = 2;
 
   curl_http_client(
       remote_uri, json_part, "", n2SmMsg, supi, itti_msg.pdu_session_id,
@@ -470,7 +470,7 @@ void amf_n11::handle_pdu_session_initial_request(
   octet_stream_2_hex_stream((uint8_t*) bdata(sm_msg), blength(sm_msg), n1SmMsg);
 
   uint8_t http_version = 1;
-  if (amf_cfg.support_features.use_http2) http_version = 2;
+  // if (amf_cfg.support_features.use_http2) http_version = 2;
 
   curl_http_client(
       remote_uri, json_part, n1SmMsg, "", supi, psc.get()->pdu_session_id,
