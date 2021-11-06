@@ -1105,14 +1105,33 @@ bool amf_n11::discover_smf(
           nlohmann::json instance_json = it.value();
           // TODO: convert instance_json to SMF profile
           // TODO: add SMF to the list of available SMF
-          // TODO: check with sNSSAI and DNN
+          // check with sNSSAI
+          if (instance_json.find("sNssais") != instance_json.end()) {
+            for (auto& s : instance_json["sNssais"].items()) {
+              nlohmann::json Snssai = s.value();
+              if (Snssai["sst"] == snssai.sST) {
+                if (!Snssai["sd"].empty() & Snssai["sd"] != snssai.sD) {
+                  Logger::amf_n11().debug("SD is not matched");
+                  result = false;
+                }
+                Logger::amf_n11().debug("Snssai is matched for SMF profile");
+                result = true;
+                break;
+              } else {
+                Logger::amf_n11().debug(
+                    "Snssai is not matched for SMF profile");
+                result = false;
+              }
+            }
+            if (!result) return result;
+          }
+          // TODO: check DNN
           // TODO: PLMN (need to add plmnList into NRF profile, SMF profile)
           // for now, just IP addr of SMF of the first NF instance
           if (instance_json.find("ipv4Addresses") != instance_json.end()) {
             if (instance_json["ipv4Addresses"].size() > 0)
               smf_addr =
                   instance_json["ipv4Addresses"].at(0).get<std::string>();
-            // break;
           }
           if (instance_json.find("nfServices") != instance_json.end()) {
             if (instance_json["nfServices"].size() > 0) {
@@ -1129,14 +1148,13 @@ bool amf_n11::discover_smf(
           }
         }
       }
+      Logger::amf_n11().debug(
+          "NFDiscovery, SMF Addr: %s, SMF Api Version: %s", smf_addr.c_str(),
+          smf_api_version.c_str());
     } else {
       Logger::amf_n11().warn("NFDiscovery, could not get response from NRF");
       result = false;
     }
-
-    Logger::amf_n11().debug(
-        "NFDiscovery, SMF Addr: %s, SMF Api Version: %s", smf_addr.c_str(),
-        smf_api_version.c_str());
 
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
