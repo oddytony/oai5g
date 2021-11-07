@@ -46,6 +46,7 @@
 #include "pdu_session_context.hpp"
 #include "amf_event.hpp"
 #include "RegistrationAccept.hpp"
+#include "ue_context.hpp"
 
 namespace amf_application {
 
@@ -169,6 +170,13 @@ class amf_n1 {
       std::vector<uint8_t>& pdu_session_to_be_activated);
   void initialize_registration_accept(
       std::unique_ptr<nas::RegistrationAccept>& registration_accept);
+
+  bool find_ue_context(
+      const std::shared_ptr<nas_context>& nc, std::shared_ptr<ue_context>& uc);
+
+  bool find_ue_context(
+      uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
+      std::shared_ptr<ue_context>& uc);
 
  private:
   void ue_initiate_de_registration_handle(

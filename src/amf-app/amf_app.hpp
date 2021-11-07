@@ -91,6 +91,10 @@ class amf_app {
   bool is_ran_amf_id_2_ue_context(const std::string& ue_context_key) const;
   std::shared_ptr<ue_context> ran_amf_id_2_ue_context(
       const std::string& ue_context_key) const;
+
+  bool ran_amf_id_2_ue_context(
+      const std::string& ue_context_key, std::shared_ptr<ue_context>& uc) const;
+
   void set_ran_amf_id_2_ue_context(
       const std::string& ue_context_key, std::shared_ptr<ue_context> uc);
 
