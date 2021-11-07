@@ -226,26 +226,12 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
       }
 
     } else {
-      string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
-                              ":amfid_" + to_string(amf_ue_ngap_id);
+      std::shared_ptr<ue_context> uc = {};
 
-      if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
-        Logger::amf_n1().error(
-            "No UE context for %s exit", ue_context_key.c_str());
+      if (!find_ue_context(ran_ue_ngap_id, amf_ue_ngap_id, uc)) {
+        Logger::amf_n1().warn("Cannot find the UE context");
         return;
       }
-
-      std::shared_ptr<ue_context> uc = {};
-      uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
-      if (uc.get() == nullptr) {
-        // TODO:
-        Logger::amf_n1().error(
-            "ue_context in amf_app using ran_amf_id (%s) does not existed!",
-            ue_context_key.c_str());
-      }
-      Logger::amf_n1().info(
-          "Found ue_context (%p) in amf_app using ran_amf_id (%s)", uc.get(),
-          ue_context_key.c_str());
 
       if (uc.get()->isUeContextRequest) {
         // PDU SESSION RESOURCE SETUP_REQUEST
@@ -682,14 +668,11 @@ void amf_n1::identity_response_handle(
 void amf_n1::service_request_handle(
     bool isNasSig, std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id,
     long amf_ue_ngap_id, bstring nas) {
-  string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
-                          ":amfid_" + to_string(amf_ue_ngap_id);
-
   std::shared_ptr<ue_context> uc = {};
-  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
-    Logger::amf_n1().error("No UE context for %s exit", ue_context_key.c_str());
-  } else {
-    uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+
+  if (!find_ue_context(ran_ue_ngap_id, amf_ue_ngap_id, uc)) {
+    Logger::amf_n1().warn("Cannot find the UE context");
+    return;
   }
 
   if (!nc.get() or !uc.get()) {
@@ -904,19 +887,12 @@ void amf_n1::registration_request_handle(
   bdestroy(reg);  // free buffer
 
   // Find UE context
-  string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
-                          ":amfid_" + to_string(amf_ue_ngap_id);
   std::shared_ptr<ue_context> uc = {};
-  Logger::amf_n1().info(
-      "Try to find ue_context in amf_app using ran_amf_id (%s)",
-      ue_context_key.c_str());
 
-  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
-    Logger::amf_n1().error("No UE context for %s exit", ue_context_key.c_str());
+  if (!find_ue_context(ran_ue_ngap_id, amf_ue_ngap_id, uc)) {
+    Logger::amf_n1().warn("Cannot find the UE context");
     return;
   }
-
-  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
 
   // Check 5gs Mobility Identity (Mandatory IE)
   std::string guti;
@@ -2160,26 +2136,12 @@ int amf_n1::security_select_algorithms(
 void amf_n1::security_mode_complete_handle(
     uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas_msg) {
   Logger::amf_n1().debug("Handling security mode complete ...");
-  string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
-                          ":amfid_" + to_string(amf_ue_ngap_id);
-  std::shared_ptr<ue_context> uc;
-  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
-    Logger::amf_n1().error("No UE context for %s exit", ue_context_key.c_str());
+
+  std::shared_ptr<ue_context> uc = {};
+  if (!find_ue_context(ran_ue_ngap_id, amf_ue_ngap_id, uc)) {
+    Logger::amf_n1().warn("Cannot find the UE context");
     return;
   }
-
-  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
-  if (uc.get() == nullptr) {
-    // TODO:
-    Logger::amf_n1().error(
-        "ue_context in amf_app using ran_amf_id (%s) does not existed!",
-        ue_context_key.c_str());
-    return;
-  }
-
-  Logger::amf_n1().info(
-      "Found ue_context (%p) in amf_app using ran_amf_id (%s)", uc.get(),
-      ue_context_key.c_str());
 
   // Encoding REGISTRATION ACCEPT
   auto regAccept = std::make_unique<RegistrationAccept>();
@@ -2805,24 +2767,14 @@ void amf_n1::run_mobility_registration_update_procedure(
   // Encoding REGISTRATION ACCEPT
   auto regAccept = std::make_unique<RegistrationAccept>();
   initialize_registration_accept(regAccept);
-  regAccept->set_5GS_Network_Feature_Support(0x00, 0x00);
+  regAccept->set_5GS_Network_Feature_Support(
+      0x00, 0x00);  // TODO: remove hardcoded values
 
-  string supi = "imsi-" + nc.get()->imsi;
-  Logger::amf_n1().debug("Key for PDU Session Context SUPI (%s)", supi.c_str());
   std::shared_ptr<pdu_session_context> psc = {};
-  string ue_context_key = "app_ue_ranid_" + to_string(nc->ran_ue_ngap_id) +
-                          ":amfid_" + to_string(nc->amf_ue_ngap_id);
-  std::shared_ptr<ue_context> uc = {};
-  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
-    Logger::amf_n1().error("No UE context for %s exit", ue_context_key.c_str());
-    return;
-  }
+  std::shared_ptr<ue_context> uc           = {};
 
-  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
-
-  if (uc.get() == nullptr) {
-    Logger::amf_n1().warn(
-        "Cannot find the UE context with key %s", ue_context_key.c_str());
+  if (!find_ue_context(nc, uc)) {
+    Logger::amf_n1().warn("Cannot find the UE context");
     return;
   }
 
@@ -2879,7 +2831,7 @@ void amf_n1::run_mobility_registration_update_procedure(
   itti_msg->amf_ue_ngap_id = nc.get()->amf_ue_ngap_id;
   itti_msg->kgnb           = kgnb_bs;
   itti_msg->nas            = protectedNas;
-  itti_msg->is_sr          = true;  // service request indicator
+  itti_msg->is_sr          = true;  // service request indicator, to be verified
 
   if (psc.get() != nullptr) {
     itti_msg->pdu_session_id = psc.get()->pdu_session_id;
@@ -2904,22 +2856,11 @@ void amf_n1::run_periodic_registration_update_procedure(
   auto regAccept = std::make_unique<RegistrationAccept>();
   initialize_registration_accept(regAccept);
 
-  string supi = "imsi-" + nc.get()->imsi;
-  Logger::amf_n1().debug("Key for PDU Session Context SUPI (%s)", supi.c_str());
-
-  string ue_context_key = "app_ue_ranid_" + to_string(nc->ran_ue_ngap_id) +
-                          ":amfid_" + to_string(nc->amf_ue_ngap_id);
+  // amf_ue_context
   std::shared_ptr<ue_context> uc = {};
-  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
-    Logger::amf_n1().error("No UE context for %s exit", ue_context_key.c_str());
-    return;
-  }
 
-  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
-
-  if (uc.get() == nullptr) {
-    Logger::amf_n1().warn(
-        "Cannot find the UE context with key %s", ue_context_key.c_str());
+  if (!find_ue_context(nc, uc)) {
+    Logger::amf_n1().warn("Cannot find the UE context");
     return;
   }
 
@@ -2986,22 +2927,10 @@ void amf_n1::run_periodic_registration_update_procedure(
   auto regAccept = std::make_unique<RegistrationAccept>();
   initialize_registration_accept(regAccept);
 
-  string supi = "imsi-" + nc.get()->imsi;
-  Logger::amf_n1().debug("Key for PDU Session Context SUPI (%s)", supi.c_str());
-
-  string ue_context_key = "app_ue_ranid_" + to_string(nc->ran_ue_ngap_id) +
-                          ":amfid_" + to_string(nc->amf_ue_ngap_id);
   std::shared_ptr<ue_context> uc = {};
-  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
-    Logger::amf_n1().error("No UE context for %s exit", ue_context_key.c_str());
-    return;
-  }
 
-  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
-
-  if (uc.get() == nullptr) {
-    Logger::amf_n1().warn(
-        "Cannot find the UE context with key %s", ue_context_key.c_str());
+  if (!find_ue_context(nc, uc)) {
+    Logger::amf_n1().warn("Cannot find the UE context");
     return;
   }
 
@@ -3179,4 +3108,52 @@ void amf_n1::initialize_registration_accept(
   }
   registration_accept->setALLOWED_NSSAI(nssai);
   return;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::find_ue_context(
+    const std::shared_ptr<nas_context>& nc, std::shared_ptr<ue_context>& uc) {
+  string supi = "imsi-" + nc.get()->imsi;
+  Logger::amf_n1().debug("Key for PDU Session Context SUPI (%s)", supi.c_str());
+
+  string ue_context_key = "app_ue_ranid_" + to_string(nc->ran_ue_ngap_id) +
+                          ":amfid_" + to_string(nc->amf_ue_ngap_id);
+
+  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
+    Logger::amf_n1().error("No UE context with key %s", ue_context_key.c_str());
+    return false;
+  }
+
+  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+
+  if (uc.get() == nullptr) {
+    Logger::amf_n1().warn(
+        "Cannot find the UE context with key %s", ue_context_key.c_str());
+    return false;
+  }
+
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::find_ue_context(
+    uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
+    std::shared_ptr<ue_context>& uc) {
+  string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
+                          ":amfid_" + to_string(amf_ue_ngap_id);
+
+  if (!amf_app_inst->is_ran_amf_id_2_ue_context(ue_context_key)) {
+    Logger::amf_n1().error("No UE context with key %s", ue_context_key.c_str());
+    return false;
+  }
+
+  uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
+
+  if (uc.get() == nullptr) {
+    Logger::amf_n1().warn(
+        "Cannot find the UE context with key %s", ue_context_key.c_str());
+    return false;
+  }
+
+  return true;
 }
