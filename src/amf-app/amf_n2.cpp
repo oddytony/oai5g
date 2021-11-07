@@ -1296,6 +1296,7 @@ void amf_n2::handle_itti_message(itti_ue_context_release_complete& itti_msg) {
       MOBILE_REACHABLE_TIMER_NO_EMERGENCY_SERVICES_MIN * 60, 0, TASK_AMF_N1,
       TASK_AMF_MOBILE_REACHABLE_TIMER_EXPIRE, amf_ue_ngap_id);
   Logger::amf_app().startup("Started mobile reachable timer ( tid %d)", tid);
+  amf_n1_inst->set_mobile_reachable_timer(nc, tid);
   amf_n1_inst->set_mobile_reachable_timer_timeout(nc, false);
 
   // TODO: User Location Information IE

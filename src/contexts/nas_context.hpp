@@ -37,6 +37,7 @@
 #include "nas_security_context.hpp"
 #include "security_def.hpp"
 #include "struct.hpp"
+#include "itti.hpp"
 
 typedef enum {
   _5GMM_STATE_MIN     = 0,
@@ -72,6 +73,7 @@ class nas_context {
   cm_state_t nas_status;
   _5gmm_state_t _5gmm_state;
   bool is_mobile_reachable_timer_timeout;
+  timer_id_t mobile_reachable_timer;
 
   // parameters from Registration request
   uint8_t registration_type : 3;

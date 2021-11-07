@@ -489,6 +489,8 @@ void amf_n1::nas_signalling_establishment_request_handle(
     nc.get()->amf_ue_ngap_id  = amf_ue_ngap_id;
     nc.get()->ran_ue_ngap_id  = ran_ue_ngap_id;
     nc.get()->serving_network = snn;
+    // stop Mobile Reachable Timer
+    itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
     // stacs.UE_connected += 1;
 
     // Trigger UE Reachability Status Notify
@@ -675,6 +677,8 @@ void amf_n1::identity_response_handle(
   nc.get()->imsi                         = supi;
   supi2amfId[("imsi-" + nc.get()->imsi)] = amf_ue_ngap_id;
   supi2ranId[("imsi-" + nc.get()->imsi)] = ran_ue_ngap_id;
+  // stop Mobile Reachable Timer
+  itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
   if (nc.get()->to_be_register_by_new_suci) {
     run_registration_procedure(nc);
   }
@@ -928,6 +932,8 @@ void amf_n1::registration_request_handle(
           nc.get()->amf_ue_ngap_id  = amf_ue_ngap_id;
           nc.get()->ran_ue_ngap_id  = ran_ue_ngap_id;
           nc.get()->serving_network = snn;
+          // stop Mobile Reachable Timer
+          itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
         }
         nc.get()->is_imsi_present = true;
         nc.get()->imsi            = imsi.mcc + imsi.mnc + imsi.msin;
@@ -1013,6 +1019,8 @@ void amf_n1::registration_request_handle(
         // nc.get()->imsi =
         // supi2amfId[("imsi-"+nc.get()->imsi)] = amf_ue_ngap_id;
         // supi2ranId[("imsi-"+nc.get()->imsi)] = ran_ue_ngap_id;
+        // stop Mobile Reachable Timer
+        itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
       }
     } break;
 
@@ -3196,6 +3204,13 @@ void amf_n1::mobile_reachable_timer_timeout(
   }
   set_mobile_reachable_timer_timeout(nc, true);
   // TODO: Start the implicit de-registration timer
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::set_mobile_reachable_timer(
+    std::shared_ptr<nas_context>& nc, const timer_id_t& t) {
+  std::unique_lock lock(m_nas_context);
+  nc.get()->mobile_reachable_timer = t;
 }
 
 //------------------------------------------------------------------------------

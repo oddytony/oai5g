@@ -192,6 +192,8 @@ class amf_n1 {
       const std::shared_ptr<nas_context>& nc, bool& b) const;
   bool get_mobile_reachable_timer_timeout(
       const std::shared_ptr<nas_context>& nc) const;
+  void set_mobile_reachable_timer(
+      std::shared_ptr<nas_context>& nc, const timer_id_t& t);
 
  private:
   void ue_initiate_de_registration_handle(
