@@ -47,6 +47,7 @@
 #include "amf_event.hpp"
 #include "RegistrationAccept.hpp"
 #include "ue_context.hpp"
+#include "itti.hpp"
 
 namespace amf_application {
 
@@ -162,6 +163,11 @@ class amf_n1 {
   void set_5gmm_state(std::shared_ptr<nas_context> nc, _5gmm_state_t state);
   void get_5gmm_state(std::shared_ptr<nas_context> nc, _5gmm_state_t& state);
 
+  void set_5gcm_state(
+      std::shared_ptr<nas_context>& nc, const cm_state_t& state);
+  void get_5gcm_state(
+      const std::shared_ptr<nas_context>& nc, cm_state_t& state) const;
+
   void handle_ue_reachability_status_change(
       std::string supi, uint8_t http_version);
 
@@ -177,6 +183,15 @@ class amf_n1 {
   bool find_ue_context(
       uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
       std::shared_ptr<ue_context>& uc);
+
+  void mobile_reachable_timer_timeout(
+      timer_id_t timer_id, uint64_t amf_ue_ngap_id);
+  void set_mobile_reachable_timer_timeout(
+      std::shared_ptr<nas_context>& nc, const bool& b);
+  void get_mobile_reachable_timer_timeout(
+      const std::shared_ptr<nas_context>& nc, bool& b) const;
+  bool get_mobile_reachable_timer_timeout(
+      const std::shared_ptr<nas_context>& nc) const;
 
  private:
   void ue_initiate_de_registration_handle(

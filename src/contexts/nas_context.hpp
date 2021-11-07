@@ -71,6 +71,7 @@ class nas_context {
   uint32_t ran_ue_ngap_id;
   cm_state_t nas_status;
   _5gmm_state_t _5gmm_state;
+  bool is_mobile_reachable_timer_timeout;
 
   // parameters from Registration request
   uint8_t registration_type : 3;
