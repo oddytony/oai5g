@@ -1133,7 +1133,6 @@ void amf_n1::registration_request_handle(
     } break;
 
     case MOBILITY_REGISTRATION_UPDATING: {
-      // TODO: check if the List Of PDU Sessions To Be Activated is available
       Logger::amf_n1().debug("Handling Mobility Registration Update...");
       run_mobility_registration_update_procedure(
           nc, regReq->getUplinkDataStatus(), regReq->getPduSessionStatus());
@@ -2772,7 +2771,6 @@ void amf_n1::run_mobility_registration_update_procedure(
 
   std::shared_ptr<pdu_session_context> psc = {};
   std::shared_ptr<ue_context> uc           = {};
-
   if (!find_ue_context(nc, uc)) {
     Logger::amf_n1().warn("Cannot find the UE context");
     return;
@@ -2856,9 +2854,8 @@ void amf_n1::run_periodic_registration_update_procedure(
   auto regAccept = std::make_unique<RegistrationAccept>();
   initialize_registration_accept(regAccept);
 
-  // amf_ue_context
+  // Get UE context
   std::shared_ptr<ue_context> uc = {};
-
   if (!find_ue_context(nc, uc)) {
     Logger::amf_n1().warn("Cannot find the UE context");
     return;
@@ -2927,8 +2924,8 @@ void amf_n1::run_periodic_registration_update_procedure(
   auto regAccept = std::make_unique<RegistrationAccept>();
   initialize_registration_accept(regAccept);
 
+  // Get UE context
   std::shared_ptr<ue_context> uc = {};
-
   if (!find_ue_context(nc, uc)) {
     Logger::amf_n1().warn("Cannot find the UE context");
     return;
@@ -2991,13 +2988,12 @@ void amf_n1::set_5gmm_state(
       "Set 5GMM state to %s", _5gmm_state_e2str[state].c_str());
   std::unique_lock lock(m_nas_context);
   nc.get()->_5gmm_state = state;
-  // TODO:
 }
 
 //------------------------------------------------------------------------------
 void amf_n1::get_5gmm_state(
     std::shared_ptr<nas_context> nc, _5gmm_state_t& state) {
-  // TODO:
+  std::shared_lock lock(m_nas_context);
   state = nc.get()->_5gmm_state;
 }
 
