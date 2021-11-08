@@ -27,4 +27,5 @@
 #define T3512_TIMER_VALUE_MIN 54    // 54 minutes
 #define MOBILE_REACHABLE_TIMER_NO_EMERGENCY_SERVICES_MIN                       \
   (T3512_TIMER_VALUE_MIN + 4)  // T3512 + 4, not for emergency services
+#define IMPLICIT_DEREGISTRATION_TIMER_MIN (T3512_TIMER_VALUE_MIN + 4)
 #endif
