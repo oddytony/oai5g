@@ -56,6 +56,7 @@ namespace amf_application {
 
 #define TASK_AMF_APP_PERIODIC_STATISTICS (0)
 #define TASK_AMF_MOBILE_REACHABLE_TIMER_EXPIRE (1)
+#define TASK_AMF_IMPLICIT_DEREGISTRATION_TIMER_EXPIRE (2)
 
 class amf_app {
  private:

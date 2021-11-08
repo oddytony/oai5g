@@ -74,6 +74,7 @@ class nas_context {
   _5gmm_state_t _5gmm_state;
   bool is_mobile_reachable_timer_timeout;
   timer_id_t mobile_reachable_timer;
+  timer_id_t implicit_deregistration_timer;
 
   // parameters from Registration request
   uint8_t registration_type : 3;

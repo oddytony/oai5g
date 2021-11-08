@@ -195,6 +195,11 @@ class amf_n1 {
   void set_mobile_reachable_timer(
       std::shared_ptr<nas_context>& nc, const timer_id_t& t);
 
+  void set_implicit_deregistration_timer(
+      std::shared_ptr<nas_context>& nc, const timer_id_t& t);
+  void implicit_deregistration_timer_timeout(
+      timer_id_t timer_id, uint64_t amf_ue_ngap_id);
+
  private:
   void ue_initiate_de_registration_handle(
       uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas);

@@ -119,6 +119,10 @@ void amf_n1_task(void*) {
               amf_n1_inst->mobile_reachable_timer_timeout(
                   to->timer_id, to->arg2_user);
               break;
+            case TASK_AMF_IMPLICIT_DEREGISTRATION_TIMER_EXPIRE:
+              amf_n1_inst->implicit_deregistration_timer_timeout(
+                  to->timer_id, to->arg2_user);
+              break;
             default:
               Logger::amf_n1().info(
                   "No handler for timer(%d) with arg1_user(%d) ", to->timer_id,
@@ -489,8 +493,9 @@ void amf_n1::nas_signalling_establishment_request_handle(
     nc.get()->amf_ue_ngap_id  = amf_ue_ngap_id;
     nc.get()->ran_ue_ngap_id  = ran_ue_ngap_id;
     nc.get()->serving_network = snn;
-    // stop Mobile Reachable Timer
+    // Stop Mobile Reachable Timer/Implicit Deregistration Timer
     itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
+    itti_inst->timer_remove(nc.get()->implicit_deregistration_timer);
     // stacs.UE_connected += 1;
 
     // Trigger UE Reachability Status Notify
@@ -677,8 +682,10 @@ void amf_n1::identity_response_handle(
   nc.get()->imsi                         = supi;
   supi2amfId[("imsi-" + nc.get()->imsi)] = amf_ue_ngap_id;
   supi2ranId[("imsi-" + nc.get()->imsi)] = ran_ue_ngap_id;
-  // stop Mobile Reachable Timer
+  // Stop Mobile Reachable Timer/Implicit Deregistration Timer
   itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
+  itti_inst->timer_remove(nc.get()->implicit_deregistration_timer);
+
   if (nc.get()->to_be_register_by_new_suci) {
     run_registration_procedure(nc);
   }
@@ -932,8 +939,9 @@ void amf_n1::registration_request_handle(
           nc.get()->amf_ue_ngap_id  = amf_ue_ngap_id;
           nc.get()->ran_ue_ngap_id  = ran_ue_ngap_id;
           nc.get()->serving_network = snn;
-          // stop Mobile Reachable Timer
+          // Stop Mobile Reachable Timer/Implicit Deregistration Timer
           itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
+          itti_inst->timer_remove(nc.get()->implicit_deregistration_timer);
         }
         nc.get()->is_imsi_present = true;
         nc.get()->imsi            = imsi.mcc + imsi.mnc + imsi.msin;
@@ -1019,8 +1027,10 @@ void amf_n1::registration_request_handle(
         // nc.get()->imsi =
         // supi2amfId[("imsi-"+nc.get()->imsi)] = amf_ue_ngap_id;
         // supi2ranId[("imsi-"+nc.get()->imsi)] = ran_ue_ngap_id;
-        // stop Mobile Reachable Timer
+
+        // Stop Mobile Reachable Timer/Implicit Deregistration Timer
         itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
+        itti_inst->timer_remove(nc.get()->implicit_deregistration_timer);
       }
     } break;
 
@@ -3203,9 +3213,88 @@ void amf_n1::mobile_reachable_timer_timeout(
         "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
   }
   set_mobile_reachable_timer_timeout(nc, true);
+
   // TODO: Start the implicit de-registration timer
+  timer_id_t tid = itti_inst->timer_setup(
+      IMPLICIT_DEREGISTRATION_TIMER_MIN * 60, 0, TASK_AMF_N1,
+      TASK_AMF_IMPLICIT_DEREGISTRATION_TIMER_EXPIRE, amf_ue_ngap_id);
+  Logger::amf_app().startup(
+      "Started implicit de-registration timer (tid %d)", tid);
+
+  set_implicit_deregistration_timer(nc, tid);
 }
 
+//------------------------------------------------------------------------------
+void amf_n1::implicit_deregistration_timer_timeout(
+    timer_id_t timer_id, uint64_t amf_ue_ngap_id) {
+  std::shared_ptr<nas_context> nc;
+  if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+    nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+  else {
+    Logger::amf_n2().warn(
+        "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+  }
+  // Implicitly de-register UE
+  // TODO (4.2.2.3.3 Network-initiated Deregistration @3GPP TS 23.502V16.0.0):
+  // If the UE is in CM-CONNECTED state, the AMF may explicitly deregister the
+  // UE by sending a Deregistration Request message (Deregistration type, Access
+  // Type) to the UE
+
+  // Send PDU Session Release SM Context Request to SMF for each PDU Session
+  std::shared_ptr<ue_context> uc = {};
+
+  if (!find_ue_context(
+          nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id, uc)) {
+    Logger::amf_n1().warn("Cannot find the UE context");
+    return;
+  }
+
+  std::vector<std::shared_ptr<pdu_session_context>> pdu_sessions;
+  if (!uc.get()->get_pdu_sessions_context(pdu_sessions)) return;
+
+  for (auto p : pdu_sessions) {
+    std::shared_ptr<itti_nsmf_pdusession_release_sm_context> itti_msg =
+        std::make_shared<itti_nsmf_pdusession_release_sm_context>(
+            TASK_AMF_N1, TASK_AMF_N11);
+    itti_msg->supi           = uc->supi;
+    itti_msg->pdu_session_id = p->pdu_session_id;
+
+    int ret = itti_inst->send_msg(itti_msg);
+    if (0 != ret) {
+      Logger::amf_n1().error(
+          "Could not send ITTI message %s to task TASK_AMF_N11",
+          itti_msg->get_msg_name());
+    }
+  }
+
+  // Send N2 UE Release command to NG-RAN if there is a N2 signalling connection
+  // to NG-RAN
+  Logger::amf_n1().debug(
+      "Sending ITTI UE Context Release Command to TASK_AMF_N2");
+
+  std::shared_ptr<itti_ue_context_release_command> itti_msg_cxt_release =
+      std::make_shared<itti_ue_context_release_command>(
+          TASK_AMF_N1, TASK_AMF_N2);
+
+  itti_msg_cxt_release->amf_ue_ngap_id = nc.get()->amf_ue_ngap_id;
+  itti_msg_cxt_release->ran_ue_ngap_id = nc.get()->ran_ue_ngap_id;
+  itti_msg_cxt_release->cause.setChoiceOfCause(Ngap_Cause_PR_nas);
+  itti_msg_cxt_release->cause.setValue(Ngap_CauseNas_deregister);
+
+  int ret = itti_inst->send_msg(itti_msg_cxt_release);
+  if (0 != ret) {
+    Logger::ngap().error(
+        "Could not send ITTI message %s to task TASK_AMF_N2",
+        itti_msg_cxt_release->get_msg_name());
+  }
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::set_implicit_deregistration_timer(
+    std::shared_ptr<nas_context>& nc, const timer_id_t& t) {
+  std::unique_lock lock(m_nas_context);
+  nc.get()->implicit_deregistration_timer = t;
+}
 //------------------------------------------------------------------------------
 void amf_n1::set_mobile_reachable_timer(
     std::shared_ptr<nas_context>& nc, const timer_id_t& t) {
