@@ -55,6 +55,7 @@ static uint32_t amf_app_ue_ngap_id_generator = 1;
 namespace amf_application {
 
 #define TASK_AMF_APP_PERIODIC_STATISTICS (0)
+#define TASK_AMF_MOBILE_REACHABLE_TIMER_EXPIRE (1)
 
 class amf_app {
  private:

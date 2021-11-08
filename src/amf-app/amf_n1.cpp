@@ -63,6 +63,7 @@
 #include "nas_algorithms.hpp"
 #include "sha256.hpp"
 #include "comUt.hpp"
+#include "3gpp_24.501.h"
 
 extern "C" {
 #include "bstrlib.h"
@@ -111,6 +112,21 @@ void amf_n1_task(void*) {
             dynamic_cast<itti_downlink_nas_transfer*>(msg);
         amf_n1_inst->handle_itti_message(ref(*m));
       } break;
+      case TIME_OUT: {
+        if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
+          switch (to->arg1_user) {
+            case TASK_AMF_MOBILE_REACHABLE_TIMER_EXPIRE:
+              amf_n1_inst->mobile_reachable_timer_timeout(
+                  to->timer_id, to->arg2_user);
+              break;
+            default:
+              Logger::amf_n1().info(
+                  "No handler for timer(%d) with arg1_user(%d) ", to->timer_id,
+                  to->arg1_user);
+          }
+        }
+      } break;
+
       case TERMINATE: {
         if (itti_msg_terminate* terminate =
                 dynamic_cast<itti_msg_terminate*>(msg)) {
@@ -473,6 +489,8 @@ void amf_n1::nas_signalling_establishment_request_handle(
     nc.get()->amf_ue_ngap_id  = amf_ue_ngap_id;
     nc.get()->ran_ue_ngap_id  = ran_ue_ngap_id;
     nc.get()->serving_network = snn;
+    // stop Mobile Reachable Timer
+    itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
     // stacs.UE_connected += 1;
 
     // Trigger UE Reachability Status Notify
@@ -659,6 +677,8 @@ void amf_n1::identity_response_handle(
   nc.get()->imsi                         = supi;
   supi2amfId[("imsi-" + nc.get()->imsi)] = amf_ue_ngap_id;
   supi2ranId[("imsi-" + nc.get()->imsi)] = ran_ue_ngap_id;
+  // stop Mobile Reachable Timer
+  itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
   if (nc.get()->to_be_register_by_new_suci) {
     run_registration_procedure(nc);
   }
@@ -912,6 +932,8 @@ void amf_n1::registration_request_handle(
           nc.get()->amf_ue_ngap_id  = amf_ue_ngap_id;
           nc.get()->ran_ue_ngap_id  = ran_ue_ngap_id;
           nc.get()->serving_network = snn;
+          // stop Mobile Reachable Timer
+          itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
         }
         nc.get()->is_imsi_present = true;
         nc.get()->imsi            = imsi.mcc + imsi.mnc + imsi.msin;
@@ -997,6 +1019,8 @@ void amf_n1::registration_request_handle(
         // nc.get()->imsi =
         // supi2amfId[("imsi-"+nc.get()->imsi)] = amf_ue_ngap_id;
         // supi2ranId[("imsi-"+nc.get()->imsi)] = ran_ue_ngap_id;
+        // stop Mobile Reachable Timer
+        itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
       }
     } break;
 
@@ -2166,7 +2190,7 @@ void amf_n1::security_mode_complete_handle(
 
   // TODO: remove hardcoded values
   regAccept->set_5GS_Network_Feature_Support(0x01, 0x00);
-  regAccept->setT3512_Value(0x5, 0x1e);
+  regAccept->setT3512_Value(0x5, T3512_TIMER_VALUE_MIN);
   uint8_t buffer[BUFFER_SIZE_1024] = {0};
   int encoded_size = regAccept->encode2buffer(buffer, BUFFER_SIZE_1024);
   comUt::print_buffer(
@@ -2998,6 +3022,20 @@ void amf_n1::get_5gmm_state(
 }
 
 //------------------------------------------------------------------------------
+void amf_n1::set_5gcm_state(
+    std::shared_ptr<nas_context>& nc, const cm_state_t& state) {
+  std::shared_lock lock(m_nas_context);
+  nc.get()->nas_status = state;
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::get_5gcm_state(
+    const std::shared_ptr<nas_context>& nc, cm_state_t& state) const {
+  std::shared_lock lock(m_nas_context);
+  state = nc.get()->nas_status;
+}
+
+//------------------------------------------------------------------------------
 void amf_n1::handle_ue_reachability_status_change(
     std::string supi, uint8_t http_version) {
   Logger::amf_n1().debug(
@@ -3072,8 +3110,8 @@ void amf_n1::initialize_registration_accept(
     std::unique_ptr<nas::RegistrationAccept>& registration_accept) {
   registration_accept->setHeader(PLAIN_5GS_MSG);
   registration_accept->set_5GS_Registration_Result(
-      false, false, false, 0x01);                  // 3GPP Access
-  registration_accept->setT3512_Value(0x5, 0x1e);  // TODO
+      false, false, false, 0x01);  // 3GPP Access
+  registration_accept->setT3512_Value(0x5, T3512_TIMER_VALUE_MIN);
 
   std::vector<p_tai_t> tai_list;
   for (auto p : amf_cfg.plmn_list) {
@@ -3152,4 +3190,46 @@ bool amf_n1::find_ue_context(
   }
 
   return true;
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::mobile_reachable_timer_timeout(
+    timer_id_t timer_id, uint64_t amf_ue_ngap_id) {
+  std::shared_ptr<nas_context> nc;
+  if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+    nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+  else {
+    Logger::amf_n2().warn(
+        "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+  }
+  set_mobile_reachable_timer_timeout(nc, true);
+  // TODO: Start the implicit de-registration timer
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::set_mobile_reachable_timer(
+    std::shared_ptr<nas_context>& nc, const timer_id_t& t) {
+  std::unique_lock lock(m_nas_context);
+  nc.get()->mobile_reachable_timer = t;
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::set_mobile_reachable_timer_timeout(
+    std::shared_ptr<nas_context>& nc, const bool& b) {
+  std::unique_lock lock(m_nas_context);
+  nc.get()->is_mobile_reachable_timer_timeout = b;
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::get_mobile_reachable_timer_timeout(
+    const std::shared_ptr<nas_context>& nc, bool& b) const {
+  std::shared_lock lock(m_nas_context);
+  b = nc.get()->is_mobile_reachable_timer_timeout;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::get_mobile_reachable_timer_timeout(
+    const std::shared_ptr<nas_context>& nc) const {
+  std::shared_lock lock(m_nas_context);
+  return nc.get()->is_mobile_reachable_timer_timeout;
 }

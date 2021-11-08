@@ -53,6 +53,7 @@
 #include "itti_msg_amf_app.hpp"
 #include "logger.hpp"
 #include "sctp_server.hpp"
+#include "3gpp_24.501.h"
 
 #include <boost/chrono.hpp>
 #include <boost/chrono/chrono.hpp>
@@ -260,6 +261,21 @@ void amf_n2::handle_itti_message(itti_paging& itti_msg) {
   }
 
   // TODO: check UE reachability status
+
+  // get NAS context
+  std::shared_ptr<nas_context> nc = {};
+  if (amf_n1_inst->is_amf_ue_id_2_nas_context(itti_msg.amf_ue_ngap_id))
+    nc = amf_n1_inst->amf_ue_id_2_nas_context(itti_msg.amf_ue_ngap_id);
+  else {
+    Logger::amf_n2().warn(
+        "No existed nas_context with amf_ue_ngap_id(0x%x)",
+        itti_msg.amf_ue_ngap_id);
+  }
+  // Network stops sending paging messages since the mobile reachable timer
+  // expires
+  if (amf_n1_inst->get_mobile_reachable_timer_timeout(nc)) {
+    return;
+  }
 
   PagingMsg paging_msg = {};
   paging_msg.setMessageType();
@@ -1265,6 +1281,25 @@ void amf_n2::handle_itti_message(itti_ue_context_release_complete& itti_msg) {
   Logger::amf_n2().debug("Handle UE Context Release Complete ...");
   unsigned long amf_ue_ngap_id = itti_msg.ueCtxRelCmpl->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.ueCtxRelCmpl->getRanUeNgapId();
+  // Change UE status from CM-CONNECTED to CM-IDLE
+  std::shared_ptr<nas_context> nc;
+  if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+    nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+  else {
+    Logger::amf_n2().warn(
+        "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+  }
+  amf_n1_inst->set_5gcm_state(nc, CM_IDLE);
+
+  // Start/reset the Mobile Reachable Timer
+  timer_id_t tid = itti_inst->timer_setup(
+      MOBILE_REACHABLE_TIMER_NO_EMERGENCY_SERVICES_MIN * 60, 0, TASK_AMF_N1,
+      TASK_AMF_MOBILE_REACHABLE_TIMER_EXPIRE, amf_ue_ngap_id);
+  Logger::amf_app().startup("Started mobile reachable timer ( tid %d)", tid);
+
+  amf_n1_inst->set_mobile_reachable_timer(nc, tid);
+  amf_n1_inst->set_mobile_reachable_timer_timeout(nc, false);
+
   // TODO: User Location Information IE
   // TODO: Information on Recommended Cells & RAN Nodes for Paging IE
 

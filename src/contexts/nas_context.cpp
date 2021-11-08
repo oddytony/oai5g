@@ -64,7 +64,9 @@ nas_context::nas_context() : _vector(), _5g_he_av(), _5g_av(), kamf() {
   is_auth_vectors_present                               = false;
   to_be_register_by_new_suci                            = false;
   ueSecurityCaplen                                      = 0;
-  nas_status                                            = {};
+  nas_status                                            = CM_IDLE;
+  is_mobile_reachable_timer_timeout                     = false;
+  mobile_reachable_timer                                = ITTI_INVALID_TIMER_ID;
 }
 
 //------------------------------------------------------------------------------
