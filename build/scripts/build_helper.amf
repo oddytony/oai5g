@@ -494,6 +494,7 @@ check_install_amf_deps(){
   echo "Install distro libs"
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
   
+  # fix issue with libboost in U18 for a bare metal deployment
   if [[ $OS_DISTRO == "ubuntu" ]]; then
     case "$(get_distribution_release)" in
       "ubuntu18.04")
