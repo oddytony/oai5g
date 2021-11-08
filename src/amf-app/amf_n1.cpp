@@ -3239,9 +3239,8 @@ void amf_n1::implicit_deregistration_timer_timeout(
   // If the UE is in CM-CONNECTED state, the AMF may explicitly deregister the
   // UE by sending a Deregistration Request message (Deregistration type, Access
   // Type) to the UE
-  // Send PDU Session Release SM Context Request to SMF for each PDU Session
 
-  // Get all the PDU sessions
+  // Send PDU Session Release SM Context Request to SMF for each PDU Session
   std::shared_ptr<ue_context> uc = {};
 
   if (!find_ue_context(
@@ -3257,7 +3256,6 @@ void amf_n1::implicit_deregistration_timer_timeout(
     std::shared_ptr<itti_nsmf_pdusession_release_sm_context> itti_msg =
         std::make_shared<itti_nsmf_pdusession_release_sm_context>(
             TASK_AMF_N1, TASK_AMF_N11);
-
     itti_msg->supi           = uc->supi;
     itti_msg->pdu_session_id = p->pdu_session_id;
 
@@ -3268,25 +3266,26 @@ void amf_n1::implicit_deregistration_timer_timeout(
           itti_msg->get_msg_name());
     }
   }
+
   // Send N2 UE Release command to NG-RAN if there is a N2 signalling connection
   // to NG-RAN
   Logger::amf_n1().debug(
       "Sending ITTI UE Context Release Command to TASK_AMF_N2");
 
-  itti_ue_context_release_command* itti_msg =
-      new itti_ue_context_release_command(TASK_AMF_N1, TASK_AMF_N2);
+  std::shared_ptr<itti_ue_context_release_command> itti_msg_cxt_release =
+      std::make_shared<itti_ue_context_release_command>(
+          TASK_AMF_N1, TASK_AMF_N2);
 
-  itti_msg->amf_ue_ngap_id = nc.get()->amf_ue_ngap_id;
-  itti_msg->ran_ue_ngap_id = nc.get()->ran_ue_ngap_id;
-  itti_msg->cause.setChoiceOfCause(Ngap_Cause_PR_nas);
-  itti_msg->cause.setValue(Ngap_CauseNas_deregister);
-  std::shared_ptr<itti_ue_context_release_command> i =
-      std::shared_ptr<itti_ue_context_release_command>(itti_msg);
-  int ret = itti_inst->send_msg(i);
+  itti_msg_cxt_release->amf_ue_ngap_id = nc.get()->amf_ue_ngap_id;
+  itti_msg_cxt_release->ran_ue_ngap_id = nc.get()->ran_ue_ngap_id;
+  itti_msg_cxt_release->cause.setChoiceOfCause(Ngap_Cause_PR_nas);
+  itti_msg_cxt_release->cause.setValue(Ngap_CauseNas_deregister);
+
+  int ret = itti_inst->send_msg(itti_msg_cxt_release);
   if (0 != ret) {
     Logger::ngap().error(
         "Could not send ITTI message %s to task TASK_AMF_N2",
-        i->get_msg_name());
+        itti_msg_cxt_release->get_msg_name());
   }
 }
 
