@@ -437,7 +437,6 @@ check_install_amf_deps(){
     # removed libspdlog-dev
     PACKAGE_LIST="\
       $specific_packages \
-      libboost1.67-dev \
       mysql-server \
       mysql-client \
       libmysqlclient-dev \
@@ -494,6 +493,17 @@ check_install_amf_deps(){
   fi
   echo "Install distro libs"
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
+  
+  # fix issue with libboost in U18 for a bare metal deployment
+  if [[ $OS_DISTRO == "ubuntu" ]]; then
+    case "$(get_distribution_release)" in
+      "ubuntu18.04")
+        $SUDO $INSTALLER remove libboost1.65-dev
+        $SUDO $INSTALLER install libboost1.67-dev
+        ;;
+    esac
+  fi  
+
   ret=$?;[[ $ret -ne 0 ]] && return $ret
   echo "distro libs installation complete"
 
