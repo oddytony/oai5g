@@ -64,6 +64,22 @@ typedef enum {
 
 class amf_n1 {
  public:
+  std::map<long, std::shared_ptr<nas_context>>
+      amfueid2nas_context;  // amf ue ngap id
+  std::map<std::string, std::shared_ptr<nas_context>> imsi2nas_context;
+  std::map<std::string, long> supi2amfId;
+  std::map<std::string, uint32_t> supi2ranId;
+
+  mutable std::shared_mutex m_nas_context;
+
+  std::map<std::string, std::shared_ptr<nas_context>> guti2nas_context;
+  mutable std::shared_mutex m_guti2nas_context;
+
+  static std::map<std::string, std::string> rand_record;
+  static uint8_t no_random_delta;
+  random_state_t random_state;
+  database_t* db_desc;
+
   amf_n1();
   ~amf_n1();
   void handle_itti_message(itti_uplink_nas_data_ind&);
@@ -78,16 +94,6 @@ class amf_n1 {
       plmn_t plmn);
   bool check_security_header_type(SecurityHeaderType& type, uint8_t* buffer);
 
-  std::map<long, std::shared_ptr<nas_context>>
-      amfueid2nas_context;  // amf ue ngap id
-  std::map<std::string, std::shared_ptr<nas_context>> imsi2nas_context;
-  std::map<std::string, long> supi2amfId;
-  std::map<std::string, uint32_t> supi2ranId;
-
-  mutable std::shared_mutex m_nas_context;
-
-  std::map<std::string, std::shared_ptr<nas_context>> guti2nas_context;
-  mutable std::shared_mutex m_guti2nas_context;
   bool is_guti_2_nas_context(const std::string& guti) const;
   std::shared_ptr<nas_context> guti_2_nas_context(
       const std::string& guti) const;
@@ -100,7 +106,6 @@ class amf_n1 {
       const long& amf_ue_ngap_id) const;
   void set_amf_ue_ngap_id_2_nas_context(
       const long& amf_ue_ngap_id, std::shared_ptr<nas_context> nc);
-  database_t* db_desc;
 
   // procedures
   // specific procedures running logic
