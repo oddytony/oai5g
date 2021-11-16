@@ -371,7 +371,7 @@ pipeline {
         always {
           script {
             copyArtifacts(projectName: params.AMF_BT_PipelineName,
-                          filter: '*_results_oai_amf_bt.html',
+                          filter: '*_results_oai_amf_bt*.html',
                           selector: lastCompleted())
           }
         }
@@ -403,7 +403,7 @@ pipeline {
             always {
               script {
                 copyArtifacts(projectName: params.CN5G_FED_PipelineName,
-                              filter: '*_results_oai_cn5g.html',
+                              filter: '*_results_oai_cn5g*.html',
                               selector: lastCompleted())
               }
             }
@@ -433,7 +433,7 @@ pipeline {
             always {
               script {
                 copyArtifacts(projectName: params.CN5G_FED_OC_PipelineName,
-                              filter: '*_results_oai_cn5g_oc.html',
+                              filter: '*_results_oai_cn5g_oc*.html',
                               selector: lastCompleted())
               }
             }
