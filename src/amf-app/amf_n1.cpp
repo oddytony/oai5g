@@ -1135,8 +1135,10 @@ void amf_n1::registration_request_handle(
   std::vector<SNSSAI_t> requestedNssai = {};
   if (!regReq->getRequestedNssai(requestedNssai)) {
     Logger::amf_n1().warn("No Optional IE RequestedNssai available");
+  } else {
+    nc.get()->requestedNssai = requestedNssai;
   }
-  nc.get()->requestedNssai       = requestedNssai;
+
   nc.get()->ctx_avaliability_ind = true;
 
   // Get Last visited registered TAI(OPtional IE), if provided
@@ -1147,6 +1149,19 @@ void amf_n1::registration_request_handle(
 
   bstring nas_msg;
   bool is_messagecontainer = regReq->getNasMessageContainer(nas_msg);
+
+  if (is_messagecontainer) {
+    std::unique_ptr<RegistrationRequest> registration_request_msg_container =
+        std::make_unique<RegistrationRequest>();
+    registration_request_msg_container->decodefrombuffer(
+        nullptr, (uint8_t*) bdata(nas_msg), blength(nas_msg));
+
+    if (!regReq->getRequestedNssai(requestedNssai)) {
+      Logger::amf_n1().warn("No Optional IE RequestedNssai available");
+    } else {
+      nc.get()->requestedNssai = requestedNssai;
+    }
+  }
 
   // Store NAS information into nas_context
   // Run the corresponding registration procedure
@@ -2604,8 +2619,22 @@ void amf_n1::ul_nas_transport_handle(
   uint8_t payload_type   = ulNas->getPayloadContainerType();
   uint8_t pdu_session_id = ulNas->getPduSessionId();
   uint8_t request_type   = ulNas->getRequestType();
-  SNSSAI_t snssai        = {};
-  ulNas->getSnssai(snssai);
+  // SNSSAI
+  SNSSAI_t snssai = {};
+  if (!ulNas->getSnssai(snssai)) {  // If no SNSSAI in this message, use the one
+                                    // in Registration Request
+    // Only use the first one
+
+    std::shared_ptr<nas_context> nc = {};
+    if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+      nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+    else {
+      Logger::amf_n2().warn(
+          "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+    }
+    if (nc.get()->requestedNssai.size() > 0)
+      snssai = nc.get()->requestedNssai[0];
+  }
   bstring dnn = bfromcstr("default");
   bstring sm_msg;
   if (ulNas->getDnn(dnn)) {
@@ -3088,6 +3117,7 @@ void amf_n1::initialize_registration_accept(
   }
   registration_accept->setTaiList(tai_list);
 
+  // TODO: get the list of common SST, SD between UE/gNB and AMF
   std::vector<struct SNSSAI_s> nssai;
   for (auto p : amf_cfg.plmn_list) {
     for (auto s : p.slice_list) {
