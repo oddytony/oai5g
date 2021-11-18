@@ -515,8 +515,7 @@ int _5GSMobilityIdentity::decodefrombuffer(
     } break;
     case IMEISVI: {
       typeOfIdentity = IMEISVI;
-      decoded_size +=
-          imeisv_decodefrombuffer(buf + decoded_size, len - decoded_size);
+      decoded_size += imeisv_decodefrombuffer(buf + decoded_size, length);
       return decoded_size;
     } break;
     case _5G_S_TMSI: {
