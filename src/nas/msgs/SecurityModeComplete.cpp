@@ -36,10 +36,10 @@ using namespace nas;
 //------------------------------------------------------------------------------
 SecurityModeComplete::SecurityModeComplete() {
   Logger::nas_mm().debug("initiating class SecurityModeComplete");
-  plain_header             = NULL;
-  ie_imeisv                = NULL;
-  ie_nas_message_container = NULL;
-  ie_non_imeisvpei         = NULL;
+  plain_header             = nullptr;
+  ie_imeisv                = nullptr;
+  ie_nas_message_container = nullptr;
+  ie_non_imeisvpei         = nullptr;
 };
 
 //------------------------------------------------------------------------------
@@ -75,9 +75,9 @@ void SecurityModeComplete::setNON_IMEISV(IMEISV_t imeisv) {
 bool SecurityModeComplete::getIMEISV(IMEISV_t& imeisv) {
   if (ie_imeisv) {
     ie_imeisv->getIMEISV(imeisv);
-    return 0;
+    return true;
   } else {
-    return -1;
+    return false;
   }
 }
 
@@ -85,9 +85,9 @@ bool SecurityModeComplete::getIMEISV(IMEISV_t& imeisv) {
 bool SecurityModeComplete::getNasMessageContainer(bstring& nas) {
   if (ie_nas_message_container) {
     ie_nas_message_container->getValue(nas);
-    return 0;
+    return true;
   } else {
-    return -1;
+    return false;
   }
 }
 
@@ -95,9 +95,9 @@ bool SecurityModeComplete::getNasMessageContainer(bstring& nas) {
 bool SecurityModeComplete::getNON_IMEISV(IMEISV_t& imeisv) {
   if (ie_non_imeisvpei) {
     ie_non_imeisvpei->getIMEISV(imeisv);
-    return 0;
+    return true;
   } else {
-    return -1;
+    return false;
   }
 }
 
@@ -155,7 +155,7 @@ int SecurityModeComplete::decodefrombuffer(
   Logger::nas_mm().debug("Decoding SecurityModeComplete message");
   int decoded_size = 3;
   plain_header     = header;
-  Logger::nas_mm().debug("decoded_size(%d)", decoded_size);
+  Logger::nas_mm().debug("Decoded_size (%d)", decoded_size);
   uint8_t octet = *(buf + decoded_size);
   Logger::nas_mm().debug("First option IEI (0x%x)", octet);
   while ((octet != 0x0)) {

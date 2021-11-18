@@ -47,6 +47,7 @@
 #include "RegistrationRequest.hpp"
 #include "SecurityModeCommand.hpp"
 #include "ServiceAccept.hpp"
+#include "SecurityModeComplete.hpp"
 #include "ServiceRequest.hpp"
 #include "String2Value.hpp"
 #include "UEAuthenticationCtx.h"
@@ -2149,9 +2150,44 @@ void amf_n1::security_mode_complete_handle(
     return;
   }
 
+  std::shared_ptr<nas_context> nc;
+  if (is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+    nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
+  else {
+    Logger::amf_n1().warn(
+        "No existed nas_context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+    return;
+  }
+  // Decode Security Mode Complete
+  auto security_mode_complete = std::make_unique<SecurityModeComplete>();
+  security_mode_complete->decodefrombuffer(
+      nullptr, (uint8_t*) bdata(nas_msg), blength(nas_msg));
+
+  bstring nas_msg_container;
+  if (security_mode_complete->getNasMessageContainer(nas_msg_container)) {
+    uint8_t* buf_nas     = (uint8_t*) bdata(nas_msg_container);
+    uint8_t message_type = *(buf_nas + 2);
+    if (message_type == REGISTRATION_REQUEST) {
+      Logger::amf_n1().debug("Registration Request in NAS Message Container");
+      // Decode registration request message
+      std::unique_ptr<RegistrationRequest> registration_request =
+          std::make_unique<RegistrationRequest>();
+      registration_request->decodefrombuffer(
+          nullptr, (uint8_t*) bdata(nas_msg_container),
+          blength(nas_msg_container));
+      bdestroy(nas_msg_container);  // free buffer
+
+      // Get Requested NSSAI (Optional IE), if provided
+      std::vector<SNSSAI_t> requested_nssai = {};
+      if (registration_request->getRequestedNssai(requested_nssai)) {
+        nc.get()->requestedNssai = requested_nssai;
+      }
+    }
+  }
+
   // Encoding REGISTRATION ACCEPT
-  auto regAccept = std::make_unique<RegistrationAccept>();
-  initialize_registration_accept(regAccept);
+  auto registration_accept = std::make_unique<RegistrationAccept>();
+  initialize_registration_accept(registration_accept, nc);
 
   std::string mcc = {};
   std::string mnc = {};
@@ -2162,7 +2198,7 @@ void amf_n1::security_mode_complete_handle(
     // TODO:
     return;
   }
-  regAccept->set5G_GUTI(
+  registration_accept->set5G_GUTI(
       mcc, mnc, amf_cfg.guami.regionID, amf_cfg.guami.AmfSetID,
       amf_cfg.guami.AmfPointer, tmsi);
 
@@ -2172,10 +2208,11 @@ void amf_n1::security_mode_complete_handle(
   Logger::amf_n1().debug("Allocated GUTI %s", guti.c_str());
 
   // TODO: remove hardcoded values
-  regAccept->set_5GS_Network_Feature_Support(0x01, 0x00);
-  regAccept->setT3512_Value(0x5, T3512_TIMER_VALUE_MIN);
+  registration_accept->set_5GS_Network_Feature_Support(0x01, 0x00);
+  registration_accept->setT3512_Value(0x5, T3512_TIMER_VALUE_MIN);
   uint8_t buffer[BUFFER_SIZE_1024] = {0};
-  int encoded_size = regAccept->encode2buffer(buffer, BUFFER_SIZE_1024);
+  int encoded_size =
+      registration_accept->encode2buffer(buffer, BUFFER_SIZE_1024);
   comUt::print_buffer(
       "amf_n1", "Registration-Accept message buffer", buffer, encoded_size);
   if (!encoded_size) {
@@ -2183,14 +2220,6 @@ void amf_n1::security_mode_complete_handle(
     return;
   }
 
-  if (!is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
-    Logger::amf_n2().error(
-        "No UE NAS context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
-    return;
-  }
-
-  std::shared_ptr<nas_context> nc = {};
-  nc                              = amf_ue_id_2_nas_context(amf_ue_ngap_id);
   Logger::amf_n1().info(
       "UE (IMSI %s, GUTI %s, current RAN ID %d, current AMF ID %d) has been "
       "registered to the network",
@@ -3130,6 +3159,54 @@ void amf_n1::initialize_registration_accept(
         return;
       }
       nssai.push_back(snssai);
+    }
+  }
+  registration_accept->setALLOWED_NSSAI(nssai);
+  return;
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::initialize_registration_accept(
+    std::unique_ptr<nas::RegistrationAccept>& registration_accept,
+    std::shared_ptr<nas_context>& nc) {
+  registration_accept->setHeader(PLAIN_5GS_MSG);
+  registration_accept->set_5GS_Registration_Result(
+      false, false, false, 0x01);  // 3GPP Access
+  registration_accept->setT3512_Value(0x5, T3512_TIMER_VALUE_MIN);
+
+  std::vector<p_tai_t> tai_list;
+  for (auto p : amf_cfg.plmn_list) {
+    p_tai_t item    = {};
+    item.type       = 0x00;
+    nas_plmn_t plmn = {};
+    plmn.mcc        = p.mcc;
+    plmn.mnc        = p.mnc;
+    item.plmn_list.push_back(plmn);
+    item.tac_list.push_back(p.tac);
+    tai_list.push_back(item);
+  }
+  registration_accept->setTaiList(tai_list);
+
+  // TODO: get the list of common SST, SD between UE/gNB and AMF
+  std::vector<struct SNSSAI_s> nssai;
+  for (auto p : amf_cfg.plmn_list) {
+    for (auto s : p.slice_list) {
+      SNSSAI_t snssai = {};
+      try {
+        snssai.sst = std::stoi(s.sST);
+        snssai.sd  = std::stoi(s.sD);
+      } catch (const std::exception& err) {
+        Logger::amf_n1().warn("Invalid SST/SD");
+        return;
+      }
+
+      // Check with the requested NSSAI from UE
+      for (auto rn : nc.get()->requestedNssai) {
+        if ((rn.sst == snssai.sst) and (rn.sd == snssai.sd)) {
+          nssai.push_back(snssai);
+          break;
+        }
+      }
     }
   }
   registration_accept->setALLOWED_NSSAI(nssai);

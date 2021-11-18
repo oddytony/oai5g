@@ -182,6 +182,10 @@ class amf_n1 {
   void initialize_registration_accept(
       std::unique_ptr<nas::RegistrationAccept>& registration_accept);
 
+  void initialize_registration_accept(
+      std::unique_ptr<nas::RegistrationAccept>& registration_accept,
+      std::shared_ptr<nas_context>& nc);
+
   bool find_ue_context(
       const std::shared_ptr<nas_context>& nc, std::shared_ptr<ue_context>& uc);
 
