@@ -2165,8 +2165,14 @@ void amf_n1::security_mode_complete_handle(
 
   bstring nas_msg_container;
   if (security_mode_complete->getNasMessageContainer(nas_msg_container)) {
+    comUt::print_buffer(
+        "amf_n1", "NAS Message Container", (uint8_t*) bdata(nas_msg_container),
+        blength(nas_msg_container));
+
     uint8_t* buf_nas     = (uint8_t*) bdata(nas_msg_container);
     uint8_t message_type = *(buf_nas + 2);
+    Logger::amf_n1().debug(
+        "NAS Message Container, Message Type 0x%x", message_type);
     if (message_type == REGISTRATION_REQUEST) {
       Logger::amf_n1().debug("Registration Request in NAS Message Container");
       // Decode registration request message
