@@ -75,8 +75,6 @@ extern amf_n11* amf_n11_inst;
 extern amf_config amf_cfg;
 extern amf_app* amf_app_inst;
 extern statistics stacs;
-extern void print_buffer(
-    const std::string app, const std::string commit, uint8_t* buf, int len);
 
 void amf_n2_task(void*);
 

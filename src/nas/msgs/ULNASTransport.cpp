@@ -144,9 +144,9 @@ void ULNASTransport::setS_NSSAI(SNSSAI_s snssai) {
 bool ULNASTransport::getSnssai(SNSSAI_s& snssai) {
   if (ie_s_nssai) {
     ie_s_nssai->getValue(snssai);
-    return 0;
+    return true;
   } else {
-    return -1;
+    return false;
   }
 }
 
