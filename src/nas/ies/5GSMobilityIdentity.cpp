@@ -497,8 +497,9 @@ int _5GSMobilityIdentity::decodefrombuffer(
   decoded_size++;
   len2 = *(buf + decoded_size);
   decoded_size++;
-  uint16_t length = (0x0000) | (len1 << 8) | len2;
+  length = (0x0000) | (len1 << 8) | len2;
   Logger::amf_n1().debug("Decoded 5GSMobilityIdentity IE length %d", length);
+
   switch (*(buf + decoded_size) & 0x07) {
     case SUCI: {
       typeOfIdentity = SUCI;
@@ -706,14 +707,14 @@ int _5GSMobilityIdentity::imeisv_decodefrombuffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("decoding 5GSMobilityIdentity IMEISV");
   int decoded_size = 0;
   decode_bstring(
-      &(_IMEISV.identity), length, (buf + decoded_size), len - decoded_size);
-  decoded_size += length;
-  for (int i = 0; i < length; i++) {
+      &(_IMEISV.identity), len, (buf + decoded_size), len - decoded_size);
+  decoded_size += len;
+  for (int i = 0; i < len; i++) {
     Logger::nas_mm().debug(
         "decoded 5GSMobilityIdentity IMEISV value(0x%x)",
         (uint8_t) _IMEISV.identity->data[i]);
   }
   Logger::nas_mm().debug(
-      "decoded 5GSMobilityIdentity IMEISV len(%d)", decoded_size);
+      "decoded 5GSMobilityIdentity IMEISV len (%d)", decoded_size);
   return decoded_size;
 }

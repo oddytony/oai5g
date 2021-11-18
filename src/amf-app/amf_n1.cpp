@@ -365,6 +365,10 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
     return;
   }
 
+  comUt::print_buffer(
+      "amf_n1", "Uplink Nas Message", (uint8_t*) bdata(recved_nas_msg),
+      blength(recved_nas_msg));
+
   uint8_t ulCount = 0;
 
   switch (type) {
