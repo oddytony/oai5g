@@ -2167,6 +2167,10 @@ void amf_n1::security_mode_complete_handle(
   security_mode_complete->decodefrombuffer(
       nullptr, (uint8_t*) bdata(nas_msg), blength(nas_msg));
 
+  comUt::print_buffer(
+      "amf_n1", "Security Mode Complete message buffer",
+      (uint8_t*) bdata(nas_msg), blength(nas_msg));
+
   bstring nas_msg_container;
   if (security_mode_complete->getNasMessageContainer(nas_msg_container)) {
     comUt::print_buffer(
