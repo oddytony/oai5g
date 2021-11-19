@@ -366,7 +366,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
   }
 
   comUt::print_buffer(
-      "amf_n1", "Uplink Nas Message", (uint8_t*) bdata(recved_nas_msg),
+      "amf_n1", "Received Uplink NAS Message", (uint8_t*) bdata(recved_nas_msg),
       blength(recved_nas_msg));
 
   uint8_t ulCount = 0;
@@ -446,6 +446,10 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
       return;
     }
   }
+
+  comUt::print_buffer(
+      "amf_n1", "Decoded Plain Message", (uint8_t*) bdata(decoded_plain_msg),
+      blength(decoded_plain_msg));
 
   if (nas_data_ind.is_nas_signalling_estab_req) {
     Logger::amf_n1().debug("Received NAS signalling establishment request...");
@@ -2223,7 +2227,7 @@ void amf_n1::security_mode_complete_handle(
 
   // TODO: remove hardcoded values
   registration_accept->set_5GS_Network_Feature_Support(0x01, 0x00);
-  registration_accept->setT3512_Value(0x5, T3512_TIMER_VALUE_MIN);
+  // registration_accept->setT3512_Value(0x5, T3512_TIMER_VALUE_MIN);
   uint8_t buffer[BUFFER_SIZE_1024] = {0};
   int encoded_size =
       registration_accept->encode2buffer(buffer, BUFFER_SIZE_1024);

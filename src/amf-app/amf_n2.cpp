@@ -861,6 +861,7 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
       0xe000);  // TODO: remove hardcoded value
   msg->setSecurityKey((uint8_t*) bdata(itti_msg.kgnb));
   msg->setNasPdu((uint8_t*) bdata(itti_msg.nas), blength(itti_msg.nas));
+
   // Allowed NSSAI
   std::vector<S_Nssai> list;
   for (auto p : amf_cfg.plmn_list) {
