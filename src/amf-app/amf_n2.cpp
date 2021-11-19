@@ -862,14 +862,25 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
   msg->setSecurityKey((uint8_t*) bdata(itti_msg.kgnb));
   msg->setNasPdu((uint8_t*) bdata(itti_msg.nas), blength(itti_msg.nas));
 
-  // Allowed NSSAI
+  // Get the list allowed NSSAI from the common PLMN between gNB and AMF
   std::vector<S_Nssai> list;
-  for (auto p : amf_cfg.plmn_list) {
-    for (auto s : p.slice_list) {
-      S_Nssai item;
-      item.sst = s.sST;
-      item.sd  = s.sD;
-      list.push_back(item);
+  /*  for (auto p : amf_cfg.plmn_list) {
+      for (auto s : p.slice_list) {
+        S_Nssai item;
+        item.sst = s.sST;
+        item.sd  = s.sD;
+        list.push_back(item);
+      }
+    }
+  */
+  for (auto s : gc.get()->s_ta_list) {
+    for (auto p : s.b_plmn_list) {
+      for (auto s : p.slice_list) {
+        S_Nssai item;
+        item.sst = s.sst;
+        item.sd  = s.sd;
+        list.push_back(item);
+      }
     }
   }
   msg->setAllowedNssai(list);
