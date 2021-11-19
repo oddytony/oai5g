@@ -379,7 +379,7 @@ bool NGSetupResponseMsg::getPlmnSupportList(
     plmn->getMcc(plmnSupportItem_data.mcc);
     plmn->getMnc(plmnSupportItem_data.mnc);
     for (int j = 0; j < numofsnssai; j++) {
-      SliceSupportItem_t sliceSupportItem_data;
+      S_Nssai sliceSupportItem_data;
       snssai[j].getSst(sliceSupportItem_data.sst);
       snssai[j].getSd(sliceSupportItem_data.sd);
       plmnSupportItem_data.slice_list.push_back(sliceSupportItem_data);

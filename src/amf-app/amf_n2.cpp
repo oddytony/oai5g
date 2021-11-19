@@ -350,7 +350,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
 
   std::string gnb_name = {};
   if (!itti_msg.ngSetupReq->getRanNodeName(gnb_name)) {
-    Logger::amf_n2().warn("IE RanNodeName not existed");
+    Logger::amf_n2().warn("Missing IE RanNodeName");
   } else {
     gc->gnb_name     = gnb_name;
     gnbItem.gnb_name = gnb_name;
@@ -427,7 +427,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
     tmp.mcc = amf_cfg.plmn_list[i].mcc;
     tmp.mnc = amf_cfg.plmn_list[i].mnc;
     for (int j = 0; j < amf_cfg.plmn_list[i].slice_list.size(); j++) {
-      SliceSupportItem_t s_tmp;
+      S_Nssai s_tmp;
       s_tmp.sst = amf_cfg.plmn_list[i].slice_list[j].sST;
       s_tmp.sd  = amf_cfg.plmn_list[i].slice_list[j].sD;
       tmp.slice_list.push_back(s_tmp);
@@ -1455,7 +1455,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   std::vector<S_NSSAI> Allowed_Nssai;
   for (int i = 0; i < amf_cfg.plmn_list.size(); i++) {
     for (int j = 0; j < amf_cfg.plmn_list[i].slice_list.size(); j++) {
-      SliceSupportItem_t s_tmp;
+      S_Nssai s_tmp;
       S_NSSAI s_nssai = {};
       s_nssai.setSst(amf_cfg.plmn_list[i].slice_list[j].sST);
       s_nssai.setSd(amf_cfg.plmn_list[i].slice_list[j].sD);
@@ -2114,6 +2114,7 @@ std::vector<SupportedItem_t> amf_n2::get_common_plmn(
       for (int k = 0; k < list[j].b_plmn_list.size(); k++) {
         if (!(list[j].b_plmn_list[k].mcc.compare(amf_cfg.plmn_list[i].mcc)) &&
             !(list[j].b_plmn_list[k].mnc.compare(amf_cfg.plmn_list[i].mnc))) {
+          // TODO: compare NSSAI
           plmn_list.push_back(list[j]);
         }
       }
