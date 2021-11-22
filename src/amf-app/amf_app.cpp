@@ -85,7 +85,7 @@ amf_app::amf_app(const amf_config& amf_cfg)
     throw;
   }
 
-  // Register to NRF
+  // Register to NRF if needed
   if (amf_cfg.support_features.enable_nf_registration) register_to_nrf();
 
   timer_id_t tid = itti_inst->timer_setup(
@@ -146,7 +146,7 @@ void amf_app_task(void*) {
         }
       } break;
       default:
-        Logger::amf_app().info("no handler for msg type %d", msg->msg_type);
+        Logger::amf_app().info("No handler for msg type %d", msg->msg_type);
     }
   } while (true);
 }
@@ -191,6 +191,7 @@ std::shared_ptr<ue_context> amf_app::ran_amf_id_2_ue_context(
   return ue_ctx_key.at(ue_context_key);
 }
 
+//------------------------------------------------------------------------------
 bool amf_app::ran_amf_id_2_ue_context(
     const std::string& ue_context_key, std::shared_ptr<ue_context>& uc) const {
   std::shared_lock lock(m_ue_ctx_key);
@@ -201,6 +202,7 @@ bool amf_app::ran_amf_id_2_ue_context(
   } else
     return false;
 }
+
 //------------------------------------------------------------------------------
 void amf_app::set_ran_amf_id_2_ue_context(
     const string& ue_context_key, std::shared_ptr<ue_context> uc) {

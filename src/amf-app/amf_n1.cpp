@@ -3198,6 +3198,14 @@ void amf_n1::initialize_registration_accept(
       false, false, false, 0x01);  // 3GPP Access
   registration_accept->setT3512_Value(0x5, T3512_TIMER_VALUE_MIN);
 
+  // Find UE Context
+  std::shared_ptr<ue_context> uc = {};
+  if (!find_ue_context(
+          nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id, uc)) {
+    Logger::amf_n1().warn("Cannot find the UE context");
+    return;
+  }
+
   std::vector<p_tai_t> tai_list;
   for (auto p : amf_cfg.plmn_list) {
     p_tai_t item    = {};
@@ -3211,24 +3219,28 @@ void amf_n1::initialize_registration_accept(
   }
   registration_accept->setTaiList(tai_list);
 
-  // TODO: get the list of common SST, SD between UE/gNB and AMF
+  // TODO: get the list of common SST, SD between UE and AMF
   std::vector<struct SNSSAI_s> nssai;
   for (auto p : amf_cfg.plmn_list) {
-    for (auto s : p.slice_list) {
-      SNSSAI_t snssai = {};
-      try {
-        snssai.sst = std::stoi(s.sST);
-        snssai.sd  = std::stoi(s.sD);
-      } catch (const std::exception& err) {
-        Logger::amf_n1().warn("Invalid SST/SD");
-        return;
-      }
+    if ((p.mcc.compare(uc.get()->tai.mcc) == 0) and
+        (p.mnc.compare(uc.get()->tai.mnc) == 0) and
+        (p.tac == uc.get()->tai.tac)) {
+      for (auto s : p.slice_list) {
+        SNSSAI_t snssai = {};
+        try {
+          snssai.sst = std::stoi(s.sST);
+          snssai.sd  = std::stoi(s.sD);
+        } catch (const std::exception& err) {
+          Logger::amf_n1().warn("Invalid SST/SD");
+          return;
+        }
 
-      // Check with the requested NSSAI from UE
-      for (auto rn : nc.get()->requestedNssai) {
-        if ((rn.sst == snssai.sst) and (rn.sd == snssai.sd)) {
-          nssai.push_back(snssai);
-          break;
+        // Check with the requested NSSAI from UE
+        for (auto rn : nc.get()->requestedNssai) {
+          if ((rn.sst == snssai.sst) and (rn.sd == snssai.sd)) {
+            nssai.push_back(snssai);
+            break;
+          }
         }
       }
     }
