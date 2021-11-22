@@ -156,16 +156,18 @@ int SecurityModeComplete::decodefrombuffer(
   int decoded_size = 3;
   plain_header     = header;
   Logger::nas_mm().debug("Decoded_size (%d)", decoded_size);
-  uint8_t octet = *(buf + decoded_size);
-  Logger::nas_mm().debug("First option IEI (0x%x)", octet);
-  while ((octet != 0x0)) {
+
+  // while ((octet != 0x0)) {
+  while (len - decoded_size > 0) {
+    uint8_t octet = *(buf + decoded_size);
+    Logger::nas_mm().debug("Optional IEI (0x%x)", octet);
     switch (octet) {
       case 0x77: {
         Logger::nas_mm().debug("Decoding IEI (0x77)");
         ie_imeisv = new _5GSMobilityIdentity();
         decoded_size += ie_imeisv->decodefrombuffer(
             buf + decoded_size, len - decoded_size, true);
-        octet = *(buf + decoded_size);
+        // octet = *(buf + decoded_size);
         Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       } break;
       case 0x71: {
@@ -173,7 +175,7 @@ int SecurityModeComplete::decodefrombuffer(
         ie_nas_message_container = new NAS_Message_Container();
         decoded_size += ie_nas_message_container->decodefrombuffer(
             buf + decoded_size, len - decoded_size, true);
-        octet = *(buf + decoded_size);
+        // octet = *(buf + decoded_size);
         Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       } break;
       case 0x78: {
@@ -181,12 +183,16 @@ int SecurityModeComplete::decodefrombuffer(
         ie_non_imeisvpei = new _5GSMobilityIdentity();
         decoded_size += ie_non_imeisvpei->decodefrombuffer(
             buf + decoded_size, len - decoded_size, true);
-        octet = *(buf + decoded_size);
+        // octet = *(buf + decoded_size);
         Logger::nas_mm().debug("Next IEI (0x%x)", octet);
       } break;
+      default: {
+        Logger::nas_mm().debug("Unexpected IEI (0x%x)", octet);
+        return TLV_UNEXPECTED_IEI;
+      }
     }
   }
   Logger::nas_mm().debug(
       "Decoded SecurityModeComplete message len (%d)", decoded_size);
-  return 1;
+  return TLV_ERROR_OK;
 }
