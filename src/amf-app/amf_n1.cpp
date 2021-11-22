@@ -2199,6 +2199,12 @@ void amf_n1::security_mode_complete_handle(
       std::vector<SNSSAI_t> requested_nssai = {};
       if (registration_request->getRequestedNssai(requested_nssai)) {
         nc.get()->requestedNssai = requested_nssai;
+        for (auto s : nc.get()->requestedNssai) {
+          Logger::amf_n1().debug(
+              "Requested NSSAI SST (0x%x) SD (0x%x) hplmnSST (0x%x) hplmnSD "
+              "(%d)",
+              s.sst, s.sd, s.mHplmnSst, s.mHplmnSd);
+        }
       }
     }
   }
