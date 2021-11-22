@@ -2676,8 +2676,7 @@ void amf_n1::ul_nas_transport_handle(
   SNSSAI_t snssai = {};
   if (!ulNas->getSnssai(snssai)) {  // If no SNSSAI in this message, use the one
                                     // in Registration Request
-    // Only use the first one
-
+    // Only use the first one if there's multiple requested NSSAI
     std::shared_ptr<nas_context> nc = {};
     if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
       nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
@@ -2688,6 +2687,11 @@ void amf_n1::ul_nas_transport_handle(
     if (nc.get()->requestedNssai.size() > 0)
       snssai = nc.get()->requestedNssai[0];
   }
+
+  Logger::nas_mm().debug(
+      "S_NSSAI SST (0x%x) SD (0x%x) hplmnSST (0x%x) hplmnSD (0x%x)", snssai.sst,
+      snssai.sd, snssai.mHplmnSst, snssai.mHplmnSd);
+
   bstring dnn = bfromcstr("default");
   bstring sm_msg;
   if (ulNas->getDnn(dnn)) {
