@@ -1172,6 +1172,13 @@ void amf_n1::registration_request_handle(
     }
   }
 
+  for (auto s : nc.get()->requestedNssai) {
+    Logger::amf_n1().debug(
+        "Requested NSSAI SST (0x%x) SD (0x%x) hplmnSST (0x%x) hplmnSD "
+        "(%d)",
+        s.sst, s.sd, s.mHplmnSst, s.mHplmnSd);
+  }
+
   // Store NAS information into nas_context
   // Run the corresponding registration procedure
   switch (reg_type) {
@@ -3238,14 +3245,15 @@ void amf_n1::initialize_registration_accept(
           Logger::amf_n1().warn("Invalid SST/SD");
           return;
         }
-
+        nssai.push_back(snssai);
         // Check with the requested NSSAI from UE
-        for (auto rn : nc.get()->requestedNssai) {
-          if ((rn.sst == snssai.sst) and (rn.sd == snssai.sd)) {
-            nssai.push_back(snssai);
-            break;
-          }
-        }
+        /*  for (auto rn : nc.get()->requestedNssai) {
+             if ((rn.sst == snssai.sst) and (rn.sd == snssai.sd)) {
+               nssai.push_back(snssai);
+               break;
+             }
+           }
+          */
       }
     }
   }

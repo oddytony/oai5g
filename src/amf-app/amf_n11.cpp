@@ -315,6 +315,10 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
   psc.get()->plmn.mcc       = smf.plmn.mcc;
   psc.get()->plmn.mnc       = smf.plmn.mnc;
 
+  Logger::amf_n1().debug(
+      "PDU Session Context, NSSAI SST (0x%x) SD %s", psc.get()->snssai.sST,
+      psc.get()->snssai.sD.c_str());
+
   // parse binary dnn and store
   std::string dnn = "default";  // If DNN doesn't available, use "default"
   if ((smf.dnn != nullptr) && (blength(smf.dnn) > 0)) {
@@ -438,20 +442,22 @@ void amf_n11::handle_pdu_session_initial_request(
   std::string remote_uri =
       smf_addr + "/nsmf-pdusession/" + smf_api_version + "/sm-contexts";
   nlohmann::json pdu_session_establishment_request;
-  pdu_session_establishment_request["supi"]          = supi.c_str();
-  pdu_session_establishment_request["pei"]           = "imei-200000000000001";
-  pdu_session_establishment_request["gpsi"]          = "msisdn-200000000001";
-  pdu_session_establishment_request["dnn"]           = dnn.c_str();
-  pdu_session_establishment_request["sNssai"]["sst"] = psc.get()->snssai.sST;
-  pdu_session_establishment_request["sNssai"]["sd"]  = psc.get()->snssai.sD;
+  pdu_session_establishment_request["supi"] = supi.c_str();
+  pdu_session_establishment_request["pei"]  = "imei-200000000000001";
+  pdu_session_establishment_request["gpsi"] = "msisdn-200000000001";
+  pdu_session_establishment_request["dnn"]  = dnn.c_str();
+  pdu_session_establishment_request["sNssai"]["sst"] =
+      1;  // psc.get()->snssai.sST;
+  pdu_session_establishment_request["sNssai"]["sd"] =
+      "1";  // psc.get()->snssai.sD.c_str();
   pdu_session_establishment_request["pduSessionId"] = psc.get()->pdu_session_id;
   pdu_session_establishment_request["requestType"] =
       "INITIAL_REQUEST";  // TODO: from SM_MSG
   pdu_session_establishment_request["servingNfId"] = "servingNfId";
   pdu_session_establishment_request["servingNetwork"]["mcc"] =
-      psc.get()->plmn.mcc;
+      psc.get()->plmn.mcc.c_str();
   pdu_session_establishment_request["servingNetwork"]["mnc"] =
-      psc.get()->plmn.mnc;
+      psc.get()->plmn.mnc.c_str();
   pdu_session_establishment_request["anType"] = "3GPP_ACCESS";  // TODO
   pdu_session_establishment_request["smContextStatusUri"] =
       "http://" +

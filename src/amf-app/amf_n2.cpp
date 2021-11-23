@@ -935,6 +935,8 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
         item.s_nssai.sd  = psc.get()->snssai.sD;
       }
 
+      item.s_nssai.sst = "1";
+      item.s_nssai.sd  = "000001";
       Logger::amf_n2().debug(
           "S_NSSAI (SST, SD) %s, %s", item.s_nssai.sst.c_str(),
           item.s_nssai.sd.c_str());
@@ -1037,9 +1039,13 @@ void amf_n2::handle_itti_message(
     item.s_nssai.sst = "01";    // TODO: get from N1N2msgTranferMsg
     item.s_nssai.sd  = "none";  // TODO: get from N1N2msgTranferMsg
   } else {
-    item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
-    item.s_nssai.sd  = psc.get()->snssai.sD;
+    // USE HARDCODED for NOW
+    item.s_nssai.sst = "01";      // std::to_string(psc.get()->snssai.sST);
+    item.s_nssai.sd  = "000001";  // psc.get()->snssai.sD;
   }
+
+  item.s_nssai.sst = "01";      // std::to_string(psc.get()->snssai.sST);
+  item.s_nssai.sd  = "000001";  // psc.get()->snssai.sD;
 
   // item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
   // item.s_nssai.sd = psc.get()->snssai.sD;
