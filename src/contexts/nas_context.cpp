@@ -30,24 +30,24 @@
 
 //------------------------------------------------------------------------------
 nas_context::nas_context() : _vector(), _5g_he_av(), _5g_av(), kamf() {
-  security_ctx                                          = nullptr;
-  is_imsi_present                                       = false;
-  is_stacs_available                                    = false;
-  is_auth_vectors_present                               = false;
-  auts                                                  = nullptr;
-  ctx_avaliability_ind                                  = false;
-  amf_ue_ngap_id                                        = 0;
-  ran_ue_ngap_id                                        = 0;
-  _5gmm_state                                           = {};
-  registration_type                                     = 0;
-  follow_on_req_pending_ind                             = false;
-  ngKsi                                                 = 0;
-  mmCapability                                          = 0;
-  ueSecurityCapEnc                                      = 0;
-  ueSecurityCapInt                                      = 0;
-  ueSecurityCapEEA                                      = 0;
-  ueSecurityCapEIA                                      = 0;
-  requestedNssai                                        = {};
+  security_ctx              = nullptr;
+  is_imsi_present           = false;
+  is_stacs_available        = false;
+  is_auth_vectors_present   = false;
+  auts                      = nullptr;
+  ctx_avaliability_ind      = false;
+  amf_ue_ngap_id            = 0;
+  ran_ue_ngap_id            = 0;
+  _5gmm_state               = {};
+  registration_type         = 0;
+  follow_on_req_pending_ind = false;
+  ngKsi                     = 0;
+  mmCapability              = 0;
+  ueSecurityCapEnc          = 0;
+  ueSecurityCapInt          = 0;
+  ueSecurityCapEEA          = 0;
+  ueSecurityCapEIA          = 0;
+  //  requestedNssai                                        = {};
   is_specific_procedure_for_registration_running        = false;
   is_specific_procedure_for_deregistration_running      = false;
   is_specific_procedure_for_eCell_inactivity_running    = false;

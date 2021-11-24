@@ -922,6 +922,8 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
       }
       string supi = "imsi-" + nc.get()->imsi;
       Logger::amf_n2().debug("SUPI (%s)", supi.c_str());
+
+      // Get S_NSSAI from PDU Session Context
       std::shared_ptr<pdu_session_context> psc = {};
 
       if (!amf_app_inst->find_pdu_session_context(
@@ -929,14 +931,12 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
         Logger::amf_n2().warn(
             "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
         item.s_nssai.sst = "01";
-        item.s_nssai.sd  = "None";
+        item.s_nssai.sd  = "none";
       } else {
         item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
         item.s_nssai.sd  = psc.get()->snssai.sD;
       }
 
-      item.s_nssai.sst = "1";
-      item.s_nssai.sd  = "000001";
       Logger::amf_n2().debug(
           "S_NSSAI (SST, SD) %s, %s", item.s_nssai.sst.c_str(),
           item.s_nssai.sd.c_str());
@@ -1030,8 +1030,9 @@ void amf_n2::handle_itti_message(
   }
   string supi = "imsi-" + nc.get()->imsi;
   Logger::amf_n2().debug("SUPI (%s)", supi.c_str());
-  std::shared_ptr<pdu_session_context> psc = {};
 
+  // Get SNSSAI info from PDU Session Context
+  std::shared_ptr<pdu_session_context> psc = {};
   if (!amf_app_inst->find_pdu_session_context(
           supi, itti_msg.pdu_session_id, psc)) {
     Logger::amf_n2().warn(
@@ -1039,16 +1040,13 @@ void amf_n2::handle_itti_message(
     item.s_nssai.sst = "01";    // TODO: get from N1N2msgTranferMsg
     item.s_nssai.sd  = "none";  // TODO: get from N1N2msgTranferMsg
   } else {
-    // USE HARDCODED for NOW
-    item.s_nssai.sst = "01";      // std::to_string(psc.get()->snssai.sST);
-    item.s_nssai.sd  = "000001";  // psc.get()->snssai.sD;
+    item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
+    item.s_nssai.sd  = psc.get()->snssai.sD;
   }
 
-  item.s_nssai.sst = "01";      // std::to_string(psc.get()->snssai.sST);
-  item.s_nssai.sd  = "000001";  // psc.get()->snssai.sD;
-
-  // item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
-  // item.s_nssai.sd = psc.get()->snssai.sD;
+  Logger::amf_n2().debug(
+      "S_NSSAI (SST, SD) %s, %s", item.s_nssai.sst.c_str(),
+      item.s_nssai.sd.c_str());
 
   item.pduSessionResourceSetupRequestTransfer.buf =
       (uint8_t*) bdata(itti_msg.n2sm);

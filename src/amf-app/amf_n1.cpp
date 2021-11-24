@@ -903,7 +903,7 @@ void amf_n1::service_request_handle(
 
 //------------------------------------------------------------------------------
 void amf_n1::registration_request_handle(
-    bool isNasSig, std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id,
+    bool isNasSig, std::shared_ptr<nas_context>& nc, uint32_t ran_ue_ngap_id,
     long amf_ue_ngap_id, std::string snn, bstring reg) {
   // Decode registration request message
   std::unique_ptr<RegistrationRequest> regReq =
@@ -1060,7 +1060,7 @@ void amf_n1::registration_request_handle(
       if (uc.get()) uc.reset();
 
       if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
-        Logger::amf_n2().error(
+        Logger::amf_n1().error(
             "No UE NGAP context with ran_ue_ngap_id (%d)", ran_ue_ngap_id);
         return;
       }
@@ -1141,11 +1141,14 @@ void amf_n1::registration_request_handle(
   nc.get()->ueSecurityCapEIA = security_cap_eia;
 
   // Get Requested NSSAI (Optional IE), if provided
-  std::vector<SNSSAI_t> requestedNssai = {};
-  if (!regReq->getRequestedNssai(requestedNssai)) {
+  if (!regReq->getRequestedNssai(nc.get()->requestedNssai)) {
     Logger::amf_n1().warn("No Optional IE RequestedNssai available");
-  } else {
-    nc.get()->requestedNssai = requestedNssai;
+  }
+
+  for (auto r : nc.get()->requestedNssai) {
+    Logger::nas_mm().debug(
+        "Requested NSSAI SST (0x%x) SD (0x%x) hplmnSST (0x%x) hplmnSD (%d)",
+        r.sst, r.sd, r.mHplmnSst, r.mHplmnSd);
   }
 
   nc.get()->ctx_avaliability_ind = true;
@@ -1165,18 +1168,19 @@ void amf_n1::registration_request_handle(
     registration_request_msg_container->decodefrombuffer(
         nullptr, (uint8_t*) bdata(nas_msg), blength(nas_msg));
 
-    if (!regReq->getRequestedNssai(requestedNssai)) {
-      Logger::amf_n1().warn("No Optional IE RequestedNssai available");
+    if (!registration_request_msg_container->getRequestedNssai(
+            nc.get()->requestedNssai)) {
+      Logger::amf_n1().warn(
+          "No Optional IE RequestedNssai available in NAS Container");
     } else {
-      nc.get()->requestedNssai = requestedNssai;
+      for (auto s : nc.get()->requestedNssai) {
+        Logger::amf_n1().debug(
+            "Requested NSSAI inside the NAS container: SST (0x%x) SD (0x%x) "
+            "hplmnSST (0x%x) hplmnSD "
+            "(%d)",
+            s.sst, s.sd, s.mHplmnSst, s.mHplmnSd);
+      }
     }
-  }
-
-  for (auto s : nc.get()->requestedNssai) {
-    Logger::amf_n1().debug(
-        "Requested NSSAI SST (0x%x) SD (0x%x) hplmnSST (0x%x) hplmnSD "
-        "(%d)",
-        s.sst, s.sd, s.mHplmnSst, s.mHplmnSd);
   }
 
   // Store NAS information into nas_context
@@ -2203,15 +2207,15 @@ void amf_n1::security_mode_complete_handle(
       bdestroy(nas_msg_container);  // free buffer
 
       // Get Requested NSSAI (Optional IE), if provided
-      std::vector<SNSSAI_t> requested_nssai = {};
-      if (registration_request->getRequestedNssai(requested_nssai)) {
-        nc.get()->requestedNssai = requested_nssai;
+      if (registration_request->getRequestedNssai(nc.get()->requestedNssai)) {
         for (auto s : nc.get()->requestedNssai) {
           Logger::amf_n1().debug(
               "Requested NSSAI SST (0x%x) SD (0x%x) hplmnSST (0x%x) hplmnSD "
               "(%d)",
               s.sst, s.sd, s.mHplmnSst, s.mHplmnSd);
         }
+      } else {
+        Logger::amf_n1().debug("No Optional IE RequestedNssai available");
       }
     }
   }
@@ -2671,73 +2675,6 @@ void amf_n1::ue_initiate_de_registration_handle(
 
 //------------------------------------------------------------------------------
 void amf_n1::ul_nas_transport_handle(
-    uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas) {
-  // Decode UL_NAS_TRANSPORT message
-  Logger::amf_n1().debug("Handling UL NAS Transport");
-  ULNASTransport* ulNas = new ULNASTransport();
-  ulNas->decodefrombuffer(NULL, (uint8_t*) bdata(nas), blength(nas));
-  uint8_t payload_type   = ulNas->getPayloadContainerType();
-  uint8_t pdu_session_id = ulNas->getPduSessionId();
-  uint8_t request_type   = ulNas->getRequestType();
-  // SNSSAI
-  SNSSAI_t snssai = {};
-  if (!ulNas->getSnssai(snssai)) {  // If no SNSSAI in this message, use the one
-                                    // in Registration Request
-    // Only use the first one if there's multiple requested NSSAI
-    std::shared_ptr<nas_context> nc = {};
-    if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
-      nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
-    else {
-      Logger::amf_n2().warn(
-          "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
-    }
-    if (nc.get()->requestedNssai.size() > 0)
-      snssai = nc.get()->requestedNssai[0];
-  }
-
-  Logger::nas_mm().debug(
-      "S_NSSAI SST (0x%x) SD (0x%x) hplmnSST (0x%x) hplmnSD (0x%x)", snssai.sst,
-      snssai.sd, snssai.mHplmnSst, snssai.mHplmnSd);
-
-  bstring dnn = bfromcstr("default");
-  bstring sm_msg;
-  if (ulNas->getDnn(dnn)) {
-  } else {
-    dnn = bfromcstr("default");
-  }
-  comUt::print_buffer(
-      "amf_n1", "Decoded DNN bitstring", (uint8_t*) bdata(dnn), blength(dnn));
-  switch (payload_type) {
-    case N1_SM_INFORMATION: {
-      if (!ulNas->getPayloadContainer(sm_msg)) {
-        Logger::amf_n1().error("Cannot decode Payload Container");
-        return;
-      }
-      itti_nsmf_pdusession_create_sm_context* itti_msg =
-          new itti_nsmf_pdusession_create_sm_context(TASK_AMF_N1, TASK_AMF_N11);
-      itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
-      itti_msg->amf_ue_ngap_id = amf_ue_ngap_id;
-      itti_msg->req_type       = request_type;
-      itti_msg->pdu_sess_id    = pdu_session_id;
-      itti_msg->dnn            = dnn;
-      itti_msg->sm_msg         = sm_msg;
-      itti_msg->snssai.sST     = snssai.sst;
-      itti_msg->snssai.sD      = std::to_string(snssai.sd);
-      std::shared_ptr<itti_nsmf_pdusession_create_sm_context> i =
-          std::shared_ptr<itti_nsmf_pdusession_create_sm_context>(itti_msg);
-      int ret = itti_inst->send_msg(i);
-      if (0 != ret) {
-        Logger::amf_n1().error(
-            "Could not send ITTI message %s to task TASK_AMF_N11",
-            i->get_msg_name());
-      }
-
-    } break;
-  }
-}
-
-//------------------------------------------------------------------------------
-void amf_n1::ul_nas_transport_handle(
     uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas, plmn_t plmn) {
   // Decode UL_NAS_TRANSPORT message
   Logger::amf_n1().debug("Handling UL NAS Transport");
@@ -2746,8 +2683,34 @@ void amf_n1::ul_nas_transport_handle(
   uint8_t payload_type   = ulNas->getPayloadContainerType();
   uint8_t pdu_session_id = ulNas->getPduSessionId();
   uint8_t request_type   = ulNas->getRequestType();
-  SNSSAI_t snssai        = {};
-  ulNas->getSnssai(snssai);
+
+  // SNSSAI
+  SNSSAI_t snssai = {};
+  if (!ulNas->getSnssai(snssai)) {  // If no SNSSAI in this message, use the one
+                                    // in Registration Request
+    Logger::amf_n1().debug(
+        "No Requested NSSAI available in ULNASTransport, use NSSAI from "
+        "Requested NSSAI!");
+
+    std::shared_ptr<nas_context> nc = {};
+    if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
+      nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+    else {
+      Logger::amf_n1().warn(
+          "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+      return;
+    }
+
+    // TODO: Only use the first one for now if there's multiple requested NSSAI
+    if (nc.get()->requestedNssai.size() > 0)
+      snssai = nc.get()->requestedNssai[0];
+  }
+
+  Logger::amf_n1().debug(
+      "S_NSSAI for this PDU Session SST (0x%x) SD (0x%x) hplmnSST (0x%x) "
+      "hplmnSD (0x%x)",
+      snssai.sst, snssai.sd, snssai.mHplmnSst, snssai.mHplmnSd);
+
   bstring dnn = bfromcstr("default");
   bstring sm_msg;
   if (ulNas->getDnn(dnn)) {
@@ -2755,7 +2718,7 @@ void amf_n1::ul_nas_transport_handle(
     dnn = bfromcstr("default");
   }
   comUt::print_buffer(
-      "amf_n1", "Decoded DNN bitstring", (uint8_t*) bdata(dnn), blength(dnn));
+      "amf_n1", "Decoded DNN Bit String", (uint8_t*) bdata(dnn), blength(dnn));
   switch (payload_type) {
     case N1_SM_INFORMATION: {
       if (!ulNas->getPayloadContainer(sm_msg)) {
@@ -3246,7 +3209,7 @@ void amf_n1::initialize_registration_accept(
           return;
         }
         nssai.push_back(snssai);
-        // Check with the requested NSSAI from UE
+        // TODO: Check with the requested NSSAI from UE
         /*  for (auto rn : nc.get()->requestedNssai) {
              if ((rn.sst == snssai.sst) and (rn.sd == snssai.sd)) {
                nssai.push_back(snssai);
@@ -3316,7 +3279,7 @@ void amf_n1::mobile_reachable_timer_timeout(
   if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
     nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
   else {
-    Logger::amf_n2().warn(
+    Logger::amf_n1().warn(
         "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
   }
   set_mobile_reachable_timer_timeout(nc, true);
@@ -3338,7 +3301,7 @@ void amf_n1::implicit_deregistration_timer_timeout(
   if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
     nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
   else {
-    Logger::amf_n2().warn(
+    Logger::amf_n1().warn(
         "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
   }
   // Implicitly de-register UE
