@@ -61,6 +61,7 @@ using namespace oai::smf::model;
 using namespace oai::smf::api;
 using namespace web;
 using namespace web::http;
+// Common features like URIs.
 using namespace web::http::client;
 using namespace config;
 using namespace amf_application;
@@ -1109,11 +1110,14 @@ bool amf_n11::discover_smf(
             for (auto& s : instance_json["sNssais"].items()) {
               nlohmann::json Snssai = s.value();
               if (Snssai["sst"] == snssai.sST) {
+                // Match SD (optional) only if it is provided
                 if (!Snssai["sd"].empty() & Snssai["sd"] != snssai.sD) {
                   Logger::amf_n11().debug("SD is not matched");
                   result = false;
                 }
-                Logger::amf_n11().debug("Snssai is matched for SMF profile");
+                Logger::amf_n11().debug(
+                    "Snssai [SST- %s, SD -%s] is matched for SMF profile",
+                    Snssai["sst"].dump().c_str(), Snssai["sd"].dump().c_str());
                 result = true;
                 break;
               } else {
@@ -1122,7 +1126,6 @@ bool amf_n11::discover_smf(
                 result = false;
               }
             }
-            if (!result) return result;
           }
           // TODO: check DNN
           // TODO: PLMN (need to add plmnList into NRF profile, SMF profile)
@@ -1143,8 +1146,9 @@ bool amf_n11::discover_smf(
                 }
               }
             }
-            break;
           }
+          // Break after first matching SMF instance for requested S-NSSAI
+          if (result) break;
         }
       }
       Logger::amf_n11().debug(
