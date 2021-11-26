@@ -55,6 +55,8 @@ static uint32_t amf_app_ue_ngap_id_generator = 1;
 namespace amf_application {
 
 #define TASK_AMF_APP_PERIODIC_STATISTICS (0)
+#define TASK_AMF_MOBILE_REACHABLE_TIMER_EXPIRE (1)
+#define TASK_AMF_IMPLICIT_DEREGISTRATION_TIMER_EXPIRE (2)
 
 class amf_app {
  private:
@@ -91,6 +93,10 @@ class amf_app {
   bool is_ran_amf_id_2_ue_context(const std::string& ue_context_key) const;
   std::shared_ptr<ue_context> ran_amf_id_2_ue_context(
       const std::string& ue_context_key) const;
+
+  bool ran_amf_id_2_ue_context(
+      const std::string& ue_context_key, std::shared_ptr<ue_context>& uc) const;
+
   void set_ran_amf_id_2_ue_context(
       const std::string& ue_context_key, std::shared_ptr<ue_context> uc);
 

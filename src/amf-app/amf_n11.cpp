@@ -61,7 +61,6 @@ using namespace oai::smf::model;
 using namespace oai::smf::api;
 using namespace web;
 using namespace web::http;
-// Common features like URIs.
 using namespace web::http::client;
 using namespace config;
 using namespace amf_application;

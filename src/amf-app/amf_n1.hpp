@@ -46,6 +46,8 @@
 #include "pdu_session_context.hpp"
 #include "amf_event.hpp"
 #include "RegistrationAccept.hpp"
+#include "ue_context.hpp"
+#include "itti.hpp"
 
 namespace amf_application {
 
@@ -62,6 +64,22 @@ typedef enum {
 
 class amf_n1 {
  public:
+  std::map<long, std::shared_ptr<nas_context>>
+      amfueid2nas_context;  // amf ue ngap id
+  std::map<std::string, std::shared_ptr<nas_context>> imsi2nas_context;
+  std::map<std::string, long> supi2amfId;
+  std::map<std::string, uint32_t> supi2ranId;
+
+  mutable std::shared_mutex m_nas_context;
+
+  std::map<std::string, std::shared_ptr<nas_context>> guti2nas_context;
+  mutable std::shared_mutex m_guti2nas_context;
+
+  static std::map<std::string, std::string> rand_record;
+  static uint8_t no_random_delta;
+  random_state_t random_state;
+  database_t* db_desc;
+
   amf_n1();
   ~amf_n1();
   void handle_itti_message(itti_uplink_nas_data_ind&);
@@ -76,16 +94,6 @@ class amf_n1 {
       plmn_t plmn);
   bool check_security_header_type(SecurityHeaderType& type, uint8_t* buffer);
 
-  std::map<long, std::shared_ptr<nas_context>>
-      amfueid2nas_context;  // amf ue ngap id
-  std::map<std::string, std::shared_ptr<nas_context>> imsi2nas_context;
-  std::map<std::string, long> supi2amfId;
-  std::map<std::string, uint32_t> supi2ranId;
-
-  mutable std::shared_mutex m_nas_context;
-
-  std::map<std::string, std::shared_ptr<nas_context>> guti2nas_context;
-  mutable std::shared_mutex m_guti2nas_context;
   bool is_guti_2_nas_context(const std::string& guti) const;
   std::shared_ptr<nas_context> guti_2_nas_context(
       const std::string& guti) const;
@@ -98,7 +106,6 @@ class amf_n1 {
       const long& amf_ue_ngap_id) const;
   void set_amf_ue_ngap_id_2_nas_context(
       const long& amf_ue_ngap_id, std::shared_ptr<nas_context> nc);
-  database_t* db_desc;
 
   // procedures
   // specific procedures running logic
@@ -161,6 +168,11 @@ class amf_n1 {
   void set_5gmm_state(std::shared_ptr<nas_context> nc, _5gmm_state_t state);
   void get_5gmm_state(std::shared_ptr<nas_context> nc, _5gmm_state_t& state);
 
+  void set_5gcm_state(
+      std::shared_ptr<nas_context>& nc, const cm_state_t& state);
+  void get_5gcm_state(
+      const std::shared_ptr<nas_context>& nc, cm_state_t& state) const;
+
   void handle_ue_reachability_status_change(
       std::string supi, uint8_t http_version);
 
@@ -169,6 +181,29 @@ class amf_n1 {
       std::vector<uint8_t>& pdu_session_to_be_activated);
   void initialize_registration_accept(
       std::unique_ptr<nas::RegistrationAccept>& registration_accept);
+
+  bool find_ue_context(
+      const std::shared_ptr<nas_context>& nc, std::shared_ptr<ue_context>& uc);
+
+  bool find_ue_context(
+      uint32_t ran_ue_ngap_id, long amf_ue_ngap_id,
+      std::shared_ptr<ue_context>& uc);
+
+  void mobile_reachable_timer_timeout(
+      timer_id_t timer_id, uint64_t amf_ue_ngap_id);
+  void set_mobile_reachable_timer_timeout(
+      std::shared_ptr<nas_context>& nc, const bool& b);
+  void get_mobile_reachable_timer_timeout(
+      const std::shared_ptr<nas_context>& nc, bool& b) const;
+  bool get_mobile_reachable_timer_timeout(
+      const std::shared_ptr<nas_context>& nc) const;
+  void set_mobile_reachable_timer(
+      std::shared_ptr<nas_context>& nc, const timer_id_t& t);
+
+  void set_implicit_deregistration_timer(
+      std::shared_ptr<nas_context>& nc, const timer_id_t& t);
+  void implicit_deregistration_timer_timeout(
+      timer_id_t timer_id, uint64_t amf_ue_ngap_id);
 
  private:
   void ue_initiate_de_registration_handle(

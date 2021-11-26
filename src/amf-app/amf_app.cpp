@@ -191,6 +191,16 @@ std::shared_ptr<ue_context> amf_app::ran_amf_id_2_ue_context(
   return ue_ctx_key.at(ue_context_key);
 }
 
+bool amf_app::ran_amf_id_2_ue_context(
+    const std::string& ue_context_key, std::shared_ptr<ue_context>& uc) const {
+  std::shared_lock lock(m_ue_ctx_key);
+  if (ue_ctx_key.count(ue_context_key) > 0) {
+    uc = ue_ctx_key.at(ue_context_key);
+    if (uc.get() == nullptr) return false;
+    return true;
+  } else
+    return false;
+}
 //------------------------------------------------------------------------------
 void amf_app::set_ran_amf_id_2_ue_context(
     const string& ue_context_key, std::shared_ptr<ue_context> uc) {
