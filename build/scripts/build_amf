@@ -158,7 +158,7 @@ function main()
         return 1
     else
         echo_success "AMF deps installation successful"
-        echo_warning "AMF not compiled, to compile it, re-run build_smf without -I option"
+        echo_warning "AMF not compiled, to compile it, re-run build_amf without -I option"
         return 0
     fi
   fi
