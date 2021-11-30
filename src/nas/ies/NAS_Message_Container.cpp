@@ -94,13 +94,14 @@ int NAS_Message_Container::decodefrombuffer(
   Logger::nas_mm().debug("Decoding NAS_Message_Container iei (0x%x)", *buf);
   int decoded_size = 0;
   if (is_option) {
-    decoded_size++;
+    decoded_size++;  // for IE
   }
   length = 0;
   length |= (*(buf + decoded_size)) << 8;
   decoded_size++;
   length |= *(buf + decoded_size);
   decoded_size++;
+
   decode_bstring(&_value, length, (buf + decoded_size), len - decoded_size);
   decoded_size += length;
   for (int i = 0; i < length; i++) {

@@ -182,6 +182,10 @@ class amf_n1 {
   void initialize_registration_accept(
       std::unique_ptr<nas::RegistrationAccept>& registration_accept);
 
+  void initialize_registration_accept(
+      std::unique_ptr<nas::RegistrationAccept>& registration_accept,
+      std::shared_ptr<nas_context>& nc);
+
   bool find_ue_context(
       const std::shared_ptr<nas_context>& nc, std::shared_ptr<ue_context>& uc);
 
@@ -209,7 +213,7 @@ class amf_n1 {
   void ue_initiate_de_registration_handle(
       uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas);
   void registration_request_handle(
-      bool isNasSig, std::shared_ptr<nas_context> nc, uint32_t ran_ue_ngap_id,
+      bool isNasSig, std::shared_ptr<nas_context>& nc, uint32_t ran_ue_ngap_id,
       long amf_ue_ngap_id, std::string snn, bstring reg);
   void authentication_response_handle(
       uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg);
@@ -219,8 +223,6 @@ class amf_n1 {
       uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas_msg);
   void security_mode_reject_handle(
       uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas_msg);
-  void ul_nas_transport_handle(
-      uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas);
   void ul_nas_transport_handle(
       uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas, plmn_t plmn);
   void registration_complete_handle(

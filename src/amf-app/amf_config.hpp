@@ -154,6 +154,20 @@ typedef struct guami_s {
 typedef struct slice_s {
   std::string sST;
   std::string sD;
+  bool operator==(const struct slice_s& s) const {
+    if ((s.sST == this->sST) && (s.sD.compare(this->sD) == 0)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  bool operator>(const struct slice_s& s) const {
+    if (this->sST.compare(s.sST) > 0) return true;
+    if (this->sST.compare(s.sST) == 0) {
+      if (this->sD.compare(s.sD) > 0) return true;
+      if (this->sD.compare(s.sD) < 0) return false;
+    }
+  }
 } slice_t;
 
 typedef struct plmn_support_item_s {

@@ -45,14 +45,29 @@ extern "C" {
 
 namespace ngap {
 
-typedef struct SliceSupportItem_s {
+typedef struct S_Nssai_s {
   std::string sst;
   std::string sd;
-} SliceSupportItem_t;
+  bool operator==(const struct S_Nssai_s& s) const {
+    if ((s.sst == this->sst) && (s.sd.compare(this->sd) == 0)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  bool operator>(const struct S_Nssai_s& s) const {
+    if (this->sst.compare(s.sst) > 0) return true;
+    if (this->sst.compare(s.sst) == 0) {
+      if (this->sd.compare(s.sd) > 0) return true;
+      if (this->sd.compare(s.sd) < 0) return false;
+    }
+  }
+} S_Nssai;
+
 typedef struct PlmnSliceSupport_s {
   std::string mcc;
   std::string mnc;
-  std::vector<SliceSupportItem_t> slice_list;
+  std::vector<S_Nssai> slice_list;
 } PlmnSliceSupport_t;
 
 typedef struct SupportedItem_s {
@@ -88,11 +103,6 @@ typedef struct Guami_s {
   std::string AmfSetID;
   std::string AmfPointer;
 } Guami_t;
-
-typedef struct {
-  std::string sst;
-  std::string sd;
-} S_Nssai;
 
 typedef struct {
   uint8_t pduSessionId;

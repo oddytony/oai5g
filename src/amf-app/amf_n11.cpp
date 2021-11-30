@@ -288,13 +288,13 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
   }
 
   uc = amf_app_inst->ran_amf_id_2_ue_context(ue_context_key);
-
   if (!uc.get()) {
     Logger::amf_n11().error(
         "No UE context for %s exit", ue_context_key.c_str());
     return;
   }
 
+  // Create PDU Session Context if not available
   std::shared_ptr<pdu_session_context> psc = {};
   if (!uc.get()->find_pdu_session_context(smf.pdu_sess_id, psc)) {
     psc = std::shared_ptr<pdu_session_context>(new pdu_session_context());
@@ -307,6 +307,7 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
     return;
   }
 
+  // Store corresponding info in PDU Session Context
   psc.get()->amf_ue_ngap_id = nc.get()->amf_ue_ngap_id;
   psc.get()->ran_ue_ngap_id = nc.get()->ran_ue_ngap_id;
   psc.get()->req_type       = smf.req_type;
@@ -315,6 +316,10 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
   psc.get()->snssai.sD      = smf.snssai.sD;
   psc.get()->plmn.mcc       = smf.plmn.mcc;
   psc.get()->plmn.mnc       = smf.plmn.mnc;
+
+  Logger::amf_n1().debug(
+      "PDU Session Context, NSSAI SST (0x%x) SD %s", psc.get()->snssai.sST,
+      psc.get()->snssai.sD.c_str());
 
   // parse binary dnn and store
   std::string dnn = "default";  // If DNN doesn't available, use "default"
@@ -444,15 +449,16 @@ void amf_n11::handle_pdu_session_initial_request(
   pdu_session_establishment_request["gpsi"]          = "msisdn-200000000001";
   pdu_session_establishment_request["dnn"]           = dnn.c_str();
   pdu_session_establishment_request["sNssai"]["sst"] = psc.get()->snssai.sST;
-  pdu_session_establishment_request["sNssai"]["sd"]  = psc.get()->snssai.sD;
+  pdu_session_establishment_request["sNssai"]["sd"] =
+      psc.get()->snssai.sD.c_str();
   pdu_session_establishment_request["pduSessionId"] = psc.get()->pdu_session_id;
   pdu_session_establishment_request["requestType"] =
       "INITIAL_REQUEST";  // TODO: from SM_MSG
   pdu_session_establishment_request["servingNfId"] = "servingNfId";
   pdu_session_establishment_request["servingNetwork"]["mcc"] =
-      psc.get()->plmn.mcc;
+      psc.get()->plmn.mcc.c_str();
   pdu_session_establishment_request["servingNetwork"]["mnc"] =
-      psc.get()->plmn.mnc;
+      psc.get()->plmn.mnc.c_str();
   pdu_session_establishment_request["anType"] = "3GPP_ACCESS";  // TODO
   pdu_session_establishment_request["smContextStatusUri"] =
       "http://" +
@@ -466,7 +472,10 @@ void amf_n11::handle_pdu_session_initial_request(
                                    ["contentId"] = "n1SmMsg";
 
   std::string json_part = pdu_session_establishment_request.dump();
-  std::string n1SmMsg   = {};
+
+  Logger::amf_n11().debug("Message body %s", json_part.c_str());
+
+  std::string n1SmMsg = {};
   octet_stream_2_hex_stream((uint8_t*) bdata(sm_msg), blength(sm_msg), n1SmMsg);
 
   uint8_t http_version = 1;

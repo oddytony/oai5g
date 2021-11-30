@@ -145,9 +145,9 @@ int NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
         a.sst = *(buf + decoded_size);
         decoded_size++;
         length_tmp--;
-        a.sd        = -1;
-        a.mHplmnSst = -1;
-        a.mHplmnSd  = -1;
+        a.sd        = 0;
+        a.mHplmnSst = 0;
+        a.mHplmnSd  = 0;
       } break;
       case 4: {
         decoded_size++;
@@ -158,16 +158,16 @@ int NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
         a.sd |= *(buf + decoded_size);
         decoded_size++;
         length_tmp--;
-        a.sd << 8;
+        a.sd <<= 8;
         a.sd |= *(buf + decoded_size);
         decoded_size++;
         length_tmp--;
-        a.sd << 8;
+        a.sd <<= 8;
         a.sd |= *(buf + decoded_size);
         decoded_size++;
         length_tmp--;
-        a.mHplmnSst = -1;
-        a.mHplmnSd  = -1;
+        a.mHplmnSst = 0;
+        a.mHplmnSd  = 0;
       } break;
       case 5: {
         decoded_size++;
@@ -178,18 +178,18 @@ int NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
         a.sd |= *(buf + decoded_size);
         decoded_size++;
         length_tmp--;
-        a.sd << 8;
+        a.sd <<= 8;
         a.sd |= *(buf + decoded_size);
         decoded_size++;
         length_tmp--;
-        a.sd << 8;
+        a.sd <<= 8;
         a.sd |= *(buf + decoded_size);
         decoded_size++;
         length_tmp--;
         a.mHplmnSst = *(buf + decoded_size);
         decoded_size++;
         length_tmp--;
-        a.mHplmnSd = -1;
+        a.mHplmnSd = 0;
       } break;
       case 8: {
         decoded_size++;
@@ -200,11 +200,11 @@ int NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
         a.sd |= *(buf + decoded_size);
         decoded_size++;
         length_tmp--;
-        a.sd << 8;
+        a.sd <<= 8;
         a.sd |= *(buf + decoded_size);
         decoded_size++;
         length_tmp--;
-        a.sd << 8;
+        a.sd <<= 8;
         a.sd |= *(buf + decoded_size);
         decoded_size++;
         length_tmp--;
@@ -214,11 +214,11 @@ int NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
         a.mHplmnSd |= *(buf + decoded_size);
         decoded_size++;
         length_tmp--;
-        a.mHplmnSd << 16;
+        a.mHplmnSd <<= 8;
         a.mHplmnSd |= *(buf + decoded_size);
         decoded_size++;
         length_tmp--;
-        a.mHplmnSd << 8;
+        a.mHplmnSd <<= 8;
         a.mHplmnSd |= *(buf + decoded_size);
         decoded_size++;
         length_tmp--;

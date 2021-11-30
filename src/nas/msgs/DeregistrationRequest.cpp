@@ -82,12 +82,14 @@ void DeregistrationRequest::getDeregistrationType(
 }
 
 //------------------------------------------------------------------------------
-void DeregistrationRequest::getngKSI(uint8_t& ng_ksi) {
+bool DeregistrationRequest::getngKSI(uint8_t& ng_ksi) {
   if (ie_ngKSI) {
     ng_ksi =
         (ie_ngKSI->getTypeOfSecurityContext()) | ie_ngKSI->getasKeyIdentifier();
+    return true;
   } else {
-    ng_ksi = 0;
+    // ng_ksi = 0;
+    return false;
   }
 }
 

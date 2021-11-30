@@ -113,7 +113,6 @@ void RegistrationAccept::set5G_GUTI(
   int regionId = fromString<int>(amfRegionId);
   int setId    = fromString<int>(amfSetId);
   int pointer  = fromString<int>(amfPointer);
-  cout << "amfRegionID: " << amfRegionId.c_str() << endl;
   ie_5g_guti->set5GGUTI(
       mcc, mnc, (uint8_t) regionId, (uint16_t) setId, (uint8_t) pointer, tmsi);
   ie_5g_guti->setIEI(0x77);

@@ -375,7 +375,7 @@ bool NGSetupRequestMsg::getSupportedTAList(
       plmnId_decode->getMcc(broadcastplmn_data.mcc);
       plmnId_decode->getMnc(broadcastplmn_data.mnc);
       for (int k = 0; k < numofsnssai; k++) {
-        SliceSupportItem_t slicesupport_data;
+        S_Nssai slicesupport_data;
         snssai_decode[k].getSst(slicesupport_data.sst);
         snssai_decode[k].getSd(slicesupport_data.sd);
         broadcastplmn_data.slice_list.push_back(slicesupport_data);

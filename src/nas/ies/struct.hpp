@@ -45,6 +45,13 @@ typedef struct SNSSAI_s {
   int32_t sd;
   int32_t mHplmnSst;
   int32_t mHplmnSd;
+  SNSSAI_s& operator=(const struct SNSSAI_s& s) {
+    sst       = s.sst;
+    sd        = s.sd;
+    mHplmnSst = s.mHplmnSst;
+    mHplmnSd  = s.mHplmnSd;
+    return *this;
+  }
 } SNSSAI_t;
 typedef struct {
   uint8_t ie_type;

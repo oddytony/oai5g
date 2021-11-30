@@ -350,7 +350,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
 
   std::string gnb_name = {};
   if (!itti_msg.ngSetupReq->getRanNodeName(gnb_name)) {
-    Logger::amf_n2().warn("IE RanNodeName not existed");
+    Logger::amf_n2().warn("Missing IE RanNodeName");
   } else {
     gc->gnb_name     = gnb_name;
     gnbItem.gnb_name = gnb_name;
@@ -427,7 +427,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
     tmp.mcc = amf_cfg.plmn_list[i].mcc;
     tmp.mnc = amf_cfg.plmn_list[i].mnc;
     for (int j = 0; j < amf_cfg.plmn_list[i].slice_list.size(); j++) {
-      SliceSupportItem_t s_tmp;
+      S_Nssai s_tmp;
       s_tmp.sst = amf_cfg.plmn_list[i].slice_list[j].sST;
       s_tmp.sd  = amf_cfg.plmn_list[i].slice_list[j].sD;
       tmp.slice_list.push_back(s_tmp);
@@ -861,14 +861,26 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
       0xe000);  // TODO: remove hardcoded value
   msg->setSecurityKey((uint8_t*) bdata(itti_msg.kgnb));
   msg->setNasPdu((uint8_t*) bdata(itti_msg.nas), blength(itti_msg.nas));
-  // Allowed NSSAI
+
+  // Get the list allowed NSSAI from the common PLMN between gNB and AMF
   std::vector<S_Nssai> list;
-  for (auto p : amf_cfg.plmn_list) {
-    for (auto s : p.slice_list) {
-      S_Nssai item;
-      item.sst = s.sST;
-      item.sd  = s.sD;
-      list.push_back(item);
+  /*  for (auto p : amf_cfg.plmn_list) {
+      for (auto s : p.slice_list) {
+        S_Nssai item;
+        item.sst = s.sST;
+        item.sd  = s.sD;
+        list.push_back(item);
+      }
+    }
+  */
+  for (auto s : gc.get()->s_ta_list) {
+    for (auto p : s.b_plmn_list) {
+      for (auto s : p.slice_list) {
+        S_Nssai item;
+        item.sst = s.sst;
+        item.sd  = s.sd;
+        list.push_back(item);
+      }
     }
   }
   msg->setAllowedNssai(list);
@@ -910,6 +922,8 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
       }
       string supi = "imsi-" + nc.get()->imsi;
       Logger::amf_n2().debug("SUPI (%s)", supi.c_str());
+
+      // Get S_NSSAI from PDU Session Context
       std::shared_ptr<pdu_session_context> psc = {};
 
       if (!amf_app_inst->find_pdu_session_context(
@@ -917,7 +931,7 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
         Logger::amf_n2().warn(
             "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
         item.s_nssai.sst = "01";
-        item.s_nssai.sd  = "None";
+        item.s_nssai.sd  = "none";
       } else {
         item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
         item.s_nssai.sd  = psc.get()->snssai.sD;
@@ -1016,8 +1030,9 @@ void amf_n2::handle_itti_message(
   }
   string supi = "imsi-" + nc.get()->imsi;
   Logger::amf_n2().debug("SUPI (%s)", supi.c_str());
-  std::shared_ptr<pdu_session_context> psc = {};
 
+  // Get SNSSAI info from PDU Session Context
+  std::shared_ptr<pdu_session_context> psc = {};
   if (!amf_app_inst->find_pdu_session_context(
           supi, itti_msg.pdu_session_id, psc)) {
     Logger::amf_n2().warn(
@@ -1029,8 +1044,9 @@ void amf_n2::handle_itti_message(
     item.s_nssai.sd  = psc.get()->snssai.sD;
   }
 
-  // item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
-  // item.s_nssai.sd = psc.get()->snssai.sD;
+  Logger::amf_n2().debug(
+      "S_NSSAI (SST, SD) %s, %s", item.s_nssai.sst.c_str(),
+      item.s_nssai.sd.c_str());
 
   item.pduSessionResourceSetupRequestTransfer.buf =
       (uint8_t*) bdata(itti_msg.n2sm);
@@ -1443,7 +1459,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   std::vector<S_NSSAI> Allowed_Nssai;
   for (int i = 0; i < amf_cfg.plmn_list.size(); i++) {
     for (int j = 0; j < amf_cfg.plmn_list[i].slice_list.size(); j++) {
-      SliceSupportItem_t s_tmp;
+      S_Nssai s_tmp;
       S_NSSAI s_nssai = {};
       s_nssai.setSst(amf_cfg.plmn_list[i].slice_list[j].sST);
       s_nssai.setSd(amf_cfg.plmn_list[i].slice_list[j].sD);
@@ -2102,6 +2118,7 @@ std::vector<SupportedItem_t> amf_n2::get_common_plmn(
       for (int k = 0; k < list[j].b_plmn_list.size(); k++) {
         if (!(list[j].b_plmn_list[k].mcc.compare(amf_cfg.plmn_list[i].mcc)) &&
             !(list[j].b_plmn_list[k].mnc.compare(amf_cfg.plmn_list[i].mnc))) {
+          // TODO: compare NSSAI
           plmn_list.push_back(list[j]);
         }
       }
