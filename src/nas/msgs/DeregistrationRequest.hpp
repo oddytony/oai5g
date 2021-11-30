@@ -58,7 +58,7 @@ class DeregistrationRequest {
 
   void getDeregistrationType(uint8_t& dereg_type);
   void getDeregistrationType(_5gs_deregistration_type_t& type);
-  void getngKSI(uint8_t& ng_ksi);
+  bool getngKSI(uint8_t& ng_ksi);
   void getMobilityIdentityType(uint8_t& type);
   std::string get_5g_guti();
   bool getSuciSupiFormatImsi(nas::SUCI_imsi_t& imsi);

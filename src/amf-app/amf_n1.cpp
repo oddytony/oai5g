@@ -1088,21 +1088,20 @@ void amf_n1::registration_request_handle(
   }
 
   // Check 5GS_Registration_type IE (Mandatory IE)
-  uint8_t reg_type;
-  bool is_follow_on_req_pending;
+  uint8_t reg_type              = 0;
+  bool is_follow_on_req_pending = false;
   if (!regReq->get5GSRegistrationType(is_follow_on_req_pending, reg_type)) {
     Logger::amf_n1().error("Missing Mandatory IE 5GS Registration type...");
     response_registration_reject_msg(
         _5GMM_CAUSE_INVALID_MANDATORY_INFO, ran_ue_ngap_id, amf_ue_ngap_id);
-    // delete regReq;
     return;
   }
   nc.get()->registration_type         = reg_type;
   nc.get()->follow_on_req_pending_ind = is_follow_on_req_pending;
 
   // Check ngKSI (Mandatory IE)
-  uint8_t ngKSI = regReq->getngKSI();
-  if (ngKSI == -1) {
+  uint8_t ngKSI = 0;
+  if (!regReq->getngKSI(ngKSI)) {
     Logger::amf_n1().error("Missing Mandatory IE ngKSI...");
     response_registration_reject_msg(
         _5GMM_CAUSE_INVALID_MANDATORY_INFO, ran_ue_ngap_id, amf_ue_ngap_id);
@@ -1142,7 +1141,7 @@ void amf_n1::registration_request_handle(
 
   // Get Requested NSSAI (Optional IE), if provided
   if (!regReq->getRequestedNssai(nc.get()->requestedNssai)) {
-    Logger::amf_n1().warn("No Optional IE RequestedNssai available");
+    Logger::amf_n1().debug("No Optional IE RequestedNssai available");
   }
 
   for (auto r : nc.get()->requestedNssai) {
@@ -1170,7 +1169,7 @@ void amf_n1::registration_request_handle(
 
     if (!registration_request_msg_container->getRequestedNssai(
             nc.get()->requestedNssai)) {
-      Logger::amf_n1().warn(
+      Logger::amf_n1().debug(
           "No Optional IE RequestedNssai available in NAS Container");
     } else {
       for (auto s : nc.get()->requestedNssai) {
@@ -1181,6 +1180,9 @@ void amf_n1::registration_request_handle(
             s.sst, s.sd, s.mHplmnSst, s.mHplmnSd);
       }
     }
+  } else {
+    Logger::amf_n1().debug(
+        "No Optional NAS Container inside Registration Request message");
   }
 
   // Store NAS information into nas_context
@@ -2702,6 +2704,7 @@ void amf_n1::ul_nas_transport_handle(
     }
 
     // TODO: Only use the first one for now if there's multiple requested NSSAI
+    // since we don't know which slice associated with this PDU session
     if (nc.get()->requestedNssai.size() > 0)
       snssai = nc.get()->requestedNssai[0];
   }

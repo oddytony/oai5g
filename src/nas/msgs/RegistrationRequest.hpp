@@ -93,7 +93,7 @@ class RegistrationRequest {
   void setEPS_Bearer_Context_Status(uint16_t value);
 
   bool get5GSRegistrationType(bool& is_for, uint8_t& reg_type /*3bits*/);
-  uint8_t getngKSI();
+  bool getngKSI(uint8_t& ng_ksi);
   uint8_t getMobilityIdentityType();
   std::string get_5g_guti();  //"error" for missing IE GUTI
   bool getSuciSupiFormatImsi(nas::SUCI_imsi_t& imsi);

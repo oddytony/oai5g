@@ -246,13 +246,13 @@ int ServiceRequest::decodefrombuffer(
 }
 
 //------------------------------------------------------------------------------
-uint8_t ServiceRequest::getngKSI() {
+bool ServiceRequest::getngKSI(uint8_t& ng_ksi) {
   if (ie_ngKSI) {
-    uint8_t a = 0;
-    a = (ie_ngKSI->getTypeOfSecurityContext()) | ie_ngKSI->getasKeyIdentifier();
-    return a;
+    ng_ksi =
+        (ie_ngKSI->getTypeOfSecurityContext()) | ie_ngKSI->getasKeyIdentifier();
+    return true;
   } else {
-    return 0;
+    return false;
   }
 }
 

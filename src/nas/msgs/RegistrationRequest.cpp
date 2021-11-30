@@ -92,13 +92,14 @@ void RegistrationRequest::setngKSI(uint8_t tsc, uint8_t key_set_id) {
 }
 
 //------------------------------------------------------------------------------
-uint8_t RegistrationRequest::getngKSI() {
+bool RegistrationRequest::getngKSI(uint8_t& ng_ksi) {
   if (ie_ngKSI) {
-    return (
-        (ie_ngKSI->getTypeOfSecurityContext()) |
-        ie_ngKSI->getasKeyIdentifier());
+    ng_ksi =
+        (ie_ngKSI->getTypeOfSecurityContext()) | ie_ngKSI->getasKeyIdentifier();
+    return true;
   } else {
-    return 0;
+    // ng_ksi = 0;
+    return false;
   }
 }
 

@@ -56,7 +56,7 @@ class ServiceRequest {
 
  public:
   int decodefrombuffer(NasMmPlainHeader* header, uint8_t* buf, int len);
-  uint8_t getngKSI();
+  bool getngKSI(uint8_t& ng_ksi);
   uint8_t getServiceType();
   bool get5G_S_TMSI(uint16_t& amfSetId, uint8_t& amfPointer, string& tmsi);
   uint16_t getUplinkDataStatus();
