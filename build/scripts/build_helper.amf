@@ -501,6 +501,9 @@ check_install_amf_deps(){
         $SUDO $INSTALLER remove $OPTION libboost1.65-dev || true
         $SUDO $INSTALLER install $OPTION libboost1.67-dev
         ;;
+      "ubuntu20.04")
+        $SUDO $INSTALLER install $OPTION libboost1.67-dev libboost1.67-all libmysqlclient-dev
+        ;;        
     esac
   fi  
 
