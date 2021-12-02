@@ -60,8 +60,21 @@ class amf_event {
   bs2::connection subscribe_ue_reachability_status(
       const ue_reachability_status_sig_t::slot_type& sig);
 
+  /*
+   * Subscribe to UE Registration State Notification signal
+   * @param [const ue_registration_state_sig_t::slot_type&] sig:  slot_type
+   * parameter
+   * @return boost::signals2::connection: the connection between the signal and
+   * the slot
+   */
+  bs2::connection subscribe_ue_registration_state(
+      const ue_registration_state_sig_t::slot_type& sig);
+
  private:
   ue_reachability_status_sig_t
       ue_reachability_status;  // Signal for UE Reachability Report
+
+  ue_registration_state_sig_t
+      ue_registration_state;  // Signal for UE Registration State Report
 };
 }  // namespace amf_application

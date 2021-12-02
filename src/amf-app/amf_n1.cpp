@@ -153,7 +153,12 @@ amf_n1::amf_n1() {
   // EventExposure: subscribe to UE Reachability Status change
   ee_ue_reachability_status_connection =
       event_sub.subscribe_ue_reachability_status(boost::bind(
-          &amf_n1::handle_ue_reachability_status_change, this, _1, _2));
+          &amf_n1::handle_ue_reachability_status_change, this, _1, _2, _3));
+
+  // EventExposure: subscribe to UE Registration State change
+  ee_ue_registration_state_connection =
+      event_sub.subscribe_ue_registration_state(boost::bind(
+          &amf_n1::handle_ue_registration_state_change, this, _1, _2, _3));
 }
 
 //------------------------------------------------------------------------------
@@ -503,7 +508,7 @@ void amf_n1::nas_signalling_establishment_request_handle(
     Logger::amf_n1().debug(
         "Signal the UE Reachability Status Event notification for SUPI %s",
         supi.c_str());
-    event_sub.ue_reachability_status(supi, 1);
+    event_sub.ue_reachability_status(supi, CM_CONNECTED, 1);
 
   } else {
     // Logger::amf_n1().debug("existing nas_context with amf_ue_ngap_id(0x%x)
@@ -975,6 +980,14 @@ void amf_n1::registration_request_handle(
 
           stacs.update_ue_info(ueItem);
           set_5gmm_state(nc, _5GMM_COMMON_PROCEDURE_INITIATED);
+
+          string supi = "imsi-" + nc.get()->imsi;
+          Logger::amf_n1().debug(
+              "Signal the UE Registration State Event notification for SUPI %s",
+              supi.c_str());
+          event_sub.ue_registration_state(
+              supi, _5GMM_COMMON_PROCEDURE_INITIATED, 1);
+
           nc.get()->is_stacs_available = true;
         }
       }
@@ -2268,6 +2281,12 @@ void amf_n1::security_mode_complete_handle(
   }
   set_5gmm_state(nc, _5GMM_REGISTERED);
 
+  string supi = "imsi-" + nc.get()->imsi;
+  Logger::amf_n1().debug(
+      "Signal the UE Registration State Event notification for SUPI %s",
+      supi.c_str());
+  event_sub.ue_registration_state(supi, _5GMM_REGISTERED, 1);
+
   set_guti_2_nas_context(guti, nc);
   nc.get()->is_common_procedure_for_security_mode_control_running = false;
   nas_secu_ctx* secu = nc.get()->security_ctx;
@@ -2647,6 +2666,13 @@ void amf_n1::ue_initiate_de_registration_handle(
   itti_send_dl_nas_buffer_to_task_n2(b, ran_ue_ngap_id, amf_ue_ngap_id);
 
   set_5gmm_state(nc, _5GMM_DEREGISTERED);
+
+  string supi = "imsi-" + nc.get()->imsi;
+  Logger::amf_n1().debug(
+      "Signal the UE Registration State Event notification for SUPI %s",
+      supi.c_str());
+  event_sub.ue_registration_state(supi, _5GMM_DEREGISTERED, 1);
+
   if (nc.get()->is_stacs_available) {
     stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
   }
@@ -3058,7 +3084,7 @@ void amf_n1::get_5gcm_state(
 
 //------------------------------------------------------------------------------
 void amf_n1::handle_ue_reachability_status_change(
-    std::string supi, uint8_t http_version) {
+    std::string supi, uint8_t status, uint8_t http_version) {
   Logger::amf_n1().debug(
       "Send request to SBI to triger UE Reachability Report (SUPI "
       "%s )",
@@ -3089,9 +3115,61 @@ void amf_n1::handle_ue_reachability_status_change(
       // TODO
       report.m_type                = REACHABILITY_REPORT;
       report.m_reachability_is_set = true;
-      report.m_reachability        = REACHABLE;  // TODO
-      report.m_supi_is_set         = true;
-      report.m_supi                = supi;
+      if (status == CM_CONNECTED)
+        report.m_reachability = REACHABLE;
+      else
+        report.m_reachability = UNREACHABLE;
+      report.m_supi_is_set = true;
+      report.m_supi        = supi;
+      ev_notif.add_report(report);
+      itti_msg->event_notifs.push_back(ev_notif);
+    }
+
+    int ret = itti_inst->send_msg(itti_msg);
+    if (0 != ret) {
+      Logger::amf_n1().error(
+          "Could not send ITTI message %s to task TASK_AMF_N11",
+          itti_msg->get_msg_name());
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::handle_ue_registration_state_change(
+    std::string supi, uint8_t status, uint8_t http_version) {
+  Logger::amf_n1().debug(
+      "Send request to SBI to triger UE Registration State Report (SUPI "
+      "%s )",
+      supi.c_str());
+
+  std::vector<std::shared_ptr<amf_subscription>> subscriptions = {};
+  amf_app_inst->get_ee_subscriptions(
+      amf_event_type_t::REGISTRATION_STATE_REPORT, subscriptions);
+
+  if (subscriptions.size() > 0) {
+    // Send request to SBI to trigger the notification to the subscribed event
+    Logger::amf_app().debug(
+        "Send ITTI msg to AMF SBI to trigger the event notification");
+
+    std::shared_ptr<itti_sbi_notify_subscribed_event> itti_msg =
+        std::make_shared<itti_sbi_notify_subscribed_event>(
+            TASK_AMF_N1, TASK_AMF_N11);
+
+    // TODO:
+    // itti_msg->notif_id     = "";
+    itti_msg->http_version = 1;
+
+    for (auto i : subscriptions) {
+      event_notification ev_notif = {};
+      ev_notif.set_notify_correlation_id(i.get()->notify_correlation_id);
+      // ev_notif.set_subs_change_notify_correlation_id(i.get()->notify_uri);
+      amf_event_report_t report = {};
+      // TODO
+      report.m_type = REGISTRATION_STATE_REPORT;
+      // report. = true;
+      // report.m_ = UNREACHABLE;
+      report.m_supi_is_set = true;
+      report.m_supi        = supi;
       ev_notif.add_report(report);
       itti_msg->event_notifs.push_back(ev_notif);
     }

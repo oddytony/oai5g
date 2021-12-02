@@ -38,11 +38,18 @@ namespace bs2 = boost::signals2;
 namespace amf_application {
 
 // Signal for UE Reachability Report
-// SUPI, HTTP version
+// SUPI, status, HTTP version
 typedef bs2::signal_type<
-    void(std::string, uint8_t),
+    void(std::string, uint8_t, uint8_t),
     bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
     ue_reachability_status_sig_t;
+
+// Signal for UE Registration State Report
+// SUPI, registration state, HTTP version
+typedef bs2::signal_type<
+    void(std::string, uint8_t, uint8_t),
+    bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
+    ue_registration_state_sig_t;
 
 }  // namespace amf_application
 #endif

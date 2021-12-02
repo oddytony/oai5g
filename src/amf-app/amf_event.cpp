@@ -34,3 +34,9 @@ bs2::connection amf_event::subscribe_ue_reachability_status(
     const ue_reachability_status_sig_t::slot_type& sig) {
   return ue_reachability_status.connect(sig);
 }
+
+//------------------------------------------------------------------------------
+bs2::connection amf_event::subscribe_ue_registration_state(
+    const ue_registration_state_sig_t::slot_type& sig) {
+  return ue_registration_state.connect(sig);
+}
