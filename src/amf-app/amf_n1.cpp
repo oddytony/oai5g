@@ -65,6 +65,8 @@
 #include "comUt.hpp"
 #include "3gpp_24.501.h"
 #include "sha256.hpp"
+#include "AmfEventReport.h"
+#include "AmfEventType.h"
 
 extern "C" {
 #include "bstrlib.h"
@@ -3111,17 +3113,34 @@ void amf_n1::handle_ue_reachability_status_change(
       event_notification ev_notif = {};
       ev_notif.set_notify_correlation_id(i.get()->notify_correlation_id);
       // ev_notif.set_subs_change_notify_correlation_id(i.get()->notify_uri);
-      amf_event_report_t report = {};
-      // TODO
-      report.m_type                = REACHABILITY_REPORT;
-      report.m_reachability_is_set = true;
+
+      /*  amf_event_report_t report = {};
+        // TODO
+        report.m_type                = REACHABILITY_REPORT;
+        report.m_reachability_is_set = true;
+        if (status == CM_CONNECTED)
+          report.m_reachability = REACHABLE;
+        else
+          report.m_reachability = UNREACHABLE;
+        report.m_supi_is_set = true;
+        report.m_supi        = supi;
+        ev_notif.add_report(report);
+  */
+      oai::amf::model::AmfEventReport event_report = {};
+      oai::amf::model::AmfEventType amf_event_type = {};
+      amf_event_type.set_value("REACHABILITY_REPORT");
+
+      event_report.setType(amf_event_type);
+      oai::amf::model::UeReachability ue_reachability = {};
       if (status == CM_CONNECTED)
-        report.m_reachability = REACHABLE;
+        ue_reachability.set_value("REACHABLE");
       else
-        report.m_reachability = UNREACHABLE;
-      report.m_supi_is_set = true;
-      report.m_supi        = supi;
-      ev_notif.add_report(report);
+        ue_reachability.set_value("UNREACHABLE");
+
+      event_report.setReachability(ue_reachability);
+      event_report.setSupi(supi);
+      ev_notif.add_report(event_report);
+
       itti_msg->event_notifs.push_back(ev_notif);
     }
 
@@ -3163,6 +3182,7 @@ void amf_n1::handle_ue_registration_state_change(
       event_notification ev_notif = {};
       ev_notif.set_notify_correlation_id(i.get()->notify_correlation_id);
       // ev_notif.set_subs_change_notify_correlation_id(i.get()->notify_uri);
+      /*
       amf_event_report_t report = {};
       // TODO
       report.m_type = REGISTRATION_STATE_REPORT;
@@ -3170,7 +3190,28 @@ void amf_n1::handle_ue_registration_state_change(
       // report.m_ = UNREACHABLE;
       report.m_supi_is_set = true;
       report.m_supi        = supi;
-      ev_notif.add_report(report);
+      ev_notif.add_report(report);*/
+
+      oai::amf::model::AmfEventReport event_report = {};
+      oai::amf::model::AmfEventType amf_event_type = {};
+      amf_event_type.set_value("REGISTRATION_STATE_REPORT");
+
+      event_report.setType(amf_event_type);
+
+      std::vector<oai::amf::model::RmInfo> rm_infos;
+
+      oai::amf::model::RmInfo rm_info   = {};
+      oai::amf::model::RmState rm_state = {};
+      rm_state.set_value("REGISTERED");
+      rm_info.setRmState(rm_state);
+
+      oai::amf::model::AccessType access_type = {};
+      access_type.setValue(AccessType::eAccessType::_3GPP_ACCESS);
+      rm_info.setAccessType(access_type);
+
+      event_report.setSupi(supi);
+      ev_notif.add_report(event_report);
+
       itti_msg->event_notifs.push_back(ev_notif);
     }
 

@@ -89,6 +89,7 @@ typedef enum ue_reachability_e {
   REGULATORY_ONLY = 3
 } ue_reachability_t;
 
+/*
 typedef struct amf_event_report_s {
   amf_event_type_t m_type;    // Mandatory
   amf_event_state_t m_state;  // Mandatory
@@ -101,35 +102,8 @@ typedef struct amf_event_report_s {
   bool m_subscription_id_is_set;
   bool m_any_ue;
   bool m_any_ue_is_set;
-  /*
-        std::vector<AmfEventArea> m_AreaList;
-            bool m_AreaListIsSet;
-            int32_t m_RefId;
-            bool m_RefIdIsSet;
-            std::string m_Gpsi;
-            bool m_GpsiIsSet;
-            std::string m_Pei;
-            bool m_PeiIsSet;
-            UserLocation m_Location;
-            bool m_LocationIsSet;
-            std::string m_Timezone;
-            bool m_TimezoneIsSet;
-            std::vector<AccessType> m_AccessTypeList;
-            bool m_AccessTypeListIsSet;
-            std::vector<RmInfo> m_RmInfoList;
-            bool m_RmInfoListIsSet;
-            std::vector<CmInfo> m_CmInfoList;
-            bool m_CmInfoListIsSet;
-
-            //CommunicationFailure m_CommFailure;
-           // bool m_CommFailureIsSet;
-           // int32_t m_NumberOfUes;
-           // bool m_NumberOfUesIsSet;
-           // std::vector<_5GsUserStateInfo> m_r_5gsUserStateList;
-           // bool m_r_5gsUserStateListIsSet;
-  */
 } amf_event_report_t;
-
+*/
 enum n1_n2_message_transfer_cause_e {
   ATTEMPTING_TO_REACH_UE            = 1,
   N1_N2_TRANSFER_INITIATED          = 2,
