@@ -1038,7 +1038,7 @@ bool amf_n11::discover_smf(
     const std::string& nrf_port, const std::string& nrf_api_version) {
   Logger::amf_n11().debug(
       "Send NFDiscovery to NRF to discover the available SMFs");
-  bool result = true;
+  bool result = false;
 
   uint8_t http_version = 1;
   if (amf_cfg.support_features.use_http2) http_version = 2;
@@ -1118,24 +1118,26 @@ bool amf_n11::discover_smf(
           if (instance_json.find("sNssais") != instance_json.end()) {
             for (auto& s : instance_json["sNssais"].items()) {
               nlohmann::json Snssai = s.value();
-              if (Snssai["sst"] == snssai.sST) {
+              if (Snssai["sst"].get<int>() == snssai.sST) {
                 // Match SD (optional) only if it is provided
-                if (!Snssai["sd"].empty() & Snssai["sd"] != snssai.sD) {
-                  Logger::amf_n11().debug("SD is not matched");
-                  result = false;
+                if (Snssai["sd"].empty() or
+                    (snssai.sD.compare(Snssai["sd"].get<std::string>()) == 0)) {
+                  Logger::amf_n11().debug(
+                      "S-NSSAI [SST- %d, SD -%s] is matched for SMF profile",
+                      snssai.sST, snssai.sD.c_str());
+                  result = true;
+                  break;  // NSSAI is included in the list of supported slices
+                          // from SMF
                 }
-                Logger::amf_n11().debug(
-                    "Snssai [SST- %s, SD -%s] is matched for SMF profile",
-                    Snssai["sst"].dump().c_str(), Snssai["sd"].dump().c_str());
-                result = true;
-                break;
-              } else {
-                Logger::amf_n11().debug(
-                    "Snssai is not matched for SMF profile");
-                result = false;
               }
             }
           }
+
+          if (!result) {
+            Logger::amf_n11().debug("S-NSSAI is not matched for SMF profile");
+            // continue;
+          }
+
           // TODO: check DNN
           // TODO: PLMN (need to add plmnList into NRF profile, SMF profile)
           // for now, just IP addr of SMF of the first NF instance
@@ -1156,6 +1158,7 @@ bool amf_n11::discover_smf(
               }
             }
           }
+
           // Break after first matching SMF instance for requested S-NSSAI
           if (result) break;
         }
