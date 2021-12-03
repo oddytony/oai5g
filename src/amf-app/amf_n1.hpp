@@ -179,6 +179,9 @@ class amf_n1 {
   void handle_ue_registration_state_change(
       std::string supi, uint8_t status, uint8_t http_version);
 
+  void handle_ue_connectivity_state_change(
+      std::string supi, uint8_t status, uint8_t http_version);
+
   void get_pdu_session_to_be_activated(
       uint16_t pdu_session_status,
       std::vector<uint8_t>& pdu_session_to_be_activated);
@@ -249,6 +252,7 @@ class amf_n1 {
   amf_event event_sub;
   bs2::connection ee_ue_reachability_status_connection;
   bs2::connection ee_ue_registration_state_connection;
+  bs2::connection ee_ue_connectivity_state_connection;
 };
 }  // namespace amf_application
 

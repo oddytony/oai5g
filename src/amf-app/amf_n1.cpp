@@ -161,10 +161,23 @@ amf_n1::amf_n1() {
   ee_ue_registration_state_connection =
       event_sub.subscribe_ue_registration_state(boost::bind(
           &amf_n1::handle_ue_registration_state_change, this, _1, _2, _3));
+
+  // EventExposure: subscribe to UE Connectivity State change
+  ee_ue_connectivity_state_connection =
+      event_sub.subscribe_ue_connectivity_state(boost::bind(
+          &amf_n1::handle_ue_connectivity_state_change, this, _1, _2, _3));
 }
 
 //------------------------------------------------------------------------------
-amf_n1::~amf_n1() {}
+amf_n1::~amf_n1() {
+  // Disconnect the boost connection
+  if (ee_ue_reachability_status_connection.connected())
+    ee_ue_reachability_status_connection.disconnect();
+  if (ee_ue_registration_state_connection.connected())
+    ee_ue_registration_state_connection.disconnect();
+  if (ee_ue_connectivity_state_connection.connected())
+    ee_ue_connectivity_state_connection.disconnect();
+}
 
 //------------------------------------------------------------------------------
 void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
@@ -3172,13 +3185,12 @@ void amf_n1::handle_ue_registration_state_change(
       // ev_notif.set_subs_change_notify_correlation_id(i.get()->notify_uri);
 
       oai::amf::model::AmfEventReport event_report = {};
+
       oai::amf::model::AmfEventType amf_event_type = {};
       amf_event_type.set_value("REGISTRATION_STATE_REPORT");
-
       event_report.setType(amf_event_type);
 
       std::vector<oai::amf::model::RmInfo> rm_infos;
-
       oai::amf::model::RmInfo rm_info   = {};
       oai::amf::model::RmState rm_state = {};
       rm_state.set_value("REGISTERED");
@@ -3187,6 +3199,72 @@ void amf_n1::handle_ue_registration_state_change(
       oai::amf::model::AccessType access_type = {};
       access_type.setValue(AccessType::eAccessType::_3GPP_ACCESS);
       rm_info.setAccessType(access_type);
+
+      rm_infos.push_back(rm_info);
+      event_report.setRmInfoList(rm_infos);
+
+      event_report.setSupi(supi);
+      ev_notif.add_report(event_report);
+
+      itti_msg->event_notifs.push_back(ev_notif);
+    }
+
+    int ret = itti_inst->send_msg(itti_msg);
+    if (0 != ret) {
+      Logger::amf_n1().error(
+          "Could not send ITTI message %s to task TASK_AMF_N11",
+          itti_msg->get_msg_name());
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::handle_ue_connectivity_state_change(
+    std::string supi, uint8_t status, uint8_t http_version) {
+  Logger::amf_n1().debug(
+      "Send request to SBI to triger UE Connectivity State Report (SUPI "
+      "%s )",
+      supi.c_str());
+
+  std::vector<std::shared_ptr<amf_subscription>> subscriptions = {};
+  amf_app_inst->get_ee_subscriptions(
+      amf_event_type_t::CONNECTIVITY_STATE_REPORT, subscriptions);
+
+  if (subscriptions.size() > 0) {
+    // Send request to SBI to trigger the notification to the subscribed event
+    Logger::amf_app().debug(
+        "Send ITTI msg to AMF SBI to trigger the event notification");
+
+    std::shared_ptr<itti_sbi_notify_subscribed_event> itti_msg =
+        std::make_shared<itti_sbi_notify_subscribed_event>(
+            TASK_AMF_N1, TASK_AMF_N11);
+
+    // TODO:
+    // itti_msg->notif_id     = "";
+    itti_msg->http_version = 1;
+
+    for (auto i : subscriptions) {
+      event_notification ev_notif = {};
+      ev_notif.set_notify_correlation_id(i.get()->notify_correlation_id);
+      // ev_notif.set_subs_change_notify_correlation_id(i.get()->notify_uri);
+
+      oai::amf::model::AmfEventReport event_report = {};
+
+      oai::amf::model::AmfEventType amf_event_type = {};
+      amf_event_type.set_value("CONNECTIVITY_STATE_REPORT");
+      event_report.setType(amf_event_type);
+
+      std::vector<oai::amf::model::CmInfo> cm_infos;
+      oai::amf::model::CmInfo cm_info   = {};
+      oai::amf::model::CmState cm_state = {};
+      cm_state.set_value("CONNECTED");
+      cm_info.setCmState(cm_state);
+
+      oai::amf::model::AccessType access_type = {};
+      access_type.setValue(AccessType::eAccessType::_3GPP_ACCESS);
+      cm_info.setAccessType(access_type);
+      cm_infos.push_back(cm_info);
+      event_report.setCmInfoList(cm_infos);
 
       event_report.setSupi(supi);
       ev_notif.add_report(event_report);

@@ -21,10 +21,10 @@
 
 /*! \file amf_event.cpp
  \brief
- \author  Shivam Gandhi
- \company KCL
+ \author  Shivam Gandhi (KCL), Tien-Thinh NGUYEN (EURECOM)
+ \company
  \date 2021
- \email: shivam.gandhi@kcl.ac.uk
+ \email: contact@openairinterface.org
  */
 
 #include "amf_event.hpp"
@@ -39,4 +39,9 @@ bs2::connection amf_event::subscribe_ue_reachability_status(
 bs2::connection amf_event::subscribe_ue_registration_state(
     const ue_registration_state_sig_t::slot_type& sig) {
   return ue_registration_state.connect(sig);
+}
+
+bs2::connection amf_event::subscribe_ue_connectivity_state(
+    const ue_connectivity_state_sig_t::slot_type& sig) {
+  return ue_connectivity_state.connect(sig);
 }

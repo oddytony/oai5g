@@ -21,10 +21,10 @@
 
 /*! \file amf_event.hpp
  \brief
- \author  Shivam Gandhi
- \company KCL
+ \author  Shivam Gandhi (KCL), Tien-Thinh NGUYEN (EURECOM)
+ \company
  \date 2021
- \email: shivam.gandhi@kcl.ac.uk
+ \email: contact@openairinterface.org
  */
 
 #include <boost/signals2.hpp>
@@ -70,11 +70,24 @@ class amf_event {
   bs2::connection subscribe_ue_registration_state(
       const ue_registration_state_sig_t::slot_type& sig);
 
+  /*
+   * Subscribe to UE Connectivity State Notification signal
+   * @param [const ue_connectivity_state_sig_t::slot_type&] sig:  slot_type
+   * parameter
+   * @return boost::signals2::connection: the connection between the signal and
+   * the slot
+   */
+  bs2::connection subscribe_ue_connectivity_state(
+      const ue_connectivity_state_sig_t::slot_type& sig);
+
  private:
   ue_reachability_status_sig_t
       ue_reachability_status;  // Signal for UE Reachability Report
 
   ue_registration_state_sig_t
       ue_registration_state;  // Signal for UE Registration State Report
+
+  ue_connectivity_state_sig_t
+      ue_connectivity_state;  // Signal for UE Connectivity State Report
 };
 }  // namespace amf_application

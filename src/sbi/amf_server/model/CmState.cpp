@@ -49,10 +49,21 @@ bool CmState::operator!=(const CmState& rhs) const {
   return !(*this == rhs);
 }
 
+void CmState::set_value(std::string value) {
+  this->value = value;
+}
+void CmState::get_value(std::string& value) const {
+  value = this->value;
+}
+std::string CmState::get_value() const {
+  return value;
+}
 void to_json(nlohmann::json& j, const CmState& o) {
-  j = nlohmann::json();
+  j = o.get_value();
 }
 
-void from_json(const nlohmann::json& j, CmState& o) {}
+void from_json(const nlohmann::json& j, CmState& o) {
+  o.set_value(j.get<std::string>());
+}
 
 }  // namespace oai::amf::model
