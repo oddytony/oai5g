@@ -83,10 +83,8 @@ class amf_event {
  private:
   ue_reachability_status_sig_t
       ue_reachability_status;  // Signal for UE Reachability Report
-
   ue_registration_state_sig_t
       ue_registration_state;  // Signal for UE Registration State Report
-
   ue_connectivity_state_sig_t
       ue_connectivity_state;  // Signal for UE Connectivity State Report
 };

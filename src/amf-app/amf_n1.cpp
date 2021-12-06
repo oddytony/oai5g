@@ -3130,8 +3130,12 @@ void amf_n1::handle_ue_reachability_status_change(
       oai::amf::model::AmfEventReport event_report = {};
       oai::amf::model::AmfEventType amf_event_type = {};
       amf_event_type.set_value("REACHABILITY_REPORT");
-
       event_report.setType(amf_event_type);
+
+      AmfEventState amf_event_state = {};
+      amf_event_state.setActive(true);
+      event_report.setState(amf_event_state);
+
       oai::amf::model::UeReachability ue_reachability = {};
       if (status == CM_CONNECTED)
         ue_reachability.set_value("REACHABLE");
@@ -3189,6 +3193,10 @@ void amf_n1::handle_ue_registration_state_change(
       oai::amf::model::AmfEventType amf_event_type = {};
       amf_event_type.set_value("REGISTRATION_STATE_REPORT");
       event_report.setType(amf_event_type);
+
+      AmfEventState amf_event_state = {};
+      amf_event_state.setActive(true);
+      event_report.setState(amf_event_state);
 
       std::vector<oai::amf::model::RmInfo> rm_infos;
       oai::amf::model::RmInfo rm_info   = {};
@@ -3253,6 +3261,10 @@ void amf_n1::handle_ue_connectivity_state_change(
       oai::amf::model::AmfEventType amf_event_type = {};
       amf_event_type.set_value("CONNECTIVITY_STATE_REPORT");
       event_report.setType(amf_event_type);
+
+      AmfEventState amf_event_state = {};
+      amf_event_state.setActive(true);
+      event_report.setState(amf_event_state);
 
       std::vector<oai::amf::model::CmInfo> cm_infos;
       oai::amf::model::CmInfo cm_info   = {};

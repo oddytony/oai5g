@@ -75,22 +75,6 @@ typedef struct amf_event_s {
 
 } amf_event_t;
 
-/*
-typedef struct amf_event_state_s {
-  bool m_active;
-  int32_t m_remain_reports;
-  bool m_remain_reports_is_set;
-  int32_t m_remain_duration;
-  bool m_remain_duration_is_set;
-} amf_event_state_t;
-
-typedef enum ue_reachability_e {
-  UNREACHABLE     = 1,
-  REACHABLE       = 2,
-  REGULATORY_ONLY = 3
-} ue_reachability_t;
-*/
-
 enum n1_n2_message_transfer_cause_e {
   ATTEMPTING_TO_REACH_UE            = 1,
   N1_N2_TRANSFER_INITIATED          = 2,
