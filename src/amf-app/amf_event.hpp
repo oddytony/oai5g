@@ -51,6 +51,16 @@ class amf_event {
   friend class amf_profile;
 
   /*
+   * Subscribe to Location Report signal
+   * @param [const ue_location_report_sig_t::slot_type&] sig:  slot_type
+   * parameter
+   * @return boost::signals2::connection: the connection between the signal and
+   * the slot
+   */
+  bs2::connection subscribe_ue_location_report(
+      const ue_location_report_sig_t::slot_type& sig);
+
+  /*
    * Subscribe to UE Reachability Status Notification signal
    * @param [const ue_reachability_status_sig_t::slot_type&] sig:  slot_type
    * parameter
@@ -81,6 +91,7 @@ class amf_event {
       const ue_connectivity_state_sig_t::slot_type& sig);
 
  private:
+  ue_location_report_sig_t ue_location_report;  // Signal for UE Location Report
   ue_reachability_status_sig_t
       ue_reachability_status;  // Signal for UE Reachability Report
   ue_registration_state_sig_t

@@ -152,6 +152,10 @@ amf_n1::amf_n1() {
   }
   Logger::amf_n1().startup("amf_n1 started");
 
+  // EventExposure: subscribe to UE Location Report
+  ee_ue_location_report_connection = event_sub.subscribe_ue_location_report(
+      boost::bind(&amf_n1::handle_ue_location_change, this, _1, _2, _3));
+
   // EventExposure: subscribe to UE Reachability Status change
   ee_ue_reachability_status_connection =
       event_sub.subscribe_ue_reachability_status(boost::bind(
@@ -171,6 +175,8 @@ amf_n1::amf_n1() {
 //------------------------------------------------------------------------------
 amf_n1::~amf_n1() {
   // Disconnect the boost connection
+  if (ee_ue_location_report_connection.connected())
+    ee_ue_location_report_connection.disconnect();
   if (ee_ue_reachability_status_connection.connected())
     ee_ue_reachability_status_connection.disconnect();
   if (ee_ue_registration_state_connection.connected())
@@ -524,7 +530,6 @@ void amf_n1::nas_signalling_establishment_request_handle(
         "Signal the UE Reachability Status Event notification for SUPI %s",
         supi.c_str());
     event_sub.ue_reachability_status(supi, CM_CONNECTED, 1);
-
   } else {
     // Logger::amf_n1().debug("existing nas_context with amf_ue_ngap_id(0x%x)
     // --> Update",amf_ue_ngap_id); nc =
@@ -1211,6 +1216,54 @@ void amf_n1::registration_request_handle(
   } else {
     Logger::amf_n1().debug(
         "No Optional NAS Container inside Registration Request message");
+  }
+
+  // Trigger UE Location Report
+  if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
+    Logger::amf_n1().warn(
+        "No UE NGAP context with ran_ue_ngap_id (%d)", ran_ue_ngap_id);
+  } else {
+    std::shared_ptr<ue_ngap_context> unc =
+        amf_n2_inst->ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
+
+    std::shared_ptr<gnb_context> gc = {};
+    if (!amf_n2_inst->is_assoc_id_2_gnb_context(unc.get()->gnb_assoc_id)) {
+      Logger::amf_n2().error(
+          "No existed gNB context with assoc_id (%d)", unc.get()->gnb_assoc_id);
+    } else {
+      gc = amf_n2_inst->assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
+      if (gc.get() && uc.get()) {
+        oai::amf::model::UserLocation user_location = {};
+        oai::amf::model::NrLocation nr_location     = {};
+
+        oai::amf::model::Tai tai  = {};
+        nlohmann::json tai_json   = {};
+        tai_json["plmnId"]["mcc"] = uc.get()->cgi.mcc;
+        tai_json["plmnId"]["mnc"] = uc.get()->cgi.mnc;
+        tai_json["tac"]           = std::to_string(uc.get()->tai.tac);
+        from_json(tai_json, tai);
+        // uc.get()->cgi.nrCellID;
+        nr_location.setTai(tai);
+
+        nlohmann::json global_ran_node_id_json        = {};
+        global_ran_node_id_json["plmnId"]["mcc"]      = uc.get()->cgi.mcc;
+        global_ran_node_id_json["plmnId"]["mnc"]      = uc.get()->cgi.mnc;
+        global_ran_node_id_json["gNbId"]["bitLength"] = 32;
+        global_ran_node_id_json["gNbId"]["gNBValue"]  = gc->globalRanNodeId;
+        oai::amf::model::GlobalRanNodeId global_ran_node_id = {};
+        from_json(global_ran_node_id_json, global_ran_node_id);
+        nr_location.setGlobalGnbId(global_ran_node_id);
+
+        user_location.setNrLocation(nr_location);
+
+        // Trigger UE Location Report
+        string supi = uc.get()->supi;
+        Logger::amf_n1().debug(
+            "Signal the UE Location Report Event notification for SUPI %s",
+            supi.c_str());
+        event_sub.ue_location_report(supi, user_location, 1);
+      }
+    }
   }
 
   // Store NAS information into nas_context
@@ -3098,6 +3151,62 @@ void amf_n1::get_5gcm_state(
 }
 
 //------------------------------------------------------------------------------
+void amf_n1::handle_ue_location_change(
+    std::string supi, oai::amf::model::UserLocation user_location,
+    uint8_t http_version) {
+  Logger::amf_n1().debug(
+      "Send request to SBI to triger UE Location Report (SUPI "
+      "%s )",
+      supi.c_str());
+  std::vector<std::shared_ptr<amf_subscription>> subscriptions = {};
+  amf_app_inst->get_ee_subscriptions(
+      amf_event_type_t::LOCATION_REPORT, subscriptions);
+
+  if (subscriptions.size() > 0) {
+    // Send request to SBI to trigger the notification to the subscribed event
+    Logger::amf_app().debug(
+        "Send ITTI msg to AMF SBI to trigger the event notification");
+
+    std::shared_ptr<itti_sbi_notify_subscribed_event> itti_msg =
+        std::make_shared<itti_sbi_notify_subscribed_event>(
+            TASK_AMF_N1, TASK_AMF_N11);
+
+    // TODO:
+    // itti_msg->notif_id     = "";
+    itti_msg->http_version = 1;
+
+    for (auto i : subscriptions) {
+      event_notification ev_notif = {};
+      ev_notif.set_notify_correlation_id(i.get()->notify_correlation_id);
+      // ev_notif.set_subs_change_notify_correlation_id(i.get()->notify_uri);
+
+      oai::amf::model::AmfEventReport event_report = {};
+      oai::amf::model::AmfEventType amf_event_type = {};
+      amf_event_type.set_value("LOCATION_REPORT");
+      event_report.setType(amf_event_type);
+
+      oai::amf::model::AmfEventState amf_event_state = {};
+      amf_event_state.setActive(true);
+      event_report.setState(amf_event_state);
+
+      event_report.setLocation(user_location);
+
+      event_report.setSupi(supi);
+      ev_notif.add_report(event_report);
+
+      itti_msg->event_notifs.push_back(ev_notif);
+    }
+
+    int ret = itti_inst->send_msg(itti_msg);
+    if (0 != ret) {
+      Logger::amf_n1().error(
+          "Could not send ITTI message %s to task TASK_AMF_N11",
+          itti_msg->get_msg_name());
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
 void amf_n1::handle_ue_reachability_status_change(
     std::string supi, uint8_t status, uint8_t http_version) {
   Logger::amf_n1().debug(
@@ -3132,7 +3241,7 @@ void amf_n1::handle_ue_reachability_status_change(
       amf_event_type.set_value("REACHABILITY_REPORT");
       event_report.setType(amf_event_type);
 
-      AmfEventState amf_event_state = {};
+      oai::amf::model::AmfEventState amf_event_state = {};
       amf_event_state.setActive(true);
       event_report.setState(amf_event_state);
 
@@ -3194,7 +3303,7 @@ void amf_n1::handle_ue_registration_state_change(
       amf_event_type.set_value("REGISTRATION_STATE_REPORT");
       event_report.setType(amf_event_type);
 
-      AmfEventState amf_event_state = {};
+      oai::amf::model::AmfEventState amf_event_state = {};
       amf_event_state.setActive(true);
       event_report.setState(amf_event_state);
 
@@ -3262,7 +3371,7 @@ void amf_n1::handle_ue_connectivity_state_change(
       amf_event_type.set_value("CONNECTIVITY_STATE_REPORT");
       event_report.setType(amf_event_type);
 
-      AmfEventState amf_event_state = {};
+      oai::amf::model::AmfEventState amf_event_state = {};
       amf_event_state.setActive(true);
       event_report.setState(amf_event_state);
 

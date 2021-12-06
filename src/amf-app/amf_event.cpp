@@ -30,6 +30,12 @@
 #include "amf_event.hpp"
 using namespace amf_application;
 //------------------------------------------------------------------------------
+bs2::connection amf_event::subscribe_ue_location_report(
+    const ue_location_report_sig_t::slot_type& sig) {
+  return ue_location_report.connect(sig);
+}
+
+//------------------------------------------------------------------------------
 bs2::connection amf_event::subscribe_ue_reachability_status(
     const ue_reachability_status_sig_t::slot_type& sig) {
   return ue_reachability_status.connect(sig);
