@@ -437,13 +437,12 @@ check_install_amf_deps(){
     # removed libspdlog-dev
     PACKAGE_LIST="\
       $specific_packages \
-      mysql-server \
       mysql-client \
       libmysqlclient-dev \
       guile-2.0-dev \
       libcurl4-gnutls-dev \
       libevent-dev \
-      libgcrypt11-dev \
+      libgcrypt-dev \
       libgmp-dev \
       libhogweed? \
       libidn2-0-dev \
@@ -462,7 +461,7 @@ check_install_amf_deps(){
       pkg-config \
       ninja-build \
       wget \
-      libasan2"
+      libasan4"
   elif [[ "$OS_BASEDISTRO" == "fedora" ]]; then
     PACKAGE_LIST="\
       guile-devel \
