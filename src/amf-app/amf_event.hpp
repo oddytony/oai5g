@@ -52,7 +52,7 @@ class amf_event {
 
   /*
    * Subscribe to Location Report signal
-   * @param [const ue_location_report_sig_t::slot_type&] sig:  slot_type
+   * @param [const ue_location_report_sig_t::slot_type&] sig: slot_type
    * parameter
    * @return boost::signals2::connection: the connection between the signal and
    * the slot
@@ -62,7 +62,7 @@ class amf_event {
 
   /*
    * Subscribe to UE Reachability Status Notification signal
-   * @param [const ue_reachability_status_sig_t::slot_type&] sig:  slot_type
+   * @param [const ue_reachability_status_sig_t::slot_type&] sig: slot_type
    * parameter
    * @return boost::signals2::connection: the connection between the signal and
    * the slot
@@ -72,7 +72,7 @@ class amf_event {
 
   /*
    * Subscribe to UE Registration State Notification signal
-   * @param [const ue_registration_state_sig_t::slot_type&] sig:  slot_type
+   * @param [const ue_registration_state_sig_t::slot_type&] sig: slot_type
    * parameter
    * @return boost::signals2::connection: the connection between the signal and
    * the slot
@@ -82,7 +82,7 @@ class amf_event {
 
   /*
    * Subscribe to UE Connectivity State Notification signal
-   * @param [const ue_connectivity_state_sig_t::slot_type&] sig:  slot_type
+   * @param [const ue_connectivity_state_sig_t::slot_type&] sig: slot_type
    * parameter
    * @return boost::signals2::connection: the connection between the signal and
    * the slot

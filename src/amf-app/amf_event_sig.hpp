@@ -37,10 +37,13 @@
 namespace bs2 = boost::signals2;
 
 namespace amf_application {
-// TODO: Location-Report
+
+// Signal for UE Location Report
+// SUPI, User Location, HTTP version
 typedef bs2::signal_type<
     void(std::string, oai::amf::model::UserLocation, uint8_t),
     bs2::keywords::mutex_type<bs2::dummy_mutex>>::type ue_location_report_sig_t;
+
 // TODO: Presence-In-AOI-Report
 // TODO: Time-Zone-Report
 // TODO: Access-Type-Report
