@@ -476,7 +476,7 @@ void amf_n1::nas_signalling_establishment_request_handle(
     uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg,
     std::string snn, uint8_t ulCount) {
   // Create NAS Context, or Update if existed
-  if ((nc.get() == nullptr) && (type == PlainNasMsg)) {
+  if (!nc.get()) {
     Logger::amf_n1().debug(
         "No existing nas_context with amf_ue_ngap_id 0x%x --> Create a new one",
         amf_ue_ngap_id);
@@ -506,9 +506,9 @@ void amf_n1::nas_signalling_establishment_request_handle(
     event_sub.ue_reachability_status(supi, 1);
 
   } else {
-    // Logger::amf_n1().debug("existing nas_context with amf_ue_ngap_id(0x%x)
-    // --> Update",amf_ue_ngap_id); nc =
-    // amf_ue_id_2_nas_context(amf_ue_ngap_id);
+    Logger::amf_n1().debug(
+        "Existing nas_context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+    // nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
   }
 
   uint8_t* buf         = (uint8_t*) bdata(plain_msg);
@@ -525,6 +525,10 @@ void amf_n1::nas_signalling_establishment_request_handle(
 
     case SERVICE_REQUEST: {
       Logger::amf_n1().debug("Received service request message, handling...");
+      if (!nc.get()) {
+        Logger::amf_n1().error("No NAS Context found");
+        return;
+      }
       if (!nc.get()->security_ctx) {
         Logger::amf_n1().error("No Security Context found");
         return;
