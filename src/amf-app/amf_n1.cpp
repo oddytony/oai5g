@@ -1249,7 +1249,8 @@ void amf_n1::registration_request_handle(
         global_ran_node_id_json["plmnId"]["mcc"]      = uc.get()->cgi.mcc;
         global_ran_node_id_json["plmnId"]["mnc"]      = uc.get()->cgi.mnc;
         global_ran_node_id_json["gNbId"]["bitLength"] = 32;
-        global_ran_node_id_json["gNbId"]["gNBValue"]  = gc->globalRanNodeId;
+        global_ran_node_id_json["gNbId"]["gNBValue"] =
+            std::to_string(gc->globalRanNodeId);
         oai::amf::model::GlobalRanNodeId global_ran_node_id = {};
         from_json(global_ran_node_id_json, global_ran_node_id);
         nr_location.setGlobalGnbId(global_ran_node_id);
