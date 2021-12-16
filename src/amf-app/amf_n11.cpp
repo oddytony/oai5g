@@ -540,28 +540,8 @@ void amf_n11::handle_itti_message(itti_sbi_notify_subscribed_event& itti_msg) {
     auto report_lists                = nlohmann::json::array();
     nlohmann::json report            = {};
 
-    // std::vector<amf_event_report_t> reports = i.get_reports();
     std::vector<oai::amf::model::AmfEventReport> event_reports = {};
     i.get_reports(event_reports);
-    /*
-        for (auto r : reports) {
-          report["type"] =
-       amf_event_type_e2str.at(static_cast<uint8_t>(r.m_type));
-          report["state"]["active"] = "TRUE";
-          if (r.m_supi_is_set) {
-            report["supi"] = r.m_supi;  // TODO
-          }
-          if (r.m_reachability_is_set) {
-            report["reachability"] = r.m_reachability;
-          }
-
-          // timestamp
-          std::time_t time_epoch_ntp = std::time(nullptr);
-          uint64_t tv_ntp            = time_epoch_ntp +
-       SECONDS_SINCE_FIRST_EPOCH; report["timeStamp"]        =
-       std::to_string(tv_ntp); report_lists.push_back(report);
-        }
-    */
     for (auto r : event_reports) {
       report["type"]            = r.getType().get_value();
       report["state"]["active"] = "TRUE";
