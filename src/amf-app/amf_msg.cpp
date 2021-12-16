@@ -144,13 +144,15 @@ std::string event_notification::get_subs_change_notify_correlation_id() const {
 }
 
 //-----------------------------------------------------------------------------
-void event_notification::add_report(const amf_event_report_t& report) {
-  m_report_list.push_back(report);
+void event_notification::add_report(
+    const oai::amf::model::AmfEventReport& report) {
+  m_event_report_list.push_back(report);
 }
 
 //-----------------------------------------------------------------------------
-std::vector<amf_event_report_t> event_notification::get_reports() const {
-  return m_report_list;
+void event_notification::get_reports(
+    std::vector<oai::amf::model::AmfEventReport>& reports) const {
+  reports = m_event_report_list;
 }
 
 //-----------------------------------------------------------------------------

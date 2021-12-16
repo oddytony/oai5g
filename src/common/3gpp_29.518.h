@@ -75,61 +75,6 @@ typedef struct amf_event_s {
 
 } amf_event_t;
 
-typedef struct amf_event_state_s {
-  bool m_active;
-  int32_t m_remain_reports;
-  bool m_remain_reports_is_set;
-  int32_t m_remain_duration;
-  bool m_remain_duration_is_set;
-} amf_event_state_t;
-
-typedef enum ue_reachability_e {
-  UNREACHABLE     = 1,
-  REACHABLE       = 2,
-  REGULATORY_ONLY = 3
-} ue_reachability_t;
-
-typedef struct amf_event_report_s {
-  amf_event_type_t m_type;    // Mandatory
-  amf_event_state_t m_state;  // Mandatory
-  std::string m_TimeStamp;    // Mandatory
-  ue_reachability_t m_reachability;
-  bool m_reachability_is_set;
-  std::string m_supi;
-  bool m_supi_is_set;
-  std::string m_subscription_id;
-  bool m_subscription_id_is_set;
-  bool m_any_ue;
-  bool m_any_ue_is_set;
-  /*
-        std::vector<AmfEventArea> m_AreaList;
-            bool m_AreaListIsSet;
-            int32_t m_RefId;
-            bool m_RefIdIsSet;
-            std::string m_Gpsi;
-            bool m_GpsiIsSet;
-            std::string m_Pei;
-            bool m_PeiIsSet;
-            UserLocation m_Location;
-            bool m_LocationIsSet;
-            std::string m_Timezone;
-            bool m_TimezoneIsSet;
-            std::vector<AccessType> m_AccessTypeList;
-            bool m_AccessTypeListIsSet;
-            std::vector<RmInfo> m_RmInfoList;
-            bool m_RmInfoListIsSet;
-            std::vector<CmInfo> m_CmInfoList;
-            bool m_CmInfoListIsSet;
-
-            //CommunicationFailure m_CommFailure;
-           // bool m_CommFailureIsSet;
-           // int32_t m_NumberOfUes;
-           // bool m_NumberOfUesIsSet;
-           // std::vector<_5GsUserStateInfo> m_r_5gsUserStateList;
-           // bool m_r_5gsUserStateListIsSet;
-  */
-} amf_event_report_t;
-
 enum n1_n2_message_transfer_cause_e {
   ATTEMPTING_TO_REACH_UE            = 1,
   N1_N2_TRANSFER_INITIATED          = 2,

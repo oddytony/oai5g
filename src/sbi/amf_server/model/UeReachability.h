@@ -50,10 +50,15 @@ class UeReachability {
   /////////////////////////////////////////////
   /// UeReachability members
 
+  void set_value(std::string value);
+  void get_value(std::string& value) const;
+  std::string get_value() const;
+
   friend void to_json(nlohmann::json& j, const UeReachability& o);
   friend void from_json(const nlohmann::json& j, UeReachability& o);
 
  protected:
+  std::string value;
   // Helper overload for validate. Used when one model stores another model and
   // calls it's validate.
   bool validate(std::stringstream& msg, const std::string& pathPrefix) const;

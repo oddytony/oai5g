@@ -173,8 +173,16 @@ class amf_n1 {
   void get_5gcm_state(
       const std::shared_ptr<nas_context>& nc, cm_state_t& state) const;
 
+  void handle_ue_location_change(
+      std::string supi, oai::amf::model::UserLocation, uint8_t http_version);
   void handle_ue_reachability_status_change(
-      std::string supi, uint8_t http_version);
+      std::string supi, uint8_t status, uint8_t http_version);
+
+  void handle_ue_registration_state_change(
+      std::string supi, uint8_t status, uint8_t http_version);
+
+  void handle_ue_connectivity_state_change(
+      std::string supi, uint8_t status, uint8_t http_version);
 
   void get_pdu_session_to_be_activated(
       uint16_t pdu_session_status,
@@ -244,7 +252,10 @@ class amf_n1 {
 
   // for Event Handling
   amf_event event_sub;
+  bs2::connection ee_ue_location_report_connection;
   bs2::connection ee_ue_reachability_status_connection;
+  bs2::connection ee_ue_registration_state_connection;
+  bs2::connection ee_ue_connectivity_state_connection;
 };
 }  // namespace amf_application
 

@@ -32,6 +32,7 @@
 #include "amf.hpp"
 #include "3gpp_29.518.h"
 #include "amf_profile.hpp"
+#include "AmfEventReport.h"
 
 namespace amf_application {
 
@@ -88,8 +89,8 @@ class event_notification {
   std::string get_notify_correlation_id() const;
   void set_subs_change_notify_correlation_id(std::string const& value);
   std::string get_subs_change_notify_correlation_id() const;
-  void add_report(const amf_event_report_t& report);
-  std::vector<amf_event_report_t> get_reports() const;
+  void add_report(const oai::amf::model::AmfEventReport& report);
+  void get_reports(std::vector<oai::amf::model::AmfEventReport>& reports) const;
 
  private:
   std::string m_notify_correlation_id;  // notifyCorrelationId
@@ -97,7 +98,8 @@ class event_notification {
   std::string
       m_subs_change_notify_correlation_id;  // SubsChangeNotifyCorrelationId;
   bool m_subs_change_notify_correlation_id_is_set;
-  std::vector<amf_event_report_t> m_report_list;  // Report List
+  std::vector<oai::amf::model::AmfEventReport>
+      m_event_report_list;  // Report List
   bool m_report_list_is_set;
 };
 

@@ -50,10 +50,22 @@ bool UeReachability::operator!=(const UeReachability& rhs) const {
   return !(*this == rhs);
 }
 
-void to_json(nlohmann::json& j, const UeReachability& o) {
-  j = nlohmann::json();
+void UeReachability::set_value(std::string value) {
+  this->value = value;
+}
+void UeReachability::get_value(std::string& value) const {
+  value = this->value;
+}
+std::string UeReachability::get_value() const {
+  return value;
 }
 
-void from_json(const nlohmann::json& j, UeReachability& o) {}
+void to_json(nlohmann::json& j, const UeReachability& o) {
+  j = o.get_value();
+}
+
+void from_json(const nlohmann::json& j, UeReachability& o) {
+  o.set_value(j.get<std::string>());
+}
 
 }  // namespace oai::amf::model
