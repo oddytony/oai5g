@@ -1,5 +1,18 @@
 # RELEASE NOTES: #
 
+## v1.3.0 -- January 2022 ##
+
+* Periodic Registration Update
+* Event Exposure Registration
+* Implicit Deregistration Timer
+* Mobile Reachable Timer
+* Validate SMF Info
+* Fix RAN UE NGAP Id
+* Fix SMF Selection SD
+* Fix NSSAI mismatch
+* Fix Service Request
+* Docker optimization
+
 ## v1.2.1 -- October 2021 ##
 
 * Fix build issue
