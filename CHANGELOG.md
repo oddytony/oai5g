@@ -6,7 +6,8 @@
 * Event Exposure Registration
 * Implicit Deregistration Timer
 * Mobile Reachable Timer
-* Validate SMF Info
+* NRF Selection (via NSSF)
+* Fix for validation of SMF Info
 * Fix RAN UE NGAP Id
 * Fix SMF Selection SD
 * Fix NSSAI mismatch
