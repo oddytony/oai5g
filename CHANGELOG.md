@@ -3,9 +3,10 @@
 ## v1.3.0 -- January 2022 ##
 
 * Periodic Registration Update
-* Event Exposure Registration
+* Support for Event Exposure (Registration State Report)
 * Implicit Deregistration Timer
 * Mobile Reachable Timer
+* Mobility Registration Update
 * NRF Selection (via NSSF)
 * Fix for validation of SMF Info
 * Fix RAN UE NGAP Id
