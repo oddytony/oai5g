@@ -564,7 +564,7 @@ void amf_n11::handle_itti_message(itti_sbi_notify_subscribed_event& itti_msg) {
     std::string body = json_data.dump();
     std::string response_data;
 
-    std::string url = i.get_notify_correlation_id();
+    std::string url = i.get_notify_uri();
     curl_http_client(url, "POST", body, response_data);
     // TODO: process the response
   }
@@ -1358,7 +1358,6 @@ void amf_n11::curl_http_client(
     std::string remoteUri, std::string method, std::string msgBody,
     std::string& response, uint8_t http_version) {
   Logger::amf_n11().info("Send HTTP message to %s", remoteUri.c_str());
-
   Logger::amf_n11().info("HTTP message Body: %s", msgBody.c_str());
 
   uint32_t str_len = msgBody.length();
