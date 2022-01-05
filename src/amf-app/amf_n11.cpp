@@ -1355,9 +1355,11 @@ bool amf_n11::send_ue_authentication_request(
 //-----------------------------------------------------------------------------------------------------
 // From AMF_N1, need to be reworked
 void amf_n11::curl_http_client(
-    std::string remoteUri, std::string Method, std::string msgBody,
+    std::string remoteUri, std::string method, std::string msgBody,
     std::string& response, uint8_t http_version) {
-  Logger::amf_n11().info("Send HTTP message with body %s", msgBody.c_str());
+  Logger::amf_n11().info("Send HTTP message to %s", remoteUri.c_str());
+
+  Logger::amf_n11().info("HTTP message Body: %s", msgBody.c_str());
 
   uint32_t str_len = msgBody.length();
   char* body_data  = (char*) malloc(str_len + 1);
@@ -1370,21 +1372,22 @@ void amf_n11::curl_http_client(
   if (curl) {
     CURLcode res               = {};
     struct curl_slist* headers = nullptr;
-    if (!Method.compare("POST") || !Method.compare("PATCH") ||
-        !Method.compare("PUT")) {
+    if ((method.compare("POST") == 0) or (method.compare("PATCH") == 0) or
+        (method.compare("PUT") == 0)) {
       std::string content_type = "Content-Type: application/json";
       headers = curl_slist_append(headers, content_type.c_str());
       curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     }
     curl_easy_setopt(curl, CURLOPT_URL, remoteUri.c_str());
-    if (!Method.compare("POST"))
+    if (method.compare("POST") == 0)
       curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
-    else if (!Method.compare("PATCH"))
+    else if (method.compare("PATCH") == 0)
       curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
-    else if (!Method.compare("PUT")) {
+    else if (method.compare("PUT") == 0) {
       curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
     } else
       curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
     curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1);
     curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
@@ -1407,8 +1410,8 @@ void amf_n11::curl_http_client(
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
     curl_easy_setopt(curl, CURLOPT_HEADERDATA, httpHeaderData.get());
-    if (!Method.compare("POST") || !Method.compare("PATCH") ||
-        !Method.compare("PUT")) {
+    if ((method.compare("POST") == 0) or (method.compare("PATCH") == 0) or
+        (method.compare("PUT") == 0)) {
       curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, msgBody.length());
       curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body_data);
     }
