@@ -530,8 +530,7 @@ void amf_n11::handle_itti_message(
 
 //------------------------------------------------------------------------------
 void amf_n11::handle_itti_message(itti_sbi_notify_subscribed_event& itti_msg) {
-  Logger::amf_n11().debug(
-      "Send notification for the subscribed event to the subscription");
+  Logger::amf_n11().debug("Send notification for the subscribed events");
 
   for (auto i : itti_msg.event_notifs) {
     // Fill the json part
@@ -564,7 +563,7 @@ void amf_n11::handle_itti_message(itti_sbi_notify_subscribed_event& itti_msg) {
     std::string body = json_data.dump();
     std::string response_data;
 
-    std::string url = i.get_notify_correlation_id();
+    std::string url = i.get_notify_uri();
     curl_http_client(url, "POST", body, response_data);
     // TODO: process the response
   }
@@ -636,10 +635,10 @@ void amf_n11::handle_post_sm_context_response_error(
 
 //------------------------------------------------------------------------------
 void amf_n11::curl_http_client(
-    std::string remoteUri, std::string jsonData, std::string n1SmMsg,
+    std::string remote_uri, std::string jsonData, std::string n1SmMsg,
     std::string n2SmMsg, std::string supi, uint8_t pdu_session_id,
     uint8_t http_version, uint32_t promise_id) {
-  Logger::amf_n11().debug("Call SMF service: %s", remoteUri.c_str());
+  Logger::amf_n11().debug("Call SMF service: %s", remote_uri.c_str());
 
   uint8_t number_parts                     = 0;
   mime_parser parser                       = {};
@@ -696,7 +695,7 @@ void amf_n11::curl_http_client(
     }
     headers = curl_slist_append(headers, content_type.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curl, CURLOPT_URL, remoteUri.c_str());
+    curl_easy_setopt(curl, CURLOPT_URL, remote_uri.c_str());
     curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
     curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
@@ -741,7 +740,7 @@ void amf_n11::curl_http_client(
         http_response_codes_e::HTTP_RESPONSE_CODE_0) {
       // TODO: should be removed
       Logger::amf_n11().error(
-          "Cannot get response when calling %s", remoteUri.c_str());
+          "Cannot get response when calling %s", remote_uri.c_str());
       // free curl before returning
       curl_slist_free_all(headers);
       curl_easy_cleanup(curl);
@@ -758,7 +757,7 @@ void amf_n11::curl_http_client(
       json_data_response = response;
     }
 
-    Logger::amf_n11().info("Json part %s", json_data_response.c_str());
+    Logger::amf_n11().info("JSON part %s", json_data_response.c_str());
 
     if ((static_cast<http_response_codes_e>(httpCode) !=
          http_response_codes_e::HTTP_RESPONSE_CODE_200_OK) &&
@@ -784,7 +783,7 @@ void amf_n11::curl_http_client(
           response_data = nlohmann::json::parse(json_data_response);
         } catch (nlohmann::json::exception& e) {
           Logger::amf_n11().warn(
-              "Could not get Json content from the response");
+              "Could not get JSON content from the response");
           // Set the default Cause
           response_data["error"]["cause"] = "504 Gateway Timeout";
         }
@@ -827,7 +826,7 @@ void amf_n11::curl_http_client(
       try {
         response_data = nlohmann::json::parse(json_data_response);
       } catch (nlohmann::json::exception& e) {
-        Logger::amf_n11().warn("Could not get Json content from the response");
+        Logger::amf_n11().warn("Could not get JSON content from the response");
         curl_slist_free_all(headers);
         curl_easy_cleanup(curl);
         curl_global_cleanup();
@@ -1333,7 +1332,7 @@ bool amf_n11::send_ue_authentication_request(
             "UE Authentication, response from AUSF\n, %s ", tmp.c_str());
       } catch (nlohmann::json::exception& e) {
         Logger::amf_n11().warn(
-            "UE Authentication, could not parse Json from the AUSF "
+            "UE Authentication, could not parse JSON from the AUSF "
             "response");
         // TODO: error handling
         return false;
@@ -1355,14 +1354,15 @@ bool amf_n11::send_ue_authentication_request(
 //-----------------------------------------------------------------------------------------------------
 // From AMF_N1, need to be reworked
 void amf_n11::curl_http_client(
-    std::string remoteUri, std::string Method, std::string msgBody,
+    std::string remote_uri, std::string method, std::string msg_body,
     std::string& response, uint8_t http_version) {
-  Logger::amf_n11().info("Send HTTP message with body %s", msgBody.c_str());
+  Logger::amf_n11().info("Send HTTP message to %s", remote_uri.c_str());
+  Logger::amf_n11().info("HTTP message Body: %s", msg_body.c_str());
 
-  uint32_t str_len = msgBody.length();
+  uint32_t str_len = msg_body.length();
   char* body_data  = (char*) malloc(str_len + 1);
   memset(body_data, 0, str_len + 1);
-  memcpy((void*) body_data, (void*) msgBody.c_str(), str_len);
+  memcpy((void*) body_data, (void*) msg_body.c_str(), str_len);
 
   curl_global_init(CURL_GLOBAL_ALL);
   CURL* curl = curl_easy_init();
@@ -1370,21 +1370,22 @@ void amf_n11::curl_http_client(
   if (curl) {
     CURLcode res               = {};
     struct curl_slist* headers = nullptr;
-    if (!Method.compare("POST") || !Method.compare("PATCH") ||
-        !Method.compare("PUT")) {
+    if ((method.compare("POST") == 0) or (method.compare("PATCH") == 0) or
+        (method.compare("PUT") == 0)) {
       std::string content_type = "Content-Type: application/json";
       headers = curl_slist_append(headers, content_type.c_str());
       curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     }
-    curl_easy_setopt(curl, CURLOPT_URL, remoteUri.c_str());
-    if (!Method.compare("POST"))
+    curl_easy_setopt(curl, CURLOPT_URL, remote_uri.c_str());
+    if (method.compare("POST") == 0)
       curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
-    else if (!Method.compare("PATCH"))
+    else if (method.compare("PATCH") == 0)
       curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
-    else if (!Method.compare("PUT")) {
+    else if (method.compare("PUT") == 0) {
       curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
     } else
       curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
     curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1);
     curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
@@ -1407,9 +1408,9 @@ void amf_n11::curl_http_client(
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
     curl_easy_setopt(curl, CURLOPT_HEADERDATA, httpHeaderData.get());
-    if (!Method.compare("POST") || !Method.compare("PATCH") ||
-        !Method.compare("PUT")) {
-      curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, msgBody.length());
+    if ((method.compare("POST") == 0) or (method.compare("PATCH") == 0) or
+        (method.compare("PUT") == 0)) {
+      curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, msg_body.length());
       curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body_data);
     }
 
@@ -1421,11 +1422,11 @@ void amf_n11::curl_http_client(
     std::string json_data_response = {};
     std::string resMsg             = {};
     bool is_response_ok            = true;
-    Logger::amf_n11().info("Get response with httpcode (%d)", httpCode);
+    Logger::amf_n11().info("Get response with HTTP code (%d)", httpCode);
 
     if (httpCode == 0) {
       Logger::amf_n11().info(
-          "Cannot get response when calling %s", remoteUri.c_str());
+          "Cannot get response when calling %s", remote_uri.c_str());
       // free curl before returning
       curl_slist_free_all(headers);
       curl_easy_cleanup(curl);
@@ -1449,7 +1450,7 @@ void amf_n11::curl_http_client(
       try {
         response_data = nlohmann::json::parse(json_data_response);
       } catch (nlohmann::json::exception& e) {
-        Logger::amf_n11().info("Could not get Json content from the response");
+        Logger::amf_n11().info("Could not get JSON content from the response");
         // Set the default Cause
         response_data["error"]["cause"] = "504 Gateway Timeout";
       }

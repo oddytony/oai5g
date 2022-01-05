@@ -41,5 +41,6 @@ void amf_subscription::display() {
   if (supi_is_set) Logger::amf_app().debug("\tSUPI: %s", supi.c_str());
   Logger::amf_app().debug(
       "\tNotify Correlation ID: %s", notify_correlation_id.c_str());
+  Logger::amf_app().debug("\tNotify URI: %s", notify_uri.c_str());
   Logger::amf_app().debug("\tNF ID: %s", nf_id.c_str());
 };

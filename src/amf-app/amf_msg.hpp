@@ -87,6 +87,10 @@ class event_notification {
  public:
   void set_notify_correlation_id(std::string const& value);
   std::string get_notify_correlation_id() const;
+
+  void set_notify_uri(std::string const& value);
+  std::string get_notify_uri() const;
+
   void set_subs_change_notify_correlation_id(std::string const& value);
   std::string get_subs_change_notify_correlation_id() const;
   void add_report(const oai::amf::model::AmfEventReport& report);
@@ -95,6 +99,10 @@ class event_notification {
  private:
   std::string m_notify_correlation_id;  // notifyCorrelationId
   bool m_notify_correlation_is_set;
+
+  std::string m_notify_uri;  // notifyUri
+  bool m_notify_uri_is_set;
+
   std::string
       m_subs_change_notify_correlation_id;  // SubsChangeNotifyCorrelationId;
   bool m_subs_change_notify_correlation_id_is_set;

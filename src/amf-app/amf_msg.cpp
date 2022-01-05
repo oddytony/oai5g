@@ -124,12 +124,22 @@ void event_exposure_msg::set_any_ue(bool value) {
 
 //-----------------------------------------------------------------------------
 void event_notification::set_notify_correlation_id(std::string const& value) {
-  m_notify_correlation_id = value;
+  m_notify_correlation_id     = value;
+  m_notify_correlation_is_set = true;
 }
 
 //-----------------------------------------------------------------------------
 std::string event_notification::get_notify_correlation_id() const {
   return m_notify_correlation_id;
+}
+
+void event_notification::set_notify_uri(std::string const& value) {
+  m_notify_uri        = value;
+  m_notify_uri_is_set = true;
+}
+
+std::string event_notification::get_notify_uri() const {
+  return m_notify_uri;
 }
 
 //-----------------------------------------------------------------------------

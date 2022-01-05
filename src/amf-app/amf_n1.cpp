@@ -3176,13 +3176,12 @@ void amf_n1::handle_ue_location_change(
         std::make_shared<itti_sbi_notify_subscribed_event>(
             TASK_AMF_N1, TASK_AMF_N11);
 
-    // TODO:
-    // itti_msg->notif_id     = "";
     itti_msg->http_version = 1;
 
     for (auto i : subscriptions) {
       event_notification ev_notif = {};
       ev_notif.set_notify_correlation_id(i.get()->notify_correlation_id);
+      ev_notif.set_notify_uri(i.get()->notify_uri);  // Direct subscription
       // ev_notif.set_subs_change_notify_correlation_id(i.get()->notify_uri);
 
       oai::amf::model::AmfEventReport event_report = {};
@@ -3232,13 +3231,12 @@ void amf_n1::handle_ue_reachability_status_change(
         std::make_shared<itti_sbi_notify_subscribed_event>(
             TASK_AMF_N1, TASK_AMF_N11);
 
-    // TODO:
-    // itti_msg->notif_id     = "";
     itti_msg->http_version = 1;
 
     for (auto i : subscriptions) {
       event_notification ev_notif = {};
       ev_notif.set_notify_correlation_id(i.get()->notify_correlation_id);
+      ev_notif.set_notify_uri(i.get()->notify_uri);  // Direct subscription
       // ev_notif.set_subs_change_notify_correlation_id(i.get()->notify_uri);
 
       oai::amf::model::AmfEventReport event_report = {};
@@ -3293,13 +3291,12 @@ void amf_n1::handle_ue_registration_state_change(
         std::make_shared<itti_sbi_notify_subscribed_event>(
             TASK_AMF_N1, TASK_AMF_N11);
 
-    // TODO:
-    // itti_msg->notif_id     = "";
     itti_msg->http_version = 1;
 
     for (auto i : subscriptions) {
       event_notification ev_notif = {};
       ev_notif.set_notify_correlation_id(i.get()->notify_correlation_id);
+      ev_notif.set_notify_uri(i.get()->notify_uri);  // Direct subscription
       // ev_notif.set_subs_change_notify_correlation_id(i.get()->notify_uri);
 
       oai::amf::model::AmfEventReport event_report = {};
@@ -3361,13 +3358,12 @@ void amf_n1::handle_ue_connectivity_state_change(
         std::make_shared<itti_sbi_notify_subscribed_event>(
             TASK_AMF_N1, TASK_AMF_N11);
 
-    // TODO:
-    // itti_msg->notif_id     = "";
     itti_msg->http_version = 1;
 
     for (auto i : subscriptions) {
       event_notification ev_notif = {};
       ev_notif.set_notify_correlation_id(i.get()->notify_correlation_id);
+      ev_notif.set_notify_uri(i.get()->notify_uri);  // Direct subscription
       // ev_notif.set_subs_change_notify_correlation_id(i.get()->notify_uri);
 
       oai::amf::model::AmfEventReport event_report = {};
