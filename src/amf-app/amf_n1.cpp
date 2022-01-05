@@ -3183,6 +3183,7 @@ void amf_n1::handle_ue_location_change(
     for (auto i : subscriptions) {
       event_notification ev_notif = {};
       ev_notif.set_notify_correlation_id(i.get()->notify_correlation_id);
+      ev_notif.set_notify_uri(i.get()->notify_uri);  // Direct subscription
       // ev_notif.set_subs_change_notify_correlation_id(i.get()->notify_uri);
 
       oai::amf::model::AmfEventReport event_report = {};
@@ -3239,6 +3240,7 @@ void amf_n1::handle_ue_reachability_status_change(
     for (auto i : subscriptions) {
       event_notification ev_notif = {};
       ev_notif.set_notify_correlation_id(i.get()->notify_correlation_id);
+      ev_notif.set_notify_uri(i.get()->notify_uri);  // Direct subscription
       // ev_notif.set_subs_change_notify_correlation_id(i.get()->notify_uri);
 
       oai::amf::model::AmfEventReport event_report = {};
@@ -3300,6 +3302,7 @@ void amf_n1::handle_ue_registration_state_change(
     for (auto i : subscriptions) {
       event_notification ev_notif = {};
       ev_notif.set_notify_correlation_id(i.get()->notify_correlation_id);
+      ev_notif.set_notify_uri(i.get()->notify_uri);  // Direct subscription
       // ev_notif.set_subs_change_notify_correlation_id(i.get()->notify_uri);
 
       oai::amf::model::AmfEventReport event_report = {};
