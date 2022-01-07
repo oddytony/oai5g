@@ -342,7 +342,9 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
     Logger::amf_n2().error("Missing Mandatory IE Global RAN Node ID");
     return;
   }
-  Logger::amf_n2().debug("Global RAN Node ID: 0x%x", gnb_id);
+  Logger::amf_n2().debug(
+      "RAN Node Info, Global RAN Node ID: 0x%x, MCC %s, MNC %s", gnb_id,
+      gnb_mcc.c_str(), gnb_mnc.c_str());
   gc->globalRanNodeId = gnb_id;
   gnbItem.gnb_id      = gnb_id;
   gnbItem.mcc         = gnb_mcc;

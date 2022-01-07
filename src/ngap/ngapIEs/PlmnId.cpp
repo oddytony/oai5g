@@ -74,6 +74,11 @@ void PlmnId::setMccMnc(const std::string mcc, const std::string mnc) {
 void PlmnId::getMcc(std::string& mcc) {
   int m_mcc = mcc_digit1 * 100 + mcc_digit2 * 10 + mcc_digit3;
   mcc       = to_string(m_mcc);
+  if ((mcc_digit2 == 0) and (mcc_digit1 == 0)) {
+    mcc = "00" + mcc;
+  } else if (mcc_digit1 == 0) {
+    mcc = "0" + mcc;
+  }
 }
 
 //------------------------------------------------------------------------------

@@ -562,9 +562,16 @@ int _5GSMobilityIdentity::suci_decodefrombuffer(
       if (mnc < 10) {
         mnc_str = "0" + mnc_str;
       }
+      std::string mcc_str = std::to_string(mcc);
+      if (mcc < 10) {
+        mcc_str = "00" + mcc_str;
+      } else if (mcc < 100) {
+        mcc_str = "0" + mcc_str;
+      }
+
       Logger::nas_mm().debug(
-          "MCC %s, MNC %s", std::to_string(mcc).c_str(), mnc_str.c_str());
-      supi_format_imsi->mcc = (const string)(std::to_string(mcc));
+          "MCC %s, MNC %s", mcc_str.c_str(), mnc_str.c_str());
+      supi_format_imsi->mcc = (const string)(mcc_str);
       supi_format_imsi->mnc = (const string)(mnc_str);
       int routid            = 0;
       uint8_t digit[4];
