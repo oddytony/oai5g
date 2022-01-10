@@ -162,6 +162,17 @@ class amf_app {
       oai::amf::model::ProblemDetails& problem_details, uint8_t& http_code);
 
   /*
+   * Handle N1 Message Notification
+   * @param [std::shared_ptr<itti_sbi_n1_message_notification>& ] msg: message
+   * @param [oai::amf::model::ProblemDetails& ] problem_details
+   * @param [uint8_t&] http_code
+   * @return true if handle sucessfully, otherwise return false
+   */
+  bool handle_n1_message_notification(
+      std::shared_ptr<itti_sbi_n1_message_notification>& msg,
+      oai::amf::model::ProblemDetails& problem_details, uint32_t& http_code);
+
+  /*
    * Generate a random UUID for SMF instance
    * @param [void]
    * @return void
