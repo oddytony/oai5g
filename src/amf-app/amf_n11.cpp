@@ -338,7 +338,7 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
 
   std::string smf_addr        = {};
   std::string smf_api_version = {};
-  std::string smf_port = "80";  // Set to default port number
+  std::string smf_port        = "80";  // Set to default port number
   if (!psc.get()->smf_available) {
     if (amf_cfg.support_features.enable_nrf_selection) {
       if (!discover_smf_from_nsi_info(
@@ -446,13 +446,20 @@ void amf_n11::handle_pdu_session_initial_request(
       "Handle PDU Session Establishment Request (SUPI %s, PDU Session ID %d)",
       supi.c_str(), psc.get()->pdu_session_id);
 
-  // TODO: Remove hardcoded values
-
+  // remove http port from the URI if existed
+  std::string smf_ip_addr = {};
+  std::size_t found_port  = smf_addr.find(":");
+  if (found_port != std::string::npos)
+    smf_ip_addr = smf_addr.substr(0, found_port);
+  else
+    smf_ip_addr = smf_addr;
+  // provide http2 port if enabled
   std::string amf_port = to_string(amf_cfg.n11.port);
   if (amf_cfg.support_features.use_http2)
     amf_port = to_string(amf_cfg.sbi_http2_port);
 
-  std::string remote_uri = smf_addr + ":" + smf_port + "/nsmf-pdusession/" +
+  // TODO: Remove hardcoded values
+  std::string remote_uri = smf_ip_addr + ":" + smf_port + "/nsmf-pdusession/" +
                            smf_api_version + "/sm-contexts";
   nlohmann::json pdu_session_establishment_request;
   pdu_session_establishment_request["supi"]          = supi.c_str();
