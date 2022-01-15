@@ -334,20 +334,21 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
   psc.get()->dnn = dnn;
 
   std::string smf_addr        = {};
+  std::string smf_port        = {};
   std::string smf_api_version = {};
   if (!psc.get()->smf_available) {
     if (amf_cfg.support_features.enable_nrf_selection) {
       if (!discover_smf_from_nsi_info(
-              smf_addr, smf_api_version, psc.get()->snssai, psc.get()->plmn,
-              psc.get()->dnn)) {
+              smf_addr, smf_api_version, smf_port, psc.get()->snssai,
+              psc.get()->plmn, psc.get()->dnn)) {
         Logger::amf_n11().error("NRF Selection, no NRF candidate is available");
         return;
       }
     } else if (amf_cfg.support_features.enable_smf_selection) {
       // use NRF to find suitable SMF based on snssai, plmn and dnn
       if (!discover_smf(
-              smf_addr, smf_api_version, psc.get()->snssai, psc.get()->plmn,
-              psc.get()->dnn)) {
+              smf_addr, smf_api_version, smf_port, psc.get()->snssai,
+              psc.get()->plmn, psc.get()->dnn)) {
         Logger::amf_n11().error("SMF Selection, no SMF candidate is available");
         return;
       }
@@ -359,6 +360,7 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
     // store smf info to be used with this PDU session
     psc.get()->smf_available = true;
     psc->smf_addr            = smf_addr;
+    psc->smf_port            = smf_port;
     psc->smf_api_version     = smf_api_version;
   } else {
     smf_addr        = psc->smf_addr;
@@ -910,8 +912,8 @@ void amf_n11::curl_http_client(
 }
 //-----------------------------------------------------------------------------------------------------
 bool amf_n11::discover_smf_from_nsi_info(
-    std::string& smf_addr, std::string& smf_api_version, const snssai_t snssai,
-    const plmn_t plmn, const std::string dnn) {
+    std::string& smf_addr, std::string& smf_api_version, std::string& smf_port,
+    const snssai_t snssai, const plmn_t plmn, const std::string dnn) {
   Logger::amf_n11().debug(
       "Send NS Selection to NSSF to discover the appropriate NRF");
 
@@ -1025,17 +1027,18 @@ bool amf_n11::discover_smf_from_nsi_info(
 
   Logger::amf_n11().debug("NSI Inforation is successfully retrieved from NSSF");
   if (!discover_smf(
-          smf_addr, smf_api_version, snssai, plmn, dnn, nrf_addr, nrf_port,
-          nrf_api_version))
+          smf_addr, smf_api_version, smf_port, snssai, plmn, dnn, nrf_addr,
+          nrf_port, nrf_api_version))
     return false;
   return true;
 }
 
 //-----------------------------------------------------------------------------------------------------
 bool amf_n11::discover_smf(
-    std::string& smf_addr, std::string& smf_api_version, const snssai_t snssai,
-    const plmn_t plmn, const std::string dnn, const std::string& nrf_addr,
-    const std::string& nrf_port, const std::string& nrf_api_version) {
+    std::string& smf_addr, std::string& smf_api_version, std::string& smf_port,
+    const snssai_t snssai, const plmn_t plmn, const std::string dnn,
+    const std::string& nrf_addr, const std::string& nrf_port,
+    const std::string& nrf_api_version) {
   Logger::amf_n11().debug(
       "Send NFDiscovery to NRF to discover the available SMFs");
   bool result = false;
@@ -1156,6 +1159,12 @@ bool amf_n11::discover_smf(
                       nf_version["apiVersionInUri"].get<std::string>();
                 }
               }
+              if (nf_service.find("ipEndPoints") != nf_service.end()) {
+                nlohmann::json nf_ip_end = nf_service["ipEndPoints"].at(0);
+                if (nf_ip_end.find("port") != nf_ip_end.end()) {
+                  smf_port = to_string(nf_ip_end["port"].get<int>()).c_str();
+                }
+              }
             }
           }
 
@@ -1163,9 +1172,10 @@ bool amf_n11::discover_smf(
           if (result) break;
         }
       }
+      if (smf_port.empty()) smf_port = '80';
       Logger::amf_n11().debug(
-          "NFDiscovery, SMF Addr: %s, SMF Api Version: %s", smf_addr.c_str(),
-          smf_api_version.c_str());
+          "NFDiscovery, SMF Addr: %s, SMF Api Version: %s, SMF Port: %d",
+          smf_addr.c_str(), smf_api_version.c_str(), smf_port);
     } else {
       Logger::amf_n11().warn("NFDiscovery, could not get response from NRF");
       result = false;

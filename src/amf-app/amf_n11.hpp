@@ -82,12 +82,14 @@ class amf_n11 {
 
   bool discover_smf_from_nsi_info(
       std::string& smf_addr, std::string& smf_api_version,
-      const snssai_t snssai, const plmn_t plmn, const std::string dnn);
+      std::string& smf_port, const snssai_t snssai, const plmn_t plmn,
+      const std::string dnn);
 
   bool discover_smf(
       std::string& smf_addr, std::string& smf_api_version,
-      const snssai_t snssai, const plmn_t plmn, const std::string dnn,
-      const std::string& nrf_addr = {}, const std::string& nrf_port = {},
+      std::string& smf_port, const snssai_t snssai, const plmn_t plmn,
+      const std::string dnn, const std::string& nrf_addr = {},
+      const std::string& nrf_port        = {},
       const std::string& nrf_api_version = {});
 
   void register_nf_instance(
