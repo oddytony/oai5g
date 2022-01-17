@@ -482,12 +482,13 @@ bool amf_app::handle_event_exposure_delete(const std::string& subscription_id) {
 //------------------------------------------------------------------------------
 bool amf_app::handle_nf_status_notification(
     std::shared_ptr<itti_sbi_notification_data>& msg,
-    oai::amf::model::ProblemDetails& problem_details, uint8_t& http_code) {
+    oai::amf::model::ProblemDetails& problem_details, uint32_t& http_code) {
   Logger::amf_app().info(
       "Handle a NF status notification from NRF (HTTP version "
       "%d)",
       msg->http_version);
   // TODO
+  http_code = 204;  // HTTP_STATUS_CODE_204_NO_CONTENT;
   return true;
 }
 
@@ -496,10 +497,11 @@ bool amf_app::handle_n1_message_notification(
     std::shared_ptr<itti_sbi_n1_message_notification>& msg,
     oai::amf::model::ProblemDetails& problem_details, uint32_t& http_code) {
   Logger::amf_app().info(
-      "Handle a NF status notification from NRF (HTTP version "
+      "Handle a N1 Message Notification from the initial AMF (HTTP version "
       "%d)",
       msg->http_version);
   // TODO
+  http_code = 204;  // HTTP_STATUS_CODE_204_NO_CONTENT;
   return true;
 }
 

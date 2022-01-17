@@ -13,6 +13,7 @@
 
 #include "N1MessageNotifyApiImpl.h"
 #include "itti_msg_sbi.hpp"
+#include "conversions.hpp"
 
 using namespace amf_application;
 namespace oai {
@@ -28,11 +29,9 @@ N1MessageNotifyApiImpl::N1MessageNotifyApiImpl(
 
 void N1MessageNotifyApiImpl::receive_n1_message_notification(
     const std::string& ueContextId,
-    const N1MessageNotification& notificationData,
+    const N1MessageNotification& notificationData, std::string& n1sm_str,
     Pistache::Http::ResponseWriter& response) {
   Logger::amf_server().debug("Receive N1MessageNotify, handling...");
-
-  Pistache::Http::Code code = Pistache::Http::Code::Ok;
 
   std::string supi = ueContextId;
   Logger::amf_server().debug("SUPI (%s)", supi.c_str());
@@ -43,13 +42,14 @@ void N1MessageNotifyApiImpl::receive_n1_message_notification(
           TASK_AMF_SBI, TASK_AMF_APP);
   itti_msg->notification_msg = notificationData;
   itti_msg->ue_id            = supi;
+  itti_msg->n1sm             = n1sm_str;
   itti_msg->http_version     = 1;
 
   oai::amf::model::ProblemDetails problem_details = {};
   uint32_t http_code                              = {0};
   if (m_amf_app->handle_n1_message_notification(
           itti_msg, problem_details, http_code)) {
-    response.send(Pistache::Http::Code(204));
+    response.send(Pistache::Http::Code(http_code));
   } else {
     response.headers().add<Pistache::Http::Header::ContentType>(
         Pistache::Http::Mime::MediaType("application/problem+json"));

@@ -56,7 +56,7 @@ class N1MessageNotifyApi {
 
   virtual void receive_n1_message_notification(
       const std::string& ueContextId,
-      const N1MessageNotification& notificationData,
+      const N1MessageNotification& notificationData, std::string& n1sm_str,
       Pistache::Http::ResponseWriter& response) = 0;
 };
 

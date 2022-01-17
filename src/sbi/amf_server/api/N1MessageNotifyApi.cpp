@@ -16,6 +16,7 @@
 #include "mime_parser.hpp"
 #include "logger.hpp"
 #include "amf_config.hpp"
+#include "mime_parser.hpp"
 
 extern config::amf_config amf_cfg;
 
@@ -58,12 +59,33 @@ void N1MessageNotifyApi::n1_message_notify_handler(
       "Received a N1MessageNotification with ue_ctx_id %s",
       ueContextId.c_str());
 
-  N1MessageNotification n1MessageNotification;
+  N1MessageNotification n1MessageNotification = {};
+
+  // simple parser
+  mime_parser sp = {};
+  sp.parse(request.body());
+
+  std::vector<mime_part> parts = {};
+  sp.get_mime_parts(parts);
+  uint8_t size = parts.size();
+  Logger::amf_server().debug("Number of MIME parts %d", size);
+
+  // 2 parts for Json data and N1
+  if (size != 2) {
+    response.send(Pistache::Http::Code::Bad_Request);
+    Logger::amf_server().debug("Bad request: should have 2 MIME parts");
+    return;
+  }
+
+  Logger::amf_server().debug(
+      "Request body, part 1: \n%s", parts[0].body.c_str());
+  Logger::amf_server().debug(
+      "Request body, part 2: \n %s", parts[1].body.c_str());
 
   try {
-    nlohmann::json::parse(request.body()).get_to(n1MessageNotification);
+    nlohmann::json::parse(parts[0].body.c_str()).get_to(n1MessageNotification);
     this->receive_n1_message_notification(
-        ueContextId, n1MessageNotification, response);
+        ueContextId, n1MessageNotification, parts[1].body, response);
   } catch (nlohmann::detail::exception& e) {
     // send a 400 error
     response.send(Pistache::Http::Code::Bad_Request, e.what());

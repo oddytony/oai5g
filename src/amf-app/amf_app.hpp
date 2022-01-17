@@ -154,12 +154,12 @@ class amf_app {
    * Handle NF status notification (e.g., when an UPF becomes available)
    * @param [std::shared_ptr<itti_sbi_notification_data>& ] msg: message
    * @param [oai::amf::model::ProblemDetails& ] problem_details
-   * @param [uint8_t&] http_code
+   * @param [uint32_t&] http_code
    * @return true if handle sucessfully, otherwise return false
    */
   bool handle_nf_status_notification(
       std::shared_ptr<itti_sbi_notification_data>& msg,
-      oai::amf::model::ProblemDetails& problem_details, uint8_t& http_code);
+      oai::amf::model::ProblemDetails& problem_details, uint32_t& http_code);
 
   /*
    * Handle N1 Message Notification

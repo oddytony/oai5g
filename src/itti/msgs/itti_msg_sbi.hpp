@@ -124,11 +124,13 @@ class itti_sbi_n1_message_notification : public itti_sbi_msg {
       : itti_sbi_msg(SBI_N1_MESSAGE_NOTIFICATION, orig, dest),
         notification_msg(),
         ue_id(),
+        n1sm(),
         http_version(1) {}
   itti_sbi_n1_message_notification(const itti_sbi_n1_message_notification& i)
       : itti_sbi_msg(i),
         notification_msg(i.notification_msg),
         ue_id(i.ue_id),
+        n1sm(i.n1sm),
         http_version(1) {}
   itti_sbi_n1_message_notification(
       const itti_sbi_n1_message_notification& i, const task_id_t orig,
@@ -136,10 +138,12 @@ class itti_sbi_n1_message_notification : public itti_sbi_msg {
       : itti_sbi_msg(i, orig, dest),
         notification_msg(i.notification_msg),
         ue_id(i.ue_id),
+        n1sm(i.n1sm),
         http_version(i.http_version) {}
   const char* get_msg_name() { return "SBI_N1_MESSAGE_NOTIFICATION"; };
   oai::amf::model::N1MessageNotification notification_msg;
   std::string ue_id;
+  std::string n1sm;
   uint8_t http_version;
 };
 
