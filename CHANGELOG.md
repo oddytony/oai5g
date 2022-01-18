@@ -13,6 +13,8 @@
 * Fix SMF Selection SD
 * Fix NSSAI mismatch
 * Fix Service Request
+* Fix HTTP2
+* Fix MCC such as 001
 * Docker optimization
 
 ## v1.2.1 -- October 2021 ##
