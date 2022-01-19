@@ -618,7 +618,8 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
 
   if (unc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Failed to get UE NGAP context for ran_ue_ngap_id 0x%x", 21);
+        "Failed to get UE NGAP context for ran_ue_ngap_id 0x%x",
+        ran_ue_ngap_id);
   } else {
     // Store related information into UE NGAP context
     unc.get()->ran_ue_ngap_id   = ran_ue_ngap_id;
@@ -677,6 +678,7 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
       return;
     }
   }
+
   itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
   itti_msg->amf_ue_ngap_id = -1;
   std::shared_ptr<itti_nas_signalling_establishment_request> i =

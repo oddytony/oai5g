@@ -24,7 +24,7 @@
 //------------------------------------------------------------------------------
 ue_context::ue_context() {
   ran_ue_ngap_id     = 0;
-  amf_ue_ngap_id     = 0;
+  amf_ue_ngap_id     = -1;
   rrc_estb_cause     = {};
   isUeContextRequest = false;
   cgi                = {};

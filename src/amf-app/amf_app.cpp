@@ -43,6 +43,8 @@
 #include "itti.hpp"
 #include "ngap_app.hpp"
 #include "comUt.hpp"
+#include "RegistrationContextContainer.h"
+#include "GlobalRanNodeId.h"
 
 using namespace ngap;
 using namespace nas;
@@ -500,7 +502,112 @@ bool amf_app::handle_n1_message_notification(
       "Handle a N1 Message Notification from the initial AMF (HTTP version "
       "%d)",
       msg->http_version);
-  // TODO
+  // Step 1. Get UE, gNB related information
+
+  // Get NAS message (RegistrationRequest, this message included
+  // in N1 Message Notify is actually is RegistrationRequest from UE to the
+  // initial AMF)
+  bstring n1sm;
+  conv::msg_str_2_msg_hex(msg->n1sm, n1sm);
+
+  // get RegistrationContextContainer including gNB info
+  // UE context information, N1 message from UE, AN address
+
+  oai::amf::model::RegistrationContextContainer registration_context =
+      msg->notification_msg.getRegistrationCtxtContainer();
+  // UE context
+  // UeContext getUeContext()
+
+  // GlobalRAN Node ID (~in NGSetupRequest)
+  oai::amf::model::GlobalRanNodeId ran_node_id =
+      registration_context.getRanNodeId();
+  // RAN UE NGAP ID
+  uint32_t ran_ue_ngap_id = registration_context.getAnN2ApId();
+
+  // UserLocation getUserLocation()
+  // std::string getAnN2IPv4Addr()
+  // AllowedNssai getAllowedNssai() const;
+  // std::vector<ConfiguredSnssai>& getConfiguredNssai();
+  // rejectedNssaiInPlmn
+  // rejectedNssaiInTa
+  // std::string getInitialAmfName()
+
+  // Step 2. Create gNB context if necessary
+
+  // How to create gNB context without SCTP association?
+  // TODO: How to establish SCTP connection between the Target AMF and gNB?
+  std::shared_ptr<gnb_context> gc = {};
+
+  // Step 3. Create UE Context
+  // TODO: to be verified since UE context is also bound with (AMF UE NGAP ID,
+  // RAN UE NGAP ID)
+  std::shared_ptr<ue_context> uc = {};
+  if (!is_supi_2_ue_context(msg->ue_id)) {
+    // TODO: Create a new UE Context
+  } else {  // Update UE Context
+    uc = supi_2_ue_context(msg->ue_id);
+  }
+
+  if (registration_context.rrcEstCauseIsSet()) {
+    // std::string getRrcEstCause()
+    // TODO: rrc_cause = registration_context.getRrcEstCause();
+    // TODO:  uc.get()->rrc_estb_cause = (e_Ngap_RRCEstablishmentCause)
+    // rrc_cause;
+  }
+  // ueContextRequest
+  uc.get()->isUeContextRequest = registration_context.isUeContextRequest();
+
+  // Step 4. Create UE NGAP Context if necessary
+
+  long amf_ue_ngap_id = 0;
+
+  // Check UE Context
+  // TODO: check UE context here or above based on SUPI
+  if ((amf_ue_ngap_id = uc->amf_ue_ngap_id) == -1) {
+    amf_ue_ngap_id = generate_amf_ue_ngap_id();
+  }
+
+  uc.get()->amf_ue_ngap_id = amf_ue_ngap_id;
+
+  string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
+                          ":amfid_" + to_string(amf_ue_ngap_id);
+  if (!is_ran_amf_id_2_ue_context(ue_context_key)) {
+    Logger::amf_app().debug(
+        "No existing UE Context, Create a new one with ran_amf_id %s",
+        ue_context_key.c_str());
+    uc = std::shared_ptr<ue_context>(new ue_context());
+    set_ran_amf_id_2_ue_context(ue_context_key, uc);
+  }
+
+  // Create/Update UE NGAP Context
+  std::shared_ptr<ue_ngap_context> unc = {};
+  if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
+    Logger::amf_app().debug(
+        "Create a new UE NGAP context with ran_ue_ngap_id 0x%x",
+        ran_ue_ngap_id);
+    unc = std::shared_ptr<ue_ngap_context>(new ue_ngap_context());
+    amf_n2_inst->set_ran_ue_ngap_id_2_ue_ngap_context(ran_ue_ngap_id, unc);
+  } else {
+    unc = amf_n2_inst->ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
+    if (!unc.get()) {
+      Logger::amf_app().error(
+          "Failed to get UE NGAP context for ran_ue_ngap_id 0x%x",
+          ran_ue_ngap_id);
+      return false;
+    }
+  }
+
+  // Store related information into UE NGAP context
+  unc.get()->ran_ue_ngap_id = ran_ue_ngap_id;
+  // TODO:  unc.get()->sctp_stream_recv
+  // TODO: unc.get()->sctp_stream_send
+  // TODO: gc.get()->next_sctp_stream
+  // TODO: unc.get()->gnb_assoc_id
+  // TODO: unc.get()->tai
+
+  // Step 5. Trigger the procedure following RegistrationRequest
+  // TODO:
+
   http_code = 204;  // HTTP_STATUS_CODE_204_NO_CONTENT;
   return true;
 }
