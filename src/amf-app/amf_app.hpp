@@ -83,6 +83,7 @@ class amf_app {
   // itti handlers
   void handle_itti_message(itti_nas_signalling_establishment_request& itti_msg);
   void handle_itti_message(itti_n1n2_message_transfer_request& itti_msg);
+  void handle_itti_message(itti_sbi_n1_message_notification& itti_msg);
 
   bool is_amf_ue_id_2_ue_context(const long& amf_ue_ngap_id) const;
   std::shared_ptr<ue_context> amf_ue_id_2_ue_context(
@@ -159,17 +160,6 @@ class amf_app {
    */
   bool handle_nf_status_notification(
       std::shared_ptr<itti_sbi_notification_data>& msg,
-      oai::amf::model::ProblemDetails& problem_details, uint32_t& http_code);
-
-  /*
-   * Handle N1 Message Notification
-   * @param [std::shared_ptr<itti_sbi_n1_message_notification>& ] msg: message
-   * @param [oai::amf::model::ProblemDetails& ] problem_details
-   * @param [uint8_t&] http_code
-   * @return true if handle sucessfully, otherwise return false
-   */
-  bool handle_n1_message_notification(
-      std::shared_ptr<itti_sbi_n1_message_notification>& msg,
       oai::amf::model::ProblemDetails& problem_details, uint32_t& http_code);
 
   /*

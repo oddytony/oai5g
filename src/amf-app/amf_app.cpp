@@ -124,6 +124,13 @@ void amf_app_task(void*) {
         amf_app_inst->handle_itti_message(ref(*m));
       } break;
 
+      case SBI_N1_MESSAGE_NOTIFICATION: {
+        Logger::amf_app().debug("Received SBI_N1_MESSAGE_NOTIFICATION");
+        itti_sbi_n1_message_notification* m =
+            dynamic_cast<itti_sbi_n1_message_notification*>(msg);
+        amf_app_inst->handle_itti_message(ref(*m));
+      } break;
+
       case TIME_OUT: {
         if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
           switch (to->arg1_user) {
@@ -140,6 +147,7 @@ void amf_app_task(void*) {
           }
         }
       } break;
+
       case TERMINATE: {
         if (itti_msg_terminate* terminate =
                 dynamic_cast<itti_msg_terminate*>(msg)) {
@@ -401,6 +409,203 @@ void amf_app::handle_itti_message(
   }
 }
 
+//------------------------------------------------------------------------------
+void amf_app::handle_itti_message(itti_sbi_n1_message_notification& itti_msg) {
+  Logger::amf_app().info(
+      "Handle a N1 Message Notification from the initial AMF");
+  // Step 1. Get UE, gNB related information
+
+  // Get NAS message (RegistrationRequest, this message included
+  // in N1 Message Notify is actually is RegistrationRequest from UE to the
+  // initial AMF)
+  bstring n1sm;
+  conv::msg_str_2_msg_hex(itti_msg.n1sm, n1sm);
+
+  // get RegistrationContextContainer including gNB info
+  // UE context information, N1 message from UE, AN address
+
+  oai::amf::model::RegistrationContextContainer registration_context =
+      itti_msg.notification_msg.getRegistrationCtxtContainer();
+
+  // UE Context
+  oai::amf::model::UeContext ue_ctx = registration_context.getUeContext();
+  std::string supi                  = {};
+  std::shared_ptr<ue_context> uc    = {};
+
+  if (ue_ctx.supiIsSet()) {
+    supi = ue_ctx.getSupi();
+    if (!is_supi_2_ue_context(supi)) {
+      // Create a new UE Context
+      Logger::amf_app().debug(
+          "No existing UE Context, Create a new one with SUPI %s",
+          supi.c_str());
+      uc                 = std::shared_ptr<ue_context>(new ue_context());
+      uc->amf_ue_ngap_id = -1;
+      uc->supi           = supi;
+      set_supi_2_ue_context(supi, uc);
+    } else {  // Update UE Context
+      uc = supi_2_ue_context(supi);
+    }
+  }
+
+  // TODO: 5gMmCapability
+  // TODO: MmContext
+  // TODO: PduSessionContext
+
+  // GlobalRAN Node ID (~in NGSetupRequest)
+  oai::amf::model::GlobalRanNodeId ran_node_id =
+      registration_context.getRanNodeId();
+  // RAN UE NGAP ID
+  uint32_t ran_ue_ngap_id = registration_context.getAnN2ApId();
+
+  // UserLocation getUserLocation()
+  // std::string getAnN2IPv4Addr()
+  // AllowedNssai getAllowedNssai()
+  // std::vector<ConfiguredSnssai>& getConfiguredNssai();
+  // rejectedNssaiInPlmn
+  // rejectedNssaiInTa
+  // std::string getInitialAmfName()
+
+  // Step 2. Create gNB context if necessary
+
+  // How to create gNB context without SCTP association?
+  // TODO: How to establish SCTP connection between the Target AMF and gNB?
+  std::shared_ptr<gnb_context> gc = {};
+
+  if (ran_node_id.gNbIdIsSet()) {
+    oai::amf::model::GNbId gnb_id_model = ran_node_id.getGNbId();
+    uint32_t gnb_id                     = {};
+
+    try {
+      gnb_id = std::stoul(gnb_id_model.getGNBValue(), nullptr, 10);
+    } catch (const std::exception& e) {
+      Logger::amf_app().warn(
+          "Error when converting from string to int for gNB Value: %s",
+          e.what());
+      return;
+    }
+
+    gc->globalRanNodeId = gnb_id;
+    // TODO:   gc->gnb_name
+    // TODO: DefaultPagingDRX
+    // TODO: Supported TA List
+    amf_n2_inst->set_gnb_id_2_gnb_context(gnb_id, gc);
+  }
+
+  // Step 3. Create UE Context
+  /*
+  if (!is_supi_2_ue_context(itti_msg.ue_id)) {
+    // TODO: Create a new UE Context
+  } else {  // Update UE Context
+    uc = supi_2_ue_context(itti_msg.ue_id);
+  }
+*/
+
+  long amf_ue_ngap_id = -1;
+  // Generate AMF UE NGAP ID if necessary
+  if (!uc.get()) {  // No UE context existed
+    amf_ue_ngap_id = generate_amf_ue_ngap_id();
+  } else {
+    if ((amf_ue_ngap_id = uc->amf_ue_ngap_id) == -1) {
+      amf_ue_ngap_id = generate_amf_ue_ngap_id();
+    }
+  }
+
+  string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
+                          ":amfid_" + to_string(amf_ue_ngap_id);
+  if (!is_ran_amf_id_2_ue_context(ue_context_key)) {
+    Logger::amf_app().debug(
+        "No existing UE Context associated with UE Context Key %s",
+        ue_context_key.c_str());
+    if (!uc.get()) {
+      // Create a new UE Context
+      Logger::amf_app().debug(
+          "Create a new UE Context with UE Context Key",
+          ue_context_key.c_str());
+      uc = std::shared_ptr<ue_context>(new ue_context());
+    }
+    set_ran_amf_id_2_ue_context(ue_context_key, uc);
+  } else {
+    uc = ran_amf_id_2_ue_context(ue_context_key);
+  }
+  // Return if UE Context is still invalid
+  if (!uc.get()) {
+    Logger::amf_app().error("Failed to get UE Context");
+    return;
+  }
+
+  // Update info for UE context
+  uc.get()->amf_ue_ngap_id = amf_ue_ngap_id;
+  uc.get()->ran_ue_ngap_id = ran_ue_ngap_id;
+  // RrcEstCause
+  if (registration_context.rrcEstCauseIsSet()) {
+    uint8_t rrc_cause = {};
+    try {
+      rrc_cause =
+          std::stoul(registration_context.getRrcEstCause(), nullptr, 10);
+    } catch (const std::exception& e) {
+      Logger::amf_app().warn(
+          "Error when converting from string to int for RrcEstCause: %s",
+          e.what());
+      rrc_cause = 0;
+    }
+
+    uc.get()->rrc_estb_cause = (e_Ngap_RRCEstablishmentCause) rrc_cause;
+  }
+  // ueContextRequest
+  uc.get()->isUeContextRequest = registration_context.isUeContextRequest();
+
+  // Step 4. Create UE NGAP Context if necessary
+  // Create/Update UE NGAP Context
+  std::shared_ptr<ue_ngap_context> unc = {};
+  if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
+    Logger::amf_app().debug(
+        "Create a new UE NGAP context with ran_ue_ngap_id 0x%x",
+        ran_ue_ngap_id);
+    unc = std::shared_ptr<ue_ngap_context>(new ue_ngap_context());
+    amf_n2_inst->set_ran_ue_ngap_id_2_ue_ngap_context(ran_ue_ngap_id, unc);
+  } else {
+    unc = amf_n2_inst->ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
+    if (!unc.get()) {
+      Logger::amf_app().error(
+          "Failed to get UE NGAP context for ran_ue_ngap_id 0x%x",
+          ran_ue_ngap_id);
+      return;
+    }
+  }
+
+  // Store related information into UE NGAP context
+  unc.get()->ran_ue_ngap_id = ran_ue_ngap_id;
+  // TODO:  unc.get()->sctp_stream_recv
+  // TODO: unc.get()->sctp_stream_send
+  // TODO: gc.get()->next_sctp_stream
+  // TODO: unc.get()->gnb_assoc_id
+  // TODO: unc.get()->tai
+
+  // Step 5. Trigger the procedure following RegistrationRequest
+
+  itti_uplink_nas_data_ind* itti_n1_msg =
+      new itti_uplink_nas_data_ind(TASK_AMF_APP, TASK_AMF_N1);
+  itti_n1_msg->amf_ue_ngap_id              = amf_ue_ngap_id;
+  itti_n1_msg->ran_ue_ngap_id              = ran_ue_ngap_id;
+  itti_n1_msg->is_nas_signalling_estab_req = true;
+  itti_n1_msg->nas_msg                     = n1sm;
+  itti_n1_msg->mcc                         = ran_node_id.getPlmnId().getMcc();
+  itti_n1_msg->mnc                         = ran_node_id.getPlmnId().getMnc();
+  ;
+  itti_n1_msg->is_guti_valid = false;
+
+  std::shared_ptr<itti_uplink_nas_data_ind> i =
+      std::shared_ptr<itti_uplink_nas_data_ind>(itti_n1_msg);
+  int ret = itti_inst->send_msg(i);
+  if (0 != ret) {
+    Logger::amf_app().error(
+        "Could not send ITTI message %s to task TASK_AMF_N1",
+        i->get_msg_name());
+  }
+
+  return;
+}
 // AMF Client response handlers
 //------------------------------------------------------------------------------
 void amf_app::handle_post_sm_context_response_error_400() {
@@ -490,124 +695,6 @@ bool amf_app::handle_nf_status_notification(
       "%d)",
       msg->http_version);
   // TODO
-  http_code = 204;  // HTTP_STATUS_CODE_204_NO_CONTENT;
-  return true;
-}
-
-//------------------------------------------------------------------------------
-bool amf_app::handle_n1_message_notification(
-    std::shared_ptr<itti_sbi_n1_message_notification>& msg,
-    oai::amf::model::ProblemDetails& problem_details, uint32_t& http_code) {
-  Logger::amf_app().info(
-      "Handle a N1 Message Notification from the initial AMF (HTTP version "
-      "%d)",
-      msg->http_version);
-  // Step 1. Get UE, gNB related information
-
-  // Get NAS message (RegistrationRequest, this message included
-  // in N1 Message Notify is actually is RegistrationRequest from UE to the
-  // initial AMF)
-  bstring n1sm;
-  conv::msg_str_2_msg_hex(msg->n1sm, n1sm);
-
-  // get RegistrationContextContainer including gNB info
-  // UE context information, N1 message from UE, AN address
-
-  oai::amf::model::RegistrationContextContainer registration_context =
-      msg->notification_msg.getRegistrationCtxtContainer();
-  // UE context
-  // UeContext getUeContext()
-
-  // GlobalRAN Node ID (~in NGSetupRequest)
-  oai::amf::model::GlobalRanNodeId ran_node_id =
-      registration_context.getRanNodeId();
-  // RAN UE NGAP ID
-  uint32_t ran_ue_ngap_id = registration_context.getAnN2ApId();
-
-  // UserLocation getUserLocation()
-  // std::string getAnN2IPv4Addr()
-  // AllowedNssai getAllowedNssai() const;
-  // std::vector<ConfiguredSnssai>& getConfiguredNssai();
-  // rejectedNssaiInPlmn
-  // rejectedNssaiInTa
-  // std::string getInitialAmfName()
-
-  // Step 2. Create gNB context if necessary
-
-  // How to create gNB context without SCTP association?
-  // TODO: How to establish SCTP connection between the Target AMF and gNB?
-  std::shared_ptr<gnb_context> gc = {};
-
-  // Step 3. Create UE Context
-  // TODO: to be verified since UE context is also bound with (AMF UE NGAP ID,
-  // RAN UE NGAP ID)
-  std::shared_ptr<ue_context> uc = {};
-  if (!is_supi_2_ue_context(msg->ue_id)) {
-    // TODO: Create a new UE Context
-  } else {  // Update UE Context
-    uc = supi_2_ue_context(msg->ue_id);
-  }
-
-  if (registration_context.rrcEstCauseIsSet()) {
-    // std::string getRrcEstCause()
-    // TODO: rrc_cause = registration_context.getRrcEstCause();
-    // TODO:  uc.get()->rrc_estb_cause = (e_Ngap_RRCEstablishmentCause)
-    // rrc_cause;
-  }
-  // ueContextRequest
-  uc.get()->isUeContextRequest = registration_context.isUeContextRequest();
-
-  // Step 4. Create UE NGAP Context if necessary
-
-  long amf_ue_ngap_id = 0;
-
-  // Check UE Context
-  // TODO: check UE context here or above based on SUPI
-  if ((amf_ue_ngap_id = uc->amf_ue_ngap_id) == -1) {
-    amf_ue_ngap_id = generate_amf_ue_ngap_id();
-  }
-
-  uc.get()->amf_ue_ngap_id = amf_ue_ngap_id;
-
-  string ue_context_key = "app_ue_ranid_" + to_string(ran_ue_ngap_id) +
-                          ":amfid_" + to_string(amf_ue_ngap_id);
-  if (!is_ran_amf_id_2_ue_context(ue_context_key)) {
-    Logger::amf_app().debug(
-        "No existing UE Context, Create a new one with ran_amf_id %s",
-        ue_context_key.c_str());
-    uc = std::shared_ptr<ue_context>(new ue_context());
-    set_ran_amf_id_2_ue_context(ue_context_key, uc);
-  }
-
-  // Create/Update UE NGAP Context
-  std::shared_ptr<ue_ngap_context> unc = {};
-  if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
-    Logger::amf_app().debug(
-        "Create a new UE NGAP context with ran_ue_ngap_id 0x%x",
-        ran_ue_ngap_id);
-    unc = std::shared_ptr<ue_ngap_context>(new ue_ngap_context());
-    amf_n2_inst->set_ran_ue_ngap_id_2_ue_ngap_context(ran_ue_ngap_id, unc);
-  } else {
-    unc = amf_n2_inst->ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
-    if (!unc.get()) {
-      Logger::amf_app().error(
-          "Failed to get UE NGAP context for ran_ue_ngap_id 0x%x",
-          ran_ue_ngap_id);
-      return false;
-    }
-  }
-
-  // Store related information into UE NGAP context
-  unc.get()->ran_ue_ngap_id = ran_ue_ngap_id;
-  // TODO:  unc.get()->sctp_stream_recv
-  // TODO: unc.get()->sctp_stream_send
-  // TODO: gc.get()->next_sctp_stream
-  // TODO: unc.get()->gnb_assoc_id
-  // TODO: unc.get()->tai
-
-  // Step 5. Trigger the procedure following RegistrationRequest
-  // TODO:
-
   http_code = 204;  // HTTP_STATUS_CODE_204_NO_CONTENT;
   return true;
 }

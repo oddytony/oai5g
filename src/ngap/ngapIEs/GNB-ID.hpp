@@ -45,10 +45,12 @@ class GNB_ID {
   void setValue(uint32_t gnbId);
   long getValue();
 
+  void setValue(uint32_t id, uint8_t bit_length);
+
  private:
   struct gNBId_s {
     uint32_t id;
-    uint8_t biteslen;
+    uint8_t bit_length;
   } gNBId;  // 22bits to 32bits
 };
 

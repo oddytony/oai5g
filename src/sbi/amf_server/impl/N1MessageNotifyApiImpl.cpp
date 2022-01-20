@@ -14,8 +14,11 @@
 #include "N1MessageNotifyApiImpl.h"
 #include "itti_msg_sbi.hpp"
 #include "conversions.hpp"
+#include "itti.hpp"
 
 using namespace amf_application;
+extern itti_mw* itti_inst;
+
 namespace oai {
 namespace amf {
 namespace api {
@@ -47,15 +50,17 @@ void N1MessageNotifyApiImpl::receive_n1_message_notification(
 
   oai::amf::model::ProblemDetails problem_details = {};
   uint32_t http_code                              = {0};
-  if (m_amf_app->handle_n1_message_notification(
-          itti_msg, problem_details, http_code)) {
-    response.send(Pistache::Http::Code(http_code));
-  } else {
-    response.headers().add<Pistache::Http::Header::ContentType>(
-        Pistache::Http::Mime::MediaType("application/problem+json"));
-    nlohmann::json json_data = {};
-    to_json(json_data, problem_details);
-    response.send(Pistache::Http::Code(http_code), json_data.dump().c_str());
+
+  // Send response
+  response.send(Pistache::Http::Code::No_Content);
+  // TODO: problem
+
+  // Process N1 Notification Message at AMF APP
+  int ret = itti_inst->send_msg(itti_msg);
+  if (0 != ret) {
+    Logger::amf_server().error(
+        "Could not send ITTI message %s to task TASK_AMF_N2",
+        itti_msg->get_msg_name());
   }
 }
 
