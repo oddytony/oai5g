@@ -412,7 +412,8 @@ void amf_app::handle_itti_message(
 //------------------------------------------------------------------------------
 void amf_app::handle_itti_message(itti_sbi_n1_message_notification& itti_msg) {
   Logger::amf_app().info(
-      "Handle a N1 Message Notification from the initial AMF");
+      "Target AMF, handling a N1 Message Notification from the initial AMF");
+
   // Step 1. Get UE, gNB related information
 
   // Get NAS message (RegistrationRequest, this message included
@@ -423,11 +424,50 @@ void amf_app::handle_itti_message(itti_sbi_n1_message_notification& itti_msg) {
 
   // get RegistrationContextContainer including gNB info
   // UE context information, N1 message from UE, AN address
-
   oai::amf::model::RegistrationContextContainer registration_context =
       itti_msg.notification_msg.getRegistrationCtxtContainer();
 
-  // UE Context
+  // Step 2. Create gNB context if necessary
+
+  // TODO: How to get SCTP-related information and establish a new SCTP
+  // connection between the Target AMF and gNB?
+  std::shared_ptr<gnb_context> gc = {};
+
+  // GlobalRAN Node ID (~in NGSetupRequest)
+  oai::amf::model::GlobalRanNodeId ran_node_id =
+      registration_context.getRanNodeId();
+  // RAN UE NGAP ID
+  uint32_t ran_ue_ngap_id = registration_context.getAnN2ApId();
+
+  if (ran_node_id.gNbIdIsSet()) {
+    oai::amf::model::GNbId gnb_id_model = ran_node_id.getGNbId();
+    uint32_t gnb_id                     = {};
+
+    try {
+      gnb_id = std::stoul(gnb_id_model.getGNBValue(), nullptr, 10);
+    } catch (const std::exception& e) {
+      Logger::amf_app().warn(
+          "Error when converting from string to uint32_t for gNB Value: %s",
+          e.what());
+      return;
+    }
+
+    gc->globalRanNodeId = gnb_id;
+    // TODO:   gc->gnb_name
+    // TODO: DefaultPagingDRX
+    // TODO: Supported TA List
+    amf_n2_inst->set_gnb_id_2_gnb_context(gnb_id, gc);
+  }
+
+  // UserLocation getUserLocation()
+  // std::string getAnN2IPv4Addr()
+  // AllowedNssai getAllowedNssai()
+  // std::vector<ConfiguredSnssai>& getConfiguredNssai();
+  // rejectedNssaiInPlmn
+  // rejectedNssaiInTa
+  // std::string getInitialAmfName()
+
+  // Step 3. Create UE Context
   oai::amf::model::UeContext ue_ctx = registration_context.getUeContext();
   std::string supi                  = {};
   std::shared_ptr<ue_context> uc    = {};
@@ -452,47 +492,6 @@ void amf_app::handle_itti_message(itti_sbi_n1_message_notification& itti_msg) {
   // TODO: MmContext
   // TODO: PduSessionContext
 
-  // GlobalRAN Node ID (~in NGSetupRequest)
-  oai::amf::model::GlobalRanNodeId ran_node_id =
-      registration_context.getRanNodeId();
-  // RAN UE NGAP ID
-  uint32_t ran_ue_ngap_id = registration_context.getAnN2ApId();
-
-  // UserLocation getUserLocation()
-  // std::string getAnN2IPv4Addr()
-  // AllowedNssai getAllowedNssai()
-  // std::vector<ConfiguredSnssai>& getConfiguredNssai();
-  // rejectedNssaiInPlmn
-  // rejectedNssaiInTa
-  // std::string getInitialAmfName()
-
-  // Step 2. Create gNB context if necessary
-
-  // How to create gNB context without SCTP association?
-  // TODO: How to establish SCTP connection between the Target AMF and gNB?
-  std::shared_ptr<gnb_context> gc = {};
-
-  if (ran_node_id.gNbIdIsSet()) {
-    oai::amf::model::GNbId gnb_id_model = ran_node_id.getGNbId();
-    uint32_t gnb_id                     = {};
-
-    try {
-      gnb_id = std::stoul(gnb_id_model.getGNBValue(), nullptr, 10);
-    } catch (const std::exception& e) {
-      Logger::amf_app().warn(
-          "Error when converting from string to int for gNB Value: %s",
-          e.what());
-      return;
-    }
-
-    gc->globalRanNodeId = gnb_id;
-    // TODO:   gc->gnb_name
-    // TODO: DefaultPagingDRX
-    // TODO: Supported TA List
-    amf_n2_inst->set_gnb_id_2_gnb_context(gnb_id, gc);
-  }
-
-  // Step 3. Create UE Context
   /*
   if (!is_supi_2_ue_context(itti_msg.ue_id)) {
     // TODO: Create a new UE Context
@@ -592,8 +591,7 @@ void amf_app::handle_itti_message(itti_sbi_n1_message_notification& itti_msg) {
   itti_n1_msg->nas_msg                     = n1sm;
   itti_n1_msg->mcc                         = ran_node_id.getPlmnId().getMcc();
   itti_n1_msg->mnc                         = ran_node_id.getPlmnId().getMnc();
-  ;
-  itti_n1_msg->is_guti_valid = false;
+  itti_n1_msg->is_guti_valid               = false;
 
   std::shared_ptr<itti_uplink_nas_data_ind> i =
       std::shared_ptr<itti_uplink_nas_data_ind>(itti_n1_msg);
