@@ -122,17 +122,19 @@ typedef struct amf_set_id_s /*5G ADD it*/
   uint16_t amf_set_id : 10;
 } amf_set_id_t;
 
-typedef struct allowed_nssai /*5G ADD it*/
+/*
+typedef struct allowed_nssai
 {
   uint8_t sST;
   uint32_t sD : 24;
 } allowed_nssai;
 
-typedef struct allowed_nssai_s /*5G ADD it*/
+typedef struct allowed_nssai_s
 {
   allowed_nssai* s_nssai;
   uint32_t count;
 } allowed_nssai_t;
+*/
 
 typedef struct guami_5g_s {
   plmn_t plmn;

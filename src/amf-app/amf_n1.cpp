@@ -1416,12 +1416,12 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
           ngksi = (nc.get()->amf_ue_ngap_id + 1);  // % (NGKSI_MAX_VALUE + 1);
         }
         nc.get()->ngKsi = ngksi;
-        handle_auth_vector_successful_result(nc);
       } else {
         Logger::amf_n1().error("Request authentication vectors failure");
         response_registration_reject_msg(
             _5GMM_CAUSE_ILLEGAL_UE, nc.get()->ran_ue_ngap_id,
             nc.get()->amf_ue_ngap_id);  // cause?
+        return;
       }
     } else {
       Logger::amf_n1().debug(
@@ -1435,8 +1435,15 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
         // TODO: How to handle?
       }
       nc.get()->ngKsi = ngksi;
-      handle_auth_vector_successful_result(nc);
     }
+    // TODO: If AMF can't handle this UE, reroute the Registration Request to a
+    // new AMF Get UE's slice selection subscription from UDM if not available
+    if (reroute_registration_request(nc)) {
+      return;
+    }
+
+    handle_auth_vector_successful_result(nc);
+
   } else if (nc.get()->is_5g_guti_present) {
     Logger::amf_n1().debug("Start to run UE Identification Request procedure");
     nc.get()->is_auth_vectors_present   = false;
@@ -3693,3 +3700,64 @@ bool amf_n1::get_mobile_reachable_timer_timeout(
   std::shared_lock lock(m_nas_context);
   return nc.get()->is_mobile_reachable_timer_timeout;
 }
+
+//------------------------------------------------------------------------------
+bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
+  Logger::amf_n1().debug(
+      "Registration with AMF re-allocation, Reroute Registration Request to "
+      "the target AMF");
+  nssai_t nssai = {};
+  if (!get_slice_selection_subscription_data(nc, nssai)) {  // Get NSSAI from
+                                                            // UDM
+    return false;
+  }
+  if (check_requested_nssai(
+          nc,
+          nssai)) {  // Check that AMF can process the Requested NSSAIs or not
+    return false;
+  }
+  // Process NS selection to select the appropriate AMF
+  std::string nf_instance_id                                    = {};
+  slice_info_fo_registration_t slice_info                       = {};
+  authorized_network_slice_info_t authorized_network_slice_info = {};
+  if (!get_network_slice_selection(
+          nf_instance_id, slice_info, authorized_network_slice_info)) {
+    return false;
+  }
+  std::string target_amf = {};
+  // Send N1MessageNotify to the Target AMF
+  send_n1_message_notity(nc, target_amf);
+
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::check_requested_nssai(
+    const std::shared_ptr<nas_context>& nc, const nssai_t& nssai) const {
+  // TODO
+
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::get_slice_selection_subscription_data(
+    const std::shared_ptr<nas_context>& nc, nssai_t& nssai) const {
+  // TODO: UDM selection (from NRF or configuration file)
+  if (amf_cfg.support_features.enable_external_udm) {
+  }
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::get_network_slice_selection(
+    const std::string& nf_instance_id, slice_info_fo_registration_t& slice_info,
+    authorized_network_slice_info_t& authorized_network_slice_info) const {
+  // TODO: UDM selection (from NRF or configuration file)
+  if (amf_cfg.support_features.enable_external_udm) {
+  }
+  return true;
+}
+
+void amf_n1::send_n1_message_notity(
+    const std::shared_ptr<nas_context>& nc,
+    const std::string& target_amf) const {}
