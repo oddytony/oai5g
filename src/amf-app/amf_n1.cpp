@@ -3711,14 +3711,13 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
                                                             // UDM
     return false;
   }
-  if (check_requested_nssai(
-          nc,
-          nssai)) {  // Check that AMF can process the Requested NSSAIs or not
+  // Check that AMF can process the Requested NSSAIs or not
+  if (check_requested_nssai(nc, nssai)) {
     return false;
   }
   // Process NS selection to select the appropriate AMF
   std::string nf_instance_id                                    = {};
-  slice_info_fo_registration_t slice_info                       = {};
+  slice_info_for_registration_t slice_info                      = {};
   authorized_network_slice_info_t authorized_network_slice_info = {};
   if (!get_network_slice_selection(
           nf_instance_id, slice_info, authorized_network_slice_info)) {
@@ -3744,13 +3743,16 @@ bool amf_n1::get_slice_selection_subscription_data(
     const std::shared_ptr<nas_context>& nc, nssai_t& nssai) const {
   // TODO: UDM selection (from NRF or configuration file)
   if (amf_cfg.support_features.enable_external_udm) {
+  } else {
+    // TODO: get from the conf file
   }
   return true;
 }
 
 //------------------------------------------------------------------------------
 bool amf_n1::get_network_slice_selection(
-    const std::string& nf_instance_id, slice_info_fo_registration_t& slice_info,
+    const std::string& nf_instance_id,
+    slice_info_for_registration_t& slice_info,
     authorized_network_slice_info_t& authorized_network_slice_info) const {
   // TODO: UDM selection (from NRF or configuration file)
   if (amf_cfg.support_features.enable_external_udm) {
@@ -3758,6 +3760,7 @@ bool amf_n1::get_network_slice_selection(
   return true;
 }
 
+//------------------------------------------------------------------------------
 void amf_n1::send_n1_message_notity(
     const std::shared_ptr<nas_context>& nc,
     const std::string& target_amf) const {}

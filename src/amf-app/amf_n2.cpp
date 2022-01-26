@@ -71,7 +71,6 @@ using namespace std;
 extern itti_mw* itti_inst;
 extern amf_n2* amf_n2_inst;
 extern amf_n1* amf_n1_inst;
-extern amf_n11* amf_n11_inst;
 extern amf_config amf_cfg;
 extern amf_app* amf_app_inst;
 extern statistics stacs;

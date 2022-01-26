@@ -61,7 +61,7 @@ typedef struct mapping_of_snssai_s {
   snssai_t home_snssai;
 } mapping_of_snssai_t;
 
-typedef struct slice_info_fo_registration_s {
+typedef struct slice_info_for_registration_s {
   std::vector<subscribed_snssai_t> subscribed_nssai;
   std::vector<allowed_nssai_t> allowed_nssai_current_access;
   // allowed_nssai_other_access
@@ -70,7 +70,7 @@ typedef struct slice_info_fo_registration_s {
   bool default_configured_snssai_ind;
   std::vector<mapping_of_snssai_t> mapping_of_nssai;
   bool request_mapping;
-} slice_info_fo_registration_t;
+} slice_info_for_registration_t;
 
 typedef struct configured_snssai_s {
   snssai_t configured_snssai;

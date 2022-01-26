@@ -191,4 +191,20 @@ class itti_n11_deregister_nf_instance : public itti_msg_n11 {
   std::string amf_instance_id;
 };
 
+//-----------------------------------------------------------------------------
+class itti_n11_slice_selection_subscription_data : public itti_msg_n11 {
+ public:
+  itti_n11_slice_selection_subscription_data(
+      const task_id_t orig, const task_id_t dest)
+      : itti_msg_n11(N11_SLICE_SELECTION_SUBSCRIPTION_DATA, orig, dest),
+        http_version(1) {}
+  const char* get_msg_name() {
+    return "N11_SLICE_SELECTION_SUBSCRIPTION_DATA";
+  };
+
+  uint8_t http_version;
+  std::string supi;
+  plmn_t plmn;
+};
+
 #endif
