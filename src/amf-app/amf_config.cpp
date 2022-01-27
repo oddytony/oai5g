@@ -82,6 +82,7 @@ amf_config::amf_config() {
   support_features.enable_smf_selection   = false;
   support_features.enable_external_ausf   = false;
   support_features.enable_external_udm    = false;
+  support_features.enable_external_nssf   = false;
   support_features.use_fqdn_dns           = false;
   support_features.use_http2              = false;
   // TODO:
@@ -268,6 +269,14 @@ int amf_config::load(const std::string& config_file) {
       support_features.enable_external_udm = true;
     } else {
       support_features.enable_external_udm = false;
+    }
+
+    support_features_cfg.lookupValue(
+        AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_NSSF, opt);
+    if (boost::iequals(opt, "yes")) {
+      support_features.enable_external_nssf = true;
+    } else {
+      support_features.enable_external_nssf = false;
     }
 
     support_features_cfg.lookupValue(
@@ -706,6 +715,9 @@ void amf_config::display() {
   Logger::config().info(
       "    External UDM ..........: %s",
       support_features.enable_external_udm ? "Yes" : "No");
+  Logger::config().info(
+      "    External NSSF .........: %s",
+      support_features.enable_external_nssf ? "Yes" : "No");
   Logger::config().info(
       "    Use FQDN ..............: %s",
       support_features.use_fqdn_dns ? "Yes" : "No");

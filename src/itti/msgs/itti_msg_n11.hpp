@@ -28,6 +28,7 @@
 #include "amf_profile.hpp"
 #include "bstrlib.h"
 #include "itti_msg.hpp"
+#include "3gpp_29.531.h"
 
 class itti_msg_n11 : public itti_msg {
  public:
@@ -205,6 +206,23 @@ class itti_n11_slice_selection_subscription_data : public itti_msg_n11 {
   uint8_t http_version;
   std::string supi;
   plmn_t plmn;
+  uint32_t promise_id;
+};
+
+//-----------------------------------------------------------------------------
+class itti_n11_network_slice_selection_information : public itti_msg_n11 {
+ public:
+  itti_n11_network_slice_selection_information(
+      const task_id_t orig, const task_id_t dest)
+      : itti_msg_n11(N11_NETWORK_SLICE_SELECTION_INFORMATION, orig, dest),
+        http_version(1) {}
+  const char* get_msg_name() {
+    return "N11_NETWORK_SLICE_SELECTION_INFORMATION";
+  };
+
+  uint8_t http_version;
+  std::string nf_instance_id;
+  slice_info_for_registration_t slice_info;
   uint32_t promise_id;
 };
 

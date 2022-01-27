@@ -230,6 +230,11 @@ class amf_n1 {
       const std::string& nf_instance_id,
       slice_info_for_registration_t& slice_info,
       authorized_network_slice_info_t& authorized_network_slice_info) const;
+  bool get_network_slice_selection_from_conf_file(
+      const std::string& nf_instance_id,
+      slice_info_for_registration_t& slice_info,
+      authorized_network_slice_info_t& authorized_network_slice_info) const;
+
   void send_n1_message_notity(
       const std::shared_ptr<nas_context>& nc,
       const std::string& target_amf) const;

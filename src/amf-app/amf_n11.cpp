@@ -146,6 +146,15 @@ void amf_n11_task(void*) {
         amf_n11_inst->handle_itti_message(ref(*m));
       } break;
 
+      case N11_NETWORK_SLICE_SELECTION_INFORMATION: {
+        Logger::amf_n11().info(
+            "Receive Network Slice Selection Information Request, "
+            "handling ...");
+        itti_n11_network_slice_selection_information* m =
+            dynamic_cast<itti_n11_network_slice_selection_information*>(msg);
+        amf_n11_inst->handle_itti_message(ref(*m));
+      } break;
+
       case TERMINATE: {
         if (itti_msg_terminate* terminate =
                 dynamic_cast<itti_msg_terminate*>(msg)) {
@@ -569,11 +578,11 @@ void amf_n11::handle_itti_message(itti_sbi_notify_subscribed_event& itti_msg) {
 
     json_data["reportList"] = report_lists;
 
-    std::string body = json_data.dump();
-    std::string response_data;
+    std::string body             = json_data.dump();
+    nlohmann::json response_json = {};
 
     std::string url = i.get_notify_uri();
-    curl_http_client(url, "POST", body, response_data);
+    curl_http_client(url, "POST", body, response_json);
     // TODO: process the response
   }
   return;
@@ -602,58 +611,64 @@ void amf_n11::handle_itti_message(
 
   Logger::amf_n11().debug("MSG body: \n %s", body.c_str());
 
-  curl_global_init(CURL_GLOBAL_ALL);
-  CURL* curl = curl = curl_easy_init();
-  std::unique_ptr<std::string> httpData(new std::string());
-
   nlohmann::json response_data = {};
+  curl_http_client(url, "GET", body, response_data);
 
-  if (curl) {
-    CURLcode res               = {};
-    struct curl_slist* headers = nullptr;
-    headers = curl_slist_append(headers, "content-type: application/json");
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
-    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
+  /*
 
-    if (itti_msg.http_version == 2) {
-      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-      // we use a self-signed test server, skip verification during debugging
-      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-      curl_easy_setopt(
-          curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE);
-    }
-
-    // Response information
-    long httpCode = {0};
+    curl_global_init(CURL_GLOBAL_ALL);
+    CURL* curl = curl = curl_easy_init();
     std::unique_ptr<std::string> httpData(new std::string());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
-    res = curl_easy_perform(curl);
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 
-    Logger::amf_n11().debug("Response from UDM, HTTP Code: %d", httpCode);
+    nlohmann::json response_data = {};
 
-    if (static_cast<http_response_codes_e>(httpCode) !=
-        http_response_codes_e::HTTP_RESPONSE_CODE_200_OK) {
-      try {
-        response_data = nlohmann::json::parse(*httpData.get());
-      } catch (nlohmann::json::exception& e) {
-        Logger::amf_n11().warn("Could not parse JSON from the UDM response");
+    if (curl) {
+      CURLcode res               = {};
+      struct curl_slist* headers = nullptr;
+      headers = curl_slist_append(headers, "content-type: application/json");
+      curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+      curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+      curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+      curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
+      curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
+
+      if (itti_msg.http_version == 2) {
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+        // we use a self-signed test server, skip verification during debugging
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+        curl_easy_setopt(
+            curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE);
       }
-    } else {
-      Logger::amf_n11().warn("Could not get NSSAI from UDM");
-    }
 
-    curl_slist_free_all(headers);
-    curl_easy_cleanup(curl);
-  }
-  curl_global_cleanup();
+      // Response information
+      long httpCode = {0};
+      std::unique_ptr<std::string> httpData(new std::string());
+      curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
+      curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
+      curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
+      curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
+      res = curl_easy_perform(curl);
+      curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+
+      Logger::amf_n11().debug("Response from UDM, HTTP Code: %d", httpCode);
+
+      if (static_cast<http_response_codes_e>(httpCode) !=
+          http_response_codes_e::HTTP_RESPONSE_CODE_200_OK) {
+        try {
+          response_data = nlohmann::json::parse(*httpData.get());
+        } catch (nlohmann::json::exception& e) {
+          Logger::amf_n11().warn("Could not parse JSON from the UDM response");
+        }
+      } else {
+        Logger::amf_n11().warn("Could not get NSSAI from UDM");
+      }
+
+      curl_slist_free_all(headers);
+      curl_easy_cleanup(curl);
+    }
+    curl_global_cleanup();
+  */
 
   // Notify to the result
   if (itti_msg.promise_id > 0) {
@@ -663,6 +678,9 @@ void amf_n11::handle_itti_message(
 
   return;
 }
+
+void amf_n11::handle_itti_message(
+    itti_n11_network_slice_selection_information& itti_msg) {}
 
 //------------------------------------------------------------------------------
 bool amf_n11::smf_selection_from_configuration(
@@ -727,281 +745,6 @@ void amf_n11::handle_post_sm_context_response_error(
   }
 }
 
-//------------------------------------------------------------------------------
-void amf_n11::curl_http_client(
-    std::string remote_uri, std::string jsonData, std::string n1SmMsg,
-    std::string n2SmMsg, std::string supi, uint8_t pdu_session_id,
-    uint8_t http_version, uint32_t promise_id) {
-  Logger::amf_n11().debug("Call SMF service: %s", remote_uri.c_str());
-
-  uint8_t number_parts                     = 0;
-  mime_parser parser                       = {};
-  std::string body                         = {};
-  std::shared_ptr<pdu_session_context> psc = {};
-  bool is_multipart                        = true;
-
-  if (!amf_app_inst->find_pdu_session_context(supi, pdu_session_id, psc)) {
-    Logger::amf_n11().warn(
-        "PDU Session context for SUPI %s doesn't exit!", supi.c_str());
-    // TODO:
-    return;
-  }
-
-  if ((n1SmMsg.size() > 0) and (n2SmMsg.size() > 0)) {
-    // prepare the body content for Curl
-    parser.create_multipart_related_content(
-        body, jsonData, CURL_MIME_BOUNDARY, n1SmMsg, n2SmMsg);
-  } else if (n1SmMsg.size() > 0) {  // only N1 content
-    // prepare the body content for Curl
-    parser.create_multipart_related_content(
-        body, jsonData, CURL_MIME_BOUNDARY, n1SmMsg,
-        multipart_related_content_part_e::NAS);
-  } else if (n2SmMsg.size() > 0) {  // only N2 content
-    // prepare the body content for Curl
-    parser.create_multipart_related_content(
-        body, jsonData, CURL_MIME_BOUNDARY, n2SmMsg,
-        multipart_related_content_part_e::NGAP);
-  } else {
-    body         = jsonData;
-    is_multipart = false;
-  }
-
-  Logger::amf_n11().debug(
-      "Send HTTP message to SMF with body %s", body.c_str());
-
-  uint32_t str_len = body.length();
-  char* body_data  = (char*) malloc(str_len + 1);
-  memset(body_data, 0, str_len + 1);
-  memcpy((void*) body_data, (void*) body.c_str(), str_len);
-
-  curl_global_init(CURL_GLOBAL_ALL);
-  CURL* curl = curl_easy_init();
-
-  if (curl) {
-    CURLcode res               = {};
-    struct curl_slist* headers = nullptr;
-    std::string content_type   = {};
-    if (is_multipart) {
-      content_type = "content-type: multipart/related; boundary=" +
-                     std::string(CURL_MIME_BOUNDARY);
-    } else {
-      content_type = "content-type: application/json";
-    }
-    headers = curl_slist_append(headers, content_type.c_str());
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curl, CURLOPT_URL, remote_uri.c_str());
-    curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
-    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
-
-    if (http_version == 2) {
-      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-      // we use a self-signed test server, skip verification during debugging
-      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-      curl_easy_setopt(
-          curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE);
-    }
-
-    // Response information
-    long httpCode = {0};
-    std::unique_ptr<std::string> httpData(new std::string());
-    std::unique_ptr<std::string> httpHeaderData(new std::string());
-
-    // Hook up data handling function
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
-    curl_easy_setopt(curl, CURLOPT_HEADERDATA, httpHeaderData.get());
-
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body_data);
-
-    res = curl_easy_perform(curl);
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
-
-    // get cause from the response
-    std::string response           = *httpData.get();
-    std::string json_data_response = {};
-    std::string n1sm               = {};
-    std::string n2sm               = {};
-    nlohmann::json response_data   = {};
-    bstring n1sm_hex, n2sm_hex;
-
-    Logger::amf_n11().info("Get response with HTTP code (%d)", httpCode);
-    Logger::amf_n11().info("Response body %s", response.c_str());
-
-    if (static_cast<http_response_codes_e>(httpCode) ==
-        http_response_codes_e::HTTP_RESPONSE_CODE_0) {
-      // TODO: should be removed
-      Logger::amf_n11().error(
-          "Cannot get response when calling %s", remote_uri.c_str());
-      // free curl before returning
-      curl_slist_free_all(headers);
-      curl_easy_cleanup(curl);
-      curl_global_cleanup();
-      free_wrapper((void**) &body_data);
-      return;
-    }
-
-    if (response.size() > 0) {
-      number_parts = parser.parse(response, json_data_response, n1sm, n2sm);
-    }
-
-    if (number_parts == 0) {
-      json_data_response = response;
-    }
-
-    Logger::amf_n11().info("JSON part %s", json_data_response.c_str());
-
-    if ((static_cast<http_response_codes_e>(httpCode) !=
-         http_response_codes_e::HTTP_RESPONSE_CODE_200_OK) &&
-        (static_cast<http_response_codes_e>(httpCode) !=
-         http_response_codes_e::HTTP_RESPONSE_CODE_201_CREATED) &&
-        (static_cast<http_response_codes_e>(httpCode) !=
-         http_response_codes_e::HTTP_RESPONSE_CODE_204_UPDATED)) {
-      // ERROR
-      if (response.size() < 1) {
-        Logger::amf_n11().error("There's no content in the response");
-        curl_slist_free_all(headers);
-        curl_easy_cleanup(curl);
-        curl_global_cleanup();
-        free_wrapper((void**) &body_data);
-        // TODO: send context response error
-        return;
-      }
-      // TODO: HO
-
-      // Transfer N1 to gNB/UE if available
-      if (number_parts > 1) {
-        try {
-          response_data = nlohmann::json::parse(json_data_response);
-        } catch (nlohmann::json::exception& e) {
-          Logger::amf_n11().warn(
-              "Could not get JSON content from the response");
-          // Set the default Cause
-          response_data["error"]["cause"] = "504 Gateway Timeout";
-        }
-
-        Logger::amf_n11().debug(
-            "Get response with jsonData: %s", json_data_response.c_str());
-        conv::msg_str_2_msg_hex(n1sm, n1sm_hex);
-        comUt::print_buffer(
-            "amf_n11", "Get response with n1sm:", (uint8_t*) bdata(n1sm_hex),
-            blength(n1sm_hex));
-
-        std::string cause = response_data["error"]["cause"];
-        Logger::amf_n11().debug(
-            "Network Function services failure (with cause %s)", cause.c_str());
-        //         if (!cause.compare("DNN_DENIED"))
-        handle_post_sm_context_response_error(
-            httpCode, cause, n1sm_hex, supi, pdu_session_id);
-      }
-
-    } else {  // Response with success code
-      // Store location of the created context in case of PDU Session
-      // Establishment
-      std::string header_response = *httpHeaderData.get();
-      std::string CRLF            = "\r\n";
-      std::size_t location_pos    = header_response.find("Location");
-      if (location_pos == std::string::npos)
-        location_pos = header_response.find("location");
-
-      if (location_pos != std::string::npos) {
-        std::size_t crlf_pos = header_response.find(CRLF, location_pos);
-        if (crlf_pos != std::string::npos) {
-          std::string location = header_response.substr(
-              location_pos + 10, crlf_pos - (location_pos + 10));
-          Logger::amf_n11().info(
-              "Location of the created SMF context: %s", location.c_str());
-          psc.get()->smf_context_location = location;
-        }
-      }
-
-      try {
-        response_data = nlohmann::json::parse(json_data_response);
-      } catch (nlohmann::json::exception& e) {
-        Logger::amf_n11().warn("Could not get JSON content from the response");
-        curl_slist_free_all(headers);
-        curl_easy_cleanup(curl);
-        curl_global_cleanup();
-        free_wrapper((void**) &body_data);
-        // TODO:
-        return;
-      }
-
-      // For N2 HO
-      bool is_ho_procedure       = false;
-      std::string promise_result = {};
-      if (response_data.find("hoState") != response_data.end()) {
-        is_ho_procedure = true;
-
-        std::string ho_state = {};
-        response_data.at("hoState").get_to(ho_state);
-        if (ho_state.compare("COMPLETED") == 0) {
-          if (response_data.find("pduSessionId") != response_data.end())
-            response_data.at("pduSessionId").get_to(promise_result);
-        } else if (number_parts > 1) {
-          promise_result = n1sm;  // actually, N2 SM Info
-        }
-      }
-      // Notify to the result
-      if ((promise_id > 0) and (is_ho_procedure)) {
-        amf_app_inst->trigger_process_response(promise_id, promise_result);
-        curl_slist_free_all(headers);
-        curl_easy_cleanup(curl);
-        curl_global_cleanup();
-        free_wrapper((void**) &body_data);
-        return;
-      }
-
-      // Transfer N1/N2 to gNB/UE if available
-      if (number_parts > 1) {
-        itti_n1n2_message_transfer_request* itti_msg =
-            new itti_n1n2_message_transfer_request(TASK_AMF_N11, TASK_AMF_APP);
-
-        itti_msg->is_n1sm_set = false;
-        itti_msg->is_n2sm_set = false;
-        itti_msg->is_ppi_set  = false;
-
-        if (n1sm.size() > 0) {
-          conv::msg_str_2_msg_hex(n1sm, n1sm_hex);
-          comUt::print_buffer(
-              "amf_n11", "Get response n1sm:", (uint8_t*) bdata(n1sm_hex),
-              blength(n1sm_hex));
-          itti_msg->n1sm        = n1sm_hex;
-          itti_msg->is_n1sm_set = true;
-        }
-        if (n2sm.size() > 0) {
-          conv::msg_str_2_msg_hex(n2sm, n2sm_hex);
-          comUt::print_buffer(
-              "amf_n11", "Get response n2sm:", (uint8_t*) bdata(n2sm_hex),
-              blength(n2sm_hex));
-          itti_msg->n2sm           = n2sm_hex;
-          itti_msg->is_n2sm_set    = true;
-          itti_msg->n2sm_info_type = response_data
-              ["n2SmInfoType"];  // response_data["n2InfoContainer"]["smInfo"]["n2InfoContent"]["ngapIeType"];
-        }
-
-        itti_msg->supi           = supi;
-        itti_msg->pdu_session_id = pdu_session_id;
-        std::shared_ptr<itti_n1n2_message_transfer_request> i =
-            std::shared_ptr<itti_n1n2_message_transfer_request>(itti_msg);
-        int ret = itti_inst->send_msg(i);
-        if (0 != ret) {
-          Logger::amf_n11().error(
-              "Could not send ITTI message %s to task TASK_AMF_APP",
-              i->get_msg_name());
-        }
-      }
-    }
-
-    curl_slist_free_all(headers);
-    curl_easy_cleanup(curl);
-  }
-
-  curl_global_cleanup();
-  free_wrapper((void**) &body_data);
-}
 //-----------------------------------------------------------------------------------------------------
 bool amf_n11::discover_smf_from_nsi_info(
     std::string& smf_addr, std::string& smf_api_version, const snssai_t snssai,
@@ -1445,11 +1188,286 @@ bool amf_n11::send_ue_authentication_request(
   return true;
 }
 
+//------------------------------------------------------------------------------
+void amf_n11::curl_http_client(
+    std::string remote_uri, std::string jsonData, std::string n1SmMsg,
+    std::string n2SmMsg, std::string supi, uint8_t pdu_session_id,
+    uint8_t http_version, uint32_t promise_id) {
+  Logger::amf_n11().debug("Call SMF service: %s", remote_uri.c_str());
+
+  uint8_t number_parts                     = 0;
+  mime_parser parser                       = {};
+  std::string body                         = {};
+  std::shared_ptr<pdu_session_context> psc = {};
+  bool is_multipart                        = true;
+
+  if (!amf_app_inst->find_pdu_session_context(supi, pdu_session_id, psc)) {
+    Logger::amf_n11().warn(
+        "PDU Session context for SUPI %s doesn't exit!", supi.c_str());
+    // TODO:
+    return;
+  }
+
+  if ((n1SmMsg.size() > 0) and (n2SmMsg.size() > 0)) {
+    // prepare the body content for Curl
+    parser.create_multipart_related_content(
+        body, jsonData, CURL_MIME_BOUNDARY, n1SmMsg, n2SmMsg);
+  } else if (n1SmMsg.size() > 0) {  // only N1 content
+    // prepare the body content for Curl
+    parser.create_multipart_related_content(
+        body, jsonData, CURL_MIME_BOUNDARY, n1SmMsg,
+        multipart_related_content_part_e::NAS);
+  } else if (n2SmMsg.size() > 0) {  // only N2 content
+    // prepare the body content for Curl
+    parser.create_multipart_related_content(
+        body, jsonData, CURL_MIME_BOUNDARY, n2SmMsg,
+        multipart_related_content_part_e::NGAP);
+  } else {
+    body         = jsonData;
+    is_multipart = false;
+  }
+
+  Logger::amf_n11().debug(
+      "Send HTTP message to SMF with body %s", body.c_str());
+
+  uint32_t str_len = body.length();
+  char* body_data  = (char*) malloc(str_len + 1);
+  memset(body_data, 0, str_len + 1);
+  memcpy((void*) body_data, (void*) body.c_str(), str_len);
+
+  curl_global_init(CURL_GLOBAL_ALL);
+  CURL* curl = curl_easy_init();
+
+  if (curl) {
+    CURLcode res               = {};
+    struct curl_slist* headers = nullptr;
+    std::string content_type   = {};
+    if (is_multipart) {
+      content_type = "content-type: multipart/related; boundary=" +
+                     std::string(CURL_MIME_BOUNDARY);
+    } else {
+      content_type = "content-type: application/json";
+    }
+    headers = curl_slist_append(headers, content_type.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_URL, remote_uri.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
+
+    if (http_version == 2) {
+      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+      // we use a self-signed test server, skip verification during debugging
+      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+      curl_easy_setopt(
+          curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE);
+    }
+
+    // Response information
+    long httpCode = {0};
+    std::unique_ptr<std::string> httpData(new std::string());
+    std::unique_ptr<std::string> httpHeaderData(new std::string());
+
+    // Hook up data handling function
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
+    curl_easy_setopt(curl, CURLOPT_HEADERDATA, httpHeaderData.get());
+
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body_data);
+
+    res = curl_easy_perform(curl);
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+
+    // get cause from the response
+    std::string response           = *httpData.get();
+    std::string json_data_response = {};
+    std::string n1sm               = {};
+    std::string n2sm               = {};
+    nlohmann::json response_data   = {};
+    bstring n1sm_hex, n2sm_hex;
+
+    Logger::amf_n11().info("Get response with HTTP code (%d)", httpCode);
+    Logger::amf_n11().info("Response body %s", response.c_str());
+
+    if (static_cast<http_response_codes_e>(httpCode) ==
+        http_response_codes_e::HTTP_RESPONSE_CODE_0) {
+      // TODO: should be removed
+      Logger::amf_n11().error(
+          "Cannot get response when calling %s", remote_uri.c_str());
+      // free curl before returning
+      curl_slist_free_all(headers);
+      curl_easy_cleanup(curl);
+      curl_global_cleanup();
+      free_wrapper((void**) &body_data);
+      return;
+    }
+
+    if (response.size() > 0) {
+      number_parts = parser.parse(response, json_data_response, n1sm, n2sm);
+    }
+
+    if (number_parts == 0) {
+      json_data_response = response;
+    }
+
+    Logger::amf_n11().info("JSON part %s", json_data_response.c_str());
+
+    if ((static_cast<http_response_codes_e>(httpCode) !=
+         http_response_codes_e::HTTP_RESPONSE_CODE_200_OK) &&
+        (static_cast<http_response_codes_e>(httpCode) !=
+         http_response_codes_e::HTTP_RESPONSE_CODE_201_CREATED) &&
+        (static_cast<http_response_codes_e>(httpCode) !=
+         http_response_codes_e::HTTP_RESPONSE_CODE_204_NO_CONTENT)) {
+      // ERROR
+      if (response.size() < 1) {
+        Logger::amf_n11().error("There's no content in the response");
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
+        free_wrapper((void**) &body_data);
+        // TODO: send context response error
+        return;
+      }
+      // TODO: HO
+
+      // Transfer N1 to gNB/UE if available
+      if (number_parts > 1) {
+        try {
+          response_data = nlohmann::json::parse(json_data_response);
+        } catch (nlohmann::json::exception& e) {
+          Logger::amf_n11().warn(
+              "Could not get JSON content from the response");
+          // Set the default Cause
+          response_data["error"]["cause"] = "504 Gateway Timeout";
+        }
+
+        Logger::amf_n11().debug(
+            "Get response with jsonData: %s", json_data_response.c_str());
+        conv::msg_str_2_msg_hex(n1sm, n1sm_hex);
+        comUt::print_buffer(
+            "amf_n11", "Get response with n1sm:", (uint8_t*) bdata(n1sm_hex),
+            blength(n1sm_hex));
+
+        std::string cause = response_data["error"]["cause"];
+        Logger::amf_n11().debug(
+            "Network Function services failure (with cause %s)", cause.c_str());
+        //         if (!cause.compare("DNN_DENIED"))
+        handle_post_sm_context_response_error(
+            httpCode, cause, n1sm_hex, supi, pdu_session_id);
+      }
+
+    } else {  // Response with success code
+      // Store location of the created context in case of PDU Session
+      // Establishment
+      std::string header_response = *httpHeaderData.get();
+      std::string CRLF            = "\r\n";
+      std::size_t location_pos    = header_response.find("Location");
+      if (location_pos == std::string::npos)
+        location_pos = header_response.find("location");
+
+      if (location_pos != std::string::npos) {
+        std::size_t crlf_pos = header_response.find(CRLF, location_pos);
+        if (crlf_pos != std::string::npos) {
+          std::string location = header_response.substr(
+              location_pos + 10, crlf_pos - (location_pos + 10));
+          Logger::amf_n11().info(
+              "Location of the created SMF context: %s", location.c_str());
+          psc.get()->smf_context_location = location;
+        }
+      }
+
+      try {
+        response_data = nlohmann::json::parse(json_data_response);
+      } catch (nlohmann::json::exception& e) {
+        Logger::amf_n11().warn("Could not get JSON content from the response");
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
+        free_wrapper((void**) &body_data);
+        // TODO:
+        return;
+      }
+
+      // For N2 HO
+      bool is_ho_procedure       = false;
+      std::string promise_result = {};
+      if (response_data.find("hoState") != response_data.end()) {
+        is_ho_procedure = true;
+
+        std::string ho_state = {};
+        response_data.at("hoState").get_to(ho_state);
+        if (ho_state.compare("COMPLETED") == 0) {
+          if (response_data.find("pduSessionId") != response_data.end())
+            response_data.at("pduSessionId").get_to(promise_result);
+        } else if (number_parts > 1) {
+          promise_result = n1sm;  // actually, N2 SM Info
+        }
+      }
+      // Notify to the result
+      if ((promise_id > 0) and (is_ho_procedure)) {
+        amf_app_inst->trigger_process_response(promise_id, promise_result);
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
+        free_wrapper((void**) &body_data);
+        return;
+      }
+
+      // Transfer N1/N2 to gNB/UE if available
+      if (number_parts > 1) {
+        itti_n1n2_message_transfer_request* itti_msg =
+            new itti_n1n2_message_transfer_request(TASK_AMF_N11, TASK_AMF_APP);
+
+        itti_msg->is_n1sm_set = false;
+        itti_msg->is_n2sm_set = false;
+        itti_msg->is_ppi_set  = false;
+
+        if (n1sm.size() > 0) {
+          conv::msg_str_2_msg_hex(n1sm, n1sm_hex);
+          comUt::print_buffer(
+              "amf_n11", "Get response n1sm:", (uint8_t*) bdata(n1sm_hex),
+              blength(n1sm_hex));
+          itti_msg->n1sm        = n1sm_hex;
+          itti_msg->is_n1sm_set = true;
+        }
+        if (n2sm.size() > 0) {
+          conv::msg_str_2_msg_hex(n2sm, n2sm_hex);
+          comUt::print_buffer(
+              "amf_n11", "Get response n2sm:", (uint8_t*) bdata(n2sm_hex),
+              blength(n2sm_hex));
+          itti_msg->n2sm           = n2sm_hex;
+          itti_msg->is_n2sm_set    = true;
+          itti_msg->n2sm_info_type = response_data
+              ["n2SmInfoType"];  // response_data["n2InfoContainer"]["smInfo"]["n2InfoContent"]["ngapIeType"];
+        }
+
+        itti_msg->supi           = supi;
+        itti_msg->pdu_session_id = pdu_session_id;
+        std::shared_ptr<itti_n1n2_message_transfer_request> i =
+            std::shared_ptr<itti_n1n2_message_transfer_request>(itti_msg);
+        int ret = itti_inst->send_msg(i);
+        if (0 != ret) {
+          Logger::amf_n11().error(
+              "Could not send ITTI message %s to task TASK_AMF_APP",
+              i->get_msg_name());
+        }
+      }
+    }
+
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+  }
+
+  curl_global_cleanup();
+  free_wrapper((void**) &body_data);
+}
+
 //-----------------------------------------------------------------------------------------------------
-// From AMF_N1, need to be reworked
 void amf_n11::curl_http_client(
     std::string remote_uri, std::string method, std::string msg_body,
-    std::string& response, uint8_t http_version) {
+    nlohmann::json& response_json, uint8_t http_version) {
   Logger::amf_n11().info("Send HTTP message to %s", remote_uri.c_str());
   Logger::amf_n11().info("HTTP message Body: %s", msg_body.c_str());
 
@@ -1464,20 +1482,19 @@ void amf_n11::curl_http_client(
   if (curl) {
     CURLcode res               = {};
     struct curl_slist* headers = nullptr;
-    if ((method.compare("POST") == 0) or (method.compare("PATCH") == 0) or
-        (method.compare("PUT") == 0)) {
-      std::string content_type = "Content-Type: application/json";
-      headers = curl_slist_append(headers, content_type.c_str());
-      curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    }
+
+    std::string content_type = "Content-Type: application/json";
+    headers                  = curl_slist_append(headers, content_type.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(curl, CURLOPT_URL, remote_uri.c_str());
+
     if (method.compare("POST") == 0)
       curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
     else if (method.compare("PATCH") == 0)
       curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
     else if (method.compare("PUT") == 0) {
       curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
-    } else
+    } else  // GET
       curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
@@ -1512,13 +1529,13 @@ void amf_n11::curl_http_client(
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 
     // get the response
-    response                       = *httpData.get();
-    std::string json_data_response = {};
-    std::string resMsg             = {};
-    bool is_response_ok            = true;
+    std::string response = *httpData.get();
+    std::string resMsg   = {};
+    bool is_response_ok  = true;
     Logger::amf_n11().info("Get response with HTTP code (%d)", httpCode);
 
-    if (httpCode == 0) {
+    if (static_cast<http_response_codes_e>(httpCode) ==
+        http_response_codes_e::HTTP_RESPONSE_CODE_0) {
       Logger::amf_n11().info(
           "Cannot get response when calling %s", remote_uri.c_str());
       // free curl before returning
@@ -1527,13 +1544,16 @@ void amf_n11::curl_http_client(
       return;
     }
 
-    nlohmann::json response_data = {};
-
-    if (httpCode != 200 && httpCode != 201 && httpCode != 204) {
+    if ((static_cast<http_response_codes_e>(httpCode) !=
+         http_response_codes_e::HTTP_RESPONSE_CODE_200_OK) and
+        (static_cast<http_response_codes_e>(httpCode) !=
+         http_response_codes_e::HTTP_RESPONSE_CODE_201_CREATED) and
+        (static_cast<http_response_codes_e>(httpCode) !=
+         http_response_codes_e::HTTP_RESPONSE_CODE_204_NO_CONTENT)) {
       is_response_ok = false;
+      response_json  = {};  // Do not process the ProblemDetails
       if (response.size() < 1) {
         Logger::amf_n11().info("There's no content in the response");
-        // TODO: send context response error
         return;
       }
       Logger::amf_n11().debug("Error with response code %d", httpCode);
@@ -1542,19 +1562,13 @@ void amf_n11::curl_http_client(
 
     if (!is_response_ok) {
       try {
-        response_data = nlohmann::json::parse(json_data_response);
+        response_json = nlohmann::json::parse(response);
       } catch (nlohmann::json::exception& e) {
         Logger::amf_n11().info("Could not get JSON content from the response");
-        // Set the default Cause
-        response_data["error"]["cause"] = "504 Gateway Timeout";
       }
 
       Logger::amf_n11().info(
-          "Get response with jsonData: %s", json_data_response.c_str());
-
-      std::string cause = response_data["error"]["cause"];
-      Logger::amf_n11().info("Call Network Function services failure");
-      Logger::amf_n11().info("Cause value: %s", cause.c_str());
+          "Get response with jsonData: %s", response_json.dump().c_str());
     }
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
@@ -1566,5 +1580,4 @@ void amf_n11::curl_http_client(
     free(body_data);
     body_data = NULL;
   }
-  fflush(stdout);
 }

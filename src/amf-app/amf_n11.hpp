@@ -61,6 +61,8 @@ class amf_n11 {
   void handle_itti_message(itti_sbi_notify_subscribed_event& itti_msg);
   void handle_itti_message(
       itti_n11_slice_selection_subscription_data& itti_msg);
+  void handle_itti_message(
+      itti_n11_network_slice_selection_information& itti_msg);
 
   void send_pdu_session_update_sm_context_request(
       std::string supi, std::shared_ptr<pdu_session_context> psc,
@@ -79,8 +81,8 @@ class amf_n11 {
       uint8_t http_version = 1, uint32_t promise_id = 0);
 
   void curl_http_client(
-      std::string remoteUri, std::string Method, std::string msgBody,
-      std::string& response, uint8_t http_version = 1);
+      std::string remote_uri, std::string method, std::string msg_body,
+      nlohmann::json& response_json, uint8_t http_version = 1);
 
   bool discover_smf_from_nsi_info(
       std::string& smf_addr, std::string& smf_api_version,

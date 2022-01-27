@@ -1583,8 +1583,9 @@ bool amf_n1::_5g_aka_confirmation_from_ausf(
   Logger::amf_n1().debug("_5g_aka_confirmation_from_ausf");
   std::string remoteUri = nc.get()->Href;
 
-  std::string msgBody        = {};
-  std::string response       = {};
+  std::string msgBody = {};
+  // std::string response       = {};
+  nlohmann::json response    = {};
   std::string resStar_string = {};
 
   std::map<std::string, std::string>::iterator iter;
@@ -1619,7 +1620,8 @@ bool amf_n1::_5g_aka_confirmation_from_ausf(
   free_wrapper((void**) &resStar_s);
   try {
     ConfirmationDataResponse confirmationdataresponse;
-    nlohmann::json::parse(response.c_str()).get_to(confirmationdataresponse);
+    // nlohmann::json::parse(response.c_str()).get_to(confirmationdataresponse);
+    response.get_to(confirmationdataresponse);
     unsigned char* kseaf_hex =
         conv::format_string_as_hex(confirmationdataresponse.getKseaf());
     memcpy(nc.get()->_5g_av[0].kseaf, kseaf_hex, 32);
@@ -3707,8 +3709,8 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
       "Registration with AMF re-allocation, Reroute Registration Request to "
       "the target AMF");
   nssai_t nssai = {};
-  if (!get_slice_selection_subscription_data(nc, nssai)) {  // Get NSSAI from
-                                                            // UDM
+  // Get NSSAI from UDM
+  if (!get_slice_selection_subscription_data(nc, nssai)) {
     return false;
   }
   // Check that AMF can process the Requested NSSAIs or not
@@ -3772,7 +3774,7 @@ bool amf_n1::get_slice_selection_subscription_data(
     int ret = itti_inst->send_msg(itti_msg);
     if (0 != ret) {
       Logger::ngap().error(
-          "Could not send ITTI message %s to task TASK_AMF_N2",
+          "Could not send ITTI message %s to task TASK_AMF_N11",
           itti_msg->get_msg_name());
     }
 
@@ -3784,10 +3786,10 @@ bool amf_n1::get_slice_selection_subscription_data(
       assert(f.is_ready());
       assert(f.has_value());
       assert(!f.has_exception());
-      // Wait for the result from APP and send reply to AMF
+      // Wait for the result from UDM
       nlohmann::json nssai = f.get();
       if (!nssai.empty()) {
-        Logger::ngap().debug("Got NSSAI from UDM", nssai.dump().c_str());
+        Logger::ngap().debug("Got NSSAI from UDM: %s", nssai.dump().c_str());
       } else {
         return false;
       }
@@ -3809,14 +3811,77 @@ bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
   // TODO:
   return true;
 }
+
 //------------------------------------------------------------------------------
 bool amf_n1::get_network_slice_selection(
     const std::string& nf_instance_id,
     slice_info_for_registration_t& slice_info,
     authorized_network_slice_info_t& authorized_network_slice_info) const {
-  // TODO: UDM selection (from NRF or configuration file)
-  if (amf_cfg.support_features.enable_external_udm) {
+  if (amf_cfg.support_features.enable_external_nssf) {
+    // Get Authorized Network Slice Info from an  external NSSF
+
+    std::shared_ptr<itti_n11_network_slice_selection_information> itti_msg =
+        std::make_shared<itti_n11_network_slice_selection_information>(
+            TASK_AMF_N1, TASK_AMF_N11);
+
+    // Generate a promise and associate this promise to the ITTI message
+    uint32_t promise_id = amf_app_inst->generate_promise_id();
+    Logger::amf_n1().debug("Promise ID generated %d", promise_id);
+
+    boost::shared_ptr<boost::promise<nlohmann::json>> p =
+        boost::make_shared<boost::promise<nlohmann::json>>();
+    boost::shared_future<nlohmann::json> f = p->get_future();
+    amf_app_inst->add_promise(promise_id, p);
+
+    itti_msg->http_version   = 1;
+    itti_msg->nf_instance_id = nf_instance_id;
+    itti_msg->slice_info     = slice_info;
+    itti_msg->promise_id     = promise_id;
+
+    int ret = itti_inst->send_msg(itti_msg);
+    if (0 != ret) {
+      Logger::ngap().error(
+          "Could not send ITTI message %s to task TASK_AMF_N11",
+          itti_msg->get_msg_name());
+    }
+
+    bool result = false;
+    boost::future_status status;
+    // wait for timeout or ready
+    status = f.wait_for(boost::chrono::milliseconds(FUTURE_STATUS_TIMEOUT_MS));
+    if (status == boost::future_status::ready) {
+      assert(f.is_ready());
+      assert(f.has_value());
+      assert(!f.has_exception());
+      // Wait for the result from NSSF
+      nlohmann::json network_slice_info = f.get();
+      if (!network_slice_info.empty()) {
+        Logger::ngap().debug(
+            "Got Authorized Network Slice Info from NSSF: %s",
+            network_slice_info.dump().c_str());
+      } else {
+        return false;
+      }
+
+    } else {
+      return false;
+    }
+
+  } else {
+    // TODO: Get Authorized Network Slice Info from local configuration file
+    return get_network_slice_selection_from_conf_file(
+        nf_instance_id, slice_info, authorized_network_slice_info);
   }
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::get_network_slice_selection_from_conf_file(
+    const std::string& nf_instance_id,
+    slice_info_for_registration_t& slice_info,
+    authorized_network_slice_info_t& authorized_network_slice_info) const {
+  // TODO: Get Authorized Network Slice Info from local configuration file
+
   return true;
 }
 
