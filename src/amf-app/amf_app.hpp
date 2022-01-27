@@ -37,6 +37,7 @@
 #include "amf_module_from_config.hpp"
 #include "amf_profile.hpp"
 #include "itti.hpp"
+#include "itti_msg_n11.hpp"
 #include "itti_msg_amf_app.hpp"
 #include "ue_context.hpp"
 #include "amf_subscription.hpp"
@@ -268,11 +269,13 @@ class amf_app {
     return util::uint_uid_generator<uint64_t>::get_instance().get_uid();
   }
 
-  void trigger_process_response(uint32_t pid, uint32_t http_code);
-
   void add_promise(
       uint32_t pid, boost::shared_ptr<boost::promise<std::string>>& p);
+  void add_promise(
+      uint32_t pid, boost::shared_ptr<boost::promise<nlohmann::json>>& p);
+  void trigger_process_response(uint32_t pid, uint32_t http_code);
   void trigger_process_response(uint32_t pid, std::string n2_sm);
+  void trigger_process_response(uint32_t pid, nlohmann::json& json_data);
 
  private:
   std::map<long, std::shared_ptr<ue_context>> amf_ue_ngap_id2ue_ctx;
@@ -286,6 +289,10 @@ class amf_app {
   mutable std::shared_mutex m_curl_handle_responses_n2_sm;
   std::map<uint32_t, boost::shared_ptr<boost::promise<std::string>>>
       curl_handle_responses_n2_sm;
+
+  mutable std::shared_mutex m_curl_handle_responses_n11;
+  std::map<uint32_t, boost::shared_ptr<boost::promise<nlohmann::json>>>
+      curl_handle_responses_n11;
 };
 
 }  // namespace amf_application

@@ -221,12 +221,14 @@ class amf_n1 {
 
   bool reroute_registration_request(std::shared_ptr<nas_context>& nc);
   bool get_slice_selection_subscription_data(
-      const std::shared_ptr<nas_context>& nc, nssai_t& nssai) const;
+      const std::shared_ptr<nas_context>& nc, nssai_t& nssai);
+  bool get_slice_selection_subscription_data_from_conf_file(
+      const std::shared_ptr<nas_context>& nc, nssai_t& nssai);
   bool check_requested_nssai(
       const std::shared_ptr<nas_context>& nc, const nssai_t& nssai) const;
   bool get_network_slice_selection(
       const std::string& nf_instance_id,
-      slice_info_fo_registration_t& slice_info,
+      slice_info_for_registration_t& slice_info,
       authorized_network_slice_info_t& authorized_network_slice_info) const;
   void send_n1_message_notity(
       const std::shared_ptr<nas_context>& nc,

@@ -137,6 +137,15 @@ void amf_n11_task(void*) {
             dynamic_cast<itti_sbi_notify_subscribed_event*>(msg);
         amf_n11_inst->handle_itti_message(ref(*m));
       } break;
+      case N11_SLICE_SELECTION_SUBSCRIPTION_DATA: {
+        Logger::amf_n11().info(
+            "Receive Slice Selection Subscription Data Retrieval Request, "
+            "handling ...");
+        itti_n11_slice_selection_subscription_data* m =
+            dynamic_cast<itti_n11_slice_selection_subscription_data*>(msg);
+        amf_n11_inst->handle_itti_message(ref(*m));
+      } break;
+
       case TERMINATE: {
         if (itti_msg_terminate* terminate =
                 dynamic_cast<itti_msg_terminate*>(msg)) {
@@ -567,6 +576,91 @@ void amf_n11::handle_itti_message(itti_sbi_notify_subscribed_event& itti_msg) {
     curl_http_client(url, "POST", body, response_data);
     // TODO: process the response
   }
+  return;
+}
+
+//------------------------------------------------------------------------------
+void amf_n11::handle_itti_message(
+    itti_n11_slice_selection_subscription_data& itti_msg) {
+  Logger::amf_n11().debug(
+      "Send Slice Selection Subscription Data Retrieval to UDM (HTTP version "
+      "%d)",
+      itti_msg.http_version);
+
+  std::string url =
+      std::string(inet_ntoa(*((struct in_addr*) &amf_cfg.udm_addr.ipv4_addr))) +
+      ":" + std::to_string(amf_cfg.udm_addr.port) + "/nudm-sdm/" +
+      amf_cfg.udm_addr.api_version + "/" + itti_msg.supi + "/nssai";
+  nlohmann::json json_data    = {};
+  json_data["plmn-id"]["mcc"] = itti_msg.plmn.mcc;
+  json_data["plmn-id"]["mnc"] = itti_msg.plmn.mnc;
+  std::string body            = json_data.dump();
+
+  Logger::amf_n11().debug(
+      "Send Slice Selection Subscription Data Retrieval to UDM, URL %s",
+      url.c_str());
+
+  Logger::amf_n11().debug("MSG body: \n %s", body.c_str());
+
+  curl_global_init(CURL_GLOBAL_ALL);
+  CURL* curl = curl = curl_easy_init();
+  std::unique_ptr<std::string> httpData(new std::string());
+
+  nlohmann::json response_data = {};
+
+  if (curl) {
+    CURLcode res               = {};
+    struct curl_slist* headers = nullptr;
+    headers = curl_slist_append(headers, "content-type: application/json");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
+
+    if (itti_msg.http_version == 2) {
+      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+      // we use a self-signed test server, skip verification during debugging
+      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+      curl_easy_setopt(
+          curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE);
+    }
+
+    // Response information
+    long httpCode = {0};
+    std::unique_ptr<std::string> httpData(new std::string());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
+    res = curl_easy_perform(curl);
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+
+    Logger::amf_n11().debug("Response from UDM, HTTP Code: %d", httpCode);
+
+    if (static_cast<http_response_codes_e>(httpCode) !=
+        http_response_codes_e::HTTP_RESPONSE_CODE_200_OK) {
+      try {
+        response_data = nlohmann::json::parse(*httpData.get());
+      } catch (nlohmann::json::exception& e) {
+        Logger::amf_n11().warn("Could not parse JSON from the UDM response");
+      }
+    } else {
+      Logger::amf_n11().warn("Could not get NSSAI from UDM");
+    }
+
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+  }
+  curl_global_cleanup();
+
+  // Notify to the result
+  if (itti_msg.promise_id > 0) {
+    amf_app_inst->trigger_process_response(itti_msg.promise_id, response_data);
+    return;
+  }
+
   return;
 }
 

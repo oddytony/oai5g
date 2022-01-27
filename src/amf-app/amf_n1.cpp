@@ -3740,15 +3740,75 @@ bool amf_n1::check_requested_nssai(
 
 //------------------------------------------------------------------------------
 bool amf_n1::get_slice_selection_subscription_data(
-    const std::shared_ptr<nas_context>& nc, nssai_t& nssai) const {
+    const std::shared_ptr<nas_context>& nc, nssai_t& nssai) {
   // TODO: UDM selection (from NRF or configuration file)
   if (amf_cfg.support_features.enable_external_udm) {
+    std::shared_ptr<ue_context> uc = {};
+    if (!find_ue_context(
+            nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id, uc)) {
+      Logger::amf_n1().warn("Cannot find the UE context");
+      return false;
+    }
+
+    std::shared_ptr<itti_n11_slice_selection_subscription_data> itti_msg =
+        std::make_shared<itti_n11_slice_selection_subscription_data>(
+            TASK_AMF_N1, TASK_AMF_N11);
+
+    // Generate a promise and associate this promise to the ITTI message
+    uint32_t promise_id = amf_app_inst->generate_promise_id();
+    Logger::amf_n1().debug("Promise ID generated %d", promise_id);
+
+    boost::shared_ptr<boost::promise<nlohmann::json>> p =
+        boost::make_shared<boost::promise<nlohmann::json>>();
+    boost::shared_future<nlohmann::json> f = p->get_future();
+    amf_app_inst->add_promise(promise_id, p);
+
+    itti_msg->http_version = 1;
+    itti_msg->supi         = uc.get()->supi;
+    itti_msg->plmn.mcc     = uc.get()->cgi.mcc;
+    itti_msg->plmn.mnc     = uc.get()->cgi.mnc;
+    itti_msg->promise_id   = promise_id;
+
+    int ret = itti_inst->send_msg(itti_msg);
+    if (0 != ret) {
+      Logger::ngap().error(
+          "Could not send ITTI message %s to task TASK_AMF_N2",
+          itti_msg->get_msg_name());
+    }
+
+    bool result = false;
+    boost::future_status status;
+    // wait for timeout or ready
+    status = f.wait_for(boost::chrono::milliseconds(FUTURE_STATUS_TIMEOUT_MS));
+    if (status == boost::future_status::ready) {
+      assert(f.is_ready());
+      assert(f.has_value());
+      assert(!f.has_exception());
+      // Wait for the result from APP and send reply to AMF
+      nlohmann::json nssai = f.get();
+      if (!nssai.empty()) {
+        Logger::ngap().debug("Got NSSAI from UDM", nssai.dump().c_str());
+      } else {
+        return false;
+      }
+
+    } else {
+      return false;
+    }
+
   } else {
     // TODO: get from the conf file
+    return get_slice_selection_subscription_data_from_conf_file(nc, nssai);
   }
   return true;
 }
 
+//------------------------------------------------------------------------------
+bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
+    const std::shared_ptr<nas_context>& nc, nssai_t& nssai) {
+  // TODO:
+  return true;
+}
 //------------------------------------------------------------------------------
 bool amf_n1::get_network_slice_selection(
     const std::string& nf_instance_id,

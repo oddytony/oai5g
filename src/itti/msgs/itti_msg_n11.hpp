@@ -205,6 +205,7 @@ class itti_n11_slice_selection_subscription_data : public itti_msg_n11 {
   uint8_t http_version;
   std::string supi;
   plmn_t plmn;
+  uint32_t promise_id;
 };
 
 #endif

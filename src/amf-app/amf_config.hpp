@@ -192,6 +192,12 @@ typedef struct {
   std::string fqdn;
 } smf_inst_t;
 
+typedef struct nf_addr_s {
+  struct in_addr ipv4_addr;
+  unsigned int port;
+  std::string api_version;
+} nf_addr_t;
+
 class amf_config {
  public:
   amf_config();
@@ -228,24 +234,35 @@ class amf_config {
     bool use_fqdn_dns;
     bool use_http2;
   } support_features;
+  /*
+    struct {
+      struct in_addr ipv4_addr;
+      unsigned int port;
+      std::string api_version;
+    } nrf_addr;
 
-  struct {
-    struct in_addr ipv4_addr;
-    unsigned int port;
-    std::string api_version;
-  } nrf_addr;
+    struct {
+      struct in_addr ipv4_addr;
+      unsigned int port;
+      std::string api_version;
+    } ausf_addr;
 
-  struct {
-    struct in_addr ipv4_addr;
-    unsigned int port;
-    std::string api_version;
-  } ausf_addr;
+    struct {
+      struct in_addr ipv4_addr;
+      unsigned int port;
+      std::string api_version;
+    } udm_addr;
 
-  struct {
-    struct in_addr ipv4_addr;
-    unsigned int port;
-    std::string api_version;
-  } nssf_addr;
+    struct {
+      struct in_addr ipv4_addr;
+      unsigned int port;
+      std::string api_version;
+    } nssf_addr;
+    */
+  nf_addr_t nrf_addr;
+  nf_addr_t ausf_addr;
+  nf_addr_t udm_addr;
+  nf_addr_t nssf_addr;
 };
 
 }  // namespace config
