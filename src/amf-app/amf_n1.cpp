@@ -3718,11 +3718,13 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
     return false;
   }
   // Process NS selection to select the appropriate AMF
-  std::string nf_instance_id                                    = {};
-  slice_info_for_registration_t slice_info                      = {};
+  // TODO: use from OpenAPI
   authorized_network_slice_info_t authorized_network_slice_info = {};
+
+  oai::amf::model::SliceInfoForRegistration slice_info = {};
   if (!get_network_slice_selection(
-          nf_instance_id, slice_info, authorized_network_slice_info)) {
+          nc, amf_app_inst->get_nf_instance(), slice_info,
+          authorized_network_slice_info)) {
     return false;
   }
   std::string target_amf = {};
@@ -3814,9 +3816,16 @@ bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
 
 //------------------------------------------------------------------------------
 bool amf_n1::get_network_slice_selection(
-    const std::string& nf_instance_id,
-    slice_info_for_registration_t& slice_info,
-    authorized_network_slice_info_t& authorized_network_slice_info) const {
+    std::shared_ptr<nas_context>& nc, const std::string& nf_instance_id,
+    oai::amf::model::SliceInfoForRegistration& slice_info,
+    authorized_network_slice_info_t& authorized_network_slice_info) {
+  std::shared_ptr<ue_context> uc = {};
+  if (!find_ue_context(
+          nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id, uc)) {
+    Logger::amf_n1().warn("Cannot find the UE context");
+    return false;
+  }
+
   if (amf_cfg.support_features.enable_external_nssf) {
     // Get Authorized Network Slice Info from an  external NSSF
 
@@ -3837,6 +3846,8 @@ bool amf_n1::get_network_slice_selection(
     itti_msg->nf_instance_id = nf_instance_id;
     itti_msg->slice_info     = slice_info;
     itti_msg->promise_id     = promise_id;
+    itti_msg->plmn.mcc       = uc.get()->cgi.mcc;
+    itti_msg->plmn.mnc       = uc.get()->cgi.mnc;
 
     int ret = itti_inst->send_msg(itti_msg);
     if (0 != ret) {
@@ -3878,7 +3889,7 @@ bool amf_n1::get_network_slice_selection(
 //------------------------------------------------------------------------------
 bool amf_n1::get_network_slice_selection_from_conf_file(
     const std::string& nf_instance_id,
-    slice_info_for_registration_t& slice_info,
+    oai::amf::model::SliceInfoForRegistration& slice_info,
     authorized_network_slice_info_t& authorized_network_slice_info) const {
   // TODO: Get Authorized Network Slice Info from local configuration file
 

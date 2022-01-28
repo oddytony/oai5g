@@ -32,9 +32,28 @@ namespace model {
 class NsiInformation {
  public:
   NsiInformation();
-  virtual ~NsiInformation();
+  virtual ~NsiInformation() = default;
 
-  void validate();
+  /// <summary>
+  /// Validate the current data in the model. Throws a ValidationException on
+  /// failure.
+  /// </summary>
+  void validate() const;
+
+  /// <summary>
+  /// Validate the current data in the model. Returns false on error and writes
+  /// an error message into the given stringstream.
+  /// </summary>
+  bool validate(std::stringstream& msg) const;
+
+  /// <summary>
+  /// Helper overload for validate. Used when one model stores another model and
+  /// calls it's validate. Not meant to be called outside that case.
+  /// </summary>
+  bool validate(std::stringstream& msg, const std::string& pathPrefix) const;
+
+  bool operator==(const NsiInformation& rhs) const;
+  bool operator!=(const NsiInformation& rhs) const;
 
   /////////////////////////////////////////////
   /// NsiInformation members
@@ -51,6 +70,20 @@ class NsiInformation {
   void setNsiId(std::string const& value);
   bool nsiIdIsSet() const;
   void unsetNsiId();
+  /// <summary>
+  ///
+  /// </summary>
+  std::string getNrfNfMgtUri() const;
+  void setNrfNfMgtUri(std::string const& value);
+  bool nrfNfMgtUriIsSet() const;
+  void unsetNrfNfMgtUri();
+  /// <summary>
+  ///
+  /// </summary>
+  std::string getNrfAccessTokenUri() const;
+  void setNrfAccessTokenUri(std::string const& value);
+  bool nrfAccessTokenUriIsSet() const;
+  void unsetNrfAccessTokenUri();
 
   friend void to_json(nlohmann::json& j, const NsiInformation& o);
   friend void from_json(const nlohmann::json& j, NsiInformation& o);
@@ -60,6 +93,10 @@ class NsiInformation {
 
   std::string m_NsiId;
   bool m_NsiIdIsSet;
+  std::string m_NrfNfMgtUri;
+  bool m_NrfNfMgtUriIsSet;
+  std::string m_NrfAccessTokenUri;
+  bool m_NrfAccessTokenUriIsSet;
 };
 
 }  // namespace model

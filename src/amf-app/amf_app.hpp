@@ -75,6 +75,22 @@ class amf_app {
 
   util::uint_generator<uint32_t> tmsi_generator;
 
+  std::map<long, std::shared_ptr<ue_context>> amf_ue_ngap_id2ue_ctx;
+  mutable std::shared_mutex m_amf_ue_ngap_id2ue_ctx;
+  std::map<std::string, std::shared_ptr<ue_context>> ue_ctx_key;
+  mutable std::shared_mutex m_ue_ctx_key;
+
+  std::map<std::string, std::shared_ptr<ue_context>> supi2ue_ctx;
+  mutable std::shared_mutex m_supi2ue_ctx;
+
+  mutable std::shared_mutex m_curl_handle_responses_n2_sm;
+  std::map<uint32_t, boost::shared_ptr<boost::promise<std::string>>>
+      curl_handle_responses_n2_sm;
+
+  mutable std::shared_mutex m_curl_handle_responses_n11;
+  std::map<uint32_t, boost::shared_ptr<boost::promise<nlohmann::json>>>
+      curl_handle_responses_n11;
+
  public:
   explicit amf_app(const amf_config& amf_cfg);
   amf_app(amf_app const&) = delete;
@@ -114,9 +130,7 @@ class amf_app {
   bool get_pdu_sessions_context(
       const string& supi,
       std::vector<std::shared_ptr<pdu_session_context>>& sessions_ctx);
-  // SMF Client response handlers
-  void handle_post_sm_context_response_error_400();
-  // others
+
   uint32_t generate_tmsi();
   bool generate_5g_guti(
       uint32_t ranid, long amfid, std::string& mcc, std::string& mnc,
@@ -277,22 +291,7 @@ class amf_app {
   void trigger_process_response(uint32_t pid, std::string n2_sm);
   void trigger_process_response(uint32_t pid, nlohmann::json& json_data);
 
- private:
-  std::map<long, std::shared_ptr<ue_context>> amf_ue_ngap_id2ue_ctx;
-  mutable std::shared_mutex m_amf_ue_ngap_id2ue_ctx;
-  std::map<std::string, std::shared_ptr<ue_context>> ue_ctx_key;
-  mutable std::shared_mutex m_ue_ctx_key;
-
-  std::map<std::string, std::shared_ptr<ue_context>> supi2ue_ctx;
-  mutable std::shared_mutex m_supi2ue_ctx;
-
-  mutable std::shared_mutex m_curl_handle_responses_n2_sm;
-  std::map<uint32_t, boost::shared_ptr<boost::promise<std::string>>>
-      curl_handle_responses_n2_sm;
-
-  mutable std::shared_mutex m_curl_handle_responses_n11;
-  std::map<uint32_t, boost::shared_ptr<boost::promise<nlohmann::json>>>
-      curl_handle_responses_n11;
+  std::string get_nf_instance() const;
 };
 
 }  // namespace amf_application

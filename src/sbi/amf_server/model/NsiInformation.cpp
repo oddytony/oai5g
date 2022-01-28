@@ -12,27 +12,75 @@
  */
 
 #include "NsiInformation.h"
+#include "Helpers.h"
+
+#include <sstream>
 
 namespace oai {
 namespace amf {
 namespace model {
 
 NsiInformation::NsiInformation() {
-  m_NrfId      = "";
-  m_NsiId      = "";
-  m_NsiIdIsSet = false;
+  m_NrfId                  = "";
+  m_NsiId                  = "";
+  m_NsiIdIsSet             = false;
+  m_NrfNfMgtUri            = "";
+  m_NrfNfMgtUriIsSet       = false;
+  m_NrfAccessTokenUri      = "";
+  m_NrfAccessTokenUriIsSet = false;
 }
 
-NsiInformation::~NsiInformation() {}
+void NsiInformation::validate() const {
+  std::stringstream msg;
+  // if (!validate(msg))
+  // {
+  //     throw oai::nssf_server::helpers::ValidationException(msg.str());
+  // }
+}
 
-void NsiInformation::validate() {
-  // TODO: implement validation
+bool NsiInformation::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool NsiInformation::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success = true;
+  const std::string _pathPrefix =
+      pathPrefix.empty() ? "NsiInformation" : pathPrefix;
+
+  return success;
+}
+
+bool NsiInformation::operator==(const NsiInformation& rhs) const {
+  return
+
+      (getNrfId() == rhs.getNrfId()) &&
+
+      ((!nsiIdIsSet() && !rhs.nsiIdIsSet()) ||
+       (nsiIdIsSet() && rhs.nsiIdIsSet() && getNsiId() == rhs.getNsiId())) &&
+
+      ((!nrfNfMgtUriIsSet() && !rhs.nrfNfMgtUriIsSet()) ||
+       (nrfNfMgtUriIsSet() && rhs.nrfNfMgtUriIsSet() &&
+        getNrfNfMgtUri() == rhs.getNrfNfMgtUri())) &&
+
+      ((!nrfAccessTokenUriIsSet() && !rhs.nrfAccessTokenUriIsSet()) ||
+       (nrfAccessTokenUriIsSet() && rhs.nrfAccessTokenUriIsSet() &&
+        getNrfAccessTokenUri() == rhs.getNrfAccessTokenUri()))
+
+          ;
+}
+
+bool NsiInformation::operator!=(const NsiInformation& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const NsiInformation& o) {
   j          = nlohmann::json();
   j["nrfId"] = o.m_NrfId;
   if (o.nsiIdIsSet()) j["nsiId"] = o.m_NsiId;
+  if (o.nrfNfMgtUriIsSet()) j["nrfNfMgtUri"] = o.m_NrfNfMgtUri;
+  if (o.nrfAccessTokenUriIsSet())
+    j["nrfAccessTokenUri"] = o.m_NrfAccessTokenUri;
 }
 
 void from_json(const nlohmann::json& j, NsiInformation& o) {
@@ -40,6 +88,14 @@ void from_json(const nlohmann::json& j, NsiInformation& o) {
   if (j.find("nsiId") != j.end()) {
     j.at("nsiId").get_to(o.m_NsiId);
     o.m_NsiIdIsSet = true;
+  }
+  if (j.find("nrfNfMgtUri") != j.end()) {
+    j.at("nrfNfMgtUri").get_to(o.m_NrfNfMgtUri);
+    o.m_NrfNfMgtUriIsSet = true;
+  }
+  if (j.find("nrfAccessTokenUri") != j.end()) {
+    j.at("nrfAccessTokenUri").get_to(o.m_NrfAccessTokenUri);
+    o.m_NrfAccessTokenUriIsSet = true;
   }
 }
 
@@ -61,6 +117,32 @@ bool NsiInformation::nsiIdIsSet() const {
 }
 void NsiInformation::unsetNsiId() {
   m_NsiIdIsSet = false;
+}
+std::string NsiInformation::getNrfNfMgtUri() const {
+  return m_NrfNfMgtUri;
+}
+void NsiInformation::setNrfNfMgtUri(std::string const& value) {
+  m_NrfNfMgtUri      = value;
+  m_NrfNfMgtUriIsSet = true;
+}
+bool NsiInformation::nrfNfMgtUriIsSet() const {
+  return m_NrfNfMgtUriIsSet;
+}
+void NsiInformation::unsetNrfNfMgtUri() {
+  m_NrfNfMgtUriIsSet = false;
+}
+std::string NsiInformation::getNrfAccessTokenUri() const {
+  return m_NrfAccessTokenUri;
+}
+void NsiInformation::setNrfAccessTokenUri(std::string const& value) {
+  m_NrfAccessTokenUri      = value;
+  m_NrfAccessTokenUriIsSet = true;
+}
+bool NsiInformation::nrfAccessTokenUriIsSet() const {
+  return m_NrfAccessTokenUriIsSet;
+}
+void NsiInformation::unsetNrfAccessTokenUri() {
+  m_NrfAccessTokenUriIsSet = false;
 }
 
 }  // namespace model

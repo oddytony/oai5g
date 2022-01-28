@@ -87,6 +87,9 @@ amf_app::amf_app(const amf_config& amf_cfg)
     throw;
   }
 
+  // Generate an AMF profile (including NF instance)
+  generate_amf_profile();
+
   // Register to NRF if needed
   if (amf_cfg.support_features.enable_nf_registration) register_to_nrf();
 
@@ -604,11 +607,6 @@ void amf_app::handle_itti_message(itti_sbi_n1_message_notification& itti_msg) {
 
   return;
 }
-// AMF Client response handlers
-//------------------------------------------------------------------------------
-void amf_app::handle_post_sm_context_response_error_400() {
-  Logger::amf_app().error("Post SM context response error 400");
-}
 
 //------------------------------------------------------------------------------
 uint32_t amf_app::generate_tmsi() {
@@ -821,9 +819,12 @@ void amf_app::generate_amf_profile() {
 }
 
 //---------------------------------------------------------------------------------------------
+std::string amf_app::get_nf_instance() const {
+  return amf_instance_id;
+}
+
+//---------------------------------------------------------------------------------------------
 void amf_app::register_to_nrf() {
-  // create a NF profile to this instance
-  generate_amf_profile();
   // send request to N11 to send NF registration to NRF
   trigger_nf_registration_request();
 }

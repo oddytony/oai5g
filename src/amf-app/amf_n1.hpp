@@ -50,6 +50,7 @@
 #include "RegistrationAccept.hpp"
 #include "ue_context.hpp"
 #include "itti.hpp"
+#include "SliceInfoForRegistration.h"
 
 namespace amf_application {
 
@@ -227,12 +228,12 @@ class amf_n1 {
   bool check_requested_nssai(
       const std::shared_ptr<nas_context>& nc, const nssai_t& nssai) const;
   bool get_network_slice_selection(
-      const std::string& nf_instance_id,
-      slice_info_for_registration_t& slice_info,
-      authorized_network_slice_info_t& authorized_network_slice_info) const;
+      std::shared_ptr<nas_context>& nc, const std::string& nf_instance_id,
+      oai::amf::model::SliceInfoForRegistration& slice_info,
+      authorized_network_slice_info_t& authorized_network_slice_info);
   bool get_network_slice_selection_from_conf_file(
       const std::string& nf_instance_id,
-      slice_info_for_registration_t& slice_info,
+      oai::amf::model::SliceInfoForRegistration& slice_info,
       authorized_network_slice_info_t& authorized_network_slice_info) const;
 
   void send_n1_message_notity(

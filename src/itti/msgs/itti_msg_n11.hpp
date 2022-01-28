@@ -29,6 +29,7 @@
 #include "bstrlib.h"
 #include "itti_msg.hpp"
 #include "3gpp_29.531.h"
+#include "SliceInfoForRegistration.h"
 
 class itti_msg_n11 : public itti_msg {
  public:
@@ -222,7 +223,8 @@ class itti_n11_network_slice_selection_information : public itti_msg_n11 {
 
   uint8_t http_version;
   std::string nf_instance_id;
-  slice_info_for_registration_t slice_info;
+  oai::amf::model::SliceInfoForRegistration slice_info;
+  plmn_t plmn;
   uint32_t promise_id;
 };
 

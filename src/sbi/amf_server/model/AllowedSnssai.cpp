@@ -12,6 +12,9 @@
  */
 
 #include "AllowedSnssai.h"
+#include "Helpers.h"
+
+#include <sstream>
 
 namespace oai {
 namespace amf {
@@ -22,16 +25,75 @@ AllowedSnssai::AllowedSnssai() {
   m_MappedHomeSnssaiIsSet   = false;
 }
 
-AllowedSnssai::~AllowedSnssai() {}
+void AllowedSnssai::validate() const {
+  std::stringstream msg;
+  // if (!validate(msg))
+  // {
+  //     throw oai::nssf_server::helpers::ValidationException(msg.str());
+  // }
+}
 
-void AllowedSnssai::validate() {
-  // TODO: implement validation
+bool AllowedSnssai::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool AllowedSnssai::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success = true;
+  const std::string _pathPrefix =
+      pathPrefix.empty() ? "AllowedSnssai" : pathPrefix;
+
+  if (nsiInformationListIsSet()) {
+    const std::vector<NsiInformation>& value = m_NsiInformationList;
+    const std::string currentValuePath = _pathPrefix + ".nsiInformationList";
+
+    if (value.size() < 1) {
+      success = false;
+      msg << currentValuePath << ": must have at least 1 elements;";
+    }
+    {  // Recursive validation of array elements
+      const std::string oldValuePath = currentValuePath;
+      int i                          = 0;
+      for (const NsiInformation& value : value) {
+        const std::string currentValuePath =
+            oldValuePath + "[" + std::to_string(i) + "]";
+
+        success =
+            value.validate(msg, currentValuePath + ".nsiInformationList") &&
+            success;
+
+        i++;
+      }
+    }
+  }
+
+  return success;
+}
+
+bool AllowedSnssai::operator==(const AllowedSnssai& rhs) const {
+  return
+
+      (getAllowedSnssai() == rhs.getAllowedSnssai()) &&
+
+      ((!nsiInformationListIsSet() && !rhs.nsiInformationListIsSet()) ||
+       (nsiInformationListIsSet() && rhs.nsiInformationListIsSet() &&
+        getNsiInformationList() == rhs.getNsiInformationList())) &&
+
+      ((!mappedHomeSnssaiIsSet() && !rhs.mappedHomeSnssaiIsSet()) ||
+       (mappedHomeSnssaiIsSet() && rhs.mappedHomeSnssaiIsSet() &&
+        getMappedHomeSnssai() == rhs.getMappedHomeSnssai()))
+
+          ;
+}
+
+bool AllowedSnssai::operator!=(const AllowedSnssai& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const AllowedSnssai& o) {
   j                  = nlohmann::json();
   j["allowedSnssai"] = o.m_AllowedSnssai;
-  if (o.nsiInformationListIsSet())
+  if (o.nsiInformationListIsSet() || !o.m_NsiInformationList.empty())
     j["nsiInformationList"] = o.m_NsiInformationList;
   if (o.mappedHomeSnssaiIsSet()) j["mappedHomeSnssai"] = o.m_MappedHomeSnssai;
 }
@@ -54,8 +116,13 @@ Snssai AllowedSnssai::getAllowedSnssai() const {
 void AllowedSnssai::setAllowedSnssai(Snssai const& value) {
   m_AllowedSnssai = value;
 }
-std::vector<NsiInformation>& AllowedSnssai::getNsiInformationList() {
+std::vector<NsiInformation> AllowedSnssai::getNsiInformationList() const {
   return m_NsiInformationList;
+}
+void AllowedSnssai::setNsiInformationList(
+    std::vector<NsiInformation> const& value) {
+  m_NsiInformationList      = value;
+  m_NsiInformationListIsSet = true;
 }
 bool AllowedSnssai::nsiInformationListIsSet() const {
   return m_NsiInformationListIsSet;
