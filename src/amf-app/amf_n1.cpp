@@ -3718,18 +3718,21 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
     return false;
   }
   // Process NS selection to select the appropriate AMF
-  // TODO: use from OpenAPI
-  authorized_network_slice_info_t authorized_network_slice_info = {};
-
   oai::amf::model::SliceInfoForRegistration slice_info = {};
+  oai::amf::model::AuthorizedNetworkSliceInfo authorized_network_slice_info =
+      {};
+
   if (!get_network_slice_selection(
           nc, amf_app_inst->get_nf_instance(), slice_info,
           authorized_network_slice_info)) {
     return false;
   }
+  // if get_target_amf();
   std::string target_amf = {};
-  // Send N1MessageNotify to the Target AMF
-  send_n1_message_notity(nc, target_amf);
+  if (get_target_amf(nc, target_amf, authorized_network_slice_info)) {
+    // Send N1MessageNotify to the Target AMF
+    send_n1_message_notity(nc, target_amf);
+  }
 
   return true;
 }
@@ -3816,9 +3819,10 @@ bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
 
 //------------------------------------------------------------------------------
 bool amf_n1::get_network_slice_selection(
-    std::shared_ptr<nas_context>& nc, const std::string& nf_instance_id,
-    oai::amf::model::SliceInfoForRegistration& slice_info,
-    authorized_network_slice_info_t& authorized_network_slice_info) {
+    const std::shared_ptr<nas_context>& nc, const std::string& nf_instance_id,
+    const oai::amf::model::SliceInfoForRegistration& slice_info,
+    oai::amf::model::AuthorizedNetworkSliceInfo&
+        authorized_network_slice_info) {
   std::shared_ptr<ue_context> uc = {};
   if (!find_ue_context(
           nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id, uc)) {
@@ -3828,7 +3832,6 @@ bool amf_n1::get_network_slice_selection(
 
   if (amf_cfg.support_features.enable_external_nssf) {
     // Get Authorized Network Slice Info from an  external NSSF
-
     std::shared_ptr<itti_n11_network_slice_selection_information> itti_msg =
         std::make_shared<itti_n11_network_slice_selection_information>(
             TASK_AMF_N1, TASK_AMF_N11);
@@ -3856,8 +3859,8 @@ bool amf_n1::get_network_slice_selection(
           itti_msg->get_msg_name());
     }
 
-    bool result = false;
-    boost::future_status status;
+    bool result                 = false;
+    boost::future_status status = {};
     // wait for timeout or ready
     status = f.wait_for(boost::chrono::milliseconds(FUTURE_STATUS_TIMEOUT_MS));
     if (status == boost::future_status::ready) {
@@ -3870,11 +3873,16 @@ bool amf_n1::get_network_slice_selection(
         Logger::ngap().debug(
             "Got Authorized Network Slice Info from NSSF: %s",
             network_slice_info.dump().c_str());
+        from_json(network_slice_info, authorized_network_slice_info);
       } else {
+        Logger::ngap().debug(
+            "Could not get Authorized Network Slice Info from NSSF");
         return false;
       }
 
     } else {
+      Logger::ngap().debug(
+          "Could not get Authorized Network Slice Info from NSSF");
       return false;
     }
 
@@ -3889,10 +3897,20 @@ bool amf_n1::get_network_slice_selection(
 //------------------------------------------------------------------------------
 bool amf_n1::get_network_slice_selection_from_conf_file(
     const std::string& nf_instance_id,
-    oai::amf::model::SliceInfoForRegistration& slice_info,
-    authorized_network_slice_info_t& authorized_network_slice_info) const {
+    const oai::amf::model::SliceInfoForRegistration& slice_info,
+    oai::amf::model::AuthorizedNetworkSliceInfo& authorized_network_slice_info)
+    const {
   // TODO: Get Authorized Network Slice Info from local configuration file
 
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::get_target_amf(
+    const std::shared_ptr<nas_context>& nc, std::string& target_amf,
+    const oai::amf::model::AuthorizedNetworkSliceInfo&
+        authorized_network_slice_info) {
+  // Get Target AMF from AuthorizedNetworkSliceInfo
   return true;
 }
 
