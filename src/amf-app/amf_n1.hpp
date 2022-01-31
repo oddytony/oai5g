@@ -38,7 +38,6 @@
 
 #include "3gpp_ts24501.hpp"
 #include "3gpp_29.503.h"
-#include "3gpp_29.531.h"
 #include "amf.hpp"
 #include "amf_statistics.hpp"
 #include "bstrlib.h"
@@ -52,6 +51,7 @@
 #include "itti.hpp"
 #include "SliceInfoForRegistration.h"
 #include "AuthorizedNetworkSliceInfo.h"
+#include "Nssai.h"
 
 namespace amf_application {
 
@@ -223,11 +223,11 @@ class amf_n1 {
 
   bool reroute_registration_request(std::shared_ptr<nas_context>& nc);
   bool get_slice_selection_subscription_data(
-      const std::shared_ptr<nas_context>& nc, nssai_t& nssai);
+      const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai);
   bool get_slice_selection_subscription_data_from_conf_file(
-      const std::shared_ptr<nas_context>& nc, nssai_t& nssai);
+      const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai);
   bool check_requested_nssai(
-      const std::shared_ptr<nas_context>& nc, const nssai_t& nssai) const;
+      const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai);
   bool get_network_slice_selection(
       const std::shared_ptr<nas_context>& nc, const std::string& nf_instance_id,
       const oai::amf::model::SliceInfoForRegistration& slice_info,

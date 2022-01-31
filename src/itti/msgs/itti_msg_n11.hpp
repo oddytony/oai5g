@@ -28,7 +28,6 @@
 #include "amf_profile.hpp"
 #include "bstrlib.h"
 #include "itti_msg.hpp"
-#include "3gpp_29.531.h"
 #include "SliceInfoForRegistration.h"
 
 class itti_msg_n11 : public itti_msg {

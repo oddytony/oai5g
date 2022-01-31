@@ -1411,8 +1411,8 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
 
   GlobalgNBId* TargetGlobalgNBId = new GlobalgNBId();
   itti_msg.handoverReq->getGlobalRanNodeId(TargetGlobalgNBId);
-  PlmnId* plmn  = new PlmnId();
-  GNB_ID* gnbid = new GNB_ID();
+  ngap::PlmnId* plmn = new ngap::PlmnId();
+  GNB_ID* gnbid      = new GNB_ID();
   TargetGlobalgNBId->getGlobalgNBId(plmn, gnbid);
   std::string mcc = {};
   std::string mnc = {};
@@ -1426,8 +1426,8 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
 
   TAI* tai = new TAI();
   itti_msg.handoverReq->getTAI(tai);
-  PlmnId* plmnOfTAI = new PlmnId();
-  TAC* tac          = new TAC();
+  ngap::PlmnId* plmnOfTAI = new ngap::PlmnId();
+  TAC* tac                = new TAC();
   tai->getTAI(plmnOfTAI, tac);
   string mccOfselectTAI = {};
   string mncOfselectTAI = {};
@@ -1478,7 +1478,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   guami.regionID             = amf_cfg.guami.regionID;
   guami.AmfSetID             = amf_cfg.guami.AmfSetID;
   guami.AmfPointer           = amf_cfg.guami.AmfPointer;
-  PlmnId* m_plmnId           = new PlmnId();
+  ngap::PlmnId* m_plmnId     = new ngap::PlmnId();
   AMFRegionID* m_aMFRegionID = new AMFRegionID();
   AMFSetID* m_aMFSetID       = new AMFSetID();
   AMFPointer* m_aMFPointer   = new AMFPointer();
