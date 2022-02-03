@@ -52,11 +52,11 @@ class UENetworkCapability {
   uint8_t length;
   uint8_t _5g_EEASel;
   uint8_t _5g_EIASel;
-  uint8_t uEASel;
-  uint8_t uIASel;
-  uint8_t octet_7;
-  uint8_t octet_8;
-  uint8_t octet_9;
+  // TODO: uint8_t uEASel;
+  // TODO: uint8_t uIASel;
+  // TODO: uint8_t octet_7;
+  // TODO: uint8_t octet_8;
+  // TODO: uint8_t octet_9;
 };
 
 }  // namespace nas
