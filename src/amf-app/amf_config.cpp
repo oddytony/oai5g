@@ -772,4 +772,11 @@ int amf_config::load_interface(
   return RETURNok;
 }
 
+//------------------------------------------------------------------------------
+std::string amf_config::get_nrf_nf_discovery_service_uri() {
+  return std::string(inet_ntoa(*((struct in_addr*) &nrf_addr.ipv4_addr))) +
+         ":" + std::to_string(nrf_addr.port) + "/nnrf-disc/" +
+         nrf_addr.api_version + "/nf-instances";
+}
+
 }  // namespace config

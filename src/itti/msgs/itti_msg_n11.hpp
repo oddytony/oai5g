@@ -227,4 +227,33 @@ class itti_n11_network_slice_selection_information : public itti_msg_n11 {
   uint32_t promise_id;
 };
 
+//-----------------------------------------------------------------------------
+class itti_n11_nf_instance_discovery : public itti_msg_n11 {
+ public:
+  itti_n11_nf_instance_discovery(const task_id_t orig, const task_id_t dest)
+      : itti_msg_n11(N11_NF_INSTANCE_DISCOVERY, orig, dest),
+        target_amf_set_is_set(false),
+        http_version(1) {}
+  const char* get_msg_name() { return "N11_NF_INSTANCE_DISCOVERY"; };
+
+  uint8_t http_version;
+  std::string target_amf_set;
+  bool target_amf_set_is_set;
+  std::string target_nf_type;
+  uint32_t promise_id;
+};
+
+//-----------------------------------------------------------------------------
+class itti_n11_n1_message_notify : public itti_msg_n11 {
+ public:
+  itti_n11_n1_message_notify(const task_id_t orig, const task_id_t dest)
+      : itti_msg_n11(N11_N1_MESSAGE_NOTIFY, orig, dest), http_version(1) {}
+  const char* get_msg_name() { return "N11_N1_MESSAGE_NOTIFY"; };
+
+  uint8_t http_version;
+  std::string target_amf_uri;
+  std::string supi;
+  bstring registration_request;
+};
+
 #endif

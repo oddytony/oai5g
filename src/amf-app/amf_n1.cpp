@@ -939,6 +939,8 @@ void amf_n1::registration_request_handle(
       std::make_unique<RegistrationRequest>();
 
   regReq->decodefrombuffer(nullptr, (uint8_t*) bdata(reg), blength(reg));
+  nc->registration_request = blk2bstr((uint8_t*) bdata(reg), blength(reg));
+  nc->registration_request_is_set = true;
   bdestroy(reg);  // free buffer
 
   // Find UE context
@@ -3993,14 +3995,142 @@ bool amf_n1::get_target_amf(
         authorized_network_slice_info) {
   // Get Target AMF from AuthorizedNetworkSliceInfo
   std::string target_amf_set = {};
+  std::string nrf_amf_set = {};  // The URI of NRF NFDiscovery Service to query
+                                 // the list of AMF candidates
+
   if (authorized_network_slice_info.targetAmfSetIsSet()) {
     target_amf_set = authorized_network_slice_info.getTargetAmfSet();
+    if (authorized_network_slice_info.nrfAmfSetIsSet()) {
+      nrf_amf_set = authorized_network_slice_info.getNrfAmfSet();
+    }
+  } else {
+    return false;
+  }
+
+  std::vector<std::string> candidate_amf_list;
+  if (authorized_network_slice_info.candidateAmfListIsSet()) {
+    candidate_amf_list = authorized_network_slice_info.getCandidateAmfList();
+    // TODO:
+  }
+
+  if (amf_cfg.support_features
+          .enable_smf_selection) {  // TODO: define new option for external NRF
+    // use NRF's URI from conf file if not available
+    if (nrf_amf_set.empty()) {
+      nrf_amf_set = amf_cfg.get_nrf_nf_discovery_service_uri();
+    }
+
+    // Get list of AMF candidates from NRF
+    std::shared_ptr<itti_n11_nf_instance_discovery> itti_msg =
+        std::make_shared<itti_n11_nf_instance_discovery>(
+            TASK_AMF_N1, TASK_AMF_N11);
+
+    // Generate a promise and associate this promise to the ITTI message
+    uint32_t promise_id = amf_app_inst->generate_promise_id();
+    Logger::amf_n1().debug("Promise ID generated %d", promise_id);
+
+    boost::shared_ptr<boost::promise<nlohmann::json>> p =
+        boost::make_shared<boost::promise<nlohmann::json>>();
+    boost::shared_future<nlohmann::json> f = p->get_future();
+    amf_app_inst->add_promise(promise_id, p);
+
+    itti_msg->http_version          = 1;
+    itti_msg->target_amf_set        = target_amf_set;
+    itti_msg->target_amf_set_is_set = true;
+    itti_msg->promise_id            = promise_id;
+    itti_msg->target_nf_type        = "AMF";
+
+    int ret = itti_inst->send_msg(itti_msg);
+    if (0 != ret) {
+      Logger::ngap().error(
+          "Could not send ITTI message %s to task TASK_AMF_N11",
+          itti_msg->get_msg_name());
+    }
+
+    bool result                 = false;
+    boost::future_status status = {};
+    // wait for timeout or ready
+    status = f.wait_for(boost::chrono::milliseconds(FUTURE_STATUS_TIMEOUT_MS));
+    if (status == boost::future_status::ready) {
+      assert(f.is_ready());
+      assert(f.has_value());
+      assert(!f.has_exception());
+      // Wait for the result from NRF
+      nlohmann::json amf_candidate_list = f.get();
+      if (!amf_candidate_list.empty()) {
+        Logger::ngap().debug(
+            "Got List of AMF candidates from NRF: %s",
+            amf_candidate_list.dump().c_str());
+        // TODO: Select an AMF from the candidate list
+        if (!select_target_amf(nc, target_amf, amf_candidate_list)) {
+          Logger::ngap().debug(
+              "Could not select an appropriate AMF from the AMF candidates");
+          return false;
+        } else {
+          Logger::ngap().debug("Candidate AMF: %s", target_amf.c_str());
+          return true;
+        }
+
+      } else {
+        Logger::ngap().debug("Could not get List of AMF candidates from NRF");
+        return false;
+      }
+
+    } else {
+      Logger::ngap().debug("Could not get List of AMF candidates from NRF");
+      return false;
+    }
   }
 
   return true;
 }
 
 //------------------------------------------------------------------------------
+bool amf_n1::select_target_amf(
+    const std::shared_ptr<nas_context>& nc, std::string& target_amf,
+    const nlohmann::json& amf_candidate_list) {
+  bool result = false;
+  // Process data to obtain the target AMF
+  if (amf_candidate_list.find("nfInstances") != amf_candidate_list.end()) {
+    for (auto& it : amf_candidate_list["nfInstances"].items()) {
+      nlohmann::json instance_json = it.value();
+      // TODO: do we need to check with sNSSAI?
+      if (instance_json.find("sNssais") != instance_json.end()) {
+        // Each S-NSSAI in the Default Single NSSAIs must be in the AMF's Slice
+        // List
+        for (auto& s : instance_json["sNssais"].items()) {
+          nlohmann::json Snssai = s.value();  // TODO: validate NSSAIs
+        }
+      }
+      // for now, just IP addr of AMF of the first NF instance
+      if (instance_json.find("ipv4Addresses") != instance_json.end()) {
+        if (instance_json["ipv4Addresses"].size() > 0)
+          target_amf = instance_json["ipv4Addresses"].at(0).get<std::string>();
+        result = true;
+        break;
+      }
+    }
+  }
+  return result;
+}
+//------------------------------------------------------------------------------
 void amf_n1::send_n1_message_notity(
     const std::shared_ptr<nas_context>& nc,
-    const std::string& target_amf) const {}
+    const std::string& target_amf) const {
+  std::shared_ptr<itti_n11_n1_message_notify> itti_msg =
+      std::make_shared<itti_n11_n1_message_notify>(TASK_AMF_N1, TASK_AMF_N11);
+
+  itti_msg->http_version = 1;
+  if (nc->registration_request_is_set) {
+    itti_msg->registration_request = nc->registration_request;
+  }
+  itti_msg->target_amf_uri = target_amf;
+  itti_msg->supi           = nc->imsi;
+
+  int ret = itti_inst->send_msg(itti_msg);
+  if (0 != ret) {
+    Logger::ngap().error(
+        "Could not send ITTI message %s to task TASK_AMF_N11",
+        itti_msg->get_msg_name());
+  }
+}

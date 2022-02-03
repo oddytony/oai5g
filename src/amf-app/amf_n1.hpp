@@ -238,11 +238,13 @@ class amf_n1 {
       const oai::amf::model::SliceInfoForRegistration& slice_info,
       oai::amf::model::AuthorizedNetworkSliceInfo&
           authorized_network_slice_info) const;
-
   bool get_target_amf(
       const std::shared_ptr<nas_context>& nc, std::string& target_amf,
       const oai::amf::model::AuthorizedNetworkSliceInfo&
           authorized_network_slice_info);
+  bool select_target_amf(
+      const std::shared_ptr<nas_context>& nc, std::string& target_amf,
+      const nlohmann::json& amf_candidate_list);
 
   void send_n1_message_notity(
       const std::shared_ptr<nas_context>& nc,

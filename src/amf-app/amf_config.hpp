@@ -205,6 +205,7 @@ class amf_config {
   ~amf_config();
   int load(const std::string& config_file);
   int load_interface(const Setting& if_cfg, interface_cfg_t& cfg);
+  std::string get_nrf_nf_discovery_service_uri();
 
   void display();
   unsigned int instance;
@@ -236,31 +237,7 @@ class amf_config {
     bool use_fqdn_dns;
     bool use_http2;
   } support_features;
-  /*
-    struct {
-      struct in_addr ipv4_addr;
-      unsigned int port;
-      std::string api_version;
-    } nrf_addr;
 
-    struct {
-      struct in_addr ipv4_addr;
-      unsigned int port;
-      std::string api_version;
-    } ausf_addr;
-
-    struct {
-      struct in_addr ipv4_addr;
-      unsigned int port;
-      std::string api_version;
-    } udm_addr;
-
-    struct {
-      struct in_addr ipv4_addr;
-      unsigned int port;
-      std::string api_version;
-    } nssf_addr;
-    */
   nf_addr_t nrf_addr;
   nf_addr_t ausf_addr;
   nf_addr_t udm_addr;

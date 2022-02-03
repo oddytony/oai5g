@@ -148,6 +148,15 @@ void amf_n11_task(void*) {
         amf_n11_inst->handle_itti_message(ref(*m));
       } break;
 
+      case N11_N1_MESSAGE_NOTIFY: {
+        Logger::amf_n11().info(
+            "Receive N1 Message Notify message, "
+            "handling ...");
+        itti_n11_n1_message_notify* m =
+            dynamic_cast<itti_n11_n1_message_notify*>(msg);
+        amf_n11_inst->handle_itti_message(ref(*m));
+      } break;
+
       case TERMINATE: {
         if (itti_msg_terminate* terminate =
                 dynamic_cast<itti_msg_terminate*>(msg)) {
@@ -662,6 +671,38 @@ void amf_n11::handle_itti_message(
 }
 
 //------------------------------------------------------------------------------
+void amf_n11::handle_itti_message(itti_n11_n1_message_notify& itti_msg) {
+  Logger::amf_n11().debug(
+      "Send N1 Message Notify to the target AMF (HTTP version "
+      "%d)",
+      itti_msg.http_version);
+
+  std::string url = itti_msg.target_amf_uri + "/ue-contexts/" + itti_msg.supi +
+                    "/n1-message-notify";
+
+  Logger::amf_n11().debug("Target AMF URI: %s", url.c_str());
+
+  nlohmann::json json_data          = {};
+  json_data["n1SmMsg"]["contentId"] = "n1SmMsg";
+  std::string json_part             = json_data.dump();
+
+  std::string n1sm_msg = {};
+  octet_stream_2_hex_stream(
+      (uint8_t*) bdata(itti_msg.registration_request),
+      blength(itti_msg.registration_request), n1sm_msg);
+
+  uint8_t http_version   = 1;
+  uint32_t response_code = 0;
+  std::string n2sm_msg   = {};
+
+  curl_http_client(
+      url, json_part, n1sm_msg, n2sm_msg, http_version, response_code);
+
+  // TODO: handle response
+  return;
+}
+
+//------------------------------------------------------------------------------
 bool amf_n11::smf_selection_from_configuration(
     std::string& smf_addr, std::string& smf_api_version) {
   for (int i = 0; i < amf_cfg.smf_pool.size(); i++) {
@@ -836,7 +877,8 @@ bool amf_n11::discover_smf_from_nsi_info(
   curl_global_cleanup();
   if (!result) return result;
 
-  Logger::amf_n11().debug("NSI Inforation is successfully retrieved from NSSF");
+  Logger::amf_n11().debug(
+      "NSI Information is successfully retrieved from NSSF");
   if (!discover_smf(
           smf_addr, smf_api_version, snssai, plmn, dnn, nrf_addr, nrf_port,
           nrf_api_version))
@@ -1434,6 +1476,172 @@ void amf_n11::curl_http_client(
           Logger::amf_n11().error(
               "Could not send ITTI message %s to task TASK_AMF_APP",
               i->get_msg_name());
+        }
+      }
+    }
+
+    curl_slist_free_all(headers);
+    curl_easy_cleanup(curl);
+  }
+
+  curl_global_cleanup();
+  free_wrapper((void**) &body_data);
+}
+
+//------------------------------------------------------------------------------
+void amf_n11::curl_http_client(
+    std::string& remote_uri, std::string& json_data, std::string& n1sm_msg,
+    std::string& n2sm_msg, uint8_t http_version, uint32_t& response_code,
+    uint32_t promise_id) {
+  Logger::amf_n11().debug("Call SMF service: %s", remote_uri.c_str());
+
+  uint8_t number_parts = 0;
+  mime_parser parser   = {};
+  std::string body     = {};
+
+  bool is_multipart = true;
+
+  if ((n1sm_msg.size() > 0) and (n2sm_msg.size() > 0)) {
+    // prepare the body content for Curl
+    parser.create_multipart_related_content(
+        body, json_data, CURL_MIME_BOUNDARY, n1sm_msg, n2sm_msg);
+  } else if (n1sm_msg.size() > 0) {  // only N1 content
+    // prepare the body content for Curl
+    parser.create_multipart_related_content(
+        body, json_data, CURL_MIME_BOUNDARY, n1sm_msg,
+        multipart_related_content_part_e::NAS);
+  } else if (n2sm_msg.size() > 0) {  // only N2 content
+    // prepare the body content for Curl
+    parser.create_multipart_related_content(
+        body, json_data, CURL_MIME_BOUNDARY, n2sm_msg,
+        multipart_related_content_part_e::NGAP);
+  } else {
+    body         = json_data;
+    is_multipart = false;
+  }
+
+  Logger::amf_n11().debug(
+      "Send HTTP message to SMF with body %s", body.c_str());
+
+  uint32_t str_len = body.length();
+  char* body_data  = (char*) malloc(str_len + 1);
+  memset(body_data, 0, str_len + 1);
+  memcpy((void*) body_data, (void*) body.c_str(), str_len);
+
+  curl_global_init(CURL_GLOBAL_ALL);
+  CURL* curl = curl_easy_init();
+
+  if (curl) {
+    CURLcode res               = {};
+    struct curl_slist* headers = nullptr;
+    std::string content_type   = {};
+    if (is_multipart) {
+      content_type = "content-type: multipart/related; boundary=" +
+                     std::string(CURL_MIME_BOUNDARY);
+    } else {
+      content_type = "content-type: application/json";
+    }
+    headers = curl_slist_append(headers, content_type.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    curl_easy_setopt(curl, CURLOPT_URL, remote_uri.c_str());
+    curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
+    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
+
+    if (http_version == 2) {
+      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+      // we use a self-signed test server, skip verification during debugging
+      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+      curl_easy_setopt(
+          curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE);
+    }
+
+    // Response information
+    long httpCode = {0};
+    std::unique_ptr<std::string> httpData(new std::string());
+    std::unique_ptr<std::string> httpHeaderData(new std::string());
+
+    // Hook up data handling function
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
+    curl_easy_setopt(curl, CURLOPT_HEADERDATA, httpHeaderData.get());
+
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body_data);
+
+    res = curl_easy_perform(curl);
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+
+    // get cause from the response
+    std::string response           = *httpData.get();
+    std::string json_data_response = {};
+    std::string n1sm               = {};
+    std::string n2sm               = {};
+    nlohmann::json response_data   = {};
+    bstring n1sm_hex, n2sm_hex;
+
+    // clear input
+    n1sm_msg  = {};
+    n2sm_msg  = {};
+    json_data = {};
+
+    Logger::amf_n11().info("Get response with HTTP code (%d)", httpCode);
+    Logger::amf_n11().info("Response body %s", response.c_str());
+
+    response_code = httpCode;
+    if (static_cast<http_response_codes_e>(httpCode) ==
+        http_response_codes_e::HTTP_RESPONSE_CODE_0) {
+      // TODO: should be removed
+      Logger::amf_n11().error(
+          "Cannot get response when calling %s", remote_uri.c_str());
+      // free curl before returning
+      curl_slist_free_all(headers);
+      curl_easy_cleanup(curl);
+      curl_global_cleanup();
+      free_wrapper((void**) &body_data);
+      return;
+    }
+
+    if (response.size() > 0) {
+      number_parts = parser.parse(response, json_data_response, n1sm, n2sm);
+    }
+
+    if (number_parts == 0) {
+      json_data_response = response;
+    }
+
+    Logger::amf_n11().info("JSON part %s", json_data_response.c_str());
+
+    if ((static_cast<http_response_codes_e>(httpCode) !=
+         http_response_codes_e::HTTP_RESPONSE_CODE_200_OK) &&
+        (static_cast<http_response_codes_e>(httpCode) !=
+         http_response_codes_e::HTTP_RESPONSE_CODE_201_CREATED) &&
+        (static_cast<http_response_codes_e>(httpCode) !=
+         http_response_codes_e::HTTP_RESPONSE_CODE_204_NO_CONTENT)) {
+      // TODO:
+
+    } else {  // Response with success code
+
+      try {
+        response_data = nlohmann::json::parse(json_data_response);
+      } catch (nlohmann::json::exception& e) {
+        Logger::amf_n11().warn("Could not get JSON content from the response");
+        curl_slist_free_all(headers);
+        curl_easy_cleanup(curl);
+        curl_global_cleanup();
+        free_wrapper((void**) &body_data);
+        // TODO:
+        return;
+      }
+
+      // Transfer N1/N2 to gNB/UE if available
+      if (number_parts > 1) {
+        if (n1sm.size() > 0) {
+          n1sm_msg = n1sm;
+        }
+        if (n2sm.size() > 0) {
+          n2sm_msg = n2sm;
         }
       }
     }
