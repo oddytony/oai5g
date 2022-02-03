@@ -66,7 +66,7 @@
 #define AMF_CONFIG_STRING_API_VERSION "API_VERSION"
 
 #define AMF_CONFIG_STRING_AUSF "AUSF"
-
+#define AMF_CONFIG_STRING_UDM "UDM"
 #define AMF_CONFIG_STRING_NSSF "NSSF"
 
 #define AMF_CONFIG_STRING_SCHED_PARAMS "SCHED_PARAMS"
@@ -206,6 +206,8 @@ class amf_config {
   int load(const std::string& config_file);
   int load_interface(const Setting& if_cfg, interface_cfg_t& cfg);
   std::string get_nrf_nf_discovery_service_uri();
+  std::string get_udm_slice_selection_subscription_data_retrieval_uri(
+      const std::string& supi);
 
   void display();
   unsigned int instance;

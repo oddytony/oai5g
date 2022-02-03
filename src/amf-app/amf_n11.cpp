@@ -601,9 +601,8 @@ void amf_n11::handle_itti_message(
       itti_msg.http_version);
 
   std::string url =
-      std::string(inet_ntoa(*((struct in_addr*) &amf_cfg.udm_addr.ipv4_addr))) +
-      ":" + std::to_string(amf_cfg.udm_addr.port) + "/nudm-sdm/" +
-      amf_cfg.udm_addr.api_version + "/" + itti_msg.supi + "/nssai";
+      amf_cfg.get_udm_slice_selection_subscription_data_retrieval_uri(
+          itti_msg.supi);
   nlohmann::json json_data    = {};
   json_data["plmn-id"]["mcc"] = itti_msg.plmn.mcc;
   json_data["plmn-id"]["mnc"] = itti_msg.plmn.mnc;

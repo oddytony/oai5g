@@ -3710,7 +3710,7 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
     return false;
   }
 
-  // Update subscribed NSSAIs
+  // TODO: Update subscribed NSSAIs
 
   // Check that AMF can process the Requested NSSAIs or not
   if (check_requested_nssai(nc, nssai)) {
