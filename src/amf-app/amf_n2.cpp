@@ -429,8 +429,8 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
     tmp.mnc = amf_cfg.plmn_list[i].mnc;
     for (int j = 0; j < amf_cfg.plmn_list[i].slice_list.size(); j++) {
       S_Nssai s_tmp;
-      s_tmp.sst = amf_cfg.plmn_list[i].slice_list[j].sST;
-      s_tmp.sd  = amf_cfg.plmn_list[i].slice_list[j].sD;
+      s_tmp.sst = std::to_string(amf_cfg.plmn_list[i].slice_list[j].sst);
+      s_tmp.sd  = amf_cfg.plmn_list[i].slice_list[j].sd;
       tmp.slice_list.push_back(s_tmp);
     }
     plmn_list.push_back(tmp);
@@ -1464,8 +1464,8 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
     for (int j = 0; j < amf_cfg.plmn_list[i].slice_list.size(); j++) {
       S_Nssai s_tmp;
       S_NSSAI s_nssai = {};
-      s_nssai.setSst(amf_cfg.plmn_list[i].slice_list[j].sST);
-      s_nssai.setSd(amf_cfg.plmn_list[i].slice_list[j].sD);
+      s_nssai.setSst(amf_cfg.plmn_list[i].slice_list[j].sst);
+      s_nssai.setSd(amf_cfg.plmn_list[i].slice_list[j].sd);
       Allowed_Nssai.push_back(s_nssai);
     }
   }
@@ -1601,11 +1601,11 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
                 supi, curl_responses.begin()->first, psc)) {
           PDUSessionResourceSetupRequestItem_t item = {};
           item.pduSessionId                         = psc.get()->pdu_session_id;
-          item.s_nssai.sst                          = psc.get()->snssai.sST;
-          item.s_nssai.sd                           = psc.get()->snssai.sD;
-          item.pduSessionNAS_PDU                    = nullptr;
-          unsigned int data_len                     = n2_sm.length();
-          unsigned char* data = (unsigned char*) malloc(data_len + 1);
+          item.s_nssai.sst       = std::to_string(psc.get()->snssai.sST);
+          item.s_nssai.sd        = psc.get()->snssai.sD;
+          item.pduSessionNAS_PDU = nullptr;
+          unsigned int data_len  = n2_sm.length();
+          unsigned char* data    = (unsigned char*) malloc(data_len + 1);
           memset(data, 0, data_len + 1);
           memcpy((void*) data, (void*) n2_sm.c_str(), data_len);
           item.pduSessionResourceSetupRequestTransfer.buf  = data;

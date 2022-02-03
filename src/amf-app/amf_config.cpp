@@ -215,8 +215,16 @@ int amf_config::load(const std::string& config_file) {
       for (int j = 0; j < numOfSlice; j++) {
         slice_t slice;
         const Setting& slice_item = slice_list_cfg[j];
-        slice_item.lookupValue(AMF_CONFIG_STRING_SST, slice.sST);
-        slice_item.lookupValue(AMF_CONFIG_STRING_SD, slice.sD);
+        std::string sst           = {};
+        std::string sd            = {};
+        slice_item.lookupValue(AMF_CONFIG_STRING_SST, sst);
+        slice_item.lookupValue(AMF_CONFIG_STRING_SD, sd);
+        try {
+          slice.sst = std::stoi(sst);
+          slice.sd  = std::stoi(sd);
+        } catch (const std::exception& err) {
+          Logger::amf_app().error("Invalid SST/SD");
+        }
         plmn_item.slice_list.push_back(slice);
       }
       plmn_list.push_back(plmn_item);
@@ -627,9 +635,8 @@ void amf_config::display() {
     Logger::config().info("       Slice Support ......:");
     for (int j = 0; j < plmn_list[i].slice_list.size(); j++) {
       Logger::config().info(
-          "           SST, SD ........: %s, %s",
-          plmn_list[i].slice_list[j].sST.c_str(),
-          plmn_list[i].slice_list[j].sD.c_str());
+          "           SST, SD ........: %d, %d", plmn_list[i].slice_list[j].sst,
+          plmn_list[i].slice_list[j].sd);
     }
   }
   Logger::config().info(

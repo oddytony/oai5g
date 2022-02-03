@@ -3462,13 +3462,8 @@ void amf_n1::initialize_registration_accept(
   for (auto p : amf_cfg.plmn_list) {
     for (auto s : p.slice_list) {
       SNSSAI_t snssai = {};
-      try {
-        snssai.sst = std::stoi(s.sST);
-        snssai.sd  = std::stoi(s.sD);
-      } catch (const std::exception& err) {
-        Logger::amf_n1().warn("Invalid SST/SD");
-        return;
-      }
+      snssai.sst      = s.sst;
+      snssai.sd       = s.sd;
       nssai.push_back(snssai);
     }
   }
@@ -3514,13 +3509,8 @@ void amf_n1::initialize_registration_accept(
         (p.tac == uc.get()->tai.tac)) {
       for (auto s : p.slice_list) {
         SNSSAI_t snssai = {};
-        try {
-          snssai.sst = std::stoi(s.sST);
-          snssai.sd  = std::stoi(s.sD);
-        } catch (const std::exception& err) {
-          Logger::amf_n1().warn("Invalid SST/SD");
-          return;
-        }
+        snssai.sst      = s.sst;
+        snssai.sd       = s.sd;
         nssai.push_back(snssai);
         // TODO: Check with the requested NSSAI from UE
         /*  for (auto rn : nc.get()->requestedNssai) {
@@ -3720,6 +3710,8 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
     return false;
   }
 
+  // Update subscribed NSSAIs
+
   // Check that AMF can process the Requested NSSAIs or not
   if (check_requested_nssai(nc, nssai)) {
     Logger::amf_n1().debug(
@@ -3792,32 +3784,83 @@ bool amf_n1::check_requested_nssai(
 
     result = true;
 
-    // Each S-NSSAI in the Default Single NSSAIs must be in the AMF's Slice List
-    for (auto n : nssai.getDefaultSingleNssais()) {
-      bool found_nssai = false;
-      for (auto s : p.slice_list) {
-        uint8_t sst = 0;
-        try {
-          sst = std::stoi(s.sST);
-        } catch (const std::exception& err) {
-          Logger::amf_n1().warn("Invalid SST");
-          continue;
-        }
-
-        if (sst == n.getSst()) {
-          if ((n.sdIsSet() and (n.getSd().compare(s.sD) == 0)) or
-              (!n.sdIsSet() and s.sD.empty())) {
-            found_nssai = true;
+    // Find the common NSSAIs between Requested NSSAIs and Subscribed NSSAIs
+    std::vector<oai::amf::model::Snssai> common_snssais;
+    for (auto s : nc->requestedNssai) {
+      std::string sd = std::to_string(s.sd);
+      // Check with default subscribed NSSAIs
+      for (auto n : nssai.getDefaultSingleNssais()) {
+        if (s.sst == n.getSst()) {
+          if ((n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
+              (!n.sdIsSet() and sd.empty())) {
+            common_snssais.push_back(n);
             Logger::amf_n1().debug(
-                "Found S-NSSAI (SST %d, SD %s)", sst, n.getSd().c_str());
+                "Found S-NSSAI (SST %d, SD %s)", s.sst, sd.c_str());
             break;
           }
         }
       }
 
-      if (!found_nssai) {
-        result = false;
-        break;
+      // check with other subscribed NSSAIs
+      for (auto n : nssai.getSingleNssais()) {
+        if (s.sst == n.getSst()) {
+          if ((n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
+              (!n.sdIsSet() and sd.empty())) {
+            common_snssais.push_back(n);
+            Logger::amf_n1().debug(
+                "Found S-NSSAI (SST %d, SD %s)", s.sst, sd.c_str());
+            break;
+          }
+        }
+      }
+    }
+
+    // If there no requested NSSAIs or no common NSSAIs between requested NSSAIs
+    // and Subscribed NSSAIs
+    if ((nc->requestedNssai.size() == 0) or (common_snssais.size() == 0)) {
+      // Each S-NSSAI in the Default Single NSSAIs must be in the AMF's Slice
+      // List
+      for (auto n : nssai.getDefaultSingleNssais()) {
+        bool found_nssai = false;
+        for (auto s : p.slice_list) {
+          std::string sd = std::to_string(s.sd);
+          if (s.sst == n.getSst()) {
+            if ((n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
+                (!n.sdIsSet() and sd.empty())) {
+              found_nssai = true;
+              Logger::amf_n1().debug(
+                  "Found S-NSSAI (SST %d, SD %s)", s.sst, n.getSd().c_str());
+              break;
+            }
+          }
+        }
+
+        if (!found_nssai) {
+          result = false;
+          break;
+        }
+      }
+    } else {
+      // check if AMF can serve all the common NSSAIs
+      for (auto n : common_snssais) {
+        bool found_nssai = false;
+        for (auto s : p.slice_list) {
+          std::string sd = std::to_string(s.sd);
+          if (s.sst == n.getSst()) {
+            if ((n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
+                (!n.sdIsSet() and sd.empty())) {
+              found_nssai = true;
+              Logger::amf_n1().debug(
+                  "Found S-NSSAI (SST %d, SD %s)", s.sst, n.getSd().c_str());
+              break;
+            }
+          }
+        }
+
+        if (!found_nssai) {
+          result = false;
+          break;
+        }
       }
     }
   }

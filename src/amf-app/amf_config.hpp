@@ -153,20 +153,20 @@ typedef struct guami_s {
 } guami_t;
 
 typedef struct slice_s {
-  std::string sST;
-  std::string sD;
+  uint8_t sst;
+  uint32_t sd;
   bool operator==(const struct slice_s& s) const {
-    if ((s.sST == this->sST) && (s.sD.compare(this->sD) == 0)) {
+    if ((s.sst == this->sst) && (s.sd == this->sd)) {
       return true;
     } else {
       return false;
     }
   }
   bool operator>(const struct slice_s& s) const {
-    if (this->sST.compare(s.sST) > 0) return true;
-    if (this->sST.compare(s.sST) == 0) {
-      if (this->sD.compare(s.sD) > 0) return true;
-      if (this->sD.compare(s.sD) < 0) return false;
+    if (this->sst > s.sst) return true;
+    if (this->sst == s.sst) {
+      if (this->sd > s.sd) return true;
+      if (this->sd <= s.sd) return false;
     }
   }
 } slice_t;

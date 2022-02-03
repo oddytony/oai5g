@@ -86,6 +86,10 @@ void S_NSSAI::setSst(const std::string charSst) {
 }
 
 //------------------------------------------------------------------------------
+void S_NSSAI::setSst(const uint8_t s) {
+  sst = s;
+}
+//------------------------------------------------------------------------------
 void S_NSSAI::getSst(std::string& charSst) const {
   charSst = to_string((int) sst);
 }
@@ -101,6 +105,11 @@ void S_NSSAI::setSd(const std::string charSd) {
   sd      = fromString<int>(charSd);
 }
 
+//------------------------------------------------------------------------------
+void S_NSSAI::setSd(const uint32_t s) {
+  sdIsSet = true;
+  sd      = s;
+}
 //------------------------------------------------------------------------------
 bool S_NSSAI::getSd(std::string& s_nssaiSd) const {
   if (sdIsSet) {

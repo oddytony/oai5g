@@ -93,6 +93,7 @@ class nas_context {
   std::vector<nas::SNSSAI_t>
       requestedNssai;  // TODO: update with naming convention
   std::vector<nas::SNSSAI_t> allowed_nssai;  // in Registration Accept
+  // Set to true if marked as default
   std::vector<std::pair<bool, nas::SNSSAI_t>> subscribed_snssai;
   std::vector<nas::SNSSAI_t> configured_nssai;
   // std::vector<nas::SNSSAI_t>  default_configured_nssai;
