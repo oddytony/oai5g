@@ -226,8 +226,9 @@ class amf_n1 {
       const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai);
   bool get_slice_selection_subscription_data_from_conf_file(
       const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai);
-  bool check_requested_nssai(
+  bool check_subscribed_nssai(
       const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai);
+  bool check_requested_nssai(const std::shared_ptr<nas_context>& nc);
   bool get_network_slice_selection(
       const std::shared_ptr<nas_context>& nc, const std::string& nf_instance_id,
       const oai::amf::model::SliceInfoForRegistration& slice_info,
