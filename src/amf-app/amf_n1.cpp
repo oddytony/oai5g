@@ -3702,6 +3702,7 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
       "Registration with AMF re-allocation, Reroute Registration Request to "
       "the target AMF");
 
+  /*
   // Check if the AMF can serve all the requested S-NSSAIs
   if (check_requested_nssai(nc)) {
     Logger::amf_n1().debug(
@@ -3709,6 +3710,7 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
         "perform AMF Re-allocation procedure");
     return false;
   }
+*/
 
   // Get NSSAI from UDM
   oai::amf::model::Nssai nssai = {};
@@ -3724,8 +3726,7 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
   if (check_subscribed_nssai(nc, nssai)) {
     Logger::amf_n1().debug(
         "Current AMF can handle the Requested/Subscribed NSSAIs, do not need "
-        "to "
-        "perform AMF Re-allocation procedure");
+        "to perform AMF Re-allocation procedure");
     return false;
   }
 
@@ -3782,6 +3783,7 @@ bool amf_n1::check_requested_nssai(const std::shared_ptr<nas_context>& nc) {
   if (nc->requestedNssai.size() == 0) {
     return false;
   }
+
   bool result = false;
   for (auto p : amf_cfg.plmn_list) {
     // Check PLMN/TAC
@@ -3792,7 +3794,7 @@ bool amf_n1::check_requested_nssai(const std::shared_ptr<nas_context>& nc) {
     }
 
     result = true;
-    // check if AMF can serve all the common NSSAIs
+    // check if AMF can serve all the requested NSSAIs
     for (auto n : nc->requestedNssai) {
       bool found_nssai = false;
       for (auto s : p.slice_list) {
@@ -3816,7 +3818,7 @@ bool amf_n1::check_requested_nssai(const std::shared_ptr<nas_context>& nc) {
 //------------------------------------------------------------------------------
 bool amf_n1::check_subscribed_nssai(
     const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai) {
-  // Check if the AMF can serve all the subscribed S-NSSAIs
+  // Check if the AMF can serve all the requested/subscribed S-NSSAIs
 
   std::shared_ptr<ue_context> uc = {};
   if (!find_ue_context(
@@ -3992,7 +3994,54 @@ bool amf_n1::get_slice_selection_subscription_data(
 //------------------------------------------------------------------------------
 bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
     const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai) {
-  // TODO:
+  // For now, use the common NSSAIs, supported by AMF and gNB, as subscribed
+  // NSSAIs
+  std::shared_ptr<ue_context> uc = {};
+  if (!find_ue_context(
+          nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id, uc)) {
+    Logger::amf_n1().warn("Cannot find the UE context");
+    return false;
+  }
+
+  // Get gNB Context
+  std::shared_ptr<ue_ngap_context> unc =
+      amf_n2_inst->ran_ue_id_2_ue_ngap_context(nc->ran_ue_ngap_id);
+
+  std::shared_ptr<gnb_context> gc = {};
+  if (!amf_n2_inst->is_assoc_id_2_gnb_context(unc.get()->gnb_assoc_id)) {
+    Logger::amf_n2().error(
+        "No existed gNB context with assoc_id (%d)", unc.get()->gnb_assoc_id);
+    return false;
+  }
+
+  // Find the common NSSAIs between Requested NSSAIs and Subscribed NSSAIs
+  std::vector<oai::amf::model::Snssai> common_snssais =
+      nssai.getDefaultSingleNssais();
+
+  for (auto ta : gc->s_ta_list) {
+    for (auto p : ta.b_plmn_list) {
+      for (auto s : p.slice_list) {
+        oai::amf::model::Snssai nssai = {};
+        uint8_t sst                   = 0;
+        try {
+          sst = std::stoi(s.sst);
+        } catch (const std::exception& err) {
+          Logger::amf_app().error("Invalid SST");
+          return false;
+        }
+        nssai.setSst(sst);
+        nssai.setSd(s.sd);
+        common_snssais.push_back(nssai);
+      }
+    }
+  }
+
+  // Print out the list of subscribed NSSAIs
+  for (auto n : nssai.getDefaultSingleNssais()) {
+    Logger::amf_n1().debug(
+        "Found S-NSSAI (SST %d, SD %s)", n.getSst(), n.getSd().c_str());
+  }
+
   return true;
 }
 
