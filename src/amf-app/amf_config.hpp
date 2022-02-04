@@ -208,6 +208,7 @@ class amf_config {
   std::string get_nrf_nf_discovery_service_uri();
   std::string get_udm_slice_selection_subscription_data_retrieval_uri(
       const std::string& supi);
+  std::string get_nssf_network_slice_selection_information_uri();
 
   void display();
   unsigned int instance;

@@ -851,4 +851,11 @@ std::string amf_config::get_udm_slice_selection_subscription_data_retrieval_uri(
          ":" + std::to_string(udm_addr.port) + "/nudm-sdm/" +
          udm_addr.api_version + "/" + supi + "/nssai";
 }
+
+//------------------------------------------------------------------------------
+std::string amf_config::get_nssf_network_slice_selection_information_uri() {
+  return std::string(inet_ntoa(*((struct in_addr*) &nssf_addr.ipv4_addr))) +
+         ":" + std::to_string(nssf_addr.port) + "/nnssf-nsselection/" +
+         nssf_addr.api_version + "/network-slice-information";
+}
 }  // namespace config

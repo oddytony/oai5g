@@ -634,11 +634,7 @@ void amf_n11::handle_itti_message(
       "%d)",
       itti_msg.http_version);
 
-  std::string url =
-      std::string(
-          inet_ntoa(*((struct in_addr*) &amf_cfg.nssf_addr.ipv4_addr))) +
-      ":" + std::to_string(amf_cfg.nssf_addr.port) + "/nnssf-nsselection/" +
-      amf_cfg.nssf_addr.api_version + "/network-slice-information";
+  std::string url = amf_cfg.get_nssf_network_slice_selection_information_uri();
 
   // slice-info-request-for-registration
   nlohmann::json slice_info = {};
@@ -653,8 +649,9 @@ void amf_n11::handle_itti_message(
                "?slice-info-request-for-registration=" + slice_info.dump() +
                "?home-plmn-id=" + home_plmn_id.dump();
 
+  url += parameters;
   Logger::amf_n11().debug(
-      "Send Slice Selection Subscription Data Retrieval to UDM, URL %s",
+      "Send Slice Selection Information Retrieval to NSSF, URL %s",
       url.c_str());
 
   nlohmann::json response_data = {};
@@ -785,13 +782,17 @@ bool amf_n11::discover_smf_from_nsi_info(
   slice_info["roamingIndication"] = "NON_ROAMING";
   // ToDo Add TAI
 
-  std::string url = std::string(inet_ntoa(
-                        *((struct in_addr*) &amf_cfg.nssf_addr.ipv4_addr))) +
-                    ":" + std::to_string(amf_cfg.nssf_addr.port) +
-                    "/nnssf-nsselection/" + amf_cfg.nssf_addr.api_version +
-                    "/network-slice-information?nf-type=AMF&nf-id=abc&slice-"
-                    "info-request-for-pdu-session=" +
-                    slice_info.dump();
+  std::string url = amf_cfg.get_nssf_network_slice_selection_information_uri();
+
+  std::string parameters = {};
+  parameters = "?nf-type=AMF&nf-id=" + amf_app_inst->get_nf_instance() +
+               "&slice-info-request-for-pdu-session=" + slice_info.dump();
+  url += parameters;
+
+  Logger::amf_n11().debug(
+      "Send Network Slice Information Retrieval during PDU session "
+      "establishment procedure, URL %s",
+      url.c_str());
 
   // TODO: use curl_http_client
 
