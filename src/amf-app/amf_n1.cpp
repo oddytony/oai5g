@@ -4023,6 +4023,8 @@ bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
     return false;
   }
 
+  gc = amf_n2_inst->assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
+
   // Find the common NSSAIs between Requested NSSAIs and Subscribed NSSAIs
   std::vector<oai::amf::model::Snssai> common_snssais =
       nssai.getDefaultSingleNssais();
