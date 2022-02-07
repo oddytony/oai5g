@@ -3698,9 +3698,11 @@ bool amf_n1::get_mobile_reachable_timer_timeout(
 
 //------------------------------------------------------------------------------
 bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
-  Logger::amf_n1().debug(
-      "Registration with AMF re-allocation, Reroute Registration Request to "
-      "the target AMF");
+  // Verifying whether this AMF can handle the request (if not, AMF
+  // re-allocation procedure will be executed to reroute the Registration "
+  // Request to an appropriate AMF
+
+  Logger::amf_n1().debug("Verifying whether this AMF can handle the request");
 
   /*
   // Check if the AMF can serve all the requested S-NSSAIs
@@ -3928,6 +3930,9 @@ bool amf_n1::get_slice_selection_subscription_data(
     const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai) {
   // TODO: UDM selection (from NRF or configuration file)
   if (amf_cfg.support_features.enable_external_udm) {
+    Logger::amf_n1().debug(
+        "Get the Slice Selection Subscription Data from UDM");
+
     std::shared_ptr<ue_context> uc = {};
     if (!find_ue_context(
             nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id, uc)) {
@@ -3994,8 +3999,12 @@ bool amf_n1::get_slice_selection_subscription_data(
 //------------------------------------------------------------------------------
 bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
     const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai) {
+  Logger::amf_n1().debug(
+      "Get the Slice Selection Subscription Data from configuration file");
+
   // For now, use the common NSSAIs, supported by AMF and gNB, as subscribed
   // NSSAIs
+
   std::shared_ptr<ue_context> uc = {};
   if (!find_ue_context(
           nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id, uc)) {
@@ -4031,6 +4040,8 @@ bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
         }
         nssai.setSst(sst);
         nssai.setSd(s.sd);
+        Logger::amf_n1().debug(
+            "Added S-NSSAI (SST %d, SD %s)", sst, s.sd.c_str());
         common_snssais.push_back(nssai);
       }
     }
@@ -4039,7 +4050,7 @@ bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
   // Print out the list of subscribed NSSAIs
   for (auto n : nssai.getDefaultSingleNssais()) {
     Logger::amf_n1().debug(
-        "Found S-NSSAI (SST %d, SD %s)", n.getSst(), n.getSd().c_str());
+        "S-NSSAI (SST %d, SD %s)", n.getSst(), n.getSd().c_str());
   }
 
   return true;
@@ -4051,6 +4062,9 @@ bool amf_n1::get_network_slice_selection(
     const oai::amf::model::SliceInfoForRegistration& slice_info,
     oai::amf::model::AuthorizedNetworkSliceInfo&
         authorized_network_slice_info) {
+  Logger::amf_n1().debug(
+      "Get the Network Slice Selection Information from NSSF");
+
   std::shared_ptr<ue_context> uc = {};
   if (!find_ue_context(
           nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id, uc)) {
@@ -4128,6 +4142,8 @@ bool amf_n1::get_network_slice_selection_from_conf_file(
     const oai::amf::model::SliceInfoForRegistration& slice_info,
     oai::amf::model::AuthorizedNetworkSliceInfo& authorized_network_slice_info)
     const {
+  Logger::amf_n1().debug(
+      "Get the Network Slice Selection Information from configuration file");
   // TODO: Get Authorized Network Slice Info from local configuration file
 
   return true;
@@ -4139,6 +4155,9 @@ bool amf_n1::get_target_amf(
     const oai::amf::model::AuthorizedNetworkSliceInfo&
         authorized_network_slice_info) {
   // Get Target AMF from AuthorizedNetworkSliceInfo
+  Logger::amf_n1().debug(
+      "Get the list of candidates AMFs from the AuthorizedNetworkSliceInfo and "
+      "select the appropriate one");
   std::string target_amf_set = {};
   std::string nrf_amf_set = {};  // The URI of NRF NFDiscovery Service to query
                                  // the list of AMF candidates
@@ -4234,6 +4253,8 @@ bool amf_n1::get_target_amf(
 bool amf_n1::select_target_amf(
     const std::shared_ptr<nas_context>& nc, std::string& target_amf,
     const nlohmann::json& amf_candidate_list) {
+  Logger::amf_n1().debug(
+      "Select the appropriate AMF from the list of candidates");
   bool result = false;
   // Process data to obtain the target AMF
   if (amf_candidate_list.find("nfInstances") != amf_candidate_list.end()) {
@@ -4262,6 +4283,9 @@ bool amf_n1::select_target_amf(
 void amf_n1::send_n1_message_notity(
     const std::shared_ptr<nas_context>& nc,
     const std::string& target_amf) const {
+  Logger::amf_n1().debug(
+      "Send a request to N11 to send N1 Message Notify to the target AMF");
+
   std::shared_ptr<itti_n11_n1_message_notify> itti_msg =
       std::make_shared<itti_n11_n1_message_notify>(TASK_AMF_N1, TASK_AMF_N11);
 
