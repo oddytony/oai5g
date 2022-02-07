@@ -377,10 +377,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
   // in gNB context, if verified; else response NG SETUP FAILURE with cause
   // "Unknown PLMN"(9.3.1.2, ts38413)
   // std::vector<SupportedItem_t> common_plmn_list = get_common_plmn(s_ta_list);
-  get_common_plmn(s_ta_list, gc->s_ta_list);
-
-  if (gc->s_ta_list.size() == 0) {
-    // if (!verifyPlmn(s_ta_list)) {
+  if (!get_common_plmn(s_ta_list, gc->s_ta_list)) {
     // encode NG SETUP FAILURE MESSAGE and send back
     void* buffer = calloc(1, BUFFER_SIZE_1024);
     NGSetupFailureMsg ngSetupFailure;
@@ -394,24 +391,8 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
     Logger::amf_n2().error(
         "No common PLMN, encoding NG_SETUP_FAILURE with cause (Unknown PLMN)");
     return;
+
   } else {
-    // store only the common PLMN
-    // gc->s_ta_list = common_plmn_list;
-    /*
-Logger::amf_n2().debug("Common PLMN");
-for (auto ta : gc->s_ta_list) {
-for (auto p : ta.b_plmn_list) {
-  std::string mcc;
-  std::string mnc;
-  Logger::amf_n2().debug(
-      "PLMN MCC %s, MNC %s", p.mcc.c_str(), p.mnc.c_str());
-  for (auto s : p.slice_list) {
-    Logger::amf_n2().debug(
-        "S-NSSAI (SST %s, SD %s)", s.sst.c_str(), s.sd.c_str());
-  }
-}
-}
-*/
     for (auto i : gc->s_ta_list) {
       gnbItem.plmn_list.push_back(i);
     }
@@ -2123,10 +2104,10 @@ bool amf_n2::verifyPlmn(vector<SupportedItem_t> list) {
 }
 
 //------------------------------------------------------------------------------
-void amf_n2::get_common_plmn(
+bool amf_n2::get_common_plmn(
     std::vector<SupportedItem_t> list, std::vector<SupportedItem_t>& result) {
   std::vector<SupportedItem_t> plmn_list = {};
-
+  bool found_common_plmn                 = false;
   for (int i = 0; i < amf_cfg.plmn_list.size(); i++) {
     for (int j = 0; j < list.size(); j++) {
       Logger::amf_n2().debug(
@@ -2156,6 +2137,7 @@ void amf_n2::get_common_plmn(
                     "Common S-NSSAI (SST %s, SD %s)", s1.sst.c_str(),
                     s1.sd.c_str());
                 plmn_slice_support_item.slice_list.push_back(s1);
+                found_common_plmn = true;
               }
             }
           }
@@ -2166,5 +2148,5 @@ void amf_n2::get_common_plmn(
       }
     }
   }
-  // return plmn_list;
+  return found_common_plmn;
 }
