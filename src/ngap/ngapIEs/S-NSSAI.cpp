@@ -77,14 +77,10 @@ bool S_NSSAI::sDEncode2OctetString(Ngap_SD_t* m_sd) {
 bool S_NSSAI::sDdecodefromOctetString(Ngap_SD_t* m_sd) {
   if (!m_sd->buf) return false;
   if (m_sd->size == 3) {
-    sd = 0x00ffffff &&
-         (((m_sd->buf[0] & 0x00ff0000) >> 16) |
-          ((m_sd->buf[1] & 0x0000ff00) >> 8) | (m_sd->buf[2] & 0x000000ff));
+    sd = ((m_sd->buf[0] >> 16) + (m_sd->buf[1] >> 8) + m_sd->buf[2]);
 
   } else if (m_sd->size == 4) {
-    sd = 0x00ffffff &&
-         (((m_sd->buf[1] & 0x00ff0000) >> 16) |
-          ((m_sd->buf[2] & 0x0000ff00) >> 8) | (m_sd->buf[3] & 0x000000ff));
+    sd = ((m_sd->buf[1] >> 16) + (m_sd->buf[2] >> 8) + m_sd->buf[3]);
   }
   //  sd = *(uint32_t*) m_sd->buf & 0x00ffffff;
 
