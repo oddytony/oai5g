@@ -395,6 +395,20 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
   } else {
     // store only the common PLMN
     gc->s_ta_list = common_plmn_list;
+    Logger::amf_n2().debug("Common PLMN");
+    for (auto ta : gc->s_ta_list) {
+      for (auto p : ta.b_plmn_list) {
+        std::string mcc;
+        std::string mnc;
+        Logger::amf_n2().debug(
+            "PLMN MCC %s, MNC %s", p.mcc.c_str(), p.mnc.c_str());
+        for (auto s : p.slice_list) {
+          Logger::amf_n2().debug(
+              "S-NSSAI (SST %d, SD %s)", s.sst.c_str(), s.sd.c_str());
+        }
+      }
+    }
+
     for (auto i : common_plmn_list) {
       gnbItem.plmn_list.push_back(i);
     }
