@@ -376,8 +376,10 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
   // Verify PLMN Identity and TAC with configuration and store supportedTAList
   // in gNB context, if verified; else response NG SETUP FAILURE with cause
   // "Unknown PLMN"(9.3.1.2, ts38413)
-  std::vector<SupportedItem_t> common_plmn_list = get_common_plmn(s_ta_list);
-  if (common_plmn_list.size() == 0) {
+  // std::vector<SupportedItem_t> common_plmn_list = get_common_plmn(s_ta_list);
+  get_common_plmn(s_ta_list, gc->s_ta_list);
+
+  if (gc->s_ta_list.size() == 0) {
     // if (!verifyPlmn(s_ta_list)) {
     // encode NG SETUP FAILURE MESSAGE and send back
     void* buffer = calloc(1, BUFFER_SIZE_1024);
@@ -394,22 +396,23 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
     return;
   } else {
     // store only the common PLMN
-    gc->s_ta_list = common_plmn_list;
-    Logger::amf_n2().debug("Common PLMN");
-    for (auto ta : gc->s_ta_list) {
-      for (auto p : ta.b_plmn_list) {
-        std::string mcc;
-        std::string mnc;
-        Logger::amf_n2().debug(
-            "PLMN MCC %s, MNC %s", p.mcc.c_str(), p.mnc.c_str());
-        for (auto s : p.slice_list) {
-          Logger::amf_n2().debug(
-              "S-NSSAI (SST %s, SD %s)", s.sst.c_str(), s.sd.c_str());
-        }
-      }
-    }
-
-    for (auto i : common_plmn_list) {
+    // gc->s_ta_list = common_plmn_list;
+    /*
+Logger::amf_n2().debug("Common PLMN");
+for (auto ta : gc->s_ta_list) {
+for (auto p : ta.b_plmn_list) {
+  std::string mcc;
+  std::string mnc;
+  Logger::amf_n2().debug(
+      "PLMN MCC %s, MNC %s", p.mcc.c_str(), p.mnc.c_str());
+  for (auto s : p.slice_list) {
+    Logger::amf_n2().debug(
+        "S-NSSAI (SST %s, SD %s)", s.sst.c_str(), s.sd.c_str());
+  }
+}
+}
+*/
+    for (auto i : gc->s_ta_list) {
       gnbItem.plmn_list.push_back(i);
     }
   }
@@ -2120,8 +2123,8 @@ bool amf_n2::verifyPlmn(vector<SupportedItem_t> list) {
 }
 
 //------------------------------------------------------------------------------
-std::vector<SupportedItem_t> amf_n2::get_common_plmn(
-    std::vector<SupportedItem_t> list) {
+void amf_n2::get_common_plmn(
+    std::vector<SupportedItem_t> list, std::vector<SupportedItem_t>& result) {
   std::vector<SupportedItem_t> plmn_list = {};
 
   for (int i = 0; i < amf_cfg.plmn_list.size(); i++) {
@@ -2135,11 +2138,33 @@ std::vector<SupportedItem_t> amf_n2::get_common_plmn(
       for (int k = 0; k < list[j].b_plmn_list.size(); k++) {
         if (!(list[j].b_plmn_list[k].mcc.compare(amf_cfg.plmn_list[i].mcc)) &&
             !(list[j].b_plmn_list[k].mnc.compare(amf_cfg.plmn_list[i].mnc))) {
-          // TODO: compare NSSAI
-          plmn_list.push_back(list[j]);
+          Logger::amf_n2().debug(
+              "Common PLMN MCC %s, MNC %s", amf_cfg.plmn_list[i].mcc.c_str(),
+              amf_cfg.plmn_list[i].mnc.c_str());
+          // Get the common S-NSSAI
+          SupportedItem_t item                       = {};
+          PlmnSliceSupport_t plmn_slice_support_item = {};
+          item.tac                                   = list[j].tac;
+          plmn_slice_support_item.mcc = list[j].b_plmn_list[k].mcc;
+          plmn_slice_support_item.mnc = list[j].b_plmn_list[k].mnc;
+
+          for (auto s1 : list[j].b_plmn_list[k].slice_list) {
+            for (auto s2 : amf_cfg.plmn_list[i].slice_list) {
+              if ((s1.sst.compare(std::to_string(s2.sst)) == 0) and
+                  (s1.sd.compare(std::to_string(s2.sd)) == 0)) {
+                Logger::amf_n2().debug(
+                    "Common S-NSSAI (SST %s, SD %s)", s1.sst.c_str(),
+                    s1.sd.c_str());
+                plmn_slice_support_item.slice_list.push_back(s1);
+              }
+            }
+          }
+
+          item.b_plmn_list.push_back(plmn_slice_support_item);
+          result.push_back(item);
         }
       }
     }
   }
-  return plmn_list;
+  // return plmn_list;
 }
