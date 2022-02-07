@@ -404,7 +404,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
             "PLMN MCC %s, MNC %s", p.mcc.c_str(), p.mnc.c_str());
         for (auto s : p.slice_list) {
           Logger::amf_n2().debug(
-              "S-NSSAI (SST %d, SD %s)", s.sst.c_str(), s.sd.c_str());
+              "S-NSSAI (SST %s, SD %s)", s.sst.c_str(), s.sd.c_str());
         }
       }
     }
