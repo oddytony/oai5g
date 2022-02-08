@@ -4027,8 +4027,9 @@ bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
   gc = amf_n2_inst->assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
 
   // Find the common NSSAIs between Requested NSSAIs and Subscribed NSSAIs
-  std::vector<oai::amf::model::Snssai> common_snssais =
-      nssai.getDefaultSingleNssais();
+  std::vector<oai::amf::model::Snssai> common_snssais;
+
+  //    nssai.getDefaultSingleNssais();
 
   for (auto ta : gc->s_ta_list) {
     for (auto p : ta.b_plmn_list) {
@@ -4050,10 +4051,12 @@ bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
     }
   }
 
+  nssai.setDefaultSingleNssais(common_snssais);
+
   // Print out the list of subscribed NSSAIs
   for (auto n : nssai.getDefaultSingleNssais()) {
     Logger::amf_n1().debug(
-        "S-NSSAI (SST %d, SD %s)", n.getSst(), n.getSd().c_str());
+        "Default Single NSSAIs: S-NSSAI (SST %d, SD %s)", n.getSst(), n.getSd().c_str());
   }
 
   return true;

@@ -85,6 +85,9 @@ void Nssai::unsetSupportedFeatures() {
 std::vector<Snssai>& Nssai::getDefaultSingleNssais() {
   return m_DefaultSingleNssais;
 }
+void Nssai::setDefaultSingleNssais(std::vector<Snssai>& snssais) {
+  m_DefaultSingleNssais = snssais;
+}
 std::vector<Snssai>& Nssai::getSingleNssais() {
   return m_SingleNssais;
 }

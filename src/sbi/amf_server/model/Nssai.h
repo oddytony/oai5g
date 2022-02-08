@@ -75,6 +75,7 @@ class Nssai {
   ///
   /// </summary>
   std::vector<Snssai>& getDefaultSingleNssais();
+  void setDefaultSingleNssais(std::vector<Snssai>& snssais);
   /// <summary>
   ///
   /// </summary>
