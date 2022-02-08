@@ -3702,7 +3702,8 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
   // re-allocation procedure will be executed to reroute the Registration "
   // Request to an appropriate AMF
 
-  Logger::amf_n1().debug("Verifying whether this AMF can handle the request");
+  Logger::amf_n1().debug(
+      "Verifying whether this AMF can handle the request...");
 
   /*
   // Check if the AMF can serve all the requested S-NSSAIs
@@ -3727,7 +3728,7 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
   // Check that AMF can process the Requested NSSAIs or not
   if (check_subscribed_nssai(nc, nssai)) {
     Logger::amf_n1().debug(
-        "Current AMF can handle the Requested/Subscribed NSSAIs, do not need "
+        "Current AMF can handle the Requested/Subscribed NSSAIs, no need "
         "to perform AMF Re-allocation procedure");
     return false;
   }

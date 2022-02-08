@@ -1747,28 +1747,18 @@ void amf_n11::curl_http_client(
         response_json = {};
         return;
       }
-      // Get the ProblemDetails
-      try {
-        response_json = nlohmann::json::parse(response);
-      } catch (nlohmann::json::exception& e) {
-        Logger::amf_n11().info("Could not get JSON content from the response");
-        response_json = {};
-      }
-
-      Logger::amf_n11().debug("Response code %d", httpCode);
-      return;
     }
 
-    if (!is_response_ok) {
-      try {
-        response_json = nlohmann::json::parse(response);
-      } catch (nlohmann::json::exception& e) {
-        Logger::amf_n11().info("Could not get JSON content from the response");
-      }
-
-      Logger::amf_n11().info(
-          "Get response with Json content: %s", response_json.dump().c_str());
+    try {
+      response_json = nlohmann::json::parse(response);
+    } catch (nlohmann::json::exception& e) {
+      Logger::amf_n11().info("Could not get JSON content from the response");
+      response_json = {};
     }
+
+    Logger::amf_n11().info(
+        "Get response with Json content: %s", response_json.dump().c_str());
+
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
   }
