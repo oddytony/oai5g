@@ -609,6 +609,8 @@ int _5GSMobilityIdentity::suci_decodefrombuffer(
       decoded_size++;
       supi_format_imsi->homeNetworkPKI = octet;
       string msin                      = "";
+      // TODO: get MSIN according to Protection Scheme ID to support
+      // ECIES scheme profile A/B
       int digit_low = 0, digit_high = 0, numMsin = ie_len - decoded_size;
       for (int i = 0; i < numMsin; i++) {
         octet = *(buf + decoded_size);
