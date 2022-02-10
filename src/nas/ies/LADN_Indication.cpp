@@ -74,8 +74,8 @@ int LADN_Indication::encode2buffer(uint8_t* buf, int len) {
   }
   int encoded_size = 0;
   if (_iei) {
-    ENCODE_U8(buf, _iei, encoded_size);
-    ENCODE_U16(buf, length - 3, encoded_size);
+    ENCODE_U8(buf + encoded_size, _iei, encoded_size);
+    ENCODE_U16(buf + encoded_size, length - 3, encoded_size);
     for (int i = 0; i < LADN.size(); i++) {
       *(buf + encoded_size) = blength(LADN.at(i));
       encoded_size++;
@@ -99,13 +99,13 @@ int LADN_Indication::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
     decoded_size++;
   }
   length = 0;
-  DECODE_U16(buf, length, decoded_size);
+  DECODE_U16(buf + decoded_size, length, decoded_size);
   Logger::nas_mm().debug("Decoded LADN_Indication len (%d)", length);
   int len_ie      = length;
   uint8_t len_dnn = 0;
   bstring dnn;
   while (len_ie) {
-    DECODE_U8(buf, len_dnn, decoded_size);
+    DECODE_U8(buf + decoded_size, len_dnn, decoded_size);
     len_ie--;
     decode_bstring(&dnn, len_dnn, (buf + decoded_size), len - decoded_size);
     decoded_size += len_dnn;
