@@ -1608,11 +1608,12 @@ bool amf_n1::_5g_aka_confirmation_from_ausf(
   msgBody = confirmationdata_j.dump();
 
   // TODO: Should be updated
-  uint8_t http_version = 1;
+  uint8_t http_version   = 1;
+  uint32_t response_code = 0;
   if (amf_cfg.support_features.use_http2) http_version = 2;
 
   amf_n11_inst->curl_http_client(
-      remoteUri, "PUT", msgBody, response, http_version);
+      remoteUri, "PUT", msgBody, response, response_code, http_version);
 
   free_wrapper((void**) &resStar_s);
   try {

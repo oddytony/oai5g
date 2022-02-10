@@ -85,6 +85,7 @@ amf_config::amf_config() {
   smf_pool                                = {};
   support_features.enable_nf_registration = false;
   support_features.enable_nrf_selection   = false;
+  support_features.enable_external_nrf    = false;
   support_features.enable_smf_selection   = false;
   support_features.enable_external_ausf   = false;
   support_features.enable_external_udm    = false;
@@ -259,6 +260,14 @@ int amf_config::load(const std::string& config_file) {
       support_features.enable_nrf_selection = true;
     } else {
       support_features.enable_nrf_selection = false;
+    }
+
+    support_features_cfg.lookupValue(
+        AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_NRF, opt);
+    if (boost::iequals(opt, "yes")) {
+      support_features.enable_external_nrf = true;
+    } else {
+      support_features.enable_external_nrf = false;
     }
 
     support_features_cfg.lookupValue(
@@ -532,7 +541,7 @@ int amf_config::load(const std::string& config_file) {
     }
 
     // NSSF
-    if (support_features.enable_nrf_selection) {
+    if (support_features.enable_external_nssf) {
       const Setting& nssf_cfg       = new_if_cfg[AMF_CONFIG_STRING_NSSF];
       struct in_addr nssf_ipv4_addr = {};
       unsigned int nssf_port        = {};
@@ -723,7 +732,7 @@ void amf_config::display() {
         "    API version ...........: %s", nrf_addr.api_version.c_str());
   }
 
-  if (support_features.enable_nrf_selection) {
+  if (support_features.enable_external_nssf) {
     Logger::config().info("- NSSF:");
     Logger::config().info(
         "    IP Addr ...............: %s", inet_ntoa(nssf_addr.ipv4_addr));
@@ -774,6 +783,9 @@ void amf_config::display() {
   Logger::config().info(
       "    SMF Selection .........: %s",
       support_features.enable_smf_selection ? "Yes" : "No");
+  Logger::config().info(
+      "    External NRF ..........: %s",
+      support_features.enable_external_nrf ? "Yes" : "No");
   Logger::config().info(
       "    External AUSF .........: %s",
       support_features.enable_external_ausf ? "Yes" : "No");
@@ -858,4 +870,5 @@ std::string amf_config::get_nssf_network_slice_selection_information_uri() {
          ":" + std::to_string(nssf_addr.port) + "/nnssf-nsselection/" +
          nssf_addr.api_version + "/network-slice-information";
 }
+
 }  // namespace config

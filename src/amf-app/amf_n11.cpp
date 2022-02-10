@@ -585,8 +585,9 @@ void amf_n11::handle_itti_message(itti_sbi_notify_subscribed_event& itti_msg) {
     std::string body             = json_data.dump();
     nlohmann::json response_json = {};
 
-    std::string url = i.get_notify_uri();
-    curl_http_client(url, "POST", body, response_json);
+    std::string url        = i.get_notify_uri();
+    uint32_t response_code = 0;
+    curl_http_client(url, "POST", body, response_json, response_code);
     // TODO: process the response
   }
   return;
@@ -615,7 +616,8 @@ void amf_n11::handle_itti_message(
   Logger::amf_n11().debug("MSG body: \n %s", body.c_str());
 
   nlohmann::json response_data = {};
-  curl_http_client(url, "GET", body, response_data);
+  uint32_t response_code       = 0;
+  curl_http_client(url, "GET", body, response_data, response_code);
 
   // Notify to the result
   if (itti_msg.promise_id > 0) {
@@ -655,7 +657,8 @@ void amf_n11::handle_itti_message(
       url.c_str());
 
   nlohmann::json response_data = {};
-  curl_http_client(url, "GET", "", response_data);
+  uint32_t response_code       = 0;
+  curl_http_client(url, "GET", "", response_data, response_code);
 
   // Notify to the result
   if (itti_msg.promise_id > 0) {
@@ -904,134 +907,85 @@ bool amf_n11::discover_smf(
   if (!nrf_addr.empty() & !nrf_port.empty() & !nrf_api_version.empty()) {
     url = nrf_addr + ":" + nrf_port + "/nnrf-disc/" + nrf_api_version +
           "/nf-instances?target-nf-type=SMF&requester-nf-type=AMF";
-  } else
+  } else {
     url = std::string(
               inet_ntoa(*((struct in_addr*) &amf_cfg.nrf_addr.ipv4_addr))) +
           ":" + std::to_string(amf_cfg.nrf_addr.port) + "/nnrf-disc/" +
           amf_cfg.nrf_addr.api_version +
           "/nf-instances?target-nf-type=SMF&requester-nf-type=AMF";
-
-  // TODO: use curl_http_client
-
-  curl_global_init(CURL_GLOBAL_ALL);
-  CURL* curl = curl = curl_easy_init();
-
-  if (curl) {
-    CURLcode res               = {};
-    struct curl_slist* headers = nullptr;
-    // headers = curl_slist_append(headers, "charsets: utf-8");
-    headers = curl_slist_append(headers, "content-type: application/json");
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
-    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
-
-    if (http_version == 2) {
-      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-      // we use a self-signed test server, skip verification during debugging
-      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-      curl_easy_setopt(
-          curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE);
-    }
-
-    // Response information
-    long httpCode = {0};
-    std::unique_ptr<std::string> httpData(new std::string());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
-    // curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
-    // curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
-
-    res = curl_easy_perform(curl);
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
-
-    Logger::amf_n11().debug(
-        "NFDiscovery, response from NRF, HTTP Code: %d", httpCode);
-
-    if (httpCode == 200) {
-      Logger::amf_n11().debug("NFDiscovery, got successful response from NRF");
-
-      nlohmann::json response_data = {};
-      try {
-        response_data = nlohmann::json::parse(*httpData.get());
-      } catch (nlohmann::json::exception& e) {
-        Logger::amf_n11().warn(
-            "NFDiscovery, could not parse json from the NRF "
-            "response");
-      }
-      Logger::amf_n11().debug(
-          "NFDiscovery, response from NRF, json data: \n %s",
-          response_data.dump().c_str());
-
-      // Process data to obtain SMF info
-      if (response_data.find("nfInstances") != response_data.end()) {
-        for (auto& it : response_data["nfInstances"].items()) {
-          nlohmann::json instance_json = it.value();
-          // TODO: convert instance_json to SMF profile
-          // TODO: add SMF to the list of available SMF
-          // check with sNSSAI
-          if (instance_json.find("sNssais") != instance_json.end()) {
-            for (auto& s : instance_json["sNssais"].items()) {
-              nlohmann::json Snssai = s.value();
-              if (Snssai["sst"].get<int>() == snssai.sST) {
-                // Match SD (optional) only if it is provided
-                if (Snssai["sd"].empty() or
-                    (snssai.sD.compare(Snssai["sd"].get<std::string>()) == 0)) {
-                  Logger::amf_n11().debug(
-                      "S-NSSAI [SST- %d, SD -%s] is matched for SMF profile",
-                      snssai.sST, snssai.sD.c_str());
-                  result = true;
-                  break;  // NSSAI is included in the list of supported slices
-                          // from SMF
-                }
-              }
-            }
-          }
-
-          if (!result) {
-            Logger::amf_n11().debug("S-NSSAI is not matched for SMF profile");
-            // continue;
-          }
-
-          // TODO: check DNN
-          // TODO: PLMN (need to add plmnList into NRF profile, SMF profile)
-          // for now, just IP addr of SMF of the first NF instance
-          if (instance_json.find("ipv4Addresses") != instance_json.end()) {
-            if (instance_json["ipv4Addresses"].size() > 0)
-              smf_addr =
-                  instance_json["ipv4Addresses"].at(0).get<std::string>();
-          }
-          if (instance_json.find("nfServices") != instance_json.end()) {
-            if (instance_json["nfServices"].size() > 0) {
-              nlohmann::json nf_service = instance_json["nfServices"].at(0);
-              if (nf_service.find("versions") != nf_service.end()) {
-                nlohmann::json nf_version = nf_service["versions"].at(0);
-                if (nf_version.find("apiVersionInUri") != nf_version.end()) {
-                  smf_api_version =
-                      nf_version["apiVersionInUri"].get<std::string>();
-                }
-              }
-            }
-          }
-
-          // Break after first matching SMF instance for requested S-NSSAI
-          if (result) break;
-        }
-      }
-      Logger::amf_n11().debug(
-          "NFDiscovery, SMF Addr: %s, SMF Api Version: %s", smf_addr.c_str(),
-          smf_api_version.c_str());
-    } else {
-      Logger::amf_n11().warn("NFDiscovery, could not get response from NRF");
-      result = false;
-    }
-
-    curl_slist_free_all(headers);
-    curl_easy_cleanup(curl);
   }
-  curl_global_cleanup();
+
+  nlohmann::json response_data = {};
+  uint32_t response_code       = 0;
+  curl_http_client(url, "GET", "", response_data, response_code);
+
+  Logger::amf_n11().debug(
+      "NFDiscovery, response from NRF, json data: \n %s",
+      response_data.dump().c_str());
+
+  if (response_code != 200) {
+    Logger::amf_n11().warn("NFDiscovery, could not get response from NRF");
+    result = false;
+  } else {
+    // Process data to obtain SMF info
+    if (response_data.find("nfInstances") != response_data.end()) {
+      for (auto& it : response_data["nfInstances"].items()) {
+        nlohmann::json instance_json = it.value();
+        // TODO: convert instance_json to SMF profile
+        // TODO: add SMF to the list of available SMF
+        // check with sNSSAI
+        if (instance_json.find("sNssais") != instance_json.end()) {
+          for (auto& s : instance_json["sNssais"].items()) {
+            nlohmann::json Snssai = s.value();
+            if (Snssai["sst"].get<int>() == snssai.sST) {
+              // Match SD (optional) only if it is provided
+              if (Snssai["sd"].empty() or
+                  (snssai.sD.compare(Snssai["sd"].get<std::string>()) == 0)) {
+                Logger::amf_n11().debug(
+                    "S-NSSAI [SST- %d, SD -%s] is matched for SMF profile",
+                    snssai.sST, snssai.sD.c_str());
+                result = true;
+                break;  // NSSAI is included in the list of supported slices
+                        // from SMF
+              }
+            }
+          }
+        }
+
+        if (!result) {
+          Logger::amf_n11().debug("S-NSSAI is not matched for SMF profile");
+          // continue;
+        }
+
+        // TODO: check DNN
+        // TODO: PLMN (need to add plmnList into NRF profile, SMF profile)
+        // for now, just IP addr of SMF of the first NF instance
+        if (instance_json.find("ipv4Addresses") != instance_json.end()) {
+          if (instance_json["ipv4Addresses"].size() > 0)
+            smf_addr = instance_json["ipv4Addresses"].at(0).get<std::string>();
+        }
+        if (instance_json.find("nfServices") != instance_json.end()) {
+          if (instance_json["nfServices"].size() > 0) {
+            nlohmann::json nf_service = instance_json["nfServices"].at(0);
+            if (nf_service.find("versions") != nf_service.end()) {
+              nlohmann::json nf_version = nf_service["versions"].at(0);
+              if (nf_version.find("apiVersionInUri") != nf_version.end()) {
+                smf_api_version =
+                    nf_version["apiVersionInUri"].get<std::string>();
+              }
+            }
+          }
+        }
+
+        // Break after first matching SMF instance for requested S-NSSAI
+        if (result) break;
+      }
+    }
+    Logger::amf_n11().debug(
+        "NFDiscovery, SMF Addr: %s, SMF Api Version: %s", smf_addr.c_str(),
+        smf_api_version.c_str());
+  }
+
   return result;
 }
 
@@ -1065,61 +1019,17 @@ void amf_n11::register_nf_instance(
 
   // TODO: use curl_http_client
 
-  if (curl) {
-    CURLcode res               = {};
-    struct curl_slist* headers = nullptr;
-    // headers = curl_slist_append(headers, "charsets: utf-8");
-    headers = curl_slist_append(headers, "content-type: application/json");
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
-    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
-    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
+  nlohmann::json response_data = {};
+  uint32_t response_code       = 0;
+  curl_http_client(
+      url, "PUT", body, response_data, response_code, http_version);
 
-    if (http_version == 2) {
-      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-      // we use a self-signed test server, skip verification during debugging
-      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-      curl_easy_setopt(
-          curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE);
-    }
+  Logger::amf_n11().debug(
+      "NF Registration, response from NRF, json data: \n %s",
+      response_data.dump().c_str());
 
-    // Response information.
-    long httpCode = {0};
-    std::unique_ptr<std::string> httpData(new std::string());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
-
-    res = curl_easy_perform(curl);
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
-
-    Logger::amf_n11().debug(
-        "NFDiscovery, response from NRF, HTTP Code: %d", httpCode);
-
-    if (httpCode == 200) {
-      Logger::amf_n11().debug(
-          "NFRegistration, got successful response from NRF");
-
-      nlohmann::json response_data = {};
-      try {
-        response_data = nlohmann::json::parse(*httpData.get());
-      } catch (nlohmann::json::exception& e) {
-        Logger::amf_n11().warn(
-            "NFDiscovery, could not parse json from the NRF "
-            "response");
-      }
-      Logger::amf_n11().debug(
-          "NFDiscovery, response from NRF, json data: \n %s",
-          response_data.dump().c_str());
-
-      curl_slist_free_all(headers);
-      curl_easy_cleanup(curl);
-    }
-    curl_global_cleanup();
+  if (response_code == 201) {
+    Logger::amf_n11().debug("NFRegistration, got successful response from NRF");
   }
 }
 
@@ -1145,70 +1055,26 @@ bool amf_n11::send_ue_authentication_request(
   Logger::amf_n11().debug(
       "Send UE Authentication Request to AUSF, msg body: \n %s", body.c_str());
 
-  // TODO: use curl_http_client
+  nlohmann::json response_data = {};
+  uint32_t response_code       = 0;
+  curl_http_client(url, "POST", body, response_data, response_code);
 
-  curl_global_init(CURL_GLOBAL_ALL);
-  CURL* curl = curl = curl_easy_init();
+  Logger::amf_n11().debug(
+      "UE Authentication, response from AUSF, HTTP Code: %d", response_code);
 
-  if (curl) {
-    CURLcode res               = {};
-    struct curl_slist* headers = nullptr;
-    // headers = curl_slist_append(headers, "charsets: utf-8");
-    headers = curl_slist_append(headers, "content-type: application/json");
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, CURL_TIMEOUT_MS);
-    curl_easy_setopt(curl, CURLOPT_INTERFACE, amf_cfg.n11.if_name.c_str());
-
-    if (http_version == 2) {
-      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-      // we use a self-signed test server, skip verification during debugging
-      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-      curl_easy_setopt(
-          curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE);
-    }
-
-    // Response information
-    long httpCode = {0};
-    std::unique_ptr<std::string> httpData(new std::string());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
-    res = curl_easy_perform(curl);
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
-
+  if ((response_code == 200) or
+      (response_code == 201)) {  // TODO: remove hardcoded value
     Logger::amf_n11().debug(
-        "UE Authentication, response from AUSF, HTTP Code: %d", httpCode);
+        "UE Authentication, response from AUSF\n, %s ",
+        response_data.dump().c_str());
+    from_json(response_data, ue_auth_ctx);
 
-    if ((httpCode == 200) or
-        (httpCode == 201)) {  // TODO: remove hardcoded value
-      try {
-        std::string tmp = *httpData.get();
-        nlohmann::json::parse(tmp.c_str()).get_to(ue_auth_ctx);
-        Logger::amf_n11().debug(
-            "UE Authentication, response from AUSF\n, %s ", tmp.c_str());
-      } catch (nlohmann::json::exception& e) {
-        Logger::amf_n11().warn(
-            "UE Authentication, could not parse JSON from the AUSF "
-            "response");
-        // TODO: error handling
-        return false;
-      }
-
-    } else {
-      Logger::amf_n11().warn(
-          "UE Authentication, could not get response from AUSF");
-      return false;
-    }
-
-    curl_slist_free_all(headers);
-    curl_easy_cleanup(curl);
+  } else {
+    Logger::amf_n11().warn(
+        "UE Authentication, could not get response from AUSF");
+    return false;
   }
-  curl_global_cleanup();
+
   return true;
 }
 
@@ -1657,7 +1523,8 @@ void amf_n11::curl_http_client(
 //-----------------------------------------------------------------------------------------------------
 void amf_n11::curl_http_client(
     std::string remote_uri, std::string method, std::string msg_body,
-    nlohmann::json& response_json, uint8_t http_version) {
+    nlohmann::json& response_json, uint32_t& response_code,
+    uint8_t http_version) {
   Logger::amf_n11().info("Send HTTP message to %s", remote_uri.c_str());
   Logger::amf_n11().info("HTTP message Body: %s", msg_body.c_str());
 
@@ -1768,5 +1635,19 @@ void amf_n11::curl_http_client(
   if (body_data) {
     free(body_data);
     body_data = NULL;
+  }
+}
+
+//------------------------------------------------------------------------------
+void amf_n11::get_nrf_uri(std::string& nrf_uri) {
+  if (!amf_cfg.support_features.enable_nrf_selection) {
+    // Get NRF info from configuration file
+    nrf_uri = std::string(
+                  inet_ntoa(*((struct in_addr*) &amf_cfg.nrf_addr.ipv4_addr))) +
+              ":" + std::to_string(amf_cfg.nrf_addr.port) + "/nnrf-disc/" +
+              amf_cfg.nrf_addr.api_version + "/nf-instances";
+
+  } else {  // Get NRF info from NSSF
+    // TODO:
   }
 }

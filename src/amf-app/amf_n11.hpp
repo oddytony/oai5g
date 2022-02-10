@@ -83,7 +83,8 @@ class amf_n11 {
 
   void curl_http_client(
       std::string remote_uri, std::string method, std::string msg_body,
-      nlohmann::json& response_json, uint8_t http_version = 1);
+      nlohmann::json& response_json, uint32_t& response_code,
+      uint8_t http_version = 1);
 
   void curl_http_client(
       std::string& remote_uri, std::string& json_data, std::string& n1sm_msg,
@@ -106,6 +107,8 @@ class amf_n11 {
   bool send_ue_authentication_request(
       oai::amf::model::AuthenticationInfo& auth_info,
       oai::amf::model::UEAuthenticationCtx& ue_auth_ctx, uint8_t http_version);
+
+  void get_nrf_uri(std::string& nrf_uri);
 };
 
 }  // namespace amf_application
