@@ -3843,6 +3843,9 @@ bool amf_n1::check_subscribed_nssai(
     result = true;
 
     // Find the common NSSAIs between Requested NSSAIs and Subscribed NSSAIs
+    Logger::amf_n1().debug(
+        "Find the common NSSAIs between Requested NSSAIs and Subscribed "
+        "NSSAIs");
     std::vector<oai::amf::model::Snssai> common_snssais;
     for (auto s : nc->requestedNssai) {
       std::string sd = std::to_string(s.sd);
@@ -3853,7 +3856,7 @@ bool amf_n1::check_subscribed_nssai(
               (!n.sdIsSet() and sd.empty())) {
             common_snssais.push_back(n);
             Logger::amf_n1().debug(
-                "Found S-NSSAI (SST %d, SD %s)", s.sst, sd.c_str());
+                "Common S-NSSAI (SST %d, SD %s)", s.sst, sd.c_str());
             break;
           }
         }
@@ -3866,7 +3869,7 @@ bool amf_n1::check_subscribed_nssai(
               (!n.sdIsSet() and sd.empty())) {
             common_snssais.push_back(n);
             Logger::amf_n1().debug(
-                "Found S-NSSAI (SST %d, SD %s)", s.sst, sd.c_str());
+                "Common S-NSSAI (SST %d, SD %s)", s.sst, sd.c_str());
             break;
           }
         }
@@ -4056,7 +4059,8 @@ bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
   // Print out the list of subscribed NSSAIs
   for (auto n : nssai.getDefaultSingleNssais()) {
     Logger::amf_n1().debug(
-        "Default Single NSSAIs: S-NSSAI (SST %d, SD %s)", n.getSst(), n.getSd().c_str());
+        "Default Single NSSAIs: S-NSSAI (SST %d, SD %s)", n.getSst(),
+        n.getSd().c_str());
   }
 
   return true;
