@@ -600,7 +600,6 @@ int amf_config::load(const std::string& config_file) {
   }
 
   // Authentication Info
-  // TODO: remove operator_key, random
   try {
     const Setting& auth = amf_cfg[AMF_CONFIG_STRING_AUTHENTICATION];
     auth.lookupValue(
@@ -608,8 +607,6 @@ int amf_config::load(const std::string& config_file) {
     auth.lookupValue(AMF_CONFIG_STRING_AUTH_MYSQL_USER, auth_para.mysql_user);
     auth.lookupValue(AMF_CONFIG_STRING_AUTH_MYSQL_PASS, auth_para.mysql_pass);
     auth.lookupValue(AMF_CONFIG_STRING_AUTH_MYSQL_DB, auth_para.mysql_db);
-    auth.lookupValue(
-        AMF_CONFIG_STRING_AUTH_OPERATOR_KEY, auth_para.operator_key);
     auth.lookupValue(AMF_CONFIG_STRING_AUTH_RANDOM, auth_para.random);
   } catch (const SettingNotFoundException& nfex) {
     Logger::amf_app().error(
@@ -857,6 +854,14 @@ std::string amf_config::get_nrf_nf_discovery_service_uri() {
 }
 
 //------------------------------------------------------------------------------
+std::string amf_config::get_nrf_nf_registration_uri(
+    const std::string& nf_instance_id) {
+  return std::string(inet_ntoa(*((struct in_addr*) &nrf_addr.ipv4_addr))) +
+         ":" + std::to_string(nrf_addr.port) + "/nnrf-nfm/" +
+         nrf_addr.api_version + "/nf-instances/" + nf_instance_id;
+}
+
+//------------------------------------------------------------------------------
 std::string amf_config::get_udm_slice_selection_subscription_data_retrieval_uri(
     const std::string& supi) {
   return std::string(inet_ntoa(*((struct in_addr*) &udm_addr.ipv4_addr))) +
@@ -869,6 +874,13 @@ std::string amf_config::get_nssf_network_slice_selection_information_uri() {
   return std::string(inet_ntoa(*((struct in_addr*) &nssf_addr.ipv4_addr))) +
          ":" + std::to_string(nssf_addr.port) + "/nnssf-nsselection/" +
          nssf_addr.api_version + "/network-slice-information";
+}
+
+//------------------------------------------------------------------------------
+std::string amf_config::get_ausf_ue_authentications_uri() {
+  return std::string(inet_ntoa(*((struct in_addr*) &ausf_addr.ipv4_addr))) +
+         ":" + std::to_string(ausf_addr.port) + "/nausf-auth/" +
+         ausf_addr.api_version + "/ue-authentications";
 }
 
 }  // namespace config

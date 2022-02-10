@@ -124,7 +124,6 @@ typedef struct {
   std::string mysql_user;
   std::string mysql_pass;
   std::string mysql_db;
-  std::string operator_key;
   std::string random;
 } auth_conf;
 
@@ -207,9 +206,11 @@ class amf_config {
   int load(const std::string& config_file);
   int load_interface(const Setting& if_cfg, interface_cfg_t& cfg);
   std::string get_nrf_nf_discovery_service_uri();
+  std::string get_nrf_nf_registration_uri(const std::string& nf_instance_id);
   std::string get_udm_slice_selection_subscription_data_retrieval_uri(
       const std::string& supi);
   std::string get_nssf_network_slice_selection_information_uri();
+  std::string get_ausf_ue_authentications_uri();
 
   void display();
   unsigned int instance;

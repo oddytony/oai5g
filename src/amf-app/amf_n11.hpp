@@ -98,8 +98,7 @@ class amf_n11 {
   bool discover_smf(
       std::string& smf_addr, std::string& smf_api_version,
       const snssai_t snssai, const plmn_t plmn, const std::string dnn,
-      const std::string& nrf_addr = {}, const std::string& nrf_port = {},
-      const std::string& nrf_api_version = {});
+      const std::string& nrf_uri = {});
 
   void register_nf_instance(
       std::shared_ptr<itti_n11_register_nf_instance_request> msg);
