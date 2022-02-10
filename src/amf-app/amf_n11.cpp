@@ -1591,6 +1591,8 @@ void amf_n11::curl_http_client(
     bool is_response_ok  = true;
     Logger::amf_n11().info("Get response with HTTP code (%d)", httpCode);
 
+    response_code = httpCode;
+
     if (static_cast<http_response_codes_e>(httpCode) ==
         http_response_codes_e::HTTP_RESPONSE_CODE_0) {
       Logger::amf_n11().info(
