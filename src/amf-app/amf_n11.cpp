@@ -355,26 +355,50 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
   std::string smf_addr        = {};
   std::string smf_api_version = {};
   if (!psc.get()->smf_available) {
-    if (amf_cfg.support_features.enable_nrf_selection) {
-      if (!discover_smf_from_nsi_info(
-              smf_addr, smf_api_version, psc.get()->snssai, psc.get()->plmn,
-              psc.get()->dnn)) {
-        Logger::amf_n11().error("NRF Selection, no NRF candidate is available");
+    if (amf_cfg.support_features.enable_smf_selection) {
+      // Get NRF URI
+      std::string nrf_uri = {};
+      if (!amf_n11::get_nrf_uri(
+              psc.get()->snssai, psc.get()->plmn, psc.get()->dnn, nrf_uri)) {
+        Logger::amf_n11().error("No NRF is available");
         return;
       }
-    } else if (amf_cfg.support_features.enable_smf_selection) {
       // use NRF to find suitable SMF based on snssai, plmn and dnn
       if (!discover_smf(
               smf_addr, smf_api_version, psc.get()->snssai, psc.get()->plmn,
-              psc.get()->dnn)) {
+              psc.get()->dnn, nrf_uri)) {
         Logger::amf_n11().error("SMF Selection, no SMF candidate is available");
         return;
       }
+
     } else if (!smf_selection_from_configuration(smf_addr, smf_api_version)) {
       Logger::amf_n11().error(
           "No SMF candidate is available (from configuration file)");
       return;
     }
+
+    /*
+        if (amf_cfg.support_features.enable_nrf_selection) {
+          if (!discover_smf_from_nsi_info(
+                  smf_addr, smf_api_version, psc.get()->snssai, psc.get()->plmn,
+                  psc.get()->dnn)) {
+            Logger::amf_n11().error("NRF Selection, no NRF candidate is
+       available"); return;
+          }
+        } else if (amf_cfg.support_features.enable_smf_selection) {
+          // use NRF to find suitable SMF based on snssai, plmn and dnn
+          if (!discover_smf(
+                  smf_addr, smf_api_version, psc.get()->snssai, psc.get()->plmn,
+                  psc.get()->dnn)) {
+            Logger::amf_n11().error("SMF Selection, no SMF candidate is
+       available"); return;
+          }
+        } else if (!smf_selection_from_configuration(smf_addr, smf_api_version))
+       { Logger::amf_n11().error( "No SMF candidate is available (from
+       configuration file)"); return;
+        }
+    */
+
     // store smf info to be used with this PDU session
     psc.get()->smf_available = true;
     psc->smf_addr            = smf_addr;
@@ -1577,15 +1601,85 @@ void amf_n11::curl_http_client(
 }
 
 //------------------------------------------------------------------------------
-void amf_n11::get_nrf_uri(std::string& nrf_uri) {
+bool amf_n11::get_nrf_uri(
+    const snssai_t& snssai, const plmn_t& plmn, const std::string& dnn,
+    std::string& nrf_uri) {
   if (!amf_cfg.support_features.enable_nrf_selection) {
     // Get NRF info from configuration file
     nrf_uri = std::string(
                   inet_ntoa(*((struct in_addr*) &amf_cfg.nrf_addr.ipv4_addr))) +
               ":" + std::to_string(amf_cfg.nrf_addr.port) + "/nnrf-disc/" +
               amf_cfg.nrf_addr.api_version + "/nf-instances";
+    return true;
 
   } else {  // Get NRF info from NSSF
-    // TODO:
+    Logger::amf_n11().debug(
+        "Send NS Selection to NSSF to discover the appropriate NRF");
+
+    bool result = false;
+
+    uint8_t http_version = 1;
+    if (amf_cfg.support_features.use_http2) http_version = 2;
+
+    // Get NSI information from NSSF
+    nlohmann::json slice_info  = {};
+    nlohmann::json snssai_info = {};
+    snssai_info["sst"]         = snssai.sST;
+    if (!snssai.sD.empty()) snssai_info["sd"] = snssai.sD;
+    slice_info["sNssai"]            = snssai_info;
+    slice_info["roamingIndication"] = "NON_ROAMING";
+    // ToDo Add TAI
+
+    std::string nssf_url =
+        amf_cfg.get_nssf_network_slice_selection_information_uri();
+
+    std::string parameters = {};
+    parameters = "?nf-type=AMF&nf-id=" + amf_app_inst->get_nf_instance() +
+                 "&slice-info-request-for-pdu-session=" + slice_info.dump();
+    nssf_url += parameters;
+
+    Logger::amf_n11().debug(
+        "Send Network Slice Information Retrieval during PDU session "
+        "establishment procedure, URL %s",
+        nssf_url.c_str());
+
+    nlohmann::json response_data = {};
+    uint32_t response_code       = 0;
+    curl_http_client(nssf_url, "GET", "", response_data, response_code);
+
+    Logger::amf_n11().debug(
+        "NFDiscovery, response from NRF, json data: \n %s",
+        response_data.dump().c_str());
+    std::string nrf_uri = {};
+
+    if (response_code != 200) {
+      Logger::amf_n11().warn("NS Selection, could not get response from NSSF");
+      result = false;
+    } else {
+      Logger::amf_n11().debug(
+          "NS Selection, got successful response from NSSF");
+
+      Logger::amf_n11().debug(
+          "NS Selection, response from NSSF, json data: \n %s",
+          response_data.dump().c_str());
+
+      // Process data to obtain NRF info
+      if (response_data.find("nsiInformation") != response_data.end()) {
+        if (response_data["nsiInformation"].count("nrfId") > 0) {
+          nrf_uri = response_data["nsiInformation"]["nrfId"].get<std::string>();
+          Logger::amf_n11().debug(
+              "NSI Information is successfully retrieved from NSSF");
+          Logger::amf_n11().debug(
+              "NS Selection, NRF's URI: %s", nrf_uri.c_str());
+          result = true;
+        }
+
+        std::string nsi_id = {};
+        if (response_data["nsiInformation"].count("nsi_id") > 0)
+          nsi_id = response_data["nsiInformation"]["nsiId"].get<std::string>();
+      }
+    }
+
+    return result;
   }
 }

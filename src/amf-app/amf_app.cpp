@@ -91,7 +91,9 @@ amf_app::amf_app(const amf_config& amf_cfg)
   generate_amf_profile();
 
   // Register to NRF if needed
-  if (amf_cfg.support_features.enable_nf_registration) register_to_nrf();
+  if (amf_cfg.support_features.enable_nf_registration and
+      amf_cfg.support_features.enable_external_nrf)
+    register_to_nrf();
 
   timer_id_t tid = itti_inst->timer_setup(
       amf_cfg.statistics_interval, 0, TASK_AMF_APP,

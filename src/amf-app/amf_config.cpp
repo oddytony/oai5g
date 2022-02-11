@@ -719,8 +719,7 @@ void amf_config::display() {
   Logger::config().info(
       "    API version............: %s", sbi_api_version.c_str());
 
-  if (support_features.enable_nf_registration or
-      support_features.enable_smf_selection) {
+  if (support_features.enable_external_nrf) {
     Logger::config().info("- NRF:");
     Logger::config().info(
         "    IP Addr ...............: %s", inet_ntoa(nrf_addr.ipv4_addr));

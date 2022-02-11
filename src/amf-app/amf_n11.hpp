@@ -107,7 +107,9 @@ class amf_n11 {
       oai::amf::model::AuthenticationInfo& auth_info,
       oai::amf::model::UEAuthenticationCtx& ue_auth_ctx, uint8_t http_version);
 
-  void get_nrf_uri(std::string& nrf_uri);
+  bool get_nrf_uri(
+      const snssai_t& snssai, const plmn_t& plmn, const std::string& dnn,
+      std::string& nrf_uri);
 };
 
 }  // namespace amf_application
