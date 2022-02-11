@@ -490,7 +490,12 @@ int amf_config::load(const std::string& config_file) {
           IPV4_STR_ADDR_TO_INADDR(
               util::trim(address).c_str(), ausf_ipv4_addr,
               "BAD IPv4 ADDRESS FORMAT FOR AUSF !");
-          ausf_addr.ipv4_addr   = ausf_ipv4_addr;
+          ausf_addr.ipv4_addr = ausf_ipv4_addr;
+          // We hardcode nrf port from config for the moment
+          if (!(ausf_cfg.lookupValue(AMF_CONFIG_STRING_PORT, ausf_port))) {
+            Logger::amf_app().error(AMF_CONFIG_STRING_PORT "failed");
+            throw(AMF_CONFIG_STRING_PORT "failed");
+          }
           ausf_addr.port        = ausf_port;
           ausf_addr.api_version = "v1";  // TODO: get API version
         }

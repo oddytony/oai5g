@@ -59,7 +59,7 @@ UENetworkCapability::UENetworkCapability(
   _iei       = iei;
   _5g_EEASel = _5gg_EEASel;
   _5g_EIASel = _5gg_EIASel;
-  length     = 4;
+  length     = 4;  // Minimum length
   Logger::nas_mm().debug(
       "decoded UENetworkCapability EA(0x%d),IA(0x%d)", _5g_EEASel, _5g_EIASel);
 }
@@ -86,9 +86,9 @@ uint8_t UENetworkCapability::getEIASel() {
 
 //------------------------------------------------------------------------------
 int UENetworkCapability::encode2buffer(uint8_t* buf, int len) {
-  Logger::nas_mm().debug("encoding UENetworkCapability iei(0x%x)", _iei);
+  Logger::nas_mm().debug("encoding UENetworkCapability IEI (0x%x)", _iei);
   if (len < length) {
-    Logger::nas_mm().error("len is less than %d", length);
+    Logger::nas_mm().error("Len is less than %d", length);
     return 0;
   }
   int encoded_size = 0;
@@ -102,29 +102,41 @@ int UENetworkCapability::encode2buffer(uint8_t* buf, int len) {
     *(buf + encoded_size) = _5g_EIASel;
     encoded_size++;
   } else {
-    //*(buf + encoded_size) = length - 1; encoded_size++;
-    //*(buf + encoded_size) = _value; encoded_size++; encoded_size++;
+    *(buf + encoded_size) = length - 1;
+    encoded_size++;
+    *(buf + encoded_size) = _5g_EEASel;
+    encoded_size++;
+    *(buf + encoded_size) = _5g_EIASel;
+    encoded_size++;
   }
-  Logger::nas_mm().debug("encoded UENetworkCapability len(%d)", encoded_size);
+  Logger::nas_mm().debug("Encoded UENetworkCapability len (%d)", encoded_size);
   return encoded_size;
 }
 
 //------------------------------------------------------------------------------
 int UENetworkCapability::decodefrombuffer(
     uint8_t* buf, int len, bool is_option) {
-  Logger::nas_mm().debug("decoding UENetworkCapability iei(0x%x)", *buf);
+  Logger::nas_mm().debug("Decoding UENetworkCapability IEI");
   int decoded_size = 0;
+  int ie_length    = 0;
   if (is_option) {
+    _iei = *(buf + decoded_size);
     decoded_size++;
   }
   length = *(buf + decoded_size);
   decoded_size++;
+  ie_length = length + decoded_size;
+
   _5g_EEASel = *(buf + decoded_size);
   decoded_size++;
   _5g_EIASel = *(buf + decoded_size);
   decoded_size++;
   Logger::nas_mm().debug(
-      "decoded UENetworkCapability EA(0x%d),IA(0x%d)", _5g_EEASel, _5g_EIASel);
-  Logger::nas_mm().debug("decoded UENetworkCapability len(%d)", decoded_size);
-  return decoded_size;
+      "Decoded UENetworkCapability EA (0x%d), IA (0x%d)", _5g_EEASel,
+      _5g_EIASel);
+  Logger::nas_mm().debug(
+      "Decoded UENetworkCapability len 0x%d, actual length 0x%d", decoded_size,
+      ie_length);
+
+  return ie_length;
 }

@@ -49,6 +49,7 @@ class pdu_session_context {
   bool isn1sm_avaliable;
   std::string dnn;
   std::string smf_addr;
+  std::string smf_port;
   std::string smf_api_version;
   bool smf_available;
   std::string location;
