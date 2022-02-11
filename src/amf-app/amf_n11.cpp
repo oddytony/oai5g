@@ -363,6 +363,7 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
         Logger::amf_n11().error("No NRF is available");
         return;
       }
+      Logger::amf_n11().debug("NRF NF Discover URI: %s", nrf_uri.c_str());
       // use NRF to find suitable SMF based on snssai, plmn and dnn
       if (!discover_smf(
               smf_addr, smf_api_version, psc.get()->snssai, psc.get()->plmn,
@@ -909,7 +910,7 @@ bool amf_n11::discover_smf(
             int sst               = 0;
             std::string sd        = {};
             if (Snssai.count("sst") > 0) sst = Snssai["sst"].get<int>();
-            if (Snssai.count("sd") > 0) sd = Snssai["sst"].get<string>();
+            if (Snssai.count("sd") > 0) sd = Snssai["sd"].get<string>();
             if (sst == snssai.sST) {
               // Match SD (optional) only if it is provided
               if (sd.empty() or (snssai.sD.compare(sd) == 0)) {
