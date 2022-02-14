@@ -71,7 +71,8 @@ class amf_n11 {
       std::string smf_addr, bstring sm_msg, std::string dnn);
 
   bool smf_selection_from_configuration(
-      std::string& smf_addr, std::string& smf_api_version);
+      std::string& smf_addr, std::string& smf_port,
+      std::string& smf_api_version);
   void handle_post_sm_context_response_error(
       long code, std::string cause, bstring n1sm, std::string supi,
       uint8_t pdu_session_id);
@@ -97,9 +98,9 @@ class amf_n11 {
       const std::string dnn);
 
   bool discover_smf(
-      std::string& smf_addr, std::string& smf_api_version,
-      const snssai_t snssai, const plmn_t plmn, const std::string dnn,
-      const std::string& nrf_uri = {});
+      std::string& smf_addr, std::string& smf_port,
+      std::string& smf_api_version, const snssai_t snssai, const plmn_t plmn,
+      const std::string dnn, const std::string& nrf_uri = {});
 
   void register_nf_instance(
       std::shared_ptr<itti_n11_register_nf_instance_request> msg);
