@@ -269,6 +269,8 @@ int amf_config::load(const std::string& config_file) {
     } else {
       support_features.enable_external_nrf = false;
     }
+    // TODO: should be removed
+    support_features.enable_external_nrf = true;
 
     support_features_cfg.lookupValue(
         AMF_CONFIG_STRING_SUPPORT_FEATURES_SMF_SELECTION, opt);
@@ -301,6 +303,10 @@ int amf_config::load(const std::string& config_file) {
     } else {
       support_features.enable_external_nssf = false;
     }
+
+    // TODO: should be removed
+    support_features.enable_external_nssf =
+        support_features.enable_nrf_selection;
 
     support_features_cfg.lookupValue(
         AMF_CONFIG_STRING_SUPPORT_FEATURES_USE_FQDN_DNS, opt);
