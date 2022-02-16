@@ -370,9 +370,12 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
   std::shared_ptr<nas_context> nc = {};
   if (nas_data_ind.is_guti_valid) {
     std::string guti = nas_data_ind.guti;
-    if (is_guti_2_nas_context(guti))
+    if (is_guti_2_nas_context(guti)) {
       nc = guti_2_nas_context(guti);
-    else {
+      // Update Nas Context
+      nc->amf_ue_ngap_id = nas_data_ind.amf_ue_ngap_id;
+      nc->ran_ue_ngap_id = nas_data_ind.ran_ue_ngap_id;
+    } else {
       Logger::amf_n1().error(
           "No existing nas_context with GUTI %s", nas_data_ind.guti.c_str());
       // return;
@@ -534,6 +537,7 @@ void amf_n1::nas_signalling_establishment_request_handle(
     Logger::amf_n1().debug(
         "Existing nas_context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
     // nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
+    set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
   }
 
   uint8_t* buf         = (uint8_t*) bdata(plain_msg);
@@ -1029,6 +1033,9 @@ void amf_n1::registration_request_handle(
       } else if (is_guti_2_nas_context(guti)) {
         nc = guti_2_nas_context(guti);
         set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
+        // Update Nas Context
+        nc->amf_ue_ngap_id                      = amf_ue_ngap_id;
+        nc->ran_ue_ngap_id                      = ran_ue_ngap_id;
         supi2amfId[("imsi-" + nc.get()->imsi)]  = amf_ue_ngap_id;
         supi2ranId[("imsi-" + nc.get()->imsi)]  = ran_ue_ngap_id;
         nc.get()->is_auth_vectors_present       = false;
@@ -1081,9 +1088,10 @@ void amf_n1::registration_request_handle(
     if (is_guti_2_nas_context(guti)) {
       nc = guti_2_nas_context(guti);
       set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
-      supi2amfId[("imsi-" + nc.get()->imsi)] = amf_ue_ngap_id;
-      supi2ranId[("imsi-" + nc.get()->imsi)] = ran_ue_ngap_id;
-
+      nc->amf_ue_ngap_id                      = amf_ue_ngap_id;
+      nc->ran_ue_ngap_id                      = ran_ue_ngap_id;
+      supi2amfId[("imsi-" + nc.get()->imsi)]  = amf_ue_ngap_id;
+      supi2ranId[("imsi-" + nc.get()->imsi)]  = ran_ue_ngap_id;
       nc.get()->is_auth_vectors_present       = false;
       nc.get()->is_current_security_available = false;
       if (nc.get()->security_ctx)
@@ -1110,6 +1118,7 @@ void amf_n1::registration_request_handle(
   } else {
     Logger::amf_n1().debug("Existing nas_context --> Update");
     // nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
+    set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
   }
   nc.get()->ran_ue_ngap_id  = ran_ue_ngap_id;
   nc.get()->amf_ue_ngap_id  = amf_ue_ngap_id;
