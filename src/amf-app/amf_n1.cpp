@@ -2055,12 +2055,10 @@ void amf_n1::authentication_response_handle(
     return;
   } else {
     Logger::amf_n1().debug("Authentication successful by network!");
-    if (!nc.get()->is_current_security_available) {
-      if (!start_security_mode_control_procedure(nc)) {
-        Logger::amf_n1().error("Start SMC procedure failure");
-      } else {
-        // ...
-      }
+    // TODO: To verify UE/AMF behavior according to 3GPP TS 24.501
+    // if (!nc.get()->is_current_security_available) {
+    if (!start_security_mode_control_procedure(nc)) {
+      Logger::amf_n1().error("Start SMC procedure failure");
     }
   }
 }
