@@ -1595,7 +1595,19 @@ bool amf_n11::get_nrf_uri(
       // Process data to obtain NRF info
       if (response_data.find("nsiInformation") != response_data.end()) {
         if (response_data["nsiInformation"].count("nrfId") > 0) {
-          nrf_uri = response_data["nsiInformation"]["nrfId"].get<std::string>();
+          // nrf_uri =
+          // response_data["nsiInformation"]["nrfId"].get<std::string>();
+
+          // TODO: Should be remove when NSSF is updated with NRF Disc URI
+          std::string nrf_id =
+              response_data["nsiInformation"]["nrfId"].get<std::string>();
+          std::vector<std::string> split_result;
+          boost::split(split_result, nrf_id, boost::is_any_of("/"));
+          if (split_result.size() > 2) {
+            nrf_uri = split_result[0] + "/nnrf-disc/" + split_result[2] +
+                      "/nf-instances";
+          }
+
           Logger::amf_n11().debug(
               "NSI Information is successfully retrieved from NSSF");
           Logger::amf_n11().debug(
