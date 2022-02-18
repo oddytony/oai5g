@@ -1603,8 +1603,8 @@ bool amf_n11::get_nrf_uri(
               response_data["nsiInformation"]["nrfId"].get<std::string>();
           std::vector<std::string> split_result;
           boost::split(split_result, nrf_id, boost::is_any_of("/"));
-          if (split_result.size() > 2) {
-            nrf_uri = split_result[0] + "/nnrf-disc/" + split_result[2] +
+          if (split_result.size() > 4) {
+            nrf_uri = split_result[2] + "/nnrf-disc/" + split_result[4] +
                       "/nf-instances";
           }
 
