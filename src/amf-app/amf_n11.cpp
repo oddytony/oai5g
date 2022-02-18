@@ -289,7 +289,7 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
   Logger::amf_n11().debug("Handle ITTI SMF_PDU_SESSION_CREATE_SM_CTX");
 
   if (!amf_n1_inst->is_amf_ue_id_2_nas_context(smf.amf_ue_ngap_id)) {
-    Logger::amf_n2().error(
+    Logger::amf_n11().error(
         "No UE NAS context with amf_ue_ngap_id (0x%x)", smf.amf_ue_ngap_id);
     return;
   }
@@ -340,7 +340,7 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
   psc.get()->plmn.mcc       = smf.plmn.mcc;
   psc.get()->plmn.mnc       = smf.plmn.mnc;
 
-  Logger::amf_n1().debug(
+  Logger::amf_n11().debug(
       "PDU Session Context, NSSAI SST (0x%x) SD %s", psc.get()->snssai.sST,
       psc.get()->snssai.sD.c_str());
 
@@ -1620,10 +1620,7 @@ bool amf_n11::get_nrf_uri(
   if (!amf_cfg.support_features.enable_nrf_selection) {
     // Get NRF info from configuration file if available
     if (amf_cfg.support_features.enable_external_nrf) {
-      nrf_uri = std::string(inet_ntoa(
-                    *((struct in_addr*) &amf_cfg.nrf_addr.ipv4_addr))) +
-                ":" + std::to_string(amf_cfg.nrf_addr.port) + "/nnrf-disc/" +
-                amf_cfg.nrf_addr.api_version + "/nf-instances";
+      nrf_uri = amf_cfg.get_nrf_nf_discovery_service_uri();
       return true;
     } else {
       Logger::amf_n11().debug("No NRF information from the configuration file");
