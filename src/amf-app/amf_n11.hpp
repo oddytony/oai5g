@@ -92,11 +92,6 @@ class amf_n11 {
       std::string& n2sm_msg, uint8_t http_version, uint32_t& response_code,
       uint32_t promise_id = 0);
 
-  bool discover_smf_from_nsi_info(
-      std::string& smf_addr, std::string& smf_api_version,
-      std::string& smf_port, const snssai_t snssai, const plmn_t plmn,
-      const std::string dnn);
-
   bool discover_smf(
       std::string& smf_addr, std::string& smf_port,
       std::string& smf_api_version, const snssai_t snssai, const plmn_t plmn,
