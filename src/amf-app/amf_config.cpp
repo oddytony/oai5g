@@ -64,6 +64,12 @@ amf_config::amf_config() {
   ausf_addr.ipv4_addr.s_addr              = INADDR_ANY;
   ausf_addr.port                          = 80;
   ausf_addr.api_version                   = "v1";
+  udm_addr.ipv4_addr.s_addr               = INADDR_ANY;
+  udm_addr.port                           = 80;
+  udm_addr.api_version                    = "v1";
+  nssf_addr.ipv4_addr.s_addr              = INADDR_ANY;
+  nssf_addr.port                          = 80;
+  nssf_addr.api_version                   = "v1";
   instance                                = 0;
   n2                                      = {};
   n11                                     = {};
@@ -79,9 +85,11 @@ amf_config::amf_config() {
   smf_pool                                = {};
   support_features.enable_nf_registration = false;
   support_features.enable_nrf_selection   = false;
+  support_features.enable_external_nrf    = false;
   support_features.enable_smf_selection   = false;
   support_features.enable_external_ausf   = false;
   support_features.enable_external_udm    = false;
+  support_features.enable_external_nssf   = false;
   support_features.use_fqdn_dns           = false;
   support_features.use_http2              = false;
   // TODO:
@@ -214,8 +222,16 @@ int amf_config::load(const std::string& config_file) {
       for (int j = 0; j < numOfSlice; j++) {
         slice_t slice;
         const Setting& slice_item = slice_list_cfg[j];
-        slice_item.lookupValue(AMF_CONFIG_STRING_SST, slice.sST);
-        slice_item.lookupValue(AMF_CONFIG_STRING_SD, slice.sD);
+        std::string sst           = {};
+        std::string sd            = {};
+        slice_item.lookupValue(AMF_CONFIG_STRING_SST, sst);
+        slice_item.lookupValue(AMF_CONFIG_STRING_SD, sd);
+        try {
+          slice.sst = std::stoi(sst);
+          slice.sd  = std::stoi(sd);
+        } catch (const std::exception& err) {
+          Logger::amf_app().error("Invalid SST/SD");
+        }
         plmn_item.slice_list.push_back(slice);
       }
       plmn_list.push_back(plmn_item);
@@ -247,6 +263,16 @@ int amf_config::load(const std::string& config_file) {
     }
 
     support_features_cfg.lookupValue(
+        AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_NRF, opt);
+    if (boost::iequals(opt, "yes")) {
+      support_features.enable_external_nrf = true;
+    } else {
+      support_features.enable_external_nrf = false;
+    }
+    // TODO: should be removed
+    support_features.enable_external_nrf = true;
+
+    support_features_cfg.lookupValue(
         AMF_CONFIG_STRING_SUPPORT_FEATURES_SMF_SELECTION, opt);
     if (boost::iequals(opt, "yes")) {
       support_features.enable_smf_selection = true;
@@ -269,6 +295,18 @@ int amf_config::load(const std::string& config_file) {
     } else {
       support_features.enable_external_udm = false;
     }
+
+    support_features_cfg.lookupValue(
+        AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_NSSF, opt);
+    if (boost::iequals(opt, "yes")) {
+      support_features.enable_external_nssf = true;
+    } else {
+      support_features.enable_external_nssf = false;
+    }
+
+    // TODO: should be removed
+    support_features.enable_external_nssf =
+        support_features.enable_nrf_selection;
 
     support_features_cfg.lookupValue(
         AMF_CONFIG_STRING_SUPPORT_FEATURES_USE_FQDN_DNS, opt);
@@ -470,8 +508,51 @@ int amf_config::load(const std::string& config_file) {
       }
     }
 
+    // UDM
+    if (support_features.enable_external_udm) {
+      const Setting& udm_cfg       = new_if_cfg[AMF_CONFIG_STRING_UDM];
+      struct in_addr udm_ipv4_addr = {};
+      unsigned int udm_port        = {};
+      std::string udm_api_version  = {};
+
+      if (!support_features.use_fqdn_dns) {
+        udm_cfg.lookupValue(AMF_CONFIG_STRING_IPV4_ADDRESS, address);
+        IPV4_STR_ADDR_TO_INADDR(
+            util::trim(address).c_str(), udm_ipv4_addr,
+            "BAD IPv4 ADDRESS FORMAT FOR UDM !");
+        udm_addr.ipv4_addr = udm_ipv4_addr;
+        if (!(udm_cfg.lookupValue(AMF_CONFIG_STRING_PORT, udm_port))) {
+          Logger::amf_app().error(AMF_CONFIG_STRING_PORT "failed");
+          throw(AMF_CONFIG_STRING_PORT "failed");
+        }
+        udm_addr.port = udm_port;
+
+        if (!(udm_cfg.lookupValue(
+                AMF_CONFIG_STRING_API_VERSION, udm_api_version))) {
+          Logger::amf_app().error(AMF_CONFIG_STRING_API_VERSION "failed");
+          throw(AMF_CONFIG_STRING_API_VERSION "failed");
+        }
+        udm_addr.api_version = udm_api_version;
+      } else {
+        std::string udm_fqdn = {};
+        udm_cfg.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, udm_fqdn);
+        uint8_t addr_type = {};
+        fqdn::resolve(udm_fqdn, address, udm_port, addr_type);
+        if (addr_type != 0) {  // IPv6: TODO
+          throw("DO NOT SUPPORT IPV6 ADDR FOR UDM!");
+        } else {  // IPv4
+          IPV4_STR_ADDR_TO_INADDR(
+              util::trim(address).c_str(), udm_ipv4_addr,
+              "BAD IPv4 ADDRESS FORMAT FOR UDM !");
+          udm_addr.ipv4_addr   = udm_ipv4_addr;
+          udm_addr.port        = udm_port;
+          udm_addr.api_version = "v1";  // TODO: get API version
+        }
+      }
+    }
+
     // NSSF
-    if (support_features.enable_nrf_selection) {
+    if (support_features.enable_external_nssf) {
       const Setting& nssf_cfg       = new_if_cfg[AMF_CONFIG_STRING_NSSF];
       struct in_addr nssf_ipv4_addr = {};
       unsigned int nssf_port        = {};
@@ -530,7 +611,6 @@ int amf_config::load(const std::string& config_file) {
   }
 
   // Authentication Info
-  // TODO: remove operator_key, random
   try {
     const Setting& auth = amf_cfg[AMF_CONFIG_STRING_AUTHENTICATION];
     auth.lookupValue(
@@ -538,8 +618,6 @@ int amf_config::load(const std::string& config_file) {
     auth.lookupValue(AMF_CONFIG_STRING_AUTH_MYSQL_USER, auth_para.mysql_user);
     auth.lookupValue(AMF_CONFIG_STRING_AUTH_MYSQL_PASS, auth_para.mysql_pass);
     auth.lookupValue(AMF_CONFIG_STRING_AUTH_MYSQL_DB, auth_para.mysql_db);
-    auth.lookupValue(
-        AMF_CONFIG_STRING_AUTH_OPERATOR_KEY, auth_para.operator_key);
     auth.lookupValue(AMF_CONFIG_STRING_AUTH_RANDOM, auth_para.random);
   } catch (const SettingNotFoundException& nfex) {
     Logger::amf_app().error(
@@ -623,9 +701,8 @@ void amf_config::display() {
     Logger::config().info("       Slice Support ......:");
     for (int j = 0; j < plmn_list[i].slice_list.size(); j++) {
       Logger::config().info(
-          "           SST, SD ........: %s, %s",
-          plmn_list[i].slice_list[j].sST.c_str(),
-          plmn_list[i].slice_list[j].sD.c_str());
+          "           SST, SD ........: %d, %d", plmn_list[i].slice_list[j].sst,
+          plmn_list[i].slice_list[j].sd);
     }
   }
   Logger::config().info(
@@ -653,8 +730,7 @@ void amf_config::display() {
   Logger::config().info(
       "    API version............: %s", sbi_api_version.c_str());
 
-  if (support_features.enable_nf_registration or
-      support_features.enable_smf_selection) {
+  if (support_features.enable_external_nrf) {
     Logger::config().info("- NRF:");
     Logger::config().info(
         "    IP Addr ...............: %s", inet_ntoa(nrf_addr.ipv4_addr));
@@ -663,7 +739,7 @@ void amf_config::display() {
         "    API version ...........: %s", nrf_addr.api_version.c_str());
   }
 
-  if (support_features.enable_nrf_selection) {
+  if (support_features.enable_external_nssf) {
     Logger::config().info("- NSSF:");
     Logger::config().info(
         "    IP Addr ...............: %s", inet_ntoa(nssf_addr.ipv4_addr));
@@ -679,6 +755,15 @@ void amf_config::display() {
     Logger::config().info("    Port ..................: %d", ausf_addr.port);
     Logger::config().info(
         "    API version ...........: %s", ausf_addr.api_version.c_str());
+  }
+
+  if (support_features.enable_external_udm) {
+    Logger::config().info("- UDM:");
+    Logger::config().info(
+        "    IP Addr ...............: %s", inet_ntoa(udm_addr.ipv4_addr));
+    Logger::config().info("    Port ..................: %d", udm_addr.port);
+    Logger::config().info(
+        "    API version ...........: %s", udm_addr.api_version.c_str());
   }
 
   if (!support_features.enable_smf_selection) {
@@ -706,11 +791,17 @@ void amf_config::display() {
       "    SMF Selection .........: %s",
       support_features.enable_smf_selection ? "Yes" : "No");
   Logger::config().info(
+      "    External NRF ..........: %s",
+      support_features.enable_external_nrf ? "Yes" : "No");
+  Logger::config().info(
       "    External AUSF .........: %s",
       support_features.enable_external_ausf ? "Yes" : "No");
   Logger::config().info(
       "    External UDM ..........: %s",
       support_features.enable_external_udm ? "Yes" : "No");
+  Logger::config().info(
+      "    External NSSF .........: %s",
+      support_features.enable_external_nssf ? "Yes" : "No");
   Logger::config().info(
       "    Use FQDN ..............: %s",
       support_features.use_fqdn_dns ? "Yes" : "No");
@@ -763,6 +854,43 @@ int amf_config::load_interface(
     if_cfg.lookupValue(AMF_CONFIG_STRING_PORT, cfg.port);
   }
   return RETURNok;
+}
+
+//------------------------------------------------------------------------------
+std::string amf_config::get_nrf_nf_discovery_service_uri() {
+  return std::string(inet_ntoa(*((struct in_addr*) &nrf_addr.ipv4_addr))) +
+         ":" + std::to_string(nrf_addr.port) + "/nnrf-disc/" +
+         nrf_addr.api_version + "/nf-instances";
+}
+
+//------------------------------------------------------------------------------
+std::string amf_config::get_nrf_nf_registration_uri(
+    const std::string& nf_instance_id) {
+  return std::string(inet_ntoa(*((struct in_addr*) &nrf_addr.ipv4_addr))) +
+         ":" + std::to_string(nrf_addr.port) + "/nnrf-nfm/" +
+         nrf_addr.api_version + "/nf-instances/" + nf_instance_id;
+}
+
+//------------------------------------------------------------------------------
+std::string amf_config::get_udm_slice_selection_subscription_data_retrieval_uri(
+    const std::string& supi) {
+  return std::string(inet_ntoa(*((struct in_addr*) &udm_addr.ipv4_addr))) +
+         ":" + std::to_string(udm_addr.port) + "/nudm-sdm/" +
+         udm_addr.api_version + "/" + supi + "/nssai";
+}
+
+//------------------------------------------------------------------------------
+std::string amf_config::get_nssf_network_slice_selection_information_uri() {
+  return std::string(inet_ntoa(*((struct in_addr*) &nssf_addr.ipv4_addr))) +
+         ":" + std::to_string(nssf_addr.port) + "/nnssf-nsselection/" +
+         nssf_addr.api_version + "/network-slice-information";
+}
+
+//------------------------------------------------------------------------------
+std::string amf_config::get_ausf_ue_authentications_uri() {
+  return std::string(inet_ntoa(*((struct in_addr*) &ausf_addr.ipv4_addr))) +
+         ":" + std::to_string(ausf_addr.port) + "/nausf-auth/" +
+         ausf_addr.api_version + "/ue-authentications";
 }
 
 }  // namespace config

@@ -34,7 +34,7 @@
 #include "3gpp_29.518.h"
 
 using namespace amf_application;
-using namespace oai::amf::model;
+// using namespace oai::amf::model;
 namespace xgpp_conv {
 
 /*

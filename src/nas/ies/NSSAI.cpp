@@ -92,15 +92,15 @@ int NSSAI::encode2buffer(uint8_t* buf, int len) {
         *(buf + encoded_size) = (S_NSSAI.at(i).sd & 0x00ff0000) >> 16;
         encoded_size++;
         Logger::nas_mm().debug(
-            "Encoded NSSAI len (%x)", *(buf + encoded_size - 1));
+            "Encoded NSSAI SD first octet (%x)", *(buf + encoded_size - 1));
         *(buf + encoded_size) = (S_NSSAI.at(i).sd & 0x0000ff00) >> 8;
         encoded_size++;
         Logger::nas_mm().debug(
-            "Encoded NSSAI len (%x)", *(buf + encoded_size - 1));
+            "Encoded NSSAI SD second octet (%x)", *(buf + encoded_size - 1));
         *(buf + encoded_size) = S_NSSAI.at(i).sd & 0x000000ff;
         encoded_size++;
         Logger::nas_mm().debug(
-            "Encoded NSSAI len (%x)", *(buf + encoded_size - 1));
+            "Encoded NSSAI SD third octet (%x)", *(buf + encoded_size - 1));
       }
       if (S_NSSAI.at(i).mHplmnSst != -1) {
         len_s_nssai += 1;

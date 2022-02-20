@@ -34,9 +34,28 @@ namespace model {
 class AllowedNssai {
  public:
   AllowedNssai();
-  virtual ~AllowedNssai();
+  virtual ~AllowedNssai() = default;
 
-  void validate();
+  /// <summary>
+  /// Validate the current data in the model. Throws a ValidationException on
+  /// failure.
+  /// </summary>
+  void validate() const;
+
+  /// <summary>
+  /// Validate the current data in the model. Returns false on error and writes
+  /// an error message into the given stringstream.
+  /// </summary>
+  bool validate(std::stringstream& msg) const;
+
+  /// <summary>
+  /// Helper overload for validate. Used when one model stores another model and
+  /// calls it's validate. Not meant to be called outside that case.
+  /// </summary>
+  bool validate(std::stringstream& msg, const std::string& pathPrefix) const;
+
+  bool operator==(const AllowedNssai& rhs) const;
+  bool operator!=(const AllowedNssai& rhs) const;
 
   /////////////////////////////////////////////
   /// AllowedNssai members
@@ -44,7 +63,8 @@ class AllowedNssai {
   /// <summary>
   ///
   /// </summary>
-  std::vector<AllowedSnssai>& getAllowedSnssaiList();
+  std::vector<AllowedSnssai> getAllowedSnssaiList() const;
+  void setAllowedSnssaiList(std::vector<AllowedSnssai> const& value);
   /// <summary>
   ///
   /// </summary>

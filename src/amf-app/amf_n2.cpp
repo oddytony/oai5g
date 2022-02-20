@@ -71,7 +71,6 @@ using namespace std;
 extern itti_mw* itti_inst;
 extern amf_n2* amf_n2_inst;
 extern amf_n1* amf_n1_inst;
-extern amf_n11* amf_n11_inst;
 extern amf_config amf_cfg;
 extern amf_app* amf_app_inst;
 extern statistics stacs;
@@ -377,9 +376,8 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
   // Verify PLMN Identity and TAC with configuration and store supportedTAList
   // in gNB context, if verified; else response NG SETUP FAILURE with cause
   // "Unknown PLMN"(9.3.1.2, ts38413)
-  std::vector<SupportedItem_t> common_plmn_list = get_common_plmn(s_ta_list);
-  if (common_plmn_list.size() == 0) {
-    // if (!verifyPlmn(s_ta_list)) {
+  // std::vector<SupportedItem_t> common_plmn_list = get_common_plmn(s_ta_list);
+  if (!get_common_plmn(s_ta_list, gc->s_ta_list)) {
     // encode NG SETUP FAILURE MESSAGE and send back
     void* buffer = calloc(1, BUFFER_SIZE_1024);
     NGSetupFailureMsg ngSetupFailure;
@@ -393,10 +391,9 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
     Logger::amf_n2().error(
         "No common PLMN, encoding NG_SETUP_FAILURE with cause (Unknown PLMN)");
     return;
+
   } else {
-    // store only the common PLMN
-    gc->s_ta_list = common_plmn_list;
-    for (auto i : common_plmn_list) {
+    for (auto i : gc->s_ta_list) {
       gnbItem.plmn_list.push_back(i);
     }
   }
@@ -430,8 +427,8 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
     tmp.mnc = amf_cfg.plmn_list[i].mnc;
     for (int j = 0; j < amf_cfg.plmn_list[i].slice_list.size(); j++) {
       S_Nssai s_tmp;
-      s_tmp.sst = amf_cfg.plmn_list[i].slice_list[j].sST;
-      s_tmp.sd  = amf_cfg.plmn_list[i].slice_list[j].sD;
+      s_tmp.sst = std::to_string(amf_cfg.plmn_list[i].slice_list[j].sst);
+      s_tmp.sd  = amf_cfg.plmn_list[i].slice_list[j].sd;
       tmp.slice_list.push_back(s_tmp);
     }
     plmn_list.push_back(tmp);
@@ -618,7 +615,8 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
 
   if (unc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Failed to get UE NGAP context for ran_ue_ngap_id 0x%x", 21);
+        "Failed to get UE NGAP context for ran_ue_ngap_id 0x%x",
+        ran_ue_ngap_id);
   } else {
     // Store related information into UE NGAP context
     unc.get()->ran_ue_ngap_id   = ran_ue_ngap_id;
@@ -677,6 +675,7 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
       return;
     }
   }
+
   itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
   itti_msg->amf_ue_ngap_id = -1;
   std::shared_ptr<itti_nas_signalling_establishment_request> i =
@@ -1410,8 +1409,8 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
 
   GlobalgNBId* TargetGlobalgNBId = new GlobalgNBId();
   itti_msg.handoverReq->getGlobalRanNodeId(TargetGlobalgNBId);
-  PlmnId* plmn  = new PlmnId();
-  GNB_ID* gnbid = new GNB_ID();
+  ngap::PlmnId* plmn = new ngap::PlmnId();
+  GNB_ID* gnbid      = new GNB_ID();
   TargetGlobalgNBId->getGlobalgNBId(plmn, gnbid);
   std::string mcc = {};
   std::string mnc = {};
@@ -1425,8 +1424,8 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
 
   TAI* tai = new TAI();
   itti_msg.handoverReq->getTAI(tai);
-  PlmnId* plmnOfTAI = new PlmnId();
-  TAC* tac          = new TAC();
+  ngap::PlmnId* plmnOfTAI = new ngap::PlmnId();
+  TAC* tac                = new TAC();
   tai->getTAI(plmnOfTAI, tac);
   string mccOfselectTAI = {};
   string mncOfselectTAI = {};
@@ -1463,8 +1462,8 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
     for (int j = 0; j < amf_cfg.plmn_list[i].slice_list.size(); j++) {
       S_Nssai s_tmp;
       S_NSSAI s_nssai = {};
-      s_nssai.setSst(amf_cfg.plmn_list[i].slice_list[j].sST);
-      s_nssai.setSd(amf_cfg.plmn_list[i].slice_list[j].sD);
+      s_nssai.setSst(amf_cfg.plmn_list[i].slice_list[j].sst);
+      s_nssai.setSd(amf_cfg.plmn_list[i].slice_list[j].sd);
       Allowed_Nssai.push_back(s_nssai);
     }
   }
@@ -1477,7 +1476,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   guami.regionID             = amf_cfg.guami.regionID;
   guami.AmfSetID             = amf_cfg.guami.AmfSetID;
   guami.AmfPointer           = amf_cfg.guami.AmfPointer;
-  PlmnId* m_plmnId           = new PlmnId();
+  ngap::PlmnId* m_plmnId     = new ngap::PlmnId();
   AMFRegionID* m_aMFRegionID = new AMFRegionID();
   AMFSetID* m_aMFSetID       = new AMFSetID();
   AMFPointer* m_aMFPointer   = new AMFPointer();
@@ -1600,11 +1599,11 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
                 supi, curl_responses.begin()->first, psc)) {
           PDUSessionResourceSetupRequestItem_t item = {};
           item.pduSessionId                         = psc.get()->pdu_session_id;
-          item.s_nssai.sst                          = psc.get()->snssai.sST;
-          item.s_nssai.sd                           = psc.get()->snssai.sD;
-          item.pduSessionNAS_PDU                    = nullptr;
-          unsigned int data_len                     = n2_sm.length();
-          unsigned char* data = (unsigned char*) malloc(data_len + 1);
+          item.s_nssai.sst       = std::to_string(psc.get()->snssai.sST);
+          item.s_nssai.sd        = psc.get()->snssai.sD;
+          item.pduSessionNAS_PDU = nullptr;
+          unsigned int data_len  = n2_sm.length();
+          unsigned char* data    = (unsigned char*) malloc(data_len + 1);
           memset(data, 0, data_len + 1);
           memcpy((void*) data, (void*) n2_sm.c_str(), data_len);
           item.pduSessionResourceSetupRequestTransfer.buf  = data;
@@ -2105,10 +2104,10 @@ bool amf_n2::verifyPlmn(vector<SupportedItem_t> list) {
 }
 
 //------------------------------------------------------------------------------
-std::vector<SupportedItem_t> amf_n2::get_common_plmn(
-    std::vector<SupportedItem_t> list) {
+bool amf_n2::get_common_plmn(
+    std::vector<SupportedItem_t> list, std::vector<SupportedItem_t>& result) {
   std::vector<SupportedItem_t> plmn_list = {};
-
+  bool found_common_plmn                 = false;
   for (int i = 0; i < amf_cfg.plmn_list.size(); i++) {
     for (int j = 0; j < list.size(); j++) {
       Logger::amf_n2().debug(
@@ -2120,11 +2119,34 @@ std::vector<SupportedItem_t> amf_n2::get_common_plmn(
       for (int k = 0; k < list[j].b_plmn_list.size(); k++) {
         if (!(list[j].b_plmn_list[k].mcc.compare(amf_cfg.plmn_list[i].mcc)) &&
             !(list[j].b_plmn_list[k].mnc.compare(amf_cfg.plmn_list[i].mnc))) {
-          // TODO: compare NSSAI
-          plmn_list.push_back(list[j]);
+          Logger::amf_n2().debug(
+              "Common PLMN MCC %s, MNC %s", amf_cfg.plmn_list[i].mcc.c_str(),
+              amf_cfg.plmn_list[i].mnc.c_str());
+          // Get the common S-NSSAI
+          SupportedItem_t item                       = {};
+          PlmnSliceSupport_t plmn_slice_support_item = {};
+          item.tac                                   = list[j].tac;
+          plmn_slice_support_item.mcc = list[j].b_plmn_list[k].mcc;
+          plmn_slice_support_item.mnc = list[j].b_plmn_list[k].mnc;
+
+          for (auto s1 : list[j].b_plmn_list[k].slice_list) {
+            for (auto s2 : amf_cfg.plmn_list[i].slice_list) {
+              if ((s1.sst.compare(std::to_string(s2.sst)) == 0) and
+                  (s1.sd.compare(std::to_string(s2.sd)) == 0)) {
+                Logger::amf_n2().debug(
+                    "Common S-NSSAI (SST %s, SD %s)", s1.sst.c_str(),
+                    s1.sd.c_str());
+                plmn_slice_support_item.slice_list.push_back(s1);
+                found_common_plmn = true;
+              }
+            }
+          }
+
+          item.b_plmn_list.push_back(plmn_slice_support_item);
+          result.push_back(item);
         }
       }
     }
   }
-  return plmn_list;
+  return found_common_plmn;
 }

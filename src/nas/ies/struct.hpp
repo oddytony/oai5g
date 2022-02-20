@@ -53,6 +53,7 @@ typedef struct SNSSAI_s {
     return *this;
   }
 } SNSSAI_t;
+
 typedef struct {
   uint8_t ie_type;
   uint8_t ie_len;

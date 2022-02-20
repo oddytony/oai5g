@@ -12,6 +12,9 @@
  */
 
 #include "Snssai.h"
+#include "Helpers.h"
+
+#include <sstream>
 
 namespace oai {
 namespace amf {
@@ -23,10 +26,58 @@ Snssai::Snssai() {
   m_SdIsSet = false;
 }
 
-Snssai::~Snssai() {}
+void Snssai::validate() const {
+  std::stringstream msg;
+  // if (!validate(msg))
+  // {
+  //     throw oai::nssf_server::helpers::ValidationException(msg.str());
+  // }
+}
 
-void Snssai::validate() {
-  // TODO: implement validation
+bool Snssai::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool Snssai::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success                  = true;
+  const std::string _pathPrefix = pathPrefix.empty() ? "Snssai" : pathPrefix;
+
+  /* Sst */ {
+    const int32_t& value               = m_Sst;
+    const std::string currentValuePath = _pathPrefix + ".sst";
+
+    if (value < 0) {
+      success = false;
+      msg << currentValuePath << ": must be greater than or equal to 0;";
+    }
+    if (value > 255) {
+      success = false;
+      msg << currentValuePath << ": must be less than or equal to 255;";
+    }
+  }
+
+  if (sdIsSet()) {
+    const std::string& value           = m_Sd;
+    const std::string currentValuePath = _pathPrefix + ".sd";
+  }
+
+  return success;
+}
+
+bool Snssai::operator==(const Snssai& rhs) const {
+  return
+
+      (getSst() == rhs.getSst()) &&
+
+      ((!sdIsSet() && !rhs.sdIsSet()) ||
+       (sdIsSet() && rhs.sdIsSet() && getSd() == rhs.getSd()))
+
+          ;
+}
+
+bool Snssai::operator!=(const Snssai& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const Snssai& o) {

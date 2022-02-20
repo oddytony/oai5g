@@ -68,8 +68,8 @@ class amf_n2 : public ngap::ngap_app {
   void handle_itti_message(itti_paging& itti_msg);
 
   bool verifyPlmn(std::vector<SupportedItem_t> list);
-  std::vector<SupportedItem_t> get_common_plmn(
-      std::vector<SupportedItem_t> list);
+  bool get_common_plmn(
+      std::vector<SupportedItem_t> list, std::vector<SupportedItem_t>& result);
 
   std::shared_ptr<ue_ngap_context> ran_ue_id_2_ue_ngap_context(
       const uint32_t& ran_ue_ngap_id) const;

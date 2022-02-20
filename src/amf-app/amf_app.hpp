@@ -37,6 +37,7 @@
 #include "amf_module_from_config.hpp"
 #include "amf_profile.hpp"
 #include "itti.hpp"
+#include "itti_msg_n11.hpp"
 #include "itti_msg_amf_app.hpp"
 #include "ue_context.hpp"
 #include "amf_subscription.hpp"
@@ -74,6 +75,22 @@ class amf_app {
 
   util::uint_generator<uint32_t> tmsi_generator;
 
+  std::map<long, std::shared_ptr<ue_context>> amf_ue_ngap_id2ue_ctx;
+  mutable std::shared_mutex m_amf_ue_ngap_id2ue_ctx;
+  std::map<std::string, std::shared_ptr<ue_context>> ue_ctx_key;
+  mutable std::shared_mutex m_ue_ctx_key;
+
+  std::map<std::string, std::shared_ptr<ue_context>> supi2ue_ctx;
+  mutable std::shared_mutex m_supi2ue_ctx;
+
+  mutable std::shared_mutex m_curl_handle_responses_n2_sm;
+  std::map<uint32_t, boost::shared_ptr<boost::promise<std::string>>>
+      curl_handle_responses_n2_sm;
+
+  mutable std::shared_mutex m_curl_handle_responses_n11;
+  std::map<uint32_t, boost::shared_ptr<boost::promise<nlohmann::json>>>
+      curl_handle_responses_n11;
+
  public:
   explicit amf_app(const amf_config& amf_cfg);
   amf_app(amf_app const&) = delete;
@@ -83,6 +100,7 @@ class amf_app {
   // itti handlers
   void handle_itti_message(itti_nas_signalling_establishment_request& itti_msg);
   void handle_itti_message(itti_n1n2_message_transfer_request& itti_msg);
+  void handle_itti_message(itti_sbi_n1_message_notification& itti_msg);
 
   bool is_amf_ue_id_2_ue_context(const long& amf_ue_ngap_id) const;
   std::shared_ptr<ue_context> amf_ue_id_2_ue_context(
@@ -112,9 +130,7 @@ class amf_app {
   bool get_pdu_sessions_context(
       const string& supi,
       std::vector<std::shared_ptr<pdu_session_context>>& sessions_ctx);
-  // SMF Client response handlers
-  void handle_post_sm_context_response_error_400();
-  // others
+
   uint32_t generate_tmsi();
   bool generate_5g_guti(
       uint32_t ranid, long amfid, std::string& mcc, std::string& mnc,
@@ -154,12 +170,12 @@ class amf_app {
    * Handle NF status notification (e.g., when an UPF becomes available)
    * @param [std::shared_ptr<itti_sbi_notification_data>& ] msg: message
    * @param [oai::amf::model::ProblemDetails& ] problem_details
-   * @param [uint8_t&] http_code
+   * @param [uint32_t&] http_code
    * @return true if handle sucessfully, otherwise return false
    */
   bool handle_nf_status_notification(
       std::shared_ptr<itti_sbi_notification_data>& msg,
-      oai::amf::model::ProblemDetails& problem_details, uint8_t& http_code);
+      oai::amf::model::ProblemDetails& problem_details, uint32_t& http_code);
 
   /*
    * Generate a random UUID for SMF instance
@@ -267,24 +283,15 @@ class amf_app {
     return util::uint_uid_generator<uint64_t>::get_instance().get_uid();
   }
 
-  void trigger_process_response(uint32_t pid, uint32_t http_code);
-
   void add_promise(
       uint32_t pid, boost::shared_ptr<boost::promise<std::string>>& p);
+  void add_promise(
+      uint32_t pid, boost::shared_ptr<boost::promise<nlohmann::json>>& p);
+  void trigger_process_response(uint32_t pid, uint32_t http_code);
   void trigger_process_response(uint32_t pid, std::string n2_sm);
+  void trigger_process_response(uint32_t pid, nlohmann::json& json_data);
 
- private:
-  std::map<long, std::shared_ptr<ue_context>> amf_ue_ngap_id2ue_ctx;
-  mutable std::shared_mutex m_amf_ue_ngap_id2ue_ctx;
-  std::map<std::string, std::shared_ptr<ue_context>> ue_ctx_key;
-  mutable std::shared_mutex m_ue_ctx_key;
-
-  std::map<std::string, std::shared_ptr<ue_context>> supi2ue_ctx;
-  mutable std::shared_mutex m_supi2ue_ctx;
-
-  mutable std::shared_mutex m_curl_handle_responses_n2_sm;
-  std::map<uint32_t, boost::shared_ptr<boost::promise<std::string>>>
-      curl_handle_responses_n2_sm;
+  std::string get_nf_instance() const;
 };
 
 }  // namespace amf_application

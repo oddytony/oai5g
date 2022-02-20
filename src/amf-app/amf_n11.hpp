@@ -59,14 +59,20 @@ class amf_n11 {
   void handle_itti_message(itti_nsmf_pdusession_release_sm_context& itti_msg);
   void handle_itti_message(itti_pdu_session_resource_setup_response& itti_msg);
   void handle_itti_message(itti_sbi_notify_subscribed_event& itti_msg);
+  void handle_itti_message(
+      itti_n11_slice_selection_subscription_data& itti_msg);
+  void handle_itti_message(
+      itti_n11_network_slice_selection_information& itti_msg);
+
+  void handle_itti_message(itti_n11_n1_message_notify& itti_msg);
 
   void send_pdu_session_update_sm_context_request(
       std::string supi, std::shared_ptr<pdu_session_context> psc,
       std::string smf_addr, bstring sm_msg, std::string dnn);
 
   bool smf_selection_from_configuration(
-      std::string& smf_addr, std::string& smf_api_version);
-  void handle_post_sm_context_response_error_400();
+      std::string& smf_addr, std::string& smf_port,
+      std::string& smf_api_version);
   void handle_post_sm_context_response_error(
       long code, std::string cause, bstring n1sm, std::string supi,
       uint8_t pdu_session_id);
@@ -77,20 +83,19 @@ class amf_n11 {
       uint8_t http_version = 1, uint32_t promise_id = 0);
 
   void curl_http_client(
-      std::string remoteUri, std::string Method, std::string msgBody,
-      std::string& response, uint8_t http_version = 1);
+      std::string remote_uri, std::string method, std::string msg_body,
+      nlohmann::json& response_json, uint32_t& response_code,
+      uint8_t http_version = 1);
 
-  bool discover_smf_from_nsi_info(
-      std::string& smf_addr, std::string& smf_api_version,
-      std::string& smf_port, const snssai_t snssai, const plmn_t plmn,
-      const std::string dnn);
+  void curl_http_client(
+      std::string& remote_uri, std::string& json_data, std::string& n1sm_msg,
+      std::string& n2sm_msg, uint8_t http_version, uint32_t& response_code,
+      uint32_t promise_id = 0);
 
   bool discover_smf(
-      std::string& smf_addr, std::string& smf_api_version,
-      std::string& smf_port, const snssai_t snssai, const plmn_t plmn,
-      const std::string dnn, const std::string& nrf_addr = {},
-      const std::string& nrf_port        = {},
-      const std::string& nrf_api_version = {});
+      std::string& smf_addr, std::string& smf_port,
+      std::string& smf_api_version, const snssai_t snssai, const plmn_t plmn,
+      const std::string dnn, const std::string& nrf_uri = {});
 
   void register_nf_instance(
       std::shared_ptr<itti_n11_register_nf_instance_request> msg);
@@ -98,6 +103,10 @@ class amf_n11 {
   bool send_ue_authentication_request(
       oai::amf::model::AuthenticationInfo& auth_info,
       oai::amf::model::UEAuthenticationCtx& ue_auth_ctx, uint8_t http_version);
+
+  bool get_nrf_uri(
+      const snssai_t& snssai, const plmn_t& plmn, const std::string& dnn,
+      std::string& nrf_uri);
 };
 
 }  // namespace amf_application

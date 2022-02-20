@@ -66,7 +66,7 @@
 #define AMF_CONFIG_STRING_API_VERSION "API_VERSION"
 
 #define AMF_CONFIG_STRING_AUSF "AUSF"
-
+#define AMF_CONFIG_STRING_UDM "UDM"
 #define AMF_CONFIG_STRING_NSSF "NSSF"
 
 #define AMF_CONFIG_STRING_SCHED_PARAMS "SCHED_PARAMS"
@@ -105,9 +105,11 @@
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES "SUPPORT_FEATURES"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_NF_REGISTRATION "NF_REGISTRATION"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_NRF_SELECTION "NRF_SELECTION"
+#define AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_NRF "EXTERNAL_NRF"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_SMF_SELECTION "SMF_SELECTION"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_AUSF "EXTERNAL_AUSF"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_UDM "EXTERNAL_UDM"
+#define AMF_CONFIG_STRING_SUPPORT_FEATURES_EXTERNAL_NSSF "EXTERNAL_NSSF"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_USE_FQDN_DNS "USE_FQDN_DNS"
 #define AMF_CONFIG_STRING_SUPPORT_FEATURES_USE_HTTP2 "USE_HTTP2"
 
@@ -122,7 +124,6 @@ typedef struct {
   std::string mysql_user;
   std::string mysql_pass;
   std::string mysql_db;
-  std::string operator_key;
   std::string random;
 } auth_conf;
 
@@ -152,20 +153,20 @@ typedef struct guami_s {
 } guami_t;
 
 typedef struct slice_s {
-  std::string sST;
-  std::string sD;
+  uint8_t sst;
+  uint32_t sd;
   bool operator==(const struct slice_s& s) const {
-    if ((s.sST == this->sST) && (s.sD.compare(this->sD) == 0)) {
+    if ((s.sst == this->sst) && (s.sd == this->sd)) {
       return true;
     } else {
       return false;
     }
   }
   bool operator>(const struct slice_s& s) const {
-    if (this->sST.compare(s.sST) > 0) return true;
-    if (this->sST.compare(s.sST) == 0) {
-      if (this->sD.compare(s.sD) > 0) return true;
-      if (this->sD.compare(s.sD) < 0) return false;
+    if (this->sst > s.sst) return true;
+    if (this->sst == s.sst) {
+      if (this->sd > s.sd) return true;
+      if (this->sd <= s.sd) return false;
     }
   }
 } slice_t;
@@ -192,12 +193,24 @@ typedef struct {
   std::string fqdn;
 } smf_inst_t;
 
+typedef struct nf_addr_s {
+  struct in_addr ipv4_addr;
+  unsigned int port;
+  std::string api_version;
+} nf_addr_t;
+
 class amf_config {
  public:
   amf_config();
   ~amf_config();
   int load(const std::string& config_file);
   int load_interface(const Setting& if_cfg, interface_cfg_t& cfg);
+  std::string get_nrf_nf_discovery_service_uri();
+  std::string get_nrf_nf_registration_uri(const std::string& nf_instance_id);
+  std::string get_udm_slice_selection_subscription_data_retrieval_uri(
+      const std::string& supi);
+  std::string get_nssf_network_slice_selection_information_uri();
+  std::string get_ausf_ue_authentications_uri();
 
   void display();
   unsigned int instance;
@@ -222,30 +235,19 @@ class amf_config {
   struct {
     bool enable_nf_registration;
     bool enable_nrf_selection;
+    bool enable_external_nrf;
     bool enable_smf_selection;
     bool enable_external_ausf;
     bool enable_external_udm;
+    bool enable_external_nssf;
     bool use_fqdn_dns;
     bool use_http2;
   } support_features;
 
-  struct {
-    struct in_addr ipv4_addr;
-    unsigned int port;
-    std::string api_version;
-  } nrf_addr;
-
-  struct {
-    struct in_addr ipv4_addr;
-    unsigned int port;
-    std::string api_version;
-  } ausf_addr;
-
-  struct {
-    struct in_addr ipv4_addr;
-    unsigned int port;
-    std::string api_version;
-  } nssf_addr;
+  nf_addr_t nrf_addr;
+  nf_addr_t ausf_addr;
+  nf_addr_t udm_addr;
+  nf_addr_t nssf_addr;
 };
 
 }  // namespace config

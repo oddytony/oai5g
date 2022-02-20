@@ -12,6 +12,9 @@
  */
 
 #include "ConfiguredSnssai.h"
+#include "Helpers.h"
+
+#include <sstream>
 
 namespace oai {
 namespace amf {
@@ -21,10 +24,41 @@ ConfiguredSnssai::ConfiguredSnssai() {
   m_MappedHomeSnssaiIsSet = false;
 }
 
-ConfiguredSnssai::~ConfiguredSnssai() {}
+void ConfiguredSnssai::validate() const {
+  std::stringstream msg;
+  // if (!validate(msg))
+  // {
+  //     throw oai::nssf_server::helpers::ValidationException(msg.str());
+  // }
+}
 
-void ConfiguredSnssai::validate() {
-  // TODO: implement validation
+bool ConfiguredSnssai::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool ConfiguredSnssai::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success = true;
+  const std::string _pathPrefix =
+      pathPrefix.empty() ? "ConfiguredSnssai" : pathPrefix;
+
+  return success;
+}
+
+bool ConfiguredSnssai::operator==(const ConfiguredSnssai& rhs) const {
+  return
+
+      (getConfiguredSnssai() == rhs.getConfiguredSnssai()) &&
+
+      ((!mappedHomeSnssaiIsSet() && !rhs.mappedHomeSnssaiIsSet()) ||
+       (mappedHomeSnssaiIsSet() && rhs.mappedHomeSnssaiIsSet() &&
+        getMappedHomeSnssai() == rhs.getMappedHomeSnssai()))
+
+          ;
+}
+
+bool ConfiguredSnssai::operator!=(const ConfiguredSnssai& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const ConfiguredSnssai& o) {

@@ -76,7 +76,14 @@ bool S_NSSAI::sDEncode2OctetString(Ngap_SD_t* m_sd) {
 //------------------------------------------------------------------------------
 bool S_NSSAI::sDdecodefromOctetString(Ngap_SD_t* m_sd) {
   if (!m_sd->buf) return false;
-  sd = *(uint32_t*) m_sd->buf & 0x00ffffff;
+  if (m_sd->size == 3) {
+    sd = ((m_sd->buf[0] >> 16) + (m_sd->buf[1] >> 8) + m_sd->buf[2]);
+
+  } else if (m_sd->size == 4) {
+    sd = ((m_sd->buf[1] >> 16) + (m_sd->buf[2] >> 8) + m_sd->buf[3]);
+  }
+  //  sd = *(uint32_t*) m_sd->buf & 0x00ffffff;
+
   return true;
 }
 
@@ -85,6 +92,10 @@ void S_NSSAI::setSst(const std::string charSst) {
   sst = fromString<int>(charSst);
 }
 
+//------------------------------------------------------------------------------
+void S_NSSAI::setSst(const uint8_t s) {
+  sst = s;
+}
 //------------------------------------------------------------------------------
 void S_NSSAI::getSst(std::string& charSst) const {
   charSst = to_string((int) sst);
@@ -101,6 +112,11 @@ void S_NSSAI::setSd(const std::string charSd) {
   sd      = fromString<int>(charSd);
 }
 
+//------------------------------------------------------------------------------
+void S_NSSAI::setSd(const uint32_t s) {
+  sdIsSet = true;
+  sd      = s;
+}
 //------------------------------------------------------------------------------
 bool S_NSSAI::getSd(std::string& s_nssaiSd) const {
   if (sdIsSet) {

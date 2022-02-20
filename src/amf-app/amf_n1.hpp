@@ -37,6 +37,7 @@
 #include <shared_mutex>
 
 #include "3gpp_ts24501.hpp"
+#include "3gpp_29.503.h"
 #include "amf.hpp"
 #include "amf_statistics.hpp"
 #include "bstrlib.h"
@@ -48,6 +49,9 @@
 #include "RegistrationAccept.hpp"
 #include "ue_context.hpp"
 #include "itti.hpp"
+#include "SliceInfoForRegistration.h"
+#include "AuthorizedNetworkSliceInfo.h"
+#include "Nssai.h"
 
 namespace amf_application {
 
@@ -216,6 +220,36 @@ class amf_n1 {
       std::shared_ptr<nas_context>& nc, const timer_id_t& t);
   void implicit_deregistration_timer_timeout(
       timer_id_t timer_id, uint64_t amf_ue_ngap_id);
+
+  bool reroute_registration_request(std::shared_ptr<nas_context>& nc);
+  bool get_slice_selection_subscription_data(
+      const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai);
+  bool get_slice_selection_subscription_data_from_conf_file(
+      const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai);
+  bool check_subscribed_nssai(
+      const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai);
+  bool check_requested_nssai(const std::shared_ptr<nas_context>& nc);
+  bool get_network_slice_selection(
+      const std::shared_ptr<nas_context>& nc, const std::string& nf_instance_id,
+      const oai::amf::model::SliceInfoForRegistration& slice_info,
+      oai::amf::model::AuthorizedNetworkSliceInfo&
+          authorized_network_slice_info);
+  bool get_network_slice_selection_from_conf_file(
+      const std::string& nf_instance_id,
+      const oai::amf::model::SliceInfoForRegistration& slice_info,
+      oai::amf::model::AuthorizedNetworkSliceInfo&
+          authorized_network_slice_info) const;
+  bool get_target_amf(
+      const std::shared_ptr<nas_context>& nc, std::string& target_amf,
+      const oai::amf::model::AuthorizedNetworkSliceInfo&
+          authorized_network_slice_info);
+  bool select_target_amf(
+      const std::shared_ptr<nas_context>& nc, std::string& target_amf,
+      const nlohmann::json& amf_candidate_list);
+
+  void send_n1_message_notity(
+      const std::shared_ptr<nas_context>& nc,
+      const std::string& target_amf) const;
 
  private:
   void ue_initiate_de_registration_handle(

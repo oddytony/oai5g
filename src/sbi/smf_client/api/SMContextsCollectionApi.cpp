@@ -168,7 +168,7 @@ SMContextsCollectionApi::postSmContexts(
         // 4xx - client error  : not OK
         // 5xx - client error  : not OK
         if (localVarResponse.status_code() >= 400) {
-          amf_n11_inst->handle_post_sm_context_response_error_400();
+          // amf_n11_inst->handle_post_sm_context_response_error_400();
           throw ApiException(
               localVarResponse.status_code(),
               utility::conversions::to_string_t(

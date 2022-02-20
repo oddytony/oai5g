@@ -73,7 +73,7 @@ extern "C" {
 #include "dynamic_memory_check.h"
 }
 
-using namespace oai::amf::model;
+// using namespace oai::amf::model;
 using namespace nas;
 using namespace amf_application;
 using namespace config;
@@ -943,6 +943,8 @@ void amf_n1::registration_request_handle(
       std::make_unique<RegistrationRequest>();
 
   regReq->decodefrombuffer(nullptr, (uint8_t*) bdata(reg), blength(reg));
+  nc->registration_request = blk2bstr((uint8_t*) bdata(reg), blength(reg));
+  nc->registration_request_is_set = true;
   bdestroy(reg);  // free buffer
 
   // Find UE context
@@ -1425,12 +1427,12 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
           ngksi = (nc.get()->amf_ue_ngap_id + 1);  // % (NGKSI_MAX_VALUE + 1);
         }
         nc.get()->ngKsi = ngksi;
-        handle_auth_vector_successful_result(nc);
       } else {
         Logger::amf_n1().error("Request authentication vectors failure");
         response_registration_reject_msg(
             _5GMM_CAUSE_ILLEGAL_UE, nc.get()->ran_ue_ngap_id,
             nc.get()->amf_ue_ngap_id);  // cause?
+        return;
       }
     } else {
       Logger::amf_n1().debug(
@@ -1444,8 +1446,10 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
         // TODO: How to handle?
       }
       nc.get()->ngKsi = ngksi;
-      handle_auth_vector_successful_result(nc);
     }
+
+    handle_auth_vector_successful_result(nc);
+
   } else if (nc.get()->is_5g_guti_present) {
     Logger::amf_n1().debug("Start to run UE Identification Request procedure");
     nc.get()->is_auth_vectors_present   = false;
@@ -1585,8 +1589,9 @@ bool amf_n1::_5g_aka_confirmation_from_ausf(
   Logger::amf_n1().debug("_5g_aka_confirmation_from_ausf");
   std::string remoteUri = nc.get()->Href;
 
-  std::string msgBody        = {};
-  std::string response       = {};
+  std::string msgBody = {};
+  // std::string response       = {};
+  nlohmann::json response    = {};
   std::string resStar_string = {};
 
   std::map<std::string, std::string>::iterator iter;
@@ -1612,16 +1617,18 @@ bool amf_n1::_5g_aka_confirmation_from_ausf(
   msgBody = confirmationdata_j.dump();
 
   // TODO: Should be updated
-  uint8_t http_version = 1;
+  uint8_t http_version   = 1;
+  uint32_t response_code = 0;
   if (amf_cfg.support_features.use_http2) http_version = 2;
 
   amf_n11_inst->curl_http_client(
-      remoteUri, "PUT", msgBody, response, http_version);
+      remoteUri, "PUT", msgBody, response, response_code, http_version);
 
   free_wrapper((void**) &resStar_s);
   try {
     ConfirmationDataResponse confirmationdataresponse;
-    nlohmann::json::parse(response.c_str()).get_to(confirmationdataresponse);
+    // nlohmann::json::parse(response.c_str()).get_to(confirmationdataresponse);
+    response.get_to(confirmationdataresponse);
     unsigned char* kseaf_hex =
         conv::format_string_as_hex(confirmationdataresponse.getKseaf());
     memcpy(nc.get()->_5g_av[0].kseaf, kseaf_hex, 32);
@@ -2313,6 +2320,12 @@ void amf_n1::security_mode_complete_handle(
         Logger::amf_n1().debug("No Optional IE RequestedNssai available");
       }
     }
+  }
+
+  // If current AMF can't handle this UE, reroute the Registration Request to
+  // a target AMF
+  if (reroute_registration_request(nc)) {
+    return;
   }
 
   // Encoding REGISTRATION ACCEPT
@@ -3457,13 +3470,8 @@ void amf_n1::initialize_registration_accept(
   for (auto p : amf_cfg.plmn_list) {
     for (auto s : p.slice_list) {
       SNSSAI_t snssai = {};
-      try {
-        snssai.sst = std::stoi(s.sST);
-        snssai.sd  = std::stoi(s.sD);
-      } catch (const std::exception& err) {
-        Logger::amf_n1().warn("Invalid SST/SD");
-        return;
-      }
+      snssai.sst      = s.sst;
+      snssai.sd       = s.sd;
       nssai.push_back(snssai);
     }
   }
@@ -3509,13 +3517,8 @@ void amf_n1::initialize_registration_accept(
         (p.tac == uc.get()->tai.tac)) {
       for (auto s : p.slice_list) {
         SNSSAI_t snssai = {};
-        try {
-          snssai.sst = std::stoi(s.sST);
-          snssai.sd  = std::stoi(s.sD);
-        } catch (const std::exception& err) {
-          Logger::amf_n1().warn("Invalid SST/SD");
-          return;
-        }
+        snssai.sst      = s.sst;
+        snssai.sd       = s.sd;
         nssai.push_back(snssai);
         // TODO: Check with the requested NSSAI from UE
         /*  for (auto rn : nc.get()->requestedNssai) {
@@ -3699,4 +3702,622 @@ bool amf_n1::get_mobile_reachable_timer_timeout(
     const std::shared_ptr<nas_context>& nc) const {
   std::shared_lock lock(m_nas_context);
   return nc.get()->is_mobile_reachable_timer_timeout;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
+  // Verifying whether this AMF can handle the request (if not, AMF
+  // re-allocation procedure will be executed to reroute the Registration "
+  // Request to an appropriate AMF
+
+  Logger::amf_n1().debug(
+      "Verifying whether this AMF can handle the request...");
+
+  /*
+  // Check if the AMF can serve all the requested S-NSSAIs
+  if (check_requested_nssai(nc)) {
+    Logger::amf_n1().debug(
+        "Current AMF can handle all the requested NSSAIs, do not need to "
+        "perform AMF Re-allocation procedure");
+    return false;
+  }
+*/
+
+  // Get NSSAI from UDM
+  oai::amf::model::Nssai nssai = {};
+  if (!get_slice_selection_subscription_data(nc, nssai)) {
+    Logger::amf_n1().debug(
+        "Could not get the Slice Selection Subscription Data from UDM");
+    return false;
+  }
+
+  // TODO: Update subscribed NSSAIs
+
+  // Check that AMF can process the Requested NSSAIs or not
+  if (check_subscribed_nssai(nc, nssai)) {
+    Logger::amf_n1().debug(
+        "Current AMF can handle the Requested/Subscribed NSSAIs, no need "
+        "to perform AMF Re-allocation procedure");
+    return false;
+  }
+
+  // Process NS selection to select the appropriate AMF
+  oai::amf::model::SliceInfoForRegistration slice_info = {};
+  oai::amf::model::AuthorizedNetworkSliceInfo authorized_network_slice_info =
+      {};
+
+  std::vector<SubscribedSnssai> subscribed_snssais;
+  for (auto n : nssai.getDefaultSingleNssais()) {
+    SubscribedSnssai subscribed_snssai = {};
+    subscribed_snssai.setSubscribedSnssai(n);
+    subscribed_snssai.setDefaultIndication(true);
+    subscribed_snssais.push_back(subscribed_snssai);
+  }
+  slice_info.setSubscribedNssai(subscribed_snssais);
+  // TODO: To be verified
+  // slice_info.setRequestedNssai(nssai.getDefaultSingleNssais());
+
+  if (!get_network_slice_selection(
+          nc, amf_app_inst->get_nf_instance(), slice_info,
+          authorized_network_slice_info)) {
+    Logger::amf_n1().debug(
+        "Could not get the Network Slice Selection information from NSSF");
+    return false;
+  }
+
+  // Find the appropriate target AMF
+  std::string target_amf = {};
+  if (get_target_amf(nc, target_amf, authorized_network_slice_info)) {
+    Logger::amf_n1().debug("Target AMF %s", target_amf.c_str());
+    // Send N1MessageNotify to the Target AMF
+    send_n1_message_notity(nc, target_amf);
+    return true;
+  } else {
+    Logger::amf_n1().debug(
+        "Could not find an appropriate target AMF to handle UE");
+    return false;
+  }
+
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::check_requested_nssai(const std::shared_ptr<nas_context>& nc) {
+  std::shared_ptr<ue_context> uc = {};
+  if (!find_ue_context(
+          nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id, uc)) {
+    Logger::amf_n1().warn("Cannot find the UE context");
+    return false;
+  }
+
+  // If there no requested NSSAIs
+  if (nc->requestedNssai.size() == 0) {
+    return false;
+  }
+
+  bool result = false;
+  for (auto p : amf_cfg.plmn_list) {
+    // Check PLMN/TAC
+    if ((uc.get()->tai.mcc.compare(p.mcc) != 0) or
+        (uc.get()->tai.mnc.compare(p.mnc) != 0) or
+        (uc.get()->tai.tac != p.tac)) {
+      continue;
+    }
+
+    result = true;
+    // check if AMF can serve all the requested NSSAIs
+    for (auto n : nc->requestedNssai) {
+      bool found_nssai = false;
+      for (auto s : p.slice_list) {
+        std::string sd = std::to_string(s.sd);
+        if ((s.sst == n.sst) and (s.sd == n.sd)) {
+          found_nssai = true;
+          Logger::amf_n1().debug("Found S-NSSAI (SST %d, SD %d)", s.sst, n.sd);
+          break;
+        }
+      }
+      if (!found_nssai) {
+        result = false;
+        break;
+      }
+    }
+  }
+
+  return result;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::check_subscribed_nssai(
+    const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai) {
+  // Check if the AMF can serve all the requested/subscribed S-NSSAIs
+
+  std::shared_ptr<ue_context> uc = {};
+  if (!find_ue_context(
+          nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id, uc)) {
+    Logger::amf_n1().warn("Cannot find the UE context");
+    return false;
+  }
+
+  bool result = false;
+
+  for (auto p : amf_cfg.plmn_list) {
+    // Check PLMN/TAC
+    if ((uc.get()->tai.mcc.compare(p.mcc) != 0) or
+        (uc.get()->tai.mnc.compare(p.mnc) != 0) or
+        (uc.get()->tai.tac != p.tac)) {
+      continue;
+    }
+
+    result = true;
+
+    // Find the common NSSAIs between Requested NSSAIs and Subscribed NSSAIs
+    Logger::amf_n1().debug(
+        "Find the common NSSAIs between Requested NSSAIs and Subscribed "
+        "NSSAIs");
+    std::vector<oai::amf::model::Snssai> common_snssais;
+    for (auto s : nc->requestedNssai) {
+      std::string sd = std::to_string(s.sd);
+      // Check with default subscribed NSSAIs
+      for (auto n : nssai.getDefaultSingleNssais()) {
+        if (s.sst == n.getSst()) {
+          if ((n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
+              (!n.sdIsSet() and sd.empty())) {
+            common_snssais.push_back(n);
+            Logger::amf_n1().debug(
+                "Common S-NSSAI (SST %d, SD %s)", s.sst, sd.c_str());
+            break;
+          }
+        }
+      }
+
+      // check with other subscribed NSSAIs
+      for (auto n : nssai.getSingleNssais()) {
+        if (s.sst == n.getSst()) {
+          if ((n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
+              (!n.sdIsSet() and sd.empty())) {
+            common_snssais.push_back(n);
+            Logger::amf_n1().debug(
+                "Common S-NSSAI (SST %d, SD %s)", s.sst, sd.c_str());
+            break;
+          }
+        }
+      }
+    }
+
+    // If there no requested NSSAIs or no common NSSAIs between requested NSSAIs
+    // and Subscribed NSSAIs
+    if ((nc->requestedNssai.size() == 0) or (common_snssais.size() == 0)) {
+      // Each S-NSSAI in the Default Single NSSAIs must be in the AMF's Slice
+      // List
+      for (auto n : nssai.getDefaultSingleNssais()) {
+        bool found_nssai = false;
+        for (auto s : p.slice_list) {
+          std::string sd = std::to_string(s.sd);
+          if (s.sst == n.getSst()) {
+            if ((n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
+                (!n.sdIsSet() and sd.empty())) {
+              found_nssai = true;
+              Logger::amf_n1().debug(
+                  "Found S-NSSAI (SST %d, SD %s)", s.sst, n.getSd().c_str());
+              break;
+            }
+          }
+        }
+
+        if (!found_nssai) {
+          result = false;
+          break;
+        }
+      }
+    } else {
+      // check if AMF can serve all the common NSSAIs
+      for (auto n : common_snssais) {
+        bool found_nssai = false;
+        for (auto s : p.slice_list) {
+          std::string sd = std::to_string(s.sd);
+          if (s.sst == n.getSst()) {
+            if ((n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
+                (!n.sdIsSet() and sd.empty())) {
+              found_nssai = true;
+              Logger::amf_n1().debug(
+                  "Found S-NSSAI (SST %d, SD %s)", s.sst, n.getSd().c_str());
+              break;
+            }
+          }
+        }
+
+        if (!found_nssai) {
+          result = false;
+          break;
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::get_slice_selection_subscription_data(
+    const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai) {
+  // TODO: UDM selection (from NRF or configuration file)
+  if (amf_cfg.support_features.enable_external_udm) {
+    Logger::amf_n1().debug(
+        "Get the Slice Selection Subscription Data from UDM");
+
+    std::shared_ptr<ue_context> uc = {};
+    if (!find_ue_context(
+            nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id, uc)) {
+      Logger::amf_n1().warn("Cannot find the UE context");
+      return false;
+    }
+
+    std::shared_ptr<itti_n11_slice_selection_subscription_data> itti_msg =
+        std::make_shared<itti_n11_slice_selection_subscription_data>(
+            TASK_AMF_N1, TASK_AMF_N11);
+
+    // Generate a promise and associate this promise to the ITTI message
+    uint32_t promise_id = amf_app_inst->generate_promise_id();
+    Logger::amf_n1().debug("Promise ID generated %d", promise_id);
+
+    boost::shared_ptr<boost::promise<nlohmann::json>> p =
+        boost::make_shared<boost::promise<nlohmann::json>>();
+    boost::shared_future<nlohmann::json> f = p->get_future();
+    amf_app_inst->add_promise(promise_id, p);
+
+    itti_msg->http_version = 1;
+    itti_msg->supi         = uc.get()->supi;
+    itti_msg->plmn.mcc     = uc.get()->cgi.mcc;
+    itti_msg->plmn.mnc     = uc.get()->cgi.mnc;
+    itti_msg->promise_id   = promise_id;
+
+    int ret = itti_inst->send_msg(itti_msg);
+    if (0 != ret) {
+      Logger::ngap().error(
+          "Could not send ITTI message %s to task TASK_AMF_N11",
+          itti_msg->get_msg_name());
+    }
+
+    bool result = false;
+    boost::future_status status;
+    // wait for timeout or ready
+    status = f.wait_for(boost::chrono::milliseconds(FUTURE_STATUS_TIMEOUT_MS));
+    if (status == boost::future_status::ready) {
+      assert(f.is_ready());
+      assert(f.has_value());
+      assert(!f.has_exception());
+      // Wait for the result from UDM
+      nlohmann::json nssai_json = f.get();
+      if (!nssai_json.empty()) {
+        Logger::ngap().debug(
+            "Got NSSAI from UDM: %s", nssai_json.dump().c_str());
+        from_json(nssai_json, nssai);
+        return true;
+      } else {
+        return false;
+      }
+
+    } else {
+      return false;
+    }
+
+  } else {
+    // TODO: get from the conf file
+    return get_slice_selection_subscription_data_from_conf_file(nc, nssai);
+  }
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
+    const std::shared_ptr<nas_context>& nc, oai::amf::model::Nssai& nssai) {
+  Logger::amf_n1().debug(
+      "Get the Slice Selection Subscription Data from configuration file");
+
+  // For now, use the common NSSAIs, supported by AMF and gNB, as subscribed
+  // NSSAIs
+
+  std::shared_ptr<ue_context> uc = {};
+  if (!find_ue_context(
+          nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id, uc)) {
+    Logger::amf_n1().warn("Cannot find the UE context");
+    return false;
+  }
+
+  // Get gNB Context
+  std::shared_ptr<ue_ngap_context> unc =
+      amf_n2_inst->ran_ue_id_2_ue_ngap_context(nc->ran_ue_ngap_id);
+
+  std::shared_ptr<gnb_context> gc = {};
+  if (!amf_n2_inst->is_assoc_id_2_gnb_context(unc.get()->gnb_assoc_id)) {
+    Logger::amf_n2().error(
+        "No existed gNB context with assoc_id (%d)", unc.get()->gnb_assoc_id);
+    return false;
+  }
+
+  gc = amf_n2_inst->assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
+
+  // Find the common NSSAIs between Requested NSSAIs and Subscribed NSSAIs
+  std::vector<oai::amf::model::Snssai> common_snssais;
+
+  //    nssai.getDefaultSingleNssais();
+
+  for (auto ta : gc->s_ta_list) {
+    for (auto p : ta.b_plmn_list) {
+      for (auto s : p.slice_list) {
+        oai::amf::model::Snssai nssai = {};
+        uint8_t sst                   = 0;
+        try {
+          sst = std::stoi(s.sst);
+        } catch (const std::exception& err) {
+          Logger::amf_app().error("Invalid SST");
+          return false;
+        }
+        nssai.setSst(sst);
+        nssai.setSd(s.sd);
+        Logger::amf_n1().debug(
+            "Added S-NSSAI (SST %d, SD %s)", sst, s.sd.c_str());
+        common_snssais.push_back(nssai);
+      }
+    }
+  }
+
+  nssai.setDefaultSingleNssais(common_snssais);
+
+  // Print out the list of subscribed NSSAIs
+  for (auto n : nssai.getDefaultSingleNssais()) {
+    Logger::amf_n1().debug(
+        "Default Single NSSAIs: S-NSSAI (SST %d, SD %s)", n.getSst(),
+        n.getSd().c_str());
+  }
+
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::get_network_slice_selection(
+    const std::shared_ptr<nas_context>& nc, const std::string& nf_instance_id,
+    const oai::amf::model::SliceInfoForRegistration& slice_info,
+    oai::amf::model::AuthorizedNetworkSliceInfo&
+        authorized_network_slice_info) {
+  Logger::amf_n1().debug(
+      "Get the Network Slice Selection Information from NSSF");
+
+  std::shared_ptr<ue_context> uc = {};
+  if (!find_ue_context(
+          nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id, uc)) {
+    Logger::amf_n1().warn("Cannot find the UE context");
+    return false;
+  }
+
+  if (amf_cfg.support_features.enable_external_nssf) {
+    // Get Authorized Network Slice Info from an  external NSSF
+    std::shared_ptr<itti_n11_network_slice_selection_information> itti_msg =
+        std::make_shared<itti_n11_network_slice_selection_information>(
+            TASK_AMF_N1, TASK_AMF_N11);
+
+    // Generate a promise and associate this promise to the ITTI message
+    uint32_t promise_id = amf_app_inst->generate_promise_id();
+    Logger::amf_n1().debug("Promise ID generated %d", promise_id);
+
+    boost::shared_ptr<boost::promise<nlohmann::json>> p =
+        boost::make_shared<boost::promise<nlohmann::json>>();
+    boost::shared_future<nlohmann::json> f = p->get_future();
+    amf_app_inst->add_promise(promise_id, p);
+
+    itti_msg->http_version   = 1;
+    itti_msg->nf_instance_id = nf_instance_id;
+    itti_msg->slice_info     = slice_info;
+    itti_msg->promise_id     = promise_id;
+    itti_msg->plmn.mcc       = uc.get()->cgi.mcc;
+    itti_msg->plmn.mnc       = uc.get()->cgi.mnc;
+
+    int ret = itti_inst->send_msg(itti_msg);
+    if (0 != ret) {
+      Logger::ngap().error(
+          "Could not send ITTI message %s to task TASK_AMF_N11",
+          itti_msg->get_msg_name());
+    }
+
+    bool result                 = false;
+    boost::future_status status = {};
+    // wait for timeout or ready
+    status = f.wait_for(boost::chrono::milliseconds(FUTURE_STATUS_TIMEOUT_MS));
+    if (status == boost::future_status::ready) {
+      assert(f.is_ready());
+      assert(f.has_value());
+      assert(!f.has_exception());
+      // Wait for the result from NSSF
+      nlohmann::json network_slice_info = f.get();
+      if (!network_slice_info.empty()) {
+        Logger::ngap().debug(
+            "Got Authorized Network Slice Info from NSSF: %s",
+            network_slice_info.dump().c_str());
+        from_json(network_slice_info, authorized_network_slice_info);
+      } else {
+        Logger::ngap().debug(
+            "Could not get Authorized Network Slice Info from NSSF");
+        return false;
+      }
+
+    } else {
+      Logger::ngap().debug(
+          "Could not get Authorized Network Slice Info from NSSF");
+      return false;
+    }
+
+  } else {
+    // TODO: Get Authorized Network Slice Info from local configuration file
+    return get_network_slice_selection_from_conf_file(
+        nf_instance_id, slice_info, authorized_network_slice_info);
+  }
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::get_network_slice_selection_from_conf_file(
+    const std::string& nf_instance_id,
+    const oai::amf::model::SliceInfoForRegistration& slice_info,
+    oai::amf::model::AuthorizedNetworkSliceInfo& authorized_network_slice_info)
+    const {
+  Logger::amf_n1().debug(
+      "Get the Network Slice Selection Information from configuration file");
+  // TODO: Get Authorized Network Slice Info from local configuration file
+
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::get_target_amf(
+    const std::shared_ptr<nas_context>& nc, std::string& target_amf,
+    const oai::amf::model::AuthorizedNetworkSliceInfo&
+        authorized_network_slice_info) {
+  // Get Target AMF from AuthorizedNetworkSliceInfo
+  Logger::amf_n1().debug(
+      "Get the list of candidates AMFs from the AuthorizedNetworkSliceInfo and "
+      "select the appropriate one");
+  std::string target_amf_set = {};
+  std::string nrf_amf_set = {};  // The URI of NRF NFDiscovery Service to query
+                                 // the list of AMF candidates
+
+  if (authorized_network_slice_info.targetAmfSetIsSet()) {
+    target_amf_set = authorized_network_slice_info.getTargetAmfSet();
+    if (authorized_network_slice_info.nrfAmfSetIsSet()) {
+      nrf_amf_set = authorized_network_slice_info.getNrfAmfSet();
+    }
+  } else {
+    return false;
+  }
+
+  std::vector<std::string> candidate_amf_list;
+  if (authorized_network_slice_info.candidateAmfListIsSet()) {
+    candidate_amf_list = authorized_network_slice_info.getCandidateAmfList();
+    // TODO:
+  }
+
+  if (amf_cfg.support_features
+          .enable_smf_selection) {  // TODO: define new option for external NRF
+    // use NRF's URI from conf file if not available
+    if (nrf_amf_set.empty()) {
+      nrf_amf_set = amf_cfg.get_nrf_nf_discovery_service_uri();
+    }
+
+    // Get list of AMF candidates from NRF
+    std::shared_ptr<itti_n11_nf_instance_discovery> itti_msg =
+        std::make_shared<itti_n11_nf_instance_discovery>(
+            TASK_AMF_N1, TASK_AMF_N11);
+
+    // Generate a promise and associate this promise to the ITTI message
+    uint32_t promise_id = amf_app_inst->generate_promise_id();
+    Logger::amf_n1().debug("Promise ID generated %d", promise_id);
+
+    boost::shared_ptr<boost::promise<nlohmann::json>> p =
+        boost::make_shared<boost::promise<nlohmann::json>>();
+    boost::shared_future<nlohmann::json> f = p->get_future();
+    amf_app_inst->add_promise(promise_id, p);
+
+    itti_msg->http_version          = 1;
+    itti_msg->target_amf_set        = target_amf_set;
+    itti_msg->target_amf_set_is_set = true;
+    itti_msg->promise_id            = promise_id;
+    itti_msg->target_nf_type        = "AMF";
+
+    int ret = itti_inst->send_msg(itti_msg);
+    if (0 != ret) {
+      Logger::ngap().error(
+          "Could not send ITTI message %s to task TASK_AMF_N11",
+          itti_msg->get_msg_name());
+    }
+
+    bool result                 = false;
+    boost::future_status status = {};
+    // wait for timeout or ready
+    status = f.wait_for(boost::chrono::milliseconds(FUTURE_STATUS_TIMEOUT_MS));
+    if (status == boost::future_status::ready) {
+      assert(f.is_ready());
+      assert(f.has_value());
+      assert(!f.has_exception());
+      // Wait for the result from NRF
+      nlohmann::json amf_candidate_list = f.get();
+      if (!amf_candidate_list.empty()) {
+        Logger::ngap().debug(
+            "Got List of AMF candidates from NRF: %s",
+            amf_candidate_list.dump().c_str());
+        // TODO: Select an AMF from the candidate list
+        if (!select_target_amf(nc, target_amf, amf_candidate_list)) {
+          Logger::ngap().debug(
+              "Could not select an appropriate AMF from the AMF candidates");
+          return false;
+        } else {
+          Logger::ngap().debug("Candidate AMF: %s", target_amf.c_str());
+          return true;
+        }
+
+      } else {
+        Logger::ngap().debug("Could not get List of AMF candidates from NRF");
+        return false;
+      }
+
+    } else {
+      Logger::ngap().debug("Could not get List of AMF candidates from NRF");
+      return false;
+    }
+  }
+
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::select_target_amf(
+    const std::shared_ptr<nas_context>& nc, std::string& target_amf,
+    const nlohmann::json& amf_candidate_list) {
+  Logger::amf_n1().debug(
+      "Select the appropriate AMF from the list of candidates");
+  bool result = false;
+  // Process data to obtain the target AMF
+  if (amf_candidate_list.find("nfInstances") != amf_candidate_list.end()) {
+    for (auto& it : amf_candidate_list["nfInstances"].items()) {
+      nlohmann::json instance_json = it.value();
+      // TODO: do we need to check with sNSSAI?
+      if (instance_json.find("sNssais") != instance_json.end()) {
+        // Each S-NSSAI in the Default Single NSSAIs must be in the AMF's Slice
+        // List
+        for (auto& s : instance_json["sNssais"].items()) {
+          nlohmann::json Snssai = s.value();  // TODO: validate NSSAIs
+        }
+      }
+      // for now, just IP addr of AMF of the first NF instance
+      if (instance_json.find("ipv4Addresses") != instance_json.end()) {
+        if (instance_json["ipv4Addresses"].size() > 0)
+          target_amf = instance_json["ipv4Addresses"].at(0).get<std::string>();
+        result = true;
+        break;
+      }
+    }
+  }
+  return result;
+}
+//------------------------------------------------------------------------------
+void amf_n1::send_n1_message_notity(
+    const std::shared_ptr<nas_context>& nc,
+    const std::string& target_amf) const {
+  Logger::amf_n1().debug(
+      "Send a request to N11 to send N1 Message Notify to the target AMF");
+
+  std::shared_ptr<itti_n11_n1_message_notify> itti_msg =
+      std::make_shared<itti_n11_n1_message_notify>(TASK_AMF_N1, TASK_AMF_N11);
+
+  itti_msg->http_version = 1;
+  if (nc->registration_request_is_set) {
+    itti_msg->registration_request = nc->registration_request;
+  }
+  itti_msg->target_amf_uri = target_amf;
+  itti_msg->supi           = nc->imsi;
+
+  int ret = itti_inst->send_msg(itti_msg);
+  if (0 != ret) {
+    Logger::ngap().error(
+        "Could not send ITTI message %s to task TASK_AMF_N11",
+        itti_msg->get_msg_name());
+  }
 }

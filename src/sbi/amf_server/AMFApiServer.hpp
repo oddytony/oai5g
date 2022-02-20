@@ -18,6 +18,7 @@
 #include "NonUEN2MessagesSubscriptionsCollectionDocumentApiImpl.h"
 #include "SubscriptionsCollectionDocumentApiImpl.h"
 #include "SubscriptionsCollectionDocumentApiImplEventExposure.h"
+#include "N1MessageNotifyApiImpl.h"
 
 #define PISTACHE_SERVER_THREADS 2
 #define PISTACHE_SERVER_MAX_PAYLOAD 32768
@@ -68,6 +69,8 @@ class AMFApiServer {
     m_subscriptionsCollectionDocumentApiImplEventExposure =
         std::make_shared<SubscriptionsCollectionDocumentApiImplEventExposure>(
             m_router, amf_app_inst);
+    m_n1MessageNotifyApiImpl =
+        std::make_shared<N1MessageNotifyApiImpl>(m_router, amf_app_inst);
   }
 
   void init(size_t thr = 1);
@@ -101,6 +104,7 @@ class AMFApiServer {
       m_subscriptionsCollectionDocumentApiImpl;
   std::shared_ptr<SubscriptionsCollectionDocumentApiImplEventExposure>
       m_subscriptionsCollectionDocumentApiImplEventExposure;
+  std::shared_ptr<N1MessageNotifyApiImpl> m_n1MessageNotifyApiImpl;
 
   std::string m_address;
 };
