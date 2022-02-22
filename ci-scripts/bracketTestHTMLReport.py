@@ -198,8 +198,14 @@ class HtmlReport():
 				self.file.write('     </tr>\n')
 
 	def testSummaryHeader(self):
-		self.file.write('  <h2>DS Tester Summary</h2>\n')
 		cwd = os.getcwd()
+		if not os.path.isfile(cwd + '/DS-TEST-RESULTS/dsTester_Summary.txt'):
+			self.file.write('  <br>\n')
+			self.file.write('  <div class="alert alert-warning">\n')
+			self.file.write('   <strong>NO TESTING DONE BEFORE MIGRATION TO NEW RAN EMULATOR <span class="glyphicon glyphicon-warning-sign"></span></strong>\n')
+			self.file.write('  </div>\n')
+			return True
+		self.file.write('  <h2>DS Tester Summary</h2>\n')
 		finalStatusOK = False
 		if os.path.isfile(cwd + '/DS-TEST-RESULTS/dcamf.yaml'):
 			cmd = f'egrep -c "final-result: pass" DS-TEST-RESULTS/dcamf.yaml || true'
@@ -226,6 +232,9 @@ class HtmlReport():
 
 	def testSummaryDetails(self):
 		self.file.write('  <br>\n')
+		cwd = os.getcwd()
+		if not os.path.isfile(cwd + '/DS-TEST-RESULTS/dsTester_Summary.txt'):
+			return
 		self.file.write('  <button data-toggle="collapse" data-target="#ds-tester-details">More details on DsTester results</button>\n')
 		self.file.write('  <div id="ds-tester-details" class="collapse">\n')
 		self.file.write('  <table class="table-bordered" width = "60%" align = "center" border = 1>\n')
@@ -234,7 +243,6 @@ class HtmlReport():
 		self.file.write('      <th>Test Status</th>\n')
 		self.file.write('      <th>Test Details</th>\n')
 		self.file.write('    </tr>\n')
-		cwd = os.getcwd()
 		if os.path.isfile(cwd + '/DS-TEST-RESULTS/dcamf.yaml'):
 			with open(cwd + '/DS-TEST-RESULTS/dcamf.yaml') as f:
 				data = yaml.load(f)
