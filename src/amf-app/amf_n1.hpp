@@ -251,6 +251,10 @@ class amf_n1 {
       const std::shared_ptr<nas_context>& nc,
       const std::string& target_amf) const;
 
+  bool reroute_nas_via_an(
+      const std::shared_ptr<nas_context>& nc,
+      const std::string& target_amf_set) const;
+
  private:
   void ue_initiate_de_registration_handle(
       uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring nas);

@@ -3775,6 +3775,16 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
   } else {
     Logger::amf_n1().debug(
         "Could not find an appropriate target AMF to handle UE");
+    // Reroute NAS message via AN
+
+    std::string target_amf_set = {};
+    if (authorized_network_slice_info.targetAmfSetIsSet()) {
+      target_amf_set = authorized_network_slice_info.getTargetAmfSet();
+    } else {
+      return false;
+    }
+
+    if (reroute_nas_via_an(nc, target_amf_set)) return true;
     return false;
   }
 
@@ -4297,6 +4307,7 @@ bool amf_n1::select_target_amf(
   }
   return result;
 }
+
 //------------------------------------------------------------------------------
 void amf_n1::send_n1_message_notity(
     const std::shared_ptr<nas_context>& nc,
@@ -4320,4 +4331,14 @@ void amf_n1::send_n1_message_notity(
         "Could not send ITTI message %s to task TASK_AMF_N11",
         itti_msg->get_msg_name());
   }
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::reroute_nas_via_an(
+    const std::shared_ptr<nas_context>& nc,
+    const std::string& target_amf_set) const {
+  Logger::amf_n1().debug(
+      "Send a request to Reroute NAS message to the target AMF via AN");
+
+  return true;
 }
