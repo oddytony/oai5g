@@ -3776,11 +3776,11 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
     Logger::amf_n1().debug(
         "Could not find an appropriate target AMF to handle UE");
     // Reroute NAS message via AN
-
     std::string target_amf_set = {};
     if (authorized_network_slice_info.targetAmfSetIsSet()) {
       target_amf_set = authorized_network_slice_info.getTargetAmfSet();
     } else {
+      Logger::amf_n1().debug("No Target AMF Set info available!");
       return false;
     }
 
