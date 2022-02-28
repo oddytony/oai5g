@@ -44,6 +44,7 @@
 #include "UEContextReleaseCommand.hpp"
 #include "HandoverPreparationFailure.hpp"
 #include "Paging.hpp"
+#include "RerouteNASRequest.hpp"
 #include "amf_app.hpp"
 #include "amf_config.hpp"
 #include "amf_n1.hpp"
@@ -209,6 +210,11 @@ void amf_n2_task(void* args_p) {
       case PAGING: {
         Logger::amf_n2().info("Received Paging message, handling");
         itti_paging* m = dynamic_cast<itti_paging*>(msg);
+        amf_n2_inst->handle_itti_message(ref(*m));
+      } break;
+      case REROUTE_NAS_REQ: {
+        Logger::amf_n2().info("Received Reroute NAS Req message, handling");
+        itti_rereoute_nas* m = dynamic_cast<itti_rereoute_nas*>(msg);
         amf_n2_inst->handle_itti_message(ref(*m));
       } break;
       case TERMINATE: {
@@ -675,6 +681,10 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
       return;
     }
   }
+
+  // Store InitialUEMessage for Rereoute NAS later
+  unc.get()->initialUEMsg.size = init_ue_msg.initUeMsg->encode2buffer(
+      unc.get()->initialUEMsg.buf, BUFFER_SIZE_1024);
 
   itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
   itti_msg->amf_ue_ngap_id = -1;
@@ -2018,6 +2028,43 @@ void amf_n2::handle_itti_message(itti_uplink_ran_status_transfer& itti_msg) {
       downLinkranstatustransfer->encodetobuffer(buffer, BUFFER_SIZE_1024);
   bstring b = blk2bstr(buffer, encode_size);
   sctp_s_38412.sctp_send_msg(unc.get()->target_gnb_assoc_id, 0, &b);
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::handle_itti_message(itti_rereoute_nas& itti_msg) {
+  Logger::amf_n2().debug("Handle Reroute NAS Request message...");
+
+  std::shared_ptr<ue_ngap_context> unc = {};
+
+  if (!is_ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id)) {
+    Logger::amf_n2().error(
+        "No UE NGAP context with ran_ue_ngap_id (%d)", itti_msg.ran_ue_ngap_id);
+    return;
+  }
+
+  unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
+  if (unc.get()->amf_ue_ngap_id != itti_msg.amf_ue_ngap_id) {
+    Logger::amf_n2().error(
+        "The requested UE (amf_ue_ngap_id: 0x%x) is not valid, existed UE "
+        "which's amf_ue_ngap_id (0x%x)",
+        itti_msg.amf_ue_ngap_id, unc.get()->amf_ue_ngap_id);
+  }
+
+  RerouteNASRequest rerouteNASRequest = {};
+  rerouteNASRequest.setMessageType();
+  rerouteNASRequest.setRanUeNgapId(itti_msg.ran_ue_ngap_id);
+  rerouteNASRequest.setAmfUeNgapId(itti_msg.amf_ue_ngap_id);
+  rerouteNASRequest.setAMFSetID(itti_msg.amf_set_id);
+  rerouteNASRequest.setNgapMessage(
+      unc->initialUEMsg);  // Include InitialUEMessage
+  // TODO: AllowedNSSAI (Optional)
+
+  uint8_t buffer[BUFFER_SIZE_1024];
+  int encoded_size = rerouteNASRequest.encode2buffer(buffer, BUFFER_SIZE_1024);
+  bstring b        = blk2bstr(buffer, encoded_size);
+
+  amf_n2_inst->sctp_s_38412.sctp_send_msg(
+      unc.get()->gnb_assoc_id, unc.get()->sctp_stream_send, &b);
 }
 
 //------------------------------------------------------------------------------

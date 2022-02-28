@@ -68,6 +68,8 @@ class ue_ngap_context {
   // state management, ue status over the air
   ng_ue_state_t ng_ue_state;
   uint8_t ncc;  // Next Hop Chaining Counter
+
+  OCTET_STRING_t initialUEMsg;
 };
 
 #endif

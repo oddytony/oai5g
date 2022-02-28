@@ -4340,5 +4340,19 @@ bool amf_n1::reroute_nas_via_an(
   Logger::amf_n1().debug(
       "Send a request to Reroute NAS message to the target AMF via AN");
 
+  std::shared_ptr<itti_rereoute_nas> itti_msg =
+      std::make_shared<itti_rereoute_nas>(TASK_AMF_N1, TASK_AMF_N2);
+
+  itti_msg->ran_ue_ngap_id = nc->ran_ue_ngap_id;
+  itti_msg->amf_ue_ngap_id = nc->amf_ue_ngap_id;
+  itti_msg->amf_set_id     = target_amf_set;
+
+  int ret = itti_inst->send_msg(itti_msg);
+  if (0 != ret) {
+    Logger::ngap().error(
+        "Could not send ITTI message %s to task TASK_AMF_N2",
+        itti_msg->get_msg_name());
+  }
+
   return true;
 }
