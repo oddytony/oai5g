@@ -2038,16 +2038,17 @@ void amf_n2::handle_itti_message(itti_rereoute_nas& itti_msg) {
 
   if (!is_ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NGAP context with ran_ue_ngap_id (%d)", itti_msg.ran_ue_ngap_id);
+        "No UE NGAP context with ran_ue_ngap_id 0x%x", itti_msg.ran_ue_ngap_id);
     return;
   }
 
   unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
   if (unc.get()->amf_ue_ngap_id != itti_msg.amf_ue_ngap_id) {
     Logger::amf_n2().error(
-        "The requested UE (amf_ue_ngap_id: 0x%x) is not valid, existed UE "
-        "which's amf_ue_ngap_id (0x%x)",
+        "AMF UE NGAP ID does not match the expected value (requested "
+        "amf_ue_ngap_id 0x%x, existed amf_ue_ngap_id 0x%x)",
         itti_msg.amf_ue_ngap_id, unc.get()->amf_ue_ngap_id);
+    return;
   }
 
   RerouteNASRequest rerouteNASRequest = {};
