@@ -683,8 +683,12 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
   }
 
   // Store InitialUEMessage for Rereoute NAS later
-  unc.get()->initialUEMsg.size = init_ue_msg.initUeMsg->encode2buffer(
-      unc.get()->initialUEMsg.buf, BUFFER_SIZE_1024);
+  unc.get()->initialUEMsg.buf =
+      (uint8_t*) calloc(BUFFER_SIZE_1024, sizeof(uint8_t));
+  if (unc.get()->initialUEMsg.buf) {
+    unc.get()->initialUEMsg.size = init_ue_msg.initUeMsg->encode2buffer(
+        unc.get()->initialUEMsg.buf, BUFFER_SIZE_1024);
+  }
 
   itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
   itti_msg->amf_ue_ngap_id = -1;
