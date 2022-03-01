@@ -59,7 +59,7 @@ void N1MessageNotifyApiImpl::receive_n1_message_notification(
   int ret = itti_inst->send_msg(itti_msg);
   if (0 != ret) {
     Logger::amf_server().error(
-        "Could not send ITTI message %s to task TASK_AMF_N2",
+        "Could not send ITTI message %s to task TASK_AMF_APP",
         itti_msg->get_msg_name());
   }
 }
