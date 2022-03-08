@@ -326,6 +326,7 @@ void RerouteNASRequest::setNgapMessage(OCTET_STRING_t& message) {
 //------------------------------------------------------------------------------
 bool RerouteNASRequest::getNgapMessage(OCTET_STRING_t& message) const {
   message = ngapMessage;
+  return true;
 }
 //------------------------------------------------------------------------------
 void RerouteNASRequest::setAMFSetID(const std::string& amf_set_id) {

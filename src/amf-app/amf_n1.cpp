@@ -2531,9 +2531,10 @@ void amf_n1::encode_nas_message_protected(
       protected_nas_buf[0] = EPD_5GS_MM_MSG;
       protected_nas_buf[1] = INTEGRITY_PROTECTED_AND_CIPHERED;
       protected_nas_buf[6] = (uint8_t) nsc->dl_count.seq_num;
-      // if (bdata(ciphered) != nullptr)
-      memcpy(
-          &protected_nas_buf[7], (uint8_t*) bdata(ciphered), blength(ciphered));
+
+      uint8_t* buf_tmp = (uint8_t*) bdata(ciphered);
+      if (buf_tmp != nullptr)
+        memcpy(&protected_nas_buf[7], (uint8_t*) buf_tmp, blength(ciphered));
 
       uint32_t mac32;
       if (!(nas_message_integrity_protected(
