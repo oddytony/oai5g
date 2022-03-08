@@ -907,7 +907,8 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
     if (gc.get()->ue_radio_cap_ind) {
       bstring ueCapability = gc.get()->ue_radio_cap_ind;
       uint8_t* uecap       = (uint8_t*) calloc(1, blength(ueCapability) + 1);
-      memcpy(uecap, (uint8_t*) bdata(ueCapability), blength(ueCapability));
+      uint8_t* buf_tmp     = (uint8_t*) bdata(ueCapability);
+      if (buf_tmp != nullptr) memcpy(uecap, buf_tmp, blength(ueCapability));
       uecap[blength(ueCapability)] = '\0';
       msg->setUERadioCapability(uecap, (size_t) blength(ueCapability));
       free(uecap);
@@ -1028,7 +1029,8 @@ void amf_n2::handle_itti_message(
   PDUSessionResourceSetupRequestItem_t item = {};
   item.pduSessionId                         = itti_msg.pdu_session_id;
   uint8_t* nas_pdu = (uint8_t*) calloc(1, blength(itti_msg.nas) + 1);
-  memcpy(nas_pdu, (uint8_t*) bdata(itti_msg.nas), blength(itti_msg.nas));
+  uint8_t* buf_tmp = (uint8_t*) bdata(itti_msg.nas);
+  if (buf_tmp != nullptr) memcpy(nas_pdu, buf_tmp, blength(itti_msg.nas));
   nas_pdu[blength(itti_msg.nas)] = '\0';
   item.pduSessionNAS_PDU         = nas_pdu;
   item.sizeofpduSessionNAS_PDU   = blength(itti_msg.nas);
@@ -1136,7 +1138,8 @@ void amf_n2::handle_itti_message(
   item.s_nssai.sst                                  = itti_msg.s_NSSAI.getSst();
 
   uint8_t* nas_pdu = (uint8_t*) calloc(1, blength(itti_msg.nas) + 1);
-  memcpy(nas_pdu, (uint8_t*) bdata(itti_msg.nas), blength(itti_msg.nas));
+  uint8_t* buf_tmp = (uint8_t*) bdata(itti_msg.nas);
+  if (buf_tmp != nullptr) memcpy(nas_pdu, buf_tmp, blength(itti_msg.nas));
   nas_pdu[blength(itti_msg.nas)] = '\0';
   item.pduSessionNAS_PDU         = nas_pdu;
   item.sizeofpduSessionNAS_PDU   = blength(itti_msg.nas);
@@ -1201,7 +1204,8 @@ void amf_n2::handle_itti_message(
   release_cmd_msg->setAmfUeNgapId(itti_msg.amf_ue_ngap_id);
   release_cmd_msg->setRanUeNgapId(itti_msg.ran_ue_ngap_id);
   uint8_t* nas_pdu = (uint8_t*) calloc(1, blength(itti_msg.nas) + 1);
-  memcpy(nas_pdu, (uint8_t*) bdata(itti_msg.nas), blength(itti_msg.nas));
+  uint8_t* buf_tmp = (uint8_t*) bdata(itti_msg.nas);
+  if (buf_tmp != nullptr) memcpy(nas_pdu, buf_tmp, blength(itti_msg.nas));
   nas_pdu[blength(itti_msg.nas)] = '\0';
   release_cmd_msg->setNasPdu(nas_pdu, blength(itti_msg.nas));
 
