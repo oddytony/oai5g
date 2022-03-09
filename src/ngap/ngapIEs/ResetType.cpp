@@ -27,6 +27,9 @@
  */
 
 #include "ResetType.hpp"
+extern "C" {
+#include "dynamic_memory_check.h"
+}
 
 #include <iostream>
 using namespace std;
@@ -58,6 +61,7 @@ void ResetType::setResetType(
   for (int i = 0; i < list.size(); i++) {
     item[i].encode(list[i]);
   }
+  free_wrapper((void**) &item);
 }
 //------------------------------------------------------------------------------
 bool ResetType::encode(Ngap_ResetType_t* type) {

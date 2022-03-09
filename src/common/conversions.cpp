@@ -172,6 +172,8 @@ void conv::convert_string_2_hex(
     sprintf(datahex + i * 2, "%02x", data[i]);
 
   output_str = reinterpret_cast<char*>(datahex);
+  free_wrapper((void**) &datahex);
+  free_wrapper((void**) &data);
 }
 
 //------------------------------------------------------------------------------

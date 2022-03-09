@@ -56,9 +56,9 @@ void UEAssociationLogicalNGConnectionItem::setAmfUeNgapId(unsigned long id) {
   int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     cout << "encode AMF_UE_NGAP_ID IE error" << endl;
-    free_wrapper((void**) &ie);
-    return;
   }
+  free_wrapper((void**) &ie);
+  return;
 }
 
 //------------------------------------------------------------------------------
@@ -77,9 +77,9 @@ void UEAssociationLogicalNGConnectionItem::setRanUeNgapId(
   int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     cout << "Encode RAN_UE_NGAP_ID IE error" << endl;
-    free_wrapper((void**) &ie);
-    return;
   }
+  free_wrapper((void**) &ie);
+  return;
 }
 
 //------------------------------------------------------------------------------

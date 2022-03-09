@@ -2161,6 +2161,7 @@ bool amf_n1::start_security_mode_control_procedure(
   }
   if (!secu_ctx) {
     Logger::amf_n1().error("No Security Context found");
+    free_wrapper((void**) &data);
     return false;
   }
 
