@@ -173,6 +173,7 @@ void conv::convert_string_2_hex(
 
   output_str = reinterpret_cast<char*>(datahex);
   free_wrapper((void**) &datahex);
+  free_wrapper((void**) &data);
 }
 
 //------------------------------------------------------------------------------
