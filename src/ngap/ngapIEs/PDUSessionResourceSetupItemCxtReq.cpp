@@ -27,6 +27,10 @@
  */
 
 #include "PDUSessionResourceSetupItemCxtReq.hpp"
+//#include "dynamic_memory_check.h"
+extern "C" {
+#include "dynamic_memory_check.h"
+}
 
 #include <iostream>
 using namespace std;
@@ -70,7 +74,7 @@ bool PDUSessionResourceSetupItemCxtReq::
         (Ngap_NAS_PDU_t*) calloc(1, sizeof(Ngap_NAS_PDU_t));
     if (!naspdu) return false;
     if (!nAS_PDU->encode2octetstring(*naspdu)) {
-      if (naspdu != nullptr) free(naspdu);
+      free_wrapper((void**) &naspdu);
       return false;
     }
     pduSessionResourceSetupItemCxtReq->nAS_PDU = naspdu;

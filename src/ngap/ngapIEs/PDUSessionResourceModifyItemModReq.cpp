@@ -36,6 +36,7 @@ namespace ngap {
 //------------------------------------------------------------------------------
 PDUSessionResourceModifyItemModReq::PDUSessionResourceModifyItemModReq() {
   nAS_PDU = nullptr;
+  s_NSSAI = nullptr;
 }
 
 //------------------------------------------------------------------------------

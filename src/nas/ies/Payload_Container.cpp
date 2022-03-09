@@ -43,6 +43,7 @@ Payload_Container::Payload_Container(uint8_t iei, bstring b) {
   _iei    = iei;
   content = b;
   CONTENT = {};
+  length  = 1 + blength(b);
 }
 
 //------------------------------------------------------------------------------
@@ -66,6 +67,7 @@ Payload_Container::Payload_Container(
 //------------------------------------------------------------------------------
 Payload_Container::Payload_Container() : content() {
   _iei    = 0;
+  length  = 0;
   CONTENT = {};
 }
 

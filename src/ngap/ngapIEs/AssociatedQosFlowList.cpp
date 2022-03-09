@@ -27,6 +27,7 @@
  */
 
 #include "AssociatedQosFlowList.hpp"
+#include "dynamic_memory_check.h"
 
 #include <iostream>
 using namespace std;
@@ -65,12 +66,20 @@ bool AssociatedQosFlowList::encode2AssociatedQosFlowList(
     Ngap_AssociatedQosFlowItem_t* ie = (Ngap_AssociatedQosFlowItem_t*) calloc(
         1, sizeof(Ngap_AssociatedQosFlowItem_t));
     if (!ie) return false;
-    if (!associatedQosFlowItem) return false;
-    if (!associatedQosFlowItem[i].encode2AssociatedQosFlowItem(ie))
+    if (!associatedQosFlowItem) {
+      free_wrapper((void**) &ie);
       return false;
-    if (ASN_SEQUENCE_ADD(&associatedQosFlowList.list, ie) != 0) return false;
+    }
+    if (!associatedQosFlowItem[i].encode2AssociatedQosFlowItem(ie)) {
+      free_wrapper((void**) &ie);
+      return false;
+    }
+    if (ASN_SEQUENCE_ADD(&associatedQosFlowList.list, ie) != 0) {
+      free_wrapper((void**) &ie);
+      return false;
+    }
+    free_wrapper((void**) &ie);
   }
-
   return true;
 }
 
