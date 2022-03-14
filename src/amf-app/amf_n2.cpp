@@ -2186,7 +2186,13 @@ bool amf_n2::get_common_plmn(
           plmn_slice_support_item.mnc = list[j].b_plmn_list[k].mnc;
 
           for (auto s1 : list[j].b_plmn_list[k].slice_list) {
+            Logger::amf_n2().debug(
+                "S-NSSAI from gNB (SST %s, SD %s)", s1.sst.c_str(),
+                s1.sd.c_str());
             for (auto s2 : amf_cfg.plmn_list[i].slice_list) {
+              Logger::amf_n2().debug(
+                  "S-NSSAI from AMF (SST %d, SD %s)", s2.sst,
+                  std::to_string(s2.sd).c_str());
               if ((s1.sst.compare(std::to_string(s2.sst)) == 0) and
                   (s1.sd.compare(std::to_string(s2.sd)) == 0)) {
                 Logger::amf_n2().debug(
