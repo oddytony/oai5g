@@ -2194,8 +2194,8 @@ bool amf_n2::get_common_plmn(
             for (auto s2 : amf_cfg.plmn_list[i].slice_list) {
               // for debugging purpose
               Logger::amf_n2().debug(
-                  "S-NSSAI from AMF (SST %s, SD %s)", s2.sst.c_str(),
-                  s2.sd.c_str());
+                  "S-NSSAI from AMF (SST %d, SD %ld, SD %s)", s2.sst, s2.sd,
+                  std::to_string(s2.sd).c_str());
               if ((s1.sst.compare(std::to_string(s2.sst)) == 0) and
                   (s1.sd.compare(std::to_string(s2.sd)) == 0)) {
                 Logger::amf_n2().debug(
