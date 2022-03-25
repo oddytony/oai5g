@@ -357,7 +357,8 @@ void amf_app::handle_itti_message(
   std::shared_ptr<ue_ngap_context> unc = {};
   if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id)) {
     Logger::amf_n1().error(
-        "Could not find UE NGAP Context with ran_ue_ngap_id (0x%x)",
+        "Could not find UE NGAP Context with ran_ue_ngap_id "
+        "(" GNB_UE_NGAP_ID_FMT ")",
         itti_msg.ran_ue_ngap_id);
   } else {
     unc = amf_n2_inst->ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
@@ -564,7 +565,7 @@ void amf_app::handle_itti_message(itti_sbi_n1_message_notification& itti_msg) {
   std::shared_ptr<ue_ngap_context> unc = {};
   if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
     Logger::amf_app().debug(
-        "Create a new UE NGAP context with ran_ue_ngap_id 0x%x",
+        "Create a new UE NGAP context with ran_ue_ngap_id " GNB_UE_NGAP_ID_FMT,
         ran_ue_ngap_id);
     unc = std::shared_ptr<ue_ngap_context>(new ue_ngap_context());
     amf_n2_inst->set_ran_ue_ngap_id_2_ue_ngap_context(ran_ue_ngap_id, unc);
@@ -572,7 +573,8 @@ void amf_app::handle_itti_message(itti_sbi_n1_message_notification& itti_msg) {
     unc = amf_n2_inst->ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
     if (!unc.get()) {
       Logger::amf_app().error(
-          "Failed to get UE NGAP context for ran_ue_ngap_id 0x%x",
+          "Failed to get UE NGAP context for "
+          "ran_ue_ngap_id " GNB_UE_NGAP_ID_FMT,
           ran_ue_ngap_id);
       return;
     }
