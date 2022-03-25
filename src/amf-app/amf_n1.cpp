@@ -194,7 +194,8 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
     nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
   else {
     Logger::amf_n1().warn(
-        "No existed nas_context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+        "No existed nas_context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
+        amf_ue_ngap_id);
     return;
   }
   nas_secu_ctx* secu = nc.get()->security_ctx;
@@ -245,7 +246,8 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
       std::shared_ptr<nas_context> nc = {};
       if (!is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
         Logger::amf_n1().warn(
-            "No existed NAS context for UE with amf_ue_ngap_id (0x%x)",
+            "No existed NAS context for UE with amf_ue_ngap_id "
+            "(" AMF_UE_NGAP_ID_FMT ")",
             amf_ue_ngap_id);
         return;
       }
@@ -385,7 +387,8 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
       nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
     else
       Logger::amf_n1().warn(
-          "No existing nas_context with amf_ue_ngap_id 0x%x", amf_ue_ngap_id);
+          "No existing nas_context with amf_ue_ngap_id " AMF_UE_NGAP_ID_FMT,
+          amf_ue_ngap_id);
   }
 
   SecurityHeaderType type = {};
@@ -507,7 +510,8 @@ void amf_n1::nas_signalling_establishment_request_handle(
   // Create NAS Context, or Update if existed
   if (!nc.get()) {
     Logger::amf_n1().debug(
-        "No existing nas_context with amf_ue_ngap_id 0x%x --> Create a new one",
+        "No existing nas_context with amf_ue_ngap_id " AMF_UE_NGAP_ID_FMT
+        " --> Create a new one",
         amf_ue_ngap_id);
     nc = std::shared_ptr<nas_context>(new nas_context);
     if (!nc.get()) {
@@ -535,7 +539,8 @@ void amf_n1::nas_signalling_establishment_request_handle(
     event_sub.ue_reachability_status(supi, CM_CONNECTED, 1);
   } else {
     Logger::amf_n1().debug(
-        "Existing nas_context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+        "Existing nas_context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
+        amf_ue_ngap_id);
     // nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
     set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
   }
@@ -701,7 +706,8 @@ void amf_n1::identity_response_handle(
   if (is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
     nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
     Logger::amf_n1().debug(
-        "Find nas_context(%p) by amf_ue_ngap_id(%d)", nc.get(), amf_ue_ngap_id);
+        "Find nas_context(%p) by amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT ")",
+        nc.get(), amf_ue_ngap_id);
   } else {
     nc = std::shared_ptr<nas_context>(new nas_context);
     set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
@@ -776,7 +782,9 @@ void amf_n1::service_request_handle(
   supi2amfId[supi] = amf_ue_ngap_id;
   supi2ranId[supi] = ran_ue_ngap_id;
   Logger::amf_n1().debug(
-      "amf_ue_ngap_id %d, ran_ue_ngap_id %d", amf_ue_ngap_id, ran_ue_ngap_id);
+      "amf_ue_ngap_id " AMF_UE_NGAP_ID_FMT
+      ", ran_ue_ngap_id " GNB_UE_NGAP_ID_FMT,
+      amf_ue_ngap_id, ran_ue_ngap_id);
   Logger::amf_n1().debug("Key for PDU Session context: SUPI %s", supi.c_str());
 
   // get the status of PDU Session context
@@ -792,10 +800,9 @@ void amf_n1::service_request_handle(
     std::shared_ptr<ue_ngap_context> unc = {};
     if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
       Logger::amf_n1().error(
-          "Could not find UE NGAP Context with ran_ue_ngap_id (0x%x)",
-          ran_ue_ngap_id);
-    } else {
-            unc.get()->amf_ue_ngap_id   = amf_ue_ngap_id;
+          "Could not find UE NGAP Context with ran_ue_ngap_id ("
+    GNB_UE_NGAP_ID_FMT ")", ran_ue_ngap_id); } else { unc.get()->amf_ue_ngap_id
+    = amf_ue_ngap_id;
     }
   */
   // associate SUPI with UC
@@ -1046,8 +1053,8 @@ void amf_n1::registration_request_handle(
           nc.get()->security_ctx->sc_type = SECURITY_CTX_TYPE_NOT_AVAILABLE;
       } else {
         Logger::amf_n1().debug(
-            "No existing nas_context with amf_ue_ngap_id (0x%x) --> Create new "
-            "one",
+            "No existing nas_context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT
+            ") --> Create new one",
             amf_ue_ngap_id);
         nc = std::shared_ptr<nas_context>(new nas_context);
         if (!nc.get()) {
@@ -1056,7 +1063,9 @@ void amf_n1::registration_request_handle(
           return;
         }
         Logger::amf_n1().info(
-            "Created new nas_context (%p) associated with amf_ue_ngap_id (%d) "
+            "Created new nas_context (%p) associated with amf_ue_ngap_id "
+            "(" AMF_UE_NGAP_ID_FMT
+            ") "
             "for nas_signalling_establishment_request",
             nc.get(), amf_ue_ngap_id);
         set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
@@ -1108,7 +1117,8 @@ void amf_n1::registration_request_handle(
 
       if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
         Logger::amf_n1().error(
-            "No UE NGAP context with ran_ue_ngap_id (%d)", ran_ue_ngap_id);
+            "No UE NGAP context with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
+            ran_ue_ngap_id);
         return;
       }
 
@@ -1236,7 +1246,8 @@ void amf_n1::registration_request_handle(
   // Trigger UE Location Report
   if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
     Logger::amf_n1().warn(
-        "No UE NGAP context with ran_ue_ngap_id (%d)", ran_ue_ngap_id);
+        "No UE NGAP context with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
+        ran_ue_ngap_id);
   } else {
     std::shared_ptr<ue_ngap_context> unc =
         amf_n2_inst->ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
@@ -1899,7 +1910,8 @@ void amf_n1::handle_auth_vector_successful_result(
   int vindex = nc.get()->security_ctx->vector_pointer;
   if (!start_authentication_procedure(nc, vindex, nc.get()->ngKsi)) {
     Logger::amf_n1().error("Start authentication procedure failure, reject...");
-    Logger::amf_n1().error("Ran_ue_ngap_id 0x%x", nc.get()->ran_ue_ngap_id);
+    Logger::amf_n1().error(
+        "Ran_ue_ngap_id " GNB_UE_NGAP_ID_FMT, nc.get()->ran_ue_ngap_id);
     response_registration_reject_msg(
         _5GMM_CAUSE_INVALID_MANDATORY_INFO, nc.get()->ran_ue_ngap_id,
         nc.get()->amf_ue_ngap_id);  // cause?
@@ -1949,7 +1961,8 @@ bool amf_n1::start_authentication_procedure(
   comUt::print_buffer(
       "amf_n1", "Authentication-Request message buffer", (uint8_t*) bdata(b),
       blength(b));
-  Logger::amf_n1().debug("amf_ue_ngap_id 0x%x", nc.get()->amf_ue_ngap_id);
+  Logger::amf_n1().debug(
+      "amf_ue_ngap_id " AMF_UE_NGAP_ID_FMT, nc.get()->amf_ue_ngap_id);
   itti_send_dl_nas_buffer_to_task_n2(
       b, nc.get()->ran_ue_ngap_id, nc.get()->amf_ue_ngap_id);
   return true;
@@ -1984,7 +1997,7 @@ void amf_n1::authentication_response_handle(
 
   if (!is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
     Logger::amf_n1().error(
-        "No existed NAS context for UE with amf_ue_ngap_id (0x%x)",
+        "No existed NAS context for UE with amf_ue_ngap_id " AMF_UE_NGAP_ID_FMT,
         amf_ue_ngap_id);
     response_registration_reject_msg(
         _5GMM_CAUSE_ILLEGAL_UE, ran_ue_ngap_id,
@@ -1993,8 +2006,8 @@ void amf_n1::authentication_response_handle(
   }
   nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
   Logger::amf_n1().info(
-      "Found nas_context (%p) with amf_ue_ngap_id (0x%x)", nc.get(),
-      amf_ue_ngap_id);
+      "Found nas_context (%p) with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
+      nc.get(), amf_ue_ngap_id);
   // Stop timer? common procedure finished!
   nc.get()->is_common_procedure_for_authentication_running = false;
   // MM state: COMMON-PROCEDURE-INITIATED -> DEREGISTRED
@@ -2054,7 +2067,7 @@ void amf_n1::authentication_response_handle(
   // reject message with corresponding cause
   if (!isAuthOk) {
     Logger::amf_n1().error(
-        "Authentication failed for UE with amf_ue_ngap_id 0x%x",
+        "Authentication failed for UE with amf_ue_ngap_id " AMF_UE_NGAP_ID_FMT,
         amf_ue_ngap_id);
     response_registration_reject_msg(
         _5GMM_CAUSE_ILLEGAL_UE, ran_ue_ngap_id,
@@ -2076,7 +2089,8 @@ void amf_n1::authentication_failure_handle(
   std::shared_ptr<nas_context> nc;
   if (!is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
     Logger::amf_n1().error(
-        "No existed NAS context for UE with amf_ue_ngap_id(0x%x)",
+        "No existed NAS context for UE with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT
+        ")",
         amf_ue_ngap_id);
     response_registration_reject_msg(
         _5GMM_CAUSE_ILLEGAL_UE, ran_ue_ngap_id,
@@ -2132,7 +2146,8 @@ void amf_n1::authentication_failure_handle(
       if (!start_authentication_procedure(nc, vindex, nc.get()->ngKsi)) {
         Logger::amf_n1().error(
             "Start authentication procedure failure, reject...");
-        Logger::amf_n1().error("Ran_ue_ngap_id 0x%x", nc.get()->ran_ue_ngap_id);
+        Logger::amf_n1().error(
+            "Ran_ue_ngap_id " GNB_UE_NGAP_ID_FMT, nc.get()->ran_ue_ngap_id);
         response_registration_reject_msg(
             _5GMM_CAUSE_INVALID_MANDATORY_INFO, nc.get()->ran_ue_ngap_id,
             nc.get()->amf_ue_ngap_id);
@@ -2277,7 +2292,8 @@ void amf_n1::security_mode_complete_handle(
     nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
   else {
     Logger::amf_n1().warn(
-        "No existed nas_context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+        "No existed nas_context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
+        amf_ue_ngap_id);
     return;
   }
   // Decode Security Mode Complete
@@ -2396,8 +2412,10 @@ void amf_n1::security_mode_complete_handle(
 
   if (!uc.get()->isUeContextRequest) {
     Logger::amf_n1().debug(
-        "UE Context is not requested, UE with ran_ue_ngap_id %d, "
-        "amf_ue_ngap_id %d attached",
+        "UE Context is not requested, UE with "
+        "ran_ue_ngap_id " GNB_UE_NGAP_ID_FMT
+        ", "
+        "amf_ue_ngap_id " AMF_UE_NGAP_ID_FMT " attached",
         ran_ue_ngap_id, amf_ue_ngap_id);
 
     // TODO: Use DownlinkNasTransport to convey Registration Accept
@@ -2496,8 +2514,8 @@ void amf_n1::registration_complete_handle(
       nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
     else {
       Logger::amf_n1().warn(
-          "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
-      return;
+          "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT ")",
+    amf_ue_ngap_id); return;
     }
     nas_secu_ctx* secu = nc.get()->security_ctx;
     // protect nas message
@@ -2715,7 +2733,8 @@ void amf_n1::ue_initiate_de_registration_handle(
     nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
   else {
     Logger::amf_n1().warn(
-        "No existed nas_context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+        "No existed nas_context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
+        amf_ue_ngap_id);
     return;
   }
 
@@ -3593,7 +3612,8 @@ void amf_n1::mobile_reachable_timer_timeout(
     nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
   else {
     Logger::amf_n1().warn(
-        "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+        "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT ")",
+        amf_ue_ngap_id);
   }
   set_mobile_reachable_timer_timeout(nc, true);
 
@@ -3615,7 +3635,8 @@ void amf_n1::implicit_deregistration_timer_timeout(
     nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
   else {
     Logger::amf_n1().warn(
-        "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+        "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT ")",
+        amf_ue_ngap_id);
   }
   // Implicitly de-register UE
   // TODO (4.2.2.3.3 Network-initiated Deregistration @3GPP TS 23.502V16.0.0):

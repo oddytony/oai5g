@@ -290,7 +290,8 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
 
   if (!amf_n1_inst->is_amf_ue_id_2_nas_context(smf.amf_ue_ngap_id)) {
     Logger::amf_n11().error(
-        "No UE NAS context with amf_ue_ngap_id (0x%x)", smf.amf_ue_ngap_id);
+        "No UE NAS context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
+        smf.amf_ue_ngap_id);
     return;
   }
 

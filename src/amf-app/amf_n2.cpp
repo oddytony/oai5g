@@ -251,15 +251,17 @@ void amf_n2::handle_itti_message(itti_paging& itti_msg) {
 
   if (!is_ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NGAP context with ran_ue_ngap_id (%d)", itti_msg.ran_ue_ngap_id);
+        "No UE NGAP context with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
+        itti_msg.ran_ue_ngap_id);
     return;
   }
 
   unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
   if (unc.get()->amf_ue_ngap_id != itti_msg.amf_ue_ngap_id) {
     Logger::amf_n2().error(
-        "The requested UE (amf_ue_ngap_id: 0x%x) is not valid, existed UE "
-        "which's amf_ue_ngap_id (0x%x)",
+        "The requested UE (amf_ue_ngap_id: " AMF_UE_NGAP_ID_FMT
+        ") is not valid, existed UE "
+        "which's amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
         itti_msg.amf_ue_ngap_id, unc.get()->amf_ue_ngap_id);
   }
 
@@ -271,7 +273,7 @@ void amf_n2::handle_itti_message(itti_paging& itti_msg) {
     nc = amf_n1_inst->amf_ue_id_2_nas_context(itti_msg.amf_ue_ngap_id);
   else {
     Logger::amf_n2().warn(
-        "No existed nas_context with amf_ue_ngap_id(0x%x)",
+        "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT ")",
         itti_msg.amf_ue_ngap_id);
   }
   // Network stops sending paging messages since the mobile reachable timer
@@ -494,7 +496,8 @@ void amf_n2::handle_itti_message(itti_ng_reset& itti_msg) {
           nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
         else {
           Logger::amf_n2().warn(
-              "No existed nas_context with amf_ue_ngap_id(0x%x)",
+              "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT
+              ")",
               amf_ue_ngap_id);
         }
         stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
@@ -541,7 +544,9 @@ void amf_n2::handle_itti_message(itti_ng_shutdown& itti_msg) {
         stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
       } else {
         Logger::amf_n2().warn(
-            "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+            "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT
+            ")",
+            amf_ue_ngap_id);
       }
     }
   }
@@ -611,7 +616,7 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
   std::shared_ptr<ue_ngap_context> unc = {};
   if (!is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
     Logger::amf_n2().debug(
-        "Create a new UE NGAP context with ran_ue_ngap_id 0x%x",
+        "Create a new UE NGAP context with ran_ue_ngap_id " GNB_UE_NGAP_ID_FMT,
         ran_ue_ngap_id);
     unc = std::shared_ptr<ue_ngap_context>(new ue_ngap_context());
     set_ran_ue_ngap_id_2_ue_ngap_context(ran_ue_ngap_id, unc);
@@ -621,7 +626,7 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
 
   if (unc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Failed to get UE NGAP context for ran_ue_ngap_id 0x%x",
+        "Failed to get UE NGAP context for ran_ue_ngap_id " GNB_UE_NGAP_ID_FMT,
         ran_ue_ngap_id);
   } else {
     // Store related information into UE NGAP context
@@ -725,7 +730,8 @@ void amf_n2::handle_itti_message(itti_ul_nas_transport& ul_nas_transport) {
   std::shared_ptr<ue_ngap_context> unc = {};
   if (!is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "UE with ran_ue_ngap_id (0x%x) is not attached to gnb with assoc_id "
+        "UE with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT
+        ") is not attached to gnb with assoc_id "
         "(%d)",
         ran_ue_ngap_id, ul_nas_transport.assoc_id);
     return;
@@ -734,8 +740,9 @@ void amf_n2::handle_itti_message(itti_ul_nas_transport& ul_nas_transport) {
   unc = ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
   if (unc.get()->amf_ue_ngap_id != amf_ue_ngap_id) {
     Logger::amf_n2().error(
-        "The requested UE (amf_ue_ngap_id: 0x%x) is not valid, existed UE "
-        "which's amf_ue_ngap_id (0x%x)",
+        "The requested UE (amf_ue_ngap_id: " AMF_UE_NGAP_ID_FMT
+        ") is not valid, existed UE "
+        "which's amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
         amf_ue_ngap_id, unc.get()->amf_ue_ngap_id);
   }
   /*
@@ -788,7 +795,7 @@ void amf_n2::handle_itti_message(itti_dl_nas_transport& dl_nas_transport) {
   if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(
           dl_nas_transport.ran_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NGAP context with ran_ue_ngap_id (%d)",
+        "No UE NGAP context with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
         dl_nas_transport.ran_ue_ngap_id);
     return;
   }
@@ -797,7 +804,7 @@ void amf_n2::handle_itti_message(itti_dl_nas_transport& dl_nas_transport) {
   unc = ran_ue_id_2_ue_ngap_context(dl_nas_transport.ran_ue_ngap_id);
   if (unc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal UE with ran_ue_ngap_id (0x%x)",
+        "Illegal UE with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
         dl_nas_transport.ran_ue_ngap_id);
     return;
   }
@@ -811,7 +818,7 @@ void amf_n2::handle_itti_message(itti_dl_nas_transport& dl_nas_transport) {
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal gNB with assoc id (0x%x)", unc.get()->gnb_assoc_id);
+        "Illegal gNB with assoc id (%d)", unc.get()->gnb_assoc_id);
     return;
   }
   unc.get()->amf_ue_ngap_id = dl_nas_transport.amf_ue_ngap_id;
@@ -836,7 +843,8 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
 
   if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NGAP context with ran_ue_ngap_id (%d)", itti_msg.ran_ue_ngap_id);
+        "No UE NGAP context with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
+        itti_msg.ran_ue_ngap_id);
     return;
   }
 
@@ -844,7 +852,8 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
   unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
   if (unc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal UE with ran_ue_ngap_id (0x%x)", itti_msg.ran_ue_ngap_id);
+        "Illegal UE with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
+        itti_msg.ran_ue_ngap_id);
     return;
   }
   unc.get()->ncc                  = 1;
@@ -857,7 +866,7 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal gNB with assoc id (0x%x)", unc.get()->gnb_assoc_id);
+        "Illegal gNB with assoc id (%d)", unc.get()->gnb_assoc_id);
     return;
   }
   InitialContextSetupRequestMsg* msg = new InitialContextSetupRequestMsg();
@@ -932,7 +941,8 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
         nc = amf_n1_inst->amf_ue_id_2_nas_context(itti_msg.amf_ue_ngap_id);
       else {
         Logger::amf_n2().warn(
-            "No existed nas_context with amf_ue_ngap_id(0x%x)",
+            "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT
+            ")",
             itti_msg.amf_ue_ngap_id);
         // TODO:
       }
@@ -994,7 +1004,8 @@ void amf_n2::handle_itti_message(
 
   if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NGAP context with ran_ue_ngap_id (%d)", itti_msg.ran_ue_ngap_id);
+        "No UE NGAP context with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
+        itti_msg.ran_ue_ngap_id);
     return;
   }
 
@@ -1003,7 +1014,8 @@ void amf_n2::handle_itti_message(
   unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
   if (unc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal UE with ran_ue_ngap_id (0x%x)", itti_msg.ran_ue_ngap_id);
+        "Illegal UE with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
+        itti_msg.ran_ue_ngap_id);
     return;
   }
   std::shared_ptr<gnb_context> gc = {};
@@ -1015,7 +1027,7 @@ void amf_n2::handle_itti_message(
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal gNB with assoc id (0x%x)", unc.get()->gnb_assoc_id);
+        "Illegal gNB with assoc id (%d)", unc.get()->gnb_assoc_id);
     return;
   }
 
@@ -1041,7 +1053,7 @@ void amf_n2::handle_itti_message(
     nc = amf_n1_inst->amf_ue_id_2_nas_context(itti_msg.amf_ue_ngap_id);
   else {
     Logger::amf_n2().warn(
-        "No existed nas_context with amf_ue_ngap_id(0x%x)",
+        "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT ")",
         itti_msg.amf_ue_ngap_id);
     // TODO:
   }
@@ -1097,7 +1109,8 @@ void amf_n2::handle_itti_message(
 
   if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NGAP context with ran_ue_ngap_id (%d)", itti_msg.ran_ue_ngap_id);
+        "No UE NGAP context with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
+        itti_msg.ran_ue_ngap_id);
     return;
   }
 
@@ -1105,7 +1118,8 @@ void amf_n2::handle_itti_message(
   unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
   if (unc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal UE with ran_ue_ngap_id (0x%x)", itti_msg.ran_ue_ngap_id);
+        "Illegal UE with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
+        itti_msg.ran_ue_ngap_id);
     return;
   }
   std::shared_ptr<gnb_context> gc = {};
@@ -1117,7 +1131,7 @@ void amf_n2::handle_itti_message(
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal gNB with assoc id (0x%x)", unc.get()->gnb_assoc_id);
+        "Illegal gNB with assoc id (%d)", unc.get()->gnb_assoc_id);
     return;
   }
 
@@ -1173,7 +1187,8 @@ void amf_n2::handle_itti_message(
 
   if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NGAP context with ran_ue_ngap_id (%d)", itti_msg.ran_ue_ngap_id);
+        "No UE NGAP context with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
+        itti_msg.ran_ue_ngap_id);
     return;
   }
 
@@ -1181,7 +1196,8 @@ void amf_n2::handle_itti_message(
   unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
   if (unc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal UE with ran_ue_ngap_id (0x%x)", itti_msg.ran_ue_ngap_id);
+        "Illegal UE with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
+        itti_msg.ran_ue_ngap_id);
     return;
   }
   std::shared_ptr<gnb_context> gc = {};
@@ -1193,7 +1209,7 @@ void amf_n2::handle_itti_message(
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal gNB with assoc id (0x%x)", unc.get()->gnb_assoc_id);
+        "Illegal gNB with assoc id (%d)", unc.get()->gnb_assoc_id);
     return;
   }
 
@@ -1261,7 +1277,8 @@ void amf_n2::handle_itti_message(itti_ue_context_release_command& itti_msg) {
 
   if (!amf_n2_inst->is_ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NGAP context with ran_ue_ngap_id (%d)", itti_msg.ran_ue_ngap_id);
+        "No UE NGAP context with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
+        itti_msg.ran_ue_ngap_id);
     return;
   }
 
@@ -1269,7 +1286,8 @@ void amf_n2::handle_itti_message(itti_ue_context_release_command& itti_msg) {
   unc = ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id);
   if (unc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal UE with ran_ue_ngap_id (0x%x)", itti_msg.ran_ue_ngap_id);
+        "Illegal UE with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
+        itti_msg.ran_ue_ngap_id);
     return;
   }
   std::shared_ptr<gnb_context> gc = {};
@@ -1281,7 +1299,7 @@ void amf_n2::handle_itti_message(itti_ue_context_release_command& itti_msg) {
   gc = assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
   if (gc.get() == nullptr) {
     Logger::amf_n2().error(
-        "Illegal gNB with assoc id (0x%x)", unc.get()->gnb_assoc_id);
+        "Illegal gNB with assoc id (%d)", unc.get()->gnb_assoc_id);
     return;
   }
 
@@ -1320,7 +1338,8 @@ void amf_n2::handle_itti_message(itti_ue_context_release_complete& itti_msg) {
     nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
   else {
     Logger::amf_n2().warn(
-        "No existed nas_context with amf_ue_ngap_id(0x%x)", amf_ue_ngap_id);
+        "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT ")",
+        amf_ue_ngap_id);
   }
   amf_n1_inst->set_5gcm_state(nc, CM_IDLE);
 
@@ -1352,8 +1371,7 @@ void amf_n2::handle_itti_message(
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
 
   if (gc.get() == nullptr) {
-    Logger::amf_n2().error(
-        "Illegal gNB with assoc id (0x%x)", itti_msg.assoc_id);
+    Logger::amf_n2().error("Illegal gNB with assoc id (%d)", itti_msg.assoc_id);
     return;
   }
   unsigned long amf_ue_ngap_id = {0};
@@ -1383,8 +1401,7 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
 
   if (gc.get() == nullptr) {
-    Logger::amf_n2().error(
-        "Illegal gNB with assoc id (0x%x)", itti_msg.assoc_id);
+    Logger::amf_n2().error("Illegal gNB with assoc id (%d)", itti_msg.assoc_id);
     return false;
   }
 
@@ -1395,15 +1412,17 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   std::shared_ptr<ue_ngap_context> unc = {};
   if (!is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NGAP context with ran_ue_ngap_id (0x%x)", ran_ue_ngap_id);
+        "No UE NGAP context with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
+        ran_ue_ngap_id);
     return false;
   }
   unc = ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
 
   if (unc.get()->amf_ue_ngap_id != amf_ue_ngap_id) {
     Logger::amf_n2().error(
-        "The requested UE (amf_ue_ngap_id 0x%x) is not valid, existed UE "
-        "with  amf_ue_ngap_id (0x%x)",
+        "The requested UE (amf_ue_ngap_id " AMF_UE_NGAP_ID_FMT
+        ") is not valid, existed UE "
+        "with  amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
         amf_ue_ngap_id, unc.get()->amf_ue_ngap_id);
     return false;
   }
@@ -1509,7 +1528,8 @@ bool amf_n2::handle_itti_message(itti_handover_required& itti_msg) {
   // Security context
   if (!amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NAS context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+        "No UE NAS context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
+        amf_ue_ngap_id);
     return false;
   }
 
@@ -1660,7 +1680,8 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   unsigned long amf_ue_ngap_id = itti_msg.handoverrequestAck->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handoverrequestAck->getRanUeNgapId();
   Logger::amf_n2().debug(
-      "Handover Request Ack ran_ue_ngap_id (0x%d) amf_ue_ngap_id (%d)",
+      "Handover Request Ack ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT
+      ") amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
       ran_ue_ngap_id, amf_ue_ngap_id);
 
   std::shared_ptr<gnb_context> gc = {};
@@ -1671,8 +1692,7 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   }
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
   if (gc.get() == nullptr) {
-    Logger::amf_n2().error(
-        "Illegal gNB with assoc id (0x%x)", itti_msg.assoc_id);
+    Logger::amf_n2().error("Illegal gNB with assoc id (%d)", itti_msg.assoc_id);
     return;
   }
   Logger::amf_n2().debug(
@@ -1682,7 +1702,8 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
   std::shared_ptr<ue_ngap_context> unc = {};
   if (!is_amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NGAP context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+        "No UE NGAP context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
+        amf_ue_ngap_id);
     return;
   }
   unc = amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id);
@@ -1700,7 +1721,8 @@ void amf_n2::handle_itti_message(itti_handover_request_Ack& itti_msg) {
 
   if (!amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NAS context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+        "No UE NAS context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
+        amf_ue_ngap_id);
     return;
   }
 
@@ -1819,7 +1841,8 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
   unsigned long amf_ue_ngap_id = itti_msg.handovernotify->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.handovernotify->getRanUeNgapId();
   Logger::amf_n2().debug(
-      "Handover Notify ran_ue_ngap_id (0x%d) amf_ue_ngap_id (%lu)",
+      "Handover Notify ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT
+      ") amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
       ran_ue_ngap_id, amf_ue_ngap_id);
 
   std::shared_ptr<gnb_context> gc = {};
@@ -1830,8 +1853,7 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
   }
   gc = assoc_id_2_gnb_context(itti_msg.assoc_id);
   if (gc.get() == nullptr) {
-    Logger::amf_n2().error(
-        "Illegal gNB with assoc id (0x%x)", itti_msg.assoc_id);
+    Logger::amf_n2().error("Illegal gNB with assoc id (%d)", itti_msg.assoc_id);
     return;
   }
   Logger::amf_n2().debug(
@@ -1841,7 +1863,8 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
   std::shared_ptr<ue_ngap_context> unc = {};
   if (!is_amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NGAP context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+        "No UE NGAP context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
+        amf_ue_ngap_id);
     return;
   }
   unc = amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id);
@@ -1855,7 +1878,8 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
 
   if (!amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NAS context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+        "No UE NAS context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
+        amf_ue_ngap_id);
     return;
   }
 
@@ -1958,7 +1982,8 @@ void amf_n2::handle_itti_message(itti_handover_notify& itti_msg) {
 
   if (!is_amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NGAP context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+        "No UE NGAP context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
+        amf_ue_ngap_id);
     return;
   }
   unc                       = amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id);
@@ -1974,7 +1999,8 @@ void amf_n2::handle_itti_message(itti_uplink_ran_status_transfer& itti_msg) {
   Logger::amf_n2().debug("Handling Uplink RAN Status Transfer ...");
   unsigned long amf_ue_ngap_id = itti_msg.uplinkrantransfer->getAmfUeNgapId();
   Logger::amf_n2().error(
-      "Uplink RAN Status Transfer amf_ue_ngap_id (%d)", amf_ue_ngap_id);
+      "Uplink RAN Status Transfer amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
+      amf_ue_ngap_id);
   if (!is_assoc_id_2_gnb_context(itti_msg.assoc_id)) {
     Logger::amf_n2().error(
         "gNB with assoc_id (%d) is illegal", itti_msg.assoc_id);
@@ -1984,7 +2010,8 @@ void amf_n2::handle_itti_message(itti_uplink_ran_status_transfer& itti_msg) {
   std::shared_ptr<ue_ngap_context> unc = {};
   if (!is_amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NGAP context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
+        "No UE NGAP context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
+        amf_ue_ngap_id);
     return;
   }
   unc = amf_ue_id_2_ue_ngap_context(amf_ue_ngap_id);
@@ -2046,7 +2073,8 @@ void amf_n2::handle_itti_message(itti_rereoute_nas& itti_msg) {
 
   if (!is_ran_ue_id_2_ue_ngap_context(itti_msg.ran_ue_ngap_id)) {
     Logger::amf_n2().error(
-        "No UE NGAP context with ran_ue_ngap_id 0x%x", itti_msg.ran_ue_ngap_id);
+        "No UE NGAP context with ran_ue_ngap_id " GNB_UE_NGAP_ID_FMT,
+        itti_msg.ran_ue_ngap_id);
     return;
   }
 
@@ -2054,7 +2082,8 @@ void amf_n2::handle_itti_message(itti_rereoute_nas& itti_msg) {
   if (unc.get()->amf_ue_ngap_id != itti_msg.amf_ue_ngap_id) {
     Logger::amf_n2().error(
         "AMF UE NGAP ID does not match the expected value (requested "
-        "amf_ue_ngap_id 0x%x, existed amf_ue_ngap_id 0x%x)",
+        "amf_ue_ngap_id " AMF_UE_NGAP_ID_FMT
+        ", existed amf_ue_ngap_id " AMF_UE_NGAP_ID_FMT ")",
         itti_msg.amf_ue_ngap_id, unc.get()->amf_ue_ngap_id);
     return;
   }
