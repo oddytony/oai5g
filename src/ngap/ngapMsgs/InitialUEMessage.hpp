@@ -58,7 +58,7 @@ class InitialUEMessageMsg {
   void setRRCEstablishmentCause(e_Ngap_RRCEstablishmentCause cause_value);
   // void set5GS_TMSI(string amfSetId, string amfPointer, string _5g_tmsi);
   void setUeContextRequest(e_Ngap_UEContextRequest ueCtxReq);
-  int encode2buffer(uint8_t* buf, int buf_size);
+  void encode2buffer(uint8_t*& buf, int& buf_size);
   // Decapsulation
   bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
   bool getRanUENgapID(uint32_t& value);

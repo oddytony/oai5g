@@ -1267,7 +1267,13 @@ void amf_n1::registration_request_handle(
         tai_json["plmnId"]["mcc"] = uc.get()->cgi.mcc;
         tai_json["plmnId"]["mnc"] = uc.get()->cgi.mnc;
         tai_json["tac"]           = std::to_string(uc.get()->tai.tac);
-        from_json(tai_json, tai);
+
+        try {
+          from_json(tai_json, tai);
+        } catch (std::exception& e) {
+          Logger::amf_n1().error("Exception with Json: %s", e.what());
+          return;
+        }
         // uc.get()->cgi.nrCellID;
         nr_location.setTai(tai);
 
@@ -1278,7 +1284,13 @@ void amf_n1::registration_request_handle(
         global_ran_node_id_json["gNbId"]["gNBValue"] =
             std::to_string(gc->globalRanNodeId);
         oai::amf::model::GlobalRanNodeId global_ran_node_id = {};
-        from_json(global_ran_node_id_json, global_ran_node_id);
+        try {
+          from_json(global_ran_node_id_json, global_ran_node_id);
+        } catch (std::exception& e) {
+          Logger::amf_n1().error("Exception with Json: %s", e.what());
+          return;
+        }
+
         nr_location.setGlobalGnbId(global_ran_node_id);
 
         user_location.setNrLocation(nr_location);
@@ -2341,11 +2353,21 @@ void amf_n1::security_mode_complete_handle(
 
   // If current AMF can't handle this UE, reroute the Registration Request to
   // a target AMF
-  if (reroute_registration_request(nc)) {
+  bool reroute_result = true;
+  if (reroute_registration_request(nc, reroute_result)) {
     return;
   }
 
-  // Encoding REGISTRATION ACCEPT
+  // If AMF can't handle this and there's an error when trying to handling the
+  // UE to the target AMFs, thus encoding REGISTRATION REJECT
+  if (!reroute_result) {
+    uint8_t cause_value = 7;  // 5GS services not allowed - TO BE VERIFIED
+    response_registration_reject_msg(
+        cause_value, ran_ue_ngap_id, amf_ue_ngap_id);
+    return;
+  }
+
+  // Otherwise encoding REGISTRATION ACCEPT
   auto registration_accept = std::make_unique<RegistrationAccept>();
   initialize_registration_accept(registration_accept, nc);
 
@@ -3728,7 +3750,8 @@ bool amf_n1::get_mobile_reachable_timer_timeout(
 }
 
 //------------------------------------------------------------------------------
-bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
+bool amf_n1::reroute_registration_request(
+    std::shared_ptr<nas_context>& nc, bool& reroute_result) {
   // Verifying whether this AMF can handle the request (if not, AMF
   // re-allocation procedure will be executed to reroute the Registration "
   // Request to an appropriate AMF
@@ -3764,6 +3787,9 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
     return false;
   }
 
+  // If the current AMF can't process the Requested NSSAIs
+  // find the appropriate AMFs and let them handle the UE
+
   // Process NS selection to select the appropriate AMF
   oai::amf::model::SliceInfoForRegistration slice_info = {};
   oai::amf::model::AuthorizedNetworkSliceInfo authorized_network_slice_info =
@@ -3777,22 +3803,32 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
     subscribed_snssais.push_back(subscribed_snssai);
   }
   slice_info.setSubscribedNssai(subscribed_snssais);
-  // TODO: To be verified
-  // slice_info.setRequestedNssai(nssai.getDefaultSingleNssais());
+
+  // Requested NSSAIs
+  std::vector<oai::amf::model::Snssai> requested_nssais;
+  for (auto s : nc->requestedNssai) {
+    oai::amf::model::Snssai nssai = {};
+    nssai.setSst(s.sst);
+    nssai.setSd(std::to_string(s.sd));
+    requested_nssais.push_back(nssai);
+  }
+  slice_info.setRequestedNssai(requested_nssais);
 
   if (!get_network_slice_selection(
           nc, amf_app_inst->get_nf_instance(), slice_info,
           authorized_network_slice_info)) {
     Logger::amf_n1().debug(
         "Could not get the Network Slice Selection information from NSSF");
+    reroute_result = false;
     return false;
   }
 
-  // Find the appropriate target AMF
+  // Find the appropriate target AMF and send N1MessageNotify to the AMF
+  // otherwise reroute NAS message via AN
   std::string target_amf = {};
   if (get_target_amf(nc, target_amf, authorized_network_slice_info)) {
     Logger::amf_n1().debug("Target AMF %s", target_amf.c_str());
-    // Send N1MessageNotify to the Target AMF
+
     send_n1_message_notity(nc, target_amf);
     return true;
   } else {
@@ -3802,8 +3838,10 @@ bool amf_n1::reroute_registration_request(std::shared_ptr<nas_context>& nc) {
     std::string target_amf_set = {};
     if (authorized_network_slice_info.targetAmfSetIsSet()) {
       target_amf_set = authorized_network_slice_info.getTargetAmfSet();
+      Logger::amf_n1().debug("Target AMF Set %s", target_amf_set.c_str());
     } else {
       Logger::amf_n1().debug("No Target AMF Set info available!");
+      reroute_result = false;
       return false;
     }
 
@@ -3999,10 +4037,10 @@ bool amf_n1::get_slice_selection_subscription_data(
     amf_app_inst->add_promise(promise_id, p);
 
     itti_msg->http_version = 1;
-    itti_msg->supi         = uc.get()->supi;
-    itti_msg->plmn.mcc     = uc.get()->cgi.mcc;
-    itti_msg->plmn.mnc     = uc.get()->cgi.mnc;
-    itti_msg->promise_id   = promise_id;
+    itti_msg->supi       = nc->imsi;  // TODO: use SUPI in UDR, uc.get()->supi;
+    itti_msg->plmn.mcc   = uc.get()->cgi.mcc;
+    itti_msg->plmn.mnc   = uc.get()->cgi.mnc;
+    itti_msg->promise_id = promise_id;
 
     int ret = itti_inst->send_msg(itti_msg);
     if (0 != ret) {
@@ -4024,7 +4062,11 @@ bool amf_n1::get_slice_selection_subscription_data(
       if (!nssai_json.empty()) {
         Logger::ngap().debug(
             "Got NSSAI from UDM: %s", nssai_json.dump().c_str());
-        from_json(nssai_json, nssai);
+        try {
+          from_json(nssai_json, nssai);
+        } catch (std::exception& e) {
+          return false;
+        }
         return true;
       } else {
         return false;
@@ -4072,8 +4114,6 @@ bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
 
   // Find the common NSSAIs between Requested NSSAIs and Subscribed NSSAIs
   std::vector<oai::amf::model::Snssai> common_snssais;
-
-  //    nssai.getDefaultSingleNssais();
 
   for (auto ta : gc->s_ta_list) {
     for (auto p : ta.b_plmn_list) {
@@ -4142,8 +4182,11 @@ bool amf_n1::get_network_slice_selection(
     itti_msg->nf_instance_id = nf_instance_id;
     itti_msg->slice_info     = slice_info;
     itti_msg->promise_id     = promise_id;
-    itti_msg->plmn.mcc       = uc.get()->cgi.mcc;
-    itti_msg->plmn.mnc       = uc.get()->cgi.mnc;
+    // itti_msg->plmn.mcc       = uc.get()->cgi.mcc;
+    // itti_msg->plmn.mnc       = uc.get()->cgi.mnc;
+    itti_msg->tai.plmn.mcc = uc.get()->tai.mcc;
+    itti_msg->tai.plmn.mnc = uc.get()->tai.mnc;
+    itti_msg->tai.tac      = uc.get()->tai.tac;
 
     int ret = itti_inst->send_msg(itti_msg);
     if (0 != ret) {
@@ -4166,7 +4209,13 @@ bool amf_n1::get_network_slice_selection(
         Logger::ngap().debug(
             "Got Authorized Network Slice Info from NSSF: %s",
             network_slice_info.dump().c_str());
-        from_json(network_slice_info, authorized_network_slice_info);
+        try {
+          from_json(network_slice_info, authorized_network_slice_info);
+        } catch (std::exception& e) {
+          Logger::ngap().warn(
+              "Could not parse Authorized Network Slice Info from Json");
+          return false;
+        }
       } else {
         Logger::ngap().debug(
             "Could not get Authorized Network Slice Info from NSSF");
@@ -4215,10 +4264,14 @@ bool amf_n1::get_target_amf(
 
   if (authorized_network_slice_info.targetAmfSetIsSet()) {
     target_amf_set = authorized_network_slice_info.getTargetAmfSet();
+    Logger::amf_n1().debug(
+        "Target AMF Set from NSSF %s", target_amf_set.c_str());
     if (authorized_network_slice_info.nrfAmfSetIsSet()) {
       nrf_amf_set = authorized_network_slice_info.getNrfAmfSet();
+      Logger::amf_n1().debug("NRF AMF Set from NSSF %s", nrf_amf_set.c_str());
     }
   } else {
+    Logger::amf_n1().warn("No Target AMF Set available");
     return false;
   }
 
@@ -4233,6 +4286,8 @@ bool amf_n1::get_target_amf(
     // use NRF's URI from conf file if not available
     if (nrf_amf_set.empty()) {
       nrf_amf_set = amf_cfg.get_nrf_nf_discovery_service_uri();
+      Logger::amf_n1().debug(
+          "NRF AMF Set from the configuration file %s", nrf_amf_set.c_str());
     }
 
     // Get list of AMF candidates from NRF
@@ -4254,6 +4309,7 @@ bool amf_n1::get_target_amf(
     itti_msg->target_amf_set_is_set = true;
     itti_msg->promise_id            = promise_id;
     itti_msg->target_nf_type        = "AMF";
+    itti_msg->nrf_amf_set           = nrf_amf_set;
 
     int ret = itti_inst->send_msg(itti_msg);
     if (0 != ret) {
@@ -4358,23 +4414,58 @@ void amf_n1::send_n1_message_notity(
 
 //------------------------------------------------------------------------------
 bool amf_n1::reroute_nas_via_an(
-    const std::shared_ptr<nas_context>& nc,
-    const std::string& target_amf_set) const {
+    const std::shared_ptr<nas_context>& nc, const std::string& target_amf_set) {
   Logger::amf_n1().debug(
       "Send a request to Reroute NAS message to the target AMF via AN");
+
+  uint16_t amf_set_id = 0;
+  if (!get_amf_set_id(target_amf_set, amf_set_id)) {
+    Logger::ngap().warn("Could not extract AMF Set ID from Target AMF Set");
+    return false;
+  }
 
   std::shared_ptr<itti_rereoute_nas> itti_msg =
       std::make_shared<itti_rereoute_nas>(TASK_AMF_N1, TASK_AMF_N2);
 
   itti_msg->ran_ue_ngap_id = nc->ran_ue_ngap_id;
   itti_msg->amf_ue_ngap_id = nc->amf_ue_ngap_id;
-  itti_msg->amf_set_id     = target_amf_set;
+  itti_msg->amf_set_id     = amf_set_id;
 
   int ret = itti_inst->send_msg(itti_msg);
   if (0 != ret) {
     Logger::ngap().error(
         "Could not send ITTI message %s to task TASK_AMF_N2",
         itti_msg->get_msg_name());
+  }
+
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::get_amf_set_id(
+    const std::string& target_amf_set, uint16_t& amf_set_id) {
+  std::vector<std::string> words;
+  boost::split(
+      words, target_amf_set, boost::is_any_of("/"), boost::token_compress_on);
+  if (words.size() != 4) {
+    Logger::amf_n1().warn(
+        "Bad value for Target AMF Set  %s", target_amf_set.c_str());
+    return false;
+  }
+  if (words[3].size() != 3) {
+    Logger::amf_n1().warn(
+        "Bad value for Target AMF Set  %s", target_amf_set.c_str());
+    return false;
+  } else {
+    try {
+      amf_set_id = std::stoul(words[3].substr(0, 1), nullptr, 16)
+                   << 8 + std::stoul(words[3].substr(1, 2), nullptr, 16);
+    } catch (const std::exception& e) {
+      Logger::amf_n1().warn(
+          "Error when converting from string to int for AMF Set ID, "
+          "error: %s",
+          e.what());
+    }
   }
 
   return true;

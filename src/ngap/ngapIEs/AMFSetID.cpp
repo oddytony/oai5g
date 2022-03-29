@@ -49,6 +49,10 @@ void AMFSetID::setAMFSetID(const std::string charid) {
 }
 
 //------------------------------------------------------------------------------
+void AMFSetID::setAMFSetID(const uint16_t set_id) {
+  setid = set_id;
+}
+//------------------------------------------------------------------------------
 void AMFSetID::getAMFSetID(std::string& charid) {
   charid = to_string(setid);
 }

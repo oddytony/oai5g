@@ -43,6 +43,7 @@ class AMFSetID {
   virtual ~AMFSetID();
 
   void setAMFSetID(const std::string);
+  void setAMFSetID(const uint16_t set_id);
   void getAMFSetID(std::string&);
 
   bool encode2bitstring(Ngap_AMFSetID_t&);

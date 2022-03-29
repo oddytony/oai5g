@@ -50,6 +50,7 @@
 #include "amf_n1.hpp"
 #include "amf_n11.hpp"
 #include "amf_statistics.hpp"
+#include "comUt.hpp"
 #include "itti.hpp"
 #include "itti_msg_amf_app.hpp"
 #include "logger.hpp"
@@ -688,11 +689,16 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
   }
 
   // Store InitialUEMessage for Rereoute NAS later
-  unc.get()->initialUEMsg.buf =
-      (uint8_t*) calloc(BUFFER_SIZE_1024, sizeof(uint8_t));
   if (unc.get()->initialUEMsg.buf) {
-    unc.get()->initialUEMsg.size = init_ue_msg.initUeMsg->encode2buffer(
-        unc.get()->initialUEMsg.buf, BUFFER_SIZE_1024);
+    int encoded_size = 0;
+    init_ue_msg.initUeMsg->encode2buffer(
+        unc.get()->initialUEMsg.buf, encoded_size);
+    if (encoded_size > 0) {
+      comUt::print_buffer(
+          "ngap", "InitialUEMessage", unc.get()->initialUEMsg.buf,
+          encoded_size);
+      unc.get()->initialUEMsg.size = encoded_size;
+    }
   }
 
   itti_msg->ran_ue_ngap_id = ran_ue_ngap_id;
@@ -2093,12 +2099,14 @@ void amf_n2::handle_itti_message(itti_rereoute_nas& itti_msg) {
   rerouteNASRequest.setRanUeNgapId(itti_msg.ran_ue_ngap_id);
   rerouteNASRequest.setAmfUeNgapId(itti_msg.amf_ue_ngap_id);
   rerouteNASRequest.setAMFSetID(itti_msg.amf_set_id);
-  rerouteNASRequest.setNgapMessage(
-      unc->initialUEMsg);  // Include InitialUEMessage
+  if (unc->initialUEMsg.size > 0)
+    rerouteNASRequest.setNgapMessage(
+        unc->initialUEMsg);  // Include InitialUEMessage
+
   // TODO: AllowedNSSAI (Optional)
 
-  uint8_t buffer[BUFFER_SIZE_1024];
-  int encoded_size = rerouteNASRequest.encode2buffer(buffer, BUFFER_SIZE_1024);
+  uint8_t buffer[BUFFER_SIZE_2048];
+  int encoded_size = rerouteNASRequest.encode2buffer(buffer, BUFFER_SIZE_2048);
   bstring b        = blk2bstr(buffer, encoded_size);
 
   amf_n2_inst->sctp_s_38412.sctp_send_msg(

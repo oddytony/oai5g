@@ -223,7 +223,8 @@ class itti_n11_network_slice_selection_information : public itti_msg_n11 {
   uint8_t http_version;
   std::string nf_instance_id;
   oai::amf::model::SliceInfoForRegistration slice_info;
-  plmn_t plmn;
+  // plmn_t plmn;
+  tai_t tai;
   uint32_t promise_id;
 };
 
@@ -240,6 +241,7 @@ class itti_n11_nf_instance_discovery : public itti_msg_n11 {
   std::string target_amf_set;
   bool target_amf_set_is_set;
   std::string target_nf_type;
+  std::string nrf_amf_set;
   uint32_t promise_id;
 };
 

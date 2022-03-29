@@ -96,42 +96,69 @@ class amf_app {
   amf_app(amf_app const&) = delete;
   void operator=(amf_app const&) = delete;
   void allRegistredModulesInit(const amf_modules& modules);
+
+  /*
+   * Generate AMF UE NGAP ID
+   * @return generated ID
+   */
   long generate_amf_ue_ngap_id();
-  // itti handlers
+
+  /*
+   * Handle ITTI message (NAS Signalling Establishment Request: Registration
+   * Request, Service Request )
+   * @param [itti_nas_signalling_establishment_request&]: ITTI message
+   * @return void
+   */
   void handle_itti_message(itti_nas_signalling_establishment_request& itti_msg);
+
+  /*
+   * Handle ITTI message (N1N2MessageTransferRequest)
+   * @param [itti_n1n2_message_transfer_request&]: ITTI message
+   * @return void
+   */
   void handle_itti_message(itti_n1n2_message_transfer_request& itti_msg);
+
+  /*
+   * Handle ITTI message (SBI N1 Message Notification)
+   * @param [itti_sbi_n1_message_notification&]: ITTI message
+   * @return void
+   */
   void handle_itti_message(itti_sbi_n1_message_notification& itti_msg);
 
+  // TODO
   bool is_amf_ue_id_2_ue_context(const long& amf_ue_ngap_id) const;
   std::shared_ptr<ue_context> amf_ue_id_2_ue_context(
       const long& amf_ue_ngap_id) const;
+  // TODO
   void set_amf_ue_ngap_id_2_ue_context(
       const long& amf_ue_ngap_id, std::shared_ptr<ue_context> uc);
-
+  // TODO
   bool is_ran_amf_id_2_ue_context(const std::string& ue_context_key) const;
   std::shared_ptr<ue_context> ran_amf_id_2_ue_context(
       const std::string& ue_context_key) const;
-
+  // TODO
   bool ran_amf_id_2_ue_context(
       const std::string& ue_context_key, std::shared_ptr<ue_context>& uc) const;
-
+  // TODO
   void set_ran_amf_id_2_ue_context(
       const std::string& ue_context_key, std::shared_ptr<ue_context> uc);
-
+  // TODO
   bool is_supi_2_ue_context(const string& supi) const;
   std::shared_ptr<ue_context> supi_2_ue_context(const string& supi) const;
+  // TODO
   void set_supi_2_ue_context(
       const string& ue_context_key, std::shared_ptr<ue_context>& uc);
-
+  // TODO
   bool find_pdu_session_context(
       const string& supi, const std::uint8_t pdu_session_id,
       std::shared_ptr<pdu_session_context>& psc);
-
+  // TODO
   bool get_pdu_sessions_context(
       const string& supi,
       std::vector<std::shared_ptr<pdu_session_context>>& sessions_ctx);
-
+  // TODO
   uint32_t generate_tmsi();
+  // TODO
   bool generate_5g_guti(
       uint32_t ranid, long amfid, std::string& mcc, std::string& mnc,
       uint32_t& tmsi);
@@ -268,6 +295,24 @@ class amf_app {
       uint32_t pid, boost::shared_ptr<boost::promise<uint32_t>>& p);
 
   /*
+   * Store the promise
+   * @param [uint32_t] pid: promise id
+   * @param [boost::shared_ptr<boost::promise<std::string>>&] p: promise
+   * @return void
+   */
+  void add_promise(
+      uint32_t pid, boost::shared_ptr<boost::promise<std::string>>& p);
+
+  /*
+   * Store the promise
+   * @param [uint32_t] pid: promise id
+   * @param [boost::shared_ptr<boost::promise<nlohmann::json>>&] p: promise
+   * @return void
+   */
+  void add_promise(
+      uint32_t pid, boost::shared_ptr<boost::promise<nlohmann::json>>& p);
+
+  /*
    * Remove the promise
    * @param [uint32_t] pid: promise id
    * @return void
@@ -283,14 +328,34 @@ class amf_app {
     return util::uint_uid_generator<uint64_t>::get_instance().get_uid();
   }
 
-  void add_promise(
-      uint32_t pid, boost::shared_ptr<boost::promise<std::string>>& p);
-  void add_promise(
-      uint32_t pid, boost::shared_ptr<boost::promise<nlohmann::json>>& p);
+  /*
+   * Trigger the response from API server
+   * @param [uint32_t] pid: promise id
+   * @param [uint32_t] http_code: result for the corresponding promise
+   * @return void
+   */
   void trigger_process_response(uint32_t pid, uint32_t http_code);
+
+  /*
+   * Trigger the response from API server
+   * @param [uint32_t] pid: promise id
+   * @param [std::string] n2_sm: result for the corresponding promise
+   * @return void
+   */
   void trigger_process_response(uint32_t pid, std::string n2_sm);
+
+  /*
+   * Trigger the response from API server
+   * @param [uint32_t] pid: promise id
+   * @param [nlohmann::json&] json_data: result for the corresponding promise
+   * @return void
+   */
   void trigger_process_response(uint32_t pid, nlohmann::json& json_data);
 
+  /*
+   * Get the AMF's NF instance
+   * @return NF instance in string format
+   */
   std::string get_nf_instance() const;
 };
 

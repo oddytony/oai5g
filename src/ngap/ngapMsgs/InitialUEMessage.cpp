@@ -237,12 +237,12 @@ void InitialUEMessageMsg::setUeContextRequest(
 }
 
 //------------------------------------------------------------------------------
-int InitialUEMessageMsg::encode2buffer(uint8_t* buf, int buf_size) {
+void InitialUEMessageMsg::encode2buffer(uint8_t*& buf, int& buf_size) {
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, initialUEMessagePdu);
-  asn_enc_rval_t er = aper_encode_to_buffer(
-      &asn_DEF_Ngap_NGAP_PDU, NULL, initialUEMessagePdu, buf, buf_size);
-  Logger::ngap().debug("er.encoded( %d )", er.encoded);
-  return er.encoded;
+  buf_size = aper_encode_to_new_buffer(
+      &asn_DEF_Ngap_NGAP_PDU, NULL, initialUEMessagePdu, (void**) &buf);
+  Logger::ngap().debug("Encoded message size ( %d )", buf_size);
+  return;
 }
 
 //------------------------------------------------------------------------------
