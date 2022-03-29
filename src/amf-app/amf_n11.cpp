@@ -155,7 +155,14 @@ void amf_n11_task(void*) {
             dynamic_cast<itti_n11_n1_message_notify*>(msg);
         amf_n11_inst->handle_itti_message(ref(*m));
       } break;
-
+      case N11_NF_INSTANCE_DISCOVERY: {
+        Logger::amf_n11().info(
+            "Receive N1 NF Instance Discovery message, "
+            "handling ...");
+        itti_n11_nf_instance_discovery* m =
+            dynamic_cast<itti_n11_nf_instance_discovery*>(msg);
+        amf_n11_inst->handle_itti_message(ref(*m));
+      } break;
       case TERMINATE: {
         if (itti_msg_terminate* terminate =
                 dynamic_cast<itti_msg_terminate*>(msg)) {
@@ -625,20 +632,21 @@ void amf_n11::handle_itti_message(
   std::string url =
       amf_cfg.get_udm_slice_selection_subscription_data_retrieval_uri(
           itti_msg.supi);
-  nlohmann::json json_data    = {};
-  json_data["plmn-id"]["mcc"] = itti_msg.plmn.mcc;
-  json_data["plmn-id"]["mnc"] = itti_msg.plmn.mnc;
-  std::string body            = json_data.dump();
+  nlohmann::json plmn_id = {};
+  plmn_id["mcc"]         = itti_msg.plmn.mcc;
+  plmn_id["mnc"]         = itti_msg.plmn.mnc;
+
+  std::string parameters = {};
+  parameters             = "?plmn-id=" + plmn_id.dump();
+  url += parameters;
 
   Logger::amf_n11().debug(
       "Send Slice Selection Subscription Data Retrieval to UDM, URL %s",
       url.c_str());
 
-  Logger::amf_n11().debug("MSG body: \n %s", body.c_str());
-
   nlohmann::json response_data = {};
   uint32_t response_code       = 0;
-  curl_http_client(url, "GET", body, response_data, response_code);
+  curl_http_client(url, "GET", "", response_data, response_code);
 
   // Notify to the result
   if (itti_msg.promise_id > 0) {
@@ -662,16 +670,22 @@ void amf_n11::handle_itti_message(
   // Slice Info Request For Registration
   nlohmann::json slice_info = {};
   to_json(slice_info, itti_msg.slice_info);
-  // home-plmn-id
-  nlohmann::json home_plmn_id = {};
-  home_plmn_id["mcc"]         = itti_msg.plmn.mcc;
-  home_plmn_id["mnc"]         = itti_msg.plmn.mnc;
-  // TODO: tai
-  std::string parameters = {};
-  parameters = "?nf-type=AMF?nf-id=" + amf_app_inst->get_nf_instance() +
-               "?slice-info-request-for-registration=" + slice_info.dump() +
-               "?home-plmn-id=" + home_plmn_id.dump();
+  // TODO: home-plmn-id
+  // nlohmann::json home_plmn_id = {};
+  // home_plmn_id["mcc"]         = itti_msg.tai.plmn.mcc;
+  // home_plmn_id["mnc"]         = itti_msg.tai.plmn.mnc;
 
+  // TAI
+  nlohmann::json tai   = {};
+  tai["plmnId"]["mcc"] = itti_msg.tai.plmn.mcc;
+  tai["plmnId"]["mnc"] = itti_msg.tai.plmn.mnc;
+  tai["tac"]           = std::to_string(itti_msg.tai.tac);
+
+  std::string parameters = {};
+  parameters = "?nf-type=AMF&nf-id=" + amf_app_inst->get_nf_instance() +
+               "&slice-info-request-for-registration=" + slice_info.dump() +
+               "&tai=" + tai.dump();
+  //"?home-plmn-id=" + home_plmn_id.dump();
   url += parameters;
   Logger::amf_n11().debug(
       "Send Slice Selection Information Retrieval to NSSF, URL %s",
@@ -720,6 +734,34 @@ void amf_n11::handle_itti_message(itti_n11_n1_message_notify& itti_msg) {
 
   // TODO: handle response
   return;
+}
+
+//------------------------------------------------------------------------------
+void amf_n11::handle_itti_message(itti_n11_nf_instance_discovery& itti_msg) {
+  Logger::amf_n11().debug(
+      "Send NF Instance Discovery to NRF (HTTP version %d)",
+      itti_msg.http_version);
+
+  Logger::amf_n11().debug("NRF URI: %s", itti_msg.nrf_amf_set.c_str());
+
+  uint8_t http_version = itti_msg.http_version;
+  if (amf_cfg.support_features.use_http2) http_version = 2;
+
+  nlohmann::json json_data = {};
+  std::string url          = itti_msg.nrf_amf_set;
+
+  // TODO: remove hardcoded values
+  url += "?target-nf-type=AMF&requester-nf-type=AMF";
+
+  nlohmann::json response_data = {};
+  uint32_t response_code       = 0;
+  curl_http_client(url, "GET", "", response_data, response_code);
+
+  // Notify to the result
+  if (itti_msg.promise_id > 0) {
+    amf_app_inst->trigger_process_response(itti_msg.promise_id, response_data);
+    return;
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -963,8 +1005,11 @@ bool amf_n11::send_ue_authentication_request(
     Logger::amf_n11().debug(
         "UE Authentication, response from AUSF\n, %s ",
         response_data.dump().c_str());
-    from_json(response_data, ue_auth_ctx);
-
+    try {
+      from_json(response_data, ue_auth_ctx);
+    } catch (std::exception& e) {
+      return false;
+    }
   } else {
     Logger::amf_n11().warn(
         "UE Authentication, could not get response from AUSF");
@@ -1551,6 +1596,7 @@ bool amf_n11::get_nrf_uri(
     }
 
   } else {  // Get NRF info from NSSF
+            // TODO: check if external NSSF feature is supported
     Logger::amf_n11().debug(
         "Send NS Selection to NSSF to discover the appropriate NRF");
 

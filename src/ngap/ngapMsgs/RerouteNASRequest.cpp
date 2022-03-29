@@ -328,8 +328,9 @@ bool RerouteNASRequest::getNgapMessage(OCTET_STRING_t& message) const {
   message = ngapMessage;
   return true;
 }
+
 //------------------------------------------------------------------------------
-void RerouteNASRequest::setAMFSetID(const std::string& amf_set_id) {
+void RerouteNASRequest::setAMFSetID(const uint16_t& amf_set_id) {
   amfSetID.setAMFSetID(amf_set_id);
 
   Ngap_RerouteNASRequest_IEs_t* ie = (Ngap_RerouteNASRequest_IEs_t*) calloc(

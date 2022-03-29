@@ -305,7 +305,7 @@ class itti_rereoute_nas : public itti_msg_n2 {
 
   uint32_t ran_ue_ngap_id;
   long amf_ue_ngap_id;
-  std::string amf_set_id;
+  uint16_t amf_set_id;
 };
 
 #endif

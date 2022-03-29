@@ -65,6 +65,7 @@ class amf_n11 {
       itti_n11_network_slice_selection_information& itti_msg);
 
   void handle_itti_message(itti_n11_n1_message_notify& itti_msg);
+  void handle_itti_message(itti_n11_nf_instance_discovery& itti_msg);
 
   void send_pdu_session_update_sm_context_request(
       std::string supi, std::shared_ptr<pdu_session_context> psc,

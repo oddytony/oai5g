@@ -61,7 +61,8 @@ class RerouteNASRequest {
   void setNgapMessage(OCTET_STRING_t& message);
   bool getNgapMessage(OCTET_STRING_t& message) const;
 
-  void setAMFSetID(const std::string& amf_set_id);
+  // void setAMFSetID(const std::string& amf_set_id);
+  void setAMFSetID(const uint16_t& amf_set_id);
   void getAMFSetID(std::string& amf_set_id);
 
   void setAllowedNssai(std::vector<S_Nssai> list);

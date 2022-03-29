@@ -34,6 +34,7 @@
 #include <map>
 
 #include "gNB_context.hpp"
+#include "amf.hpp"
 
 using namespace sctp;
 typedef enum {
@@ -46,6 +47,34 @@ typedef enum {
 
 class ue_ngap_context {
  public:
+ public:
+  ue_ngap_context() {
+    ran_ue_ngap_id        = 0;
+    amf_ue_ngap_id        = 0;
+    target_ran_ue_ngap_id = 0;
+
+    sctp_stream_recv = {};
+    sctp_stream_send = {};
+
+    gnb_assoc_id        = {};
+    target_gnb_assoc_id = {};
+    ueContextRequest    = false;
+    s_tmsi_5g           = {};
+    s_setid             = {};
+    s_pointer           = {};
+    s_tmsi              = {};
+    tai                 = {};
+    ng_ue_state         = NGAP_UE_INVALID_STATE;
+    ncc                 = 0;
+    initialUEMsg.buf    = new uint8_t[BUFFER_SIZE_1024];
+    initialUEMsg.size   = 0;
+  }
+  virtual ~ue_ngap_context() {
+    delete[] initialUEMsg.buf;
+    initialUEMsg.buf  = nullptr;
+    initialUEMsg.size = 0;
+  }
+
   uint32_t ran_ue_ngap_id;         // 32bits
   long amf_ue_ngap_id : 40;        // 40bits
   uint32_t target_ran_ue_ngap_id;  // 32bits, for HO
