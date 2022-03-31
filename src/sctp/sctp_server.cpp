@@ -39,8 +39,10 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <netdb.h>
 
 #include "bstrlib.h"
 }
@@ -66,13 +68,21 @@ sctp_server::~sctp_server() {}
 
 //------------------------------------------------------------------------------
 int sctp_server::create_socket(const char* address, const uint16_t port_num) {
-  if ((socket_ = socket(AF_INET6, SOCK_STREAM, IPPROTO_SCTP)) < 0) {
+  struct addrinfo* res;
+  if (getaddrinfo(address, 0, NULL, &res) < 0) {
+    Logger::sctp().error(
+        "getaddrinfo on %s: %s:%d", address, strerror(errno), errno);
+    return -1;
+  } else {
+    Logger::sctp().info("getaddrinfo on %s was OK", address);
+  }
+  if ((socket_ = socket(res->ai_family, SOCK_STREAM, IPPROTO_SCTP)) < 0) {
     Logger::sctp().error("socket: %s:%d", strerror(errno), errno);
     return -1;
   }
   Logger::sctp().info("Created socket (%d)", socket_);
   bzero(&serverAddr_, sizeof(serverAddr_));
-  serverAddr_.sin_family      = AF_INET;
+  serverAddr_.sin_family      = res->ai_family;
   serverAddr_.sin_addr.s_addr = htonl(INADDR_ANY);
   serverAddr_.sin_port        = htons(port_num);
   inet_pton(AF_INET, address, &serverAddr_.sin_addr);
