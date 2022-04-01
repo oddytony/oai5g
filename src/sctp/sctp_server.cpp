@@ -74,7 +74,7 @@ int sctp_server::create_socket(const char* address, const uint16_t port_num) {
         "getaddrinfo on %s: %s:%d", address, strerror(errno), errno);
     return -1;
   } else {
-    Logger::sctp().info("getaddrinfo on %s was OK", address);
+    Logger::sctp().debug("getaddrinfo on %s was OK", address);
   }
   if ((socket_ = socket(res->ai_family, SOCK_STREAM, IPPROTO_SCTP)) < 0) {
     Logger::sctp().error("socket: %s:%d", strerror(errno), errno);
