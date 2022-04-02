@@ -1371,6 +1371,12 @@ void amf_n1::set_amf_ue_ngap_id_2_nas_context(
 }
 
 //------------------------------------------------------------------------------
+void amf_n1::remove_amf_ue_ngap_id_2_nas_context(const long& amf_ue_ngap_id) {
+  std::shared_lock lock(m_amfueid2nas_context);
+  amfueid2nas_context[amf_ue_ngap_id] = nullptr;
+}
+
+//------------------------------------------------------------------------------
 bool amf_n1::is_guti_2_nas_context(const std::string& guti) const {
   std::shared_lock lock(m_guti2nas_context);
   return bool{guti2nas_context.count(guti) > 0};
@@ -2880,6 +2886,9 @@ void amf_n1::ue_initiate_de_registration_handle(
   if (nc.get()->is_stacs_available) {
     stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
   }
+
+  // Remove NC context
+  remove_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id);
 
   // TODO: AMF to AN: N2 UE Context Release Request
   // AMF sends N2 UE Release command to NG-RAN with Cause set to Deregistration
