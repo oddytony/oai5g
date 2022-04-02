@@ -2140,7 +2140,14 @@ void amf_n2::send_handover_preparation_failure(
 bool amf_n2::is_ran_ue_id_2_ue_ngap_context(
     const uint32_t& ran_ue_ngap_id) const {
   std::shared_lock lock(m_ranid2uecontext);
-  return bool{ranid2uecontext.count(ran_ue_ngap_id) > 0};
+  if (ranid2uecontext.count(ran_ue_ngap_id) > 0) {
+    if (ranid2uecontext.at(ran_ue_ngap_id).get() != nullptr) {
+      return true;
+    }
+  }
+  return false;
+
+  // return bool{ranid2uecontext.count(ran_ue_ngap_id) > 0};
 }
 
 //------------------------------------------------------------------------------
@@ -2168,7 +2175,13 @@ std::shared_ptr<ue_ngap_context> amf_n2::amf_ue_id_2_ue_ngap_context(
 bool amf_n2::is_amf_ue_id_2_ue_ngap_context(
     const unsigned long& amf_ue_ngap_id) const {
   std::shared_lock lock(m_amfueid2uecontext);
-  return bool{amfueid2uecontext.count(amf_ue_ngap_id) > 0};
+  // return bool{amfueid2uecontext.count(amf_ue_ngap_id) > 0};
+  if (amfueid2uecontext.count(amf_ue_ngap_id) > 0) {
+    if (amfueid2uecontext.at(amf_ue_ngap_id).get() != nullptr) {
+      return true;
+    }
+  }
+  return false;
 }
 
 //------------------------------------------------------------------------------

@@ -1353,7 +1353,13 @@ bool amf_n1::generate_authentication_vector() {
 //------------------------------------------------------------------------------
 bool amf_n1::is_amf_ue_id_2_nas_context(const long& amf_ue_ngap_id) const {
   std::shared_lock lock(m_amfueid2nas_context);
-  return bool{amfueid2nas_context.count(amf_ue_ngap_id) > 0};
+  // return bool{amfueid2nas_context.count(amf_ue_ngap_id) > 0};
+  if (amfueid2nas_context.count(amf_ue_ngap_id) > 0) {
+    if (amfueid2nas_context.at(amf_ue_ngap_id).get() != nullptr) {
+      return true;
+    }
+  }
+  return false;
 }
 
 //------------------------------------------------------------------------------
@@ -1379,7 +1385,13 @@ void amf_n1::remove_amf_ue_ngap_id_2_nas_context(const long& amf_ue_ngap_id) {
 //------------------------------------------------------------------------------
 bool amf_n1::is_guti_2_nas_context(const std::string& guti) const {
   std::shared_lock lock(m_guti2nas_context);
-  return bool{guti2nas_context.count(guti) > 0};
+  // return bool{guti2nas_context.count(guti) > 0};
+  if (guti2nas_context.count(guti) > 0) {
+    if (guti2nas_context.at(guti).get() != nullptr) {
+      return true;
+    }
+  }
+  return false;
 }
 
 //------------------------------------------------------------------------------
