@@ -83,6 +83,10 @@ class amf_app {
   std::map<std::string, std::shared_ptr<ue_context>> supi2ue_ctx;
   mutable std::shared_mutex m_supi2ue_ctx;
 
+  mutable std::shared_mutex m_curl_handle_responses_smf;
+  std::map<uint32_t, boost::shared_ptr<boost::promise<uint32_t>>>
+      curl_handle_responses_smf;
+
   mutable std::shared_mutex m_curl_handle_responses_n2_sm;
   std::map<uint32_t, boost::shared_ptr<boost::promise<std::string>>>
       curl_handle_responses_n2_sm;

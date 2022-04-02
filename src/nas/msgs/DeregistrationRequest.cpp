@@ -37,10 +37,10 @@ using namespace nas;
 
 //------------------------------------------------------------------------------
 DeregistrationRequest::DeregistrationRequest() {
-  plain_header          = NULL;
-  ie_deregistrationtype = NULL;
-  ie_ngKSI              = NULL;
-  ie_5gs_mobility_id    = NULL;
+  plain_header          = nullptr;
+  ie_deregistrationtype = nullptr;
+  ie_ngKSI              = nullptr;
+  ie_5gs_mobility_id    = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -72,13 +72,13 @@ void DeregistrationRequest::setngKSI(uint8_t tsc, uint8_t key_set_id) {
 
 //------------------------------------------------------------------------------
 void DeregistrationRequest::getDeregistrationType(uint8_t& dereg_type) {
-  ie_deregistrationtype->get(dereg_type);
+  if (ie_deregistrationtype) ie_deregistrationtype->get(dereg_type);
 }
 
 //------------------------------------------------------------------------------
 void DeregistrationRequest::getDeregistrationType(
     _5gs_deregistration_type_t& type) {
-  ie_deregistrationtype->get(type);
+  if (ie_deregistrationtype) ie_deregistrationtype->get(type);
 }
 
 //------------------------------------------------------------------------------
@@ -99,8 +99,8 @@ void DeregistrationRequest::setSUCI_SUPI_format_IMSI(
     uint8_t protection_sch_id, const string msin) {
   if (protection_sch_id != NULL_SCHEME) {
     Logger::nas_mm().error(
-        "encoding suci and supi format for imsi error, please choose right "
-        "interface");
+        "Encoding SUCI and SUPI format for IMSI error, please choose correct "
+        "protection scheme");
     return;
   } else {
     ie_5gs_mobility_id =
@@ -184,7 +184,7 @@ int DeregistrationRequest::encode2buffer(uint8_t* buf, int len) {
       return 0;
     }
   } else {
-    Logger::nas_mm().error("Encoding IE Deregistrationt Type error");
+    Logger::nas_mm().error("Encoding IE Deregistration Type error");
     return 0;
   }
   if (int size = ie_5gs_mobility_id->encode2buffer(

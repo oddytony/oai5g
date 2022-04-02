@@ -2761,45 +2761,113 @@ void amf_n1::ue_initiate_de_registration_handle(
   }
 
   // decode NAS msg
-  DeregistrationRequest* deregReq = new DeregistrationRequest();
-  deregReq->decodefrombuffer(NULL, (uint8_t*) bdata(nas), blength(nas));
-  /*
-   _5gs_deregistration_type_t type = {};
-   deregReq->getDeregistrationType(type);
-   uint8_t deregType = 0;
-   deregReq->getDeregistrationType(deregType);
-   Logger::amf_n1().debug("Deregistration Type %X", deregType);
-   */
+  DeregistrationRequest* dereg_request = new DeregistrationRequest();
+  dereg_request->decodefrombuffer(NULL, (uint8_t*) bdata(nas), blength(nas));
 
   // TODO: validate 5G Mobile Identity
   uint8_t mobile_id_type = 0;
-  deregReq->getMobilityIdentityType(mobile_id_type);
+  dereg_request->getMobilityIdentityType(mobile_id_type);
   Logger::amf_n1().debug("5G Mobile Identity %X", mobile_id_type);
   switch (mobile_id_type) {
     case _5G_GUTI: {
       Logger::amf_n1().debug(
-          "5G Mobile Identity, GUTI %s", deregReq->get_5g_guti().c_str());
+          "5G Mobile Identity, GUTI %s", dereg_request->get_5g_guti().c_str());
     } break;
     default: {
     }
   }
 
-  // Prepare DeregistrationAccept
-  DeregistrationAccept* deregAccept = new DeregistrationAccept();
-  deregAccept->setHeader(PLAIN_5GS_MSG);
-
-  uint8_t buffer[BUFFER_SIZE_512] = {0};
-  int encoded_size = deregAccept->encode2buffer(buffer, BUFFER_SIZE_512);
-
-  comUt::print_buffer(
-      "amf_n1", "De-registration Accept message buffer", buffer, encoded_size);
-  if (encoded_size < 1) {
-    Logger::nas_mm().error("Encode De-registration Accept message error!");
+  // Send request to SMF to release the established PDU sessions if needed
+  // Get list of PDU sessions
+  std::vector<std::shared_ptr<pdu_session_context>> sessions_ctx;
+  std::shared_ptr<ue_context> uc = {};
+  if (!find_ue_context(nc, uc)) {
+    Logger::amf_n1().warn("Cannot find the UE context");
     return;
   }
 
-  bstring b = blk2bstr(buffer, encoded_size);
-  itti_send_dl_nas_buffer_to_task_n2(b, ran_ue_ngap_id, amf_ue_ngap_id);
+  if (uc.get() != nullptr) {
+    if (uc->get_pdu_sessions_context(sessions_ctx)) {
+      // Send Nsmf_PDUSession_ReleaseSMContext to SMF to release the PDU session
+
+      std::map<uint32_t, boost::shared_future<uint32_t>> smf_responses;
+      for (auto session : sessions_ctx) {
+        std::shared_ptr<itti_nsmf_pdusession_release_sm_context> itti_msg =
+            std::make_shared<itti_nsmf_pdusession_release_sm_context>(
+                TASK_AMF_N1, TASK_AMF_N11);
+
+        // Generate a promise and associate this promise to the ITTI message
+        uint32_t promise_id = amf_app_inst->generate_promise_id();
+        Logger::amf_n1().debug("Promise ID generated %d", promise_id);
+
+        boost::shared_ptr<boost::promise<uint32_t>> p =
+            boost::make_shared<boost::promise<uint32_t>>();
+        boost::shared_future<uint32_t> f = p->get_future();
+
+        // Store the future to be processed later
+        smf_responses.emplace(promise_id, f);
+        amf_app_inst->add_promise(promise_id, p);
+
+        itti_msg->supi             = uc->supi;
+        itti_msg->pdu_session_id   = session->pdu_session_id;
+        itti_msg->promise_id       = promise_id;
+        itti_msg->context_location = session->smf_context_location;
+
+        int ret = itti_inst->send_msg(itti_msg);
+        if (0 != ret) {
+          Logger::amf_n1().error(
+              "Could not send ITTI message %s to task TASK_AMF_N11",
+              itti_msg->get_msg_name());
+        }
+      }
+
+      // Wait for the response from SMF
+      while (!smf_responses.empty()) {
+        boost::future_status status;
+        // wait for timeout or ready
+        status = smf_responses.begin()->second.wait_for(
+            boost::chrono::milliseconds(FUTURE_STATUS_TIMEOUT_MS));
+        if (status == boost::future_status::ready) {
+          assert(smf_responses.begin()->second.is_ready());
+          assert(smf_responses.begin()->second.has_value());
+          assert(!smf_responses.begin()->second.has_exception());
+          // Wait for the result from APP and send reply to AMF
+          uint32_t http_response_code = smf_responses.begin()->second.get();
+          // TODO: process response code
+        }
+        smf_responses.erase(smf_responses.begin());
+      }
+
+    } else {
+      Logger::amf_n1().debug("No PDU session available");
+    }
+  }
+
+  // Check Deregistration type
+  uint8_t deregType = 0;
+  dereg_request->getDeregistrationType(deregType);
+  Logger::amf_n1().debug("Deregistration Type 0x%x", deregType);
+
+  // If UE switch-off, don't need to send Deregistration Accept
+  if ((deregType & 0b00001000) == 0) {
+    // Prepare DeregistrationAccept
+    DeregistrationAccept* deregAccept = new DeregistrationAccept();
+    deregAccept->setHeader(PLAIN_5GS_MSG);
+
+    uint8_t buffer[BUFFER_SIZE_512] = {0};
+    int encoded_size = deregAccept->encode2buffer(buffer, BUFFER_SIZE_512);
+
+    comUt::print_buffer(
+        "amf_n1", "De-registration Accept message buffer", buffer,
+        encoded_size);
+    if (encoded_size < 1) {
+      Logger::nas_mm().error("Encode De-registration Accept message error!");
+      return;
+    }
+
+    bstring b = blk2bstr(buffer, encoded_size);
+    itti_send_dl_nas_buffer_to_task_n2(b, ran_ue_ngap_id, amf_ue_ngap_id);
+  }
 
   set_5gmm_state(nc, _5GMM_DEREGISTERED);
 

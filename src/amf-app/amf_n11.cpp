@@ -105,6 +105,14 @@ void amf_n11_task(void*) {
         amf_n11_inst->handle_itti_message(ref(*m));
       } break;
 
+      case NSMF_PDU_SESSION_RELEASE_SM_CTX: {
+        Logger::amf_n11().info(
+            "Receive Nsmf_PDUSessionReleaseSMContext, handling ...");
+        itti_nsmf_pdusession_release_sm_context* m =
+            dynamic_cast<itti_nsmf_pdusession_release_sm_context*>(msg);
+        amf_n11_inst->handle_itti_message(ref(*m));
+      } break;
+
       case PDU_SESSION_RESOURCE_SETUP_RESPONSE: {
         Logger::amf_n11().info(
             "Receive PDU Session Resource Setup response, handling ...");
@@ -550,6 +558,7 @@ void amf_n11::handle_itti_message(
 
   string smf_addr             = {};
   std::string smf_api_version = {};
+  std::string remote_uri      = {};
 
   if (!psc.get()->smf_available) {
     Logger::amf_n11().error("No SMF is available for this PDU session");
@@ -558,24 +567,34 @@ void amf_n11::handle_itti_message(
     smf_api_version = psc->smf_api_version;
   }
 
-  string remote_uri = psc.get()->location + "release";
+  remote_uri = psc.get()->smf_context_location + "/release";
   nlohmann::json pdu_session_release_request;
-  pdu_session_release_request["supi"] = itti_msg.supi.c_str();
-  pdu_session_release_request["dnn"]  = psc.get()->dnn.c_str();
-  pdu_session_release_request["sNssai"]["sst"] =
-      1;  // TODO: check hardcoded value
-  pdu_session_release_request["sNssai"]["sd"] =
-      "0";  // TODO: check hardcoded value
-  pdu_session_release_request["pduSessionId"] = psc.get()->pdu_session_id;
-  pdu_session_release_request["cause"]        = "REL_DUE_TO_REACTIVATION";
-  pdu_session_release_request["ngApCause"]    = "radioNetwork";
-  std::string json_part = pdu_session_release_request.dump();
-  uint8_t http_version  = 1;
+  pdu_session_release_request["supi"]          = itti_msg.supi.c_str();
+  pdu_session_release_request["dnn"]           = psc.get()->dnn.c_str();
+  pdu_session_release_request["sNssai"]["sst"] = psc.get()->snssai.sST;
+  pdu_session_release_request["sNssai"]["sd"]  = psc.get()->snssai.sD;
+  pdu_session_release_request["pduSessionId"]  = psc.get()->pdu_session_id;
+  pdu_session_release_request["cause"] = "REL_DUE_TO_REACTIVATION";  // TODO:
+  pdu_session_release_request["ngApCause"] = "radioNetwork";
+  std::string msg_body                     = pdu_session_release_request.dump();
+  uint8_t http_version                     = 1;
   if (amf_cfg.support_features.use_http2) http_version = 2;
 
+  nlohmann::json response_json = {};
+  uint32_t response_code       = 0;
+
+  // curl_http_client(
+  //     remote_uri, json_part, "", "", itti_msg.supi,
+  //     psc.get()->pdu_session_id, http_version);
+
   curl_http_client(
-      remote_uri, json_part, "", "", itti_msg.supi, psc.get()->pdu_session_id,
-      http_version);
+      remote_uri, "POST", msg_body, response_json, response_code, http_version);
+
+  // Notify to the result
+  if (itti_msg.promise_id > 0) {
+    amf_app_inst->trigger_process_response(itti_msg.promise_id, response_code);
+    return;
+  }
 }
 
 //------------------------------------------------------------------------------
