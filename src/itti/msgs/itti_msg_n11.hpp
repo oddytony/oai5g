@@ -117,13 +117,17 @@ class itti_nsmf_pdusession_release_sm_context : public itti_msg_n11 {
   itti_nsmf_pdusession_release_sm_context(
       const itti_nsmf_pdusession_release_sm_context& i)
       : itti_msg_n11(i) {
-    supi           = i.supi;
-    pdu_session_id = i.pdu_session_id;
+    supi             = i.supi;
+    pdu_session_id   = i.pdu_session_id;
+    promise_id       = i.promise_id;
+    context_location = i.context_location;
   }
 
  public:
   std::string supi;
   uint8_t pdu_session_id;
+  uint32_t promise_id;
+  std::string context_location;
 };
 
 //-----------------------------------------------------------------------------

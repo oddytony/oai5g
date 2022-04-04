@@ -872,6 +872,11 @@ void amf_app::trigger_nf_deregistration() {
   }
 }
 
+void amf_app::add_promise(
+    uint32_t pid, boost::shared_ptr<boost::promise<uint32_t>>& p) {
+  std::unique_lock lock(m_curl_handle_responses_smf);
+  curl_handle_responses_smf.emplace(pid, p);
+}
 //---------------------------------------------------------------------------------------------
 void amf_app::add_promise(
     uint32_t id, boost::shared_ptr<boost::promise<std::string>>& p) {
@@ -886,6 +891,18 @@ void amf_app::add_promise(
   curl_handle_responses_n11.emplace(pid, p);
 }
 
+void amf_app::trigger_process_response(uint32_t pid, uint32_t http_code) {
+  Logger::amf_app().debug(
+      "Trigger process response: Set promise with ID %u "
+      "to ready",
+      pid);
+  std::unique_lock lock(m_curl_handle_responses_smf);
+  if (curl_handle_responses_smf.count(pid) > 0) {
+    curl_handle_responses_smf[pid]->set_value(http_code);
+    // Remove this promise from list
+    curl_handle_responses_smf.erase(pid);
+  }
+}
 //------------------------------------------------------------------------------
 void amf_app::trigger_process_response(uint32_t pid, std::string n2_sm) {
   Logger::amf_app().debug(

@@ -1338,6 +1338,7 @@ void amf_n2::handle_itti_message(itti_ue_context_release_complete& itti_msg) {
   Logger::amf_n2().debug("Handle UE Context Release Complete ...");
   unsigned long amf_ue_ngap_id = itti_msg.ueCtxRelCmpl->getAmfUeNgapId();
   uint32_t ran_ue_ngap_id      = itti_msg.ueCtxRelCmpl->getRanUeNgapId();
+
   // Change UE status from CM-CONNECTED to CM-IDLE
   std::shared_ptr<nas_context> nc;
   if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
@@ -1347,16 +1348,18 @@ void amf_n2::handle_itti_message(itti_ue_context_release_complete& itti_msg) {
         "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT ")",
         amf_ue_ngap_id);
   }
-  amf_n1_inst->set_5gcm_state(nc, CM_IDLE);
+  if (nc.get() != nullptr) {
+    amf_n1_inst->set_5gcm_state(nc, CM_IDLE);
 
-  // Start/reset the Mobile Reachable Timer
-  timer_id_t tid = itti_inst->timer_setup(
-      MOBILE_REACHABLE_TIMER_NO_EMERGENCY_SERVICES_MIN * 60, 0, TASK_AMF_N1,
-      TASK_AMF_MOBILE_REACHABLE_TIMER_EXPIRE, amf_ue_ngap_id);
-  Logger::amf_app().startup("Started mobile reachable timer (tid %d)", tid);
+    // Start/reset the Mobile Reachable Timer
+    timer_id_t tid = itti_inst->timer_setup(
+        MOBILE_REACHABLE_TIMER_NO_EMERGENCY_SERVICES_MIN * 60, 0, TASK_AMF_N1,
+        TASK_AMF_MOBILE_REACHABLE_TIMER_EXPIRE, amf_ue_ngap_id);
+    Logger::amf_app().startup("Started mobile reachable timer (tid %d)", tid);
 
-  amf_n1_inst->set_mobile_reachable_timer(nc, tid);
-  amf_n1_inst->set_mobile_reachable_timer_timeout(nc, false);
+    amf_n1_inst->set_mobile_reachable_timer(nc, tid);
+    amf_n1_inst->set_mobile_reachable_timer_timeout(nc, false);
+  }
 
   // TODO: User Location Information IE
   // TODO: Information on Recommended Cells & RAN Nodes for Paging IE
@@ -2137,7 +2140,14 @@ void amf_n2::send_handover_preparation_failure(
 bool amf_n2::is_ran_ue_id_2_ue_ngap_context(
     const uint32_t& ran_ue_ngap_id) const {
   std::shared_lock lock(m_ranid2uecontext);
-  return bool{ranid2uecontext.count(ran_ue_ngap_id) > 0};
+  if (ranid2uecontext.count(ran_ue_ngap_id) > 0) {
+    if (ranid2uecontext.at(ran_ue_ngap_id).get() != nullptr) {
+      return true;
+    }
+  }
+  return false;
+
+  // return bool{ranid2uecontext.count(ran_ue_ngap_id) > 0};
 }
 
 //------------------------------------------------------------------------------
@@ -2165,7 +2175,13 @@ std::shared_ptr<ue_ngap_context> amf_n2::amf_ue_id_2_ue_ngap_context(
 bool amf_n2::is_amf_ue_id_2_ue_ngap_context(
     const unsigned long& amf_ue_ngap_id) const {
   std::shared_lock lock(m_amfueid2uecontext);
-  return bool{amfueid2uecontext.count(amf_ue_ngap_id) > 0};
+  // return bool{amfueid2uecontext.count(amf_ue_ngap_id) > 0};
+  if (amfueid2uecontext.count(amf_ue_ngap_id) > 0) {
+    if (amfueid2uecontext.at(amf_ue_ngap_id).get() != nullptr) {
+      return true;
+    }
+  }
+  return false;
 }
 
 //------------------------------------------------------------------------------
