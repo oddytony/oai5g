@@ -1390,7 +1390,9 @@ void amf_n1::set_amf_ue_ngap_id_2_nas_context(
 //------------------------------------------------------------------------------
 void amf_n1::remove_amf_ue_ngap_id_2_nas_context(const long& amf_ue_ngap_id) {
   std::unique_lock lock(m_amfueid2nas_context);
-  amfueid2nas_context[amf_ue_ngap_id] = nullptr;
+  if (amfueid2nas_context.count(amf_ue_ngap_id) > 0) {
+    amfueid2nas_context[amf_ue_ngap_id] = nullptr;
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -1421,7 +1423,9 @@ void amf_n1::set_guti_2_nas_context(
 //------------------------------------------------------------------------------
 void amf_n1::remove_guti_2_nas_context(const std::string& guti) {
   std::unique_lock lock(m_guti2nas_context);
-  guti2nas_context[guti] = nullptr;
+  if (guti2nas_context.count(guti) > 0) {
+    guti2nas_context[guti] = nullptr;
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -1445,7 +1449,9 @@ void amf_n1::set_imsi_2_nas_context(
 //------------------------------------------------------------------------------
 void amf_n1::remove_imsi_2_nas_context(const std::string& imsi) {
   std::unique_lock lock(m_nas_context);
-  imsi2nas_context[imsi] = nullptr;
+  if (imsi2nas_context.count(imsi) > 0) {
+    imsi2nas_context[imsi] = nullptr;
+  }
 }
 
 //------------------------------------------------------------------------------
