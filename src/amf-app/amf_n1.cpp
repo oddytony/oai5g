@@ -996,13 +996,15 @@ void amf_n1::registration_request_handle(
         supi2ranId[("imsi-" + nc.get()->imsi)] = ran_ue_ngap_id;
 
         // try to find old nas_context and release
-        std::shared_ptr<nas_context> old_nc =
-            imsi2nas_context[("imsi-" + nc.get()->imsi)];
+        std::shared_ptr<nas_context> old_nc = {};
+        old_nc = imsi_2_nas_context("imsi-" + nc.get()->imsi);
+        // imsi2nas_context[("imsi-" + nc.get()->imsi)];
         if (old_nc.get()) {
           // release
           old_nc.reset();
         }
-        imsi2nas_context[("imsi-" + nc.get()->imsi)] = nc;
+        set_imsi_2_nas_context("imsi-" + nc.get()->imsi, nc);
+        // imsi2nas_context[("imsi-" + nc.get()->imsi)] = nc;
         Logger::amf_n1().info(
             "Associating IMSI (%s) with nas_context (%p)",
             ("imsi-" + nc.get()->imsi).c_str(), nc.get());
@@ -1381,20 +1383,19 @@ std::shared_ptr<nas_context> amf_n1::amf_ue_id_2_nas_context(
 //------------------------------------------------------------------------------
 void amf_n1::set_amf_ue_ngap_id_2_nas_context(
     const long& amf_ue_ngap_id, std::shared_ptr<nas_context> nc) {
-  std::shared_lock lock(m_amfueid2nas_context);
+  std::unique_lock lock(m_amfueid2nas_context);
   amfueid2nas_context[amf_ue_ngap_id] = nc;
 }
 
 //------------------------------------------------------------------------------
 void amf_n1::remove_amf_ue_ngap_id_2_nas_context(const long& amf_ue_ngap_id) {
-  std::shared_lock lock(m_amfueid2nas_context);
+  std::unique_lock lock(m_amfueid2nas_context);
   amfueid2nas_context[amf_ue_ngap_id] = nullptr;
 }
 
 //------------------------------------------------------------------------------
 bool amf_n1::is_guti_2_nas_context(const std::string& guti) const {
   std::shared_lock lock(m_guti2nas_context);
-  // return bool{guti2nas_context.count(guti) > 0};
   if (guti2nas_context.count(guti) > 0) {
     if (guti2nas_context.at(guti).get() != nullptr) {
       return true;
@@ -1413,8 +1414,38 @@ std::shared_ptr<nas_context> amf_n1::guti_2_nas_context(
 //------------------------------------------------------------------------------
 void amf_n1::set_guti_2_nas_context(
     const std::string& guti, std::shared_ptr<nas_context> nc) {
-  std::shared_lock lock(m_guti2nas_context);
+  std::unique_lock lock(m_guti2nas_context);
   guti2nas_context[guti] = nc;
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::remove_guti_2_nas_context(const std::string& guti) {
+  std::unique_lock lock(m_guti2nas_context);
+  guti2nas_context[guti] = nullptr;
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<nas_context> amf_n1::imsi_2_nas_context(
+    const std::string& imsi) const {
+  std::shared_lock lock(m_nas_context);
+  if (imsi2nas_context.count(imsi) > 0) {
+    return imsi2nas_context.at(imsi);
+  } else {
+    return nullptr;
+  }
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::set_imsi_2_nas_context(
+    const std::string& imsi, std::shared_ptr<nas_context> nc) {
+  std::unique_lock lock(m_nas_context);
+  imsi2nas_context[imsi] = nc;
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::remove_imsi_2_nas_context(const std::string& imsi) {
+  std::unique_lock lock(m_nas_context);
+  imsi2nas_context[imsi] = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -2911,6 +2942,8 @@ void amf_n1::ue_initiate_de_registration_handle(
 
   // Remove NC context
   remove_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id);
+  remove_imsi_2_nas_context(supi);
+  remove_guti_2_nas_context(dereg_request->get_5g_guti());
 
   // TODO: AMF to AN: N2 UE Context Release Request
   // AMF sends N2 UE Release command to NG-RAN with Cause set to Deregistration

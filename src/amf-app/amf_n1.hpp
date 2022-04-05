@@ -137,6 +137,9 @@ class amf_n1 {
   void set_guti_2_nas_context(
       const std::string& guti, std::shared_ptr<nas_context> nc);
 
+  // TODO:
+  void remove_guti_2_nas_context(const std::string& guti);
+
   // TODO
   bool is_amf_ue_id_2_nas_context(const long& amf_ue_ngap_id) const;
 
@@ -149,6 +152,15 @@ class amf_n1 {
       const long& amf_ue_ngap_id, std::shared_ptr<nas_context> nc);
 
   void remove_amf_ue_ngap_id_2_nas_context(const long& amf_ue_ngap_id);
+
+  std::shared_ptr<nas_context> imsi_2_nas_context(
+      const std::string& imsi) const;
+  void set_imsi_2_nas_context(
+      const std::string& imsi, std::shared_ptr<nas_context> nc);
+
+  // TODO:
+  void remove_imsi_2_nas_context(const std::string& imsi);
+
   // TODO
   void run_registration_procedure(std::shared_ptr<nas_context>& nc);
 
