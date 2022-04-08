@@ -31,6 +31,7 @@
 
 #include "InitialContextSetupResponse.hpp"
 #include "NGReset.hpp"
+#include "NGResetAck.hpp"
 #include "NGSetupRequest.hpp"
 #include "PDUSessionResourceSetupUnsuccessfulTransfer.hpp"
 #include "PduSessionResourceReleaseResponse.hpp"

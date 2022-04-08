@@ -56,6 +56,7 @@
 #include "logger.hpp"
 #include "sctp_server.hpp"
 #include "3gpp_24.501.h"
+#include "NGResetAck.hpp"
 
 #include <boost/chrono.hpp>
 #include <boost/chrono/chrono.hpp>
@@ -452,8 +453,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
   Logger::amf_n2().debug(
       "gNB with gNB_id 0x%x, assoc_id %d has been attached to AMF",
       gc.get()->globalRanNodeId, itti_msg.assoc_id);
-  stacs.gNB_connected += 1;
-  stacs.gnbs.insert(std::pair<uint32_t, gnb_infos>(gnbItem.gnb_id, gnbItem));
+  stacs.add_gnb(gnbItem.gnb_id, gnbItem);
   return;
 }
 
@@ -483,6 +483,8 @@ void amf_n2::handle_itti_message(itti_ng_reset& itti_msg) {
   // UE association(s) indicated explicitly or implicitly in the NG RESET
   // message and remove the NGAP ID for the indicated UE associations.
   ResetType reset_type = {};
+  std::vector<UEAssociationLogicalNGConnectionItem>
+      ueAssociationLogicalNGConnectionList;
   itti_msg.ngReset->getResetType(reset_type);
   if (reset_type.getResetType() == Ngap_ResetType_PR_nG_Interface) {
     // Reset all
@@ -508,8 +510,41 @@ void amf_n2::handle_itti_message(itti_ng_reset& itti_msg) {
   } else if (
       reset_type.getResetType() == Ngap_ResetType_PR_partOfNG_Interface) {
     // TODO:
+    reset_type.getUE_associatedLogicalNG_connectionList(
+        ueAssociationLogicalNGConnectionList);
+    for (auto ue : ueAssociationLogicalNGConnectionList) {
+      unsigned long amf_ue_ngap_id = {0};
+      ue.getAmfUeNgapId(amf_ue_ngap_id);
+      uint32_t ran_ue_ngap_id = {0};
+      ue.getRanUeNgapId(ran_ue_ngap_id);
+      // get NAS context
+      std::shared_ptr<nas_context> nc;
+      if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
+        nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+      } else {
+        Logger::amf_n2().warn(
+            "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT
+            ")",
+            amf_ue_ngap_id);
+      }
+    }
   }
 
+  // TODO: create NGResetAck and reply to gNB
+  std::unique_ptr<NGResetAckMsg> ng_reset_ack =
+      std::make_unique<NGResetAckMsg>();
+  ng_reset_ack->setMessageType();
+  // UEAssociationLogicalNGConnectionList
+  if (ueAssociationLogicalNGConnectionList.size() > 0) {
+    ng_reset_ack->setUE_associatedLogicalNG_connectionList(
+        ueAssociationLogicalNGConnectionList);
+  }
+
+  uint8_t buffer[BUFFER_SIZE_512];
+  int encoded_size = ng_reset_ack->encode2buffer(buffer, BUFFER_SIZE_512);
+
+  bstring b = blk2bstr(buffer, encoded_size);
+  sctp_s_38412.sctp_send_msg(gc.get()->sctp_assoc_id, itti_msg.stream, &b);
   return;
 }
 
@@ -558,11 +593,10 @@ void amf_n2::handle_itti_message(itti_ng_shutdown& itti_msg) {
 
   // Delete gNB context
   remove_gnb_context(itti_msg.assoc_id);
-  stacs.gnbs.erase(gc.get()->globalRanNodeId);
+  stacs.remove_gnb(gc.get()->globalRanNodeId);
   Logger::amf_n2().debug(
       "Remove gNB with association id %d, globalRanNodeId 0x%x",
       itti_msg.assoc_id, gc.get()->globalRanNodeId);
-  stacs.gNB_connected -= 1;
   stacs.display();
   return;
 }
@@ -2162,6 +2196,39 @@ void amf_n2::set_ran_ue_ngap_id_2_ue_ngap_context(
     const uint32_t& ran_ue_ngap_id, std::shared_ptr<ue_ngap_context> unc) {
   std::unique_lock lock(m_ranid2uecontext);
   ranid2uecontext[ran_ue_ngap_id] = unc;
+}
+
+/*
+//------------------------------------------------------------------------------
+bool amf_n2::get_ue_ngap_context_from_ran_ue_id(const uint32_t ran_ue_ngap_id,
+std::shared_ptr<ue_ngap_context>& ue_context){ std::shared_lock
+lock(m_ranid2uecontext); if (ranid2uecontext.count(ran_ue_ngap_id) > 0) { if
+(ranid2uecontext.at(ran_ue_ngap_id).get() != nullptr) { ue_context =
+ranid2uecontext.at(ran_ue_ngap_id); return true;
+            }
+          }
+          return false;
+
+}
+*/
+
+//------------------------------------------------------------------------------
+void amf_n2::get_ue_ngap_contexts(
+    std::vector<uint32_t> ran_ue_ngap_ids,
+    std::vector<std::shared_ptr<ue_ngap_context>>& ue_contexts) {
+  std::shared_lock lock(m_ranid2uecontext);
+  for (auto ran_ue_ngap_id : ran_ue_ngap_ids) {
+    ue_contexts.push_back(ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id));
+  }
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::get_all_ue_ngap_contexts(
+    std::vector<std::shared_ptr<ue_ngap_context>>& ue_contexts) {
+  std::shared_lock lock(m_ranid2uecontext);
+  for (auto ue : ranid2uecontext) {
+    ue_contexts.push_back(ue.second);
+  }
 }
 
 //------------------------------------------------------------------------------

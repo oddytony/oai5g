@@ -220,6 +220,12 @@ class amf_n2 : public ngap::ngap_app {
       const unsigned long& amf_ue_ngap_id,
       std::shared_ptr<ue_ngap_context> unc);
 
+  void get_ue_ngap_contexts(
+      std::vector<uint32_t> ran_ue_ngap_ids,
+      std::vector<std::shared_ptr<ue_ngap_context>>& ue_contexts);
+  void get_all_ue_ngap_contexts(
+      std::vector<std::shared_ptr<ue_ngap_context>>& ue_contexts);
+
  private:
   std::map<uint32_t, std::shared_ptr<ue_ngap_context>>
       ranid2uecontext;  // ran ue ngap id

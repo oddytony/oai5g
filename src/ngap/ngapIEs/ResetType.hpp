@@ -30,6 +30,7 @@
 #define _RESET_TYPE_H_
 
 #include "UEAssociationLogicalNGConnectionItem.hpp"
+#include "UEAssociationLogicalNGConnectionList.hpp"
 
 extern "C" {
 #include "Ngap_ResetType.h"
@@ -44,20 +45,25 @@ class ResetType {
 
   void setResetType(long);
   void setResetType(std::vector<UEAssociationLogicalNGConnectionItem> list);
+  void getResetType(struct Ngap_UE_associatedLogicalNG_connectionList*&);
   bool encode(Ngap_ResetType_t* type);
   bool decode(Ngap_ResetType_t* type);
 
   void getResetType(long&);
   uint8_t getResetType();
-  void getResetType(struct Ngap_UE_associatedLogicalNG_connectionList*&);
 
   void setUE_associatedLogicalNG_connectionList(
-      const std::vector<UEAssociationLogicalNGConnectionItem> list);
+      std::vector<UEAssociationLogicalNGConnectionItem> list);
+
+  void getUE_associatedLogicalNG_connectionList(
+      std::vector<UEAssociationLogicalNGConnectionItem>& list);
+  void getUE_associatedLogicalNG_connectionList(
+      struct Ngap_UE_associatedLogicalNG_connectionList*&);
 
  private:
   Ngap_ResetType_PR present;
   long nG_Interface;
-  struct Ngap_UE_associatedLogicalNG_connectionList* partOfNG_Interface;
+  UEAssociationLogicalNGConnectionList* partOfNG_Interface;
   UEAssociationLogicalNGConnectionItem* ueAssociationLogicalNGConnectionItem;
   //	struct Ngap_ProtocolIE_SingleContainer	*choice_Extensions;
 };
