@@ -209,6 +209,12 @@ class amf_n2 : public ngap::ngap_app {
   // TODO
   void set_ran_ue_ngap_id_2_ue_ngap_context(
       const uint32_t& ran_ue_ngap_id, std::shared_ptr<ue_ngap_context> unc);
+
+  void remove_ran_ue_ngap_id_2_ngap_context(const uint32_t& ran_ue_ngap_id);
+
+  // TODO:
+  void remove_ue_context_with_ran_ue_ngap_id(const uint32_t& ran_ue_ngap_id);
+
   // TODO
   std::shared_ptr<ue_ngap_context> amf_ue_id_2_ue_ngap_context(
       const unsigned long& amf_ue_ngap_id) const;
@@ -219,6 +225,13 @@ class amf_n2 : public ngap::ngap_app {
   void set_amf_ue_ngap_id_2_ue_ngap_context(
       const unsigned long& amf_ue_ngap_id,
       std::shared_ptr<ue_ngap_context> unc);
+  void remove_amf_ue_ngap_id_2_ue_ngap_context(
+      const unsigned long& amf_ue_ngap_id);
+  void remove_ue_context_with_amf_ue_ngap_id(
+      const unsigned long& amf_ue_ngap_id);
+  void get_ue_ngap_contexts(
+      const sctp_assoc_id_t& gnb_assoc_id,
+      std::vector<std::shared_ptr<ue_ngap_context>>& ue_contexts);
 
  private:
   std::map<uint32_t, std::shared_ptr<ue_ngap_context>>

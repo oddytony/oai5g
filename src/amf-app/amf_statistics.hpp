@@ -82,14 +82,17 @@ class statistics {
   void update_ue_info(const ue_info_t& ue_info);
   void update_5gmm_state(const std::string& imsi, const std::string& state);
   void remove_gnb(const uint32_t gnb_id);
+  void add_gnb(const uint32_t& gnb_id, const gnb_infos& gnb);
+  void update_gnb(const uint32_t& gnb_id, const gnb_infos& gnb);
 
  public:
   uint32_t gNB_connected;
   uint32_t UE_connected;
   uint32_t UE_registred;
-  // uint32_t        system_pdu_sessions;
   std::map<uint32_t, gnb_infos> gnbs;
+  mutable std::shared_mutex m_gnbs;
   std::map<std::string, ue_info_t> ue_infos;
+  mutable std::shared_mutex m_ue_infos;
 };
 
 #endif

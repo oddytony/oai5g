@@ -1391,7 +1391,7 @@ void amf_n1::set_amf_ue_ngap_id_2_nas_context(
 void amf_n1::remove_amf_ue_ngap_id_2_nas_context(const long& amf_ue_ngap_id) {
   std::unique_lock lock(m_amfueid2nas_context);
   if (amfueid2nas_context.count(amf_ue_ngap_id) > 0) {
-    amfueid2nas_context[amf_ue_ngap_id] = nullptr;
+    amfueid2nas_context.erase(amf_ue_ngap_id);
   }
 }
 

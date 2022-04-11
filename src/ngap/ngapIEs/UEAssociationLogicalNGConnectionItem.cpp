@@ -41,6 +41,7 @@ UEAssociationLogicalNGConnectionItem::UEAssociationLogicalNGConnectionItem() {
   amfUeNgapId = nullptr;
   ranUeNgapId = nullptr;
 }
+
 //------------------------------------------------------------------------------
 void UEAssociationLogicalNGConnectionItem::setAmfUeNgapId(unsigned long id) {
   if (!amfUeNgapId) amfUeNgapId = new AMF_UE_NGAP_ID();
@@ -59,6 +60,15 @@ void UEAssociationLogicalNGConnectionItem::setAmfUeNgapId(unsigned long id) {
   }
   free_wrapper((void**) &ie);
   return;
+}
+
+//------------------------------------------------------------------------------
+bool UEAssociationLogicalNGConnectionItem::getAmfUeNgapId(unsigned long& id) {
+  if (amfUeNgapId) {
+    id = amfUeNgapId->getAMF_UE_NGAP_ID();
+    return true;
+  }
+  return false;
 }
 
 //------------------------------------------------------------------------------
@@ -83,6 +93,16 @@ void UEAssociationLogicalNGConnectionItem::setRanUeNgapId(
 }
 
 //------------------------------------------------------------------------------
+bool UEAssociationLogicalNGConnectionItem::getRanUeNgapId(
+    uint32_t& ran_ue_ngap_id) {
+  if (ranUeNgapId) {
+    ran_ue_ngap_id = ranUeNgapId->getRanUeNgapId();
+    return true;
+  }
+  return false;
+}
+
+//------------------------------------------------------------------------------
 bool UEAssociationLogicalNGConnectionItem::encode(
     Ngap_UE_associatedLogicalNG_connectionItem_t& item) {
   item.aMF_UE_NGAP_ID = new Ngap_AMF_UE_NGAP_ID_t();
@@ -94,11 +114,31 @@ bool UEAssociationLogicalNGConnectionItem::encode(
 
 //------------------------------------------------------------------------------
 bool UEAssociationLogicalNGConnectionItem::encode(
+    Ngap_UE_associatedLogicalNG_connectionItem_t* item) {
+  item->aMF_UE_NGAP_ID = new Ngap_AMF_UE_NGAP_ID_t();
+  amfUeNgapId->encode2AMF_UE_NGAP_ID(*item->aMF_UE_NGAP_ID);
+  item->rAN_UE_NGAP_ID = new Ngap_RAN_UE_NGAP_ID_t();
+  ranUeNgapId->encode2RAN_UE_NGAP_ID(*item->rAN_UE_NGAP_ID);
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool UEAssociationLogicalNGConnectionItem::encode(
     UEAssociationLogicalNGConnectionItem& item) {
   item.amfUeNgapId = new AMF_UE_NGAP_ID();
   item.amfUeNgapId = amfUeNgapId;
   item.ranUeNgapId = new RAN_UE_NGAP_ID();
   item.ranUeNgapId = ranUeNgapId;
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool UEAssociationLogicalNGConnectionItem::decode(
+    UEAssociationLogicalNGConnectionItem& item) {
+  if (!amfUeNgapId) amfUeNgapId = new AMF_UE_NGAP_ID();
+  amfUeNgapId->setAMF_UE_NGAP_ID(item.amfUeNgapId->getAMF_UE_NGAP_ID());
+  if (!ranUeNgapId) ranUeNgapId = new RAN_UE_NGAP_ID();
+  ranUeNgapId->setRanUeNgapId(item.ranUeNgapId->getRanUeNgapId());
   return true;
 }
 

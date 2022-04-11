@@ -26,38 +26,48 @@
  \email: contact@openairinterface.org
  */
 
-#ifndef _UE_ASSOCIATION_LOGICAL_NG_CONNECTION_ITEM_H_
-#define _UE_ASSOCIATION_LOGICAL_NG_CONNECTION_ITEM_H_
+#ifndef _UE_ASSOCIATION_LOGICAL_NG_CONNECTION_LIST_H_
+#define _UE_ASSOCIATION_LOGICAL_NG_CONNECTION_LIST_H_
 
-#include "AMF-UE-NGAP-ID.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
+#include "UEAssociationLogicalNGConnectionItem.hpp"
+
+#include <vector>
 
 extern "C" {
 #include "Ngap_ProtocolIE-Field.h"
 #include "Ngap_UE-associatedLogicalNG-connectionItem.h"
+#include "Ngap_UE-associatedLogicalNG-connectionList.h"
 }
 
 namespace ngap {
 
-class UEAssociationLogicalNGConnectionItem {
+class UEAssociationLogicalNGConnectionList {
  public:
-  UEAssociationLogicalNGConnectionItem();
-  virtual ~UEAssociationLogicalNGConnectionItem(){};
+  UEAssociationLogicalNGConnectionList();
+  virtual ~UEAssociationLogicalNGConnectionList();
 
-  void setAmfUeNgapId(unsigned long id);
-  bool getAmfUeNgapId(unsigned long& id);
-  void setRanUeNgapId(uint32_t id);
-  bool getRanUeNgapId(uint32_t& id);
+  void setUEAssociationLogicalNGConnectionItem(
+      UEAssociationLogicalNGConnectionItem*
+          m_UEAssociationLogicalNGConnectionItem,
+      int num);
+  void getUEAssociationLogicalNGConnectionItem(
+      UEAssociationLogicalNGConnectionItem*&
+          m_UEAssociationLogicalNGConnectionItem,
+      int& num);
 
-  bool encode(Ngap_UE_associatedLogicalNG_connectionItem_t& item);
-  bool encode(Ngap_UE_associatedLogicalNG_connectionItem_t* item);
-  bool encode(UEAssociationLogicalNGConnectionItem& item);
-  bool decode(Ngap_UE_associatedLogicalNG_connectionItem_t* item);
-  bool decode(UEAssociationLogicalNGConnectionItem& item);
+  void setUEAssociationLogicalNGConnectionItem(
+      std::vector<UEAssociationLogicalNGConnectionItem>& list);
+  void getUEAssociationLogicalNGConnectionItem(
+      std::vector<UEAssociationLogicalNGConnectionItem>& list);
+
+  bool encode(Ngap_UE_associatedLogicalNG_connectionList_t*
+                  ue_associatedLogicalNG_connectionList);
+  bool decode(Ngap_UE_associatedLogicalNG_connectionList_t*
+                  ue_associatedLogicalNG_connectionList);
 
  private:
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
+  UEAssociationLogicalNGConnectionItem* ueAssociationLogicalNGConnectionItem;
+  int number_of_items;
 };
 
 }  // namespace ngap

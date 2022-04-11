@@ -56,6 +56,7 @@
 #include "logger.hpp"
 #include "sctp_server.hpp"
 #include "3gpp_24.501.h"
+#include "NGResetAck.hpp"
 
 #include <boost/chrono.hpp>
 #include <boost/chrono/chrono.hpp>
@@ -452,8 +453,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
   Logger::amf_n2().debug(
       "gNB with gNB_id 0x%x, assoc_id %d has been attached to AMF",
       gc.get()->globalRanNodeId, itti_msg.assoc_id);
-  stacs.gNB_connected += 1;
-  stacs.gnbs.insert(std::pair<uint32_t, gnb_infos>(gnbItem.gnb_id, gnbItem));
+  stacs.add_gnb(gnbItem.gnb_id, gnbItem);
   return;
 }
 
@@ -483,33 +483,53 @@ void amf_n2::handle_itti_message(itti_ng_reset& itti_msg) {
   // UE association(s) indicated explicitly or implicitly in the NG RESET
   // message and remove the NGAP ID for the indicated UE associations.
   ResetType reset_type = {};
+  std::vector<UEAssociationLogicalNGConnectionItem>
+      ueAssociationLogicalNGConnectionList;
   itti_msg.ngReset->getResetType(reset_type);
   if (reset_type.getResetType() == Ngap_ResetType_PR_nG_Interface) {
     // Reset all
     // release all the resources related to this interface
-    for (auto ue_context : ranid2uecontext) {
-      if (ue_context.second->gnb_assoc_id == itti_msg.assoc_id) {
-        uint32_t ran_ue_ngap_id = ue_context.second->ran_ue_ngap_id;
-        long amf_ue_ngap_id     = ue_context.second->amf_ue_ngap_id;
-        // get NAS context
-        std::shared_ptr<nas_context> nc;
-        if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id))
-          nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
-        else {
-          Logger::amf_n2().warn(
-              "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT
-              ")",
-              amf_ue_ngap_id);
-        }
-        stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
-      }
+
+    std::vector<std::shared_ptr<ue_ngap_context>> ue_contexts;
+    get_ue_ngap_contexts(itti_msg.assoc_id, ue_contexts);
+
+    for (auto ue_context : ue_contexts) {
+      remove_ue_context_with_amf_ue_ngap_id(ue_context->amf_ue_ngap_id);
+      remove_ue_context_with_ran_ue_ngap_id(ue_context->ran_ue_ngap_id);
     }
+
     stacs.display();
   } else if (
       reset_type.getResetType() == Ngap_ResetType_PR_partOfNG_Interface) {
     // TODO:
+    reset_type.getUE_associatedLogicalNG_connectionList(
+        ueAssociationLogicalNGConnectionList);
+    for (auto ue : ueAssociationLogicalNGConnectionList) {
+      unsigned long amf_ue_ngap_id = {0};
+      uint32_t ran_ue_ngap_id      = {0};
+      if (ue.getAmfUeNgapId(amf_ue_ngap_id)) {
+        remove_ue_context_with_amf_ue_ngap_id(amf_ue_ngap_id);
+      } else if (ue.getRanUeNgapId(ran_ue_ngap_id)) {
+        remove_ue_context_with_ran_ue_ngap_id(ran_ue_ngap_id);
+      }
+    }
   }
 
+  // TODO: create NGResetAck and reply to gNB
+  std::unique_ptr<NGResetAckMsg> ng_reset_ack =
+      std::make_unique<NGResetAckMsg>();
+  ng_reset_ack->setMessageType();
+  // UEAssociationLogicalNGConnectionList
+  if (ueAssociationLogicalNGConnectionList.size() > 0) {
+    ng_reset_ack->setUE_associatedLogicalNG_connectionList(
+        ueAssociationLogicalNGConnectionList);
+  }
+
+  uint8_t buffer[BUFFER_SIZE_512];
+  int encoded_size = ng_reset_ack->encode2buffer(buffer, BUFFER_SIZE_512);
+
+  bstring b = blk2bstr(buffer, encoded_size);
+  sctp_s_38412.sctp_send_msg(gc.get()->sctp_assoc_id, itti_msg.stream, &b);
   return;
 }
 
@@ -533,36 +553,20 @@ void amf_n2::handle_itti_message(itti_ng_shutdown& itti_msg) {
   gc.get()->ng_state = NGAP_SHUTDOWN;
 
   // Release all the resources related to this interface
-  uint32_t ran_ue_ngap_id = 0;
-  for (auto ue_context : ranid2uecontext) {
-    if (ue_context.second->gnb_assoc_id == itti_msg.assoc_id) {
-      ran_ue_ngap_id      = ue_context.second->ran_ue_ngap_id;
-      long amf_ue_ngap_id = ue_context.second->amf_ue_ngap_id;
-      // get NAS context
-      std::shared_ptr<nas_context> nc = {};
-      if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
-        nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
-        stacs.update_5gmm_state(nc.get()->imsi, "5GMM-DEREGISTERED");
-      } else {
-        Logger::amf_n2().warn(
-            "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT
-            ")",
-            amf_ue_ngap_id);
-      }
-    }
-  }
-  // remove UE context
-  if (ranid2uecontext.count(ran_ue_ngap_id) > 0) {
-    ranid2uecontext.erase(ran_ue_ngap_id);
+  std::vector<std::shared_ptr<ue_ngap_context>> ue_contexts;
+  get_ue_ngap_contexts(itti_msg.assoc_id, ue_contexts);
+
+  for (auto ue_context : ue_contexts) {
+    remove_ue_context_with_amf_ue_ngap_id(ue_context->amf_ue_ngap_id);
+    remove_ue_context_with_ran_ue_ngap_id(ue_context->ran_ue_ngap_id);
   }
 
   // Delete gNB context
   remove_gnb_context(itti_msg.assoc_id);
-  stacs.gnbs.erase(gc.get()->globalRanNodeId);
+  stacs.remove_gnb(gc.get()->globalRanNodeId);
   Logger::amf_n2().debug(
       "Remove gNB with association id %d, globalRanNodeId 0x%x",
       itti_msg.assoc_id, gc.get()->globalRanNodeId);
-  stacs.gNB_connected -= 1;
   stacs.display();
   return;
 }
@@ -2146,8 +2150,6 @@ bool amf_n2::is_ran_ue_id_2_ue_ngap_context(
     }
   }
   return false;
-
-  // return bool{ranid2uecontext.count(ran_ue_ngap_id) > 0};
 }
 
 //------------------------------------------------------------------------------
@@ -2165,6 +2167,60 @@ void amf_n2::set_ran_ue_ngap_id_2_ue_ngap_context(
 }
 
 //------------------------------------------------------------------------------
+void amf_n2::remove_ran_ue_ngap_id_2_ngap_context(
+    const uint32_t& ran_ue_ngap_id) {
+  std::unique_lock lock(m_ranid2uecontext);
+  if (ranid2uecontext.count(ran_ue_ngap_id) > 0) {
+    ranid2uecontext.erase(ran_ue_ngap_id);
+  }
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::remove_ue_context_with_ran_ue_ngap_id(
+    const uint32_t& ran_ue_ngap_id) {
+  // Remove NAS context if still available
+  std::shared_ptr<ue_ngap_context> unc = {};
+
+  if (!is_ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id)) {
+    Logger::amf_n2().error(
+        "No UE NGAP context with ran_ue_ngap_id (" GNB_UE_NGAP_ID_FMT ")",
+        ran_ue_ngap_id);
+    return;
+  }
+  unc = ran_ue_id_2_ue_ngap_context(ran_ue_ngap_id);
+
+  // Remove all NAS context if still exist
+  std::shared_ptr<nas_context> nc = nullptr;
+  if (amf_n1_inst->is_amf_ue_id_2_nas_context(unc.get()->amf_ue_ngap_id)) {
+    nc = amf_n1_inst->amf_ue_id_2_nas_context(unc.get()->amf_ue_ngap_id);
+    // Remove all NAS context
+    string supi = "imsi-" + nc.get()->imsi;
+    amf_n1_inst->remove_imsi_2_nas_context(supi);
+    // TODO:  remove_guti_2_nas_context(guti);
+    amf_n1_inst->remove_amf_ue_ngap_id_2_nas_context(unc.get()->amf_ue_ngap_id);
+  } else {
+    Logger::amf_n2().warn(
+        "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT ")",
+        unc.get()->amf_ue_ngap_id);
+  }
+
+  // Remove NGAP context
+  remove_amf_ue_ngap_id_2_ue_ngap_context(unc.get()->amf_ue_ngap_id);
+  remove_ran_ue_ngap_id_2_ngap_context(ran_ue_ngap_id);
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::get_ue_ngap_contexts(
+    const sctp_assoc_id_t& gnb_assoc_id,
+    std::vector<std::shared_ptr<ue_ngap_context>>& ue_contexts) {
+  std::shared_lock lock(m_ranid2uecontext);
+  for (auto ue : ranid2uecontext) {
+    if (ue.second->gnb_assoc_id == gnb_assoc_id)
+      ue_contexts.push_back(ue.second);
+  }
+}
+
+//------------------------------------------------------------------------------
 std::shared_ptr<ue_ngap_context> amf_n2::amf_ue_id_2_ue_ngap_context(
     const unsigned long& amf_ue_ngap_id) const {
   std::shared_lock lock(m_amfueid2uecontext);
@@ -2175,7 +2231,6 @@ std::shared_ptr<ue_ngap_context> amf_n2::amf_ue_id_2_ue_ngap_context(
 bool amf_n2::is_amf_ue_id_2_ue_ngap_context(
     const unsigned long& amf_ue_ngap_id) const {
   std::shared_lock lock(m_amfueid2uecontext);
-  // return bool{amfueid2uecontext.count(amf_ue_ngap_id) > 0};
   if (amfueid2uecontext.count(amf_ue_ngap_id) > 0) {
     if (amfueid2uecontext.at(amf_ue_ngap_id).get() != nullptr) {
       return true;
@@ -2189,6 +2244,38 @@ void amf_n2::set_amf_ue_ngap_id_2_ue_ngap_context(
     const unsigned long& amf_ue_ngap_id, std::shared_ptr<ue_ngap_context> unc) {
   std::unique_lock lock(m_amfueid2uecontext);
   amfueid2uecontext[amf_ue_ngap_id] = unc;
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::remove_amf_ue_ngap_id_2_ue_ngap_context(
+    const unsigned long& amf_ue_ngap_id) {
+  std::unique_lock lock(m_amfueid2uecontext);
+  if (amfueid2uecontext.count(amf_ue_ngap_id) > 0) {
+    amfueid2uecontext.erase(amf_ue_ngap_id);
+  }
+}
+
+//------------------------------------------------------------------------------
+void amf_n2::remove_ue_context_with_amf_ue_ngap_id(
+    const unsigned long& amf_ue_ngap_id) {
+  // Remove all NAS context if still exist
+  std::shared_ptr<nas_context> nc = nullptr;
+  if (amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
+    nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
+    // Remove all NAS context
+    string supi = "imsi-" + nc.get()->imsi;
+    amf_n1_inst->remove_imsi_2_nas_context(supi);
+    // TODO:  remove_guti_2_nas_context(guti);
+    amf_n1_inst->remove_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id);
+    // Remove NGAP context related to RAN UE NGAP ID
+    remove_ran_ue_ngap_id_2_ngap_context(nc.get()->ran_ue_ngap_id);
+  } else {
+    Logger::amf_n2().warn(
+        "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT ")",
+        amf_ue_ngap_id);
+  }
+  // Remove NGAP context
+  remove_amf_ue_ngap_id_2_ue_ngap_context(amf_ue_ngap_id);
 }
 
 //------------------------------------------------------------------------------
