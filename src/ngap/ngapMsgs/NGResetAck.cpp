@@ -54,7 +54,13 @@ NGResetAckMsg::NGResetAckMsg() {
   CriticalityDiagnostics               = nullptr;
 }
 //------------------------------------------------------------------------------
-NGResetAckMsg::~NGResetAckMsg() {}
+NGResetAckMsg::~NGResetAckMsg() {
+  if (ngResetAckPdu) free_wrapper((void**) &ngResetAckPdu);
+  if (ngResetAckIEs) free_wrapper((void**) &ngResetAckIEs);
+  if (ueAssociationLogicalNGConnectionList)
+    free_wrapper((void**) &ueAssociationLogicalNGConnectionList);
+  if (CriticalityDiagnostics) free_wrapper((void**) &CriticalityDiagnostics);
+}
 
 //------------------------------------------------------------------------------
 void NGResetAckMsg::setMessageType() {

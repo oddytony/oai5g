@@ -44,7 +44,7 @@ namespace ngap {
 class UEAssociationLogicalNGConnectionList {
  public:
   UEAssociationLogicalNGConnectionList();
-  virtual ~UEAssociationLogicalNGConnectionList(){};
+  virtual ~UEAssociationLogicalNGConnectionList();
 
   void setUEAssociationLogicalNGConnectionItem(
       UEAssociationLogicalNGConnectionItem*

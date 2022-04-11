@@ -65,7 +65,7 @@ class NGResetAckMsg {
   Ngap_NGAP_PDU_t* ngResetAckPdu;
   Ngap_NGResetAcknowledge_t* ngResetAckIEs;
   UEAssociationLogicalNGConnectionList* ueAssociationLogicalNGConnectionList;
-  std::unique_ptr<Ngap_CriticalityDiagnostics_t> CriticalityDiagnostics;
+  Ngap_CriticalityDiagnostics_t* CriticalityDiagnostics;
 };
 
 }  // namespace ngap

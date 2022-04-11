@@ -42,6 +42,10 @@ UEAssociationLogicalNGConnectionList::UEAssociationLogicalNGConnectionList() {
   number_of_items                      = 0;
 }
 
+UEAssociationLogicalNGConnectionList::~UEAssociationLogicalNGConnectionList() {
+  if (ueAssociationLogicalNGConnectionItem)
+    delete[] ueAssociationLogicalNGConnectionItem;
+}
 //------------------------------------------------------------------------------
 void UEAssociationLogicalNGConnectionList::
     setUEAssociationLogicalNGConnectionItem(
