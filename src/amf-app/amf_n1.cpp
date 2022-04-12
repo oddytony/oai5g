@@ -389,7 +389,8 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
   }
 
   SecurityHeaderType type = {};
-  if (!check_security_header_type(type, (uint8_t*) bdata(recved_nas_msg))) {
+  if (!check_security_header_type(
+          type, (uint8_t*) bdata(recved_nas_msg), blength(recved_nas_msg))) {
     Logger::amf_n1().error("Not 5GS MOBILITY MANAGEMENT message");
     return;
   }
@@ -585,8 +586,8 @@ void amf_n1::nas_signalling_establishment_request_handle(
 
 //------------------------------------------------------------------------------
 void amf_n1::uplink_nas_msg_handle(
-    uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg,
-    plmn_t plmn) {
+    const uint32_t ran_ue_ngap_id, const long amf_ue_ngap_id, bstring plain_msg,
+    const plmn_t& plmn) {
   uint8_t* buf         = (uint8_t*) bdata(plain_msg);
   uint8_t message_type = *(buf + 2);
   switch (message_type) {
@@ -638,9 +639,14 @@ void amf_n1::uplink_nas_msg_handle(
 
 //------------------------------------------------------------------------------
 bool amf_n1::check_security_header_type(
-    SecurityHeaderType& type, uint8_t* buffer) {
-  uint8_t octet = 0, decoded_size = 0;
-  octet = *(buffer + decoded_size);
+    SecurityHeaderType& type, uint8_t* buffer, uint32_t length) {
+  // Length should be greater than 2 for SecurityHeaderType
+  if (length < 2) {
+    return false;
+  }
+  uint8_t octet        = 0;
+  uint8_t decoded_size = 0;
+  octet                = *(buffer + decoded_size);
   decoded_size++;
   if (octet != 0x7e) return false;
   octet = *(buffer + decoded_size);

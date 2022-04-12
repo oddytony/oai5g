@@ -118,13 +118,22 @@ class amf_n1 {
       uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg,
       std::string snn, uint8_t ulCount);
 
-  // TODO
+  /*
+   * Handle UL NAS message (Authentication Response, Security Mode Complete,
+   * etc)
+   * @param [const uint32_t] ran_ue_ngap_id: RAN UE NGAP Id
+   * @param [const long] amf_ue_ngap_id: AMF UE NGAP Id
+   * @param [bstring] plain_msg: NAS message in plain text
+   * @param [const plmn_t&] plmn: PLMN
+   * @return void
+   */
   void uplink_nas_msg_handle(
-      uint32_t ran_ue_ngap_id, long amf_ue_ngap_id, bstring plain_msg,
-      plmn_t plmn);
+      const uint32_t ran_ue_ngap_id, const long amf_ue_ngap_id,
+      bstring plain_msg, const plmn_t& plmn);
 
   // TODO
-  bool check_security_header_type(SecurityHeaderType& type, uint8_t* buffer);
+  bool check_security_header_type(
+      SecurityHeaderType& type, uint8_t* buffer, uint32_t length);
 
   // TODO
   bool is_guti_2_nas_context(const std::string& guti) const;

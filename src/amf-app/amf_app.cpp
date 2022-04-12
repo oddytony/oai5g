@@ -188,7 +188,7 @@ std::shared_ptr<ue_context> amf_app::amf_ue_id_2_ue_context(
 
 //------------------------------------------------------------------------------
 void amf_app::set_amf_ue_ngap_id_2_ue_context(
-    const long& amf_ue_ngap_id, std::shared_ptr<ue_context> uc) {
+    const long& amf_ue_ngap_id, std::shared_ptr<ue_context>& uc) {
   std::unique_lock lock(m_amf_ue_ngap_id2ue_ctx);
   amf_ue_ngap_id2ue_ctx[amf_ue_ngap_id] = uc;
 }
@@ -220,7 +220,7 @@ bool amf_app::ran_amf_id_2_ue_context(
 
 //------------------------------------------------------------------------------
 void amf_app::set_ran_amf_id_2_ue_context(
-    const string& ue_context_key, std::shared_ptr<ue_context> uc) {
+    const string& ue_context_key, const std::shared_ptr<ue_context>& uc) {
   std::unique_lock lock(m_ue_ctx_key);
   ue_ctx_key[ue_context_key] = uc;
 }
@@ -240,7 +240,7 @@ std::shared_ptr<ue_context> amf_app::supi_2_ue_context(
 
 //------------------------------------------------------------------------------
 void amf_app::set_supi_2_ue_context(
-    const string& supi, std::shared_ptr<ue_context>& uc) {
+    const string& supi, const std::shared_ptr<ue_context>& uc) {
   std::unique_lock lock(m_supi2ue_ctx);
   supi2ue_ctx[supi] = uc;
 }
@@ -619,7 +619,8 @@ uint32_t amf_app::generate_tmsi() {
 
 //------------------------------------------------------------------------------
 bool amf_app::generate_5g_guti(
-    uint32_t ranid, long amfid, string& mcc, string& mnc, uint32_t& tmsi) {
+    const uint32_t ranid, const long amfid, string& mcc, string& mnc,
+    uint32_t& tmsi) {
   string ue_context_key =
       "app_ue_ranid_" + to_string(ranid) + ":amfid_" + to_string(amfid);
   if (!is_ran_amf_id_2_ue_context(ue_context_key)) {
@@ -706,7 +707,7 @@ void amf_app::generate_uuid() {
 
 //---------------------------------------------------------------------------------------------
 void amf_app::add_event_subscription(
-    evsub_id_t sub_id, amf_event_type_t ev,
+    const evsub_id_t& sub_id, const amf_event_type_t& ev,
     std::shared_ptr<amf_subscription> ss) {
   Logger::amf_app().debug(
       "Add an Event subscription (Sub ID %d, Event %d)", sub_id, (uint8_t) ev);
@@ -715,7 +716,7 @@ void amf_app::add_event_subscription(
 }
 
 //---------------------------------------------------------------------------------------------
-bool amf_app::remove_event_subscription(evsub_id_t sub_id) {
+bool amf_app::remove_event_subscription(const evsub_id_t& sub_id) {
   Logger::amf_app().debug("Remove an Event subscription (Sub ID %d)", sub_id);
   std::unique_lock lock(m_amf_event_subscriptions);
   for (auto it = amf_event_subscriptions.cbegin();
@@ -736,7 +737,7 @@ bool amf_app::remove_event_subscription(evsub_id_t sub_id) {
 
 //---------------------------------------------------------------------------------------------
 void amf_app::get_ee_subscriptions(
-    amf_event_type_t ev,
+    const amf_event_type_t& ev,
     std::vector<std::shared_ptr<amf_subscription>>& subscriptions) {
   for (auto const& i : amf_event_subscriptions) {
     if ((uint8_t) std::get<1>(i.first) == (uint8_t) ev) {
@@ -750,7 +751,7 @@ void amf_app::get_ee_subscriptions(
 
 //---------------------------------------------------------------------------------------------
 void amf_app::get_ee_subscriptions(
-    evsub_id_t sub_id,
+    const evsub_id_t& sub_id,
     std::vector<std::shared_ptr<amf_subscription>>& subscriptions) {
   for (auto const& i : amf_event_subscriptions) {
     if (i.first.first == sub_id) {
@@ -761,7 +762,7 @@ void amf_app::get_ee_subscriptions(
 
 //---------------------------------------------------------------------------------------------
 void amf_app::get_ee_subscriptions(
-    amf_event_type_t ev, std::string& supi,
+    const amf_event_type_t& ev, std::string& supi,
     std::vector<std::shared_ptr<amf_subscription>>& subscriptions) {
   for (auto const& i : amf_event_subscriptions) {
     if ((i.first.second == ev) && (i.second->supi == supi)) {
@@ -856,7 +857,7 @@ void amf_app::trigger_nf_registration_request() {
 }
 
 //------------------------------------------------------------------------------
-void amf_app::trigger_nf_deregistration() {
+void amf_app::trigger_nf_deregistration() const {
   Logger::amf_app().debug(
       "Send ITTI msg to N11 task to trigger the deregistration request to NRF");
 
@@ -873,25 +874,28 @@ void amf_app::trigger_nf_deregistration() {
 }
 
 void amf_app::add_promise(
-    uint32_t pid, boost::shared_ptr<boost::promise<uint32_t>>& p) {
+    const uint32_t pid, const boost::shared_ptr<boost::promise<uint32_t>>& p) {
   std::unique_lock lock(m_curl_handle_responses_smf);
   curl_handle_responses_smf.emplace(pid, p);
 }
 //---------------------------------------------------------------------------------------------
 void amf_app::add_promise(
-    uint32_t id, boost::shared_ptr<boost::promise<std::string>>& p) {
+    const uint32_t id,
+    const boost::shared_ptr<boost::promise<std::string>>& p) {
   std::unique_lock lock(m_curl_handle_responses_n2_sm);
   curl_handle_responses_n2_sm.emplace(id, p);
 }
 
 //---------------------------------------------------------------------------------------------
 void amf_app::add_promise(
-    uint32_t pid, boost::shared_ptr<boost::promise<nlohmann::json>>& p) {
+    const uint32_t pid,
+    const boost::shared_ptr<boost::promise<nlohmann::json>>& p) {
   std::unique_lock lock(m_curl_handle_responses_n11);
   curl_handle_responses_n11.emplace(pid, p);
 }
 
-void amf_app::trigger_process_response(uint32_t pid, uint32_t http_code) {
+void amf_app::trigger_process_response(
+    const uint32_t pid, const uint32_t http_code) {
   Logger::amf_app().debug(
       "Trigger process response: Set promise with ID %u "
       "to ready",
@@ -904,7 +908,8 @@ void amf_app::trigger_process_response(uint32_t pid, uint32_t http_code) {
   }
 }
 //------------------------------------------------------------------------------
-void amf_app::trigger_process_response(uint32_t pid, std::string n2_sm) {
+void amf_app::trigger_process_response(
+    const uint32_t pid, const std::string& n2_sm) {
   Logger::amf_app().debug(
       "Trigger process response: Set promise with ID %u "
       "to ready",
@@ -919,7 +924,7 @@ void amf_app::trigger_process_response(uint32_t pid, std::string n2_sm) {
 
 //------------------------------------------------------------------------------
 void amf_app::trigger_process_response(
-    uint32_t pid, nlohmann::json& json_data) {
+    const uint32_t pid, const nlohmann::json& json_data) {
   Logger::amf_app().debug(
       "Trigger process response: Set promise with ID %u "
       "to ready",
