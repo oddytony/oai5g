@@ -1040,9 +1040,10 @@ void amf_n1::registration_request_handle(
     case _5G_GUTI: {
       guti = registration_request->get_5g_guti();
       Logger::amf_n1().debug("Decoded GUTI from registration request message");
-      if (!guti.compare("error")) {
+      if (guti.empty()) {
         Logger::amf_n1().warn("No GUTI IE");
       }
+
       if (nc.get()) {
         nc.get()->is_5g_guti_present         = true;
         nc.get()->to_be_register_by_new_suci = true;
@@ -2949,6 +2950,7 @@ void amf_n1::ue_initiate_de_registration_handle(
   // Remove NC context
   remove_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id);
   remove_imsi_2_nas_context(supi);
+
   remove_guti_2_nas_context(dereg_request->get_5g_guti());
 
   // TODO: AMF to AN: N2 UE Context Release Request
