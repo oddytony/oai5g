@@ -694,10 +694,17 @@ void amf_n2::handle_itti_message(itti_initial_ue_message& init_ue_msg) {
 
   // Store InitialUEMessage for Rereoute NAS later
   if (unc.get()->initialUEMsg.buf) {
-    int encoded_size = 0;
-    init_ue_msg.initUeMsg->encode2buffer(
-        unc.get()->initialUEMsg.buf, encoded_size);
+    Logger::amf_n2().debug(
+        "Store InitialUEMessage for Reroute NAS (if necessary)");
+    uint8_t* initial_ue_msg_buf = (uint8_t*) calloc(1, BUFFER_SIZE_1024);
+    int encoded_size            = 0;
+    init_ue_msg.initUeMsg->encode2buffer(initial_ue_msg_buf, encoded_size);
+
     if (encoded_size > 0) {
+      Logger::amf_n2().debug("Encoded InitialUEMessage size %d", encoded_size);
+      memcpy(
+          (void*) unc.get()->initialUEMsg.buf, (void*) initial_ue_msg_buf,
+          encoded_size);
       comUt::print_buffer(
           "ngap", "InitialUEMessage", unc.get()->initialUEMsg.buf,
           encoded_size);
