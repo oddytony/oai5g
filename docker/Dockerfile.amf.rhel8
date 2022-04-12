@@ -73,7 +73,9 @@ RUN ./build_amf --install-deps --force
 
 # Building AMF
 WORKDIR /openair-amf/build/scripts
-RUN ./build_amf --clean --Verbose --build-type Release --jobs && \
+RUN ldconfig && \
+    ./build_amf --clean --Verbose --build-type Release --jobs && \
+    ldd /openair-amf/build/amf/build/amf && \
     mv /openair-amf/build/amf/build/amf /openair-amf/build/amf/build/oai_amf
 
 #---------------------------------------------------------------------
@@ -90,7 +92,8 @@ RUN yum update -y && \
       psmisc \
       net-tools \
       libevent && \
-    rm -rf /var/lib/apt/lists/*
+    yum clean all -y && \
+    rm -rf /var/cache/yum /var/cache/dnf
 
 # Copying executable and generated libraries
 WORKDIR /openair-amf/bin
@@ -120,7 +123,8 @@ COPY --from=oai-amf-builder \
     /usr/lib64/libicuuc.so.60 \
     /usr/lib64/
 
-RUN ldconfig
+RUN ldconfig && \
+    ldd /openair-amf/bin/oai_amf
 
 # Copying template configuration files
 WORKDIR /openair-amf/etc
