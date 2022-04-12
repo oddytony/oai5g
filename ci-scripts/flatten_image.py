@@ -74,7 +74,8 @@ def perform_flattening(tag):
     cmd += ' --change "WORKDIR /openair-amf" '
     cmd += ' --change "EXPOSE 80/tcp" '
     cmd += ' --change "EXPOSE 9090/tcp" '
-    cmd += ' --change "EXPOSE 38412/sctp" '
+    if cli == 'docker':
+        cmd += ' --change "EXPOSE 38412/sctp" '
     cmd += ' --change "CMD [\\"/openair-amf/bin/oai_amf\\", \\"-c\\", \\"/openair-amf/etc/amf.conf\\", \\"-o\\"]" '
     cmd += ' --change "ENTRYPOINT [\\"/bin/bash\\", \\"/openair-amf/bin/entrypoint.sh\\"]" '
     cmd += ' - ' + image_prefix + tag
