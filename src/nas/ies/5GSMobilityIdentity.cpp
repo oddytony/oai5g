@@ -684,30 +684,12 @@ int _5GSMobilityIdentity::_5g_guti_decodefrombuffer(uint8_t* buf, int len) {
   decoded_size++;
   _5g_guti->amf_pointer = *(buf + decoded_size);
   decoded_size++;
-  uint32_t tmsi = 0;
-  uint8_t digit[4];
-  octet = *(buf + decoded_size);
-  decoded_size++;
-  Logger::nas_mm().debug("Octet 0x%x", octet);
-  digit[0] = octet;
-  tmsi |= octet;
-  octet = *(buf + decoded_size);
-  decoded_size++;
-  Logger::nas_mm().debug("Octet 0x%x", octet);
-  digit[1] = octet;
-  tmsi |= octet << 8;
-  octet = *(buf + decoded_size);
-  decoded_size++;
-  Logger::nas_mm().debug("Octet 0x%x", octet);
-  digit[2] = octet;
-  tmsi |= octet << 16;
-  octet = *(buf + decoded_size);
-  decoded_size++;
-  Logger::nas_mm().debug("Octet 0x%x", octet);
-  digit[3] = octet;
-  tmsi |= octet << 24;
-  _5g_guti->_5g_tmsi = tmsi;
-  Logger::nas_mm().debug("decoding 5GSMobilityIdentity 5G-GUTI");
+
+  // TMSI, 4 octets
+  DECODE_U32(buf + decoded_size, _5g_guti->_5g_tmsi, decoded_size);
+
+  Logger::nas_mm().debug("TMSI 0x%x", _5g_guti->_5g_tmsi);
+  Logger::nas_mm().debug("Decoding 5GSMobilityIdentity 5G-GUTI");
   return decoded_size;
 }
 

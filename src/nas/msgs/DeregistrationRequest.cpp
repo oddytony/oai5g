@@ -132,10 +132,14 @@ std::string DeregistrationRequest::get_5g_guti() {
   if (ie_5gs_mobility_id) {
     nas::_5G_GUTI_t guti;
     ie_5gs_mobility_id->get5GGUTI(guti);
-    std::string str;  //= guti.toString();
-    return str;
+    std::string guti_str =
+        guti.mcc + guti.mnc + std::to_string(guti.amf_region_id) +
+        std::to_string(guti.amf_set_id) + std::to_string(guti.amf_pointer) +
+        std::to_string(guti._5g_tmsi);
+    Logger::nas_mm().debug("5G GUTI %s", guti_str.c_str());
+    return guti_str;
   } else {
-    return "error";
+    return "";
   }
 }
 
