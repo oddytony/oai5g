@@ -63,4 +63,16 @@ constexpr uint64_t SECONDS_SINCE_FIRST_EPOCH = 2208988800;
 #define NAMF_COMMUNICATION_BASE "/namf-comm/"
 #define NAMF_COMMUNICATION_N1N2_MESSAGE_TRANSFER_URL                           \
   "/ue-contexts/{}/n1-n2-messages"  // context id
+
+#define NAS_MESSAGE_DOWNLINK 1
+#define NAS_MESSAGE_UPLINK 0
+
+typedef enum {
+  PlainNasMsg                                              = 0x0,
+  IntegrityProtected                                       = 0x1,
+  IntegrityProtectedAndCiphered                            = 0x2,
+  IntegrityProtectedWithNew5GNASSecurityContext            = 0x3,
+  IntegrityProtectedAndCipheredWithNew5GNASSecurityContext = 0x4,
+} SecurityHeaderType_t;
+
 #endif

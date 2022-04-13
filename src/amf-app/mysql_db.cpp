@@ -37,7 +37,7 @@ extern amf_config amf_cfg;
 
 //------------------------------------------------------------------------------
 bool amf_n1::get_mysql_auth_info(
-    std::string imsi,
+    const std::string& imsi,
     mysql_auth_info_t&
         resp) {  // openair-cn/tree/v0.5.0/src/oai_hss/db/db_connector.c
   MYSQL_RES* res;
@@ -116,7 +116,7 @@ bool amf_n1::connect_to_mysql() {
 
 //------------------------------------------------------------------------------
 void amf_n1::mysql_push_rand_sqn(
-    std::string imsi, uint8_t* rand_p, uint8_t* sqn) {
+    const std::string& imsi, uint8_t* rand_p, uint8_t* sqn) {
   int status = 0;
   MYSQL_RES* res;
   char query[1000];
@@ -171,7 +171,7 @@ void amf_n1::mysql_push_rand_sqn(
 }
 
 //------------------------------------------------------------------------------
-void amf_n1::mysql_increment_sqn(std::string imsi) {
+void amf_n1::mysql_increment_sqn(const std::string& imsi) {
   int status;
   MYSQL_RES* res;
   char query[1000];

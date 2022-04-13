@@ -188,7 +188,7 @@ std::shared_ptr<ue_context> amf_app::amf_ue_id_2_ue_context(
 
 //------------------------------------------------------------------------------
 void amf_app::set_amf_ue_ngap_id_2_ue_context(
-    const long& amf_ue_ngap_id, std::shared_ptr<ue_context>& uc) {
+    const long& amf_ue_ngap_id, const std::shared_ptr<ue_context>& uc) {
   std::unique_lock lock(m_amf_ue_ngap_id2ue_ctx);
   amf_ue_ngap_id2ue_ctx[amf_ue_ngap_id] = uc;
 }

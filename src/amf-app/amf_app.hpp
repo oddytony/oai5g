@@ -151,7 +151,7 @@ class amf_app {
    * @return void
    */
   void set_amf_ue_ngap_id_2_ue_context(
-      const long& amf_ue_ngap_id, std::shared_ptr<ue_context>& uc);
+      const long& amf_ue_ngap_id, const std::shared_ptr<ue_context>& uc);
 
   /*
    * Verify if a UE context associated with an UE Context Key exist
