@@ -280,8 +280,8 @@ void amf_app::handle_itti_message(
         "Handle ITTI N1N2 Message Transfer Request for Paging");
     std::shared_ptr<itti_paging> i =
         std::make_shared<itti_paging>(TASK_AMF_APP, TASK_AMF_N2);
-    i.get()->amf_ue_ngap_id = amf_n1_inst->supi2amfId.at(itti_msg.supi);
-    i.get()->ran_ue_ngap_id = amf_n1_inst->supi2ranId.at(itti_msg.supi);
+    amf_n1_inst->supi_2_amf_id(itti_msg.supi, i.get()->amf_ue_ngap_id);
+    amf_n1_inst->supi_2_ran_id(itti_msg.supi, i.get()->ran_ue_ngap_id);
 
     int ret = itti_inst->send_msg(i);
     if (0 != ret) {
@@ -315,8 +315,8 @@ void amf_app::handle_itti_message(
       dl_msg->is_n2sm_set    = true;
       dl_msg->n2sm_info_type = itti_msg.n2sm_info_type;
     }
-    dl_msg->amf_ue_ngap_id = amf_n1_inst->supi2amfId.at(itti_msg.supi);
-    dl_msg->ran_ue_ngap_id = amf_n1_inst->supi2ranId.at(itti_msg.supi);
+    amf_n1_inst->supi_2_amf_id(itti_msg.supi, dl_msg->amf_ue_ngap_id);
+    amf_n1_inst->supi_2_ran_id(itti_msg.supi, dl_msg->ran_ue_ngap_id);
     std::shared_ptr<itti_downlink_nas_transfer> i =
         std::shared_ptr<itti_downlink_nas_transfer>(dl_msg);
     int ret = itti_inst->send_msg(i);

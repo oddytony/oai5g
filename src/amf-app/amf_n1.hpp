@@ -57,23 +57,6 @@ namespace amf_application {
 
 class amf_n1 {
  public:
-  std::map<long, std::shared_ptr<nas_context>>
-      amfueid2nas_context;  // amf ue ngap id
-  mutable std::shared_mutex m_amfueid2nas_context;
-
-  std::map<std::string, std::shared_ptr<nas_context>> imsi2nas_context;
-  std::map<std::string, long> supi2amfId;
-  std::map<std::string, uint32_t> supi2ranId;
-  mutable std::shared_mutex m_nas_context;
-
-  std::map<std::string, std::shared_ptr<nas_context>> guti2nas_context;
-  mutable std::shared_mutex m_guti2nas_context;
-
-  static std::map<std::string, std::string> rand_record;
-  static uint8_t no_random_delta;
-  random_state_t random_state;
-  database_t* db_desc;
-
   amf_n1();
   ~amf_n1();
 
@@ -192,6 +175,53 @@ class amf_n1 {
    * @return true if successful, otherwise return false
    */
   bool remove_amf_ue_ngap_id_2_nas_context(const long& amf_ue_ngap_id);
+
+  /*
+   * Store the mapping between SUPI and AMF UE NGAP ID
+   * @param [const std::string&] SUPI: UE SUPI
+   *@param [const long& ] amf_ue_ngap_id: AMF UE NGAP ID
+   * @return void
+   */
+  void set_supi_2_amf_id(const std::string& supi, const long& amf_ue_ngap_id);
+
+  /*
+   * Get AMF UE NGAP ID
+   * @param [const std::string&] SUPI: UE SUPI
+   * @param [long& ] amf_ue_ngap_id: AMF UE NGAP ID
+   * @return true if success
+   */
+  bool supi_2_amf_id(const std::string& supi, long& amf_ue_ngap_id);
+
+  /*
+   * Remove AMF UE NGAP ID from the map with SUPI
+   * @param [const std::string&] SUPI: UE SUPI
+   * @return true if success
+   */
+  bool remove_supi_2_amf_id(const std::string& supi);
+
+  /*
+   * Store the mapping between SUPI and RAN UE NGAP ID
+   * @param [const std::string&] SUPI: UE SUPI
+   *@param [const uint32_t&] ran_ue_ngap_id: RAN UE NGAP ID
+   * @return void
+   */
+  void set_supi_2_ran_id(
+      const std::string& supi, const uint32_t& ran_ue_ngap_id);
+
+  /*
+   * Get RAN UE NGAP ID
+   * @param [const std::string&] SUPI: UE SUPI
+   * @param [uint32_t& ] ran_ue_ngap_id: RAN UE NGAP ID
+   * @return true if success
+   */
+  bool supi_2_ran_id(const std::string& supi, uint32_t& ran_ue_ngap_id);
+
+  /*
+   * Remove RAN UE NGAP ID from the map with SUPI
+   * @param [const std::string&] SUPI: UE SUPI
+   * @return true if success
+   */
+  bool remove_supi_2_ran_id(const std::string& supi);
 
   /*
    * Get UE NAS context associated with an IMSI
@@ -927,6 +957,23 @@ class amf_n1 {
   void send_registration_reject_msg(
       const uint8_t cause_value, const uint32_t ran_ue_ngap_id,
       const long amf_ue_ngap_id);
+
+  std::map<long, std::shared_ptr<nas_context>>
+      amfueid2nas_context;  // amf ue ngap id
+  mutable std::shared_mutex m_amfueid2nas_context;
+
+  std::map<std::string, std::shared_ptr<nas_context>> imsi2nas_context;
+  std::map<std::string, long> supi2amfId;
+  std::map<std::string, uint32_t> supi2ranId;
+  mutable std::shared_mutex m_nas_context;
+
+  std::map<std::string, std::shared_ptr<nas_context>> guti2nas_context;
+  mutable std::shared_mutex m_guti2nas_context;
+
+  static std::map<std::string, std::string> rand_record;
+  static uint8_t no_random_delta;
+  random_state_t random_state;
+  database_t* db_desc;
 
   // for Event Handling
   amf_event event_sub;

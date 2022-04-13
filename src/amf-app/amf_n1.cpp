@@ -716,14 +716,14 @@ void amf_n1::identity_response_handle(
     set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
     nc.get()->ctx_avaliability_ind = false;
   }
-  nc.get()->ctx_avaliability_ind         = true;
-  nc.get()->nas_status                   = CM_CONNECTED;
-  nc.get()->amf_ue_ngap_id               = amf_ue_ngap_id;
-  nc.get()->ran_ue_ngap_id               = ran_ue_ngap_id;
-  nc.get()->is_imsi_present              = true;
-  nc.get()->imsi                         = supi;
-  supi2amfId[("imsi-" + nc.get()->imsi)] = amf_ue_ngap_id;
-  supi2ranId[("imsi-" + nc.get()->imsi)] = ran_ue_ngap_id;
+  nc.get()->ctx_avaliability_ind = true;
+  nc.get()->nas_status           = CM_CONNECTED;
+  nc.get()->amf_ue_ngap_id       = amf_ue_ngap_id;
+  nc.get()->ran_ue_ngap_id       = ran_ue_ngap_id;
+  nc.get()->is_imsi_present      = true;
+  nc.get()->imsi                 = supi;
+  set_supi_2_amf_id("imsi-" + nc.get()->imsi, amf_ue_ngap_id);
+  set_supi_2_ran_id("imsi-" + nc.get()->imsi, ran_ue_ngap_id);
   // Stop Mobile Reachable Timer/Implicit Deregistration Timer
   itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
   itti_inst->timer_remove(nc.get()->implicit_deregistration_timer);
@@ -783,10 +783,11 @@ void amf_n1::service_request_handle(
   std::unique_ptr<ServiceAccept> service_accept =
       std::make_unique<ServiceAccept>();
   service_accept->setHeader(PLAIN_5GS_MSG);
-  string supi      = "imsi-" + nc.get()->imsi;
-  uc.get()->supi   = supi;
-  supi2amfId[supi] = amf_ue_ngap_id;
-  supi2ranId[supi] = ran_ue_ngap_id;
+  string supi    = "imsi-" + nc.get()->imsi;
+  uc.get()->supi = supi;
+  set_supi_2_amf_id(supi, amf_ue_ngap_id);
+  set_supi_2_ran_id(supi, ran_ue_ngap_id);
+
   Logger::amf_n1().debug(
       "amf_ue_ngap_id " AMF_UE_NGAP_ID_FMT
       ", ran_ue_ngap_id " GNB_UE_NGAP_ID_FMT,
@@ -998,8 +999,9 @@ void amf_n1::registration_request_handle(
         nc.get()->is_imsi_present = true;
         nc.get()->imsi            = imsi.mcc + imsi.mnc + imsi.msin;
         Logger::amf_n1().debug("Received IMSI %s", nc.get()->imsi.c_str());
-        supi2amfId[("imsi-" + nc.get()->imsi)] = amf_ue_ngap_id;
-        supi2ranId[("imsi-" + nc.get()->imsi)] = ran_ue_ngap_id;
+
+        set_supi_2_amf_id("imsi-" + nc.get()->imsi, amf_ue_ngap_id);
+        set_supi_2_ran_id("imsi-" + nc.get()->imsi, ran_ue_ngap_id);
 
         // try to find old nas_context and release
         std::shared_ptr<nas_context> old_nc = {};
@@ -1057,10 +1059,10 @@ void amf_n1::registration_request_handle(
         nc = guti_2_nas_context(guti);
         set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
         // Update Nas Context
-        nc->amf_ue_ngap_id                      = amf_ue_ngap_id;
-        nc->ran_ue_ngap_id                      = ran_ue_ngap_id;
-        supi2amfId[("imsi-" + nc.get()->imsi)]  = amf_ue_ngap_id;
-        supi2ranId[("imsi-" + nc.get()->imsi)]  = ran_ue_ngap_id;
+        nc->amf_ue_ngap_id = amf_ue_ngap_id;
+        nc->ran_ue_ngap_id = ran_ue_ngap_id;
+        set_supi_2_amf_id("imsi-" + nc.get()->imsi, amf_ue_ngap_id);
+        set_supi_2_ran_id("imsi-" + nc.get()->imsi, ran_ue_ngap_id);
         nc.get()->is_auth_vectors_present       = false;
         nc.get()->is_current_security_available = false;
         if (nc.get()->security_ctx)
@@ -1113,10 +1115,11 @@ void amf_n1::registration_request_handle(
     if (is_guti_2_nas_context(guti)) {
       nc = guti_2_nas_context(guti);
       set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
-      nc->amf_ue_ngap_id                      = amf_ue_ngap_id;
-      nc->ran_ue_ngap_id                      = ran_ue_ngap_id;
-      supi2amfId[("imsi-" + nc.get()->imsi)]  = amf_ue_ngap_id;
-      supi2ranId[("imsi-" + nc.get()->imsi)]  = ran_ue_ngap_id;
+      nc->amf_ue_ngap_id = amf_ue_ngap_id;
+      nc->ran_ue_ngap_id = ran_ue_ngap_id;
+      set_supi_2_amf_id("imsi-" + nc.get()->imsi, amf_ue_ngap_id);
+      set_supi_2_ran_id("imsi-" + nc.get()->imsi, ran_ue_ngap_id);
+
       nc.get()->is_auth_vectors_present       = false;
       nc.get()->is_current_security_available = false;
       if (nc.get()->security_ctx)
@@ -1397,6 +1400,64 @@ bool amf_n1::remove_amf_ue_ngap_id_2_nas_context(const long& amf_ue_ngap_id) {
     return true;
   }
   return false;
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::set_supi_2_amf_id(
+    const std::string& supi, const long& amf_ue_ngap_id) {
+  std::unique_lock lock(m_nas_context);
+  supi2amfId[supi] = amf_ue_ngap_id;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::supi_2_amf_id(const std::string& supi, long& amf_ue_ngap_id) {
+  std::shared_lock lock(m_nas_context);
+  if (supi2amfId.count(supi) > 0) {
+    amf_ue_ngap_id = supi2amfId.at(supi);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::remove_supi_2_amf_id(const std::string& supi) {
+  std::unique_lock lock(m_nas_context);
+  if (supi2amfId.count(supi) > 0) {
+    supi2amfId.erase(supi);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+//------------------------------------------------------------------------------
+void amf_n1::set_supi_2_ran_id(
+    const std::string& supi, const uint32_t& ran_ue_ngap_id) {
+  std::unique_lock lock(m_nas_context);
+  supi2ranId[supi] = ran_ue_ngap_id;
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::supi_2_ran_id(const std::string& supi, uint32_t& ran_ue_ngap_id) {
+  std::shared_lock lock(m_nas_context);
+  if (supi2amfId.count(supi) > 0) {
+    ran_ue_ngap_id = supi2ranId.at(supi);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+//------------------------------------------------------------------------------
+bool amf_n1::remove_supi_2_ran_id(const std::string& supi) {
+  std::unique_lock lock(m_nas_context);
+  if (supi2ranId.count(supi) > 0) {
+    supi2ranId.erase(supi);
+    return true;
+  } else {
+    return false;
+  }
 }
 
 //------------------------------------------------------------------------------
