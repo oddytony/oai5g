@@ -50,15 +50,24 @@ namespace config {
 
 class amf_modules {
  public:
+  /*
+   * Load AMF modules configuration
+   * @param [const std::string&] config_file: Configuration file
+   * @return RETURNclear/RETURNerror/RETURNok
+   */
   int load(const std::string& config_file);
+
+  /*
+   * Display the AMF modules configuration parameters
+   * @param void
+   * @return void
+   */
   void display();
-  void makeModulesAlive();
 
  private:
   std::string msgName;  // vector to store more msgs
   Ngap_NGAP_PDU_PR typeOfMsg;
   Ngap_ProcedureCode_t procedureCode;
-  //  NGSetupRequestMsg *ngSetupRequest;
 };
 }  // namespace config
 

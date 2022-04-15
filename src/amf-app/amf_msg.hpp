@@ -75,11 +75,11 @@ class event_exposure_msg {
   bool m_supi_is_set;
   bool m_any_ue;  // anyUE, Conditional
 
-  //  subsChangeNotifyUri:
-  //  subsChangeNotifyCorrelationId:
-  //  groupId:
-  //  gpsi:
-  //  pei:
+  //  subsChangeNotifyUri
+  //  subsChangeNotifyCorrelationId
+  //  groupId
+  //  gpsi
+  //  pei
   //  options: AmfEventMode
 };
 

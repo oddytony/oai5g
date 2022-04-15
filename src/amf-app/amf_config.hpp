@@ -203,16 +203,65 @@ class amf_config {
  public:
   amf_config();
   ~amf_config();
+
+  /*
+   * Load AMF configuration file
+   * @param [const std::string&] config_file: Configuration file
+   * @return RETURNclear/RETURNerror/RETURNok
+   */
   int load(const std::string& config_file);
+
+  /*
+   * Read the network interface configuration
+   * @param [const Setting&] if_cfg: Configuration for the network interface
+   * @param [interface_cfg_t&] cfg: Interface config
+   * @return RETURNclear/RETURNerror/RETURNok
+   */
   int load_interface(const Setting& if_cfg, interface_cfg_t& cfg);
+
+  /*
+   * Get the URI of NRF NF Discovery Service
+   * @param void
+   * @return URI in string format
+   */
   std::string get_nrf_nf_discovery_service_uri();
+
+  /*
+   * Get the URI of NRF NF Registration Service
+   * @param [const std::string&] nf_instance_id: NF instance ID
+   * @return URI in string format
+   */
   std::string get_nrf_nf_registration_uri(const std::string& nf_instance_id);
+
+  /*
+   * Get the URI of UDM Slice Selection Subscription Data Retrieval Service
+   * @param [const std::string&] supi: UE SUPI
+   * @return URI in string format
+   */
   std::string get_udm_slice_selection_subscription_data_retrieval_uri(
       const std::string& supi);
+
+  /*
+   * Get the URI of NSSF Network Slice Selection Information Service
+   * @param void
+   * @return URI in string format
+   */
   std::string get_nssf_network_slice_selection_information_uri();
+
+  /*
+   * Get the URI of AUSF UE Authentication Service
+   * @param void
+   * @return URI in string format
+   */
   std::string get_ausf_ue_authentications_uri();
 
+  /*
+   * Display the AMF configuration parameters
+   * @param void
+   * @return void
+   */
   void display();
+
   unsigned int instance;
   std::string pid_dir;
   interface_cfg_t n2;
