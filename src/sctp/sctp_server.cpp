@@ -225,7 +225,7 @@ int sctp_server::sctp_read_from_socket(int sd, uint32_t ppid) {
 //------------------------------------------------------------------------------
 int sctp_server::sctp_handle_com_down(sctp_assoc_id_t assoc_id) {
   app_->handle_sctp_shutdown(assoc_id);
-  return 0;
+  return SCTP_RC_DISCONNECT;
 }
 
 //------------------------------------------------------------------------------
