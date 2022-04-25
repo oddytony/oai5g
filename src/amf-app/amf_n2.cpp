@@ -2168,7 +2168,8 @@ std::shared_ptr<ue_ngap_context> amf_n2::ran_ue_id_2_ue_ngap_context(
 
 //------------------------------------------------------------------------------
 void amf_n2::set_ran_ue_ngap_id_2_ue_ngap_context(
-    const uint32_t& ran_ue_ngap_id, std::shared_ptr<ue_ngap_context> unc) {
+    const uint32_t& ran_ue_ngap_id,
+    const std::shared_ptr<ue_ngap_context>& unc) {
   std::unique_lock lock(m_ranid2uecontext);
   ranid2uecontext[ran_ue_ngap_id] = unc;
 }
@@ -2286,29 +2287,9 @@ void amf_n2::remove_ue_context_with_amf_ue_ngap_id(
 }
 
 //------------------------------------------------------------------------------
-bool amf_n2::verifyPlmn(vector<SupportedItem_t> list) {
-  for (int i = 0; i < amf_cfg.plmn_list.size(); i++) {
-    for (int j = 0; j < list.size(); j++) {
-      Logger::amf_n2().debug(
-          "TAC configured %d, TAC received %d", amf_cfg.plmn_list[i].tac,
-          list[j].tac);
-      if (amf_cfg.plmn_list[i].tac != list[j].tac) {
-        continue;
-      }
-      for (int k = 0; k < list[j].b_plmn_list.size(); k++) {
-        if (!(list[j].b_plmn_list[k].mcc.compare(amf_cfg.plmn_list[i].mcc)) &&
-            !(list[j].b_plmn_list[k].mnc.compare(amf_cfg.plmn_list[i].mnc))) {
-          return true;
-        }
-      }
-    }
-  }
-  return false;
-}
-
-//------------------------------------------------------------------------------
 bool amf_n2::get_common_plmn(
-    std::vector<SupportedItem_t> list, std::vector<SupportedItem_t>& result) {
+    const std::vector<SupportedItem_t>& list,
+    std::vector<SupportedItem_t>& result) {
   std::vector<SupportedItem_t> plmn_list = {};
   bool found_common_plmn                 = false;
   for (int i = 0; i < amf_cfg.plmn_list.size(); i++) {

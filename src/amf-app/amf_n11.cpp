@@ -437,8 +437,8 @@ void amf_n11::handle_itti_message(itti_nsmf_pdusession_create_sm_context& smf) {
 
 //------------------------------------------------------------------------------
 void amf_n11::send_pdu_session_update_sm_context_request(
-    std::string supi, std::shared_ptr<pdu_session_context> psc,
-    std::string smf_addr, bstring sm_msg, std::string dnn) {
+    const std::string& supi, std::shared_ptr<pdu_session_context>& psc,
+    const std::string& smf_addr, bstring sm_msg, const std::string& dnn) {
   Logger::amf_n11().debug(
       "Send PDU Session Update SM Context Request to SMF (SUPI %s, PDU Session "
       "ID %d, %s)",
@@ -479,9 +479,9 @@ void amf_n11::send_pdu_session_update_sm_context_request(
 
 //------------------------------------------------------------------------------
 void amf_n11::handle_pdu_session_initial_request(
-    std::string supi, std::shared_ptr<pdu_session_context> psc,
-    std::string smf_addr, std::string smf_api_version, std::string smf_port,
-    bstring sm_msg, std::string dnn) {
+    const std::string& supi, std::shared_ptr<pdu_session_context>& psc,
+    const std::string& smf_addr, const std::string& smf_api_version,
+    const std::string& smf_port, bstring sm_msg, const std::string& dnn) {
   Logger::amf_n11().debug(
       "Handle PDU Session Establishment Request (SUPI %s, PDU Session ID %d)",
       supi.c_str(), psc.get()->pdu_session_id);
@@ -827,8 +827,8 @@ bool amf_n11::smf_selection_from_configuration(
 
 //------------------------------------------------------------------------------
 void amf_n11::handle_post_sm_context_response_error(
-    long code, std::string cause, bstring n1sm, std::string supi,
-    uint8_t pdu_session_id) {
+    const long code, const std::string& cause, bstring n1sm,
+    const std::string& supi, const uint8_t pdu_session_id) {
   comUt::print_buffer(
       "amf_n11", "n1 sm", (uint8_t*) bdata(n1sm), blength(n1sm));
   itti_n1n2_message_transfer_request* itti_msg =
@@ -851,7 +851,7 @@ void amf_n11::handle_post_sm_context_response_error(
 //-----------------------------------------------------------------------------------------------------
 bool amf_n11::discover_smf(
     std::string& smf_addr, std::string& smf_port, std::string& smf_api_version,
-    const snssai_t snssai, const plmn_t plmn, const std::string dnn,
+    const snssai_t& snssai, const plmn_t& plmn, const std::string& dnn,
     const std::string& nrf_uri) {
   Logger::amf_n11().debug(
       "Send NFDiscovery to NRF to discover the available SMFs");
@@ -996,8 +996,9 @@ void amf_n11::register_nf_instance(
 
 //-----------------------------------------------------------------------------------------------------
 bool amf_n11::send_ue_authentication_request(
-    oai::amf::model::AuthenticationInfo& auth_info,
-    oai::amf::model::UEAuthenticationCtx& ue_auth_ctx, uint8_t http_version) {
+    const oai::amf::model::AuthenticationInfo& auth_info,
+    oai::amf::model::UEAuthenticationCtx& ue_auth_ctx,
+    const uint8_t& http_version) {
   Logger::amf_n11().debug(
       "Send UE Authentication Request to AUSF (HTTP version %d)", http_version);
 
@@ -1040,9 +1041,10 @@ bool amf_n11::send_ue_authentication_request(
 
 //------------------------------------------------------------------------------
 void amf_n11::curl_http_client(
-    std::string remote_uri, std::string json_data, std::string n1sm_msg,
-    std::string n2sm_msg, std::string supi, uint8_t pdu_session_id,
-    uint8_t http_version, uint32_t promise_id) {
+    const std::string& remote_uri, const std::string& json_data,
+    const std::string& n1sm_msg, const std::string& n2sm_msg,
+    const std::string& supi, const uint8_t& pdu_session_id,
+    const uint8_t& http_version, const uint32_t& promise_id) {
   Logger::amf_n11().debug("Call SMF service: %s", remote_uri.c_str());
 
   uint8_t number_parts                     = 0;
@@ -1316,9 +1318,9 @@ void amf_n11::curl_http_client(
 
 //------------------------------------------------------------------------------
 void amf_n11::curl_http_client(
-    std::string& remote_uri, std::string& json_data, std::string& n1sm_msg,
-    std::string& n2sm_msg, uint8_t http_version, uint32_t& response_code,
-    uint32_t promise_id) {
+    const std::string& remote_uri, std::string& json_data,
+    std::string& n1sm_msg, std::string& n2sm_msg, const uint8_t& http_version,
+    uint32_t& response_code, const uint32_t& promise_id) {
   Logger::amf_n11().debug("Call SMF service: %s", remote_uri.c_str());
 
   uint8_t number_parts = 0;
@@ -1482,9 +1484,9 @@ void amf_n11::curl_http_client(
 
 //-----------------------------------------------------------------------------------------------------
 void amf_n11::curl_http_client(
-    std::string remote_uri, std::string method, std::string msg_body,
-    nlohmann::json& response_json, uint32_t& response_code,
-    uint8_t http_version) {
+    const std::string& remote_uri, const std::string& method,
+    const std::string& msg_body, nlohmann::json& response_json,
+    uint32_t& response_code, const uint8_t& http_version) {
   Logger::amf_n11().info("Send HTTP message to %s", remote_uri.c_str());
   Logger::amf_n11().info("HTTP message Body: %s", msg_body.c_str());
 

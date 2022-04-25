@@ -129,43 +129,129 @@ class amf_app {
    */
   void handle_itti_message(itti_sbi_n1_message_notification& itti_msg);
 
-  // TODO
+  /*
+   * Verify if a UE context associated with an AMF UE NGAP ID exist
+   * @param [const long&] amf_ue_ngap_id: AMF UE NGAP ID
+   * @return true if UE context exist, otherwise false
+   */
   bool is_amf_ue_id_2_ue_context(const long& amf_ue_ngap_id) const;
+
+  /*
+   * Get UE context associated with an AMF UE NGAP ID
+   * @param [const long&] amf_ue_ngap_id: AMF UE NGAP ID
+   * @return shared pointer to the context
+   */
   std::shared_ptr<ue_context> amf_ue_id_2_ue_context(
       const long& amf_ue_ngap_id) const;
-  // TODO
+
+  /*
+   * Store an UE context associated with an AMF UE NGAP ID
+   * @param [const long&] amf_ue_ngap_id: AMF UE NGAP ID
+   * @param [std::shared_ptr<ue_context>&] uc: pointer to UE context
+   * @return void
+   */
   void set_amf_ue_ngap_id_2_ue_context(
-      const long& amf_ue_ngap_id, std::shared_ptr<ue_context> uc);
-  // TODO
+      const long& amf_ue_ngap_id, const std::shared_ptr<ue_context>& uc);
+
+  /*
+   * Verify if a UE context associated with an UE Context Key exist
+   * @param [const std::string&] ue_context_key: UE Context Key
+   * @return true if UE context exist, otherwise false
+   */
   bool is_ran_amf_id_2_ue_context(const std::string& ue_context_key) const;
+
+  /*
+   * Get UE context associated with an UE Context Key
+   * @param [const std::string&] ue_context_key: UE Context Key
+   * @return shared pointer to the context
+   */
   std::shared_ptr<ue_context> ran_amf_id_2_ue_context(
       const std::string& ue_context_key) const;
-  // TODO
+
+  /*
+   * Get UE context associated with an UE Context Key and verify if this pointer
+   * is nullptr
+   * @param [const std::string&] ue_context_key: UE Context Key
+   * @param [std::shared_ptr<ue_context>&] uc: pointer to UE context if exist
+   * @return true if UE Context exist and not null
+   */
   bool ran_amf_id_2_ue_context(
       const std::string& ue_context_key, std::shared_ptr<ue_context>& uc) const;
-  // TODO
+
+  /*
+   * Store an UE context associated with UE Context Key
+   * @param [const std::string&] ue_context_key: UE Context Key
+   * @param [std::shared_ptr<ue_context>&] uc: pointer to UE context
+   * @return void
+   */
   void set_ran_amf_id_2_ue_context(
-      const std::string& ue_context_key, std::shared_ptr<ue_context> uc);
-  // TODO
+      const std::string& ue_context_key, const std::shared_ptr<ue_context>& uc);
+
+  /*
+   * Verify whether a UE context associated with a SUPI exist
+   * @param [const std::string&] supi: UE SUPI
+   * @return true if UE context exist, otherwise false
+   */
   bool is_supi_2_ue_context(const string& supi) const;
+
+  /*
+   * Get UE context associated with a SUPI
+   * @param [const std::string&] supi: UE SUPI
+   * @return shared pointer to the context
+   */
   std::shared_ptr<ue_context> supi_2_ue_context(const string& supi) const;
-  // TODO
+
+  /*
+   * Store an UE context associated with a SUPI
+   * @param [const std::string&] supi: UE SUPI
+   * @param [const std::shared_ptr<ue_context>&] uc: pointer to UE context
+   * @return void
+   */
   void set_supi_2_ue_context(
-      const string& ue_context_key, std::shared_ptr<ue_context>& uc);
-  // TODO
+      const string& supi, const std::shared_ptr<ue_context>& uc);
+
+  /*
+   * Find a PDU Session Context associated with a SUPI and a PDU Session ID
+   * @param [const std::string&] supi: UE SUPI
+   * @param [ const std::uint8_t] pdu_session_id: PDU Session ID
+   * @param [const std::shared_ptr<pdu_session_context>&] psc: pointer to the
+   * PDU Session Context
+   * @return true if found, otherwise false
+   */
   bool find_pdu_session_context(
       const string& supi, const std::uint8_t pdu_session_id,
       std::shared_ptr<pdu_session_context>& psc);
-  // TODO
+
+  /*
+   * Get a list of PDU Session Contexts associated with a SUPI
+   * @param [const std::string&] supi: UE SUPI
+   * @param [std::vector<std::shared_ptr<pdu_session_context>>&] sessions_ctx:
+   * vector of contexts
+   * @return true if found, otherwise false
+   */
   bool get_pdu_sessions_context(
       const string& supi,
       std::vector<std::shared_ptr<pdu_session_context>>& sessions_ctx);
-  // TODO
+
+  /*
+   * Generate a TMSI value for UE
+   * @param void
+   * @return generated value in uint32_t
+   */
   uint32_t generate_tmsi();
-  // TODO
+
+  /*
+   * Create a 5G GUTI from PLMN/TMSI
+   * @param [const uint32_t] ranid: RAN UE NGAP ID
+   * @param [const long] amfid: AMF UE NGAP ID
+   * @param [std::string&] MCC: Mobile Country Code
+   * @param [std::string&] MNC: Mobile Network Code
+   * @param [uint32_t&] tmsi: Generated TMSI
+   * @return true if generated successfully, otherwise return false
+   */
   bool generate_5g_guti(
-      uint32_t ranid, long amfid, std::string& mcc, std::string& mnc,
-      uint32_t& tmsi);
+      const uint32_t ranid, const long amfid, std::string& mcc,
+      std::string& mnc, uint32_t& tmsi);
 
   /*
    * Generate an Event Exposure Subscription ID
@@ -202,14 +288,14 @@ class amf_app {
    * @param [std::shared_ptr<itti_sbi_notification_data>& ] msg: message
    * @param [oai::amf::model::ProblemDetails& ] problem_details
    * @param [uint32_t&] http_code
-   * @return true if handle sucessfully, otherwise return false
+   * @return true if handle successfully, otherwise return false
    */
   bool handle_nf_status_notification(
       std::shared_ptr<itti_sbi_notification_data>& msg,
       oai::amf::model::ProblemDetails& problem_details, uint32_t& http_code);
 
   /*
-   * Generate a random UUID for SMF instance
+   * Generate a random UUID for AMF instance
    * @param [void]
    * @return void
    */
@@ -218,13 +304,13 @@ class amf_app {
   /*
    * Add an Event Subscription to the list
    * @param [const evsub_id_t&] sub_id: Subscription ID
-   * @param [amf_event_t] ev: Event type
+   * @param [const amf_event_t&] ev: Event type
    * @param [std::shared_ptr<amf_subscription>] ss: a shared pointer stored
    * information of the subscription
    * @return void
    */
   void add_event_subscription(
-      evsub_id_t sub_id, amf_event_type_t ev,
+      const evsub_id_t& sub_id, const amf_event_type_t& ev,
       std::shared_ptr<amf_subscription> ss);
 
   /*
@@ -232,44 +318,44 @@ class amf_app {
    * @param [const evsub_id_t&] sub_id: Subscription ID
    * @return bool
    */
-  bool remove_event_subscription(evsub_id_t sub_id);
+  bool remove_event_subscription(const evsub_id_t& sub_id);
 
   /*
    * Get a list of subscription associated with a particular event
-   * @param [amf_event_t] ev: Event type
+   * @param [const amf_event_t] ev: Event type
    * @param [std::vector<std::shared_ptr<amf_subscription>>&] subscriptions:
    * store the list of the subscription associated with this event type
    * @return void
    */
   void get_ee_subscriptions(
-      amf_event_type_t ev,
+      const amf_event_type_t& ev,
       std::vector<std::shared_ptr<amf_subscription>>& subscriptions);
 
   /*
    * Get a list of subscription associated with a particular event
-   * @param [evsub_id_t] sub_id: Subscription ID
+   * @param [const evsub_id_t&] sub_id: Subscription ID
    * @param [std::vector<std::shared_ptr<amf_subscription>>&] subscriptions:
    * store the list of the subscription associated with this event type
    * @return void
    */
   void get_ee_subscriptions(
-      evsub_id_t sub_id,
+      const evsub_id_t& sub_id,
       std::vector<std::shared_ptr<amf_subscription>>& subscriptions);
 
   /*
    * Get a list of subscription associated with a particular event
-   * @param [amf_event_t] ev: Event type
+   * @param [const amf_event_t] ev: Event type
    * @param [std::string&] supi: SUPI
    * @param [std::vector<std::shared_ptr<amf_subscription>>&] subscriptions:
    * store the list of the subscription associated with this event type
    * @return void
    */
   void get_ee_subscriptions(
-      amf_event_type_t ev, std::string& supi,
+      const amf_event_type_t& ev, std::string& supi,
       std::vector<std::shared_ptr<amf_subscription>>& subscriptions);
 
   /*
-   * Generate a SMF profile for this instance
+   * Generate a AMF profile for this instance
    * @param [void]
    * @return void
    */
@@ -287,41 +373,44 @@ class amf_app {
    * @param [void]
    * @return void
    */
-  void trigger_nf_deregistration();
+  void trigger_nf_deregistration() const;
 
   /*
    * Store the promise
-   * @param [uint32_t] pid: promise id
-   * @param [boost::shared_ptr<boost::promise<uint32_t>>&] p: promise
+   * @param [const uint32_t] pid: promise id
+   * @param [const boost::shared_ptr<boost::promise<uint32_t>>&] p: promise
    * @return void
    */
   void add_promise(
-      uint32_t pid, boost::shared_ptr<boost::promise<uint32_t>>& p);
+      const uint32_t pid, const boost::shared_ptr<boost::promise<uint32_t>>& p);
 
   /*
    * Store the promise
-   * @param [uint32_t] pid: promise id
-   * @param [boost::shared_ptr<boost::promise<std::string>>&] p: promise
+   * @param [const uint32_t] pid: promise id
+   * @param [const boost::shared_ptr<boost::promise<std::string>>&] p: promise
    * @return void
    */
   void add_promise(
-      uint32_t pid, boost::shared_ptr<boost::promise<std::string>>& p);
+      const uint32_t pid,
+      const boost::shared_ptr<boost::promise<std::string>>& p);
 
   /*
    * Store the promise
-   * @param [uint32_t] pid: promise id
-   * @param [boost::shared_ptr<boost::promise<nlohmann::json>>&] p: promise
+   * @param [const uint32_t] pid: promise id
+   * @param [const boost::shared_ptr<boost::promise<nlohmann::json>>&] p:
+   * promise
    * @return void
    */
   void add_promise(
-      uint32_t pid, boost::shared_ptr<boost::promise<nlohmann::json>>& p);
+      const uint32_t pid,
+      const boost::shared_ptr<boost::promise<nlohmann::json>>& p);
 
   /*
    * Remove the promise
    * @param [uint32_t] pid: promise id
    * @return void
    */
-  void remove_promise(uint32_t id);
+  void remove_promise(const uint32_t id);
 
   /*
    * Generate an unique value for promise id
@@ -334,27 +423,29 @@ class amf_app {
 
   /*
    * Trigger the response from API server
-   * @param [uint32_t] pid: promise id
-   * @param [uint32_t] http_code: result for the corresponding promise
+   * @param [const uint32_t] pid: promise id
+   * @param [const uint32_t] http_code: result for the corresponding promise
    * @return void
    */
-  void trigger_process_response(uint32_t pid, uint32_t http_code);
+  void trigger_process_response(const uint32_t pid, const uint32_t http_code);
 
   /*
    * Trigger the response from API server
-   * @param [uint32_t] pid: promise id
-   * @param [std::string] n2_sm: result for the corresponding promise
+   * @param [const uint32_t] pid: promise id
+   * @param [const std::string] n2_sm: result for the corresponding promise
    * @return void
    */
-  void trigger_process_response(uint32_t pid, std::string n2_sm);
+  void trigger_process_response(const uint32_t pid, const std::string& n2_sm);
 
   /*
    * Trigger the response from API server
-   * @param [uint32_t] pid: promise id
-   * @param [nlohmann::json&] json_data: result for the corresponding promise
+   * @param [const uint32_t] pid: promise id
+   * @param [const nlohmann::json&] json_data: result for the corresponding
+   * promise
    * @return void
    */
-  void trigger_process_response(uint32_t pid, nlohmann::json& json_data);
+  void trigger_process_response(
+      const uint32_t pid, const nlohmann::json& json_data);
 
   /*
    * Get the AMF's NF instance

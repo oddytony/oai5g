@@ -47,6 +47,12 @@ class amf_subscription {
         nf_id() {
     supi_is_set = false;
   }
+
+  /*
+   * Display the AMF Subscription information
+   * @param void
+   * @return void
+   */
   void display();
 
   evsub_id_t sub_id;
