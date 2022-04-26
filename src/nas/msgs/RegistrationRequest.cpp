@@ -149,7 +149,7 @@ std::string RegistrationRequest::get_5g_guti() {
     Logger::nas_mm().debug("5G GUTI %s", guti_str.c_str());
     return guti_str;
   } else {
-    return "";
+    return {};
   }
 }
 

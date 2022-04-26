@@ -530,11 +530,13 @@ void amf_n1::nas_signalling_establishment_request_handle(
     // stacs.UE_connected += 1;
 
     // Trigger UE Reachability Status Notify
-    string supi = "imsi-" + nc.get()->imsi;
-    Logger::amf_n1().debug(
-        "Signal the UE Reachability Status Event notification for SUPI %s",
-        supi.c_str());
-    event_sub.ue_reachability_status(supi, CM_CONNECTED, 1);
+    if (!nc.get()->imsi.empty()) {
+      string supi = "imsi-" + nc.get()->imsi;
+      Logger::amf_n1().debug(
+          "Signal the UE Reachability Status Event notification for SUPI %s",
+          supi.c_str());
+      event_sub.ue_reachability_status(supi, CM_CONNECTED, 1);
+    }
   } else {
     Logger::amf_n1().debug(
         "Existing nas_context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
@@ -592,43 +594,42 @@ void amf_n1::uplink_nas_msg_handle(
   switch (message_type) {
     case AUTHENTICATION_RESPONSE: {
       Logger::amf_n1().debug(
-          "Received authentication response message, handling...");
+          "Received Authentication Response message, handling...");
       authentication_response_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case AUTHENTICATION_FAILURE: {
       Logger::amf_n1().debug(
-          "Received authentication failure message, handling...");
+          "Received Authentication Failure message, handling...");
       authentication_failure_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case SECURITY_MODE_COMPLETE: {
       Logger::amf_n1().debug(
-          "Received security mode complete message, handling...");
+          "Received Security Mode Complete message, handling...");
       security_mode_complete_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case SECURITY_MODE_REJECT: {
       Logger::amf_n1().debug(
-          "Received security mode reject message, handling...");
+          "Received Security Mode Reject message, handling...");
       security_mode_reject_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case UL_NAS_TRANSPORT: {
-      Logger::amf_n1().debug("Received ul NAS transport message, handling...");
+      Logger::amf_n1().debug("Received UL NAS Transport message, handling...");
       ul_nas_transport_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg, plmn);
     } break;
     case UE_INIT_DEREGISTER: {
       Logger::amf_n1().debug(
-          "Received de-registration request message, handling...");
+          "Received De-registration Request message, handling...");
       ue_initiate_de_registration_handle(
           ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case IDENTITY_RESPONSE: {
-      Logger::amf_n1().debug("received identity response message , handle ...");
+      Logger::amf_n1().debug("Received Identity Response message, handling...");
       identity_response_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case REGISTRATION_COMPLETE: {
       Logger::amf_n1().debug(
-          "Received registration complete message, handling...");
+          "Received Registration Complete message, handling...");
       registration_complete_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
-      // TODO
     } break;
     default: {
       Logger::amf_n1().debug("Received Unknown message type, ignoring...");
@@ -681,7 +682,7 @@ void amf_n1::identity_response_handle(
     Logger::amf_n1().error("Decode Identity Response error");
     return;
   }
-  string supi = "";
+  string supi = {};
   if (identity_response->ie_mobility_id) {
     nas::SUCI_imsi_t imsi;
     identity_response->ie_mobility_id->getSuciWithSupiImsi(imsi);
@@ -709,13 +710,15 @@ void amf_n1::identity_response_handle(
   if (is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
     nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
     Logger::amf_n1().debug(
-        "Find nas_context(%p) by amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT ")",
+        "Find nas_context (%p) by amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
         nc.get(), amf_ue_ngap_id);
   } else {
     nc = std::shared_ptr<nas_context>(new nas_context);
     set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
     nc.get()->ctx_avaliability_ind = false;
   }
+
+  // Update Nas Context
   nc.get()->ctx_avaliability_ind = true;
   nc.get()->nas_status           = CM_CONNECTED;
   nc.get()->amf_ue_ngap_id       = amf_ue_ngap_id;
@@ -728,7 +731,41 @@ void amf_n1::identity_response_handle(
   itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
   itti_inst->timer_remove(nc.get()->implicit_deregistration_timer);
 
+  // Continue the Registration Procedure
   if (nc.get()->to_be_register_by_new_suci) {
+    if (!nc.get()->is_stacs_available) {
+      ue_info_t ueItem;
+      ueItem.connStatus = "5GMM-CONNECTED";  //"CM-CONNECTED";
+      ueItem.registerStatus =
+          "5GMM-REG-INITIATED";  // 5GMM-COMMON-PROCEDURE-INITIATED
+      ueItem.ranid = ran_ue_ngap_id;
+      ueItem.amfid = amf_ue_ngap_id;
+      ueItem.imsi  = nc.get()->imsi;
+
+      // Find UE context
+      std::shared_ptr<ue_context> uc = {};
+      if (!find_ue_context(ran_ue_ngap_id, amf_ue_ngap_id, uc)) {
+        Logger::amf_n1().warn("Cannot find the UE context");
+      } else {
+        ueItem.mcc    = uc.get()->cgi.mcc;
+        ueItem.mnc    = uc.get()->cgi.mnc;
+        ueItem.cellId = uc.get()->cgi.nrCellID;
+      }
+
+      stacs.update_ue_info(ueItem);
+      set_5gmm_state(nc, _5GMM_COMMON_PROCEDURE_INITIATED);
+      stacs.display();
+
+      string supi = "imsi-" + nc.get()->imsi;
+      Logger::amf_n1().debug(
+          "Signal the UE Registration State Event notification for SUPI %s",
+          supi.c_str());
+      event_sub.ue_registration_state(
+          supi, _5GMM_COMMON_PROCEDURE_INITIATED, 1);
+
+      nc.get()->is_stacs_available = true;
+    }
+
     run_registration_procedure(nc);
   }
 }
@@ -975,7 +1012,7 @@ void amf_n1::registration_request_handle(
   }
 
   // Check 5gs Mobility Identity (Mandatory IE)
-  std::string guti;
+  std::string guti         = {};
   uint8_t mobility_id_type = registration_request->getMobilityIdentityType();
   switch (mobility_id_type) {
     case SUCI: {
@@ -984,6 +1021,10 @@ void amf_n1::registration_request_handle(
         Logger::amf_n1().warn("No SUCI and IMSI for SUPI Format");
       } else {
         if (!nc.get()) {
+          Logger::amf_n1().debug(
+              "No existing nas_context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT
+              ") --> Create new one",
+              amf_ue_ngap_id);
           nc = std::shared_ptr<nas_context>(new nas_context);
           set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
           nc.get()->ctx_avaliability_ind = false;
@@ -996,23 +1037,32 @@ void amf_n1::registration_request_handle(
           itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
           itti_inst->timer_remove(nc.get()->implicit_deregistration_timer);
         }
+
         nc.get()->is_imsi_present = true;
         nc.get()->imsi            = imsi.mcc + imsi.mnc + imsi.msin;
         Logger::amf_n1().debug("Received IMSI %s", nc.get()->imsi.c_str());
 
+        // Trigger UE Reachability Status Notify
+        if (!nc.get()->imsi.empty()) {
+          string supi = "imsi-" + nc.get()->imsi;
+          Logger::amf_n1().debug(
+              "Signal the UE Reachability Status Event notification for SUPI "
+              "%s",
+              supi.c_str());
+          event_sub.ue_reachability_status(supi, CM_CONNECTED, 1);
+        }
+
         set_supi_2_amf_id("imsi-" + nc.get()->imsi, amf_ue_ngap_id);
         set_supi_2_ran_id("imsi-" + nc.get()->imsi, ran_ue_ngap_id);
 
-        // try to find old nas_context and release
+        // Try to find old nas_context and release
         std::shared_ptr<nas_context> old_nc = {};
         old_nc = imsi_2_nas_context("imsi-" + nc.get()->imsi);
-        // imsi2nas_context[("imsi-" + nc.get()->imsi)];
+        // release
         if (old_nc.get()) {
-          // release
           old_nc.reset();
         }
         set_imsi_2_nas_context("imsi-" + nc.get()->imsi, nc);
-        // imsi2nas_context[("imsi-" + nc.get()->imsi)] = nc;
         Logger::amf_n1().info(
             "Associating IMSI (%s) with nas_context (%p)",
             ("imsi-" + nc.get()->imsi).c_str(), nc.get());
@@ -1032,6 +1082,7 @@ void amf_n1::registration_request_handle(
 
           stacs.update_ue_info(ueItem);
           set_5gmm_state(nc, _5GMM_COMMON_PROCEDURE_INITIATED);
+          stacs.display();
 
           string supi = "imsi-" + nc.get()->imsi;
           Logger::amf_n1().debug(
@@ -1047,7 +1098,8 @@ void amf_n1::registration_request_handle(
 
     case _5G_GUTI: {
       guti = registration_request->get_5g_guti();
-      Logger::amf_n1().debug("Decoded GUTI from registration request message");
+      Logger::amf_n1().debug(
+          "Decoded GUTI from registration request message %s", guti.c_str());
       if (guti.empty()) {
         Logger::amf_n1().warn("No GUTI IE");
       }
@@ -2523,6 +2575,7 @@ void amf_n1::security_mode_complete_handle(
     nc.get()->is_stacs_available = true;
   }
   set_5gmm_state(nc, _5GMM_REGISTERED);
+  stacs.display();
 
   string supi = "imsi-" + nc.get()->imsi;
   Logger::amf_n1().debug(
@@ -2984,6 +3037,7 @@ void amf_n1::ue_initiate_de_registration_handle(
   }
 
   set_5gmm_state(nc, _5GMM_DEREGISTERED);
+  stacs.display();
 
   string supi = "imsi-" + nc.get()->imsi;
   Logger::amf_n1().debug(
