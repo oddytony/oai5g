@@ -754,7 +754,7 @@ void amf_n1::identity_response_handle(
 
       stacs.update_ue_info(ueItem);
       set_5gmm_state(nc, _5GMM_COMMON_PROCEDURE_INITIATED);
-      stacs.display();
+      // stacs.display();
 
       string supi = "imsi-" + nc.get()->imsi;
       Logger::amf_n1().debug(
@@ -1084,7 +1084,7 @@ void amf_n1::registration_request_handle(
 
           stacs.update_ue_info(ueItem);
           set_5gmm_state(nc, _5GMM_COMMON_PROCEDURE_INITIATED);
-          stacs.display();
+          // stacs.display();
 
           string supi = "imsi-" + nc.get()->imsi;
           Logger::amf_n1().debug(
