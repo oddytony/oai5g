@@ -73,7 +73,6 @@ extern "C" {
 #include "dynamic_memory_check.h"
 }
 
-// using namespace oai::amf::model;
 using namespace nas;
 using namespace amf_application;
 using namespace config;
@@ -86,6 +85,7 @@ extern amf_app* amf_app_inst;
 extern amf_n2* amf_n2_inst;
 extern statistics stacs;
 
+// Static variables
 uint8_t amf_n1::no_random_delta                        = 0;
 std::map<std::string, std::string> amf_n1::rand_record = {};
 
@@ -482,7 +482,7 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
       blength(decoded_plain_msg));
 
   if (nas_data_ind.is_nas_signalling_estab_req) {
-    Logger::amf_n1().debug("Received NAS signalling establishment request...");
+    Logger::amf_n1().debug("Received NAS Signalling Establishment request...");
     comUt::print_buffer(
         "amf_n1", "Decoded plain NAS Message buffer",
         (uint8_t*) bdata(decoded_plain_msg), blength(decoded_plain_msg));
@@ -530,11 +530,13 @@ void amf_n1::nas_signalling_establishment_request_handle(
     // stacs.UE_connected += 1;
 
     // Trigger UE Reachability Status Notify
-    string supi = "imsi-" + nc.get()->imsi;
-    Logger::amf_n1().debug(
-        "Signal the UE Reachability Status Event notification for SUPI %s",
-        supi.c_str());
-    event_sub.ue_reachability_status(supi, CM_CONNECTED, 1);
+    if (!nc.get()->imsi.empty()) {
+      string supi = "imsi-" + nc.get()->imsi;
+      Logger::amf_n1().debug(
+          "Signal the UE Reachability Status Event notification for SUPI %s",
+          supi.c_str());
+      event_sub.ue_reachability_status(supi, CM_CONNECTED, 1);
+    }
   } else {
     Logger::amf_n1().debug(
         "Existing nas_context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
@@ -550,13 +552,13 @@ void amf_n1::nas_signalling_establishment_request_handle(
   switch (message_type) {
     case REGISTRATION_REQUEST: {
       Logger::amf_n1().debug(
-          "Received registration request message, handling...");
+          "Received Registration Request message, handling...");
       registration_request_handle(
           nc, ran_ue_ngap_id, amf_ue_ngap_id, snn, plain_msg);
     } break;
 
     case SERVICE_REQUEST: {
-      Logger::amf_n1().debug("Received service request message, handling...");
+      Logger::amf_n1().debug("Received Service Request message, handling...");
       if (!nc.get()) {
         Logger::amf_n1().error("No NAS Context found");
         return;
@@ -572,7 +574,7 @@ void amf_n1::nas_signalling_establishment_request_handle(
 
     case UE_INIT_DEREGISTER: {
       Logger::amf_n1().debug(
-          "Received initialUeMessage de-registration request message, "
+          "Received InitialUeMessage De-registration Request message, "
           "handling...");
       // ue_initiate_de_registration_handle(ran_ue_ngap_id, amf_ue_ngap_id,
       // plain_msg);
@@ -592,43 +594,42 @@ void amf_n1::uplink_nas_msg_handle(
   switch (message_type) {
     case AUTHENTICATION_RESPONSE: {
       Logger::amf_n1().debug(
-          "Received authentication response message, handling...");
+          "Received Authentication Response message, handling...");
       authentication_response_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case AUTHENTICATION_FAILURE: {
       Logger::amf_n1().debug(
-          "Received authentication failure message, handling...");
+          "Received Authentication Failure message, handling...");
       authentication_failure_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case SECURITY_MODE_COMPLETE: {
       Logger::amf_n1().debug(
-          "Received security mode complete message, handling...");
+          "Received Security Mode Complete message, handling...");
       security_mode_complete_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case SECURITY_MODE_REJECT: {
       Logger::amf_n1().debug(
-          "Received security mode reject message, handling...");
+          "Received Security Mode Reject message, handling...");
       security_mode_reject_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case UL_NAS_TRANSPORT: {
-      Logger::amf_n1().debug("Received ul NAS transport message, handling...");
+      Logger::amf_n1().debug("Received UL NAS Transport message, handling...");
       ul_nas_transport_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg, plmn);
     } break;
     case UE_INIT_DEREGISTER: {
       Logger::amf_n1().debug(
-          "Received de-registration request message, handling...");
+          "Received De-registration Request message, handling...");
       ue_initiate_de_registration_handle(
           ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case IDENTITY_RESPONSE: {
-      Logger::amf_n1().debug("received identity response message , handle ...");
+      Logger::amf_n1().debug("Received Identity Response message, handling...");
       identity_response_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
     } break;
     case REGISTRATION_COMPLETE: {
       Logger::amf_n1().debug(
-          "Received registration complete message, handling...");
+          "Received Registration Complete message, handling...");
       registration_complete_handle(ran_ue_ngap_id, amf_ue_ngap_id, plain_msg);
-      // TODO
     } break;
     default: {
       Logger::amf_n1().debug("Received Unknown message type, ignoring...");
@@ -681,7 +682,7 @@ void amf_n1::identity_response_handle(
     Logger::amf_n1().error("Decode Identity Response error");
     return;
   }
-  string supi = "";
+  string supi = {};
   if (identity_response->ie_mobility_id) {
     nas::SUCI_imsi_t imsi;
     identity_response->ie_mobility_id->getSuciWithSupiImsi(imsi);
@@ -709,13 +710,15 @@ void amf_n1::identity_response_handle(
   if (is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
     nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
     Logger::amf_n1().debug(
-        "Find nas_context(%p) by amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT ")",
+        "Find nas_context (%p) by amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
         nc.get(), amf_ue_ngap_id);
   } else {
     nc = std::shared_ptr<nas_context>(new nas_context);
     set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
     nc.get()->ctx_avaliability_ind = false;
   }
+
+  // Update Nas Context
   nc.get()->ctx_avaliability_ind = true;
   nc.get()->nas_status           = CM_CONNECTED;
   nc.get()->amf_ue_ngap_id       = amf_ue_ngap_id;
@@ -728,7 +731,43 @@ void amf_n1::identity_response_handle(
   itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
   itti_inst->timer_remove(nc.get()->implicit_deregistration_timer);
 
+  // Continue the Registration Procedure
   if (nc.get()->to_be_register_by_new_suci) {
+    if (!nc.get()->is_stacs_available) {
+      ue_info_t ueItem;
+      ueItem.connStatus = "5GMM-CONNECTED";  //"CM-CONNECTED";
+      ueItem.registerStatus =
+          "5GMM-REG-INITIATED";  // 5GMM-COMMON-PROCEDURE-INITIATED
+      ueItem.ranid = ran_ue_ngap_id;
+      ueItem.amfid = amf_ue_ngap_id;
+      ueItem.imsi  = nc.get()->imsi;
+
+      // Find UE context
+      std::shared_ptr<ue_context> uc = {};
+      if (!find_ue_context(ran_ue_ngap_id, amf_ue_ngap_id, uc)) {
+        Logger::amf_n1().warn("Cannot find the UE context");
+      } else {
+        ueItem.mcc    = uc.get()->cgi.mcc;
+        ueItem.mnc    = uc.get()->cgi.mnc;
+        ueItem.cellId = uc.get()->cgi.nrCellID;
+      }
+
+      stacs.update_ue_info(ueItem);
+      set_5gmm_state(nc, _5GMM_COMMON_PROCEDURE_INITIATED);
+      // stacs.display();
+
+      string supi = "imsi-" + nc.get()->imsi;
+      Logger::amf_n1().debug(
+          "Signal the UE Registration State Event notification for SUPI %s",
+          supi.c_str());
+      event_sub.ue_registration_state(
+          supi, _5GMM_COMMON_PROCEDURE_INITIATED, 1);
+
+      nc.get()->is_stacs_available = true;
+    }
+
+    // TODO: Trigger UE Location Report
+
     run_registration_procedure(nc);
   }
 }
@@ -975,7 +1014,7 @@ void amf_n1::registration_request_handle(
   }
 
   // Check 5gs Mobility Identity (Mandatory IE)
-  std::string guti;
+  std::string guti         = {};
   uint8_t mobility_id_type = registration_request->getMobilityIdentityType();
   switch (mobility_id_type) {
     case SUCI: {
@@ -984,6 +1023,10 @@ void amf_n1::registration_request_handle(
         Logger::amf_n1().warn("No SUCI and IMSI for SUPI Format");
       } else {
         if (!nc.get()) {
+          Logger::amf_n1().debug(
+              "No existing nas_context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT
+              ") --> Create new one",
+              amf_ue_ngap_id);
           nc = std::shared_ptr<nas_context>(new nas_context);
           set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
           nc.get()->ctx_avaliability_ind = false;
@@ -996,23 +1039,32 @@ void amf_n1::registration_request_handle(
           itti_inst->timer_remove(nc.get()->mobile_reachable_timer);
           itti_inst->timer_remove(nc.get()->implicit_deregistration_timer);
         }
+
         nc.get()->is_imsi_present = true;
         nc.get()->imsi            = imsi.mcc + imsi.mnc + imsi.msin;
         Logger::amf_n1().debug("Received IMSI %s", nc.get()->imsi.c_str());
 
+        // Trigger UE Reachability Status Notify
+        if (!nc.get()->imsi.empty()) {
+          string supi = "imsi-" + nc.get()->imsi;
+          Logger::amf_n1().debug(
+              "Signal the UE Reachability Status Event notification for SUPI "
+              "%s",
+              supi.c_str());
+          event_sub.ue_reachability_status(supi, CM_CONNECTED, 1);
+        }
+
         set_supi_2_amf_id("imsi-" + nc.get()->imsi, amf_ue_ngap_id);
         set_supi_2_ran_id("imsi-" + nc.get()->imsi, ran_ue_ngap_id);
 
-        // try to find old nas_context and release
+        // Try to find old nas_context and release
         std::shared_ptr<nas_context> old_nc = {};
         old_nc = imsi_2_nas_context("imsi-" + nc.get()->imsi);
-        // imsi2nas_context[("imsi-" + nc.get()->imsi)];
+        // release
         if (old_nc.get()) {
-          // release
           old_nc.reset();
         }
         set_imsi_2_nas_context("imsi-" + nc.get()->imsi, nc);
-        // imsi2nas_context[("imsi-" + nc.get()->imsi)] = nc;
         Logger::amf_n1().info(
             "Associating IMSI (%s) with nas_context (%p)",
             ("imsi-" + nc.get()->imsi).c_str(), nc.get());
@@ -1032,6 +1084,7 @@ void amf_n1::registration_request_handle(
 
           stacs.update_ue_info(ueItem);
           set_5gmm_state(nc, _5GMM_COMMON_PROCEDURE_INITIATED);
+          // stacs.display();
 
           string supi = "imsi-" + nc.get()->imsi;
           Logger::amf_n1().debug(
@@ -1047,7 +1100,8 @@ void amf_n1::registration_request_handle(
 
     case _5G_GUTI: {
       guti = registration_request->get_5g_guti();
-      Logger::amf_n1().debug("Decoded GUTI from registration request message");
+      Logger::amf_n1().debug(
+          "Decoded GUTI from registration request message %s", guti.c_str());
       if (guti.empty()) {
         Logger::amf_n1().warn("No GUTI IE");
       }
@@ -1146,7 +1200,6 @@ void amf_n1::registration_request_handle(
     }
   } else {
     Logger::amf_n1().debug("Existing nas_context --> Update");
-    // nc = amf_ue_id_2_nas_context(amf_ue_ngap_id);
     set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
   }
   nc.get()->ran_ue_ngap_id  = ran_ue_ngap_id;
@@ -1274,7 +1327,7 @@ void amf_n1::registration_request_handle(
 
     std::shared_ptr<gnb_context> gc = {};
     if (!amf_n2_inst->is_assoc_id_2_gnb_context(unc.get()->gnb_assoc_id)) {
-      Logger::amf_n2().error(
+      Logger::amf_n1().error(
           "No existed gNB context with assoc_id (%d)", unc.get()->gnb_assoc_id);
     } else {
       gc = amf_n2_inst->assoc_id_2_gnb_context(unc.get()->gnb_assoc_id);
@@ -1369,7 +1422,6 @@ void amf_n1::registration_request_handle(
 //------------------------------------------------------------------------------
 bool amf_n1::is_amf_ue_id_2_nas_context(const long& amf_ue_ngap_id) const {
   std::shared_lock lock(m_amfueid2nas_context);
-  // return bool{amfueid2nas_context.count(amf_ue_ngap_id) > 0};
   if (amfueid2nas_context.count(amf_ue_ngap_id) > 0) {
     if (amfueid2nas_context.at(amf_ue_ngap_id).get() != nullptr) {
       return true;
@@ -1566,7 +1618,7 @@ void amf_n1::send_registration_reject_msg(
 
 //------------------------------------------------------------------------------
 void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
-  Logger::amf_n1().debug("Start to run registration procedure");
+  Logger::amf_n1().debug("Start to run Registration Procedure");
   if (!nc.get()->ctx_avaliability_ind) {
     Logger::amf_n1().error("NAS context is not available");
     return;
@@ -1587,7 +1639,7 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
         }
         nc.get()->ngKsi = ngksi;
       } else {
-        Logger::amf_n1().error("Request authentication vectors failure");
+        Logger::amf_n1().error("Request Authentication Vectors failure");
         send_registration_reject_msg(
             _5GMM_CAUSE_ILLEGAL_UE, nc.get()->ran_ue_ngap_id,
             nc.get()->amf_ue_ngap_id);  // cause?
@@ -1595,13 +1647,13 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
       }
     } else {
       Logger::amf_n1().debug(
-          "Authentication vector in nas_context is available");
+          "Authentication Vector in nas_context is available");
       ngksi_t ngksi = 0;
       if (nc.get()->security_ctx &&
           nc.get()->ngKsi != NAS_KEY_SET_IDENTIFIER_NOT_AVAILABLE) {
         // ngksi = (nc.get()->ngKsi + 1) % (NGKSI_MAX_VALUE + 1);
         ngksi = (nc.get()->amf_ue_ngap_id + 1);  // % (NGKSI_MAX_VALUE + 1);
-        Logger::amf_n1().debug("New ngKsi(%d)", ngksi);
+        Logger::amf_n1().debug("New ngKSI (%d)", ngksi);
         // TODO: How to handle?
       }
       nc.get()->ngKsi = ngksi;
@@ -1638,7 +1690,7 @@ void amf_n1::run_registration_procedure(std::shared_ptr<nas_context>& nc) {
 // Get authentication vectors either from AUSF(UDM) or from AMF (generate
 // locally)
 bool amf_n1::auth_vectors_generator(std::shared_ptr<nas_context>& nc) {
-  Logger::amf_n1().debug("Start to generate authentication vectors");
+  Logger::amf_n1().debug("Start to generate Authentication Vectors");
   if (amf_cfg.support_features.enable_external_ausf) {
     // get authentication vectors from AUSF
     if (!get_authentication_vectors_from_ausf(nc)) return false;
@@ -1745,7 +1797,7 @@ bool amf_n1::get_authentication_vectors_from_ausf(
 //------------------------------------------------------------------------------
 bool amf_n1::_5g_aka_confirmation_from_ausf(
     std::shared_ptr<nas_context>& nc, bstring resStar) {
-  Logger::amf_n1().debug("_5g_aka_confirmation_from_ausf");
+  Logger::amf_n1().debug("5G AKA Confirmation from AUSF");
   std::string remoteUri = nc.get()->Href;
 
   std::string msgBody        = {};
@@ -1785,7 +1837,6 @@ bool amf_n1::_5g_aka_confirmation_from_ausf(
   free_wrapper((void**) &resStar_s);
   try {
     ConfirmationDataResponse confirmationdataresponse;
-    // nlohmann::json::parse(response.c_str()).get_to(confirmationdataresponse);
     response.get_to(confirmationdataresponse);
     unsigned char* kseaf_hex =
         conv::format_string_as_hex(confirmationdataresponse.getKseaf());
@@ -1812,7 +1863,9 @@ bool amf_n1::_5g_aka_confirmation_from_ausf(
 //------------------------------------------------------------------------------
 bool amf_n1::authentication_vectors_generator_in_ausf(
     std::shared_ptr<nas_context>& nc) {  // A.5, 3gpp ts33.501
-  Logger::amf_n1().debug("Authentication_vectors_generator_in_ausf");
+  Logger::amf_n1().debug(
+      "Generate Authentication Vectors in AUSF");  // Actually, done locally in
+                                                   // AMF
   uint8_t inputString[MAX_5GS_AUTH_VECTORS][40];
   uint8_t* xresStar[MAX_5GS_AUTH_VECTORS];
   uint8_t* rand[MAX_5GS_AUTH_VECTORS];
@@ -1838,13 +1891,13 @@ bool amf_n1::authentication_vectors_generator_in_ausf(
 //------------------------------------------------------------------------------
 bool amf_n1::authentication_vectors_generator_in_udm(
     std::shared_ptr<nas_context>& nc) {
-  Logger::amf_n1().debug("Generate authentication vectors");
+  Logger::amf_n1().debug("Generate Authentication Vectors");
   uint8_t* sqn        = NULL;
   uint8_t* auts       = (uint8_t*) bdata(nc.get()->auts);
   _5G_HE_AV_t* vector = nc.get()->_5g_he_av;
   // Access to MySQL to fetch UE-related information
   if (!connect_to_mysql()) {
-    Logger::amf_n1().error("Cannot connect to MySQL");
+    Logger::amf_n1().error("Cannot connect to MySQL DB");
     return false;
   }
   Logger::amf_n1().debug("Connected to MySQL successfully");
@@ -2012,7 +2065,7 @@ void amf_n1::annex_a_4_33501(
 void amf_n1::handle_auth_vector_successful_result(
     std::shared_ptr<nas_context>& nc) {
   Logger::amf_n1().debug(
-      "Received security vectors, try to setup security with the UE");
+      "Received Security Vectors, try to setup security with the UE");
   nc.get()->is_auth_vectors_present = true;
   ngksi_t ngksi                     = 0;
   if (!nc.get()->security_ctx) {
@@ -2025,7 +2078,7 @@ void amf_n1::handle_auth_vector_successful_result(
   }
   int vindex = nc.get()->security_ctx->vector_pointer;
   if (!start_authentication_procedure(nc, vindex, nc.get()->ngKsi)) {
-    Logger::amf_n1().error("Start authentication procedure failure, reject...");
+    Logger::amf_n1().error("Start Authentication Procedure Failure, reject...");
     Logger::amf_n1().error(
         "Ran_ue_ngap_id " GNB_UE_NGAP_ID_FMT, nc.get()->ran_ue_ngap_id);
     send_registration_reject_msg(
@@ -2039,7 +2092,7 @@ void amf_n1::handle_auth_vector_successful_result(
 //------------------------------------------------------------------------------
 bool amf_n1::start_authentication_procedure(
     std::shared_ptr<nas_context>& nc, int vindex, uint8_t ngksi) {
-  Logger::amf_n1().debug("Starting authentication procedure");
+  Logger::amf_n1().debug("Starting Authentication procedure");
   if (check_nas_common_procedure_on_going(nc)) {
     Logger::amf_n1().error("Existed NAS common procedure on going, reject...");
     send_registration_reject_msg(
@@ -2059,7 +2112,7 @@ bool amf_n1::start_authentication_procedure(
   auth_request->setABBA(2, abba);
   uint8_t* rand = nc.get()->_5g_av[vindex].rand;
   if (rand) auth_request->setAuthentication_Parameter_RAND(rand);
-  Logger::amf_n1().debug("Sending Authentication request with RAND");
+  Logger::amf_n1().debug("Sending Authentication Request with RAND");
   printf("0x");
   for (int i = 0; i < 16; i++) printf("%x", rand[i]);
   printf("\n");
@@ -2088,11 +2141,11 @@ bool amf_n1::start_authentication_procedure(
 bool amf_n1::check_nas_common_procedure_on_going(
     std::shared_ptr<nas_context>& nc) {
   if (nc.get()->is_common_procedure_for_authentication_running) {
-    Logger::amf_n1().debug("Existed authentication procedure is running");
+    Logger::amf_n1().debug("Existed Authentication procedure is running");
     return true;
   }
   if (nc.get()->is_common_procedure_for_identification_running) {
-    Logger::amf_n1().debug("Existed identification procedure is running");
+    Logger::amf_n1().debug("Existed Identification procedure is running");
     return true;
   }
   if (nc.get()->is_common_procedure_for_security_mode_control_running) {
@@ -2193,6 +2246,7 @@ void amf_n1::authentication_response_handle(
     return;
   } else {
     Logger::amf_n1().debug("Authentication successful by network!");
+    // Fix to work with ng4T
     // TODO: To verify UE/AMF behavior according to 3GPP TS 24.501
     // if (!nc.get()->is_current_security_available) {
     if (!start_security_mode_control_procedure(nc)) {
@@ -2208,7 +2262,7 @@ void amf_n1::authentication_failure_handle(
   std::shared_ptr<nas_context> nc;
   if (!is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
     Logger::amf_n1().error(
-        "No existed NAS context for UE with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT
+        "No existed NAS context for UE with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT
         ")",
         amf_ue_ngap_id);
     send_registration_reject_msg(
@@ -2233,7 +2287,7 @@ void amf_n1::authentication_failure_handle(
   }
   switch (mm_cause) {
     case _5GMM_CAUSE_SYNCH_FAILURE: {
-      Logger::amf_n1().debug("Initial new authentication procedure");
+      Logger::amf_n1().debug("Initial new Authentication procedure");
       bstring auts;
       if (!auth_failure->getAutsInAuthFailPara(auts)) {
         Logger::amf_n1().warn(
@@ -2247,7 +2301,7 @@ void amf_n1::authentication_failure_handle(
       if (auth_vectors_generator(nc)) {  // all authentication in one(AMF)
         handle_auth_vector_successful_result(nc);
       } else {
-        Logger::amf_n1().error("Request authentication vectors failure");
+        Logger::amf_n1().error("Request Authentication Vectors failure");
         send_registration_reject_msg(
             _5GMM_CAUSE_ILLEGAL_UE, nc.get()->ran_ue_ngap_id,
             nc.get()->amf_ue_ngap_id);  // cause?
@@ -2257,7 +2311,7 @@ void amf_n1::authentication_failure_handle(
     case _5GMM_CAUSE_NGKSI_ALREADY_IN_USE: {
       Logger::amf_n1().debug(
           "ngKSI already in use, select a new ngKSI and restart the "
-          "authentication procedure!");
+          "Authentication procedure!");
       // select new ngKSI and resend Authentication Request
       ngksi_t ngksi =
           (nc.get()->ngKsi + 1) % (NGKSI_MAX_VALUE + 1);  // To be verified
@@ -2265,7 +2319,7 @@ void amf_n1::authentication_failure_handle(
       int vindex      = nc.get()->security_ctx->vector_pointer;
       if (!start_authentication_procedure(nc, vindex, nc.get()->ngKsi)) {
         Logger::amf_n1().error(
-            "Start authentication procedure failure, reject...");
+            "Start Authentication procedure failure, reject...");
         Logger::amf_n1().error(
             "Ran_ue_ngap_id " GNB_UE_NGAP_ID_FMT, nc.get()->ran_ue_ngap_id);
         send_registration_reject_msg(
@@ -2523,6 +2577,7 @@ void amf_n1::security_mode_complete_handle(
     nc.get()->is_stacs_available = true;
   }
   set_5gmm_state(nc, _5GMM_REGISTERED);
+  stacs.display();
 
   string supi = "imsi-" + nc.get()->imsi;
   Logger::amf_n1().debug(
@@ -2960,7 +3015,7 @@ void amf_n1::ue_initiate_de_registration_handle(
   // Check Deregistration type
   uint8_t deregType = 0;
   dereg_request->getDeregistrationType(deregType);
-  Logger::amf_n1().debug("Deregistration Type 0x%x", deregType);
+  Logger::amf_n1().debug("De-registration Type 0x%x", deregType);
 
   // If UE switch-off, don't need to send Deregistration Accept
   if ((deregType & 0b00001000) == 0) {
@@ -2984,6 +3039,7 @@ void amf_n1::ue_initiate_de_registration_handle(
   }
 
   set_5gmm_state(nc, _5GMM_DEREGISTERED);
+  stacs.display();
 
   string supi = "imsi-" + nc.get()->imsi;
   Logger::amf_n1().debug(
@@ -3369,7 +3425,7 @@ void amf_n1::handle_ue_location_change(
     std::string supi, oai::amf::model::UserLocation user_location,
     uint8_t http_version) {
   Logger::amf_n1().debug(
-      "Send request to SBI to triger UE Location Report (SUPI "
+      "Send request to SBI to trigger UE Location Report (SUPI "
       "%s )",
       supi.c_str());
   std::vector<std::shared_ptr<amf_subscription>> subscriptions = {};
@@ -3378,7 +3434,7 @@ void amf_n1::handle_ue_location_change(
 
   if (subscriptions.size() > 0) {
     // Send request to SBI to trigger the notification to the subscribed event
-    Logger::amf_app().debug(
+    Logger::amf_n1().debug(
         "Send ITTI msg to AMF SBI to trigger the event notification");
 
     std::shared_ptr<itti_sbi_notify_subscribed_event> itti_msg =
@@ -3423,7 +3479,7 @@ void amf_n1::handle_ue_location_change(
 void amf_n1::handle_ue_reachability_status_change(
     std::string supi, uint8_t status, uint8_t http_version) {
   Logger::amf_n1().debug(
-      "Send request to SBI to triger UE Reachability Report (SUPI "
+      "Send request to SBI to trigger UE Reachability Report (SUPI "
       "%s )",
       supi.c_str());
 
@@ -3433,7 +3489,7 @@ void amf_n1::handle_ue_reachability_status_change(
 
   if (subscriptions.size() > 0) {
     // Send request to SBI to trigger the notification to the subscribed event
-    Logger::amf_app().debug(
+    Logger::amf_n1().debug(
         "Send ITTI msg to AMF SBI to trigger the event notification");
 
     std::shared_ptr<itti_sbi_notify_subscribed_event> itti_msg =
@@ -3483,7 +3539,7 @@ void amf_n1::handle_ue_reachability_status_change(
 void amf_n1::handle_ue_registration_state_change(
     std::string supi, uint8_t status, uint8_t http_version) {
   Logger::amf_n1().debug(
-      "Send request to SBI to triger UE Registration State Report (SUPI "
+      "Send request to SBI to trigger UE Registration State Report (SUPI "
       "%s )",
       supi.c_str());
 
@@ -3493,7 +3549,7 @@ void amf_n1::handle_ue_registration_state_change(
 
   if (subscriptions.size() > 0) {
     // Send request to SBI to trigger the notification to the subscribed event
-    Logger::amf_app().debug(
+    Logger::amf_n1().debug(
         "Send ITTI msg to AMF SBI to trigger the event notification");
 
     std::shared_ptr<itti_sbi_notify_subscribed_event> itti_msg =
@@ -3550,7 +3606,7 @@ void amf_n1::handle_ue_registration_state_change(
 void amf_n1::handle_ue_connectivity_state_change(
     std::string supi, uint8_t status, uint8_t http_version) {
   Logger::amf_n1().debug(
-      "Send request to SBI to triger UE Connectivity State Report (SUPI "
+      "Send request to SBI to trigger UE Connectivity State Report (SUPI "
       "%s )",
       supi.c_str());
 
@@ -3560,7 +3616,7 @@ void amf_n1::handle_ue_connectivity_state_change(
 
   if (subscriptions.size() > 0) {
     // Send request to SBI to trigger the notification to the subscribed event
-    Logger::amf_app().debug(
+    Logger::amf_n1().debug(
         "Send ITTI msg to AMF SBI to trigger the event notification");
 
     std::shared_ptr<itti_sbi_notify_subscribed_event> itti_msg =
@@ -3789,7 +3845,7 @@ void amf_n1::mobile_reachable_timer_timeout(
   timer_id_t tid = itti_inst->timer_setup(
       IMPLICIT_DEREGISTRATION_TIMER_MIN * 60, 0, TASK_AMF_N1,
       TASK_AMF_IMPLICIT_DEREGISTRATION_TIMER_EXPIRE, amf_ue_ngap_id);
-  Logger::amf_app().startup(
+  Logger::amf_n1().startup(
       "Started Implicit De-Registration Timer (tid %d)", tid);
 
   set_implicit_deregistration_timer(nc, tid);
@@ -4250,7 +4306,7 @@ bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
 
   std::shared_ptr<gnb_context> gc = {};
   if (!amf_n2_inst->is_assoc_id_2_gnb_context(unc.get()->gnb_assoc_id)) {
-    Logger::amf_n2().error(
+    Logger::amf_n1().error(
         "No existed gNB context with assoc_id (%d)", unc.get()->gnb_assoc_id);
     return false;
   }
@@ -4268,7 +4324,7 @@ bool amf_n1::get_slice_selection_subscription_data_from_conf_file(
         try {
           sst = std::stoi(s.sst);
         } catch (const std::exception& err) {
-          Logger::amf_app().error("Invalid SST");
+          Logger::amf_n1().error("Invalid SST");
           return false;
         }
         nssai.setSst(sst);
