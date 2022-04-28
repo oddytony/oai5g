@@ -3836,8 +3836,9 @@ void amf_n1::mobile_reachable_timer_timeout(
     nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
   else {
     Logger::amf_n1().warn(
-        "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT ")",
+        "No existed nas_context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
         amf_ue_ngap_id);
+    return;
   }
   set_mobile_reachable_timer_timeout(nc, true);
 
@@ -3859,8 +3860,9 @@ void amf_n1::implicit_deregistration_timer_timeout(
     nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
   else {
     Logger::amf_n1().warn(
-        "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT ")",
+        "No existed nas_context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
         amf_ue_ngap_id);
+    return;
   }
   // Implicitly de-register UE
   // TODO (4.2.2.3.3 Network-initiated Deregistration @3GPP TS 23.502V16.0.0):
