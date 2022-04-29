@@ -63,6 +63,7 @@ class conv {
       const uint8_t digit1, const uint8_t digit2, const uint8_t digit3);
   static std::string mncToString(
       const uint8_t digit1, const uint8_t digit2, const uint8_t digit3);
+  static std::string tmsi_to_string(const uint32_t tmsi);
 
   static void msg_str_2_msg_hex(std::string msg, bstring& b);
   static char* bstring2charString(bstring b);

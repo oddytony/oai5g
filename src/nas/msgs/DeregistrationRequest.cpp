@@ -31,8 +31,10 @@
 #include <string>
 
 #include "3gpp_ts24501.hpp"
-#include "String2Value.hpp"
+#include "conversions.hpp"
 #include "logger.hpp"
+#include "String2Value.hpp"
+
 using namespace nas;
 
 //------------------------------------------------------------------------------
@@ -135,7 +137,7 @@ std::string DeregistrationRequest::get_5g_guti() {
     std::string guti_str =
         guti.mcc + guti.mnc + std::to_string(guti.amf_region_id) +
         std::to_string(guti.amf_set_id) + std::to_string(guti.amf_pointer) +
-        std::to_string(guti._5g_tmsi);
+        conv::tmsi_to_string(guti._5g_tmsi);
     Logger::nas_mm().debug("5G GUTI %s", guti_str.c_str());
     return guti_str;
   } else {

@@ -121,6 +121,18 @@ std::string conv::mncToString(
 }
 
 //------------------------------------------------------------------------------
+std::string conv::tmsi_to_string(const uint32_t tmsi) {
+  std::string s        = {};
+  std::string tmsi_str = std::to_string(tmsi);
+  uint8_t length       = 4 - tmsi_str.size();
+  for (uint8_t i = 0; i < length; i++) {
+    s.append("0");
+  }
+  s.append(std::to_string(tmsi));
+  return s;
+}
+
+//------------------------------------------------------------------------------
 struct in_addr conv::fromString(const std::string addr4) {
   unsigned char buf[sizeof(struct in6_addr)] = {};
   int s              = inet_pton(AF_INET, addr4.c_str(), buf);

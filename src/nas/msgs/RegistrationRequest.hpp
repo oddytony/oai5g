@@ -95,7 +95,7 @@ class RegistrationRequest {
   bool get5GSRegistrationType(bool& is_for, uint8_t& reg_type /*3bits*/);
   bool getngKSI(uint8_t& ng_ksi);
   uint8_t getMobilityIdentityType();
-  std::string get_5g_guti();  //"error" for missing IE GUTI
+  std::string get_5g_guti();
   bool getSuciSupiFormatImsi(nas::SUCI_imsi_t& imsi);
   uint8_t getNonCurrentNativeNasKSI();
   uint8_t get5GMMCapability();
