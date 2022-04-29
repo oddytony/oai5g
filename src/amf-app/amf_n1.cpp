@@ -2551,7 +2551,7 @@ void amf_n1::security_mode_complete_handle(
 
   std::string guti = mcc + mnc + amf_cfg.guami.regionID +
                      amf_cfg.guami.AmfSetID + amf_cfg.guami.AmfPointer +
-                     std::to_string(tmsi);
+                     conv::tmsi_to_string(tmsi);
   Logger::amf_n1().debug("Allocated GUTI %s", guti.c_str());
 
   // TODO: remove hardcoded values

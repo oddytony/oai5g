@@ -27,6 +27,7 @@
  */
 
 #include "FiveGSTmsi.hpp"
+#include "conversions.hpp"
 
 using namespace ngap;
 
@@ -46,7 +47,7 @@ bool FiveGSTmsi::decodefrompdu(Ngap_FiveG_S_TMSI_t pdu) {
   amfSetid.getAMFSetID(setId);
   amfPointer.getAMFPointer(pointer);
   _5g_s_tmsi = setId + pointer + std::to_string(tmsi);
-  tmsi_value = std::to_string(tmsi);
+  tmsi_value = conv::tmsi_to_string(tmsi);
   return true;
 }
 

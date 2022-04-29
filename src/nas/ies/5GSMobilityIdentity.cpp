@@ -31,6 +31,7 @@
 #include <math.h>
 
 #include "3gpp_ts24501.hpp"
+#include "conversions.hpp"
 #include "String2Value.hpp"
 #include "logger.hpp"
 
@@ -164,7 +165,7 @@ int _5GSMobilityIdentity::_5g_s_tmsi_decodefrombuffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("Octet 0x%x", octet);
   digit[3] = octet;
   tmsi |= octet << 24;
-  _5g_s_tmsi->_5g_tmsi = (const string)(std::to_string(tmsi));
+  _5g_s_tmsi->_5g_tmsi = conv::tmsi_to_string(tmsi);
   return decoded_size;
 }
 
