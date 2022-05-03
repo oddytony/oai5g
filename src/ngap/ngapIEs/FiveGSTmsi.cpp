@@ -46,7 +46,7 @@ bool FiveGSTmsi::decodefrompdu(Ngap_FiveG_S_TMSI_t pdu) {
   std::string setId, pointer;
   amfSetid.getAMFSetID(setId);
   amfPointer.getAMFPointer(pointer);
-  _5g_s_tmsi = setId + pointer + std::to_string(tmsi);
+  _5g_s_tmsi = setId + pointer + conv::tmsi_to_string(tmsi);
   tmsi_value = conv::tmsi_to_string(tmsi);
   return true;
 }
