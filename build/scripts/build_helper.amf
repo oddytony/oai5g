@@ -427,7 +427,7 @@ check_install_amf_deps(){
       fi
         ;;
       "ubuntu20.04")
-        specific_packages="libboost-all-dev libmysqlclient-dev"
+        specific_packages="libconfig++-dev libasio-dev libboost-all-dev libmysqlclient-dev"
         ;;
     esac
     # removed libspdlog-dev
