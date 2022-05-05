@@ -1356,7 +1356,7 @@ void amf_n2::handle_itti_message(itti_ue_context_release_complete& itti_msg) {
     nc = amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
   else {
     Logger::amf_n2().warn(
-        "No existed nas_context with amf_ue_ngap_id(" AMF_UE_NGAP_ID_FMT ")",
+        "No existed nas_context with amf_ue_ngap_id (" AMF_UE_NGAP_ID_FMT ")",
         amf_ue_ngap_id);
   }
   if (nc.get() != nullptr) {
