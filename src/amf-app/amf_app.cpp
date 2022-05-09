@@ -45,6 +45,7 @@
 #include "comUt.hpp"
 #include "RegistrationContextContainer.h"
 #include "GlobalRanNodeId.h"
+#include "UeN1N2InfoSubscriptionCreatedData.h"
 
 using namespace ngap;
 using namespace nas;
@@ -133,6 +134,20 @@ void amf_app_task(void*) {
         Logger::amf_app().debug("Received SBI_N1_MESSAGE_NOTIFICATION");
         itti_sbi_n1_message_notification* m =
             dynamic_cast<itti_sbi_n1_message_notification*>(msg);
+        amf_app_inst->handle_itti_message(ref(*m));
+      } break;
+
+      case SBI_N1N2_MESSAGE_SUBSCRIBE: {
+        Logger::amf_app().debug("Received SBI_N1N2_MESSAGE_SUBSCRIBE");
+        itti_sbi_n1n2_message_subscribe* m =
+            dynamic_cast<itti_sbi_n1n2_message_subscribe*>(msg);
+        amf_app_inst->handle_itti_message(ref(*m));
+      } break;
+
+      case SBI_N1N2_MESSAGE_UNSUBSCRIBE: {
+        Logger::amf_app().debug("Received SBI_N1N2_MESSAGE_UNSUBSCRIBE");
+        itti_sbi_n1n2_message_unsubscribe* m =
+            dynamic_cast<itti_sbi_n1n2_message_unsubscribe*>(msg);
         amf_app_inst->handle_itti_message(ref(*m));
       } break;
 
@@ -270,6 +285,11 @@ bool amf_app::get_pdu_sessions_context(
 //------------------------------------------------------------------------------
 evsub_id_t amf_app::generate_ev_subscription_id() {
   return evsub_id_generator.get_uid();
+}
+
+//------------------------------------------------------------------------------
+n1n2sub_id_t amf_app::generate_n1n2_message_subscription_id() {
+  return n1n2sub_id_generator.get_uid();
 }
 
 //------------------------------------------------------------------------------
@@ -613,6 +633,110 @@ void amf_app::handle_itti_message(itti_sbi_n1_message_notification& itti_msg) {
 }
 
 //------------------------------------------------------------------------------
+void amf_app::handle_itti_message(itti_sbi_n1n2_message_subscribe& itti_msg) {
+  Logger::amf_app().info(
+      "Handle an N1N2MessageSubscribe from a NF (HTTP version "
+      "%d)",
+      itti_msg.http_version);
+
+  // Generate a subscription ID Id and store the corresponding information in a
+  // map (subscription id, info)
+  n1n2sub_id_t n1n2sub_id = generate_n1n2_message_subscription_id();
+  std::shared_ptr<oai::amf::model::UeN1N2InfoSubscriptionCreateData>
+      subscription_data =
+          std::make_shared<oai::amf::model::UeN1N2InfoSubscriptionCreateData>(
+              itti_msg.subscription_data);
+  add_n1n2_message_subscription(
+      itti_msg.ue_cxt_id, n1n2sub_id, subscription_data);
+
+  std::string location =
+      amf_cfg.get_amf_n1n2_message_subscribe_uri(itti_msg.ue_cxt_id) + "/" +
+      std::to_string((uint32_t) n1n2sub_id);
+
+  // Trigger the response from AMF API Server
+  oai::amf::model::UeN1N2InfoSubscriptionCreatedData created_data = {};
+  created_data.setN1n2NotifySubscriptionId(
+      std::to_string((uint32_t) n1n2sub_id));
+  nlohmann::json created_data_json = {};
+  to_json(created_data_json, created_data);
+
+  nlohmann::json response_data      = {};
+  response_data["createdData"]      = created_data;
+  response_data["httpResponseCode"] = 201;  // TODO:
+  response_data["location"]         = location;
+
+  // Notify to the result
+  if (itti_msg.promise_id > 0) {
+    trigger_process_response(itti_msg.promise_id, response_data);
+    return;
+  }
+}
+
+//------------------------------------------------------------------------------
+void amf_app::handle_itti_message(itti_sbi_n1n2_message_unsubscribe& itti_msg) {
+  Logger::amf_app().info(
+      "Handle an N1N2MessageUnSubscribe from a NF (HTTP version "
+      "%d)",
+      itti_msg.http_version);
+
+  // Process the request and trigger the response from AMF API Server
+  nlohmann::json response_data = {};
+  if (remove_n1n2_message_subscription(
+          itti_msg.ue_cxt_id, itti_msg.subscription_id)) {
+    response_data["httpResponseCode"] = 204;  // TODO:
+  } else {
+    response_data["httpResponseCode"]               = 400;  // TODO:
+    oai::amf::model::ProblemDetails problem_details = {};
+    // TODO set problem_details
+    to_json(response_data["ProblemDetails"], problem_details);
+  }
+
+  // Notify to the result
+  if (itti_msg.promise_id > 0) {
+    trigger_process_response(itti_msg.promise_id, response_data);
+    return;
+  }
+}
+
+//---------------------------------------------------------------------------------------------
+void amf_app::add_n1n2_message_subscription(
+    const std::string& ue_ctx_id, const n1n2sub_id_t& sub_id,
+    std::shared_ptr<oai::amf::model::UeN1N2InfoSubscriptionCreateData>&
+        subscription_data) {
+  Logger::amf_app().debug("Add an N1N2 Message Subscribe (Sub ID %d)", sub_id);
+  std::unique_lock lock(m_n1n2_message_subscribe);
+  n1n2_message_subscribe.emplace(
+      std::make_pair(ue_ctx_id, sub_id), subscription_data);
+}
+
+//---------------------------------------------------------------------------------------------
+bool amf_app::remove_n1n2_message_subscription(
+    const std::string& ue_ctx_id, const std::string& sub_id) {
+  Logger::amf_app().debug(
+      "Remove an N1N2 Message Subscribe (UE Context ID %s, Sub ID %s)",
+      ue_ctx_id.c_str(), sub_id.c_str());
+
+  // Verify Subscription ID
+  n1n2sub_id_t n1n2sub_id = {};
+  try {
+    n1n2sub_id = std::stoi(sub_id);
+  } catch (const std::exception& err) {
+    Logger::amf_app().warn(
+        "Received a Unsubscribe Request, couldn't find the corresponding "
+        "subscription");
+    return false;
+  }
+
+  // Remove from the list
+  std::unique_lock lock(m_n1n2_message_subscribe);
+  if (n1n2_message_subscribe.erase(std::make_pair(ue_ctx_id, n1n2sub_id)) == 1)
+    return true;
+  else
+    return false;
+  return true;
+}
+
+//------------------------------------------------------------------------------
 uint32_t amf_app::generate_tmsi() {
   return tmsi_generator.get_uid();
 }
@@ -672,6 +796,7 @@ evsub_id_t amf_app::handle_event_exposure_subscription(
   return evsub_id;
 }
 
+//---------------------------------------------------------------------------------------------
 bool amf_app::handle_event_exposure_delete(const std::string& subscription_id) {
   // verify Subscription ID
   evsub_id_t sub_id = {};
@@ -873,11 +998,13 @@ void amf_app::trigger_nf_deregistration() const {
   }
 }
 
+//---------------------------------------------------------------------------------------------
 void amf_app::add_promise(
     const uint32_t pid, const boost::shared_ptr<boost::promise<uint32_t>>& p) {
   std::unique_lock lock(m_curl_handle_responses_smf);
   curl_handle_responses_smf.emplace(pid, p);
 }
+
 //---------------------------------------------------------------------------------------------
 void amf_app::add_promise(
     const uint32_t id,
@@ -894,6 +1021,7 @@ void amf_app::add_promise(
   curl_handle_responses_n11.emplace(pid, p);
 }
 
+//---------------------------------------------------------------------------------------------
 void amf_app::trigger_process_response(
     const uint32_t pid, const uint32_t http_code) {
   Logger::amf_app().debug(
@@ -907,6 +1035,7 @@ void amf_app::trigger_process_response(
     curl_handle_responses_smf.erase(pid);
   }
 }
+
 //------------------------------------------------------------------------------
 void amf_app::trigger_process_response(
     const uint32_t pid, const std::string& n2_sm) {

@@ -857,6 +857,20 @@ int amf_config::load_interface(
 }
 
 //------------------------------------------------------------------------------
+std::string amf_config::get_amf_n1n2_message_subscribe_uri(
+    const std::string& ue_cxt_id) {
+  unsigned int sbi_port = 80;
+  if (support_features.use_http2) {
+    sbi_port = sbi_http2_port;
+  } else {
+    sbi_port = n11.port;
+  }
+  return std::string(inet_ntoa(*((struct in_addr*) &n11.addr4))) + ":" +
+         std::to_string(sbi_port) + NAMF_COMMUNICATION_BASE + sbi_api_version +
+         "/ue-contexts/" + ue_cxt_id + "/n1-n2-messages/subscriptions";
+}
+
+//------------------------------------------------------------------------------
 std::string amf_config::get_nrf_nf_discovery_service_uri() {
   return std::string(inet_ntoa(*((struct in_addr*) &nrf_addr.ipv4_addr))) +
          ":" + std::to_string(nrf_addr.port) + "/nnrf-disc/" +

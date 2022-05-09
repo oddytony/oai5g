@@ -27,6 +27,8 @@
 #include "ProblemDetails.h"
 #include "UeN1N2InfoSubscriptionCreateData.h"
 #include "UeN1N2InfoSubscriptionCreatedData.h"
+#include "amf.hpp"
+
 #include <string>
 
 namespace oai {
@@ -42,7 +44,7 @@ class N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApi {
   virtual ~N1N2SubscriptionsCollectionForIndividualUEContextsDocumentApi() {}
   void init();
 
-  const std::string base = "/namf-comm/";
+  const std::string base = NAMF_COMMUNICATION_BASE;
 
  private:
   void setupRoutes();

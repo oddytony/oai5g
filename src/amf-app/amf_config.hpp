@@ -220,6 +220,13 @@ class amf_config {
   int load_interface(const Setting& if_cfg, interface_cfg_t& cfg);
 
   /*
+   * Get the URI of AMF N1N2MessageSubscribe
+   * @param [const std::string&] ue_cxt_id: UE Context Id
+   * @return URI in string format
+   */
+  std::string get_amf_n1n2_message_subscribe_uri(const std::string& ue_cxt_id);
+
+  /*
    * Get the URI of NRF NF Discovery Service
    * @param void
    * @return URI in string format
