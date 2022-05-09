@@ -44,6 +44,7 @@
 #include "itti_msg_sbi.hpp"
 #include "amf_msg.hpp"
 #include "ProblemDetails.h"
+#include "UeN1N2InfoSubscriptionCreateData.h"
 
 #include "uint_generator.hpp"
 #include <boost/thread.hpp>
@@ -95,6 +96,14 @@ class amf_app {
   std::map<uint32_t, boost::shared_ptr<boost::promise<nlohmann::json>>>
       curl_handle_responses_n11;
 
+  util::uint_generator<uint32_t> n1n2sub_id_generator;
+  std::map<
+      std::pair<std::string, uint32_t>,
+      std::shared_ptr<oai::amf::model::UeN1N2InfoSubscriptionCreateData>>
+      n1n2_message_subscribe;
+
+  mutable std::shared_mutex m_n1n2_message_subscribe;
+
  public:
   explicit amf_app(const amf_config& amf_cfg);
   amf_app(amf_app const&) = delete;
@@ -128,6 +137,20 @@ class amf_app {
    * @return void
    */
   void handle_itti_message(itti_sbi_n1_message_notification& itti_msg);
+
+  /*
+   * Handle ITTI message (SBI N1N2 Message Subscribe)
+   * @param [itti_sbi_n1n2_subscribe_message&]: ITTI message
+   * @return void
+   */
+  void handle_itti_message(itti_sbi_n1n2_message_subscribe& itti_msg);
+
+  /*
+   * Handle ITTI message (SBI N1N2 Message UnSubscribe)
+   * @param [itti_sbi_n1n2_unsubscribe_message&]: ITTI message
+   * @return void
+   */
+  void handle_itti_message(itti_sbi_n1n2_message_unsubscribe& itti_msg);
 
   /*
    * Verify if a UE context associated with an AMF UE NGAP ID exist
@@ -259,6 +282,37 @@ class amf_app {
    * @return the generated reference
    */
   evsub_id_t generate_ev_subscription_id();
+
+  /*
+   * Generate an N1N2MessageSubscribe ID
+   * @param [void]
+   * @return the generated reference
+   */
+  n1n2sub_id_t generate_n1n2_message_subscription_id();
+
+  /*
+   * Add an N1N2MessageSubscribe subscription to the list
+   * @param [const std::string&] ue_ctx_id: UE Context ID
+   * @param [const n1n2sub_id_t&] sub_id: Subscription ID
+   * @param [std::shared_ptr<oai::amf::model::UeN1N2InfoSubscriptionCreateData>]
+   * oai::amf::model::UeN1N2InfoSubscriptionCreateData: a shared pointer stored
+   * information of the subscription
+   * @return void
+   */
+  void add_n1n2_message_subscription(
+      const std::string& ue_ctx_id, const n1n2sub_id_t& sub_id,
+      std::shared_ptr<oai::amf::model::UeN1N2InfoSubscriptionCreateData>&
+          subscription);
+
+  /*
+   * Remove an N1N2MessageSubscribe subscription from the list
+   * @param [const std::string&] ue_ctx_id: UE Context ID
+   * @param [const std::string&] sub_id: Subscription ID
+   * @return true if the subscription is deleted successfully, otherwise return
+   * false
+   */
+  bool remove_n1n2_message_subscription(
+      const std::string& ue_ctx_id, const std::string& sub_id);
 
   /*
    * Trigger NF instance registration to NRF
