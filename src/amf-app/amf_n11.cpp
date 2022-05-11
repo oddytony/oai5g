@@ -774,7 +774,7 @@ void amf_n11::handle_itti_message(itti_n11_nf_instance_discovery& itti_msg) {
 
   nlohmann::json response_data = {};
   uint32_t response_code       = 0;
-  curl_http_client(url, "GET", "", response_data, response_code);
+  curl_http_client(url, "GET", "", response_data, response_code, http_version);
 
   // Notify to the result
   if (itti_msg.promise_id > 0) {
@@ -874,7 +874,7 @@ bool amf_n11::discover_smf(
 
   nlohmann::json response_data = {};
   uint32_t response_code       = 0;
-  curl_http_client(url, "GET", "", response_data, response_code);
+  curl_http_client(url, "GET", "", response_data, response_code, http_version);
 
   Logger::amf_n11().debug(
       "NFDiscovery, response from NRF, json data: \n %s",
@@ -1015,7 +1015,8 @@ bool amf_n11::send_ue_authentication_request(
 
   nlohmann::json response_data = {};
   uint32_t response_code       = 0;
-  curl_http_client(url, "POST", body, response_data, response_code);
+  curl_http_client(
+      url, "POST", body, response_data, response_code, http_version);
 
   Logger::amf_n11().debug(
       "UE Authentication, response from AUSF, HTTP Code: %d", response_code);
@@ -1650,7 +1651,8 @@ bool amf_n11::get_nrf_uri(
 
     nlohmann::json response_data = {};
     uint32_t response_code       = 0;
-    curl_http_client(nssf_url, "GET", "", response_data, response_code);
+    curl_http_client(
+        nssf_url, "GET", "", response_data, response_code, http_version);
 
     Logger::amf_n11().debug(
         "NS Selection, response from NSSF, json data: \n %s",
