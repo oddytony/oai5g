@@ -379,6 +379,12 @@ void amf_n1::handle_itti_message(itti_uplink_nas_data_ind& nas_data_ind) {
       // Update Nas Context
       nc->amf_ue_ngap_id = nas_data_ind.amf_ue_ngap_id;
       nc->ran_ue_ngap_id = nas_data_ind.ran_ue_ngap_id;
+
+      set_amf_ue_ngap_id_2_nas_context(amf_ue_ngap_id, nc);
+      set_supi_2_amf_id("imsi-" + nc.get()->imsi, amf_ue_ngap_id);
+      set_supi_2_ran_id("imsi-" + nc.get()->imsi, ran_ue_ngap_id);
+      set_imsi_2_nas_context("imsi-" + nc.get()->imsi, nc);
+
     } else {
       Logger::amf_n1().error(
           "No existing nas_context with GUTI %s", nas_data_ind.guti.c_str());
