@@ -19,37 +19,22 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author
- \date 2021
- \email: contact@openairinterface.org
- */
-
 #ifndef _NG_RESET_ACK_H_
 #define _NG_RESET_ACK_H_
 
-#include "MessageType.hpp"
 #include "NgapIEsStruct.hpp"
 #include "UEAssociationLogicalNGConnectionItem.hpp"
 #include "UEAssociationLogicalNGConnectionList.hpp"
-#include <memory>
-
-extern "C" {
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_NGResetAcknowledge.h"
-#include "Ngap_UE-associatedLogicalNG-connectionList.h"
-#include "Ngap_ProtocolIE-Field.h"
-}
+#include "NgapMessage.hpp"
 
 namespace ngap {
 
-class NGResetAckMsg {
+class NGResetAckMsg : public NgapMessage {
  public:
   NGResetAckMsg();
   virtual ~NGResetAckMsg();
 
-  void setMessageType();  // Initialize the PDU and populate the MessageType;
+  void initialize();
 
   void setUE_associatedLogicalNG_connectionList(
       std::vector<UEAssociationLogicalNGConnectionItem>& list);
@@ -57,15 +42,16 @@ class NGResetAckMsg {
       std::vector<UEAssociationLogicalNGConnectionItem>& list);
 
   void addUE_associatedLogicalNG_connectionList();
-  int encode2buffer(uint8_t* buf, int buf_size);
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
+
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
   // TODO: CriticalityDiagnostics
 
  private:
-  Ngap_NGAP_PDU_t* ngResetAckPdu;
   Ngap_NGResetAcknowledge_t* ngResetAckIEs;
-  UEAssociationLogicalNGConnectionList* ueAssociationLogicalNGConnectionList;
-  Ngap_CriticalityDiagnostics_t* CriticalityDiagnostics;
+
+  UEAssociationLogicalNGConnectionList*
+      ueAssociationLogicalNGConnectionList;               // Optional
+  Ngap_CriticalityDiagnostics_t* CriticalityDiagnostics;  // Optional
 };
 
 }  // namespace ngap

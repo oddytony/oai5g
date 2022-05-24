@@ -126,6 +126,13 @@
     INT16_TO_BUFFER(x, (aSN)->buf);                                            \
   } while (0)
 
+#define INT16_TO_BIT_STRING(x, aSN)                                            \
+  do {                                                                         \
+    (aSN)->buf         = calloc(2, sizeof(uint8_t));                           \
+    (aSN)->size        = 2;                                                    \
+    (aSN)->bits_unused = 0;                                                    \
+  } while (0)
+
 #define INT8_TO_OCTET_STRING(x, aSN)                                           \
   do {                                                                         \
     (aSN)->buf  = calloc(1, sizeof(uint8_t));                                  \

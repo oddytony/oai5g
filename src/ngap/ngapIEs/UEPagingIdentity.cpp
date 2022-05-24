@@ -31,7 +31,8 @@ UEPagingIdentity::~UEPagingIdentity() {}
 
 //------------------------------------------------------------------------------
 void UEPagingIdentity::setUEPagingIdentity(
-    std::string& setid, std::string& pointer, std::string& tmsi) {
+    const std::string& setid, const std::string& pointer,
+    const std::string& tmsi) {
   fiveGSTmsi.setValue(setid, pointer, tmsi);
 }
 

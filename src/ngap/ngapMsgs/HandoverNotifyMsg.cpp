@@ -18,82 +18,136 @@
  * For more information about the OpenAirInterface (OAI) Software Alliance:
  *      contact@openairinterface.org
  */
-
-/*! \file HandoverNotifyMsg.cpp
- \brief
- \author  niuxiansheng-niu, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
 #include "HandoverNotifyMsg.hpp"
+
 #include "logger.hpp"
 
 extern "C" {
-#include "asn_codecs.h"
-#include "constr_TYPE.h"
-#include "constraints.h"
 #include "dynamic_memory_check.h"
-#include "per_decoder.h"
-#include "per_encoder.h"
 }
-
-#include <iostream>
-#include <vector>
 
 using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-HandoverNotifyMsg::HandoverNotifyMsg() {
-  amfUeNgapId             = nullptr;
-  ranUeNgapId             = nullptr;
-  userLocationInformation = nullptr;
-  handoverNotifyPdu       = nullptr;
-  handoverNotifyIEs       = nullptr;
+HandoverNotifyMsg::HandoverNotifyMsg() : NgapUEMessage() {
+  handoverNotifyIEs = nullptr;
 }
 
 //------------------------------------------------------------------------------
-HandoverNotifyMsg::~HandoverNotifyMsg() {
-  if (amfUeNgapId) delete (amfUeNgapId);
-  if (ranUeNgapId) delete (ranUeNgapId);
-  if (userLocationInformation) delete (userLocationInformation);
-  if (handoverNotifyPdu) free(handoverNotifyPdu);
-  if (handoverNotifyIEs) free(handoverNotifyIEs);
-};
+HandoverNotifyMsg::~HandoverNotifyMsg(){};
 
 //------------------------------------------------------------------------------
-unsigned long HandoverNotifyMsg::getAmfUeNgapId() {
-  if (amfUeNgapId)
-    return amfUeNgapId->getAMF_UE_NGAP_ID();
-  else
-    return 0;
+void HandoverNotifyMsg::initialize() {
+  handoverNotifyIEs =
+      &(ngapPdu->choice.initiatingMessage->value.choice.HandoverNotify);
 }
 
 //------------------------------------------------------------------------------
-int HandoverNotifyMsg::encode2buffer(uint8_t* buf, int buf_size) {
-  asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, handoverNotifyPdu);
-  asn_enc_rval_t er = aper_encode_to_buffer(
-      &asn_DEF_Ngap_NGAP_PDU, NULL, handoverNotifyPdu, buf, buf_size);
-  Logger::ngap().debug(
-      "Encode Handover Notify to buffer, er.encoded( %d )", er.encoded);
-  return er.encoded;
+void HandoverNotifyMsg::setAmfUeNgapId(const unsigned long& id) {
+  amfUeNgapId.setAMF_UE_NGAP_ID(id);
+
+  Ngap_HandoverNotifyIEs_t* ie =
+      (Ngap_HandoverNotifyIEs_t*) calloc(1, sizeof(Ngap_HandoverNotifyIEs_t));
+  ie->id            = Ngap_ProtocolIE_ID_id_AMF_UE_NGAP_ID;
+  ie->criticality   = Ngap_Criticality_reject;
+  ie->value.present = Ngap_HandoverNotifyIEs__value_PR_AMF_UE_NGAP_ID;
+
+  int ret = amfUeNgapId.encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
+  if (!ret) {
+    Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error!");
+    free_wrapper((void**) &ie);
+    return;
+  }
+
+  ret = ASN_SEQUENCE_ADD(&handoverNotifyIEs->protocolIEs.list, ie);
+  if (ret != 0) Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error!");
 }
 
 //------------------------------------------------------------------------------
-bool HandoverNotifyMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
-  if (!ngap_msg_pdu) return false;
-  handoverNotifyPdu = ngap_msg_pdu;
+void HandoverNotifyMsg::setRanUeNgapId(const uint32_t& ran_ue_ngap_id) {
+  ranUeNgapId.setRanUeNgapId(ran_ue_ngap_id);
 
-  if (handoverNotifyPdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
-    if (handoverNotifyPdu->choice.initiatingMessage &&
-        handoverNotifyPdu->choice.initiatingMessage->procedureCode ==
+  Ngap_HandoverNotifyIEs_t* ie =
+      (Ngap_HandoverNotifyIEs_t*) calloc(1, sizeof(Ngap_HandoverNotifyIEs_t));
+  ie->id            = Ngap_ProtocolIE_ID_id_RAN_UE_NGAP_ID;
+  ie->criticality   = Ngap_Criticality_reject;
+  ie->value.present = Ngap_HandoverNotifyIEs__value_PR_RAN_UE_NGAP_ID;
+
+  int ret = ranUeNgapId.encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
+  if (!ret) {
+    Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error!");
+    free_wrapper((void**) &ie);
+    return;
+  }
+
+  ret = ASN_SEQUENCE_ADD(&handoverNotifyIEs->protocolIEs.list, ie);
+  if (ret != 0) Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error!");
+}
+
+//------------------------------------------------------------------------------
+void HandoverNotifyMsg::setUserLocationInfoNR(
+    const NrCgi_t& cig, const Tai_t& tai) {
+  UserLocationInformationNR* informationNR = new UserLocationInformationNR();
+  NR_CGI nR_CGI                            = {};
+  nR_CGI.setNR_CGI(cig.mcc, cig.mnc, cig.nrCellID);
+  TAI tai_nr = {};
+  tai_nr.setTAI(tai);
+  informationNR->setInformationNR(nR_CGI, tai_nr);
+  userLocationInformation.setInformation(informationNR);
+
+  Ngap_HandoverNotifyIEs_t* ie =
+      (Ngap_HandoverNotifyIEs_t*) calloc(1, sizeof(Ngap_HandoverNotifyIEs_t));
+  ie->id            = Ngap_ProtocolIE_ID_id_UserLocationInformation;
+  ie->criticality   = Ngap_Criticality_ignore;
+  ie->value.present = Ngap_HandoverNotifyIEs__value_PR_UserLocationInformation;
+
+  int ret = userLocationInformation.encodefromUserLocationInformation(
+      &ie->value.choice.UserLocationInformation);
+  if (!ret) {
+    Logger::ngap().error("Encode UserLocationInformation IE error");
+    free_wrapper((void**) &ie);
+    return;
+  }
+
+  ret = ASN_SEQUENCE_ADD(&handoverNotifyIEs->protocolIEs.list, ie);
+  if (ret != 0) Logger::ngap().error("Encode UserLocationInformation IE error");
+}
+
+//------------------------------------------------------------------------------
+bool HandoverNotifyMsg::getUserLocationInfoNR(NrCgi_t& cig, Tai_t& tai) {
+  UserLocationInformationNR* informationNR = nullptr;
+  userLocationInformation.getInformation(informationNR);
+  if (!informationNR) return false;
+
+  if (userLocationInformation.getChoiceOfUserLocationInformation() !=
+      Ngap_UserLocationInformation_PR_userLocationInformationNR)
+    return false;
+
+  NR_CGI nR_CGI = {};
+  TAI nR_TAI    = {};
+  informationNR->getInformationNR(nR_CGI, nR_TAI);
+  nR_CGI.getNR_CGI(cig);
+  nR_TAI.getTAI(tai);
+
+  return true;
+}
+
+//------------------------------------------------------------------------------
+bool HandoverNotifyMsg::decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) {
+  if (!ngapMsgPdu) return false;
+  ngapPdu = ngapMsgPdu;
+
+  if (ngapPdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
+    if (ngapPdu->choice.initiatingMessage &&
+        ngapPdu->choice.initiatingMessage->procedureCode ==
             Ngap_ProcedureCode_id_HandoverNotification &&
-        handoverNotifyPdu->choice.initiatingMessage->criticality ==
+        ngapPdu->choice.initiatingMessage->criticality ==
             Ngap_Criticality_ignore &&
-        handoverNotifyPdu->choice.initiatingMessage->value.present ==
+        ngapPdu->choice.initiatingMessage->value.present ==
             Ngap_InitiatingMessage__value_PR_HandoverNotify) {
-      handoverNotifyIEs = &handoverNotifyPdu->choice.initiatingMessage->value
-                               .choice.HandoverNotify;
+      handoverNotifyIEs =
+          &ngapPdu->choice.initiatingMessage->value.choice.HandoverNotify;
     } else {
       Logger::ngap().error("Check HandoverNotify message error!");
       return false;
@@ -109,8 +163,7 @@ bool HandoverNotifyMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                 Ngap_Criticality_reject &&
             handoverNotifyIEs->protocolIEs.list.array[i]->value.present ==
                 Ngap_HandoverNotifyIEs__value_PR_AMF_UE_NGAP_ID) {
-          amfUeNgapId = new AMF_UE_NGAP_ID();
-          if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
+          if (!amfUeNgapId.decodefromAMF_UE_NGAP_ID(
                   handoverNotifyIEs->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
             Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
@@ -126,8 +179,7 @@ bool HandoverNotifyMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                 Ngap_Criticality_reject &&
             handoverNotifyIEs->protocolIEs.list.array[i]->value.present ==
                 Ngap_HandoverNotifyIEs__value_PR_RAN_UE_NGAP_ID) {
-          ranUeNgapId = new RAN_UE_NGAP_ID();
-          if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
+          if (!ranUeNgapId.decodefromRAN_UE_NGAP_ID(
                   handoverNotifyIEs->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
             Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
@@ -147,8 +199,7 @@ bool HandoverNotifyMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
               */
         if (handoverNotifyIEs->protocolIEs.list.array[i]->value.present ==
             Ngap_HandoverNotifyIEs__value_PR_UserLocationInformation) {
-          userLocationInformation = new UserLocationInformation();
-          if (!userLocationInformation->decodefromUserLocationInformation(
+          if (!userLocationInformation.decodefromUserLocationInformation(
                   &handoverNotifyIEs->protocolIEs.list.array[i]
                        ->value.choice.UserLocationInformation)) {
             Logger::ngap().error(
@@ -169,92 +220,4 @@ bool HandoverNotifyMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
   return true;
 }
 
-//------------------------------------------------------------------------------
-void HandoverNotifyMsg::setUserLocationInfoNR(
-    struct NrCgi_s cig, struct Tai_s tai) {
-  if (!userLocationInformation)
-    userLocationInformation = new UserLocationInformation();
-
-  UserLocationInformationNR* informationNR = new UserLocationInformationNR();
-  NR_CGI* nR_CGI                           = new NR_CGI();
-  PlmnId* plmnId_cgi                       = new PlmnId();
-  NRCellIdentity* nRCellIdentity           = new NRCellIdentity();
-  plmnId_cgi->setMccMnc(cig.mcc, cig.mnc);
-  nRCellIdentity->setNRCellIdentity(cig.nrCellID);
-  nR_CGI->setNR_CGI(plmnId_cgi, nRCellIdentity);
-
-  TAI* tai_nr        = new TAI();
-  PlmnId* plmnId_tai = new PlmnId();
-  plmnId_tai->setMccMnc(tai.mcc, tai.mnc);
-  TAC* tac = new TAC();
-  tac->setTac(tai.tac);
-  tai_nr->setTAI(plmnId_tai, tac);
-  informationNR->setInformationNR(nR_CGI, tai_nr);
-  userLocationInformation->setInformation(informationNR);
-
-  Ngap_HandoverNotifyIEs_t* ie =
-      (Ngap_HandoverNotifyIEs_t*) calloc(1, sizeof(Ngap_HandoverNotifyIEs_t));
-  ie->id            = Ngap_ProtocolIE_ID_id_UserLocationInformation;
-  ie->criticality   = Ngap_Criticality_ignore;
-  ie->value.present = Ngap_HandoverNotifyIEs__value_PR_UserLocationInformation;
-
-  int ret = userLocationInformation->encodefromUserLocationInformation(
-      &ie->value.choice.UserLocationInformation);
-  if (!ret) {
-    Logger::ngap().error("Encode UserLocationInformation IE error");
-    free_wrapper((void**) &ie);
-    return;
-  }
-
-  ret = ASN_SEQUENCE_ADD(&handoverNotifyIEs->protocolIEs.list, ie);
-  if (ret != 0) Logger::ngap().error("Encode UserLocationInformation IE error");
-
-  // free_wrapper((void**) &ie);
-}
-
-//------------------------------------------------------------------------------
-uint32_t HandoverNotifyMsg::getRanUeNgapId() {
-  if (ranUeNgapId)
-    return ranUeNgapId->getRanUeNgapId();
-  else
-    return 0;
-}
-
-//------------------------------------------------------------------------------
-bool HandoverNotifyMsg::getUserLocationInfoNR(
-    struct NrCgi_s& cig, struct Tai_s& tai) {
-  if (!userLocationInformation) return false;
-
-  UserLocationInformationNR* informationNR = nullptr;
-  userLocationInformation->getInformation(informationNR);
-  if (!informationNR) return false;
-
-  if (userLocationInformation->getChoiceOfUserLocationInformation() !=
-      Ngap_UserLocationInformation_PR_userLocationInformationNR)
-    return false;
-
-  NR_CGI* nR_CGI = nullptr;
-  TAI* nR_TAI    = nullptr;
-  informationNR->getInformationNR(nR_CGI, nR_TAI);
-  if (!nR_CGI or !nR_TAI) return false;
-
-  PlmnId* cgi_plmnId             = nullptr;
-  NRCellIdentity* nRCellIdentity = nullptr;
-  nR_CGI->getNR_CGI(cgi_plmnId, nRCellIdentity);
-  if (!cgi_plmnId or !nRCellIdentity) return false;
-
-  cgi_plmnId->getMcc(cig.mcc);
-  cgi_plmnId->getMnc(cig.mnc);
-  cig.nrCellID = nRCellIdentity->getNRCellIdentity();
-
-  PlmnId* tai_plmnId = nullptr;
-  TAC* tac           = nullptr;
-  nR_TAI->getTAI(tai_plmnId, tac);
-  if (!tai_plmnId or !tac) return false;
-  tai_plmnId->getMcc(tai.mcc);
-  tai_plmnId->getMnc(tai.mnc);
-  tai.tac = tac->getTac();
-
-  return true;
-}
 }  // namespace ngap

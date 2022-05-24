@@ -66,8 +66,9 @@ void FiveGSTmsi::getValue(
 
 //------------------------------------------------------------------------------
 void FiveGSTmsi::setValue(
-    std::string& setid, std::string& pointer, std::string& tmsi) {
-  amfSetid.setAMFSetID(setid);
+    const std::string& setId, const std::string& pointer,
+    const std::string& tmsi) {
+  amfSetid.setAMFSetID(setId);
   amfPointer.setAMFPointer(pointer);
   _5g_s_tmsi = tmsi;
 }

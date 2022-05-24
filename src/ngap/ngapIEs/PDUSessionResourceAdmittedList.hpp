@@ -36,11 +36,9 @@ class PDUSessionResourceAdmittedList {
   virtual ~PDUSessionResourceAdmittedList();
 
   void setPDUSessionResourceAdmittedList(
-      PDUSessionResourceAdmittedItem* m_pduSessionResourceAdmittedItem,
-      int num);
+      const std::vector<PDUSessionResourceAdmittedItem>& list);
   void getPDUSessionResourceAdmittedList(
-      PDUSessionResourceAdmittedItem*& m_pduSessionResourceAdmittedItem,
-      int& num);
+      std::vector<PDUSessionResourceAdmittedItem>& list);
 
   bool encode2PDUSessionResourceAdmittedList(
       Ngap_PDUSessionResourceAdmittedList_t* pduSessionResourceAdmittedList);
@@ -48,8 +46,7 @@ class PDUSessionResourceAdmittedList {
       Ngap_PDUSessionResourceAdmittedList_t* pduSessionResourceAdmittedList);
 
  private:
-  PDUSessionResourceAdmittedItem* pduSessionResourceAdmittedItem;
-  int numofSessionResourceAdmittedItem;
+  std::vector<PDUSessionResourceAdmittedItem> admittedItemList;
 };
 
 }  // namespace ngap

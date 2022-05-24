@@ -19,67 +19,41 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #include "UEContextReleaseRequest.hpp"
 
 #include "logger.hpp"
 
-#include <iostream>
 extern "C" {
-#include "asn_codecs.h"
-#include "constr_TYPE.h"
-#include "constraints.h"
 #include "dynamic_memory_check.h"
-#include "per_decoder.h"
-#include "per_encoder.h"
 }
 using namespace ngap;
-using namespace std;
 
 //------------------------------------------------------------------------------
-UEContextReleaseRequestMsg::UEContextReleaseRequestMsg() {
-  pdu         = nullptr;
-  ies         = nullptr;
-  amfUeNgapId = nullptr;
-  ranUeNgapId = nullptr;
-  causeValue  = nullptr;
+UEContextReleaseRequestMsg::UEContextReleaseRequestMsg() : NgapUEMessage() {
+  ies = nullptr;
+  setMessageType(NgapMessageType::UE_CONTEXT_RELEASE_REQUEST);
+  initialize();
 }
 
 //------------------------------------------------------------------------------
-UEContextReleaseRequestMsg::~UEContextReleaseRequestMsg() {
-  delete pdu;
+UEContextReleaseRequestMsg::~UEContextReleaseRequestMsg() {}
+
+//------------------------------------------------------------------------------
+void UEContextReleaseRequestMsg::initialize() {
+  ies = &(
+      ngapPdu->choice.initiatingMessage->value.choice.UEContextReleaseRequest);
 }
 
 //------------------------------------------------------------------------------
-void UEContextReleaseRequestMsg::setMessageType() {
-  if (!pdu) pdu = (Ngap_NGAP_PDU_t*) calloc(1, sizeof(Ngap_NGAP_PDU_t));
-  MessageType msgType;
-  msgType.setProcedureCode(Ngap_ProcedureCode_id_UEContextReleaseRequest);
-  msgType.setTypeOfMessage(Ngap_NGAP_PDU_PR_initiatingMessage);
-  msgType.setCriticality(Ngap_Criticality_ignore);
-  msgType.setValuePresent(
-      Ngap_InitiatingMessage__value_PR_UEContextReleaseRequest);
-  msgType.encode2pdu(pdu);
-  ies = &(pdu->choice.initiatingMessage->value.choice.UEContextReleaseRequest);
-}
-
-//------------------------------------------------------------------------------
-void UEContextReleaseRequestMsg::setAmfUeNgapId(unsigned long id) {
-  if (!amfUeNgapId) amfUeNgapId = new AMF_UE_NGAP_ID();
-  amfUeNgapId->setAMF_UE_NGAP_ID(id);
+void UEContextReleaseRequestMsg::setAmfUeNgapId(const unsigned long& id) {
+  amfUeNgapId.setAMF_UE_NGAP_ID(id);
   Ngap_UEContextReleaseRequest_IEs* ie =
       (Ngap_UEContextReleaseRequest_IEs*) calloc(
           1, sizeof(Ngap_UEContextReleaseRequest_IEs));
   ie->id            = Ngap_ProtocolIE_ID_id_AMF_UE_NGAP_ID;
   ie->criticality   = Ngap_Criticality_reject;
   ie->value.present = Ngap_UEContextReleaseRequest_IEs__value_PR_AMF_UE_NGAP_ID;
-  int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
+  int ret = amfUeNgapId.encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     Logger::ngap().error("Encode NGAP AMF_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
@@ -87,20 +61,19 @@ void UEContextReleaseRequestMsg::setAmfUeNgapId(unsigned long id) {
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode NGAP AMF_UE_NGAP_ID IE error");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
-void UEContextReleaseRequestMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
-  if (!ranUeNgapId) ranUeNgapId = new RAN_UE_NGAP_ID();
-  ranUeNgapId->setRanUeNgapId(ran_ue_ngap_id);
+void UEContextReleaseRequestMsg::setRanUeNgapId(
+    const uint32_t& ran_ue_ngap_id) {
+  ranUeNgapId.setRanUeNgapId(ran_ue_ngap_id);
   Ngap_UEContextReleaseRequest_IEs* ie =
       (Ngap_UEContextReleaseRequest_IEs*) calloc(
           1, sizeof(Ngap_UEContextReleaseRequest_IEs));
   ie->id            = Ngap_ProtocolIE_ID_id_RAN_UE_NGAP_ID;
   ie->criticality   = Ngap_Criticality_reject;
   ie->value.present = Ngap_UEContextReleaseRequest_IEs__value_PR_RAN_UE_NGAP_ID;
-  int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
+  int ret = ranUeNgapId.encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     Logger::ngap().error("Encode NGAP RAN_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
@@ -108,18 +81,26 @@ void UEContextReleaseRequestMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
   }
   ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode NGAP RAN_UE_NGAP_ID IE error");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
 void UEContextReleaseRequestMsg::setCauseRadioNetwork(
-    e_Ngap_CauseRadioNetwork cause_value) {
-  if (!causeValue) causeValue = new Cause();
-  causeValue->setChoiceOfCause(Ngap_Cause_PR_radioNetwork);
-  causeValue->setValue(cause_value);
+    const e_Ngap_CauseRadioNetwork& cause) {
+  causeValue.setChoiceOfCause(Ngap_Cause_PR_radioNetwork);
+  causeValue.setValue(cause);
   addCauseIE();
 }
 
+//------------------------------------------------------------------------------
+bool UEContextReleaseRequestMsg::getCauseRadioNetwork(
+    e_Ngap_CauseRadioNetwork& causeRadioNetwork) {
+  if (causeValue.getValue() < 0) {
+    Logger::ngap().error("Get Cause value from UEContextReleaseRequest Error");
+    return false;
+  }
+  causeRadioNetwork = (e_Ngap_CauseRadioNetwork) causeValue.getValue();
+  return true;
+}
 //------------------------------------------------------------------------------
 void UEContextReleaseRequestMsg::addCauseIE() {
   Ngap_UEContextReleaseRequest_IEs* ie =
@@ -128,33 +109,24 @@ void UEContextReleaseRequestMsg::addCauseIE() {
   ie->id            = Ngap_ProtocolIE_ID_id_Cause;
   ie->criticality   = Ngap_Criticality_ignore;
   ie->value.present = Ngap_UEContextReleaseRequest_IEs__value_PR_Cause;
-  causeValue->encode2Cause(&ie->value.choice.Cause);
+  causeValue.encode2Cause(&ie->value.choice.Cause);
   int ret = ASN_SEQUENCE_ADD(&ies->protocolIEs.list, ie);
-  if (ret != 0) cout << "encode Cause IE error" << endl;
-  // free_wrapper((void**) &ie);
+  if (ret != 0) Logger::ngap().error("Encode Cause IE error");
 }
 
 //------------------------------------------------------------------------------
-int UEContextReleaseRequestMsg::encode2buffer(uint8_t* buf, int buf_size) {
-  asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, pdu);
-  asn_enc_rval_t er =
-      aper_encode_to_buffer(&asn_DEF_Ngap_NGAP_PDU, NULL, pdu, buf, buf_size);
-  Logger::ngap().debug("er.encoded (%d)", er.encoded);
-  return er.encoded;
-}
-
-//------------------------------------------------------------------------------
-bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
-  pdu = ngap_msg_pdu;
-  if (pdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
-    if (pdu->choice.initiatingMessage &&
-        pdu->choice.initiatingMessage->procedureCode ==
+bool UEContextReleaseRequestMsg::decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) {
+  ngapPdu = ngapMsgPdu;
+  if (ngapPdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
+    if (ngapPdu->choice.initiatingMessage &&
+        ngapPdu->choice.initiatingMessage->procedureCode ==
             Ngap_ProcedureCode_id_UEContextReleaseRequest &&
-        pdu->choice.initiatingMessage->criticality == Ngap_Criticality_ignore &&
-        pdu->choice.initiatingMessage->value.present ==
+        ngapPdu->choice.initiatingMessage->criticality ==
+            Ngap_Criticality_ignore &&
+        ngapPdu->choice.initiatingMessage->value.present ==
             Ngap_InitiatingMessage__value_PR_UEContextReleaseRequest) {
-      ies =
-          &pdu->choice.initiatingMessage->value.choice.UEContextReleaseRequest;
+      ies = &ngapPdu->choice.initiatingMessage->value.choice
+                 .UEContextReleaseRequest;
     } else {
       Logger::ngap().error("Check UEContextReleaseRequest message error");
       return false;
@@ -172,8 +144,7 @@ bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                 Ngap_Criticality_reject &&
             ies->protocolIEs.list.array[i]->value.present ==
                 Ngap_UEContextReleaseRequest_IEs__value_PR_AMF_UE_NGAP_ID) {
-          amfUeNgapId = new AMF_UE_NGAP_ID();
-          if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
+          if (!amfUeNgapId.decodefromAMF_UE_NGAP_ID(
                   ies->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
             Logger::ngap().error("Decode NGAP AMF_UE_NGAP_ID IE error");
@@ -189,8 +160,7 @@ bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                 Ngap_Criticality_reject &&
             ies->protocolIEs.list.array[i]->value.present ==
                 Ngap_UEContextReleaseRequest_IEs__value_PR_RAN_UE_NGAP_ID) {
-          ranUeNgapId = new RAN_UE_NGAP_ID();
-          if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
+          if (!ranUeNgapId.decodefromRAN_UE_NGAP_ID(
                   ies->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
             Logger::ngap().error("Decode NGAP RAN_UE_NGAP_ID IE error");
@@ -206,8 +176,7 @@ bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                 Ngap_Criticality_ignore &&
             ies->protocolIEs.list.array[i]->value.present ==
                 Ngap_UEContextReleaseRequest_IEs__value_PR_Cause) {
-          causeValue = new Cause();
-          if (!causeValue->decodefromCause(
+          if (!causeValue.decodefromCause(
                   &ies->protocolIEs.list.array[i]->value.choice.Cause)) {
             Logger::ngap().error("Decode NGAP Cause IE error");
             return false;
@@ -220,25 +189,4 @@ bool UEContextReleaseRequestMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
     }
   }
   return true;
-}
-
-//------------------------------------------------------------------------------
-bool UEContextReleaseRequestMsg::getCauseRadioNetwork(
-    e_Ngap_CauseRadioNetwork& causeRadioNetwork) {
-  if (causeValue->getValue() < 0) {
-    Logger::ngap().error("Get Cause value from UEContextReleaseRequest Error");
-    return false;
-  }
-  causeRadioNetwork = (e_Ngap_CauseRadioNetwork) causeValue->getValue();
-  return true;
-}
-
-//------------------------------------------------------------------------------
-unsigned long UEContextReleaseRequestMsg::getAmfUeNgapId() {
-  return amfUeNgapId->getAMF_UE_NGAP_ID();
-}
-
-//------------------------------------------------------------------------------
-uint32_t UEContextReleaseRequestMsg::getRanUeNgapId() {
-  return ranUeNgapId->getRanUeNgapId();
 }

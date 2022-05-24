@@ -32,19 +32,24 @@
 using namespace std;
 namespace ngap {
 //------------------------------------------------------------------------------
-MobilityRestrictionList::MobilityRestrictionList() {
-  Servingplmn = NULL;
-}
+MobilityRestrictionList::MobilityRestrictionList() {}
 //------------------------------------------------------------------------------
 MobilityRestrictionList::~MobilityRestrictionList() {}
+
 //------------------------------------------------------------------------------
-void MobilityRestrictionList::setMobilityRestrictionList(PlmnId* servingplmn) {
-  Servingplmn = servingplmn;
+void MobilityRestrictionList::setMobilityRestrictionList(const PlmnId& sPLMN) {
+  servingPLMN = sPLMN;
 }
+
+//------------------------------------------------------------------------------
+void MobilityRestrictionList::getMobilityRestrictionList(PlmnId& sPLMN) {
+  sPLMN = servingPLMN;
+}
+
 //------------------------------------------------------------------------------
 bool MobilityRestrictionList::encodeMobilityRestrictionList(
     Ngap_MobilityRestrictionList_t* mobilityrestrictionlist) {
-  if (!Servingplmn->encode2octetstring(mobilityrestrictionlist->servingPLMN)) {
+  if (!servingPLMN.encode2octetstring(mobilityrestrictionlist->servingPLMN)) {
     return false;
   }
   return true;

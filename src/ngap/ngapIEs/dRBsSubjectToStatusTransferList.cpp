@@ -20,67 +20,64 @@
  */
 
 #include "dRBsSubjectToStatusTransferList.hpp"
-
-#include <iostream>
-#include <vector>
-using namespace std;
+#include "logger.hpp"
 
 extern "C" {
 #include "dynamic_memory_check.h"
 }
 
 namespace ngap {
-dRBSubjectList::dRBSubjectList() {
-  drbsubjectitem = nullptr;
-  numofitem      = 0;
-}
+//------------------------------------------------------------------------------
+dRBSubjectList::dRBSubjectList() {}
+
+//------------------------------------------------------------------------------
 dRBSubjectList::~dRBSubjectList() {}
-void dRBSubjectList::setdRBSubjectItem(dRBSubjectItem* m_item, int num) {
-  drbsubjectitem = m_item;
-  numofitem      = num;
+
+//------------------------------------------------------------------------------
+void dRBSubjectList::setdRBSubjectItem(
+    const std::vector<dRBSubjectItem>& list) {
+  itemList = list;
 }
-void dRBSubjectList::getdRBSubjectItem(dRBSubjectItem*& m_item, int& num) {
-  m_item = drbsubjectitem;
-  num    = numofitem;
+
+//------------------------------------------------------------------------------
+void dRBSubjectList::getdRBSubjectItem(std::vector<dRBSubjectItem>& list) {
+  list = itemList;
 }
+
+//------------------------------------------------------------------------------
 bool dRBSubjectList::encodefromdRBSubjectlist(
-    Ngap_DRBsSubjectToStatusTransferList_t& DRBsSubjectToStatusTransferList) {
-  for (int i = 0; i < numofitem; i++) {
+    Ngap_DRBsSubjectToStatusTransferList_t& dRBsSubjectToStatusTransferList) {
+  for (auto& item : itemList) {
     Ngap_DRBsSubjectToStatusTransferItem_t* ie =
         (Ngap_DRBsSubjectToStatusTransferItem_t*) calloc(
             1, sizeof(Ngap_DRBsSubjectToStatusTransferItem_t));
     if (!ie) return false;
 
-    if (!drbsubjectitem) {
+    if (!item.encodedRBSubjectItem(ie)) {
+      Logger::ngap().error("Encode dRBSubjectList IE error!");
       free_wrapper((void**) &ie);
       return false;
     }
-    if (!drbsubjectitem[i].encodedRBSubjectItem(ie)) {
-      cout << "encodefromdRBSubjectlist error" << endl;
-      return false;
-    }
-    if (ASN_SEQUENCE_ADD(&DRBsSubjectToStatusTransferList.list, ie) != 0) {
-      cout
-          << "ASN_SEQUENCE_ADD(&DRBsSubjectToStatusTransferList.list, ie) error"
-          << endl;
+    if (ASN_SEQUENCE_ADD(&dRBsSubjectToStatusTransferList.list, ie) != 0) {
+      Logger::ngap().error("ASN_SEQUENCE_ADD dRBSubjectList IE error!");
       return false;
     }
   }
-  cout << "encodefromdRBSubjectlist successfully" << endl;
   return true;
 }
+
+//------------------------------------------------------------------------------
 bool dRBSubjectList::decodefromdRBSubjectlist(
-    Ngap_DRBsSubjectToStatusTransferList_t& DRBsSubjectToStatusTransferList) {
-  numofitem      = DRBsSubjectToStatusTransferList.list.count;
-  drbsubjectitem = new dRBSubjectItem[numofitem]();
-  for (int i = 0; i < numofitem; i++) {
-    if (!drbsubjectitem[i].decodefromdRBSubjectItem(
-            DRBsSubjectToStatusTransferList.list.array[i])) {
-      cout << "decodefromdRBSubjectlist error" << endl;
+    Ngap_DRBsSubjectToStatusTransferList_t& dRBsSubjectToStatusTransferList) {
+  for (int i = 0; i < dRBsSubjectToStatusTransferList.list.count; i++) {
+    dRBSubjectItem item = {};
+    if (!item.decodefromdRBSubjectItem(
+            dRBsSubjectToStatusTransferList.list.array[i])) {
+      Logger::ngap().error("Decode dRBSubjectList IE error!");
       return false;
     }
+    itemList.push_back(item);
   }
-  cout << "decodefromdRBSubjectlist successfully" << endl;
   return true;
 }
 }  // namespace ngap

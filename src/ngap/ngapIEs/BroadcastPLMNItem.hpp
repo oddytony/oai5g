@@ -31,6 +31,7 @@
 
 #include "PlmnId.hpp"
 #include "S-NSSAI.hpp"
+#include <vector>
 
 extern "C" {
 #include "Ngap_BroadcastPLMNItem.h"
@@ -43,16 +44,17 @@ class BroadcastPLMNItem {
   BroadcastPLMNItem();
   virtual ~BroadcastPLMNItem();
 
-  void setPlmnSliceSupportList(PlmnId* m_plmn, S_NSSAI* snssai, int num);
-  void getPlmnSliceSupportList(
-      PlmnId*& m_plmn, S_NSSAI*& m_snssai, int& snssainum);
+  void setPlmnSliceSupportList(
+      const PlmnId& m_plmn, const std::vector<S_NSSAI>& sliceList);
+  void getPlmnSliceSupportList(PlmnId& m_plmn, std::vector<S_NSSAI>& sliceList);
+
   bool encode2BroadcastPLMNItem(Ngap_BroadcastPLMNItem_t*);
   bool decodefromBroadcastPLMNItem(Ngap_BroadcastPLMNItem_t* pdu);
 
  private:
-  PlmnId* plmn;
-  S_NSSAI* snssai;
-  int numOfSnssai;
+  PlmnId plmn;                              // Mandatory
+  std::vector<S_NSSAI> supportedSliceList;  // TAI Slice Support List
+                                            // (Mandatory)
 };
 }  // namespace ngap
 #endif

@@ -251,3 +251,14 @@ void conv::msg_str_2_msg_hex(std::string msg, bstring& b) {
   conv::ascii_to_hex(msg_hex, (const char*) data);
   b = blk2bstr(msg_hex, (msg_len / 2));
 }
+
+//------------------------------------------------------------------------------
+void conv::octet_string_2_bstring(
+    const OCTET_STRING_t& octet_str, bstring& b_str) {
+  b_str = blk2bstr(octet_str.buf, octet_str.size);
+}
+
+//------------------------------------------------------------------------------
+void conv::bstring_2_octet_string(bstring& b_str, OCTET_STRING_t& octet_str) {
+  OCTET_STRING_fromBuf(&octet_str, (char*) bdata(b_str), blength(b_str));
+}

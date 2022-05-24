@@ -19,58 +19,42 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
+#ifndef _UPLINK_NAS_TRANSPORT_H_
+#define _UPLINK_NAS_TRANSPORT_H_
 
-#ifndef _UPLINKNASTRANSPORT_H_
-#define _UPLINKNASTRANSPORT_H_
-
-#include "AMF-UE-NGAP-ID.hpp"
-#include "MessageType.hpp"
 #include "NAS-PDU.hpp"
-#include "NgapIEsStruct.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
 #include "UserLocationInformation.hpp"
+#include "NgapUEMessage.hpp"
 
 extern "C" {
-#include "Ngap_InitialUEMessage.h"
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
+#include "Ngap_UplinkNASTransport.h"
 }
 
 namespace ngap {
 
-class UplinkNASTransportMsg {
+class UplinkNASTransportMsg : public NgapUEMessage {
  public:
   UplinkNASTransportMsg();
   virtual ~UplinkNASTransportMsg();
 
-  void setMessageType();
+  void initialize();
 
-  void setAmfUeNgapId(unsigned long id);  // 40 bits
-  void setRanUeNgapId(uint32_t id);       // 32 bits
+  void setAmfUeNgapId(const unsigned long& id) override;
+  void setRanUeNgapId(const uint32_t& id) override;
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
+
   void setNasPdu(uint8_t* nas, size_t sizeofnas);
-  void setUserLocationInfoNR(struct NrCgi_s cig, struct Tai_s tai);
-  int encode2buffer(uint8_t* buf, int buf_size);
-  // Decapsulation
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
-  unsigned long getAmfUeNgapId();
-  uint32_t getRanUeNgapId();
   bool getNasPdu(uint8_t*& nas, size_t& sizeofnas);
-  bool getUserLocationInfoNR(struct NrCgi_s& cig, struct Tai_s& tai);
+
+  void setUserLocationInfoNR(const NrCgi_t& cig, const Tai_t& tai);
+  bool getUserLocationInfoNR(NrCgi_t& cig, Tai_t& tai);
 
  private:
-  Ngap_NGAP_PDU_t* uplinkNASTransportPdu;
   Ngap_UplinkNASTransport_t* uplinkNASTransportIEs;
-
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
-  NAS_PDU* nasPdu;
-  UserLocationInformation* userLocationInformation;
+  // AMF_UE_NGAP_ID //Mandatory
+  // RAN_UE_NGAP_ID //Mandatory
+  NAS_PDU nasPdu;                                   // Mandatory
+  UserLocationInformation userLocationInformation;  // Mandatory
 };
 
 }  // namespace ngap

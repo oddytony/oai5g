@@ -19,21 +19,12 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author Keliang DU (BUPT), Tien-Thinh NGUYEN (EURECOM)
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #include "PDUSessionResourceToReleaseListRelCmd.hpp"
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
 PDUSessionResourceToReleaseListRelCmd::PDUSessionResourceToReleaseListRelCmd() {
-  pduSessionResourceToReleaseItemRelCmd = NULL;
-  maxnoofPDUSessions                    = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -43,23 +34,15 @@ PDUSessionResourceToReleaseListRelCmd::
 //------------------------------------------------------------------------------
 void PDUSessionResourceToReleaseListRelCmd::
     setPDUSessionResourceToReleaseListRelCmd(
-        PDUSessionResourceToReleaseItemRelCmd*
-            m_pduSessionResourceToReleaseItemRelCmd,
-        int num) {
-  pduSessionResourceToReleaseItemRelCmd =
-      m_pduSessionResourceToReleaseItemRelCmd;
-  maxnoofPDUSessions = num;
+        const std::vector<PDUSessionResourceToReleaseItemRelCmd>& list) {
+  itemRelCmdList = list;
 }
 
 //------------------------------------------------------------------------------
 void PDUSessionResourceToReleaseListRelCmd::
     getPDUSessionResourceToReleaseListRelCmd(
-        PDUSessionResourceToReleaseItemRelCmd*&
-            m_pduSessionResourceToReleaseItemRelCmd,
-        int& num) {
-  m_pduSessionResourceToReleaseItemRelCmd =
-      pduSessionResourceToReleaseItemRelCmd;
-  num = maxnoofPDUSessions;
+        std::vector<PDUSessionResourceToReleaseItemRelCmd>& list) {
+  list = itemRelCmdList;
 }
 
 //------------------------------------------------------------------------------
@@ -67,14 +50,12 @@ bool PDUSessionResourceToReleaseListRelCmd::
     encode2PDUSessionResourceToReleaseListRelCmd(
         Ngap_PDUSessionResourceToReleaseListRelCmd_t*
             pduSessionResourceToReleaseListRelCmd) {
-  for (int i = 0; i < maxnoofPDUSessions; i++) {
+  for (auto& item : itemRelCmdList) {
     Ngap_PDUSessionResourceToReleaseItemRelCmd_t* rel =
         (Ngap_PDUSessionResourceToReleaseItemRelCmd_t*) calloc(
             1, sizeof(Ngap_PDUSessionResourceToReleaseItemRelCmd_t));
     if (!rel) return false;
-    if (!pduSessionResourceToReleaseItemRelCmd[i]
-             .encode2PDUSessionResourceToReleaseItemRelCmd(rel))
-      return false;
+    if (!item.encode2PDUSessionResourceToReleaseItemRelCmd(rel)) return false;
     if (ASN_SEQUENCE_ADD(&pduSessionResourceToReleaseListRelCmd->list, rel) !=
         0)
       return false;
@@ -87,14 +68,12 @@ bool PDUSessionResourceToReleaseListRelCmd::
     decodefromPDUSessionResourceToReleaseListRelCmd(
         Ngap_PDUSessionResourceToReleaseListRelCmd_t*
             pduSessionResourceToReleaseListRelCmd) {
-  maxnoofPDUSessions = pduSessionResourceToReleaseListRelCmd->list.count;
-  pduSessionResourceToReleaseItemRelCmd =
-      new PDUSessionResourceToReleaseItemRelCmd[maxnoofPDUSessions]();
-  for (int i = 0; i < maxnoofPDUSessions; i++) {
-    if (!pduSessionResourceToReleaseItemRelCmd[i]
-             .decodefromPDUSessionResourceToReleaseItemRelCmd(
-                 pduSessionResourceToReleaseListRelCmd->list.array[i]))
+  for (int i = 0; i < pduSessionResourceToReleaseListRelCmd->list.count; i++) {
+    PDUSessionResourceToReleaseItemRelCmd item = {};
+    if (!item.decodefromPDUSessionResourceToReleaseItemRelCmd(
+            pduSessionResourceToReleaseListRelCmd->list.array[i]))
       return false;
+    itemRelCmdList.push_back(item);
   }
   return true;
 }

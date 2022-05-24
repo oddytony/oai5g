@@ -19,51 +19,39 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #ifndef _UE_CONTEXT_RELEASE_COMPLETE_H_
 #define _UE_CONTEXT_RELEASE_COMPLETE_H_
 
-#include "AMF-UE-NGAP-ID.hpp"
-#include "MessageType.hpp"
-#include "NgapIEsStruct.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
+#include "NgapUEMessage.hpp"
 #include "UserLocationInformation.hpp"
 
 extern "C" {
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
+#include "Ngap_UEContextReleaseComplete.h"
 }
 
 namespace ngap {
 
-class UEContextReleaseCompleteMsg {
+class UEContextReleaseCompleteMsg : public NgapUEMessage {
  public:
   UEContextReleaseCompleteMsg();
   ~UEContextReleaseCompleteMsg();
+  void initialize();
 
- public:
-  void setMessageType();
-  void setAmfUeNgapId(unsigned long id);
-  unsigned long getAmfUeNgapId() const;
-  void setRanUeNgapId(uint32_t ran_ue_ngap_id);
-  uint32_t getRanUeNgapId() const;
-  void setUserLocationInfoNR(struct NrCgi_s cig, struct Tai_s tai);
-  void getUserLocationInfoNR(struct NrCgi_s& cig, struct Tai_s& tai);
-  int encode2buffer(uint8_t* buf, int buf_size);
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
+  void setAmfUeNgapId(const unsigned long& id) override;
+  void setRanUeNgapId(const uint32_t& id) override;
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
+
+  void setUserLocationInfoNR(const NrCgi_t& cig, const Tai_t& tai);
+  void getUserLocationInfoNR(NrCgi_t& cig, Tai_t& tai);
 
  private:
-  Ngap_NGAP_PDU_t* pdu;
   Ngap_UEContextReleaseComplete_t* ies;
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
-  UserLocationInformation* userLocationInformation;
+  // AMF_UE_NGAP_ID //Mandatory
+  // RAN_UE_NGAP_ID //Mandatory
+  UserLocationInformation* userLocationInformation;  // Optional
+  // TODO: Information on Recommended Cells and RAN Nodes for Paging (Optional)
+  // TODO: PDU Session Resource List (Optional)
+  // TODO: Criticality Diagnostics (Optional)
 };
 
 }  // namespace ngap

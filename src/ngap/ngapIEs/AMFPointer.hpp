@@ -44,6 +44,7 @@ class AMFPointer {
 
   void setAMFPointer(const std::string);
   void getAMFPointer(std::string&);
+  void setAMFPointer(const uint8_t&);
 
   bool encode2bitstring(Ngap_AMFPointer_t&);
   bool decodefrombitstring(Ngap_AMFPointer_t&);

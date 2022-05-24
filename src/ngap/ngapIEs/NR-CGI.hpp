@@ -31,6 +31,7 @@
 
 #include "NRCellIdentity.hpp"
 #include "PlmnId.hpp"
+#include "NgapIEsStruct.hpp"
 
 extern "C" {
 #include "Ngap_NR-CGI.h"
@@ -43,14 +44,20 @@ class NR_CGI {
   NR_CGI();
   virtual ~NR_CGI();
 
-  void setNR_CGI(PlmnId*, NRCellIdentity*);
+  void setNR_CGI(const PlmnId&, const NRCellIdentity&);
+  void getNR_CGI(PlmnId&, NRCellIdentity&);
+  void setNR_CGI(
+      const std::string& mcc, const std::string& mnc,
+      const unsigned long& nrcellidentity);
+  void setNR_CGI(const struct NrCgi_s& cig);
+  void getNR_CGI(struct NrCgi_s& cig);
+
   bool encode2NR_CGI(Ngap_NR_CGI_t*);
   bool decodefromNR_CGI(Ngap_NR_CGI_t*);
-  void getNR_CGI(PlmnId*&, NRCellIdentity*&);
 
  private:
-  PlmnId* plmnId;
-  NRCellIdentity* nRCellIdentity;
+  PlmnId plmnId;                  // Mandatory
+  NRCellIdentity nRCellIdentity;  // Mandatory
 };
 }  // namespace ngap
 

@@ -18,16 +18,8 @@
  * For more information about the OpenAirInterface (OAI) Software Alliance:
  *      contact@openairinterface.org
  */
-
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _AMFSETID_H_
-#define _AMFSETID_H_
+#ifndef _AMF_SET_ID_H_
+#define _AMF_SET_ID_H_
 
 #include <string>
 
@@ -42,15 +34,15 @@ class AMFSetID {
   AMFSetID();
   virtual ~AMFSetID();
 
-  void setAMFSetID(const std::string);
-  void setAMFSetID(const uint16_t set_id);
+  void setAMFSetID(const std::string&);
+  void setAMFSetID(const uint16_t& set_id);
   void getAMFSetID(std::string&);
 
   bool encode2bitstring(Ngap_AMFSetID_t&);
   bool decodefrombitstring(Ngap_AMFSetID_t&);
 
  private:
-  uint16_t setid;
+  uint16_t setId;
 };
 
 }  // namespace ngap

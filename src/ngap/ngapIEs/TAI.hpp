@@ -31,6 +31,7 @@
 
 #include "PlmnId.hpp"
 #include "Tac.hpp"
+#include "NgapIEsStruct.hpp"
 
 extern "C" {
 #include "Ngap_TAI.h"
@@ -43,14 +44,21 @@ class TAI {
   TAI();
   virtual ~TAI();
 
-  void setTAI(PlmnId*, TAC*);
+  void setTAI(const PlmnId&, const TAC&);
+  void setTAI(
+      const std::string& mcc, const std::string& mnc, const uint32_t& tac);
+  void getTAI(std::string& mcc, std::string& mnc, uint32_t& tac);
+
+  void setTAI(const Tai_t& tai);
+  void getTAI(Tai_t& tai);
+
   bool encode2TAI(Ngap_TAI_t*);
   bool decodefromTAI(Ngap_TAI_t*);
-  void getTAI(PlmnId*&, TAC*&);
+  void getTAI(PlmnId&, TAC&);
 
  private:
-  PlmnId* plmnId;
-  TAC* tac;
+  PlmnId plmnId;  // Mandatory
+  TAC tac;        // Mandatory
 };
 }  // namespace ngap
 

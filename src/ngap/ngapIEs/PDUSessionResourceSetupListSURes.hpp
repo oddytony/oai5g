@@ -19,17 +19,11 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _PDUSESSIONRESOURCESETUPLISTSURES_H_
-#define _PDUSESSIONRESOURCESETUPLISTSURES_H_
+#ifndef _PDU_SESSION_RESOURCE_SETUP_LIST_SU_RES_H_
+#define _PDU_SESSION_RESOURCE_SETUP_LIST_SU_RES_H_
 
 #include "PDUSessionResourceSetupItemSURes.hpp"
+#include <vector>
 
 extern "C" {
 #include "Ngap_PDUSessionResourceSetupListSURes.h"
@@ -43,11 +37,9 @@ class PDUSessionResourceSetupListSURes {
   virtual ~PDUSessionResourceSetupListSURes();
 
   void setPDUSessionResourceSetupListSURes(
-      PDUSessionResourceSetupItemSURes* m_pduSessionResourceSetupItemSURes,
-      int num);
+      const std::vector<PDUSessionResourceSetupItemSURes>& list);
   void getPDUSessionResourceSetupListSURes(
-      PDUSessionResourceSetupItemSURes*& m_pduSessionResourceSetupItemSURes,
-      int& num);
+      std::vector<PDUSessionResourceSetupItemSURes>& list);
 
   bool encode2PDUSessionResourceSetupListSURes(
       Ngap_PDUSessionResourceSetupListSURes_t*
@@ -57,8 +49,7 @@ class PDUSessionResourceSetupListSURes {
           pduSessionResourceSetupListSURes);
 
  private:
-  PDUSessionResourceSetupItemSURes* pduSessionResourceSetupItemSURes;
-  int numofpduSessionResourceSetupItemSURes;
+  std::vector<PDUSessionResourceSetupItemSURes> itemSUResList;
 };
 
 }  // namespace ngap

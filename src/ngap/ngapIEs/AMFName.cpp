@@ -69,7 +69,6 @@ bool AmfName::encode2AmfName(Ngap_AMFName_t* amfNameIe) {
   if (amfname)
     if (OCTET_STRING_fromBuf(amfNameIe, amfname, strlen(amfname)) < 0)
       return false;
-
   return true;
 }
 

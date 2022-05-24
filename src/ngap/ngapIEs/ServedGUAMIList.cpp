@@ -28,37 +28,23 @@
 
 #include "ServedGUAMIList.hpp"
 
-#include <iostream>
-using namespace std;
-
 namespace ngap {
 
 //------------------------------------------------------------------------------
-ServedGUAMIList::ServedGUAMIList() {
-  servedGUAMIItem         = nullptr;
-  numberOfservedGUAMIItem = 0;
-}
+ServedGUAMIList::ServedGUAMIList() {}
 
 //------------------------------------------------------------------------------
 ServedGUAMIList::~ServedGUAMIList() {}
 
 //------------------------------------------------------------------------------
-void ServedGUAMIList::addServedGUAMIItems(
-    ServedGUAMIItem* m_supportedGuamiItem, int numOfItem) {
-  servedGUAMIItem         = m_supportedGuamiItem;
-  numberOfservedGUAMIItem = numOfItem;
-}
-
-//------------------------------------------------------------------------------
 bool ServedGUAMIList::encode2ServedGUAMIList(
     Ngap_ServedGUAMIList_t* servedGUAMIList) {
-  cout << "ServedGUAMIList::numberOfservedGUAMIItem	("
-       << numberOfservedGUAMIItem << ")" << endl;
-  for (int i = 0; i < numberOfservedGUAMIItem; i++) {
+  for (std::vector<ServedGUAMIItem>::iterator it = std::begin(itemList);
+       it != std::end(itemList); ++it) {
     Ngap_ServedGUAMIItem* guamiItem =
         (Ngap_ServedGUAMIItem*) calloc(1, sizeof(Ngap_ServedGUAMIItem));
     if (!guamiItem) return false;
-    if (!servedGUAMIItem[i].encode2ServedGUAMIItem(guamiItem)) return false;
+    if (!it->encode2ServedGUAMIItem(guamiItem)) return false;
     if (ASN_SEQUENCE_ADD(&servedGUAMIList->list, guamiItem) != 0) return false;
   }
   return true;
@@ -66,21 +52,29 @@ bool ServedGUAMIList::encode2ServedGUAMIList(
 
 //------------------------------------------------------------------------------
 bool ServedGUAMIList::decodefromServedGUAMIList(Ngap_ServedGUAMIList_t* pdu) {
-  numberOfservedGUAMIItem = pdu->list.count;
-  if (servedGUAMIItem == nullptr)
-    servedGUAMIItem = new ServedGUAMIItem[numberOfservedGUAMIItem]();
-  for (int i = 0; i < numberOfservedGUAMIItem; i++) {
-    if (!servedGUAMIItem[i].decodefromServedGUAMIItem(pdu->list.array[i]))
-      return false;
+  // itemList.clear();
+  for (int i = 0; i < pdu->list.count; i++) {
+    ServedGUAMIItem item = {};
+    if (item.decodefromServedGUAMIItem(pdu->list.array[i])) return false;
+    itemList.push_back(item);
   }
   return true;
 }
 
 //------------------------------------------------------------------------------
+void ServedGUAMIList::addServedGUAMIItems(
+    const std::vector<ServedGUAMIItem>& list) {
+  itemList = list;
+}
+
+//------------------------------------------------------------------------------
 void ServedGUAMIList::getServedGUAMIItems(
-    ServedGUAMIItem*& m_supportedGuamiItem, int& numOfItem) {
-  m_supportedGuamiItem = servedGUAMIItem;
-  numOfItem            = numberOfservedGUAMIItem;
+    std::vector<ServedGUAMIItem>& list) const {
+  list = itemList;
+}
+
+void ServedGUAMIList::addServedGUAMIItem(const ServedGUAMIItem& item) {
+  itemList.push_back(item);
 }
 
 }  // namespace ngap

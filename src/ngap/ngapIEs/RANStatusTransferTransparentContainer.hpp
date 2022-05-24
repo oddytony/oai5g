@@ -19,30 +19,31 @@
  *      contact@openairinterface.org
  */
 
-#ifndef _RANSTATUSTRANSFERTRANSPATENTCONTAINER_H_
-#define _RANSTATUSTRANSFERTRANSPATENTCONTAINER_H_
-#include "dRBsSubjectToStatusTransferItem.hpp"
+#ifndef _RAN_STATUS_TRANSFER_TRANSPARENT_CONTAINER_H_
+#define _RAN_STATUS_TRANSFER_TRANSPARENT_CONTAINER_H_
+
 #include "dRBsSubjectToStatusTransferList.hpp"
 extern "C" {
 #include "Ngap_RANStatusTransfer-TransparentContainer.h"
 }
 namespace ngap {
 class RANStatusTransferTransparentContainer {
- private:
-  /* data */
-  dRBSubjectList* drb_sub_list;
-
  public:
-  RANStatusTransferTransparentContainer(/* args */);
+  RANStatusTransferTransparentContainer();
   virtual ~RANStatusTransferTransparentContainer();
-  void getdRBSubject_list(dRBSubjectList*& drblist);
-  void setdRBSubject_list(dRBSubjectList* drblist);
+
+  void getdRBSubject_list(dRBSubjectList& drblist);
+  void setdRBSubject_list(const dRBSubjectList& drblist);
+
   bool encoderanstatustransfer_transparentcontainer(
       Ngap_RANStatusTransfer_TransparentContainer_t*
           ranstatustransfer_transparentcontainer);
   bool decoderanstatustransfer_transparentcontainer(
-      Ngap_RANStatusTransfer_TransparentContainer_t*
+      Ngap_RANStatusTransfer_TransparentContainer_t&
           ranstatustransfer_transparentcontainer);
+
+ private:
+  dRBSubjectList drb_sub_list;  // Mandatory
 };
 
 }  // namespace ngap

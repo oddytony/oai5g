@@ -19,20 +19,12 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author Keliang DU (BUPT), Tien-Thinh NGUYEN (EURECOM)
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #include "PDUSessionResourceToReleaseItemRelCmd.hpp"
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
 PDUSessionResourceToReleaseItemRelCmd::PDUSessionResourceToReleaseItemRelCmd() {
-  pDUSessionID = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -42,8 +34,8 @@ PDUSessionResourceToReleaseItemRelCmd::
 //------------------------------------------------------------------------------
 void PDUSessionResourceToReleaseItemRelCmd::
     setPDUSessionResourceToReleaseItemRelCmd(
-        PDUSessionID* m_pDUSessionID,
-        OCTET_STRING_t m_pDUSessionResourceReleaseCommandTransfer) {
+        const PDUSessionID& m_pDUSessionID,
+        const OCTET_STRING_t& m_pDUSessionResourceReleaseCommandTransfer) {
   pDUSessionID = m_pDUSessionID;
   pDUSessionResourceReleaseCommandTransfer =
       m_pDUSessionResourceReleaseCommandTransfer;
@@ -52,7 +44,7 @@ void PDUSessionResourceToReleaseItemRelCmd::
 //------------------------------------------------------------------------------
 void PDUSessionResourceToReleaseItemRelCmd::
     getPDUSessionResourceToReleaseItemRelCmd(
-        PDUSessionID*& m_pDUSessionID,
+        PDUSessionID& m_pDUSessionID,
         OCTET_STRING_t& m_pDUSessionResourceReleaseCommandTransfer) {
   m_pDUSessionID = pDUSessionID;
   m_pDUSessionResourceReleaseCommandTransfer =
@@ -64,7 +56,7 @@ bool PDUSessionResourceToReleaseItemRelCmd::
     encode2PDUSessionResourceToReleaseItemRelCmd(
         Ngap_PDUSessionResourceToReleaseItemRelCmd_t*
             pduSessionResourceToReleaseItemRelCmd) {
-  if (!pDUSessionID->encode2PDUSessionID(
+  if (!pDUSessionID.encode2PDUSessionID(
           pduSessionResourceToReleaseItemRelCmd->pDUSessionID))
     return false;
 
@@ -80,8 +72,6 @@ bool PDUSessionResourceToReleaseItemRelCmd::
     decodefromPDUSessionResourceToReleaseItemRelCmd(
         Ngap_PDUSessionResourceToReleaseItemRelCmd_t*
             pduSessionResourceToReleaseItemRelCmd) {
-  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
-
   pDUSessionResourceReleaseCommandTransfer =
       pduSessionResourceToReleaseItemRelCmd
           ->pDUSessionResourceReleaseCommandTransfer;

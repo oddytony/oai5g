@@ -22,19 +22,13 @@
 #ifndef _HANDOVERCOMMAND_H_
 #define _HANDOVERCOMMAND_H_
 
-#include "AMF-UE-NGAP-ID.hpp"
-#include "Cause.hpp"
-#include "DefaultPagingDRX.hpp"
-#include "GlobalRanNodeId.hpp"
-#include "MessageType.hpp"
-#include "NgapIEsStruct.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
-#include "RanNodeName.hpp"
-#include "SupportedTAList.hpp"
+#include "NgapUEMessage.hpp"
+#include "PDUSessionResourceHandoverList.hpp"
+
 extern "C" {
 #include "Ngap_NGAP-PDU.h"
 #include "Ngap_NGSetupRequest.h"
-#include "Ngap_ProtocolIE-Field.h"
+#include "Ngap_HandoverCommand.h"
 }
 
 namespace ngap {
@@ -44,45 +38,42 @@ typedef struct {
   OCTET_STRING_t HandoverCommandTransfer;
 } PDUSessionResourceHandoverItem_t;
 
-class HandoverCommandMsg {
+class HandoverCommandMsg : public NgapUEMessage {
  public:
   HandoverCommandMsg();
   virtual ~HandoverCommandMsg();
 
-  void setMessageType();  // Initialize the PDU and populate the MessageType;
-  void setAmfUeNgapId(unsigned long id);  // 40 bits
-  void setRanUeNgapId(uint32_t id);       // 32 bits
+  void initialize();
+  void setAmfUeNgapId(const unsigned long& id) override;
+  void setRanUeNgapId(const uint32_t& id) override;
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
 
-  void setHandoverType(long type);
+  void setHandoverType(const long& type);
+  // void getHandoverType(Ngap_HandoverType_t &type);
+
   void setPduSessionResourceHandoverList(
-      std::vector<PDUSessionResourceHandoverItem_t> list);
-  void setTargetToSource_TransparentContainer(OCTET_STRING_t targetTosource);
+      const PDUSessionResourceHandoverList& list);
+  void getPduSessionResourceHandoverList(PDUSessionResourceHandoverList& list);
 
-  int encode2buffer(uint8_t* buf, int buf_size);
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
-  unsigned long getAmfUeNgapId();
-  uint32_t getRanUeNgapId();
-  /*void getHandoverType(Ngap_HandoverType_t &handovertype);
-  void getCause(Cause cause);
-  void getTargetID(Ngap_TargetID_t targetID);
-  void
-  getDirectForwardingPathAvailability(Ngap_DirectForwardingPathAvailability_t
-  directpathavailable); void
-  getPDUSessionResourceList(Ngap_PDUSessionResourceHandoverList_t
-  pdusessionresourcelist); void getSourceToTargetTransparentContainer();*/
+  void setTargetToSource_TransparentContainer(
+      const OCTET_STRING_t& targetTosource);
+  void getTargetToSource_TransparentContainer(OCTET_STRING_t& targetTosource);
+
  private:
-  Ngap_NGAP_PDU_t* handoverCommandPdu;
   Ngap_HandoverCommand_t* handoverCommandIEs;
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
-  Ngap_HandoverType_t* ngap_handovertype;
-  Ngap_NASSecurityParametersFromNGRAN_t* NASSecurityParametersFromNGRAN;
-  Ngap_PDUSessionResourceHandoverList_t* PDUSessionResourceHandoverList;
+
+  // AMF_UE_NGAP_ID (Mandatory)
+  // RAN_UE_NGAP_ID (Mandatory)
+  Ngap_HandoverType_t handoverType;  // Mandatory
+  Ngap_NASSecurityParametersFromNGRAN_t*
+      nASSecurityParametersFromNGRAN;  // TODO: Conditional
+  PDUSessionResourceHandoverList pDUSessionResourceHandoverList;  // Optional
+  bool pDUSessionResourceHandoverListIsSet;
   Ngap_PDUSessionResourceToReleaseListHOCmd_t*
-      PDUSessionResourceToReleaseListHOCmd;
-  Ngap_TargetToSource_TransparentContainer_t*
-      TargetToSource_TransparentContainer;
-  Ngap_CriticalityDiagnostics_t* CriticalityDiagnostics;
+      pDUSessionResourceToReleaseListHOCmd;  // TODO: Optional
+  Ngap_TargetToSource_TransparentContainer_t
+      targetToSource_TransparentContainer;                // Mandatory
+  Ngap_CriticalityDiagnostics_t* criticalityDiagnostics;  // TODO: Optional
 };
 
 }  // namespace ngap

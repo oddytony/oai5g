@@ -19,15 +19,8 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _GLOBALRANNODEID_H_
-#define _GLOBALRANNODEID_H_
+#ifndef _GLOBAL_RAN_NODE_ID_H_
+#define _GLOBAL_RAN_NODE_ID_H_
 
 extern "C" {
 #include "Ngap_GlobalRANNodeID.h"
@@ -42,15 +35,17 @@ class GlobalRanNodeId {
   GlobalRanNodeId();
   virtual ~GlobalRanNodeId();
 
-  void setChoiceOfRanNodeId(Ngap_GlobalRANNodeID_PR m_idPresent);
-  void setGlobalgNBID(GlobalgNBId*);
+  void setChoiceOfRanNodeId(const Ngap_GlobalRANNodeID_PR& m_idPresent);
+  Ngap_GlobalRANNodeID_PR getChoiceOfRanNodeId();
+
+  void setGlobalgNBID(const GlobalgNBId&);
+  void getGlobalgNBID(GlobalgNBId&);
+
   bool encode2GlobalRANNodeID(Ngap_GlobalRANNodeID_t*);
   bool decodefromGlobalRANNodeID(Ngap_GlobalRANNodeID_t*);
-  Ngap_GlobalRANNodeID_PR getChoiceOfRanNodeId();
-  void getGlobalgNBID(GlobalgNBId*&);
 
  private:
-  GlobalgNBId* globalgNBId;
+  GlobalgNBId globalgNBId;  // Mandatory
   Ngap_GlobalRANNodeID_PR idPresent;
 };
 

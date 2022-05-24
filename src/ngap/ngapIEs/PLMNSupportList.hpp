@@ -30,6 +30,7 @@
 #define _PLMNSUPPORTLIST_H_
 
 #include "PLMNSupportItem.hpp"
+#include <vector>
 
 extern "C" {
 #include "Ngap_PLMNSupportList.h"
@@ -44,14 +45,14 @@ class PLMNSupportList {
 
   bool encode2PLMNSupportList(Ngap_PLMNSupportList_t*);
   bool decodefromPLMNSupportList(Ngap_PLMNSupportList_t*);
-  void addPLMNSupportItems(
-      PLMNSupportItem* m_plmnsupportItemItem, int numOfItem);
-  void getPLMNSupportItems(
-      PLMNSupportItem*& m_plmnsupportItemItem, int& numOfItem);
+
+  void addPLMNSupportItems(const std::vector<PLMNSupportItem>& items);
+  void getPLMNSupportItems(std::vector<PLMNSupportItem>& items);
+
+  void addPLMNSupportItem(const PLMNSupportItem& item);
 
  private:
-  PLMNSupportItem* plmnsupportItemItem;
-  int numberOfplmnsupportItemItem;
+  std::vector<PLMNSupportItem> plmnSupportItems;
 };
 
 }  // namespace ngap

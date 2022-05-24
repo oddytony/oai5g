@@ -45,6 +45,8 @@ class AMFRegionID {
   void setAMFRegionID(const std::string);
   void getAMFRegionID(std::string&);
 
+  void setAMFRegionID(const uint8_t&);
+
   bool encode2bitstring(Ngap_AMFRegionID_t&);
   bool decodefrombitstring(Ngap_AMFRegionID_t&);
 

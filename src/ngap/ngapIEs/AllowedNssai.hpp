@@ -19,17 +19,11 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _ALLOWEDNSSAI_H_
-#define _ALLOWEDNSSAI_H_
+#ifndef _ALLOWED_NSSAI_H_
+#define _ALLOWED_NSSAI_H_
 
 #include "S-NSSAI.hpp"
+#include <vector>
 
 extern "C" {
 #include "Ngap_AllowedNSSAI.h"
@@ -42,14 +36,14 @@ class AllowedNSSAI {
   AllowedNSSAI();
   virtual ~AllowedNSSAI();
 
-  void setAllowedNSSAI(S_NSSAI* m_snssai, int m_numofsnssai);
-  bool getAllowedNSSAI(S_NSSAI*& m_snssai, int& m_numofsnssai);
+  void setAllowedNSSAI(const std::vector<S_NSSAI>& list);
+  void getAllowedNSSAI(std::vector<S_NSSAI>& list);
+
   bool encode2AllowedNSSAI(Ngap_AllowedNSSAI_t* allowedNssaiList);
   bool decodefromAllowedNSSAI(Ngap_AllowedNSSAI_t* allowedNssaiList);
 
  private:
-  S_NSSAI* snssai;
-  int numofSnssai;
+  std::vector<S_NSSAI> allowedSnssaiList;
 };
 }  // namespace ngap
 #endif

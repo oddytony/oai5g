@@ -19,43 +19,39 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang Du, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-#ifndef _UPLINKRANSTATUSTRANSFER_H_
-#define _UPLINKRANSTATUSTRANSFER_H_
-#include "AMF-UE-NGAP-ID.hpp"
-#include "NgapIEsStruct.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
+#ifndef _UPLINK_RAN_STATUS_TRANSFER_H_
+#define _UPLINK_RAN_STATUS_TRANSFER_H_
+
 #include "RANStatusTransferTransparentContainer.hpp"
+#include "NgapUEMessage.hpp"
+
 extern "C" {
-#include "Ngap_InitiatingMessage.h"
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
-#include "Ngap_RANStatusTransfer-TransparentContainer.h"
 #include "Ngap_UplinkRANStatusTransfer.h"
 }
+
 namespace ngap {
-class UplinkRANStatusTransfer {
+class UplinkRANStatusTransfer : public NgapUEMessage {
  public:
   UplinkRANStatusTransfer();
   virtual ~UplinkRANStatusTransfer();
-  unsigned long getAmfUeNgapId();
-  uint32_t getRanUeNgapId();
+
+  void initialize();
+
+  void setAmfUeNgapId(const unsigned long& id) override;
+  void setRanUeNgapId(const uint32_t& id) override;
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
+
   void getRANStatusTransfer_TransparentContainer(
-      RANStatusTransferTransparentContainer*&
-          ranstatustransfer_transparentcontainer);
-  bool defromPDU(Ngap_NGAP_PDU_t* ngap_msg_pdu);
+      RANStatusTransferTransparentContainer& ranContainer);
+  void setRANStatusTransfer_TransparentContainer(
+      const RANStatusTransferTransparentContainer& ranContainer);
 
  private:
-  Ngap_NGAP_PDU_t* UplinkRANStatusTransferPDU;
-  Ngap_UplinkRANStatusTransfer_t* UplinkRANStatusTransferIEs;
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
-  RANStatusTransferTransparentContainer* ranStatusTransfer_TransparentContainer;
+  Ngap_UplinkRANStatusTransfer_t* uplinkRANStatusTransferIEs;
+  // AMF_UE_NGAP_ID (Mandatory)
+  // RAN_UE_NGAP_ID (Mandatory)
+  RANStatusTransferTransparentContainer
+      ranStatusTransfer_TransparentContainer;  // Mandatory
 };
 }  // namespace ngap
 

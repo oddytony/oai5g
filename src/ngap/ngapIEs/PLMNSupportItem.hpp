@@ -19,18 +19,12 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _PLMNSUPPORTITEM_H_
-#define _PLMNSUPPORTITEM_H_
+#ifndef _PLMN_SUPPORT_ITEM_H_
+#define _PLMN_SUPPORT_ITEM_H_
 
 #include "PlmnId.hpp"
 #include "S-NSSAI.hpp"
+#include <vector>
 
 extern "C" {
 #include "Ngap_PLMNSupportItem.h"
@@ -43,18 +37,16 @@ class PLMNSupportItem {
   PLMNSupportItem();
   virtual ~PLMNSupportItem();
 
-  void setPlmnSliceSupportList(PlmnId* m_plmn, S_NSSAI* m_snssai, int num);
+  void setPlmnSliceSupportList(
+      const PlmnId& m_plmn, const std::vector<S_NSSAI>& m_snssais);
+  void getPlmnSliceSupportList(PlmnId& m_plmn, std::vector<S_NSSAI>& m_snssais);
 
   bool encode2PLMNSupportItem(Ngap_PLMNSupportItem_t*);
   bool decodefromPLMNSupportItem(Ngap_PLMNSupportItem_t*);
 
-  void getPlmnSliceSupportList(
-      PlmnId*& m_plmn, S_NSSAI*& m_snssai, int& snssainum);
-
  private:
-  PlmnId* plmn;
-  S_NSSAI* snssai;
-  int numOfSnssai;
+  PlmnId plmn;                   // Mandatory
+  std::vector<S_NSSAI> snssais;  // Mandatory
 };
 
 }  // namespace ngap

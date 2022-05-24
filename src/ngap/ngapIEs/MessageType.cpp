@@ -48,6 +48,13 @@ MessageType::MessageType() {
   criticality = Ngap_Criticality_reject;
 }
 
+MessageType::MessageType(
+    Ngap_ProcedureCode_t m_procedureCode, Ngap_NGAP_PDU_PR m_typeOfMessage) {
+  criticality   = Ngap_Criticality_reject;
+  procedureCode = m_procedureCode;
+  typeOfMessage = m_typeOfMessage;
+}
+
 //------------------------------------------------------------------------------
 MessageType::~MessageType() {}
 

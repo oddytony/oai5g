@@ -22,6 +22,7 @@
 include_directories(${SRC_TOP_DIR}/common)
 include_directories(${SRC_TOP_DIR}/utils/)
 include_directories(${SRC_TOP_DIR}/utils/bstr)
+include_directories(${SRC_TOP_DIR}/ngap/libngap)
 include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)
 include_directories(${SRC_TOP_DIR}/common/unicode)
 file(GLOB COMMON_SRC ${SRC_TOP_DIR}/common/conversions.cpp)

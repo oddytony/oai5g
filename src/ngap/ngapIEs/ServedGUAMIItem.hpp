@@ -26,8 +26,8 @@
  \email: contact@openairinterface.org
  */
 
-#ifndef _SERVEDGUAMIITEM_H_
-#define _SERVEDGUAMIITEM_H_
+#ifndef _SERVED_GUAMI_ITEM_H_
+#define _SERVED_GUAMI_ITEM_H_
 
 #include "AMFName.hpp"
 #include "GUAMI.hpp"
@@ -43,19 +43,20 @@ class ServedGUAMIItem {
   ServedGUAMIItem();
   virtual ~ServedGUAMIItem();
 
-  void setGUAMI(GUAMI*);
+  void setGUAMI(const GUAMI& m_guami);
+  void getGUAMI(GUAMI& m_guami);
+
   void setBackupAMFName(AmfName*);
+  bool getBackupAMFName(AmfName*&);
 
   bool encode2ServedGUAMIItem(Ngap_ServedGUAMIItem*);
   bool decodefromServedGUAMIItem(Ngap_ServedGUAMIItem*);
 
-  void getGUAMI(GUAMI*&);
-  bool getBackupAMFName(AmfName*&);
-
  private:
-  GUAMI* guamiGroup;
-  AmfName* backupAMFName;
+  GUAMI guamiGroup;        // Mandatory
+  AmfName* backupAMFName;  // Optional
   bool backupAMFNameIsSet;
+  // TODO: GUAMI Type (Optional)
 };
 
 }  // namespace ngap

@@ -19,67 +19,61 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _INITIALUEMESSAGE_H_
-#define _INITIALUEMESSAGE_H_
+#ifndef _INITIAL_UE_MESSAGE_H_
+#define _INITIAL_UE_MESSAGE_H_
 
 #include "FiveGSTmsi.hpp"
-#include "MessageType.hpp"
 #include "NAS-PDU.hpp"
 #include "NgapIEsStruct.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
 #include "RRCEstablishmentCause.hpp"
 #include "UEContextRequest.hpp"
 #include "UserLocationInformation.hpp"
-
-extern "C" {
-#include "Ngap_InitialUEMessage.h"
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
-}
+#include "NgapMessage.hpp"
 
 namespace ngap {
 
-class InitialUEMessageMsg {
+class InitialUEMessageMsg : public NgapMessage {
  public:
   InitialUEMessageMsg();
   virtual ~InitialUEMessageMsg();
 
-  void setMessageType();
-  void setRanUENgapID(uint32_t ran_ue_ngap_id);
-  void setNasPdu(uint8_t* nas, size_t sizeofnas);
-  void setUserLocationInfoNR(struct NrCgi_s cig, struct Tai_s tai);
-  void setRRCEstablishmentCause(e_Ngap_RRCEstablishmentCause cause_value);
-  // void set5GS_TMSI(string amfSetId, string amfPointer, string _5g_tmsi);
-  void setUeContextRequest(e_Ngap_UEContextRequest ueCtxReq);
-  void encode2buffer(uint8_t*& buf, int& buf_size);
-  // Decapsulation
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
+  void initialize();
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) override;
+
+  void setRanUENgapID(const uint32_t& value);
   bool getRanUENgapID(uint32_t& value);
-  bool getNasPdu(uint8_t*& nas, size_t& sizeofnas);
+
+  void setNasPdu(uint8_t* nas, size_t size);
+  bool getNasPdu(uint8_t*& nas, size_t& size);
+
+  void setUserLocationInfoNR(
+      const struct NrCgi_s& cig, const struct Tai_s& tai);
   bool getUserLocationInfoNR(struct NrCgi_s& cig, struct Tai_s& tai);
+
+  void setRRCEstablishmentCause(const e_Ngap_RRCEstablishmentCause& cause);
   int getRRCEstablishmentCause();
-  int getUeContextRequest();
-  bool get5GS_TMSI(std::string& _5g_s_tmsi);
+
+  // TODO: void set5GS_TMSI(string amfSetId, string amfPointer, string
+  // _5g_tmsi);
+  bool get5GS_TMSI(std::string& _5GsTmsi);
   bool get5GS_TMSI(
       std ::string& setid, std ::string& pointer, std ::string& tmsi);
 
+  void setUeContextRequest(const e_Ngap_UEContextRequest& ueCtxReq);
+  int getUeContextRequest();
+
  private:
-  Ngap_NGAP_PDU_t* initialUEMessagePdu;
   Ngap_InitialUEMessage_t* initialUEMessageIEs;
 
-  RAN_UE_NGAP_ID* ranUeNgapId;
-  NAS_PDU* nasPdu;
-  UserLocationInformation* userLocationInformation;
-  RRCEstablishmentCause* rRCEstablishmentCause;
-  UEContextRequest* uEContextRequest;
-  FiveGSTmsi* fivegSTmsi;
+  RAN_UE_NGAP_ID ranUeNgapId;                       // Mandatory
+  NAS_PDU nasPdu;                                   // Mandatory
+  UserLocationInformation userLocationInformation;  // Mandatory
+  RRCEstablishmentCause rRCEstablishmentCause;      // Mandatory
+  FiveGSTmsi* fivegSTmsi;                           // 5G-S-TMSI (Optional)
+  // TODO: AMF Set ID (Optional)
+  UEContextRequest* uEContextRequest;  // Optional
+  // TODO: Allowed NSSAI (Optional)
+  // TODO: Source to Target AMF Information Reroute (Optional)
 };
 
 }  // namespace ngap

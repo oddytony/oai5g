@@ -19,62 +19,42 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author
- \date 2021
- \email: contact@openairinterface.org
- */
-
 #ifndef PDU_SESSION_RESOURCE_MODIFY_RESPONSE_H_
 #define PDU_SESSION_RESOURCE_MODIFY_RESPONSE_H_
 
-#include "AMF-UE-NGAP-ID.hpp"
-#include "MessageType.hpp"
-#include "NgapIEsStruct.hpp"
 #include "PDUSessionResourceModifyListModRes.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
-#include "RANPagingPriority.hpp"
+#include "NgapUEMessage.hpp"
 
 extern "C" {
-#include "Ngap_InitialContextSetupRequest.h"
 #include "Ngap_PDUSessionResourceModifyResponse.h"
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
 }
 
 namespace ngap {
 
-class PduSessionResourceModifyResponseMsg {
+class PduSessionResourceModifyResponseMsg : public NgapUEMessage {
  public:
   PduSessionResourceModifyResponseMsg();
   virtual ~PduSessionResourceModifyResponseMsg();
 
-  void setMessageType();
-  void setAmfUeNgapId(unsigned long id);  // 40 bits
-  void setRanUeNgapId(uint32_t id);       // 32 bits
+  void initialize();
+
+  void setAmfUeNgapId(const unsigned long& id) override;
+  void setRanUeNgapId(const uint32_t& id) override;
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
 
   void setPduSessionResourceModifyResponseList(
-      std::vector<PDUSessionResourceModifyResponseItem_t> list);
-
-  int encode2buffer(uint8_t* buf, int buf_size);
-  void encode2buffer_new(char* buf, int& encoded_size);
-
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
-  unsigned long getAmfUeNgapId();
-  uint32_t getRanUeNgapId();
+      const std::vector<PDUSessionResourceModifyResponseItem_t>& list);
   bool getPduSessionResourceModifyResponseList(
       std::vector<PDUSessionResourceModifyResponseItem_t>& list);
 
  private:
-  Ngap_NGAP_PDU_t* pduSessionResourceModifyResponsePdu;
   Ngap_PDUSessionResourceModifyResponse_t* pduSessionResourceModifyResponseIEs;
 
-  AMF_UE_NGAP_ID amfUeNgapId;                                       // Mandatory
-  RAN_UE_NGAP_ID ranUeNgapId;                                       // Mandatory
-  PDUSessionResourceModifyListModRes pduSessionResourceModifyList;  // Mandatory
-  // PDUSessionResourceFailedToModifyListModRes*
-  // pduSessionResourceFailedToModifyListModRes;
+  PDUSessionResourceModifyListModRes pduSessionResourceModifyList;  // Optional
+  bool pduSessionResourceModifyListModResIsSet;
+  // TODO: PDUSessionResourceFailedToModifyListModRes (Optional)
+  // TODO: User Location Information (Optional)
+  // TODO: Criticality Diagnostics (Optional)
 };
 
 }  // namespace ngap

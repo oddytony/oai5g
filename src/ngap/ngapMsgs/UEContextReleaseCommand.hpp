@@ -19,52 +19,45 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #ifndef _UE_CONTEXT_RELEASE_COMMAND_H_
 #define _UE_CONTEXT_RELEASE_COMMAND_H_
 
 #include "AMF-UE-NGAP-ID.hpp"
-#include "Cause.hpp"
-#include "MessageType.hpp"
 #include "RAN-UE-NGAP-ID.hpp"
+#include "Cause.hpp"
+#include "NgapUEMessage.hpp"
 
 extern "C" {
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
+#include "Ngap_UEContextReleaseCommand.h"
 }
 
 namespace ngap {
 
-class UEContextReleaseCommandMsg {
+class UEContextReleaseCommandMsg : public NgapMessage {
  public:
   UEContextReleaseCommandMsg();
   ~UEContextReleaseCommandMsg();
 
- public:
-  void setMessageType();
-  void setAmfUeNgapId(unsigned long id);
-  void setUeNgapIdPair(unsigned long amfId, uint32_t ranId);
-  void addCauseIE();
-  void setCauseRadioNetwork(e_Ngap_CauseRadioNetwork cause_value);
-  void setCauseNas(e_Ngap_CauseNas cause_value);
-  int encode2buffer(uint8_t* buf, int buf_size);
+  void initialize();
 
- public:
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
+
+  void setAmfUeNgapId(const unsigned long& id);
+  bool getAmfUeNgapId(unsigned long& id);
+
+  void setUeNgapIdPair(const unsigned long& amfId, const uint32_t& ranId);
+  bool getUeNgapIdPair(unsigned long& amfId, uint32_t& ranId);
+
+  void addCauseIE();
+  void setCauseRadioNetwork(const e_Ngap_CauseRadioNetwork& cause);
+  void setCauseNas(const e_Ngap_CauseNas& cause);
 
  private:
-  Ngap_NGAP_PDU_t* pdu;
   Ngap_UEContextReleaseCommand_t* ies;
-
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
-  Cause* causeValue;
+  AMF_UE_NGAP_ID amfUeNgapId;
+  RAN_UE_NGAP_ID ranUeNgapId;
+  bool ueNgapIdPairIsSet;
+  Cause causeValue;  // Mandatory
 };
 
 }  // namespace ngap

@@ -19,48 +19,22 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author
- \date 2021
- \email: contact@openairinterface.org
- */
-
 #include "PduSessionResourceModifyResponse.hpp"
-#include "amf.hpp"
+
 #include "logger.hpp"
 
 extern "C" {
-#include "asn_codecs.h"
-#include "constr_TYPE.h"
-#include "constraints.h"
 #include "dynamic_memory_check.h"
-#include "per_decoder.h"
-#include "per_encoder.h"
 }
-
-#include <iostream>
-using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PduSessionResourceModifyResponseMsg::PduSessionResourceModifyResponseMsg() {
-  // Set Message Type
-  pduSessionResourceModifyResponsePdu =
-      (Ngap_NGAP_PDU_t*) calloc(1, sizeof(Ngap_NGAP_PDU_t));
-
-  MessageType pdu = {};
-  pdu.setProcedureCode(Ngap_ProcedureCode_id_PDUSessionResourceModify);
-
-  pdu.setTypeOfMessage(Ngap_NGAP_PDU_PR_successfulOutcome);
-  pdu.setCriticality(Ngap_Criticality_reject);
-  pdu.setValuePresent(
-      Ngap_SuccessfulOutcome__value_PR_PDUSessionResourceModifyResponse);
-  pdu.encode2pdu(pduSessionResourceModifyResponsePdu);
-  pduSessionResourceModifyResponseIEs =
-      &(pduSessionResourceModifyResponsePdu->choice.successfulOutcome->value
-            .choice.PDUSessionResourceModifyResponse);
+PduSessionResourceModifyResponseMsg::PduSessionResourceModifyResponseMsg()
+    : NgapUEMessage() {
+  pduSessionResourceModifyListModResIsSet = false;
+  setMessageType(NgapMessageType::PDU_SESSION_RESOURCE_MODIFY_RESPONSE);
+  initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -69,26 +43,15 @@ PduSessionResourceModifyResponseMsg::~PduSessionResourceModifyResponseMsg() {
 }
 
 //------------------------------------------------------------------------------
-void PduSessionResourceModifyResponseMsg::setMessageType() {
-  if (!pduSessionResourceModifyResponsePdu)
-    pduSessionResourceModifyResponsePdu =
-        (Ngap_NGAP_PDU_t*) calloc(1, sizeof(Ngap_NGAP_PDU_t));
-
-  MessageType pdu = {};
-  pdu.setProcedureCode(Ngap_ProcedureCode_id_PDUSessionResourceModify);
-
-  pdu.setTypeOfMessage(Ngap_NGAP_PDU_PR_successfulOutcome);
-  pdu.setCriticality(Ngap_Criticality_reject);
-  pdu.setValuePresent(
-      Ngap_SuccessfulOutcome__value_PR_PDUSessionResourceModifyResponse);
-  pdu.encode2pdu(pduSessionResourceModifyResponsePdu);
+void PduSessionResourceModifyResponseMsg::initialize() {
   pduSessionResourceModifyResponseIEs =
-      &(pduSessionResourceModifyResponsePdu->choice.successfulOutcome->value
-            .choice.PDUSessionResourceModifyResponse);
+      &(ngapPdu->choice.successfulOutcome->value.choice
+            .PDUSessionResourceModifyResponse);
 }
 
 //------------------------------------------------------------------------------
-void PduSessionResourceModifyResponseMsg::setAmfUeNgapId(unsigned long id) {
+void PduSessionResourceModifyResponseMsg::setAmfUeNgapId(
+    const unsigned long& id) {
   amfUeNgapId.setAMF_UE_NGAP_ID(id);
 
   Ngap_PDUSessionResourceModifyResponseIEs_t* ie =
@@ -109,12 +72,11 @@ void PduSessionResourceModifyResponseMsg::setAmfUeNgapId(unsigned long id) {
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceModifyResponseIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode NGAP AMF_UE_NGAP_ID IE error");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
 void PduSessionResourceModifyResponseMsg::setRanUeNgapId(
-    uint32_t ran_ue_ngap_id) {
+    const uint32_t& ran_ue_ngap_id) {
   ranUeNgapId.setRanUeNgapId(ran_ue_ngap_id);
 
   Ngap_PDUSessionResourceModifyResponseIEs_t* ie =
@@ -135,29 +97,28 @@ void PduSessionResourceModifyResponseMsg::setRanUeNgapId(
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceModifyResponseIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode NGAP RAN_UE_NGAP_ID IE error");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
 void PduSessionResourceModifyResponseMsg::
     setPduSessionResourceModifyResponseList(
-        std::vector<PDUSessionResourceModifyResponseItem_t> list) {
-  std::vector<PDUSessionResourceModifyItemModRes>
-      m_pduSessionResourceModifyItemModRes;
+        const std::vector<PDUSessionResourceModifyResponseItem_t>& list) {
+  std::vector<PDUSessionResourceModifyItemModRes> itemModResList;
+  // itemModResList.reserve(list.size());
+  pduSessionResourceModifyListModResIsSet = true;
 
   for (int i = 0; i < list.size(); i++) {
-    PDUSessionID m_pDUSessionID = {};
-    m_pDUSessionID.setPDUSessionID(list[i].pduSessionId);
-
+    PDUSessionID pDUSessionID               = {};
     PDUSessionResourceModifyItemModRes item = {};
 
+    pDUSessionID.setPDUSessionID(list[i].pduSessionId);
     item.setPDUSessionResourceModifyItemModRes(
-        m_pDUSessionID, list[i].pduSessionResourceModifyResponseTransfer);
-    m_pduSessionResourceModifyItemModRes.push_back(item);
+        pDUSessionID, list[i].pduSessionResourceModifyResponseTransfer);
+    itemModResList.push_back(item);
   }
 
   pduSessionResourceModifyList.setPDUSessionResourceModifyListModRes(
-      m_pduSessionResourceModifyItemModRes);
+      itemModResList);
 
   Ngap_PDUSessionResourceModifyResponseIEs_t* ie =
       (Ngap_PDUSessionResourceModifyResponseIEs_t*) calloc(
@@ -173,7 +134,6 @@ void PduSessionResourceModifyResponseMsg::
   if (!ret) {
     Logger::ngap().error(
         "Encode NGAP PDUSessionResourceModifyListModRes IE error");
-
     free_wrapper((void**) &ie);
     return;
   }
@@ -183,55 +143,47 @@ void PduSessionResourceModifyResponseMsg::
   if (ret != 0)
     Logger::ngap().error(
         "Encode NGAP PDUSessionResourceSetupListSUReq IE error");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
-int PduSessionResourceModifyResponseMsg::encode2buffer(
-    uint8_t* buf, int buf_size) {
-  asn_fprint(
-      stderr, &asn_DEF_Ngap_NGAP_PDU, pduSessionResourceModifyResponsePdu);
-  asn_enc_rval_t er = aper_encode_to_buffer(
-      &asn_DEF_Ngap_NGAP_PDU, NULL, pduSessionResourceModifyResponsePdu, buf,
-      buf_size);
-  Logger::ngap().debug("er.encoded (%d)", er.encoded);
-  return er.encoded;
+bool PduSessionResourceModifyResponseMsg::
+    getPduSessionResourceModifyResponseList(
+        std::vector<PDUSessionResourceModifyResponseItem_t>& list) {
+  if (!pduSessionResourceModifyListModResIsSet) return false;
+
+  std::vector<PDUSessionResourceModifyItemModRes> itemModResList;
+  pduSessionResourceModifyList.getPDUSessionResourceModifyListModRes(
+      itemModResList);
+
+  for (auto& it : itemModResList) {
+    PDUSessionResourceModifyResponseItem_t response = {};
+    PDUSessionID pDUSessionID                       = {};
+    it.getPDUSessionResourceModifyItemModRes(
+        pDUSessionID, response.pduSessionResourceModifyResponseTransfer);
+    pDUSessionID.getPDUSessionID(response.pduSessionId);
+
+    list.push_back(response);
+  }
+
+  return true;
 }
 
 //------------------------------------------------------------------------------
-void PduSessionResourceModifyResponseMsg::encode2buffer_new(
-    char* buf, int& encoded_size) {
-  char* buffer = (char*) calloc(1, BUFFER_SIZE_1024);
-  asn_fprint(
-      stderr, &asn_DEF_Ngap_NGAP_PDU, pduSessionResourceModifyResponsePdu);
-  encoded_size = aper_encode_to_new_buffer(
-      &asn_DEF_Ngap_NGAP_PDU, NULL, pduSessionResourceModifyResponsePdu,
-      (void**) &buffer);
+bool PduSessionResourceModifyResponseMsg::decodeFromPdu(
+    Ngap_NGAP_PDU_t* ngapMsgPdu) {
+  ngapPdu = ngapMsgPdu;
 
-  Logger::ngap().debug("er.encoded (%d)", encoded_size);
-  memcpy((void*) buf, (void*) buffer, encoded_size);
-  free(buffer);
-}
-
-//------------------------------------------------------------------------------
-bool PduSessionResourceModifyResponseMsg::decodefrompdu(
-    Ngap_NGAP_PDU_t* ngap_msg_pdu) {
-  pduSessionResourceModifyResponsePdu = ngap_msg_pdu;
-
-  if (pduSessionResourceModifyResponsePdu->present ==
-      Ngap_NGAP_PDU_PR_successfulOutcome) {
-    if (pduSessionResourceModifyResponsePdu->choice.successfulOutcome &&
-        pduSessionResourceModifyResponsePdu->choice.successfulOutcome
-                ->procedureCode ==
+  if (ngapPdu->present == Ngap_NGAP_PDU_PR_successfulOutcome) {
+    if (ngapPdu->choice.successfulOutcome &&
+        ngapPdu->choice.successfulOutcome->procedureCode ==
             Ngap_ProcedureCode_id_PDUSessionResourceModify &&
-        pduSessionResourceModifyResponsePdu->choice.successfulOutcome
-                ->criticality == Ngap_Criticality_reject &&
-        pduSessionResourceModifyResponsePdu->choice.successfulOutcome->value
-                .present ==
+        ngapPdu->choice.successfulOutcome->criticality ==
+            Ngap_Criticality_reject &&
+        ngapPdu->choice.successfulOutcome->value.present ==
             Ngap_SuccessfulOutcome__value_PR_PDUSessionResourceModifyResponse) {
       pduSessionResourceModifyResponseIEs =
-          &pduSessionResourceModifyResponsePdu->choice.successfulOutcome->value
-               .choice.PDUSessionResourceModifyResponse;
+          &ngapPdu->choice.successfulOutcome->value.choice
+               .PDUSessionResourceModifyResponse;
     } else {
       Logger::ngap().error(
           "Check PDUSessionResourceModifyResponse message error!");
@@ -311,43 +263,6 @@ bool PduSessionResourceModifyResponseMsg::decodefrompdu(
         return false;
       }
     }
-  }
-
-  return true;
-}
-
-//------------------------------------------------------------------------------
-unsigned long PduSessionResourceModifyResponseMsg::getAmfUeNgapId() {
-  return amfUeNgapId.getAMF_UE_NGAP_ID();
-}
-
-//------------------------------------------------------------------------------
-uint32_t PduSessionResourceModifyResponseMsg::getRanUeNgapId() {
-  return ranUeNgapId.getRanUeNgapId();
-}
-
-//------------------------------------------------------------------------------
-bool PduSessionResourceModifyResponseMsg::
-    getPduSessionResourceModifyResponseList(
-        std::vector<PDUSessionResourceModifyResponseItem_t>& list) {
-  std::vector<PDUSessionResourceModifyItemModRes>
-      m_pduSessionResourceModifyItemModRes;
-  int num = 0;
-  pduSessionResourceModifyList.getPDUSessionResourceModifyListModRes(
-      m_pduSessionResourceModifyItemModRes);
-
-  for (int i = 0; i < m_pduSessionResourceModifyItemModRes.size(); i++) {
-    PDUSessionResourceModifyResponseItem_t response;
-
-    PDUSessionID m_pDUSessionID = {};
-
-    m_pduSessionResourceModifyItemModRes[i]
-        .getPDUSessionResourceModifyItemModRes(
-            m_pDUSessionID, response.pduSessionResourceModifyResponseTransfer);
-
-    m_pDUSessionID.getPDUSessionID(response.pduSessionId);
-
-    list.push_back(response);
   }
 
   return true;

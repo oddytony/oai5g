@@ -35,9 +35,7 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 PDUSessionResourceFailedToSetupItemCxtRes::
-    PDUSessionResourceFailedToSetupItemCxtRes() {
-  pDUSessionID = NULL;
-}
+    PDUSessionResourceFailedToSetupItemCxtRes() {}
 
 //------------------------------------------------------------------------------
 PDUSessionResourceFailedToSetupItemCxtRes::
@@ -46,11 +44,21 @@ PDUSessionResourceFailedToSetupItemCxtRes::
 //------------------------------------------------------------------------------
 void PDUSessionResourceFailedToSetupItemCxtRes::
     setPDUSessionResourceFailedToSetupItemCxtRes(
-        PDUSessionID* m_pDUSessionID,
-        OCTET_STRING_t m_pDUSessionResourceSetupUnsuccessfulTransfer) {
+        const PDUSessionID& m_pDUSessionID,
+        const OCTET_STRING_t& m_pDUSessionResourceSetupUnsuccessfulTransfer) {
   pDUSessionID = m_pDUSessionID;
   pDUSessionResourceSetupUnsuccessfulTransfer =
       m_pDUSessionResourceSetupUnsuccessfulTransfer;
+}
+
+//------------------------------------------------------------------------------
+void PDUSessionResourceFailedToSetupItemCxtRes::
+    getPDUSessionResourceFailedToSetupItemCxtRes(
+        PDUSessionID& m_pDUSessionID,
+        OCTET_STRING_t& m_pDUSessionResourceSetupUnsuccessfulTransfer) {
+  m_pDUSessionID = pDUSessionID;
+  pDUSessionResourceSetupUnsuccessfulTransfer =
+      pDUSessionResourceSetupUnsuccessfulTransfer;
 }
 
 //------------------------------------------------------------------------------
@@ -58,8 +66,7 @@ bool PDUSessionResourceFailedToSetupItemCxtRes::
     encode2PDUSessionResourceFailedToSetupItemCxtRes(
         Ngap_PDUSessionResourceFailedToSetupItemCxtRes_t*
             pduSessionResourceFailedToSetupItemCxtRes) {
-  if (!pDUSessionID) return false;
-  if (!pDUSessionID->encode2PDUSessionID(
+  if (!pDUSessionID.encode2PDUSessionID(
           pduSessionResourceFailedToSetupItemCxtRes->pDUSessionID))
     return false;
   pduSessionResourceFailedToSetupItemCxtRes
@@ -74,8 +81,7 @@ bool PDUSessionResourceFailedToSetupItemCxtRes::
     decodefromPDUSessionResourceFailedToSetupItemCxtRes(
         Ngap_PDUSessionResourceFailedToSetupItemCxtRes_t*
             pduSessionResourceFailedToSetupItemCxtRes) {
-  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
-  if (!pDUSessionID->decodefromPDUSessionID(
+  if (!pDUSessionID.decodefromPDUSessionID(
           pduSessionResourceFailedToSetupItemCxtRes->pDUSessionID))
     return false;
   pDUSessionResourceSetupUnsuccessfulTransfer =
@@ -83,16 +89,6 @@ bool PDUSessionResourceFailedToSetupItemCxtRes::
           ->pDUSessionResourceSetupUnsuccessfulTransfer;
 
   return true;
-}
-
-//------------------------------------------------------------------------------
-void PDUSessionResourceFailedToSetupItemCxtRes::
-    getPDUSessionResourceFailedToSetupItemCxtRes(
-        PDUSessionID*& m_pDUSessionID,
-        OCTET_STRING_t& m_pDUSessionResourceSetupUnsuccessfulTransfer) {
-  m_pDUSessionID = pDUSessionID;
-  pDUSessionResourceSetupUnsuccessfulTransfer =
-      pDUSessionResourceSetupUnsuccessfulTransfer;
 }
 
 }  // namespace ngap
