@@ -19,17 +19,11 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author Keliang DU (BUPT), Tien-Thinh NGUYEN (EURECOM)
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #ifndef _PDU_SESSION_RESOURCE_TO_RELEASE_LIST_REL_CMD_H_
 #define _PDU_SESSION_RESOURCE_TO_RELEASE_LIST_REL_CMD_H_
 
 #include "PDUSessionResourceToReleaseItemRelCmd.hpp"
+#include <vector>
 
 extern "C" {
 #include "Ngap_PDUSessionResourceToReleaseItemRelCmd.h"
@@ -44,13 +38,9 @@ class PDUSessionResourceToReleaseListRelCmd {
   virtual ~PDUSessionResourceToReleaseListRelCmd();
 
   void setPDUSessionResourceToReleaseListRelCmd(
-      PDUSessionResourceToReleaseItemRelCmd*
-          m_pduSessionResourceToReleaseItemRelCmd,
-      int num);
+      const std::vector<PDUSessionResourceToReleaseItemRelCmd>& list);
   void getPDUSessionResourceToReleaseListRelCmd(
-      PDUSessionResourceToReleaseItemRelCmd*&
-          m_pduSessionResourceToReleaseItemRelCmd,
-      int& num);
+      std::vector<PDUSessionResourceToReleaseItemRelCmd>& list);
 
   bool encode2PDUSessionResourceToReleaseListRelCmd(
       Ngap_PDUSessionResourceToReleaseListRelCmd_t*
@@ -60,8 +50,7 @@ class PDUSessionResourceToReleaseListRelCmd {
           pduSessionResourceToReleaseListRelCmd);
 
  private:
-  PDUSessionResourceToReleaseItemRelCmd* pduSessionResourceToReleaseItemRelCmd;
-  int maxnoofPDUSessions;
+  std::vector<PDUSessionResourceToReleaseItemRelCmd> itemRelCmdList;
 };
 
 }  // namespace ngap

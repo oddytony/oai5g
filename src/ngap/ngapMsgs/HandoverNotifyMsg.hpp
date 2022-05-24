@@ -19,45 +19,36 @@
  *      contact@openairinterface.org
  */
 
-/*! \file HandoverNotifyMsg.hpp
- \brief
- \author  niuxiansheng-niu, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-#ifndef _HANDOVERNOTIFYMSG_H_
-#define _HANDOVERNOTIFYMSG_H_
+#ifndef _HANDOVER_NOTIFY_MSG_H_
+#define _HANDOVER_NOTIFY_MSG_H_
 
 #include "AMF-UE-NGAP-ID.hpp"
-#include "MessageType.hpp"
-#include "NgapIEsStruct.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
 #include "UserLocationInformation.hpp"
+#include "NgapUEMessage.hpp"
 
 extern "C" {
 #include "Ngap_HandoverNotify.h"
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
 }
 
 namespace ngap {
-class HandoverNotifyMsg {
+class HandoverNotifyMsg : public NgapUEMessage {
  public:
   HandoverNotifyMsg();
   virtual ~HandoverNotifyMsg();
-  int encode2buffer(uint8_t* buf, int buf_size);
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
-  void setUserLocationInfoNR(struct NrCgi_s cig, struct Tai_s tai);
-  unsigned long getAmfUeNgapId();
-  uint32_t getRanUeNgapId();
-  bool getUserLocationInfoNR(struct NrCgi_s& cig, struct Tai_s& tai);
+
+  void initialize();
+  void setAmfUeNgapId(const unsigned long& id) override;
+  void setRanUeNgapId(const uint32_t& id) override;
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
+
+  void setUserLocationInfoNR(const NrCgi_t& cig, const Tai_t& tai);
+  bool getUserLocationInfoNR(NrCgi_t& cig, Tai_t& tai);
 
  private:
-  Ngap_NGAP_PDU_t* handoverNotifyPdu;
   Ngap_HandoverNotify_t* handoverNotifyIEs;
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
-  UserLocationInformation* userLocationInformation;
+  // AMF_UE_NGAP_ID (Mandatory)
+  // RAN_UE_NGAP_ID (Mandatory)
+  UserLocationInformation userLocationInformation;  // Mandatory
 };
 
 }  // namespace ngap

@@ -19,15 +19,8 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _USERLOCATIONINFORMATION_H_
-#define _USERLOCATIONINFORMATION_H_
+#ifndef _USER_LOCATION_INFORMATION_H_
+#define _USER_LOCATION_INFORMATION_H_
 
 #include "UserLocationInformationEUTRA.hpp"
 #include "UserLocationInformationN3IWF.hpp"
@@ -44,22 +37,25 @@ class UserLocationInformation {
   virtual ~UserLocationInformation();
 
   void setInformation(UserLocationInformationEUTRA*);
+  void getInformation(UserLocationInformationEUTRA*&);
+
   void setInformation(UserLocationInformationNR*);
+  void getInformation(UserLocationInformationNR*&);
+
   // void setInformation(UserLocationInformationN3IWF*);
+  // void getInformation(UserLocationInformationN3IWF*&);
+
   bool encodefromUserLocationInformation(
       Ngap_UserLocationInformation_t* userLocationInformation);
   bool decodefromUserLocationInformation(
       Ngap_UserLocationInformation_t* userLocationInformation);
   Ngap_UserLocationInformation_PR getChoiceOfUserLocationInformation();
-  void getInformation(UserLocationInformationEUTRA*&);
-  void getInformation(UserLocationInformationNR*&);
-  // void getInformation(UserLocationInformationN3IWF*&);
 
  private:
   Ngap_UserLocationInformation_PR informationPresent;
   UserLocationInformationEUTRA* userLocationInformationEUTRA;
   UserLocationInformationNR* userLocationInformationNR;
-  // UserLocationInformationN3IWF *userLocationInformationN3IWF;
+  // TODO: UserLocationInformationN3IWF *userLocationInformationN3IWF;
 };
 
 }  // namespace ngap

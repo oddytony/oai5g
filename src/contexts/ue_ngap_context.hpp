@@ -47,7 +47,6 @@ typedef enum {
 
 class ue_ngap_context {
  public:
- public:
   ue_ngap_context() {
     ran_ue_ngap_id        = 0;
     amf_ue_ngap_id        = 0;

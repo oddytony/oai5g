@@ -19,65 +19,46 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author
- \date 2021
- \email: contact@openairinterface.org
- */
-
 #ifndef PDU_SESSION_RESOURCE_MODIFY_REQUEST_H_
 #define PDU_SESSION_RESOURCE_MODIFY_REQUEST_H_
 
-#include "AMF-UE-NGAP-ID.hpp"
-#include "MessageType.hpp"
-#include "NgapIEsStruct.hpp"
 #include "PDUSessionResourceModifyListModReq.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
 #include "RANPagingPriority.hpp"
+#include "NgapUEMessage.hpp"
 
 extern "C" {
-#include "Ngap_InitialContextSetupRequest.h"
 #include "Ngap_PDUSessionResourceModifyRequest.h"
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
 }
 
 namespace ngap {
 
-class PduSessionResourceModifyRequestMsg {
+class PduSessionResourceModifyRequestMsg : public NgapUEMessage {
  public:
   PduSessionResourceModifyRequestMsg();
   virtual ~PduSessionResourceModifyRequestMsg();
 
-  void setMessageType();
-  void setAmfUeNgapId(unsigned long id);  // 40 bits
-  void setRanUeNgapId(uint32_t id);       // 32 bits
-  void setRanPagingPriority(uint8_t priority);
-  void setNasPdu(uint8_t* nas, size_t sizeofnas);
+  void initialize();
+
+  void setAmfUeNgapId(const unsigned long& id) override;
+  void setRanUeNgapId(const uint32_t& id) override;
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
+
+  void setRanPagingPriority(const uint8_t& priority);
+  int getRanPagingPriority();
+
+  void setNasPdu(uint8_t* nas, size_t size);
+  bool getNasPdu(uint8_t*& nas, size_t& size);
 
   void setPduSessionResourceModifyRequestList(
-      std::vector<PDUSessionResourceModifyRequestItem_t> list);
-
-  int encode2buffer(uint8_t* buf, int buf_size);
-  void encode2buffer_new(char* buf, int& encoded_size);
-
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
-  unsigned long getAmfUeNgapId();
-  uint32_t getRanUeNgapId();
-  int getRanPagingPriority();
-  bool getNasPdu(uint8_t*& nas, size_t& sizeofnas);
+      const std::vector<PDUSessionResourceModifyRequestItem_t>& list);
   bool getPduSessionResourceModifyRequestList(
       std::vector<PDUSessionResourceModifyRequestItem_t>& list);
 
  private:
-  Ngap_NGAP_PDU_t* pduSessionResourceModifyRequestPdu;
   Ngap_PDUSessionResourceModifyRequest_t* pduSessionResourceModifyRequestIEs;
 
-  AMF_UE_NGAP_ID amfUeNgapId;            // Mandatory
-  RAN_UE_NGAP_ID ranUeNgapId;            // Mandatory
-  RANPagingPriority* ranPagingPriority;  // Optional
-  PDUSessionResourceModifyListModReq* pduSessionResourceModifyList;
+  RANPagingPriority* ranPagingPriority;                             // Optional
+  PDUSessionResourceModifyListModReq pduSessionResourceModifyList;  // Mandatory
 };
 
 }  // namespace ngap

@@ -19,18 +19,12 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _SupportedTaItem_H
-#define _SupportedTaItem_H
+#ifndef _SUPPORTED_TA_ITEM_H
+#define _SUPPORTED_TA_ITEM_H
 
 #include "BroadcastPLMNItem.hpp"
 #include "Tac.hpp"
+#include <vector>
 
 extern "C" {
 #include "Ngap_SupportedTAItem.h"
@@ -43,19 +37,18 @@ class SupportedTaItem {
   SupportedTaItem();
   virtual ~SupportedTaItem();
 
-  void setTac(TAC* m_tac);
-  void getTac(TAC*& m_tac);
-  void setBroadcastPlmnList(
-      BroadcastPLMNItem* m_broadcastPLMNItem, int numOfItem);
-  void getBroadcastPlmnList(
-      BroadcastPLMNItem*& m_broadcastPLMNItem, int& numOfItem);
+  void setTac(const TAC& m_tac);
+  void getTac(TAC& m_tac);
+
+  void setBroadcastPlmnList(const std::vector<BroadcastPLMNItem>& list);
+  void getBroadcastPlmnList(std::vector<BroadcastPLMNItem>& list);
+
   bool encode2SupportedTaItem(Ngap_SupportedTAItem_t* ta);
   bool decodefromSupportedTaItem(Ngap_SupportedTAItem_t* ta);
 
  private:
-  TAC* tac;
-  BroadcastPLMNItem* broadcastPLMNItem;
-  int numberOfBroadcastItem;
+  TAC tac;                                           // Mandatory
+  std::vector<BroadcastPLMNItem> broadcastPLMNList;  // Mandatory
 };
 
 }  // namespace ngap

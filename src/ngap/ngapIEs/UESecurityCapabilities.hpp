@@ -19,13 +19,6 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #ifndef _UESECURITYCAPABILITIES_H_
 #define _UESECURITYCAPABILITIES_H_
 
@@ -53,10 +46,10 @@ class UESecurityCapabilities {
   bool decodefromUESecurityCapabilities(Ngap_UESecurityCapabilities_t&);
 
  private:
-  uint16_t NR_EncryptionAlgs;
-  uint16_t NR_IntegrityProtectionAlgs;
-  uint16_t E_UTRA_EncryptionAlgs;
-  uint16_t E_UTRA_IntegrityProtectionAlgs;
+  uint16_t NR_EncryptionAlgs;               // Mandatory
+  uint16_t NR_IntegrityProtectionAlgs;      // Mandatory
+  uint16_t E_UTRA_EncryptionAlgs;           // Mandatory
+  uint16_t E_UTRA_IntegrityProtectionAlgs;  // Mandatory
 };
 
 }  // namespace ngap

@@ -19,15 +19,8 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _GlobalgNBId_H
-#define _GlobalgNBId_H
+#ifndef _GLOBAL_GNB_ID_H
+#define _GLOBAL_GNB_ID_H
 
 #include "GNB-ID.hpp"
 #include "PlmnId.hpp"
@@ -45,12 +38,13 @@ class GlobalgNBId {
 
   bool encode2GlobalgNBId(Ngap_GlobalGNB_ID_t*);
   bool decodefromGlobalgNBId(Ngap_GlobalGNB_ID_t*);
-  void setGlobalgNBId(PlmnId* plmn, GNB_ID* gnbid);
-  void getGlobalgNBId(PlmnId*& plmn, GNB_ID*& gnbid);
+
+  void setGlobalgNBId(const PlmnId& plmn, const GNB_ID& gnbid);
+  void getGlobalgNBId(PlmnId& plmn, GNB_ID& gnbid);
 
  private:
-  PlmnId* plmnId;
-  GNB_ID* gNB_ID;
+  PlmnId plmnId;  // Mandatory
+  GNB_ID gNB_ID;  // Mandatory
 };
 
 }  // namespace ngap

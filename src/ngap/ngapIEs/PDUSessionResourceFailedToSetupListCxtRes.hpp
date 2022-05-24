@@ -19,17 +19,11 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _PDUSESSIONRESOURCEFAILEDTOSETUPLISTCXTRES_H_
-#define _PDUSESSIONRESOURCEFAILEDTOSETUPLISTCXTRES_H_
+#ifndef _PDU_SESSION_RESOURCE_FAILED_TO_SETUP_LIST_CXT_RES_H_
+#define _PDU_SESSION_RESOURCE_FAILED_TO_SETUP_LIST_CXT_RES_H_
 
 #include "PDUSessionResourceFailedToSetupItemCxtRes.hpp"
+#include <vector>
 
 extern "C" {
 #include "Ngap_PDUSessionResourceFailedToSetupListCxtRes.h"
@@ -43,13 +37,9 @@ class PDUSessionResourceFailedToSetupListCxtRes {
   virtual ~PDUSessionResourceFailedToSetupListCxtRes();
 
   void setPDUSessionResourceFailedToSetupListCxtRes(
-      PDUSessionResourceFailedToSetupItemCxtRes*
-          m_pduSessionResourceFailedToSetupItemCxtRes,
-      int num);
+      const std::vector<PDUSessionResourceFailedToSetupItemCxtRes>& list);
   void getPDUSessionResourceFailedToSetupListCxtRes(
-      PDUSessionResourceFailedToSetupItemCxtRes*&
-          m_pduSessionResourceFailedToSetupItemCxtRes,
-      int& num);
+      std::vector<PDUSessionResourceFailedToSetupItemCxtRes>& list);
 
   bool encode2PDUSessionResourceFailedToSetupListCxtRes(
       Ngap_PDUSessionResourceFailedToSetupListCxtRes_t*
@@ -59,9 +49,7 @@ class PDUSessionResourceFailedToSetupListCxtRes {
           pduSessionResourceFailedToSetupListCxtRes);
 
  private:
-  PDUSessionResourceFailedToSetupItemCxtRes*
-      pduSessionResourceFailedToSetupItemCxtRes;
-  int numofpduSessionResourceFailedToSetupItemCxtRes;
+  std::vector<PDUSessionResourceFailedToSetupItemCxtRes> itemList;
 };
 
 }  // namespace ngap

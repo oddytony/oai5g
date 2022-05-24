@@ -19,42 +19,38 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #include "PDUSessionResourceSetupItemSURes.hpp"
-
-#include <iostream>
-using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PDUSessionResourceSetupItemSURes::PDUSessionResourceSetupItemSURes() {
-  pDUSessionID = NULL;
-}
+PDUSessionResourceSetupItemSURes::PDUSessionResourceSetupItemSURes() {}
 
 //------------------------------------------------------------------------------
 PDUSessionResourceSetupItemSURes::~PDUSessionResourceSetupItemSURes() {}
 
 //------------------------------------------------------------------------------
 void PDUSessionResourceSetupItemSURes::setPDUSessionResourceSetupItemSURes(
-    PDUSessionID* m_pDUSessionID,
-    OCTET_STRING_t m_pDUSessionResourceSetupResponseTransfer) {
+    const PDUSessionID& m_pDUSessionID,
+    const OCTET_STRING_t& m_pDUSessionResourceSetupResponseTransfer) {
   pDUSessionID = m_pDUSessionID;
   pDUSessionResourceSetupResponseTransfer =
       m_pDUSessionResourceSetupResponseTransfer;
 }
 
 //------------------------------------------------------------------------------
+void PDUSessionResourceSetupItemSURes::getPDUSessionResourceSetupItemSURes(
+    PDUSessionID& m_pDUSessionID,
+    OCTET_STRING_t& m_pDUSessionResourceSetupResponseTransfer) {
+  m_pDUSessionID = pDUSessionID;
+  m_pDUSessionResourceSetupResponseTransfer =
+      pDUSessionResourceSetupResponseTransfer;
+}
+
+//------------------------------------------------------------------------------
 bool PDUSessionResourceSetupItemSURes::encode2PDUSessionResourceSetupItemSURes(
     Ngap_PDUSessionResourceSetupItemSURes_t* pduSessionResourceSetupItemSURes) {
-  if (!pDUSessionID) return false;
-  if (!pDUSessionID->encode2PDUSessionID(
+  if (!pDUSessionID.encode2PDUSessionID(
           pduSessionResourceSetupItemSURes->pDUSessionID))
     return false;
   pduSessionResourceSetupItemSURes->pDUSessionResourceSetupResponseTransfer =
@@ -68,23 +64,13 @@ bool PDUSessionResourceSetupItemSURes::
     decodefromPDUSessionResourceSetupItemSURes(
         Ngap_PDUSessionResourceSetupItemSURes_t*
             pduSessionResourceSetupItemSURes) {
-  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
-  if (!pDUSessionID->decodefromPDUSessionID(
+  if (!pDUSessionID.decodefromPDUSessionID(
           pduSessionResourceSetupItemSURes->pDUSessionID))
     return false;
   pDUSessionResourceSetupResponseTransfer =
       pduSessionResourceSetupItemSURes->pDUSessionResourceSetupResponseTransfer;
 
   return true;
-}
-
-//------------------------------------------------------------------------------
-void PDUSessionResourceSetupItemSURes::getPDUSessionResourceSetupItemSURes(
-    PDUSessionID*& m_pDUSessionID,
-    OCTET_STRING_t& m_pDUSessionResourceSetupResponseTransfer) {
-  m_pDUSessionID = pDUSessionID;
-  m_pDUSessionResourceSetupResponseTransfer =
-      pDUSessionResourceSetupResponseTransfer;
 }
 
 }  // namespace ngap

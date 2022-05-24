@@ -28,15 +28,11 @@
 
 #include "ServedGUAMIItem.hpp"
 
-#include <iostream>
-using namespace std;
-
 namespace ngap {
 
 //------------------------------------------------------------------------------
 ServedGUAMIItem::ServedGUAMIItem() {
-  guamiGroup         = NULL;
-  backupAMFName      = NULL;
+  backupAMFName      = nullptr;
   backupAMFNameIsSet = false;
 }
 
@@ -44,7 +40,7 @@ ServedGUAMIItem::ServedGUAMIItem() {
 ServedGUAMIItem::~ServedGUAMIItem() {}
 
 //------------------------------------------------------------------------------
-void ServedGUAMIItem::setGUAMI(GUAMI* m_guami) {
+void ServedGUAMIItem::setGUAMI(const GUAMI& m_guami) {
   guamiGroup = m_guami;
 }
 
@@ -57,7 +53,7 @@ void ServedGUAMIItem::setBackupAMFName(AmfName* m_backupAMFName) {
 //------------------------------------------------------------------------------
 bool ServedGUAMIItem::encode2ServedGUAMIItem(
     Ngap_ServedGUAMIItem* servedGUAMIItem) {
-  if (!guamiGroup->encode2GUAMI(&(servedGUAMIItem->gUAMI))) return false;
+  if (!guamiGroup.encode2GUAMI(&(servedGUAMIItem->gUAMI))) return false;
   if (backupAMFNameIsSet) {
     Ngap_AMFName_t* backupamfname =
         (Ngap_AMFName_t*) calloc(1, sizeof(Ngap_AMFName_t));
@@ -70,8 +66,7 @@ bool ServedGUAMIItem::encode2ServedGUAMIItem(
 
 //------------------------------------------------------------------------------
 bool ServedGUAMIItem::decodefromServedGUAMIItem(Ngap_ServedGUAMIItem* pdu) {
-  if (!guamiGroup) guamiGroup = new GUAMI();
-  if (!guamiGroup->decodefromGUAMI(&pdu->gUAMI)) return false;
+  if (!guamiGroup.decodefromGUAMI(&pdu->gUAMI)) return false;
   if (pdu->backupAMFName) {
     backupAMFNameIsSet = true;
     backupAMFName      = new AmfName();
@@ -81,7 +76,7 @@ bool ServedGUAMIItem::decodefromServedGUAMIItem(Ngap_ServedGUAMIItem* pdu) {
 }
 
 //------------------------------------------------------------------------------
-void ServedGUAMIItem::getGUAMI(GUAMI*& m_guami) {
+void ServedGUAMIItem::getGUAMI(GUAMI& m_guami) {
   m_guami = guamiGroup;
 }
 

@@ -22,45 +22,36 @@
 #ifndef _HANDOVER_PREPARATION_FAILURE_H_
 #define _HANDOVER_PREPARATION_FAILURE_H_
 
-#include "AMF-UE-NGAP-ID.hpp"
 #include "Cause.hpp"
-#include "MessageType.hpp"
-#include "NgapIEsStruct.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
+#include "NgapUEMessage.hpp"
+
 extern "C" {
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
+#include "Ngap_HandoverPreparationFailure.h"
+#include "Ngap_CriticalityDiagnostics.h"
 }
 
 namespace ngap {
 
-class HandoverPreparationFailure {
+class HandoverPreparationFailure : public NgapUEMessage {
  public:
   HandoverPreparationFailure();
   virtual ~HandoverPreparationFailure();
 
-  void setMessageType();  // Initialize the PDU and populate the MessageType;
-
-  void setAmfUeNgapId(unsigned long id);  // 40 bits
-  unsigned long getAmfUeNgapId() const;
-
-  void setRanUeNgapId(uint32_t id);  // 32 bits
-  uint32_t getRanUeNgapId() const;
-
-  int encode2buffer(uint8_t* buf, int buf_size);
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
+  void initialize();
+  void setAmfUeNgapId(const unsigned long& id) override;
+  void setRanUeNgapId(const uint32_t& id) override;
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
 
   void getCause(Cause& cause) const;
-  void setCause(Ngap_Cause_PR m_causePresent, long value = 0);
-  Ngap_Cause_PR getChoiceOfCause() const;
+  void setCause(const Ngap_Cause_PR& causePresent, const long& value = 0);
+  Ngap_Cause_PR getChoiceOfCause();
 
  private:
-  Ngap_NGAP_PDU_t* hoPreparationFailurePdu;
   Ngap_HandoverPreparationFailure_t* hoPreparationFailureIEs;
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
-  Cause* cause;
-  Ngap_CriticalityDiagnostics_t* CriticalityDiagnostics;
+  // AMF_UE_NGAP_ID (Mandatory)
+  // RAN_UE_NGAP_ID (Mandatory)
+  Cause cause;                                            // Mandatory
+  Ngap_CriticalityDiagnostics_t* criticalityDiagnostics;  // Optional
 };
 
 }  // namespace ngap

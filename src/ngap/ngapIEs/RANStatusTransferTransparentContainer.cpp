@@ -20,46 +20,55 @@
  */
 
 #include "RANStatusTransferTransparentContainer.hpp"
-
-#include <iostream>
-#include <vector>
-using namespace std;
+#include "logger.hpp"
 
 namespace ngap {
+
+//------------------------------------------------------------------------------
 RANStatusTransferTransparentContainer::RANStatusTransferTransparentContainer() {
-  drb_sub_list = NULL;
 }
+
+//------------------------------------------------------------------------------
 RANStatusTransferTransparentContainer::
     ~RANStatusTransferTransparentContainer() {}
+
+//------------------------------------------------------------------------------
 void RANStatusTransferTransparentContainer::getdRBSubject_list(
-    dRBSubjectList*& drblist) {
+    dRBSubjectList& drblist) {
   drblist = drb_sub_list;
 }
+
+//------------------------------------------------------------------------------
 void RANStatusTransferTransparentContainer::setdRBSubject_list(
-    dRBSubjectList* drblist) {
+    const dRBSubjectList& drblist) {
   drb_sub_list = drblist;
 }
+
+//------------------------------------------------------------------------------
 bool RANStatusTransferTransparentContainer::
     encoderanstatustransfer_transparentcontainer(
         Ngap_RANStatusTransfer_TransparentContainer_t*
             ranstatustransfer_transparentcontainer) {
-  if (!drb_sub_list->encodefromdRBSubjectlist(
+  if (!drb_sub_list.encodefromdRBSubjectlist(
           ranstatustransfer_transparentcontainer
               ->dRBsSubjectToStatusTransferList)) {
-    cout << "encoderanstatustransfer_transparentcontainer error" << endl;
+    Logger::ngap().error(
+        "Encode RANStatusTransferTransparentContainer IE error!");
     return false;
   }
   return true;
 }
+
+//------------------------------------------------------------------------------
 bool RANStatusTransferTransparentContainer::
     decoderanstatustransfer_transparentcontainer(
-        Ngap_RANStatusTransfer_TransparentContainer_t*
+        Ngap_RANStatusTransfer_TransparentContainer_t&
             ranstatustransfer_transparentcontainer) {
-  if (drb_sub_list == nullptr) drb_sub_list = new dRBSubjectList();
-  if (!drb_sub_list->decodefromdRBSubjectlist(
+  if (!drb_sub_list.decodefromdRBSubjectlist(
           ranstatustransfer_transparentcontainer
-              ->dRBsSubjectToStatusTransferList)) {
-    cout << "decoderanstatustransfer_transparentcontainer error" << endl;
+              .dRBsSubjectToStatusTransferList)) {
+    Logger::ngap().error(
+        "Decode RANStatusTransferTransparentContainer IE error!");
     return false;
   }
   return true;

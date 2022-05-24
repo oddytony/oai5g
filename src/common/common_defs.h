@@ -32,10 +32,6 @@
 #include <arpa/inet.h>
 #include <stdint.h>
 
-#define RETURNclear (int) 2
-#define RETURNerror (int) 1
-#define RETURNok (int) 0
-
 typedef enum {
   /* Fatal errors - received message should not be processed */
   TLV_MAC_MISMATCH                  = -14,
@@ -52,12 +48,18 @@ typedef enum {
   //  RETURNerror                             = -1,
   //  RETURNok                                = 0,
 
-  TLV_ERROR_OK = RETURNok,
+  TLV_ERROR_OK = 0,
   /* Defines error code limit below which received message should be discarded
    * because it cannot be further processed */
   TLV_FATAL_ERROR = TLV_VALUE_DOESNT_MATCH
 
 } error_code_e;
+
+typedef enum {
+  RETURNerror = -1,
+  RETURNok    = 0,
+} status_code_e;
+
 //------------------------------------------------------------------------------
 #define DECODE_U8(bUFFER, vALUE, sIZE)                                         \
   vALUE = *(uint8_t*) (bUFFER);                                                \

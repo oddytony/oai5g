@@ -47,19 +47,16 @@ class CoreNetworkAssistanceInfo {
   virtual ~CoreNetworkAssistanceInfo();
 
   void setCoreNetworkAssistanceInfo(
-      UEIdentityIndexValue* m_ueIdentityIndexValue,
+      const UEIdentityIndexValue& m_ueIdentityIndexValue,
       DefaultPagingDRX* m_pagingDRX,
-      PeriodicRegistrationUpdateTimer* m_periodicRegUpdateTimer,
-      bool m_micoModeInd, TAI* m_tai, int m_numoftai);
-  void setCoreNetworkAssistanceInfo(
-      UEIdentityIndexValue* m_ueIdentityIndexValue,
-      PeriodicRegistrationUpdateTimer* m_periodicRegUpdateTimer,
-      bool m_micoModeInd, TAI* m_tai, int m_numoftai);
+      const PeriodicRegistrationUpdateTimer& m_periodicRegUpdateTimer,
+      const bool& m_micoModeInd, const std::vector<TAI>& m_tai);
+
   void getCoreNetworkAssistanceInfo(
-      UEIdentityIndexValue*& m_ueIdentityIndexValue,
+      UEIdentityIndexValue& m_ueIdentityIndexValue,
       DefaultPagingDRX*& m_pagingDRX,
-      PeriodicRegistrationUpdateTimer*& m_periodicRegUpdateTimer,
-      bool& m_micoModeInd, TAI*& m_tai, int& m_numoftai);
+      PeriodicRegistrationUpdateTimer& m_periodicRegUpdateTimer,
+      bool& m_micoModeInd, std::vector<TAI>& m_tai);
 
   bool encode2CoreNetworkAssistanceInfo(Ngap_CoreNetworkAssistanceInformation_t*
                                             coreNetworkAssistanceInformation);
@@ -68,12 +65,13 @@ class CoreNetworkAssistanceInfo {
           coreNetworkAssistanceInformation);
 
  private:
-  UEIdentityIndexValue* ueIdentityIndexValue;
-  DefaultPagingDRX* pagingDRX;
-  PeriodicRegistrationUpdateTimer* periodicRegUpdateTimer;
-  MICOModeIndication* micoModeInd;
-  TAI* tai;
-  int numoftai;
+  UEIdentityIndexValue ueIdentityIndexValue;  // Mandatory
+  DefaultPagingDRX* pagingDRX;                // UE Specific DRX, Optional
+  PeriodicRegistrationUpdateTimer periodicRegUpdateTimer;  // Mandatory
+  MICOModeIndication* micoModeInd;                         // Optional
+  std::vector<TAI> taiList;                                // Mandatory
+  // int numoftai;
+  // TODO: Expected UE Behaviour (Optional)
 };
 
 }  // namespace ngap

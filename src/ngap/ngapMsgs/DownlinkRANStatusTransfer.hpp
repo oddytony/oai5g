@@ -19,40 +19,40 @@
  *      contact@openairinterface.org
  */
 
-#ifndef _DOWNLINKRANSTATUSTRANSFER_H_
-#define _DOWNLINKRANSTATUSTRANSFER_H_
-#include "AMF-UE-NGAP-ID.hpp"
-#include "MessageType.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
+#ifndef _DOWNLINK_RAN_STATUS_TRANSFER_H_
+#define _DOWNLINK_RAN_STATUS_TRANSFER_H_
+
 #include "RANStatusTransferTransparentContainer.hpp"
-#include "dRBStatusDL18.hpp"
+#include "NgapUEMessage.hpp"
+
 extern "C" {
-#include "Ngap_DRB-ID.h"
-#include "Ngap_InitiatingMessage.h"
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
 #include "Ngap_RANStatusTransfer-TransparentContainer.h"
-#include "Ngap_UplinkRANStatusTransfer.h"
 }
 namespace ngap {
-class DownlinkRANStatusTransfer {
+class DownlinkRANStatusTransfer : public NgapUEMessage {
  public:
   DownlinkRANStatusTransfer();
   virtual ~DownlinkRANStatusTransfer();
-  void setmessagetype();
-  void setAmfUeNgapId(unsigned long id);  // 40 bits
-  void setRanUeNgapId(uint32_t id);       // 32 bits
+
+  void initialize();
+  void setAmfUeNgapId(const unsigned long& id) override;
+  void setRanUeNgapId(const uint32_t& id) override;
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
+
   void setRANStatusTransfer_TransparentContainer(
-      long drb_id, long ul_pcdp, long ul_hfn_pdcp, long dl_pcdp,
-      long dl_hfn_pdcp);
-  int encodetobuffer(uint8_t* buf, int buf_size);
+      const long& drbIDValue, const long& ulPdcpValue,
+      const long& ulHfnPdcpValue, const long& dlPdcpValue,
+      const long& dlHfnPdcpValue);
+  void getRANStatusTransfer_TransparentContainer(
+      long& drbIDValue, long& ulPdcpValue, long& ulHfnPdcpValue,
+      long& dlPdcpValue, long& dlHfnPdcpValue);
 
  private:
-  Ngap_NGAP_PDU_t* DownlinkranstatustransferPDU;
-  Ngap_DownlinkRANStatusTransfer_t* DownlinkranstatustransferIEs;
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
-  RANStatusTransferTransparentContainer* ranStatusTransfer_TransparentContainer;
+  Ngap_DownlinkRANStatusTransfer_t* downlinkranstatustransferIEs;
+  // AMF_UE_NGAP_ID (Mandatory)
+  // RAN_UE_NGAP_ID (Mandatory)
+  RANStatusTransferTransparentContainer
+      ranStatusTransfer_TransparentContainer;  // Mandatory
 };
 }  // namespace ngap
 #endif

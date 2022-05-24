@@ -19,23 +19,28 @@
  *      contact@openairinterface.org
  */
 
-#ifndef _DRBSTATUSUL_H_
-#define _DRBSTATUSUL_H_
+#ifndef _DRB_STATUS_UL_H_
+#define _DRB_STATUS_UL_H_
+
 #include "dRBStatusUL18.hpp"
+
 extern "C" {
 #include "Ngap_DRBStatusUL.h"
 }
+
 namespace ngap {
 class dRBStatusUL {
  private:
-  /* data */
-  dRBStatusUL18* ul18;
+  dRBStatusUL18 ul18;
+  // TODO: dRBStatusUL12* ul12;
 
  public:
-  dRBStatusUL(/* args */);
+  dRBStatusUL();
   virtual ~dRBStatusUL();
-  void setdRBStatusUL(dRBStatusUL18* uL18);
-  void getdRBStatusUL(dRBStatusUL18*& uL18);
+
+  void setdRBStatusUL(const dRBStatusUL18& uL18);
+  void getdRBStatusUL(dRBStatusUL18& uL18);
+
   bool encodedRBStatusUL(Ngap_DRBStatusUL_t* uL);
   bool decodedRBStatusUL(Ngap_DRBStatusUL_t* uL);
 };

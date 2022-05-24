@@ -19,51 +19,39 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #include "PDUSessionResourceSetupListCxtReq.hpp"
-
-#include <iostream>
-using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PDUSessionResourceSetupListCxtReq::PDUSessionResourceSetupListCxtReq() {
-  pduSessionResourceSetupItemCxtReq      = NULL;
-  numofpduSessionResourceSetupItemCxtReq = 0;
-}
+PDUSessionResourceSetupListCxtReq::PDUSessionResourceSetupListCxtReq() {}
 
 //------------------------------------------------------------------------------
 PDUSessionResourceSetupListCxtReq::~PDUSessionResourceSetupListCxtReq() {}
 
 //------------------------------------------------------------------------------
 void PDUSessionResourceSetupListCxtReq::setPDUSessionResourceSetupListCxtReq(
-    PDUSessionResourceSetupItemCxtReq* m_pduSessionResourceSetupItemCxtReq,
-    int num) {
-  pduSessionResourceSetupItemCxtReq      = m_pduSessionResourceSetupItemCxtReq;
-  numofpduSessionResourceSetupItemCxtReq = num;
+    const std::vector<PDUSessionResourceSetupItemCxtReq>& itemList) {
+  pduSessionResourceSetupItemCxtReqList = itemList;
 }
+
+//------------------------------------------------------------------------------
+void PDUSessionResourceSetupListCxtReq::getPDUSessionResourceSetupListCxtReq(
+    std::vector<PDUSessionResourceSetupItemCxtReq>& itemList) {}
 
 //------------------------------------------------------------------------------
 bool PDUSessionResourceSetupListCxtReq::
     encode2PDUSessionResourceSetupListCxtReq(
         Ngap_PDUSessionResourceSetupListCxtReq_t*
             pduSessionResourceSetupListCxtReq) {
-  for (int i = 0; i < numofpduSessionResourceSetupItemCxtReq; i++) {
-    cout << "encoding items" << endl;
+  for (std::vector<PDUSessionResourceSetupItemCxtReq>::iterator it =
+           std::begin(pduSessionResourceSetupItemCxtReqList);
+       it < std::end(pduSessionResourceSetupItemCxtReqList); ++it) {
     Ngap_PDUSessionResourceSetupItemCxtReq_t* request =
         (Ngap_PDUSessionResourceSetupItemCxtReq_t*) calloc(
             1, sizeof(Ngap_PDUSessionResourceSetupItemCxtReq_t));
     if (!request) return false;
-    if (!pduSessionResourceSetupItemCxtReq[i]
-             .encode2PDUSessionResourceSetupItemCxtReq(request))
-      return false;
+    if (!it->encode2PDUSessionResourceSetupItemCxtReq(request)) return false;
     if (ASN_SEQUENCE_ADD(&pduSessionResourceSetupListCxtReq->list, request) !=
         0)
       return false;
@@ -77,26 +65,18 @@ bool PDUSessionResourceSetupListCxtReq::
     decodefromPDUSessionResourceSetupListCxtReq(
         Ngap_PDUSessionResourceSetupListCxtReq_t*
             pduSessionResourceSetupListCxtReq) {
-  numofpduSessionResourceSetupItemCxtReq =
-      pduSessionResourceSetupListCxtReq->list.count;
-  pduSessionResourceSetupItemCxtReq = new PDUSessionResourceSetupItemCxtReq
-      [numofpduSessionResourceSetupItemCxtReq]();
-  for (int i = 0; i < numofpduSessionResourceSetupItemCxtReq; i++) {
-    if (!pduSessionResourceSetupItemCxtReq[i]
-             .decodefromPDUSessionResourceSetupItemCxtReq(
-                 pduSessionResourceSetupListCxtReq->list.array[i]))
+  pduSessionResourceSetupItemCxtReqList.reserve(
+      pduSessionResourceSetupListCxtReq->list.count);
+
+  for (int i = 0; i < pduSessionResourceSetupListCxtReq->list.count; i++) {
+    PDUSessionResourceSetupItemCxtReq item = {};
+    if (!item.decodefromPDUSessionResourceSetupItemCxtReq(
+            pduSessionResourceSetupListCxtReq->list.array[i]))
       return false;
+    pduSessionResourceSetupItemCxtReqList.push_back(item);
   }
 
   return true;
-}
-
-//------------------------------------------------------------------------------
-void PDUSessionResourceSetupListCxtReq::getPDUSessionResourceSetupListCxtReq(
-    PDUSessionResourceSetupItemCxtReq*& m_pduSessionResourceSetupItemCxtReq,
-    int& num) {
-  m_pduSessionResourceSetupItemCxtReq = pduSessionResourceSetupItemCxtReq;
-  num                                 = numofpduSessionResourceSetupItemCxtReq;
 }
 
 }  // namespace ngap

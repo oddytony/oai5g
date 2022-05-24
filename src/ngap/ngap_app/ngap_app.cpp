@@ -19,19 +19,10 @@
  *      contact@openairinterface.org
  */
 
-/*! \file ngap_app.cpp
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #include "ngap_app.hpp"
 
-#include "amf_module_from_config.hpp"
 #include "logger.hpp"
 #include "ngap_message_callback.hpp"
-#include "sctp_server.hpp"
 
 extern "C" {
 #include "Ngap_InitiatingMessage.h"
@@ -47,7 +38,7 @@ ngap_app::ngap_app(const std::string& address, const uint16_t port_num)
     : ppid_(60), sctp_s_38412(address.c_str(), port_num) {
   sctp_s_38412.start_receive(this);
   Logger::ngap().info(
-      "Set N2 AMF IPv4 Addr, port: %s, %d", address.c_str(), port_num);
+      "Set N2 AMF IPv4 Addr %s, port %d", address.c_str(), port_num);
 }
 
 //------------------------------------------------------------------------------
@@ -61,6 +52,7 @@ void ngap_app::handle_receive(
       "Handling SCTP payload from SCTP Server on assoc_id (%d), stream_id "
       "(%d), instreams (%d), outstreams (%d)",
       assoc_id, stream, instreams, outstreams);
+
   Ngap_NGAP_PDU_t* ngap_msg_pdu =
       (Ngap_NGAP_PDU_t*) calloc(1, sizeof(Ngap_NGAP_PDU_t));
   asn_dec_rval_t rc = asn_decode(
@@ -70,9 +62,8 @@ void ngap_app::handle_receive(
       "Decoded NGAP message, procedure code %d, present %d",
       ngap_msg_pdu->choice.initiatingMessage->procedureCode,
       ngap_msg_pdu->present);
-  printf("after decoding ...\n");
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, ngap_msg_pdu);
-  printf("end decoding ...\n");
+
   // Handle the message
   (*messages_callback[ngap_msg_pdu->choice.initiatingMessage->procedureCode]
                      [ngap_msg_pdu->present - 1])(
@@ -84,7 +75,7 @@ void ngap_app::handle_sctp_new_association(
     sctp_assoc_id_t assoc_id, sctp_stream_id_t instreams,
     sctp_stream_id_t outstreams) {
   Logger::ngap().debug(
-      "Ready to handle new NGAP SCTP association (id: %d) request", assoc_id);
+      "Ready to handle new NGAP SCTP association request (id %d)", assoc_id);
   std::shared_ptr<gnb_context> gc = {};
   if (!is_assoc_id_2_gnb_context(assoc_id)) {
     Logger::ngap().debug(
@@ -100,7 +91,7 @@ void ngap_app::handle_sctp_new_association(
     if (gc.get()->ng_state == NGAP_RESETING ||
         gc.get()->ng_state == NGAP_SHUTDOWN) {
       Logger::ngap().warn(
-          "Received new association request on an association that is being "
+          "Received a new association request on an association that is being "
           "%s, ignoring",
           ng_gnb_state_str[gc.get()->ng_state]);
     } else {
@@ -109,7 +100,7 @@ void ngap_app::handle_sctp_new_association(
   }
   if (gc.get() == nullptr) {
     Logger::ngap().error(
-        "Failed to create gNB context for assoc_id(%d)", assoc_id);
+        "Failed to create gNB context for assoc_id (%d)", assoc_id);
   } else {
     gc.get()->sctp_assoc_id    = assoc_id;
     gc.get()->instreams        = instreams;

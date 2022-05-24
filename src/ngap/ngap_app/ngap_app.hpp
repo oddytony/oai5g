@@ -19,19 +19,11 @@
  *      contact@openairinterface.org
  */
 
-/*! \file ngap_app.hpp
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #ifndef _NGAP_APPLICATION_H_
 #define _NGAP_APPLICATION_H_
 
 #include <map>
 #include <shared_mutex>
-#include <string>
 
 #include "gNB_context.hpp"
 #include "sctp_server.hpp"
@@ -40,13 +32,14 @@ using namespace sctp;
 
 namespace ngap {
 
-static const char* const ng_gnb_state_str[] = {"NGAP_INIT", "NGAP_RESETTING",
-                                               "NGAP_READY", "NGAP_SHUTDOWN"};
+static const std::vector<std::string> ng_gnb_state_str = {
+    "NGAP_INIT", "NGAP_RESETTING", "NGAP_READY", "NGAP_SHUTDOWN"};
 
 class ngap_app : public sctp_application {
  public:
   ngap_app(const std::string& address, const uint16_t port_num);
   ~ngap_app();
+
   uint32_t getPpid();
 
   /*
@@ -80,6 +73,7 @@ class ngap_app : public sctp_application {
       const sctp_assoc_id_t& assoc_id, std::shared_ptr<gnb_context> gc);
   std::shared_ptr<gnb_context> assoc_id_2_gnb_context(
       const sctp_assoc_id_t& assoc_id) const;
+
   bool is_gnb_id_2_gnb_context(const long& gnb_id) const;
   void set_gnb_id_2_gnb_context(
       const long& gnb_id, std::shared_ptr<gnb_context> gc);

@@ -19,17 +19,11 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  niuxiansheng-niu, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-#ifndef _PDUSESSIONRESOURCEITEMHORQD_H_
-#define _PDUSESSIONRESOURCEITEMHQRQD_H_
+#ifndef _PDU_SESSION_RESOURCE_ITEM_HO_RQD_H_
+#define _PDU_SESSION_RESOURCE_ITEM_HO_RQD_H_
 
 #include "PDUSessionID.hpp"
-#include "PDUSessionResourceHandoverRequestAckTransfer.hpp"
+
 extern "C" {
 #include "Ngap_PDUSessionResourceItemHORqd.h"
 }
@@ -42,10 +36,10 @@ class PDUSessionResourceItemHORqd {
   virtual ~PDUSessionResourceItemHORqd();
 
   void setPDUSessionResourceItemHORqd(
-      PDUSessionID* m_pDUSessionID, OCTET_STRING_t m_handoverrequiredtransfer);
+      const PDUSessionID& m_pDUSessionID,
+      const OCTET_STRING_t& m_handoverRequiredTransfer);
   void getPDUSessionResourceItemHORqd(
-      PDUSessionID*& m_pDUSessionID,
-      OCTET_STRING_t& m_handoverrequiredtransfer);
+      PDUSessionID& m_pDUSessionID, OCTET_STRING_t& m_handoverRequiredTransfer);
 
   bool encode2PDUSessionResourceItemHORqd(
       Ngap_PDUSessionResourceItemHORqd_t* pdUSessionResourceItemHORqd);
@@ -53,8 +47,8 @@ class PDUSessionResourceItemHORqd {
       Ngap_PDUSessionResourceItemHORqd_t* pdUSessionResourceItemHORqd);
 
  private:
-  PDUSessionID* pDUSessionID;
-  OCTET_STRING_t handoverrequiredtransfer;
+  PDUSessionID pDUSessionID;                // Mandatory
+  OCTET_STRING_t handoverRequiredTransfer;  // Mandatory
 };
 
 }  // namespace ngap

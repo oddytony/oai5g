@@ -27,9 +27,8 @@ extern "C" {
 namespace ngap {
 class COUNTValueForPDCP_SN18 {
  private:
-  /* data */
-  long pdcp;
-  long hfn_pdcp;
+  long pdcp;      // Mandatory (18 bits)
+  long hfn_pdcp;  // Mandatory (14 bits)
 
  public:
   COUNTValueForPDCP_SN18(/* args */);

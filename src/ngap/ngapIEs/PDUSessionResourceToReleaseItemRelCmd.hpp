@@ -19,13 +19,6 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author Keliang DU (BUPT), Tien-Thinh NGUYEN (EURECOM)
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #ifndef _PDU_SESSION_RESOURCE_TO_RELEASE_ITEM_REL_CMD_H_
 #define _PDU_SESSION_RESOURCE_TO_RELEASE_ITEM_REL_CMD_H_
 
@@ -43,10 +36,10 @@ class PDUSessionResourceToReleaseItemRelCmd {
   virtual ~PDUSessionResourceToReleaseItemRelCmd();
 
   void setPDUSessionResourceToReleaseItemRelCmd(
-      PDUSessionID* m_pDUSessionID,
-      OCTET_STRING_t m_pDUSessionResourceReleaseCommandTransfer);
+      const PDUSessionID& m_pDUSessionID,
+      const OCTET_STRING_t& m_pDUSessionResourceReleaseCommandTransfer);
   void getPDUSessionResourceToReleaseItemRelCmd(
-      PDUSessionID*& m_pDUSessionID,
+      PDUSessionID& m_pDUSessionID,
       OCTET_STRING_t& m_pDUSessionResourceReleaseCommandTransfer);
 
   bool encode2PDUSessionResourceToReleaseItemRelCmd(
@@ -57,9 +50,8 @@ class PDUSessionResourceToReleaseItemRelCmd {
           pduSessionResourceToReleaseItemRelCmd);
 
  private:
-  PDUSessionID* pDUSessionID;
-  OCTET_STRING_t pDUSessionResourceReleaseCommandTransfer;
-  // ProtocolExtensionContainer (OPTIONAL)
+  PDUSessionID pDUSessionID;                                // Mandatory
+  OCTET_STRING_t pDUSessionResourceReleaseCommandTransfer;  // Mandatory
 };
 
 }  // namespace ngap

@@ -19,8 +19,8 @@
  *      contact@openairinterface.org
  */
 
-#ifndef _TAILISTFORPAGING_H_
-#define _TAILISTFORPAGING_H_
+#ifndef _TAI_LIST_FOR_PAGING_H_
+#define _TAI_LIST_FOR_PAGING_H_
 
 #include "TAI.hpp"
 
@@ -35,14 +35,14 @@ class TAIListForPaging {
   TAIListForPaging();
   virtual ~TAIListForPaging();
 
-  void setTAIListForPaging(TAI* m_tai, int numOfItem);
-  void getTAIListForPaging(TAI*& m_tai, int& numOfItem);
+  void setTAIListForPaging(const std::vector<TAI>& list);
+  void getTAIListForPaging(std::vector<TAI>& list);
+
   bool encode2TAIListForPaging(Ngap_TAIListForPaging_t* pdu);
   bool decodefromTAIListForPaging(Ngap_TAIListForPaging_t* pdu);
 
  private:
-  TAI* tai;
-  int numOftai;
+  std::vector<TAI> taiList;
 };
 
 }  // namespace ngap

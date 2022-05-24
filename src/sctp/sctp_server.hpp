@@ -32,6 +32,8 @@
 #include <thread>
 
 #include "endpoint.hpp"
+#include "common_defs.h"
+
 extern "C" {
 #include <netinet/in.h>
 #include <netinet/sctp.h>

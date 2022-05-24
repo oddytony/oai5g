@@ -19,15 +19,8 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _NGSETUPREQUEST_H_
-#define _NGSETUPREQUEST_H_
+#ifndef _NG_SETUP_REQUEST_H_
+#define _NG_SETUP_REQUEST_H_
 
 #include "DefaultPagingDRX.hpp"
 #include "GlobalRanNodeId.hpp"
@@ -35,45 +28,41 @@
 #include "NgapIEsStruct.hpp"
 #include "RanNodeName.hpp"
 #include "SupportedTAList.hpp"
-
-extern "C" {
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_NGSetupRequest.h"
-#include "Ngap_ProtocolIE-Field.h"
-}
+#include "NgapMessage.hpp"
 
 namespace ngap {
 
-class NGSetupRequestMsg {
+class NGSetupRequestMsg : public NgapMessage {
  public:
   NGSetupRequestMsg();
   virtual ~NGSetupRequestMsg();
 
-  // External interfaces
-  // Encapsulation
-  void setMessageType();  // Initialize the PDU and populate the MessageType;
+  void initialize();
+
   void setGlobalRanNodeID(
-      const std::string mcc, const std::string mnc,
-      Ngap_GlobalRANNodeID_PR ranNodeType, uint32_t ranNodeId);
-  void setRanNodeName(const std::string ranNodeName);
-  void setSupportedTAList(const std::vector<struct SupportedItem_s> list);
-  void setDefaultPagingDRX(e_Ngap_PagingDRX value);
-  int encode2buffer(uint8_t* buf, int buf_size);
-  // Decapsulation
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
+      const std::string& mcc, const std::string& mnc,
+      const Ngap_GlobalRANNodeID_PR& ranNodeType, const uint32_t& ranNodeId);
   bool getGlobalGnbID(uint32_t& gnbId, std::string& mcc, std::string& mnc);
+
+  void setRanNodeName(const std::string& ranNodeName);
   bool getRanNodeName(std::string& name);
+
+  void setSupportedTAList(const std::vector<struct SupportedItem_s> list);
   bool getSupportedTAList(std::vector<struct SupportedItem_s>& list);
+
+  void setDefaultPagingDRX(const e_Ngap_PagingDRX& value);
   int getDefaultPagingDRX();
 
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
+
  private:
-  Ngap_NGAP_PDU_t* ngSetupRequestPdu;
   Ngap_NGSetupRequest_t* ngSetupRequestIEs;
 
-  GlobalRanNodeId* globalRanNodeId;
-  RanNodeName* ranNodeName;
-  SupportedTAList* supportedTAList;
-  DefaultPagingDRX* defaultPagingDrx;
+  GlobalRanNodeId globalRanNodeId;    // Mandatory
+  RanNodeName* ranNodeName;           // Optional
+  SupportedTAList supportedTAList;    // Mandatory
+  DefaultPagingDRX defaultPagingDrx;  // Mandatory
+  // TODO: UE Retention Information (Optional)
 };
 
 }  // namespace ngap

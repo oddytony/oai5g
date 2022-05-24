@@ -19,13 +19,6 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #ifndef _MICOMODEINDICATION_H_
 #define _MICOMODEINDICATION_H_
 
@@ -46,8 +39,6 @@ class MICOModeIndication {
   bool encode2MICOModeIndication(Ngap_MICOModeIndication_t* micoModeIndication);
   bool decodefromMICOModeIndication(
       Ngap_MICOModeIndication_t* micoModeIndication);
-  // private:
-  //	uint16_t indexLength10;
 };
 
 }  // namespace ngap

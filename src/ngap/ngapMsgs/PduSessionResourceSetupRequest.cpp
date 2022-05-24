@@ -19,48 +19,40 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #include "PduSessionResourceSetupRequest.hpp"
 #include "logger.hpp"
 
 extern "C" {
-#include "asn_codecs.h"
-#include "constr_TYPE.h"
-#include "constraints.h"
 #include "dynamic_memory_check.h"
-#include "per_decoder.h"
-#include "per_encoder.h"
 }
-
-#include <iostream>
-using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PduSessionResourceSetupRequestMsg::PduSessionResourceSetupRequestMsg() {
-  pduSessionResourceSetupRequestPdu  = nullptr;
-  pduSessionResourceSetupRequestIEs  = nullptr;
-  amfUeNgapId                        = nullptr;
-  ranUeNgapId                        = nullptr;
-  ranPagingPriority                  = nullptr;
-  nasPdu                             = nullptr;
-  pduSessionResourceSetupRequestList = nullptr;
-  uEAggregateMaxBitRate              = nullptr;
-  pduSessionAggregateMaximumBitRate  = nullptr;
+PduSessionResourceSetupRequestMsg::PduSessionResourceSetupRequestMsg()
+    : NgapUEMessage() {
+  pduSessionResourceSetupRequestIEs = nullptr;
+  ranPagingPriority                 = nullptr;
+  nasPdu                            = nullptr;
+  uEAggregateMaxBitRate             = nullptr;
+
+  setMessageType(NgapMessageType::PDU_SESSION_RESOURCE_SETUP_REQUEST);
+  initialize();
 }
 
 //------------------------------------------------------------------------------
 PduSessionResourceSetupRequestMsg::~PduSessionResourceSetupRequestMsg() {}
+
+//------------------------------------------------------------------------------
+void PduSessionResourceSetupRequestMsg::initialize() {
+  pduSessionResourceSetupRequestIEs =
+      &(ngapPdu->choice.initiatingMessage->value.choice
+            .PDUSessionResourceSetupRequest);
+}
+
 //-----------------------------------------------------------------------------
 void PduSessionResourceSetupRequestMsg::setUEAggregateMaxBitRate(
-    long bit_rate_downlink, long bit_rate_uplink) {
+    const long& bit_rate_downlink, const long& bit_rate_uplink) {
   if (!uEAggregateMaxBitRate)
     uEAggregateMaxBitRate = new UEAggregateMaxBitRate();
 
@@ -90,42 +82,9 @@ void PduSessionResourceSetupRequestMsg::setUEAggregateMaxBitRate(
 }
 
 //------------------------------------------------------------------------------
-void PduSessionResourceSetupRequestMsg::setMessageType() {
-  if (!pduSessionResourceSetupRequestPdu)
-    pduSessionResourceSetupRequestPdu =
-        (Ngap_NGAP_PDU_t*) calloc(1, sizeof(Ngap_NGAP_PDU_t));
-
-  MessageType initialContextSetupRequestPduTypeIE;
-  initialContextSetupRequestPduTypeIE.setProcedureCode(
-      Ngap_ProcedureCode_id_PDUSessionResourceSetup);
-  initialContextSetupRequestPduTypeIE.setTypeOfMessage(
-      Ngap_NGAP_PDU_PR_initiatingMessage);
-  initialContextSetupRequestPduTypeIE.setCriticality(Ngap_Criticality_reject);
-  initialContextSetupRequestPduTypeIE.setValuePresent(
-      Ngap_InitiatingMessage__value_PR_PDUSessionResourceSetupRequest);
-
-  if (initialContextSetupRequestPduTypeIE.getProcedureCode() ==
-          Ngap_ProcedureCode_id_PDUSessionResourceSetup &&
-      initialContextSetupRequestPduTypeIE.getTypeOfMessage() ==
-          Ngap_NGAP_PDU_PR_initiatingMessage &&
-      initialContextSetupRequestPduTypeIE.getCriticality() ==
-          Ngap_Criticality_reject) {
-    initialContextSetupRequestPduTypeIE.encode2pdu(
-        pduSessionResourceSetupRequestPdu);
-    pduSessionResourceSetupRequestIEs =
-        &(pduSessionResourceSetupRequestPdu->choice.initiatingMessage->value
-              .choice.PDUSessionResourceSetupRequest);
-  } else {
-    Logger::ngap().warn(
-        "This information doesn't refer to PDUSessionResourceSetupRequest "
-        "message!");
-  }
-}
-
-//------------------------------------------------------------------------------
-void PduSessionResourceSetupRequestMsg::setAmfUeNgapId(unsigned long id) {
-  if (!amfUeNgapId) amfUeNgapId = new AMF_UE_NGAP_ID();
-  amfUeNgapId->setAMF_UE_NGAP_ID(id);
+void PduSessionResourceSetupRequestMsg::setAmfUeNgapId(
+    const unsigned long& id) {
+  amfUeNgapId.setAMF_UE_NGAP_ID(id);
 
   Ngap_PDUSessionResourceSetupRequestIEs_t* ie =
       (Ngap_PDUSessionResourceSetupRequestIEs_t*) calloc(
@@ -135,7 +94,7 @@ void PduSessionResourceSetupRequestMsg::setAmfUeNgapId(unsigned long id) {
   ie->value.present =
       Ngap_PDUSessionResourceSetupRequestIEs__value_PR_AMF_UE_NGAP_ID;
 
-  int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
+  int ret = amfUeNgapId.encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     Logger::ngap().error("Encode NGAP AMF_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
@@ -145,14 +104,12 @@ void PduSessionResourceSetupRequestMsg::setAmfUeNgapId(unsigned long id) {
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode NGAP AMF_UE_NGAP_ID IE error");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
 void PduSessionResourceSetupRequestMsg::setRanUeNgapId(
-    uint32_t ran_ue_ngap_id) {
-  if (!ranUeNgapId) ranUeNgapId = new RAN_UE_NGAP_ID();
-  ranUeNgapId->setRanUeNgapId(ran_ue_ngap_id);
+    const uint32_t& ran_ue_ngap_id) {
+  ranUeNgapId.setRanUeNgapId(ran_ue_ngap_id);
 
   Ngap_PDUSessionResourceSetupRequestIEs_t* ie =
       (Ngap_PDUSessionResourceSetupRequestIEs_t*) calloc(
@@ -162,7 +119,7 @@ void PduSessionResourceSetupRequestMsg::setRanUeNgapId(
   ie->value.present =
       Ngap_PDUSessionResourceSetupRequestIEs__value_PR_RAN_UE_NGAP_ID;
 
-  int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
+  int ret = ranUeNgapId.encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     Logger::ngap().error("Encode NGAP RAN_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
@@ -172,11 +129,11 @@ void PduSessionResourceSetupRequestMsg::setRanUeNgapId(
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode NGAP RAN_UE_NGAP_ID IE error");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
-void PduSessionResourceSetupRequestMsg::setRanPagingPriority(uint8_t priority) {
+void PduSessionResourceSetupRequestMsg::setRanPagingPriority(
+    const uint8_t& priority) {
   if (!ranPagingPriority) ranPagingPriority = new RANPagingPriority();
 
   ranPagingPriority->setRANPagingPriority(priority);
@@ -200,15 +157,19 @@ void PduSessionResourceSetupRequestMsg::setRanPagingPriority(uint8_t priority) {
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode NGAP RANPagingPriority IE error");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
-void PduSessionResourceSetupRequestMsg::setNasPdu(
-    uint8_t* nas, size_t sizeofnas) {
+int PduSessionResourceSetupRequestMsg::getRanPagingPriority() {
+  if (!ranPagingPriority) return -1;
+  return ranPagingPriority->getRANPagingPriority();
+}
+
+//------------------------------------------------------------------------------
+void PduSessionResourceSetupRequestMsg::setNasPdu(uint8_t* nas, size_t size) {
   if (!nasPdu) nasPdu = new NAS_PDU();
 
-  nasPdu->setNasPdu(nas, sizeofnas);
+  nasPdu->setNasPdu(nas, size);
 
   Ngap_PDUSessionResourceSetupRequestIEs_t* ie =
       (Ngap_PDUSessionResourceSetupRequestIEs_t*) calloc(
@@ -227,36 +188,43 @@ void PduSessionResourceSetupRequestMsg::setNasPdu(
   ret = ASN_SEQUENCE_ADD(
       &pduSessionResourceSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode NGAP NAS_PDU IE error");
-  // free_wrapper((void**) &ie);
+}
+
+//------------------------------------------------------------------------------
+bool PduSessionResourceSetupRequestMsg::getNasPdu(
+    uint8_t*& nas, size_t& sizeofnas) {
+  if (!nasPdu) return false;
+  if (!nasPdu->getNasPdu(nas, sizeofnas)) return false;
+
+  return true;
 }
 
 //------------------------------------------------------------------------------
 void PduSessionResourceSetupRequestMsg::setPduSessionResourceSetupRequestList(
-    std::vector<PDUSessionResourceSetupRequestItem_t> list) {
-  if (!pduSessionResourceSetupRequestList)
-    pduSessionResourceSetupRequestList = new PDUSessionResourceSetupListSUReq();
-  PDUSessionResourceSetupItemSUReq* m_pduSessionResourceSetupItemSUReq =
-      new PDUSessionResourceSetupItemSUReq[list.size()]();
+    const std::vector<PDUSessionResourceSetupRequestItem_t>& list) {
+  std::vector<PDUSessionResourceSetupItemSUReq> itemSUReqList;
 
   for (int i = 0; i < list.size(); i++) {
-    PDUSessionID* m_pDUSessionID = new PDUSessionID();
-    m_pDUSessionID->setPDUSessionID(list[i].pduSessionId);
-    NAS_PDU* m_nAS_PDU = NULL;
+    PDUSessionResourceSetupItemSUReq itemSUReq = {};
+    PDUSessionID pDUSessionID                  = {};
+    pDUSessionID.setPDUSessionID(list[i].pduSessionId);
+    NAS_PDU* m_nAS_PDU = nullptr;
     if (list[i].pduSessionNAS_PDU) {
       m_nAS_PDU = new NAS_PDU();
       m_nAS_PDU->setNasPdu(
           list[i].pduSessionNAS_PDU, list[i].sizeofpduSessionNAS_PDU);
     }
-    S_NSSAI* m_s_NSSAI = new S_NSSAI();
-    m_s_NSSAI->setSst(list[i].s_nssai.sst);
-    if (list[i].s_nssai.sd.size()) m_s_NSSAI->setSd(list[i].s_nssai.sd);
-    m_pduSessionResourceSetupItemSUReq[i].setPDUSessionResourceSetupItemSUReq(
-        m_pDUSessionID, m_nAS_PDU, m_s_NSSAI,
+    S_NSSAI s_NSSAI = {};
+    s_NSSAI.setSst(list[i].s_nssai.sst);
+    if (list[i].s_nssai.sd.size()) s_NSSAI.setSd(list[i].s_nssai.sd);
+    itemSUReq.setPDUSessionResourceSetupItemSUReq(
+        pDUSessionID, m_nAS_PDU, s_NSSAI,
         list[i].pduSessionResourceSetupRequestTransfer);
+    itemSUReqList.push_back(itemSUReq);
   }
 
-  pduSessionResourceSetupRequestList->setPDUSessionResourceSetupListSUReq(
-      m_pduSessionResourceSetupItemSUReq, list.size());
+  pduSessionResourceSetupRequestList.setPDUSessionResourceSetupListSUReq(
+      itemSUReqList);
 
   Ngap_PDUSessionResourceSetupRequestIEs_t* ie =
       (Ngap_PDUSessionResourceSetupRequestIEs_t*) calloc(
@@ -267,12 +235,11 @@ void PduSessionResourceSetupRequestMsg::setPduSessionResourceSetupRequestList(
       Ngap_PDUSessionResourceSetupRequestIEs__value_PR_PDUSessionResourceSetupListSUReq;
 
   int ret = pduSessionResourceSetupRequestList
-                ->encode2PDUSessionResourceSetupListSUReq(
+                .encode2PDUSessionResourceSetupListSUReq(
                     &ie->value.choice.PDUSessionResourceSetupListSUReq);
   if (!ret) {
     Logger::ngap().error(
         "Encode NGAP PDUSessionResourceSetupListSUReq IE error");
-
     free_wrapper((void**) &ie);
     return;
   }
@@ -282,70 +249,57 @@ void PduSessionResourceSetupRequestMsg::setPduSessionResourceSetupRequestList(
   if (ret != 0)
     Logger::ngap().error(
         "Encode NGAP PDUSessionResourceSetupListSUReq IE error");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
-void PduSessionResourceSetupRequestMsg::setPduSessionAggregateMaximumBitRate(
-    long bit_rate_downlink, long bit_rate_uplink) {
-  if (!pduSessionAggregateMaximumBitRate)
-    pduSessionAggregateMaximumBitRate = new PduSessionAggregateMaximumBitRate();
-  pduSessionAggregateMaximumBitRate->setPduSessionAggregateMaximumBitRate(
-      bit_rate_downlink, bit_rate_uplink);
-  Ngap_PDUSessionResourceSetupRequestIEs_t* ie =
-      (Ngap_PDUSessionResourceSetupRequestIEs_t*) calloc(
-          1, sizeof(Ngap_PDUSessionResourceSetupRequestIEs_t));
-  ie->id          = Ngap_ProtocolIE_ID_id_PDUSessionAggregateMaximumBitRate;
-  ie->criticality = Ngap_Criticality_ignore;
-  free_wrapper((void**) &ie);
-  // TODO
+bool PduSessionResourceSetupRequestMsg::getPduSessionResourceSetupRequestList(
+    std::vector<PDUSessionResourceSetupRequestItem_t>& list) {
+  std::vector<PDUSessionResourceSetupItemSUReq> itemSUReqList;
+  pduSessionResourceSetupRequestList.getPDUSessionResourceSetupListSUReq(
+      itemSUReqList);
+
+  for (auto& item : itemSUReqList) {
+    PDUSessionResourceSetupRequestItem_t request = {};
+
+    PDUSessionID pDUSessionID = {};
+    NAS_PDU* nAS_PDU          = nullptr;
+    S_NSSAI s_NSSAI           = {};
+    item.getPDUSessionResourceSetupItemSUReq(
+        pDUSessionID, nAS_PDU, s_NSSAI,
+        request.pduSessionResourceSetupRequestTransfer);
+    pDUSessionID.getPDUSessionID(request.pduSessionId);
+    s_NSSAI.getSst(request.s_nssai.sst);
+    s_NSSAI.getSd(request.s_nssai.sd);
+    if (nAS_PDU) {
+      nAS_PDU->getNasPdu(
+          request.pduSessionNAS_PDU, request.sizeofpduSessionNAS_PDU);
+    } else {
+      request.pduSessionNAS_PDU       = nullptr;
+      request.sizeofpduSessionNAS_PDU = 0;
+    }
+
+    list.push_back(request);
+  }
+
+  return true;
 }
 
 //------------------------------------------------------------------------------
-int PduSessionResourceSetupRequestMsg::encode2buffer(
-    uint8_t* buf, int buf_size) {
-  asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, pduSessionResourceSetupRequestPdu);
-  asn_enc_rval_t er = aper_encode_to_buffer(
-      &asn_DEF_Ngap_NGAP_PDU, NULL, pduSessionResourceSetupRequestPdu, buf,
-      buf_size);
-  Logger::ngap().debug("er.encoded (%d)", er.encoded);
-  return er.encoded;
-}
+bool PduSessionResourceSetupRequestMsg::decodeFromPdu(
+    Ngap_NGAP_PDU_t* ngapMsgPdu) {
+  ngapPdu = ngapMsgPdu;
 
-//------------------------------------------------------------------------------
-void PduSessionResourceSetupRequestMsg::encode2buffer_new(
-    char* buf, int& encoded_size) {
-  char* buffer = (char*) calloc(1, 1024);  // TODO: remove hardcoded value
-  asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, pduSessionResourceSetupRequestPdu);
-  encoded_size = aper_encode_to_new_buffer(
-      &asn_DEF_Ngap_NGAP_PDU, NULL, pduSessionResourceSetupRequestPdu,
-      (void**) &buffer);
-
-  Logger::ngap().debug("er.encoded (%d)", encoded_size);
-  memcpy((void*) buf, (void*) buffer, encoded_size);
-  free(buffer);
-}
-
-//------------------------------------------------------------------------------
-// Decapsulation
-bool PduSessionResourceSetupRequestMsg::decodefrompdu(
-    Ngap_NGAP_PDU_t* ngap_msg_pdu) {
-  pduSessionResourceSetupRequestPdu = ngap_msg_pdu;
-
-  if (pduSessionResourceSetupRequestPdu->present ==
-      Ngap_NGAP_PDU_PR_initiatingMessage) {
-    if (pduSessionResourceSetupRequestPdu->choice.initiatingMessage &&
-        pduSessionResourceSetupRequestPdu->choice.initiatingMessage
-                ->procedureCode ==
+  if (ngapPdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
+    if (ngapPdu->choice.initiatingMessage &&
+        ngapPdu->choice.initiatingMessage->procedureCode ==
             Ngap_ProcedureCode_id_PDUSessionResourceSetup &&
-        pduSessionResourceSetupRequestPdu->choice.initiatingMessage
-                ->criticality == Ngap_Criticality_reject &&
-        pduSessionResourceSetupRequestPdu->choice.initiatingMessage->value
-                .present ==
+        ngapPdu->choice.initiatingMessage->criticality ==
+            Ngap_Criticality_reject &&
+        ngapPdu->choice.initiatingMessage->value.present ==
             Ngap_InitiatingMessage__value_PR_PDUSessionResourceSetupRequest) {
       pduSessionResourceSetupRequestIEs =
-          &pduSessionResourceSetupRequestPdu->choice.initiatingMessage->value
-               .choice.PDUSessionResourceSetupRequest;
+          &ngapPdu->choice.initiatingMessage->value.choice
+               .PDUSessionResourceSetupRequest;
     } else {
       Logger::ngap().error(
           "Check PDUSessionResourceSetupRequest message error!");
@@ -365,8 +319,7 @@ bool PduSessionResourceSetupRequestMsg::decodefrompdu(
             pduSessionResourceSetupRequestIEs->protocolIEs.list.array[i]
                     ->value.present ==
                 Ngap_PDUSessionResourceSetupRequestIEs__value_PR_AMF_UE_NGAP_ID) {
-          amfUeNgapId = new AMF_UE_NGAP_ID();
-          if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
+          if (!amfUeNgapId.decodefromAMF_UE_NGAP_ID(
                   pduSessionResourceSetupRequestIEs->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
             Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
@@ -383,8 +336,7 @@ bool PduSessionResourceSetupRequestMsg::decodefrompdu(
             pduSessionResourceSetupRequestIEs->protocolIEs.list.array[i]
                     ->value.present ==
                 Ngap_PDUSessionResourceSetupRequestIEs__value_PR_RAN_UE_NGAP_ID) {
-          ranUeNgapId = new RAN_UE_NGAP_ID();
-          if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
+          if (!ranUeNgapId.decodefromRAN_UE_NGAP_ID(
                   pduSessionResourceSetupRequestIEs->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
             Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
@@ -437,10 +389,8 @@ bool PduSessionResourceSetupRequestMsg::decodefrompdu(
             pduSessionResourceSetupRequestIEs->protocolIEs.list.array[i]
                     ->value.present ==
                 Ngap_PDUSessionResourceSetupRequestIEs__value_PR_PDUSessionResourceSetupListSUReq) {
-          pduSessionResourceSetupRequestList =
-              new PDUSessionResourceSetupListSUReq();
           if (!pduSessionResourceSetupRequestList
-                   ->decodefromPDUSessionResourceSetupListSUReq(
+                   .decodefromPDUSessionResourceSetupListSUReq(
                        &pduSessionResourceSetupRequestIEs->protocolIEs.list
                             .array[i]
                             ->value.choice.PDUSessionResourceSetupListSUReq)) {
@@ -457,72 +407,9 @@ bool PduSessionResourceSetupRequestMsg::decodefrompdu(
       } break;
       default: {
         Logger::ngap().error("Decoded NGAP Message PDU error");
-
         return false;
       }
     }
-  }
-
-  return true;
-}
-
-//------------------------------------------------------------------------------
-unsigned long PduSessionResourceSetupRequestMsg::getAmfUeNgapId() {
-  if (!amfUeNgapId) return -1;
-  return amfUeNgapId->getAMF_UE_NGAP_ID();
-}
-
-//------------------------------------------------------------------------------
-uint32_t PduSessionResourceSetupRequestMsg::getRanUeNgapId() {
-  if (!ranUeNgapId) return 0;
-  return ranUeNgapId->getRanUeNgapId();
-}
-
-//------------------------------------------------------------------------------
-int PduSessionResourceSetupRequestMsg::getRanPagingPriority() {
-  if (!ranPagingPriority) return -1;
-  return ranPagingPriority->getRANPagingPriority();
-}
-
-//------------------------------------------------------------------------------
-bool PduSessionResourceSetupRequestMsg::getNasPdu(
-    uint8_t*& nas, size_t& sizeofnas) {
-  if (!nasPdu) return false;
-  if (!nasPdu->getNasPdu(nas, sizeofnas)) return false;
-
-  return true;
-}
-
-//------------------------------------------------------------------------------
-bool PduSessionResourceSetupRequestMsg::getPduSessionResourceSetupRequestList(
-    std::vector<PDUSessionResourceSetupRequestItem_t>& list) {
-  if (!pduSessionResourceSetupRequestList) return false;
-  PDUSessionResourceSetupItemSUReq* m_pduSessionResourceSetupItemSUReq;
-  int num = 0;
-  pduSessionResourceSetupRequestList->getPDUSessionResourceSetupListSUReq(
-      m_pduSessionResourceSetupItemSUReq, num);
-
-  for (int i = 0; i < num; i++) {
-    PDUSessionResourceSetupRequestItem_t request;
-
-    PDUSessionID* m_pDUSessionID;
-    NAS_PDU* m_nAS_PDU;
-    S_NSSAI* m_s_NSSAI;
-    m_pduSessionResourceSetupItemSUReq[i].getPDUSessionResourceSetupItemSUReq(
-        m_pDUSessionID, m_nAS_PDU, m_s_NSSAI,
-        request.pduSessionResourceSetupRequestTransfer);
-    m_pDUSessionID->getPDUSessionID(request.pduSessionId);
-    m_s_NSSAI->getSst(request.s_nssai.sst);
-    m_s_NSSAI->getSd(request.s_nssai.sd);
-    if (m_nAS_PDU) {
-      m_nAS_PDU->getNasPdu(
-          request.pduSessionNAS_PDU, request.sizeofpduSessionNAS_PDU);
-    } else {
-      request.pduSessionNAS_PDU       = NULL;
-      request.sizeofpduSessionNAS_PDU = 0;
-    }
-
-    list.push_back(request);
   }
 
   return true;

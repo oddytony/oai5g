@@ -19,17 +19,11 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _PDUSESSIONRESOURCESETUPLISTCXTREQ_H_
-#define _PDUSESSIONRESOURCESETUPLISTCXTREQ_H_
+#ifndef _PDU_SESSION_RESOURCE_SETUP_LIST_CXT_REQ_H_
+#define _PDU_SESSION_RESOURCE_SETUP_LIST_CXT_REQ_H_
 
 #include "PDUSessionResourceSetupItemCxtReq.hpp"
+#include <vector>
 
 extern "C" {
 #include "Ngap_PDUSessionResourceSetupListCxtReq.h"
@@ -43,11 +37,9 @@ class PDUSessionResourceSetupListCxtReq {
   virtual ~PDUSessionResourceSetupListCxtReq();
 
   void setPDUSessionResourceSetupListCxtReq(
-      PDUSessionResourceSetupItemCxtReq* m_pduSessionResourceSetupItemCxtReq,
-      int num);
+      const std::vector<PDUSessionResourceSetupItemCxtReq>& itemList);
   void getPDUSessionResourceSetupListCxtReq(
-      PDUSessionResourceSetupItemCxtReq*& m_pduSessionResourceSetupItemCxtReq,
-      int& num);
+      std::vector<PDUSessionResourceSetupItemCxtReq>& itemList);
 
   bool encode2PDUSessionResourceSetupListCxtReq(
       Ngap_PDUSessionResourceSetupListCxtReq_t*
@@ -57,8 +49,8 @@ class PDUSessionResourceSetupListCxtReq {
           pduSessionResourceSetupListCxtReq);
 
  private:
-  PDUSessionResourceSetupItemCxtReq* pduSessionResourceSetupItemCxtReq;
-  int numofpduSessionResourceSetupItemCxtReq;
+  std::vector<PDUSessionResourceSetupItemCxtReq>
+      pduSessionResourceSetupItemCxtReqList;
 };
 
 }  // namespace ngap

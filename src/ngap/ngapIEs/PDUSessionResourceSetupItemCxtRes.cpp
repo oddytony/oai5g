@@ -19,35 +19,32 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #include "PDUSessionResourceSetupItemCxtRes.hpp"
-
-#include <iostream>
-using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PDUSessionResourceSetupItemCxtRes::PDUSessionResourceSetupItemCxtRes() {
-  pDUSessionID = NULL;
-}
+PDUSessionResourceSetupItemCxtRes::PDUSessionResourceSetupItemCxtRes() {}
 
 //------------------------------------------------------------------------------
 PDUSessionResourceSetupItemCxtRes::~PDUSessionResourceSetupItemCxtRes() {}
 
 //------------------------------------------------------------------------------
 void PDUSessionResourceSetupItemCxtRes::setPDUSessionResourceSetupItemCxtRes(
-    PDUSessionID* m_pDUSessionID,
-    OCTET_STRING_t m_pDUSessionResourceSetupResponseTransfer) {
+    const PDUSessionID& m_pDUSessionID,
+    const OCTET_STRING_t& m_pDUSessionResourceSetupResponseTransfer) {
   pDUSessionID = m_pDUSessionID;
   pDUSessionResourceSetupResponseTransfer =
       m_pDUSessionResourceSetupResponseTransfer;
+}
+
+//------------------------------------------------------------------------------
+void PDUSessionResourceSetupItemCxtRes::getPDUSessionResourceSetupItemCxtRes(
+    PDUSessionID& m_pDUSessionID,
+    OCTET_STRING_t& m_pDUSessionResourceSetupResponseTransfer) {
+  m_pDUSessionID = pDUSessionID;
+  m_pDUSessionResourceSetupResponseTransfer =
+      pDUSessionResourceSetupResponseTransfer;
 }
 
 //------------------------------------------------------------------------------
@@ -55,8 +52,7 @@ bool PDUSessionResourceSetupItemCxtRes::
     encode2PDUSessionResourceSetupItemCxtRes(
         Ngap_PDUSessionResourceSetupItemCxtRes_t*
             pduSessionResourceSetupItemCxtRes) {
-  if (!pDUSessionID) return false;
-  if (!pDUSessionID->encode2PDUSessionID(
+  if (!pDUSessionID.encode2PDUSessionID(
           pduSessionResourceSetupItemCxtRes->pDUSessionID))
     return false;
   pduSessionResourceSetupItemCxtRes->pDUSessionResourceSetupResponseTransfer =
@@ -70,8 +66,7 @@ bool PDUSessionResourceSetupItemCxtRes::
     decodefromPDUSessionResourceSetupItemCxtRes(
         Ngap_PDUSessionResourceSetupItemCxtRes_t*
             pduSessionResourceSetupItemCxtRes) {
-  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
-  if (!pDUSessionID->decodefromPDUSessionID(
+  if (!pDUSessionID.decodefromPDUSessionID(
           pduSessionResourceSetupItemCxtRes->pDUSessionID))
     return false;
   pDUSessionResourceSetupResponseTransfer =
@@ -79,15 +74,6 @@ bool PDUSessionResourceSetupItemCxtRes::
           ->pDUSessionResourceSetupResponseTransfer;
 
   return true;
-}
-
-//------------------------------------------------------------------------------
-void PDUSessionResourceSetupItemCxtRes::getPDUSessionResourceSetupItemCxtRes(
-    PDUSessionID*& m_pDUSessionID,
-    OCTET_STRING_t& m_pDUSessionResourceSetupResponseTransfer) {
-  m_pDUSessionID = pDUSessionID;
-  m_pDUSessionResourceSetupResponseTransfer =
-      pDUSessionResourceSetupResponseTransfer;
 }
 
 }  // namespace ngap

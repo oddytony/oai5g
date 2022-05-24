@@ -19,13 +19,6 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author
- \date
- \email: contact@openairinterface.org
- */
-
 #ifndef _PDU_SESSION_RESOURCE_MODIFY_ITEM_MOD_REQ_H_
 #define _PDU_SESSION_RESOURCE_MODIFY_ITEM_MOD_REQ_H_
 
@@ -46,7 +39,7 @@ class PDUSessionResourceModifyItemModReq {
 
   void setPDUSessionResourceModifyItemModReq(
       const PDUSessionID& m_pDUSessionID, const NAS_PDU& m_nAS_PDU,
-      const OCTET_STRING_t m_pDUSessionResourceModifyRequestTransfer,
+      const OCTET_STRING_t& m_pDUSessionResourceModifyRequestTransfer,
       const S_NSSAI& m_s_NSSAI);
   void getPDUSessionResourceModifyItemModReq(
       PDUSessionID& m_pDUSessionID, NAS_PDU& m_nAS_PDU,
@@ -61,10 +54,10 @@ class PDUSessionResourceModifyItemModReq {
           pduSessionResourceModifyItemModReq);
 
  private:
-  PDUSessionID pDUSessionID;
-  NAS_PDU* nAS_PDU;  // Optional
-  OCTET_STRING_t pDUSessionResourceModifyRequestTransfer;
-  S_NSSAI* s_NSSAI;  // Optional
+  PDUSessionID pDUSessionID;                               // Mandatory
+  NAS_PDU* nAS_PDU;                                        // Optional
+  OCTET_STRING_t pDUSessionResourceModifyRequestTransfer;  // Mandatory
+  S_NSSAI* s_NSSAI;                                        // Optional
 };
 
 }  // namespace ngap

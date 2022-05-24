@@ -49,6 +49,11 @@ void AMFRegionID::setAMFRegionID(const std::string charid) {
 }
 
 //------------------------------------------------------------------------------
+void AMFRegionID::setAMFRegionID(const uint8_t& id) {
+  regionid = id;
+}
+
+//------------------------------------------------------------------------------
 void AMFRegionID::getAMFRegionID(std::string& charid) {
   charid = to_string(regionid);
 }

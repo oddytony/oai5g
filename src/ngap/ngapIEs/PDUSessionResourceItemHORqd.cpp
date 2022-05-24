@@ -19,54 +19,53 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  niuxiansheng-niu, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
 #include "PDUSessionResourceItemHORqd.hpp"
 
-#include <iostream>
-using namespace std;
-
 namespace ngap {
-PDUSessionResourceItemHORqd::PDUSessionResourceItemHORqd() {
-  pDUSessionID = NULL;
-}
+
+//------------------------------------------------------------------------------
+PDUSessionResourceItemHORqd::PDUSessionResourceItemHORqd() {}
+
+//------------------------------------------------------------------------------
 PDUSessionResourceItemHORqd::~PDUSessionResourceItemHORqd() {}
 
+//------------------------------------------------------------------------------
 void PDUSessionResourceItemHORqd::setPDUSessionResourceItemHORqd(
-    PDUSessionID* m_pDUSessionID, OCTET_STRING_t m_handoverrequiredtransfer) {
+    const PDUSessionID& m_pDUSessionID,
+    const OCTET_STRING_t& m_handoverRequiredTransfer) {
   pDUSessionID             = m_pDUSessionID;
-  handoverrequiredtransfer = m_handoverrequiredtransfer;
+  handoverRequiredTransfer = m_handoverRequiredTransfer;
 }
+
+//------------------------------------------------------------------------------
+void PDUSessionResourceItemHORqd::getPDUSessionResourceItemHORqd(
+    PDUSessionID& m_pDUSessionID, OCTET_STRING_t& m_handoverRequiredTransfer) {
+  m_pDUSessionID             = pDUSessionID;
+  m_handoverRequiredTransfer = handoverRequiredTransfer;
+}
+
+//------------------------------------------------------------------------------
 bool PDUSessionResourceItemHORqd::encode2PDUSessionResourceItemHORqd(
     Ngap_PDUSessionResourceItemHORqd_t* pdUSessionResourceItemHORqd) {
-  if (!pDUSessionID) return false;
-  if (!pDUSessionID->encode2PDUSessionID(
+  if (!pDUSessionID.encode2PDUSessionID(
           pdUSessionResourceItemHORqd->pDUSessionID))
     return false;
   pdUSessionResourceItemHORqd->handoverRequiredTransfer =
-      handoverrequiredtransfer;
+      handoverRequiredTransfer;
 
   return true;
 }
+
+//------------------------------------------------------------------------------
 bool PDUSessionResourceItemHORqd::decodefromPDUSessionResourceItemHORqd(
     Ngap_PDUSessionResourceItemHORqd_t* pdUSessionResourceItemHORqd) {
-  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
-  if (!pDUSessionID->decodefromPDUSessionID(
+  if (!pDUSessionID.decodefromPDUSessionID(
           pdUSessionResourceItemHORqd->pDUSessionID))
     return false;
-  handoverrequiredtransfer =
+  handoverRequiredTransfer =
       pdUSessionResourceItemHORqd->handoverRequiredTransfer;
 
   return true;
-}
-void PDUSessionResourceItemHORqd::getPDUSessionResourceItemHORqd(
-    PDUSessionID*& m_pDUSessionID, OCTET_STRING_t& m_handoverrequiredtransfer) {
-  m_pDUSessionID             = pDUSessionID;
-  m_handoverrequiredtransfer = handoverrequiredtransfer;
 }
 
 }  // namespace ngap

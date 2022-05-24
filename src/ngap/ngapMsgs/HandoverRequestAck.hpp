@@ -19,62 +19,48 @@
  *      contact@openairinterface.org
  */
 
-#ifndef _HANDOVERREQUESTACK_H_
-#define _HANDOVERREQUESTACK_H_
+#ifndef _HANDOVER_REQUEST_ACK_H_
+#define _HANDOVER_REQUEST_ACK_H_
 
-#include "AMF-UE-NGAP-ID.hpp"
-#include "Cause.hpp"
-#include "DefaultPagingDRX.hpp"
-#include "GlobalRanNodeId.hpp"
-#include "MessageType.hpp"
-#include "NgapIEsStruct.hpp"
-#include "PDUSessionResourceAdmittedItem.hpp"
 #include "PDUSessionResourceAdmittedList.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
-#include "RanNodeName.hpp"
-#include "SupportedTAList.hpp"
-extern "C" {
-#include <arpa/inet.h>
-#include <netinet/in.h>
+#include "NgapUEMessage.hpp"
 
-#include "Ngap_HandoverRequestAcknowledgeTransfer.h"
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_NGSetupRequest.h"
-#include "Ngap_PDUSessionResourceAdmittedItem.h"
-#include "Ngap_ProtocolIE-Field.h"
+extern "C" {
+#include "Ngap_HandoverRequestAcknowledge.h"
+#include "Ngap_PDUSessionResourceFailedToSetupListHOAck.h"
 }
 
 namespace ngap {
 
-class HandoverRequestAck {
+class HandoverRequestAck : public NgapUEMessage {
  public:
   HandoverRequestAck();
   virtual ~HandoverRequestAck();
 
-  int encode2buffer(uint8_t* buf, int buf_size);
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
+  void initialize();
 
-  unsigned long getAmfUeNgapId();
-  uint32_t getRanUeNgapId();
+  void setAmfUeNgapId(const unsigned long& id) override;
+  void setRanUeNgapId(const uint32_t& id) override;
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
 
-  void setMessageType();  // Initialize the PDU and populate the MessageType;
+  void setTargetToSource_TransparentContainer(
+      const OCTET_STRING_t& targetTosource);
   OCTET_STRING_t getTargetToSource_TransparentContainer();
+
+  void setPDUSessionResourceAdmittedList(
+      const PDUSessionResourceAdmittedList& admittedList);
   bool getPDUSessionResourceAdmittedList(
       std::vector<PDUSessionResourceAdmittedItem_t>& list);
 
  private:
-  Ngap_NGAP_PDU_t* handoverRequestAckPdu;
   Ngap_HandoverRequestAcknowledge_t* handoverRequestAckIEs;
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
-  Ngap_HandoverType_t* handovertype;
-
-  PDUSessionResourceAdmittedList* pduSessionResourceAdmittedList;
+  // AMF_UE_NGAP_ID (Mandatory)
+  // RAN_UE_NGAP_ID (Mandatory)
+  PDUSessionResourceAdmittedList pduSessionResourceAdmittedList;  // Mandatory
   Ngap_PDUSessionResourceFailedToSetupListHOAck_t*
-      PDUSessionResourceFailedToSetupList;
-  Ngap_TargetToSource_TransparentContainer_t*
-      TargetToSource_TransparentContainer;
-  Ngap_CriticalityDiagnostics_t* CriticalityDiagnostics;
+      PDUSessionResourceFailedToSetupList;                // Optional
+  OCTET_STRING_t TargetToSource_TransparentContainer;     // Mandatory
+  Ngap_CriticalityDiagnostics_t* CriticalityDiagnostics;  // Optional
 };
 
 }  // namespace ngap

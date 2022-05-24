@@ -43,10 +43,10 @@ class PDUSessionResourceFailedToSetupItemCxtFail {
   virtual ~PDUSessionResourceFailedToSetupItemCxtFail();
 
   void setPDUSessionResourceFailedToSetupItemCxtFail(
-      PDUSessionID* m_pDUSessionID,
-      OCTET_STRING_t m_pDUSessionResourceSetupUnsuccessfulTransfer);
+      const PDUSessionID& m_pDUSessionID,
+      const OCTET_STRING_t& m_pDUSessionResourceSetupUnsuccessfulTransfer);
   void getPDUSessionResourceFailedToSetupItemCxtFail(
-      PDUSessionID*& m_pDUSessionID,
+      PDUSessionID& m_pDUSessionID,
       OCTET_STRING_t& m_pDUSessionResourceSetupUnsuccessfulTransfer);
 
   bool encode2PDUSessionResourceFailedToSetupItemCxtFail(
@@ -57,7 +57,7 @@ class PDUSessionResourceFailedToSetupItemCxtFail {
           pduSessionResourceFailedToSetupItemCxtFail);
 
  private:
-  PDUSessionID* pDUSessionID;
+  PDUSessionID pDUSessionID;  // Mandatory
   OCTET_STRING_t pDUSessionResourceSetupUnsuccessfulTransfer;
 };
 

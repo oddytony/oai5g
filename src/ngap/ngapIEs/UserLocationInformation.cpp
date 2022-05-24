@@ -19,25 +19,15 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #include "UserLocationInformation.hpp"
-
-#include <iostream>
-using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
 UserLocationInformation::UserLocationInformation() {
-  userLocationInformationEUTRA = NULL;
-  userLocationInformationNR    = NULL;
-  // userLocationInformationN3IWF = NULL;
+  userLocationInformationEUTRA = nullptr;
+  userLocationInformationNR    = nullptr;
+  // userLocationInformationN3IWF = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -98,7 +88,7 @@ bool UserLocationInformation::encodefromUserLocationInformation(
 			break;}
 #endif
     default:
-      cout << "[Warning] UserLocationInformation encode error!" << endl;
+      // cout << "[Warning] UserLocationInformation encode error!" << endl;
       return false;
   }
   return true;
@@ -128,7 +118,7 @@ bool UserLocationInformation::decodefromUserLocationInformation(
 			break;}
 #endif
     default:
-      cout << "[Warning] UserLocationInformation decode error!" << endl;
+      // cout << "[Warning] UserLocationInformation decode error!" << endl;
       return false;
   }
   return true;

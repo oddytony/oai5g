@@ -19,63 +19,47 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
+#ifndef _PDU_SESSION_RESOURCE_SETUP_RESPONSE_H_
+#define _PDU_SESSION_RESOURCE_SETUP_RESPONSE_H_
 
-#ifndef _PDUSESSIONRESOURCESETUPRESPONSE_H_
-#define _PDUSESSIONRESOURCESETUPRESPONSE_H_
-
-#include "AMF-UE-NGAP-ID.hpp"
-#include "MessageType.hpp"
-#include "NgapIEsStruct.hpp"
 #include "PDUSessionResourceFailedToSetupListSURes.hpp"
 #include "PDUSessionResourceSetupListSURes.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
+#include "NgapUEMessage.hpp"
 
 extern "C" {
-#include "Ngap_NGAP-PDU.h"
 #include "Ngap_PDUSessionResourceSetupResponse.h"
-#include "Ngap_ProtocolIE-Field.h"
 }
 
 namespace ngap {
 
-class PduSessionResourceSetupResponseMsg {
+class PduSessionResourceSetupResponseMsg : public NgapUEMessage {
  public:
   PduSessionResourceSetupResponseMsg();
   virtual ~PduSessionResourceSetupResponseMsg();
 
-  void setMessageType();
-  void setAmfUeNgapId(unsigned long id);  // 40 bits
-  void setRanUeNgapId(uint32_t id);       // 32 bits
-  void setPduSessionResourceSetupResponseList(
-      std::vector<PDUSessionResourceSetupResponseItem_t> list);
-  void setPduSessionResourceFailedToSetupList(
-      std::vector<PDUSessionResourceFailedToSetupItem_t> list);
+  void initialize();
 
-  int encode2buffer(uint8_t* buf, int buf_size);
-  // Decapsulation
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
-  unsigned long getAmfUeNgapId();
-  uint32_t getRanUeNgapId();
+  void setAmfUeNgapId(const unsigned long& id) override;
+  void setRanUeNgapId(const uint32_t& id) override;
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
+
+  void setPduSessionResourceSetupResponseList(
+      const std::vector<PDUSessionResourceSetupResponseItem_t>& list);
   bool getPduSessionResourceSetupResponseList(
       std::vector<PDUSessionResourceSetupResponseItem_t>& list);
+
+  void setPduSessionResourceFailedToSetupList(
+      const std::vector<PDUSessionResourceFailedToSetupItem_t>& list);
+
   bool getPduSessionResourceFailedToSetupList(
       std::vector<PDUSessionResourceFailedToSetupItem_t>& list);
 
  private:
-  Ngap_NGAP_PDU_t* pduSessionResourceSetupResponsePdu;
   Ngap_PDUSessionResourceSetupResponse_t* pduSessionResourceSetupResponseIEs;
-
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
-  PDUSessionResourceSetupListSURes* pduSessionResourceSetupResponseList;
+  PDUSessionResourceSetupListSURes*
+      pduSessionResourceSetupResponseList;  // Optional
   PDUSessionResourceFailedToSetupListSURes*
-      pduSessionResourceFailedToSetupResponseList;
+      pduSessionResourceFailedToSetupResponseList;  // Optional
 };
 
 }  // namespace ngap

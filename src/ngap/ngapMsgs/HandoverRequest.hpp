@@ -19,91 +19,106 @@
  *      contact@openairinterface.org
  */
 
-#ifndef _HANDOVERREQUEST_H_
-#define _HANDOVERREQUEST_H_
+#ifndef _HANDOVER_REQUEST_H_
+#define _HANDOVER_REQUEST_H_
 
 #include "AMF-UE-NGAP-ID.hpp"
 #include "Cause.hpp"
-#include "DefaultPagingDRX.hpp"
-#include "GlobalRanNodeId.hpp"
-#include "MessageType.hpp"
-#include "NgapIEsStruct.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
-#include "RanNodeName.hpp"
-#include "SupportedTAList.hpp"
 #include "UEAggregateMaxBitRate.hpp"
-extern "C" {
-#include "Ngap_AllowedNSSAI-Item.h"
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_NGSetupRequest.h"
-#include "Ngap_ProtocolIE-Field.h"
-}
-
+#include "NgapMessage.hpp"
 #include "GUAMI.hpp"
 #include "MobilityRestrictionList.hpp"
 #include "PDUSessionResourceSetupListHOReq.hpp"
 #include "S-NSSAI.hpp"
 #include "SecurityKey.hpp"
 #include "UESecurityCapabilities.hpp"
+
+extern "C" {
+#include "Ngap_AllowedNSSAI-Item.h"
+#include "Ngap_HandoverRequest.h"
+#include "Ngap_ProtocolIE-Field.h"
+}
+
 namespace ngap {
 
-class HandoverRequest {
+class HandoverRequest : public NgapMessage {
  public:
   HandoverRequest();
   virtual ~HandoverRequest();
 
-  void setMessageType();  // Initialize the PDU and populate the MessageType;
-  void setAmfUeNgapId(unsigned long id);  // 40 bits
-  void setHandoverType(long type);
-  void setCause(Ngap_Cause_PR m_causePresent, long value);
-  void setUEAggregateMaximumBitRate(
-      long bit_rate_downlink, long bit_rate_uplink);
-  void setUESecurityCapabilities(
-      uint16_t m_NR_EncryptionAlgs, uint16_t m_NR_IntegrityProtectionAlgs,
-      uint16_t m_E_UTRA_EncryptionAlgs,
-      uint16_t m_E_UTRA_IntegrityProtectionAlgs);
-  void setSecurityContext(long count, uint8_t* buffer);
+  void initialize();
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
 
-  void setPduSessionResourceSetupList(
-      std::vector<PDUSessionResourceSetupRequestItem_t> list);
-
-  void setSourceToTarget_TransparentContainer(OCTET_STRING_t sourceTotarget);
-
-  void setAllowedNSSAI(std::vector<S_NSSAI> list);
-  void setGUAMI(
-      PlmnId* m_plmnId, AMFRegionID* m_aMFRegionID, AMFSetID* m_aMFSetID,
-      AMFPointer* m_aMFPointer);
-  void setMobilityRestrictionList(PlmnId* m_plmnId);
-  int encode2buffer(uint8_t* buf, int buf_size);
-  // bool decodefrompdu(Ngap_NGAP_PDU_t *ngap_msg_pdu);
+  void setAmfUeNgapId(const unsigned long& id);  // 40 bits
   unsigned long getAmfUeNgapId();
 
+  void setHandoverType(const long& type);
+  // TODO: void getHandoverType(long& type);
+
+  void setCause(const Ngap_Cause_PR& causePresent, const long& value);
+  // TODO: getCause
+
+  void setUEAggregateMaximumBitRate(
+      const long& bitRateDownlink, const long& bitRateUplink);
+  // TODO: getUEAggregateMaximumBitRate
+
+  void setUESecurityCapabilities(
+      const uint16_t& nREncryptionAlgs,
+      const uint16_t& nRIntegrityProtectionAlgs,
+      const uint16_t& eUTRAEncryptionAlgs,
+      const uint16_t& eUTRAIntegrityProtectionAlgs);
+  // TODO: getUESecurityCapabilities
+
+  void setSecurityContext(const long& count, uint8_t* buffer);
+  // TODO: getSecurityContext
+
+  void setPduSessionResourceSetupList(
+      const std::vector<PDUSessionResourceSetupRequestItem_t>& list);
+  // TODO: getPduSessionResourceSetupList
+
+  void setSourceToTarget_TransparentContainer(
+      const OCTET_STRING_t& sourceTotarget);
+  // TODO: getSourceToTarget_TransparentContainer
+
+  void setAllowedNSSAI(std::vector<S_NSSAI>& list);
+  // TODO: getAllowedNSSAI
+
+  void setGUAMI(
+      const PlmnId& m_plmnId, const AMFRegionID& m_aMFRegionID,
+      const AMFSetID& m_aMFSetID, const AMFPointer& m_aMFPointer);
+  void setGUAMI(
+      const std::string& mcc, const std::string& mnc,
+      const std::string& regionId, const std::string& setId,
+      const std::string& pointer);
+  // TODO: getGUAMI
+
+  void setMobilityRestrictionList(const PlmnId& m_plmnId);
+  // TODO: getMobilityRestrictionList
+
  private:
-  Ngap_NGAP_PDU_t* handoverRequestPdu;
   Ngap_HandoverRequest_t* handoverRequestIEs;
 
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  Ngap_HandoverType_t* handovertype;
-  Cause* cause;
-  UEAggregateMaxBitRate* ueAggregateMaximumBitRate;
-  // Core Network Assistance Information for RRC INACTIVE
-  UESecurityCapabilities* ueSecurityCapabilities;
-  Ngap_SecurityContext_t* SecurityContext;
-  // New Security Context Indicator
-  // NASC
-  PDUSessionResourceSetupListHOReq* PDUSessionResourceSetupList;
-  Ngap_AllowedNSSAI_t* allowedNSSAI;
-  // Trace Activation
-  // Masked IMEISV
-  Ngap_SourceToTarget_TransparentContainer_t*
-      SourceToTarget_TransparentContainer;
-  // Mobility Restriction List
-  // Location Reporting Request Type
-  // RRC Inactive Transition Report Request
-  GUAMI* guami;
-  MobilityRestrictionList* mobilityrestrictionlist;
-  // Redirection for Voice EPS Fallback
-  // CN Assisted RAN Parameters Tuning
+  AMF_UE_NGAP_ID amfUeNgapId;                       // Mandatory
+  Ngap_HandoverType_t handoverType;                 // Mandatory
+  Cause cause;                                      // Mandatory
+  UEAggregateMaxBitRate ueAggregateMaximumBitRate;  // Mandatory
+  // Core Network Assistance Information for RRC INACTIVE (TODO://Optional)
+  UESecurityCapabilities ueSecurityCapabilities;  // Mandatory
+  Ngap_SecurityContext_t securityContext;         // TODO: Mandatory
+  // New Security Context Indicator (TODO: Optional)
+  // NASC - NAS-PDU (TODO: Optional)
+  PDUSessionResourceSetupListHOReq pDUSessionResourceSetupList;  // Mandatory
+  Ngap_AllowedNSSAI_t allowedNSSAI;                              // Mandatory
+  // Trace Activation (TODO: Optional)
+  // Masked IMEISV  (TODO: Optional)
+  Ngap_SourceToTarget_TransparentContainer_t
+      SourceToTarget_TransparentContainer;           // TODO: Mandatory
+  MobilityRestrictionList* mobilityRestrictionList;  // Optional
+  // Location Reporting Request Type (TODO: Optional)
+  // RRC Inactive Transition Report Request (TODO: Optional)
+  GUAMI guami;  // Mandatory
+  // Redirection for Voice EPS Fallback // Optional
+  // CN Assisted RAN Parameters Tuning (TODO: Optional)
 };
 
 }  // namespace ngap

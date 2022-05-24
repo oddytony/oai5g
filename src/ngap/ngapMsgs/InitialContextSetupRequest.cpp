@@ -19,88 +19,42 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #include "InitialContextSetupRequest.hpp"
 #include "logger.hpp"
 
 extern "C" {
-#include "asn_codecs.h"
-#include "constr_TYPE.h"
-#include "constraints.h"
 #include "dynamic_memory_check.h"
-#include "per_decoder.h"
-#include "per_encoder.h"
 }
-
-#include <iostream>
-using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
-InitialContextSetupRequestMsg::InitialContextSetupRequestMsg() {
-  initialContextSetupRequestPdu      = nullptr;
+InitialContextSetupRequestMsg::InitialContextSetupRequestMsg()
+    : NgapUEMessage() {
   initialContextSetupRequestIEs      = nullptr;
-  amfUeNgapId                        = nullptr;
-  ranUeNgapId                        = nullptr;
   oldAmfName                         = nullptr;
   uEAggregateMaxBitRate              = nullptr;
   coreNetworkAssistanceInfo          = nullptr;
-  guami                              = nullptr;
   pduSessionResourceSetupRequestList = nullptr;
-  allowedNssai                       = nullptr;
-  uESecurityCapabilities             = nullptr;
-  securityKey                        = nullptr;
   nasPdu                             = nullptr;
   ueRadioCapability                  = nullptr;
+
+  setMessageType(NgapMessageType::INITIAL_CONTEXT_SETUP_REQUEST);
+  initialize();
 }
 
 //------------------------------------------------------------------------------
 InitialContextSetupRequestMsg::~InitialContextSetupRequestMsg() {}
 
 //------------------------------------------------------------------------------
-void InitialContextSetupRequestMsg::setMessageType() {
-  if (!initialContextSetupRequestPdu)
-    initialContextSetupRequestPdu =
-        (Ngap_NGAP_PDU_t*) calloc(1, sizeof(Ngap_NGAP_PDU_t));
-
-  MessageType initialContextSetupRequestPduTypeIE;
-  initialContextSetupRequestPduTypeIE.setProcedureCode(
-      Ngap_ProcedureCode_id_InitialContextSetup);
-  initialContextSetupRequestPduTypeIE.setTypeOfMessage(
-      Ngap_NGAP_PDU_PR_initiatingMessage);
-  initialContextSetupRequestPduTypeIE.setCriticality(Ngap_Criticality_reject);
-  initialContextSetupRequestPduTypeIE.setValuePresent(
-      Ngap_InitiatingMessage__value_PR_InitialContextSetupRequest);
-
-  if (initialContextSetupRequestPduTypeIE.getProcedureCode() ==
-          Ngap_ProcedureCode_id_InitialContextSetup &&
-      initialContextSetupRequestPduTypeIE.getTypeOfMessage() ==
-          Ngap_NGAP_PDU_PR_initiatingMessage &&
-      initialContextSetupRequestPduTypeIE.getCriticality() ==
-          Ngap_Criticality_reject) {
-    initialContextSetupRequestPduTypeIE.encode2pdu(
-        initialContextSetupRequestPdu);
-    initialContextSetupRequestIEs =
-        &(initialContextSetupRequestPdu->choice.initiatingMessage->value.choice
-              .InitialContextSetupRequest);
-  } else {
-    Logger::ngap().warn(
-        " This information doesn't refer to InitialContextSetupRequest "
-        "Message!");
-  }
+void InitialContextSetupRequestMsg::initialize() {
+  initialContextSetupRequestIEs = &(ngapPdu->choice.initiatingMessage->value
+                                        .choice.InitialContextSetupRequest);
 }
 
 //------------------------------------------------------------------------------
-void InitialContextSetupRequestMsg::setAmfUeNgapId(unsigned long id) {
-  if (!amfUeNgapId) amfUeNgapId = new AMF_UE_NGAP_ID();
-  amfUeNgapId->setAMF_UE_NGAP_ID(id);
+void InitialContextSetupRequestMsg::setAmfUeNgapId(const unsigned long& id) {
+  amfUeNgapId.setAMF_UE_NGAP_ID(id);
 
   Ngap_InitialContextSetupRequestIEs_t* ie =
       (Ngap_InitialContextSetupRequestIEs_t*) calloc(
@@ -110,7 +64,7 @@ void InitialContextSetupRequestMsg::setAmfUeNgapId(unsigned long id) {
   ie->value.present =
       Ngap_InitialContextSetupRequestIEs__value_PR_AMF_UE_NGAP_ID;
 
-  int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
+  int ret = amfUeNgapId.encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error!");
     free_wrapper((void**) &ie);
@@ -119,13 +73,12 @@ void InitialContextSetupRequestMsg::setAmfUeNgapId(unsigned long id) {
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error!");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
-void InitialContextSetupRequestMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
-  if (!ranUeNgapId) ranUeNgapId = new RAN_UE_NGAP_ID();
-  ranUeNgapId->setRanUeNgapId(ran_ue_ngap_id);
+void InitialContextSetupRequestMsg::setRanUeNgapId(
+    const uint32_t& ran_ue_ngap_id) {
+  ranUeNgapId.setRanUeNgapId(ran_ue_ngap_id);
 
   Ngap_InitialContextSetupRequestIEs_t* ie =
       (Ngap_InitialContextSetupRequestIEs_t*) calloc(
@@ -135,21 +88,19 @@ void InitialContextSetupRequestMsg::setRanUeNgapId(uint32_t ran_ue_ngap_id) {
   ie->value.present =
       Ngap_InitialContextSetupRequestIEs__value_PR_RAN_UE_NGAP_ID;
 
-  int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
+  int ret = ranUeNgapId.encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error!");
-
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error!");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
-void InitialContextSetupRequestMsg::setOldAmfName(const std::string name) {
+void InitialContextSetupRequestMsg::setOldAmfName(const std::string& name) {
   if (!oldAmfName) oldAmfName = new AmfName();
   oldAmfName->setValue(name);
 
@@ -163,19 +114,17 @@ void InitialContextSetupRequestMsg::setOldAmfName(const std::string name) {
   int ret = oldAmfName->encode2AmfName(&ie->value.choice.AMFName);
   if (!ret) {
     Logger::ngap().error("Encode oldAmfName IE error!");
-
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode oldAmfName IE error!");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
 void InitialContextSetupRequestMsg::setUEAggregateMaxBitRate(
-    long bit_rate_downlink, long bit_rate_uplink) {
+    const long& bit_rate_downlink, const long& bit_rate_uplink) {
   if (!uEAggregateMaxBitRate)
     uEAggregateMaxBitRate = new UEAggregateMaxBitRate();
 
@@ -200,37 +149,37 @@ void InitialContextSetupRequestMsg::setUEAggregateMaxBitRate(
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode UEAggregateMaxBitRate IE error!");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
 void InitialContextSetupRequestMsg::setCoreNetworkAssistanceInfo(
-    uint16_t ueIdentityIndexValue /*10bits*/, e_Ngap_PagingDRX ueSpecificDrx,
-    uint8_t periodicRegUpdateTimer, bool micoModeInd,
-    std::vector<Tai_t> taiListForRRcInactive) {
+    const uint16_t& ueIdentityIndexValue /*10bits*/,
+    const e_Ngap_PagingDRX& ueSpecificDrx,
+    const uint8_t& periodicRegUpdateTimer, const bool& micoModeInd,
+    const std::vector<Tai_t>& taiListForRRcInactive) {
   if (!coreNetworkAssistanceInfo)
     coreNetworkAssistanceInfo = new CoreNetworkAssistanceInfo();
 
-  UEIdentityIndexValue* m_ueIdentityIndexValue = new UEIdentityIndexValue();
-  m_ueIdentityIndexValue->setUEIdentityIndexValue(ueIdentityIndexValue);
+  UEIdentityIndexValue m_ueIdentityIndexValue = {};
+  m_ueIdentityIndexValue.setUEIdentityIndexValue(ueIdentityIndexValue);
   DefaultPagingDRX* m_pagingDRX = new DefaultPagingDRX();
   m_pagingDRX->setValue(ueSpecificDrx);
-  PeriodicRegistrationUpdateTimer* m_periodicRegUpdateTimer =
-      new PeriodicRegistrationUpdateTimer();
-  m_periodicRegUpdateTimer->setPeriodicRegistrationUpdateTimer(
+  PeriodicRegistrationUpdateTimer m_periodicRegUpdateTimer = {};
+  m_periodicRegUpdateTimer.setPeriodicRegistrationUpdateTimer(
       periodicRegUpdateTimer);
-  TAI* m_tai = new TAI[taiListForRRcInactive.size()]();
+
+  std::vector<TAI> taiList;
   for (int i = 0; i < taiListForRRcInactive.size(); i++) {
-    PlmnId* m_plmnId = new PlmnId();
-    m_plmnId->setMccMnc(
-        taiListForRRcInactive[i].mcc, taiListForRRcInactive[i].mnc);
-    TAC* m_tac = new TAC();
-    m_tac->setTac(taiListForRRcInactive[i].tac);
-    m_tai[i].setTAI(m_plmnId, m_tac);
+    TAI m_tai = {};
+    m_tai.setTAI(
+        taiListForRRcInactive[i].mcc, taiListForRRcInactive[i].mnc,
+        taiListForRRcInactive[i].tac);
+    taiList.push_back(m_tai);
   }
+
   coreNetworkAssistanceInfo->setCoreNetworkAssistanceInfo(
       m_ueIdentityIndexValue, m_pagingDRX, m_periodicRegUpdateTimer,
-      micoModeInd, m_tai, taiListForRRcInactive.size());
+      micoModeInd, taiList);
 
   Ngap_InitialContextSetupRequestIEs_t* ie =
       (Ngap_InitialContextSetupRequestIEs_t*) calloc(
@@ -251,73 +200,12 @@ void InitialContextSetupRequestMsg::setCoreNetworkAssistanceInfo(
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0)
     Logger::ngap().error("Encode CoreNetworkAssistanceInformation IE error!");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
-void InitialContextSetupRequestMsg::setCoreNetworkAssistanceInfo(
-    uint16_t ueIdentityIndexValue /*10bits*/, uint8_t periodicRegUpdateTimer,
-    bool micoModeInd, std::vector<Tai_t> taiListForRRcInactive) {
-  if (!coreNetworkAssistanceInfo)
-    coreNetworkAssistanceInfo = new CoreNetworkAssistanceInfo();
-
-  UEIdentityIndexValue* m_ueIdentityIndexValue = new UEIdentityIndexValue();
-  m_ueIdentityIndexValue->setUEIdentityIndexValue(ueIdentityIndexValue);
-  PeriodicRegistrationUpdateTimer* m_periodicRegUpdateTimer =
-      new PeriodicRegistrationUpdateTimer();
-  m_periodicRegUpdateTimer->setPeriodicRegistrationUpdateTimer(
-      periodicRegUpdateTimer);
-  TAI* m_tai = new TAI[taiListForRRcInactive.size()]();
-  for (int i = 0; i < taiListForRRcInactive.size(); i++) {
-    PlmnId* m_plmnId = new PlmnId();
-    m_plmnId->setMccMnc(
-        taiListForRRcInactive[i].mcc, taiListForRRcInactive[i].mnc);
-    TAC* m_tac = new TAC();
-    m_tac->setTac(taiListForRRcInactive[i].tac);
-    m_tai[i].setTAI(m_plmnId, m_tac);
-  }
-  coreNetworkAssistanceInfo->setCoreNetworkAssistanceInfo(
-      m_ueIdentityIndexValue, m_periodicRegUpdateTimer, micoModeInd, m_tai,
-      taiListForRRcInactive.size());
-
-  Ngap_InitialContextSetupRequestIEs_t* ie =
-      (Ngap_InitialContextSetupRequestIEs_t*) calloc(
-          1, sizeof(Ngap_InitialContextSetupRequestIEs_t));
-  ie->id          = Ngap_ProtocolIE_ID_id_CoreNetworkAssistanceInformation;
-  ie->criticality = Ngap_Criticality_ignore;
-  ie->value.present =
-      Ngap_InitialContextSetupRequestIEs__value_PR_CoreNetworkAssistanceInformation;
-
-  int ret = coreNetworkAssistanceInfo->encode2CoreNetworkAssistanceInfo(
-      &ie->value.choice.CoreNetworkAssistanceInformation);
-  if (!ret) {
-    Logger::ngap().error("Encode CoreNetworkAssistanceInformation IE error!");
-
-    free_wrapper((void**) &ie);
-    return;
-  }
-
-  ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
-  if (ret != 0)
-    Logger::ngap().error("Encode CoreNetworkAssistanceInformation IE error!");
-  // free_wrapper((void**) &ie);
-}
-
-//------------------------------------------------------------------------------
-void InitialContextSetupRequestMsg::setGuami(Guami_t value) {
-  if (!guami) guami = new GUAMI();
-
-  PlmnId* m_plmnId           = new PlmnId();
-  AMFRegionID* m_aMFRegionID = new AMFRegionID();
-  AMFSetID* m_aMFSetID       = new AMFSetID();
-  AMFPointer* m_aMFPointer   = new AMFPointer();
-
-  m_plmnId->setMccMnc(value.mcc, value.mnc);
-  m_aMFRegionID->setAMFRegionID(value.regionID);
-  m_aMFSetID->setAMFSetID(value.AmfSetID);
-  m_aMFPointer->setAMFPointer(value.AmfPointer);
-
-  guami->setGUAMI(m_plmnId, m_aMFRegionID, m_aMFSetID, m_aMFPointer);
+void InitialContextSetupRequestMsg::setGuami(const Guami_t& value) {
+  guami.setGUAMI(
+      value.mcc, value.mnc, value.regionID, value.AmfSetID, value.AmfPointer);
 
   Ngap_InitialContextSetupRequestIEs_t* ie =
       (Ngap_InitialContextSetupRequestIEs_t*) calloc(
@@ -326,7 +214,7 @@ void InitialContextSetupRequestMsg::setGuami(Guami_t value) {
   ie->criticality   = Ngap_Criticality_reject;
   ie->value.present = Ngap_InitialContextSetupRequestIEs__value_PR_GUAMI;
 
-  int ret = guami->encode2GUAMI(&ie->value.choice.GUAMI);
+  int ret = guami.encode2GUAMI(&ie->value.choice.GUAMI);
   if (!ret) {
     Logger::ngap().error("Encode GUAMI IE error!");
     free_wrapper((void**) &ie);
@@ -335,37 +223,41 @@ void InitialContextSetupRequestMsg::setGuami(Guami_t value) {
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode GUAMI IE error!");
-
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
 void InitialContextSetupRequestMsg::setPduSessionResourceSetupRequestList(
-    std::vector<PDUSessionResourceSetupRequestItem_t> list) {
+    const std::vector<PDUSessionResourceSetupRequestItem_t>& list) {
   if (!pduSessionResourceSetupRequestList)
     pduSessionResourceSetupRequestList =
         new PDUSessionResourceSetupListCxtReq();
-  PDUSessionResourceSetupItemCxtReq* m_pduSessionResourceSetupItemCxtReq =
-      new PDUSessionResourceSetupItemCxtReq[list.size()]();
+
+  std::vector<PDUSessionResourceSetupItemCxtReq>
+      pduSessionResourceSetupItemCxtReqList;
+  pduSessionResourceSetupItemCxtReqList.reserve(list.size());
 
   for (int i = 0; i < list.size(); i++) {
-    PDUSessionID* m_pDUSessionID = new PDUSessionID();
-    m_pDUSessionID->setPDUSessionID(list[i].pduSessionId);
-    NAS_PDU* m_nAS_PDU = nullptr;
+    PDUSessionResourceSetupItemCxtReq pduSessionResourceSetupItemCxtReq = {};
+    PDUSessionID pDUSessionID                                           = {};
+    pDUSessionID.setPDUSessionID(list[i].pduSessionId);
+    NAS_PDU* nAS_PDU = nullptr;
     if (list[i].pduSessionNAS_PDU) {
-      m_nAS_PDU = new NAS_PDU();
-      m_nAS_PDU->setNasPdu(
+      nAS_PDU = new NAS_PDU();
+      nAS_PDU->setNasPdu(
           list[i].pduSessionNAS_PDU, list[i].sizeofpduSessionNAS_PDU);
     }
-    S_NSSAI* m_s_NSSAI = new S_NSSAI();
-    m_s_NSSAI->setSst(list[i].s_nssai.sst);
-    if (list[i].s_nssai.sd.size()) m_s_NSSAI->setSd(list[i].s_nssai.sd);
-    m_pduSessionResourceSetupItemCxtReq[i].setPDUSessionResourceSetupItemCxtReq(
-        m_pDUSessionID, m_nAS_PDU, m_s_NSSAI,
+    S_NSSAI s_NSSAI = {};
+    s_NSSAI.setSst(list[i].s_nssai.sst);
+    if (list[i].s_nssai.sd.size()) s_NSSAI.setSd(list[i].s_nssai.sd);
+    pduSessionResourceSetupItemCxtReq.setPDUSessionResourceSetupItemCxtReq(
+        pDUSessionID, nAS_PDU, s_NSSAI,
         list[i].pduSessionResourceSetupRequestTransfer);
+    pduSessionResourceSetupItemCxtReqList.push_back(
+        pduSessionResourceSetupItemCxtReq);
   }
+
   pduSessionResourceSetupRequestList->setPDUSessionResourceSetupListCxtReq(
-      m_pduSessionResourceSetupItemCxtReq, list.size());
+      pduSessionResourceSetupItemCxtReqList);
 
   Ngap_InitialContextSetupRequestIEs_t* ie =
       (Ngap_InitialContextSetupRequestIEs_t*) calloc(
@@ -380,7 +272,6 @@ void InitialContextSetupRequestMsg::setPduSessionResourceSetupRequestList(
                     &ie->value.choice.PDUSessionResourceSetupListCxtReq);
   if (!ret) {
     Logger::ngap().error("Encode PDUSessionResourceSetupListCxtReq IE error!");
-
     free_wrapper((void**) &ie);
     return;
   }
@@ -388,20 +279,22 @@ void InitialContextSetupRequestMsg::setPduSessionResourceSetupRequestList(
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0)
     Logger::ngap().error("Encode PDUSessionResourceSetupListCxtReq IE error!");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
-void InitialContextSetupRequestMsg::setAllowedNssai(std::vector<S_Nssai> list) {
-  if (!allowedNssai) allowedNssai = new AllowedNSSAI();
-  S_NSSAI* m_snssai = new S_NSSAI[list.size()]();
+void InitialContextSetupRequestMsg::setAllowedNssai(
+    const std::vector<S_Nssai>& list) {
+  std::vector<S_NSSAI> snssaiList;
+
   for (int i = 0; i < list.size(); i++) {
-    m_snssai[i].setSst(list[i].sst);
-    if (list[i].sd.size() &&
-        (list[i].sd.compare("None") && list[i].sd.compare("none")))
-      m_snssai[i].setSd(list[i].sd);
+    S_NSSAI snssai = {};
+    snssai.setSst(list[i].sst);
+    if (!list[i].sd.empty() && ((list[i].sd.compare("None") != 0) &&
+                                (list[i].sd.compare("none") != 0)))
+      snssai.setSd(list[i].sd);
+    snssaiList.push_back(snssai);
   }
-  allowedNssai->setAllowedNSSAI(m_snssai, list.size());
+  allowedNssai.setAllowedNSSAI(snssaiList);
 
   Ngap_InitialContextSetupRequestIEs_t* ie =
       (Ngap_InitialContextSetupRequestIEs_t*) calloc(
@@ -410,27 +303,24 @@ void InitialContextSetupRequestMsg::setAllowedNssai(std::vector<S_Nssai> list) {
   ie->criticality   = Ngap_Criticality_reject;
   ie->value.present = Ngap_InitialContextSetupRequestIEs__value_PR_AllowedNSSAI;
 
-  int ret = allowedNssai->encode2AllowedNSSAI(&ie->value.choice.AllowedNSSAI);
+  int ret = allowedNssai.encode2AllowedNSSAI(&ie->value.choice.AllowedNSSAI);
   if (!ret) {
     Logger::ngap().error("Encode AllowedNSSAI IE error!");
-
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode AllowedNSSAI IE error!");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
 void InitialContextSetupRequestMsg::setUESecurityCapability(
-    uint16_t NR_EncryptionAlgs, uint16_t NR_IntegrityProtectionAlgs,
-    uint16_t E_UTRA_EncryptionAlgs, uint16_t E_UTRA_IntegrityProtectionAlgs) {
-  if (!uESecurityCapabilities)
-    uESecurityCapabilities = new UESecurityCapabilities();
-
-  uESecurityCapabilities->setUESecurityCapabilities(
+    const uint16_t& NR_EncryptionAlgs,
+    const uint16_t& NR_IntegrityProtectionAlgs,
+    const uint16_t& E_UTRA_EncryptionAlgs,
+    const uint16_t& E_UTRA_IntegrityProtectionAlgs) {
+  uESecurityCapabilities.setUESecurityCapabilities(
       NR_EncryptionAlgs, NR_IntegrityProtectionAlgs, E_UTRA_EncryptionAlgs,
       E_UTRA_IntegrityProtectionAlgs);
 
@@ -442,25 +332,21 @@ void InitialContextSetupRequestMsg::setUESecurityCapability(
   ie->value.present =
       Ngap_InitialContextSetupRequestIEs__value_PR_UESecurityCapabilities;
 
-  int ret = uESecurityCapabilities->encode2UESecurityCapabilities(
+  int ret = uESecurityCapabilities.encode2UESecurityCapabilities(
       ie->value.choice.UESecurityCapabilities);
   if (!ret) {
     Logger::ngap().error("Encode UESecurityCapabilities IE error!");
-
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode UESecurityCapabilities IE error!");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
 void InitialContextSetupRequestMsg::setSecurityKey(uint8_t* key) {
-  if (!securityKey) securityKey = new SecurityKey();
-
-  securityKey->setSecurityKey(key);
+  securityKey.setSecurityKey(key);
 
   Ngap_InitialContextSetupRequestIEs_t* ie =
       (Ngap_InitialContextSetupRequestIEs_t*) calloc(
@@ -469,24 +355,22 @@ void InitialContextSetupRequestMsg::setSecurityKey(uint8_t* key) {
   ie->criticality   = Ngap_Criticality_reject;
   ie->value.present = Ngap_InitialContextSetupRequestIEs__value_PR_SecurityKey;
 
-  int ret = securityKey->encode2bitstring(ie->value.choice.SecurityKey);
+  int ret = securityKey.encode2bitstring(ie->value.choice.SecurityKey);
   if (!ret) {
     Logger::ngap().error("Encode SecurityKey IE error!");
-
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode SecurityKey IE error!");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
-void InitialContextSetupRequestMsg::setNasPdu(uint8_t* nas, size_t sizeofnas) {
+void InitialContextSetupRequestMsg::setNasPdu(uint8_t* nas, size_t size) {
   if (!nasPdu) nasPdu = new NAS_PDU();
 
-  nasPdu->setNasPdu(nas, sizeofnas);
+  nasPdu->setNasPdu(nas, size);
 
   Ngap_InitialContextSetupRequestIEs_t* ie =
       (Ngap_InitialContextSetupRequestIEs_t*) calloc(
@@ -498,14 +382,12 @@ void InitialContextSetupRequestMsg::setNasPdu(uint8_t* nas, size_t sizeofnas) {
   int ret = nasPdu->encode2octetstring(ie->value.choice.NAS_PDU);
   if (!ret) {
     Logger::ngap().error("Encode NAS PDU error!");
-
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode NAS PDU error!");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
@@ -527,47 +409,30 @@ void InitialContextSetupRequestMsg::setUERadioCapability(
       ie->value.choice.UERadioCapability);
   if (!ret) {
     Logger::ngap().error("Encode UERadioCapability IE error!");
-
     free_wrapper((void**) &ie);
     return;
   }
 
   ret = ASN_SEQUENCE_ADD(&initialContextSetupRequestIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode UERadioCapability IE error!");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
-int InitialContextSetupRequestMsg::encode2buffer(uint8_t* buf, int buf_size) {
-  asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, initialContextSetupRequestPdu);
-  asn_enc_rval_t er = aper_encode_to_buffer(
-      &asn_DEF_Ngap_NGAP_PDU, NULL, initialContextSetupRequestPdu, buf,
-      buf_size);
-  Logger::ngap().debug("er.encoded( %d )", er.encoded);
-  return er.encoded;
-}
+bool InitialContextSetupRequestMsg::decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) {
+  ngapPdu = ngapMsgPdu;
 
-//------------------------------------------------------------------------------
-// Decapsulation
-bool InitialContextSetupRequestMsg::decodefrompdu(
-    Ngap_NGAP_PDU_t* ngap_msg_pdu) {
-  initialContextSetupRequestPdu = ngap_msg_pdu;
-
-  if (initialContextSetupRequestPdu->present ==
-      Ngap_NGAP_PDU_PR_initiatingMessage) {
-    if (initialContextSetupRequestPdu->choice.initiatingMessage &&
-        initialContextSetupRequestPdu->choice.initiatingMessage
-                ->procedureCode == Ngap_ProcedureCode_id_InitialContextSetup &&
-        initialContextSetupRequestPdu->choice.initiatingMessage->criticality ==
+  if (ngapPdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
+    if (ngapPdu->choice.initiatingMessage &&
+        ngapPdu->choice.initiatingMessage->procedureCode ==
+            Ngap_ProcedureCode_id_InitialContextSetup &&
+        ngapPdu->choice.initiatingMessage->criticality ==
             Ngap_Criticality_reject &&
-        initialContextSetupRequestPdu->choice.initiatingMessage->value
-                .present ==
+        ngapPdu->choice.initiatingMessage->value.present ==
             Ngap_InitiatingMessage__value_PR_InitialContextSetupRequest) {
-      initialContextSetupRequestIEs =
-          &initialContextSetupRequestPdu->choice.initiatingMessage->value.choice
-               .InitialContextSetupRequest;
+      initialContextSetupRequestIEs = &ngapPdu->choice.initiatingMessage->value
+                                           .choice.InitialContextSetupRequest;
     } else {
-      cout << "Check InitialContextSetupRequest message error!!!" << endl;
+      Logger::ngap().error("Check InitialContextSetupRequest message error!");
       return false;
     }
   } else {
@@ -583,15 +448,14 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
             initialContextSetupRequestIEs->protocolIEs.list.array[i]
                     ->value.present ==
                 Ngap_InitialContextSetupRequestIEs__value_PR_AMF_UE_NGAP_ID) {
-          amfUeNgapId = new AMF_UE_NGAP_ID();
-          if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
+          if (!amfUeNgapId.decodefromAMF_UE_NGAP_ID(
                   initialContextSetupRequestIEs->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
-            Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
+            Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
+          Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -601,8 +465,7 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
             initialContextSetupRequestIEs->protocolIEs.list.array[i]
                     ->value.present ==
                 Ngap_InitialContextSetupRequestIEs__value_PR_RAN_UE_NGAP_ID) {
-          ranUeNgapId = new RAN_UE_NGAP_ID();
-          if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
+          if (!ranUeNgapId.decodefromRAN_UE_NGAP_ID(
                   initialContextSetupRequestIEs->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
             Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
@@ -677,8 +540,7 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
             initialContextSetupRequestIEs->protocolIEs.list.array[i]
                     ->value.present ==
                 Ngap_InitialContextSetupRequestIEs__value_PR_GUAMI) {
-          guami = new GUAMI();
-          if (!guami->decodefromGUAMI(
+          if (!guami.decodefromGUAMI(
                   &initialContextSetupRequestIEs->protocolIEs.list.array[i]
                        ->value.choice.GUAMI)) {
             Logger::ngap().error("Decoded NGAP GUAMI IE error");
@@ -719,8 +581,7 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
             initialContextSetupRequestIEs->protocolIEs.list.array[i]
                     ->value.present ==
                 Ngap_InitialContextSetupRequestIEs__value_PR_AllowedNSSAI) {
-          allowedNssai = new AllowedNSSAI();
-          if (!allowedNssai->decodefromAllowedNSSAI(
+          if (!allowedNssai.decodefromAllowedNSSAI(
                   &initialContextSetupRequestIEs->protocolIEs.list.array[i]
                        ->value.choice.AllowedNSSAI)) {
             Logger::ngap().error("Decoded NGAP AllowedNSSAI IE error");
@@ -737,8 +598,7 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
             initialContextSetupRequestIEs->protocolIEs.list.array[i]
                     ->value.present ==
                 Ngap_InitialContextSetupRequestIEs__value_PR_UESecurityCapabilities) {
-          uESecurityCapabilities = new UESecurityCapabilities();
-          if (!uESecurityCapabilities->decodefromUESecurityCapabilities(
+          if (!uESecurityCapabilities.decodefromUESecurityCapabilities(
                   initialContextSetupRequestIEs->protocolIEs.list.array[i]
                       ->value.choice.UESecurityCapabilities)) {
             Logger::ngap().error(
@@ -756,8 +616,7 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
             initialContextSetupRequestIEs->protocolIEs.list.array[i]
                     ->value.present ==
                 Ngap_InitialContextSetupRequestIEs__value_PR_SecurityKey) {
-          securityKey = new SecurityKey();
-          if (!securityKey->decodefrombitstring(
+          if (!securityKey.decodefrombitstring(
                   initialContextSetupRequestIEs->protocolIEs.list.array[i]
                       ->value.choice.SecurityKey)) {
             Logger::ngap().error("Decoded NGAP SecurityKey IE error");
@@ -798,18 +657,6 @@ bool InitialContextSetupRequestMsg::decodefrompdu(
 }
 
 //------------------------------------------------------------------------------
-unsigned long InitialContextSetupRequestMsg::getAmfUeNgapId() {
-  if (!amfUeNgapId) return -1;
-  return amfUeNgapId->getAMF_UE_NGAP_ID();
-}
-
-//------------------------------------------------------------------------------
-uint32_t InitialContextSetupRequestMsg::getRanUeNgapId() {
-  if (!ranUeNgapId) return 0;
-  return ranUeNgapId->getRanUeNgapId();
-}
-
-//------------------------------------------------------------------------------
 bool InitialContextSetupRequestMsg::getOldAmfName(std::string& name) {
   if (!oldAmfName) return false;
   oldAmfName->getValue(name);
@@ -830,53 +677,36 @@ bool InitialContextSetupRequestMsg::getCoreNetworkAssistanceInfo(
     uint8_t& periodicRegUpdateTimer, bool& micoModeInd,
     std::vector<Tai_t>& taiListForRRcInactive) {
   if (!coreNetworkAssistanceInfo) return false;
-  UEIdentityIndexValue* m_ueIdentityIndexValue;
-  DefaultPagingDRX* m_pagingDRX;
-  PeriodicRegistrationUpdateTimer* m_periodicRegUpdateTimer;
-  TAI* m_tai;
-  int m_numoftai = 0;
+  UEIdentityIndexValue m_ueIdentityIndexValue              = {};
+  DefaultPagingDRX* m_pagingDRX                            = nullptr;
+  PeriodicRegistrationUpdateTimer m_periodicRegUpdateTimer = {};
+
+  std::vector<TAI> taiList;
+
   coreNetworkAssistanceInfo->getCoreNetworkAssistanceInfo(
       m_ueIdentityIndexValue, m_pagingDRX, m_periodicRegUpdateTimer,
-      micoModeInd, m_tai, m_numoftai);
-  m_ueIdentityIndexValue->getUEIdentityIndexValue(ueIdentityIndexValue);
+      micoModeInd, taiList);
+  m_ueIdentityIndexValue.getUEIdentityIndexValue(ueIdentityIndexValue);
   if (m_pagingDRX)
     ueSpecificDrx = m_pagingDRX->getValue();
   else
     ueSpecificDrx = -1;
-  m_periodicRegUpdateTimer->getPeriodicRegistrationUpdateTimer(
+  m_periodicRegUpdateTimer.getPeriodicRegistrationUpdateTimer(
       periodicRegUpdateTimer);
 
-  for (int i = 0; i < m_numoftai; i++) {
-    Tai_t tai_str;
-    PlmnId* m_plmnId;
-    TAC* m_tac;
-    m_tai[i].getTAI(m_plmnId, m_tac);
-    m_plmnId->getMcc(tai_str.mcc);
-    m_plmnId->getMnc(tai_str.mnc);
-    tai_str.tac = m_tac->getTac();
-
-    taiListForRRcInactive.push_back(tai_str);
+  for (std::vector<TAI>::iterator it = std::begin(taiList);
+       it < std::end(taiList); ++it) {
+    Tai_t tai = {};
+    it->getTAI(tai);
+    taiListForRRcInactive.push_back(tai);
   }
   return true;
 }
 
 //------------------------------------------------------------------------------
 bool InitialContextSetupRequestMsg::getGuami(Guami_t& value) {
-  if (!guami) return false;
-
-  PlmnId* m_plmnId;
-  AMFRegionID* m_aMFRegionID;
-  AMFSetID* m_aMFSetID;
-  AMFPointer* m_aMFPointer;
-
-  guami->getGUAMI(m_plmnId, m_aMFRegionID, m_aMFSetID, m_aMFPointer);
-
-  m_plmnId->getMcc(value.mcc);
-  m_plmnId->getMnc(value.mnc);
-  m_aMFRegionID->getAMFRegionID(value.regionID);
-  m_aMFSetID->getAMFSetID(value.AmfSetID);
-  m_aMFPointer->getAMFPointer(value.AmfPointer);
-
+  guami.getGUAMI(
+      value.mcc, value.mnc, value.regionID, value.AmfSetID, value.AmfPointer);
   return true;
 }
 
@@ -884,28 +714,31 @@ bool InitialContextSetupRequestMsg::getGuami(Guami_t& value) {
 bool InitialContextSetupRequestMsg::getPduSessionResourceSetupRequestList(
     std::vector<PDUSessionResourceSetupRequestItem_t>& list) {
   if (!pduSessionResourceSetupRequestList) return false;
-  PDUSessionResourceSetupItemCxtReq* m_pduSessionResourceSetupItemCxtReq;
-  int num = 0;
+
+  std::vector<PDUSessionResourceSetupItemCxtReq>
+      pduSessionResourceSetupItemCxtReqList;
   pduSessionResourceSetupRequestList->getPDUSessionResourceSetupListCxtReq(
-      m_pduSessionResourceSetupItemCxtReq, num);
+      pduSessionResourceSetupItemCxtReqList);
 
-  for (int i = 0; i < num; i++) {
-    PDUSessionResourceSetupRequestItem_t request;
+  for (std::vector<PDUSessionResourceSetupItemCxtReq>::iterator it =
+           std::begin(pduSessionResourceSetupItemCxtReqList);
+       it < std::end(pduSessionResourceSetupItemCxtReqList); ++it) {
+    PDUSessionResourceSetupRequestItem_t request = {};
 
-    PDUSessionID* m_pDUSessionID;
-    NAS_PDU* m_nAS_PDU;
-    S_NSSAI* m_s_NSSAI;
-    m_pduSessionResourceSetupItemCxtReq[i].getPDUSessionResourceSetupItemCxtReq(
-        m_pDUSessionID, m_nAS_PDU, m_s_NSSAI,
+    PDUSessionID pDUSessionID = {};
+    NAS_PDU* nAS_PDU          = nullptr;
+    S_NSSAI s_NSSAI           = {};
+    it->getPDUSessionResourceSetupItemCxtReq(
+        pDUSessionID, nAS_PDU, s_NSSAI,
         request.pduSessionResourceSetupRequestTransfer);
-    m_pDUSessionID->getPDUSessionID(request.pduSessionId);
-    m_s_NSSAI->getSst(request.s_nssai.sst);
-    m_s_NSSAI->getSd(request.s_nssai.sd);
-    if (m_nAS_PDU) {
-      m_nAS_PDU->getNasPdu(
+    pDUSessionID.getPDUSessionID(request.pduSessionId);
+    s_NSSAI.getSst(request.s_nssai.sst);
+    s_NSSAI.getSd(request.s_nssai.sd);
+    if (nAS_PDU) {
+      nAS_PDU->getNasPdu(
           request.pduSessionNAS_PDU, request.sizeofpduSessionNAS_PDU);
     } else {
-      request.pduSessionNAS_PDU       = NULL;
+      request.pduSessionNAS_PDU       = nullptr;
       request.sizeofpduSessionNAS_PDU = 0;
     }
 
@@ -918,14 +751,13 @@ bool InitialContextSetupRequestMsg::getPduSessionResourceSetupRequestList(
 //------------------------------------------------------------------------------
 bool InitialContextSetupRequestMsg::getAllowedNssai(
     std::vector<S_Nssai>& list) {
-  if (!allowedNssai) return false;
-  S_NSSAI* m_snssai;
-  int m_numofsnssai;
-  allowedNssai->getAllowedNSSAI(m_snssai, m_numofsnssai);
-  for (int i = 0; i < m_numofsnssai; i++) {
-    S_Nssai s_nssai;
-    m_snssai[i].getSst(s_nssai.sst);
-    m_snssai[i].getSd(s_nssai.sd);
+  std::vector<S_NSSAI> snssaiList;
+  allowedNssai.getAllowedNSSAI(snssaiList);
+  for (std::vector<S_NSSAI>::iterator it = std::begin(snssaiList);
+       it < std::end(snssaiList); ++it) {
+    S_Nssai s_nssai = {};
+    it->getSst(s_nssai.sst);
+    it->getSd(s_nssai.sd);
     list.push_back(s_nssai);
   }
 
@@ -936,8 +768,7 @@ bool InitialContextSetupRequestMsg::getAllowedNssai(
 bool InitialContextSetupRequestMsg::getUESecurityCapability(
     uint16_t& NR_EncryptionAlgs, uint16_t& NR_IntegrityProtectionAlgs,
     uint16_t& E_UTRA_EncryptionAlgs, uint16_t& E_UTRA_IntegrityProtectionAlgs) {
-  if (!uESecurityCapabilities) return false;
-  if (!uESecurityCapabilities->getUESecurityCapabilities(
+  if (!uESecurityCapabilities.getUESecurityCapabilities(
           NR_EncryptionAlgs, NR_IntegrityProtectionAlgs, E_UTRA_EncryptionAlgs,
           E_UTRA_IntegrityProtectionAlgs))
     return false;
@@ -947,8 +778,7 @@ bool InitialContextSetupRequestMsg::getUESecurityCapability(
 
 //------------------------------------------------------------------------------
 bool InitialContextSetupRequestMsg::getSecurityKey(uint8_t*& key) {
-  if (!securityKey) return false;
-  if (!securityKey->getSecurityKey(key)) return false;
+  if (!securityKey.getSecurityKey(key)) return false;
 
   return true;
 }
