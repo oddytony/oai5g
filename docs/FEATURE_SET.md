@@ -51,14 +51,14 @@ Based on document **3GPP TS 23.501 V16.0.0 §6.2.1**.
 | 10     | Transparent proxy for routing SM messages                           | :x:                |                                             |
 | 11     | Access Authentication                                               | :heavy_check_mark: |                                             |
 | 12     | Access Authorization                                                | :heavy_check_mark: |                                             |
-| 13     | Provide transport for SMS messages between UE and SMSF.             | :x:                |                                             |
+| 13     | Provide transport for SMS messages between UE and SMSF             | :x:                |                                             |
 | 14     | Security Anchor Functionality (SEAF)                                | :heavy_check_mark: |                                             |
 | 15     | Location Services management for regulatory services                | :x:                |                                             |
 | 16     | Provide transport for Location Services messages between            |                    |                                             |
-|        | UE and LMF as well as between RAN and LMF.                          | :x:                |                                             |
-| 17     | EPS Bearer ID allocation for interworking with EPS.                 | :x:                |                                             |
+|        | UE and LMF as well as between RAN and LMF                          | :heavy_check_mark: |                                             |
+| 17     | EPS Bearer ID allocation for interworking with EPS                 | :x:                |                                             |
 | 18     | UE mobility event notification                                      | :heavy_check_mark: |                                             |
-| 19     | Support for Control Plane CIoT 5GS Optimisation.                    | :x:                |                                             |
+| 19     | Support for Control Plane CIoT 5GS Optimisation                    | :x:                |                                             |
 | 20     | Provisioning of external parameters                                 | :x:                |                                             |
 | 21     | Support non-3GPP access networks                                    | :x:                |                                             |
 
