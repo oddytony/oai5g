@@ -27,7 +27,7 @@
  */
 
 #include "S-NSSAI.hpp"
-
+#include "amf.hpp"
 #include "String2Value.hpp"
 
 using namespace std;
@@ -38,7 +38,7 @@ namespace ngap {
 S_NSSAI::S_NSSAI() {
   sdIsSet = false;
   sst     = 0;
-  sd      = 0;
+  sd      = SD_NO_VALUE;
 }
 
 //------------------------------------------------------------------------------
@@ -116,13 +116,14 @@ void S_NSSAI::setSd(const uint32_t s) {
   sdIsSet = true;
   sd      = s;
 }
+
 //------------------------------------------------------------------------------
 bool S_NSSAI::getSd(std::string& s_nssaiSd) const {
   if (sdIsSet) {
     s_nssaiSd = to_string(sd);
-  } else
-    s_nssaiSd = "None";
-
+  } else {
+    s_nssaiSd = to_string(SD_NO_VALUE);
+  }
   return sdIsSet;
 }
 
@@ -131,19 +132,19 @@ std::string S_NSSAI::getSd() const {
   if (sdIsSet) {
     return to_string(sd);
   } else
-    return "None";
+    return to_string(SD_NO_VALUE);
 }
 //------------------------------------------------------------------------------
 bool S_NSSAI::encode2S_NSSAI(Ngap_S_NSSAI_t* s_NSSAI) {
   if (!sSTEncode2OctetString(s_NSSAI->sST)) return false;
-  if (sdIsSet) {
-    Ngap_SD_t* sd = (Ngap_SD_t*) calloc(1, sizeof(Ngap_SD_t));
-    if (!sd) return false;
-    if (!sDEncode2OctetString(sd)) {
-      free(sd);
+  if (sdIsSet && (sd != SD_NO_VALUE)) {
+    Ngap_SD_t* sd_tmp = (Ngap_SD_t*) calloc(1, sizeof(Ngap_SD_t));
+    if (!sd_tmp) return false;
+    if (!sDEncode2OctetString(sd_tmp)) {
+      free(sd_tmp);
       return false;
     }
-    s_NSSAI->sD = sd;
+    s_NSSAI->sD = sd_tmp;
   }
   return true;
 }
@@ -154,6 +155,8 @@ bool S_NSSAI::decodefromS_NSSAI(Ngap_S_NSSAI_t* s_NSSAI) {
   if (s_NSSAI->sD) {
     sdIsSet = true;
     if (!sDdecodefromOctetString(s_NSSAI->sD)) return false;
+  } else {
+    sd = SD_NO_VALUE;
   }
   return true;
 }

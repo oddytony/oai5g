@@ -21,6 +21,7 @@
 
 #include "NGSetupResponse.hpp"
 #include "logger.hpp"
+#include "amf.hpp"
 
 extern "C" {
 #include "dynamic_memory_check.h"
@@ -138,8 +139,8 @@ void NGSetupResponseMsg::setPlmnSupportList(
       S_NSSAI snssai = {};
       snssai.setSst(list[i].slice_list[j].sst);
       if (!list[i].slice_list[j].sd.empty() &&
-          (list[i].slice_list[j].sd.compare("None") != 0) &&
-          (list[i].slice_list[j].sd.compare("none") != 0)) {
+          (list[i].slice_list[j].sd.compare(std::to_string(SD_NO_VALUE)) !=
+           0)) {
         snssai.setSd(list[i].slice_list[j].sd);
       }
       snssais.push_back(snssai);

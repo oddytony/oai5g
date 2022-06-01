@@ -69,6 +69,9 @@ constexpr uint64_t SECONDS_SINCE_FIRST_EPOCH = 2208988800;
 #define NAS_MESSAGE_DOWNLINK 1
 #define NAS_MESSAGE_UPLINK 0
 
+const uint32_t SD_NO_VALUE               = 0xFFFFFF;
+const uint8_t SST_MAX_STANDARDIZED_VALUE = 127;
+
 typedef enum {
   PlainNasMsg                                              = 0x0,
   IntegrityProtected                                       = 0x1,
