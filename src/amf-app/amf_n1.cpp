@@ -4505,8 +4505,9 @@ bool amf_n1::get_network_slice_selection_from_conf_file(
   Logger::amf_n1().debug(
       "Get the Network Slice Selection Information from configuration file");
   // TODO: Get Authorized Network Slice Info from local configuration file
+  Logger::amf_n1().info("This feature has not been implemented yet!");
 
-  return true;
+  return false;
 }
 
 //------------------------------------------------------------------------------
