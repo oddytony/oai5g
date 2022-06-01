@@ -983,9 +983,8 @@ void amf_n2::handle_itti_message(itti_initial_context_setup_request& itti_msg) {
               supi, itti_msg.pdu_session_id, psc)) {
         Logger::amf_n2().warn(
             "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
-        // TODO: remove hardcoded value
-        item.s_nssai.sst = "01";
-        item.s_nssai.sd  = "none";
+        item.s_nssai.sst = "01";  // TODO: remove the default value
+        item.s_nssai.sd  = std::to_string(SD_NO_VALUE);
       } else {
         item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
         item.s_nssai.sd  = psc.get()->snssai.sD;
@@ -1093,8 +1092,9 @@ void amf_n2::handle_itti_message(
           supi, itti_msg.pdu_session_id, psc)) {
     Logger::amf_n2().warn(
         "Cannot get pdu_session_context with SUPI (%s)", supi.c_str());
-    item.s_nssai.sst = "01";    // TODO: get from N1N2msgTranferMsg
-    item.s_nssai.sd  = "none";  // TODO: get from N1N2msgTranferMsg
+    item.s_nssai.sst = "01";  // TODO: get from N1N2msgTranferMsg
+    item.s_nssai.sd =
+        std::to_string(SD_NO_VALUE);  // TODO: get from N1N2msgTranferMsg
   } else {
     item.s_nssai.sst = std::to_string(psc.get()->snssai.sST);
     item.s_nssai.sd  = psc.get()->snssai.sD;
@@ -2325,13 +2325,16 @@ bool amf_n2::get_common_plmn(
               Logger::amf_n2().debug(
                   "S-NSSAI from AMF (SST %d, SD %s)", s2.sst,
                   std::to_string(s2.sd).c_str());
-              if ((s1.sst.compare(std::to_string(s2.sst)) == 0) and
-                  (s1.sd.compare(std::to_string(s2.sd)) == 0)) {
-                Logger::amf_n2().debug(
-                    "Common S-NSSAI (SST %s, SD %s)", s1.sst.c_str(),
-                    s1.sd.c_str());
-                plmn_slice_support_item.slice_list.push_back(s1);
-                found_common_plmn = true;
+              if (s1.sst.compare(std::to_string(s2.sst)) == 0) {
+                if ((s2.sst <= SST_MAX_STANDARDIZED_VALUE) or
+                    (s1.sd.compare(std::to_string(s2.sd)) ==
+                     0)) {  // don't need to check SD for standard NSSAI
+                  Logger::amf_n2().debug(
+                      "Common S-NSSAI (SST %s, SD %s)", s1.sst.c_str(),
+                      s1.sd.c_str());
+                  plmn_slice_support_item.slice_list.push_back(s1);
+                  found_common_plmn = true;
+                }
               }
             }
           }
