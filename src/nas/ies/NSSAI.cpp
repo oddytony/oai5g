@@ -47,7 +47,7 @@ NSSAI::NSSAI(const uint8_t iei, std::vector<struct SNSSAI_s> nssai) {
   length = 0;
   S_NSSAI.assign(nssai.begin(), nssai.end());
   for (int i = 0; i < nssai.size(); i++) {
-    length += 2;  // for sst
+    length += 2;  // 1 for IEI and 1 for sst
     if (nssai[i].sd != -1) length += 3;
     if (nssai[i].mHplmnSst != -1) length += 1;
     if (nssai[i].mHplmnSd != -1) length += 3;

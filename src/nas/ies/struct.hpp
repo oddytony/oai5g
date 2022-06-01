@@ -43,13 +43,16 @@ namespace nas {
 typedef struct SNSSAI_s {
   uint8_t sst;
   int32_t sd;
-  int32_t mHplmnSst;
+  int8_t mHplmnSst;
   int32_t mHplmnSd;
+  uint8_t length;
+
   SNSSAI_s& operator=(const struct SNSSAI_s& s) {
     sst       = s.sst;
     sd        = s.sd;
     mHplmnSst = s.mHplmnSst;
     mHplmnSd  = s.mHplmnSd;
+    length    = s.length;
     return *this;
   }
 } SNSSAI_t;

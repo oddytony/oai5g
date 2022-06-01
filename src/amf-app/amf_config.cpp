@@ -228,7 +228,11 @@ int amf_config::load(const std::string& config_file) {
         slice_item.lookupValue(AMF_CONFIG_STRING_SD, sd);
         try {
           slice.sst = std::stoi(sst);
-          slice.sd  = std::stoi(sd);
+          slice.sd  = SD_NO_VALUE;  // Default value
+          // Get SD if available for non standardized SST
+          if (slice.sst > SST_MAX_STANDARDIZED_VALUE) {
+            if (!sd.empty()) slice.sd = std::stoi(sd);
+          }
         } catch (const std::exception& err) {
           Logger::amf_app().error("Invalid SST/SD");
         }

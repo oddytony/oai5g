@@ -261,7 +261,7 @@ void amf_n1::handle_itti_message(itti_downlink_nas_transfer& itti_msg) {
       }
 
       itti_modify_request_msg->s_NSSAI.setSd(psc->snssai.sD);
-      itti_modify_request_msg->s_NSSAI.setSst(std::to_string(psc->snssai.sST));
+      itti_modify_request_msg->s_NSSAI.setSst(psc->snssai.sST);
 
       int ret = itti_inst->send_msg(itti_modify_request_msg);
       if (0 != ret) {
@@ -4134,10 +4134,13 @@ bool amf_n1::check_requested_nssai(const std::shared_ptr<nas_context>& nc) {
       bool found_nssai = false;
       for (auto s : p.slice_list) {
         std::string sd = std::to_string(s.sd);
-        if ((s.sst == n.sst) and (s.sd == n.sd)) {
-          found_nssai = true;
-          Logger::amf_n1().debug("Found S-NSSAI (SST %d, SD %d)", s.sst, n.sd);
-          break;
+        if (s.sst == n.sst) {
+          if ((s.sst <= SST_MAX_STANDARDIZED_VALUE) or (s.sd == n.sd)) {
+            found_nssai = true;
+            Logger::amf_n1().debug(
+                "Found S-NSSAI (SST %d, SD %d)", s.sst, n.sd);
+            break;
+          }
         }
       }
       if (!found_nssai) {
@@ -4184,7 +4187,8 @@ bool amf_n1::check_subscribed_nssai(
       // Check with default subscribed NSSAIs
       for (auto n : nssai.getDefaultSingleNssais()) {
         if (s.sst == n.getSst()) {
-          if ((n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
+          if ((s.sst <= SST_MAX_STANDARDIZED_VALUE) or
+              (n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
               (!n.sdIsSet() and sd.empty())) {
             common_snssais.push_back(n);
             Logger::amf_n1().debug(
@@ -4197,7 +4201,8 @@ bool amf_n1::check_subscribed_nssai(
       // check with other subscribed NSSAIs
       for (auto n : nssai.getSingleNssais()) {
         if (s.sst == n.getSst()) {
-          if ((n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
+          if ((s.sst <= SST_MAX_STANDARDIZED_VALUE) or
+              (n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
               (!n.sdIsSet() and sd.empty())) {
             common_snssais.push_back(n);
             Logger::amf_n1().debug(
@@ -4218,7 +4223,8 @@ bool amf_n1::check_subscribed_nssai(
         for (auto s : p.slice_list) {
           std::string sd = std::to_string(s.sd);
           if (s.sst == n.getSst()) {
-            if ((n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
+            if ((s.sst <= SST_MAX_STANDARDIZED_VALUE) or
+                (n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
                 (!n.sdIsSet() and sd.empty())) {
               found_nssai = true;
               Logger::amf_n1().debug(
@@ -4240,7 +4246,8 @@ bool amf_n1::check_subscribed_nssai(
         for (auto s : p.slice_list) {
           std::string sd = std::to_string(s.sd);
           if (s.sst == n.getSst()) {
-            if ((n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
+            if ((s.sst <= SST_MAX_STANDARDIZED_VALUE) or
+                (n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
                 (!n.sdIsSet() and sd.empty())) {
               found_nssai = true;
               Logger::amf_n1().debug(
