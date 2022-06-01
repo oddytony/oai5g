@@ -900,7 +900,8 @@ bool amf_n11::discover_smf(
             if (Snssai.count("sd") > 0) sd = Snssai["sd"].get<string>();
             if (sst == snssai.sST) {
               // Match SD (optional) only if it is provided
-              if (sd.empty() or (snssai.sD.compare(sd) == 0)) {
+              if ((sst <= SST_MAX_STANDARDIZED_VALUE) or sd.empty() or
+                  (snssai.sD.compare(sd) == 0)) {
                 Logger::amf_n11().debug(
                     "S-NSSAI [SST- %d, SD -%s] is matched for SMF profile",
                     snssai.sST, snssai.sD.c_str());
