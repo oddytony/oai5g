@@ -23,6 +23,12 @@ NSSF_FQDN=${NSSF_FQDN:-oai-nssf}
 INT_ALGO_LIST=${INT_ALGO_LIST:-'[ "NIA0" , "NIA1" , "NIA2" ]'}
 CIPH_ALGO_LIST=${CIPH_ALGO_LIST:-'[ "NEA0" , "NEA1" , "NEA2" ]'}
 USE_HTTP2=${USE_HTTP2:-no}
+SST_0=${SST_0:-128}
+SD_0=${SD_0:-2}
+SST_1=${SST_1:-1}
+SD_1=${SD_1:-0xFFFFFF}
+SST_2=${SST_2:-129}
+SD_2=${SD_2:-4}
 
 if [[ ${USE_FQDN_DNS} == "yes" ]];then
     NSSF_IPV4_ADDR=${NSSF_IPV4_ADDR_0:-0.0.0.0}
