@@ -47,8 +47,6 @@
 #include "itti_msg_amf_app.hpp"
 #include "mime_parser.hpp"
 #include "nas_context.hpp"
-#include "SMContextsCollectionApi.h"
-#include "SmContextCreateData.h"
 
 extern "C" {
 #include "dynamic_memory_check.h"
