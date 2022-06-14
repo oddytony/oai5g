@@ -686,39 +686,50 @@ void amf_config::display() {
   Logger::config().info(
       "- GUAMI (MCC, MNC, Region ID, AMF Set ID, AMF pointer): ");
   Logger::config().info(
-      "   (%s, %s, %s, %s, %s )", guami.mcc.c_str(), guami.mnc.c_str(),
+      "    (%s, %s, %s, %s, %s)", guami.mcc.c_str(), guami.mnc.c_str(),
       guami.regionID.c_str(), guami.AmfSetID.c_str(), guami.AmfPointer.c_str());
-  Logger::config().info("- Served_Guami_List .......: ");
+  Logger::config().info("- Served Guami List:");
   for (int i = 0; i < guami_list.size(); i++) {
     Logger::config().info(
-        "   (%s, %s, %s , %s, %s)", guami_list[i].mcc.c_str(),
+        "    (%s, %s, %s , %s, %s)", guami_list[i].mcc.c_str(),
         guami_list[i].mnc.c_str(), guami_list[i].regionID.c_str(),
         guami_list[i].AmfSetID.c_str(), guami_list[i].AmfPointer.c_str());
   }
   Logger::config().info("- Relative Capacity .......: %d", relativeAMFCapacity);
-  Logger::config().info("- PLMN Support ............: ");
+  Logger::config().info("- PLMN Support: ");
   for (int i = 0; i < plmn_list.size(); i++) {
     Logger::config().info(
-        "       MCC, MNC ...........: %s, %s", plmn_list[i].mcc.c_str(),
+        "    MCC, MNC ..............: %s, %s", plmn_list[i].mcc.c_str(),
         plmn_list[i].mnc.c_str());
-    Logger::config().info("       TAC ................: %d", plmn_list[i].tac);
-    Logger::config().info("       Slice Support ......:");
+    Logger::config().info("    TAC ...................: %d", plmn_list[i].tac);
+    Logger::config().info("    Slice Support .........:");
     for (int j = 0; j < plmn_list[i].slice_list.size(); j++) {
-      Logger::config().info(
-          "           SST, SD ........: %d, %d", plmn_list[i].slice_list[j].sst,
-          plmn_list[i].slice_list[j].sd);
+      std::string str = {};
+      str             = str.append("        SST")
+                .append(
+                    (plmn_list[i].slice_list[j].sst > 127) ? ", SD " : " ....")
+                .append("...........: ")
+                .append(std::to_string(plmn_list[i].slice_list[j].sst))
+                .append("")
+                .append(
+                    (plmn_list[i].slice_list[j].sst > 127) ?
+                        ", " + std::to_string(plmn_list[i].slice_list[j].sd) :
+                        " ");
+      Logger::config().info(str.c_str());
     }
   }
   Logger::config().info(
       "- Emergency Support .......: %s", is_emergency_support.c_str());
+
+  Logger::config().info("- Database : ");
   Logger::config().info(
-      "- MySQL Server Addr .......: %s", auth_para.mysql_server.c_str());
+      "    MySQL Server Addr .....: %s", auth_para.mysql_server.c_str());
   Logger::config().info(
-      "- MySQL user ..............: %s", auth_para.mysql_user.c_str());
+      "    MySQL user ............: %s", auth_para.mysql_user.c_str());
   Logger::config().info(
-      "- MySQL pass ..............: %s", auth_para.mysql_pass.c_str());
+      "    MySQL pass ............: %s", auth_para.mysql_pass.c_str());
   Logger::config().info(
-      "- MySQL DB ................: %s", auth_para.mysql_db.c_str());
+      "    MySQL DB ..............: %s", auth_para.mysql_db.c_str());
 
   Logger::config().info("- N2 Networking:");
   Logger::config().info("    Iface .................: %s", n2.if_name.c_str());
@@ -771,7 +782,7 @@ void amf_config::display() {
   }
 
   if (!support_features.enable_smf_selection) {
-    Logger::config().info("- SMF Pool.........: ");
+    Logger::config().info("- SMF Pool: ");
     for (int i = 0; i < smf_pool.size(); i++) {
       std::string selected = smf_pool[i].selected ? "true" : "false";
       std::string smf_info = support_features.use_fqdn_dns ?
