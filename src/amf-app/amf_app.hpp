@@ -153,6 +153,15 @@ class amf_app {
   void handle_itti_message(itti_sbi_n1n2_message_unsubscribe& itti_msg);
 
   /*
+   * Handle ITTI message (SBI AMF configuration)
+   * @param [itti_sbi_amf_configuration&]: ITTI message
+   * @return void
+   */
+  void handle_itti_message(itti_sbi_amf_configuration& itti_msg);
+
+  bool read_amf_configuration(nlohmann::json& json_data);
+
+  /*
    * Verify if a UE context associated with an AMF UE NGAP ID exist
    * @param [const long&] amf_ue_ngap_id: AMF UE NGAP ID
    * @return true if UE context exist, otherwise false

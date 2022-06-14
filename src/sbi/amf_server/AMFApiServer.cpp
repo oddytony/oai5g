@@ -8,6 +8,8 @@ void AMFApiServer::init(size_t thr) {
   opts.flags(Pistache::Tcp::Options::ReuseAddr);
   opts.maxRequestSize(PISTACHE_SERVER_MAX_PAYLOAD);
   m_httpEndpoint->init(opts);
+
+  m_aMFConfigurationApiImpl->init();
   m_individualSubscriptionDocumentApiImpl->init();
   m_individualSubscriptionDocumentApiImplEventExposure->init();
   m_individualUeContextDocumentApiImpl->init();
@@ -24,6 +26,9 @@ void AMFApiServer::init(size_t thr) {
 }
 
 void AMFApiServer::start() {
+  if (m_aMFConfigurationApiImpl != nullptr)
+    Logger::amf_server().debug("AMF handler for AMFConfigurationApiImpl");
+
   if (m_individualSubscriptionDocumentApiImpl != nullptr)
     Logger::amf_server().debug(
         "AMF handler for IndividualSubscriptionDocumentApiImpl");

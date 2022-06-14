@@ -7,6 +7,7 @@
 #include <unistd.h>
 #endif
 
+#include "AMFConfigurationApiImpl.h"
 #include "IndividualSubscriptionDocumentApiImpl.h"
 #include "IndividualSubscriptionDocumentApiImplEventExposure.h"
 #include "IndividualUeContextDocumentApiImpl.h"
@@ -34,6 +35,9 @@ class AMFApiServer {
       : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address)) {
     m_router  = std::make_shared<Pistache::Rest::Router>();
     m_address = address.host() + ":" + (address.port()).toString();
+
+    m_aMFConfigurationApiImpl =
+        std::make_shared<AMFConfigurationApiImpl>(m_router, amf_app_inst);
     m_individualSubscriptionDocumentApiImpl =
         std::make_shared<IndividualSubscriptionDocumentApiImpl>(
             m_router, amf_app_inst);
@@ -80,6 +84,8 @@ class AMFApiServer {
  private:
   std::shared_ptr<Pistache::Http::Endpoint> m_httpEndpoint;
   std::shared_ptr<Pistache::Rest::Router> m_router;
+
+  std::shared_ptr<AMFConfigurationApiImpl> m_aMFConfigurationApiImpl;
   std::shared_ptr<IndividualSubscriptionDocumentApiImpl>
       m_individualSubscriptionDocumentApiImpl;
   std::shared_ptr<IndividualSubscriptionDocumentApiImplEventExposure>

@@ -812,6 +812,12 @@ void amf_config::display() {
   Logger::config().info(
       "    Use HTTP2..............: %s",
       support_features.use_http2 ? "Yes" : "No");
+
+  // SHOULD BE REMOVED
+  nlohmann::json json_data = {};
+  to_json(json_data);
+  Logger::config().info(
+      "    JSON..............:\n %s", json_data.dump().c_str());
 }
 
 //------------------------------------------------------------------------------
@@ -911,4 +917,52 @@ std::string amf_config::get_ausf_ue_authentications_uri() {
          ausf_addr.api_version + "/ue-authentications";
 }
 
+//------------------------------------------------------------------------------
+void amf_config::to_json(nlohmann::json& json_data) const {
+  json_data["instance"]   = instance;
+  json_data["pid_dir"]    = pid_dir;
+  json_data["amf_name"]   = AMF_Name;  // TODO: amf_name
+  json_data["guami"]      = guami.to_json();
+  json_data["guami_list"] = nlohmann::json::array();
+  for (auto s : guami_list) {
+    json_data["guami_list"].push_back(s.to_json());
+  }
+
+  json_data["relativeAMFCapacity"] = relativeAMFCapacity;
+
+  json_data["plmn_list"] = nlohmann::json::array();
+  for (auto s : plmn_list) {
+    json_data["plmn_list"].push_back(s.to_json());
+  }
+  json_data["is_emergency_support"] = is_emergency_support;
+
+  json_data["auth_para"] = auth_para.to_json();
+
+  json_data["n2"]                    = n2.to_json();
+  json_data["n11"]                   = n11.to_json();
+  json_data["n11"]["sbi_http2_port"] = sbi_http2_port;
+
+  json_data["support_features"] = support_features.to_json();
+
+  if (support_features.enable_external_nrf) {
+    json_data["nrf"] = nrf_addr.to_json();
+  }
+
+  if (support_features.enable_external_nssf) {
+    json_data["nrf"] = nssf_addr.to_json();
+  }
+
+  if (support_features.enable_external_ausf) {
+    json_data["nrf"] = ausf_addr.to_json();
+  }
+
+  if (support_features.enable_external_udm) {
+    json_data["nrf"] = udm_addr.to_json();
+  }
+
+  json_data["smf_pool"] = nlohmann::json::array();
+  for (auto s : smf_pool) {
+    json_data["smf_pool"].push_back(s.to_json());
+  }
+}
 }  // namespace config
