@@ -210,4 +210,19 @@ class itti_sbi_n1n2_message_unsubscribe : public itti_sbi_msg {
   uint8_t http_version;
   uint32_t promise_id;
 };
+
+//-----------------------------------------------------------------------------
+class itti_sbi_amf_configuration : public itti_sbi_msg {
+ public:
+  itti_sbi_amf_configuration(
+      const task_id_t orig, const task_id_t dest, uint32_t pid)
+      : itti_sbi_msg(SBI_AMF_CONFIGURATION, orig, dest),
+        http_version(1),
+        promise_id(pid) {}
+  const char* get_msg_name() { return "SBI_AMF_CONFIGURATION"; };
+
+  uint8_t http_version;
+  uint32_t promise_id;
+};
+
 #endif /* ITTI_MSG_SBI_HPP_INCLUDED_ */

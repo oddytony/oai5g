@@ -151,6 +151,13 @@ void amf_app_task(void*) {
         amf_app_inst->handle_itti_message(ref(*m));
       } break;
 
+      case SBI_AMF_CONFIGURATION: {
+        Logger::amf_app().debug("Received N11_AMF_CONFIGURATION");
+        itti_sbi_amf_configuration* m =
+            dynamic_cast<itti_sbi_amf_configuration*>(msg);
+        amf_app_inst->handle_itti_message(ref(*m));
+      } break;
+
       case TIME_OUT: {
         if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
           switch (to->arg1_user) {
@@ -696,6 +703,40 @@ void amf_app::handle_itti_message(itti_sbi_n1n2_message_unsubscribe& itti_msg) {
     trigger_process_response(itti_msg.promise_id, response_data);
     return;
   }
+}
+
+//------------------------------------------------------------------------------
+void amf_app::handle_itti_message(itti_sbi_amf_configuration& itti_msg) {
+  Logger::amf_app().info(
+      "Handle an SBIAMFConfiguration from a NF (HTTP version "
+      "%d)",
+      itti_msg.http_version);
+
+  // Process the request and trigger the response from AMF API Server
+  nlohmann::json response_data = {};
+  response_data["content"]     = {};
+  if (read_amf_configuration(response_data["content"])) {
+    Logger::amf_app().debug(
+        "AMF configuration:\n %s", response_data["content"].dump().c_str());
+    response_data["httpResponseCode"] = 200;  // TODO:
+  } else {
+    response_data["httpResponseCode"]               = 400;  // TODO:
+    oai::amf::model::ProblemDetails problem_details = {};
+    // TODO set problem_details
+    to_json(response_data["ProblemDetails"], problem_details);
+  }
+
+  // Notify to the result
+  if (itti_msg.promise_id > 0) {
+    trigger_process_response(itti_msg.promise_id, response_data);
+    return;
+  }
+}
+
+//---------------------------------------------------------------------------------------------
+bool amf_app::read_amf_configuration(nlohmann::json& json_data) {
+  amf_cfg.to_json(json_data);
+  return true;
 }
 
 //---------------------------------------------------------------------------------------------
