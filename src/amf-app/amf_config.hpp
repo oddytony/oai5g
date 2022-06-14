@@ -127,11 +127,11 @@ typedef struct {
   std::string random;
   nlohmann::json to_json() const {
     nlohmann::json json_data  = {};
-    json_data["mysql_server"] = mysql_server;
-    json_data["mysql_user"]   = mysql_user;
-    json_data["mysql_pass"]   = mysql_pass;
-    json_data["mysql_db"]     = mysql_db;
-    json_data["random"]       = random;
+    json_data["mysql_server"] = this->mysql_server;
+    json_data["mysql_user"]   = this->mysql_user;
+    json_data["mysql_pass"]   = this->mysql_pass;
+    json_data["mysql_db"]     = this->mysql_db;
+    json_data["random"]       = this->random;
     return json_data;
   }
 } auth_conf;
@@ -176,11 +176,11 @@ typedef struct guami_s {
 
   nlohmann::json to_json() const {
     nlohmann::json json_data = {};
-    json_data["mcc"]         = mcc;
-    json_data["mnc"]         = mnc;
-    json_data["regionID"]    = regionID;
-    json_data["AmfSetID"]    = AmfSetID;
-    json_data["AmfPointer"]  = AmfPointer;
+    json_data["mcc"]         = this->mcc;
+    json_data["mnc"]         = this->mnc;
+    json_data["regionID"]    = this->regionID;
+    json_data["AmfSetID"]    = this->AmfSetID;
+    json_data["AmfPointer"]  = this->AmfPointer;
     return json_data;
   }
 } guami_t;
@@ -204,8 +204,8 @@ typedef struct slice_s {
   }
   nlohmann::json to_json() const {
     nlohmann::json json_data = {};
-    json_data["sst"]         = sst;
-    json_data["sd"]          = sd;
+    json_data["sst"]         = this->sst;
+    if (sst > 127) json_data["sd"] = this->sd;
     return json_data;
   }
 
@@ -220,8 +220,8 @@ typedef struct plmn_support_item_s {
   nlohmann::json to_json() const {
     nlohmann::json json_data = {};
     json_data["mcc"]         = this->mcc;
-    json_data["mnc"]         = mnc;
-    json_data["tac"]         = tac;
+    json_data["mnc"]         = this->mnc;
+    json_data["tac"]         = this->tac;
     json_data["slice_list"]  = nlohmann::json::array();
     for (auto s : slice_list) {
       json_data["slice_list"].push_back(s.to_json());
