@@ -823,12 +823,6 @@ void amf_config::display() {
   Logger::config().info(
       "    Use HTTP2..............: %s",
       support_features.use_http2 ? "Yes" : "No");
-
-  // SHOULD BE REMOVED
-  nlohmann::json json_data = {};
-  to_json(json_data);
-  Logger::config().info(
-      "    JSON..............:\n %s", json_data.dump().c_str());
 }
 
 //------------------------------------------------------------------------------
