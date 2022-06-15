@@ -45,6 +45,10 @@ void AMFConfigurationApi::setupRoutes() {
       *router, base + amf_cfg.sbi_api_version + "/configuration/",
       Routes::bind(&AMFConfigurationApi::read_configuration_handler, this));
 
+  Routes::PUT(
+      *router, base + amf_cfg.sbi_api_version + "/configuration/nssai",
+      Routes::bind(&AMFConfigurationApi::create_nssai_handler, this));
+
   // Default handler, called when a route is not found
   router->addCustomHandler(Routes::bind(
       &AMFConfigurationApi::configuration_api_default_handler, this));
