@@ -45,7 +45,11 @@ void AMFConfigurationApi::setupRoutes() {
       *router, base + amf_cfg.sbi_api_version + "/configuration/",
       Routes::bind(&AMFConfigurationApi::read_configuration_handler, this));
 
-  Routes::PUT(
+  Routes::Put(
+      *router, base + amf_cfg.sbi_api_version + "/configuration/",
+      Routes::bind(&AMFConfigurationApi::update_configuration_handler, this));
+
+  Routes::Put(
       *router, base + amf_cfg.sbi_api_version + "/configuration/nssai",
       Routes::bind(&AMFConfigurationApi::create_nssai_handler, this));
 
@@ -59,6 +63,46 @@ void AMFConfigurationApi::read_configuration_handler(
     Pistache::Http::ResponseWriter response) {
   try {
     this->read_configuration(response);
+  } catch (nlohmann::detail::exception& e) {
+    // send a 400 error
+    response.send(Pistache::Http::Code::Bad_Request, e.what());
+    return;
+  } catch (Pistache::Http::HttpError& e) {
+    response.send(static_cast<Pistache::Http::Code>(e.code()), e.what());
+    return;
+  } catch (std::exception& e) {
+    // send a 500 error
+    response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
+    return;
+  }
+}
+
+void AMFConfigurationApi::update_configuration_handler(
+    const Pistache::Rest::Request& request,
+    Pistache::Http::ResponseWriter response) {
+  try {
+    auto configuration_info = nlohmann::json::parse(request.body());
+    this->update_configuration(configuration_info, response);
+  } catch (nlohmann::detail::exception& e) {
+    // send a 400 error
+    response.send(Pistache::Http::Code::Bad_Request, e.what());
+    return;
+  } catch (Pistache::Http::HttpError& e) {
+    response.send(static_cast<Pistache::Http::Code>(e.code()), e.what());
+    return;
+  } catch (std::exception& e) {
+    // send a 500 error
+    response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
+    return;
+  }
+}
+
+void AMFConfigurationApi::create_nssai_handler(
+    const Pistache::Rest::Request& request,
+    Pistache::Http::ResponseWriter response) {
+  try {
+    auto json_data = nlohmann::json::parse(request.body());
+    this->create_nssai(json_data, response);
   } catch (nlohmann::detail::exception& e) {
     // send a 400 error
     response.send(Pistache::Http::Code::Bad_Request, e.what());

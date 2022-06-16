@@ -159,7 +159,15 @@ class amf_app {
    */
   void handle_itti_message(itti_sbi_amf_configuration& itti_msg);
 
+  /*
+   * Handle ITTI message (Update AMF configuration)
+   * @param [itti_sbi_update_amf_configuration&]: ITTI message
+   * @return void
+   */
+  void handle_itti_message(itti_sbi_update_amf_configuration& itti_msg);
+
   bool read_amf_configuration(nlohmann::json& json_data);
+  bool update_amf_configuration(nlohmann::json& json_data);
 
   /*
    * Verify if a UE context associated with an AMF UE NGAP ID exist

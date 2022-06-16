@@ -707,12 +707,16 @@ void amf_config::display() {
       std::string str = {};
       str             = str.append("        SST")
                 .append(
-                    (plmn_list[i].slice_list[j].sst > 127) ? ", SD " : " ....")
+                    (plmn_list[i].slice_list[j].sst >
+                     SST_MAX_STANDARDIZED_VALUE) ?
+                        ", SD " :
+                        " ....")
                 .append("...........: ")
                 .append(std::to_string(plmn_list[i].slice_list[j].sst))
                 .append("")
                 .append(
-                    (plmn_list[i].slice_list[j].sst > 127) ?
+                    (plmn_list[i].slice_list[j].sst >
+                     SST_MAX_STANDARDIZED_VALUE) ?
                         ", " + std::to_string(plmn_list[i].slice_list[j].sd) :
                         " ");
       Logger::config().info(str.c_str());
@@ -954,20 +958,125 @@ void amf_config::to_json(nlohmann::json& json_data) const {
   }
 
   if (support_features.enable_external_nssf) {
-    json_data["nrf"] = nssf_addr.to_json();
+    json_data["nssf"] = nssf_addr.to_json();
   }
 
   if (support_features.enable_external_ausf) {
-    json_data["nrf"] = ausf_addr.to_json();
+    json_data["ausf"] = ausf_addr.to_json();
   }
 
   if (support_features.enable_external_udm) {
-    json_data["nrf"] = udm_addr.to_json();
+    json_data["udm"] = udm_addr.to_json();
   }
 
   json_data["smf_pool"] = nlohmann::json::array();
   for (auto s : smf_pool) {
     json_data["smf_pool"].push_back(s.to_json());
   }
+}
+
+bool amf_config::from_json(nlohmann::json& json_data) {
+  try {
+    if (json_data.find("instance") != json_data.end()) {
+      instance = json_data["instance"].get<int>();
+    }
+
+    if (json_data.find("pid_dir") != json_data.end()) {
+      pid_dir = json_data["pid_dir"].get<std::string>();
+    }
+    if (json_data.find("amf_name") != json_data.end()) {
+      AMF_Name = json_data["amf_name"].get<std::string>();
+    }
+    if (json_data.find("guami") != json_data.end()) {
+      guami.from_json(json_data["guami"]);
+    }
+
+    if (json_data.find("guami_list") != json_data.end()) {
+      for (auto s : json_data["guami_list"]) {
+        guami_t g = {};
+        g.from_json(s);
+        guami_list.push_back(g);
+      }
+    }
+
+    if (json_data.find("relativeAMFCapacity") != json_data.end()) {
+      relativeAMFCapacity = json_data["relativeAMFCapacity"].get<int>();
+    }
+
+    if (json_data.find("plmn_list") != json_data.end()) {
+      for (auto s : json_data["plmn_list"]) {
+        plmn_item_t p = {};
+        p.from_json(s);
+        plmn_list.push_back(p);
+      }
+    }
+
+    if (json_data.find("is_emergency_support") != json_data.end()) {
+      is_emergency_support =
+          json_data["is_emergency_support"].get<std::string>();
+    }
+
+    if (json_data.find("is_emergency_support") != json_data.end()) {
+      auth_para.from_json(json_data["auth_para"]);
+    }
+
+    if (json_data.find("n2") != json_data.end()) {
+      n2.from_json(json_data["n2"]);
+    }
+    if (json_data.find("n11") != json_data.end()) {
+      n2.from_json(json_data["n11"]);
+    }
+
+    if (json_data.find("sbi_http2_port") != json_data.end()) {
+      sbi_http2_port = json_data["sbi_http2_port"].get<int>();
+    }
+
+    if (json_data.find("support_features") != json_data.end()) {
+      support_features.from_json(json_data["support_features"]);
+    }
+
+    if (support_features.enable_external_nrf) {
+      if (json_data.find("nrf") != json_data.end()) {
+        nrf_addr.from_json(json_data["nrf"]);
+      }
+    }
+
+    if (support_features.enable_external_nssf) {
+      if (json_data.find("nssf") != json_data.end()) {
+        nssf_addr.from_json(json_data["nssf"]);
+      }
+    }
+
+    if (support_features.enable_external_ausf) {
+      if (json_data.find("ausf") != json_data.end()) {
+        ausf_addr.from_json(json_data["ausf"]);
+      }
+    }
+
+    if (support_features.enable_external_udm) {
+      if (json_data.find("udm") != json_data.end()) {
+        udm_addr.from_json(json_data["udm"]);
+      }
+    }
+
+    if (json_data.find("smf_pool") != json_data.end()) {
+      for (auto s : json_data["smf_pool"]) {
+        smf_inst_t smf_item = {};
+        smf_item.from_json(s);
+        smf_pool.push_back(smf_item);
+      }
+    }
+
+  } catch (nlohmann::detail::exception& e) {
+    Logger::amf_app().error(
+        "Exception when reading configuration from json %s", e.what());
+    return false;
+  } catch (std::exception& e) {
+    Logger::amf_app().error(
+        "Exception when reading configuration from json %s", e.what());
+    return false;
+  }
+
+  return true;
 }
 }  // namespace config
