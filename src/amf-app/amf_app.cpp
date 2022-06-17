@@ -749,7 +749,8 @@ void amf_app::handle_itti_message(itti_sbi_update_amf_configuration& itti_msg) {
 
   // Process the request and trigger the response from AMF API Server
   nlohmann::json response_data = {};
-  response_data["content"]     = {};
+  response_data["content"]     = itti_msg.configuration;
+
   if (update_amf_configuration(response_data["content"])) {
     Logger::amf_app().debug(
         "AMF configuration:\n %s", response_data["content"].dump().c_str());

@@ -288,7 +288,6 @@ typedef struct plmn_support_item_s {
     this->mnc = json_data["mnc"].get<std::string>();
     this->tac = json_data["tac"].get<int>();
 
-    json_data["slice_list"] = nlohmann::json::array();
     for (auto s : json_data["slice_list"]) {
       slice_t sl = {};
       sl.from_json(s);
@@ -314,6 +313,21 @@ typedef struct {
     }
     return json_data;
   }
+  /*
+    void from_json(nlohmann::json& json_data) {
+      uint8_t i = 0;
+      for (auto s : json_data["prefered_integrity_algorithm"]) {
+        uint8_t integ_alg               = s.get<int>();
+        prefered_integrity_algorithm[i] = integ_alg;
+        ++i;
+      }
+      i = 0;
+      for (auto s : json_data["prefered_ciphering_algorithm"]) {
+        uint8_t cipher_alg              = s.get<int>();
+        prefered_ciphering_algorithm[i] = cipher_alg;
+        ++i;
+      }
+    }*/
 } nas_conf_t;
 
 typedef struct {
@@ -354,12 +368,14 @@ typedef struct nf_addr_s {
   struct in_addr ipv4_addr;
   unsigned int port;
   std::string api_version;
+  std::string fqdn;
 
   nlohmann::json to_json() const {
     nlohmann::json json_data = {};
     json_data["ipv4_addr"]   = inet_ntoa(this->ipv4_addr);
     json_data["port"]        = this->port;
     json_data["api_version"] = this->api_version;
+    json_data["fqdn"]        = this->fqdn;
     return json_data;
   }
 
@@ -370,6 +386,7 @@ typedef struct nf_addr_s {
         "BAD IPv4 ADDRESS FORMAT FOR INTERFACE !");
     this->port        = json_data["port"].get<int>();
     this->api_version = json_data["api_version"].get<std::string>();
+    this->fqdn        = json_data["fqdn"].get<std::string>();
   }
 
 } nf_addr_t;
@@ -393,6 +410,8 @@ class amf_config {
    * @return RETURNclear/RETURNerror/RETURNok
    */
   int load_interface(const Setting& if_cfg, interface_cfg_t& cfg);
+
+  bool resolve_fqdn(const std::string& fqdn, struct in_addr& ipv4_addr);
 
   /*
    * Get the URI of AMF N1N2MessageSubscribe
@@ -467,10 +486,10 @@ class amf_config {
   unsigned int sbi_http2_port;
 
   unsigned int statistics_interval;
-  std::string AMF_Name;
+  std::string amf_name;
   guami_t guami;
   std::vector<guami_t> guami_list;
-  unsigned int relativeAMFCapacity;
+  unsigned int relative_amf_capacity;
   std::vector<plmn_item_t> plmn_list;
   std::string is_emergency_support;
   auth_conf auth_para;
