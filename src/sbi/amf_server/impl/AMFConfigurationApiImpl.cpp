@@ -173,7 +173,4 @@ void AMFConfigurationApiImpl::update_configuration(
   }
 }
 
-void AMFConfigurationApiImpl::create_nssai(
-    nlohmann::json& json_data, Pistache::Http::ResponseWriter& response) {}
-
 }  // namespace oai::amf::api

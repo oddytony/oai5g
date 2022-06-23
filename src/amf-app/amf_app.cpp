@@ -755,6 +755,7 @@ void amf_app::handle_itti_message(itti_sbi_update_amf_configuration& itti_msg) {
     Logger::amf_app().debug(
         "AMF configuration:\n %s", response_data["content"].dump().c_str());
     response_data["httpResponseCode"] = 200;  // TODO:
+    // TODO: Send message to update AMF profile at NRF
   } else {
     response_data["httpResponseCode"]               = 400;  // TODO:
     oai::amf::model::ProblemDetails problem_details = {};
@@ -983,7 +984,7 @@ void amf_app::generate_amf_profile() {
   // generate UUID
   generate_uuid();
   nf_instance_profile.set_nf_instance_id(amf_instance_id);
-  nf_instance_profile.set_nf_instance_name("OAI-AMF");
+  nf_instance_profile.set_nf_instance_name(amf_cfg.amf_name);
   nf_instance_profile.set_nf_type("AMF");
   nf_instance_profile.set_nf_status("REGISTERED");
   nf_instance_profile.set_nf_heartBeat_timer(50);

@@ -48,9 +48,6 @@ class AMFConfigurationApi {
   void update_configuration_handler(
       const Pistache::Rest::Request& request,
       Pistache::Http::ResponseWriter response);
-  void create_nssai_handler(
-      const Pistache::Rest::Request& request,
-      Pistache::Http::ResponseWriter response);
   void configuration_api_default_handler(
       const Pistache::Rest::Request& request,
       Pistache::Http::ResponseWriter response);
@@ -61,8 +58,6 @@ class AMFConfigurationApi {
   virtual void update_configuration(
       nlohmann::json& configuration_info,
       Pistache::Http::ResponseWriter& response) = 0;
-  virtual void create_nssai(
-      nlohmann::json& json_data, Pistache::Http::ResponseWriter& response) = 0;
 };
 
 }  // namespace oai::amf::api

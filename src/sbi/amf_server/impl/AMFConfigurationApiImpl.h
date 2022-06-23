@@ -44,8 +44,6 @@ class AMFConfigurationApiImpl : public oai::amf::api::AMFConfigurationApi {
   void update_configuration(
       nlohmann::json& configuration_info,
       Pistache::Http::ResponseWriter& response);
-  void create_nssai(
-      nlohmann::json& json_data, Pistache::Http::ResponseWriter& response);
 };
 
 }  // namespace oai::amf::api
