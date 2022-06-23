@@ -1017,6 +1017,7 @@ void amf_app::generate_amf_profile() {
   nf_instance_profile.set_nf_heartBeat_timer(50);
   nf_instance_profile.set_nf_priority(1);
   nf_instance_profile.set_nf_capacity(100);
+  nf_instance_profile.delete_nf_ipv4_addresses();
   nf_instance_profile.add_nf_ipv4_addresses(amf_cfg.n11.addr4);
 
   // NF services
@@ -1036,6 +1037,7 @@ void amf_app::generate_amf_profile() {
   endpoint.port          = amf_cfg.n11.port;
   nf_service.ip_endpoints.push_back(endpoint);
 
+  nf_instance_profile.delete_nf_services();
   nf_instance_profile.add_nf_service(nf_service);
 
   // TODO: custom info
