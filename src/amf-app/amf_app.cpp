@@ -778,9 +778,26 @@ bool amf_app::read_amf_configuration(nlohmann::json& json_data) {
 
 //---------------------------------------------------------------------------------------------
 bool amf_app::update_amf_configuration(nlohmann::json& json_data) {
+  if (get_number_registered_ues() > 0) {
+    Logger::amf_app().info(
+        "AMF is actively handling UEs, could not update AMF configuration");
+    return false;
+  }
   return amf_cfg.from_json(json_data);
 }
 
+//---------------------------------------------------------------------------------------------
+void amf_app::get_number_registered_ues(uint32_t& num_ues) const {
+  std::shared_lock lock(m_amf_ue_ngap_id2ue_ctx);
+  num_ues = amf_ue_ngap_id2ue_ctx.size();
+  return;
+}
+
+//---------------------------------------------------------------------------------------------
+uint32_t amf_app::get_number_registered_ues() const {
+  std::shared_lock lock(m_amf_ue_ngap_id2ue_ctx);
+  return amf_ue_ngap_id2ue_ctx.size();
+}
 //---------------------------------------------------------------------------------------------
 void amf_app::add_n1n2_message_subscription(
     const std::string& ue_ctx_id, const n1n2sub_id_t& sub_id,

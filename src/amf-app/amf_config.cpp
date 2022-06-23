@@ -1017,6 +1017,7 @@ void amf_config::to_json(nlohmann::json& json_data) const {
   }
 }
 
+//------------------------------------------------------------------------------
 bool amf_config::from_json(nlohmann::json& json_data) {
   try {
     if (json_data.find("instance") != json_data.end()) {
