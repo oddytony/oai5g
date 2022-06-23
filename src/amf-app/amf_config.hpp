@@ -305,10 +305,10 @@ typedef struct {
     nlohmann::json json_data                  = {};
     json_data["prefered_integrity_algorithm"] = nlohmann::json::array();
     json_data["prefered_ciphering_algorithm"] = nlohmann::json::array();
-    for (auto s : prefered_integrity_algorithm) {
+    for (auto s : this->prefered_integrity_algorithm) {
       json_data["prefered_integrity_algorithm"].push_back(s);
     }
-    for (auto s : prefered_ciphering_algorithm) {
+    for (auto s : this->prefered_ciphering_algorithm) {
       json_data["prefered_ciphering_algorithm"].push_back(s);
     }
     return json_data;

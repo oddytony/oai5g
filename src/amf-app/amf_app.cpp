@@ -88,7 +88,10 @@ amf_app::amf_app(const amf_config& amf_cfg)
     throw;
   }
 
-  // Generate an AMF profile (including NF instance)
+  // Generate NF Instance ID (UUID)
+  generate_uuid();
+
+  // Generate an AMF profile
   generate_amf_profile();
 
   // Register to NRF if needed
@@ -756,6 +759,16 @@ void amf_app::handle_itti_message(itti_sbi_update_amf_configuration& itti_msg) {
         "AMF configuration:\n %s", response_data["content"].dump().c_str());
     response_data["httpResponseCode"] = 200;  // TODO:
     // TODO: Send message to update AMF profile at NRF
+
+    // Update AMF profile
+    generate_amf_profile();
+
+    // Update AMF profile at NRF
+    /*   if (amf_cfg.support_features.enable_nf_registration and
+           amf_cfg.support_features.enable_external_nrf)
+         update_amf_profile();
+   */
+
   } else {
     response_data["httpResponseCode"]               = 400;  // TODO:
     oai::amf::model::ProblemDetails problem_details = {};
@@ -778,9 +791,9 @@ bool amf_app::read_amf_configuration(nlohmann::json& json_data) {
 
 //---------------------------------------------------------------------------------------------
 bool amf_app::update_amf_configuration(nlohmann::json& json_data) {
-  if (get_number_registered_ues() > 0) {
+  if (stacs.get_number_connected_gnbs() > 0) {
     Logger::amf_app().info(
-        "AMF is actively handling UEs, could not update AMF configuration");
+        "Could not update AMF configuration (connected with gNBs)");
     return false;
   }
   return amf_cfg.from_json(json_data);
@@ -998,8 +1011,6 @@ void amf_app::get_ee_subscriptions(
 
 //---------------------------------------------------------------------------------------------
 void amf_app::generate_amf_profile() {
-  // generate UUID
-  generate_uuid();
   nf_instance_profile.set_nf_instance_id(amf_instance_id);
   nf_instance_profile.set_nf_instance_name(amf_cfg.amf_name);
   nf_instance_profile.set_nf_type("AMF");
@@ -1014,7 +1025,7 @@ void amf_app::generate_amf_profile() {
   nf_service.service_instance_id = "namf_communication";
   nf_service.service_name        = "namf_communication";
   nf_service_version_t version   = {};
-  version.api_version_in_uri     = "v1";
+  version.api_version_in_uri     = amf_cfg.sbi_api_version;
   version.api_full_version       = "1.0.0";  // TODO: to be updated
   nf_service.versions.push_back(version);
   nf_service.scheme            = "http";

@@ -163,3 +163,9 @@ void statistics::update_gnb(const uint32_t& gnb_id, const gnb_infos& gnb) {
     gnbs[gnb_id] = gnb;
   }
 }
+
+//------------------------------------------------------------------------------
+uint32_t statistics::get_number_connected_gnbs() const {
+  std::shared_lock lock(m_gnbs);
+  return gnbs.size();
+}
