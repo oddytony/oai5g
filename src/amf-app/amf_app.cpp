@@ -758,16 +758,15 @@ void amf_app::handle_itti_message(itti_sbi_update_amf_configuration& itti_msg) {
     Logger::amf_app().debug(
         "AMF configuration:\n %s", response_data["content"].dump().c_str());
     response_data["httpResponseCode"] = 200;  // TODO:
-    // TODO: Send message to update AMF profile at NRF
 
     // Update AMF profile
     generate_amf_profile();
 
-    // Update AMF profile at NRF
-    /*   if (amf_cfg.support_features.enable_nf_registration and
-           amf_cfg.support_features.enable_external_nrf)
-         update_amf_profile();
-   */
+    // Update AMF profile (complete replacement of the existing profile by a new
+    // one)
+    if (amf_cfg.support_features.enable_nf_registration and
+        amf_cfg.support_features.enable_external_nrf)
+      register_to_nrf();
 
   } else {
     response_data["httpResponseCode"]               = 400;  // TODO:
