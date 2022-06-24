@@ -268,6 +268,12 @@ class nf_profile : public std::enable_shared_from_this<nf_profile> {
   void get_nf_ipv4_addresses(std::vector<struct in_addr>& a) const;
 
   /*
+   * Remove all NF instance ipv4_addresses
+   * @param void
+   * @return void:
+   */
+  void delete_nf_ipv4_addresses();
+  /*
    * Print related-information for NF profile
    * @param void
    * @return void:
@@ -349,6 +355,12 @@ class amf_profile : public nf_profile {
    */
   void get_nf_services(std::vector<nf_service_t>& n) const;
 
+  /*
+   * Delete all NF services
+   * @param void
+   * @return void:
+   */
+  void delete_nf_services();
   /*
    * Set custom info
    * @param [const nlohmann::json &] c: custom info to be set

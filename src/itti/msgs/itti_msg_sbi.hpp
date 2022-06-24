@@ -225,4 +225,19 @@ class itti_sbi_amf_configuration : public itti_sbi_msg {
   uint32_t promise_id;
 };
 
+//-----------------------------------------------------------------------------
+class itti_sbi_update_amf_configuration : public itti_sbi_msg {
+ public:
+  itti_sbi_update_amf_configuration(
+      const task_id_t orig, const task_id_t dest, uint32_t pid)
+      : itti_sbi_msg(SBI_UPDATE_AMF_CONFIGURATION, orig, dest),
+        http_version(1),
+        promise_id(pid) {}
+  const char* get_msg_name() { return "SBI_UPDATE_AMF_CONFIGURATION"; };
+
+  uint8_t http_version;
+  uint32_t promise_id;
+  nlohmann::json configuration;
+};
+
 #endif /* ITTI_MSG_SBI_HPP_INCLUDED_ */

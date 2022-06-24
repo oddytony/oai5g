@@ -41,6 +41,9 @@ class AMFConfigurationApiImpl : public oai::amf::api::AMFConfigurationApi {
   ~AMFConfigurationApiImpl() {}
 
   void read_configuration(Pistache::Http::ResponseWriter& response);
+  void update_configuration(
+      nlohmann::json& configuration_info,
+      Pistache::Http::ResponseWriter& response);
 };
 
 }  // namespace oai::amf::api

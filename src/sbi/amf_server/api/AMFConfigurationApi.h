@@ -27,6 +27,8 @@
 #include <pistache/optional.h>
 #include <pistache/router.h>
 
+#include <nlohmann/json.hpp>
+
 namespace oai::amf::api {
 
 class AMFConfigurationApi {
@@ -43,6 +45,9 @@ class AMFConfigurationApi {
   void read_configuration_handler(
       const Pistache::Rest::Request& request,
       Pistache::Http::ResponseWriter response);
+  void update_configuration_handler(
+      const Pistache::Rest::Request& request,
+      Pistache::Http::ResponseWriter response);
   void configuration_api_default_handler(
       const Pistache::Rest::Request& request,
       Pistache::Http::ResponseWriter response);
@@ -50,6 +55,9 @@ class AMFConfigurationApi {
   std::shared_ptr<Pistache::Rest::Router> router;
 
   virtual void read_configuration(Pistache::Http::ResponseWriter& response) = 0;
+  virtual void update_configuration(
+      nlohmann::json& configuration_info,
+      Pistache::Http::ResponseWriter& response) = 0;
 };
 
 }  // namespace oai::amf::api

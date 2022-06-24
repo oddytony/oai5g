@@ -29,6 +29,9 @@
 #ifndef _3GPP_TS_24501_H_
 #define _3GPP_TS_24501_H_
 
+#include <string>
+#include <vector>
+
 /********** epd type **************/
 
 #define EPD_5GS_MM_MSG 0b01111110
@@ -129,6 +132,10 @@
 #define EA1_128_5G 0b001
 #define EA2_128_5G 0b010
 
+static const std::vector<std::string> nas_itegrity_algorithm_list_e2str = {
+    "NIA0", "NIA1", "NIA2"};
+static const std::vector<std::string> nas_ciphering_algorithm_list_e2str = {
+    "NEA0", "NEA1", "NEA2"};
 /************************** cause value for 5g mobility management(Annex A)
  * ********************************/
 #define _5GMM_CAUSE_ILLEGAL_UE 3

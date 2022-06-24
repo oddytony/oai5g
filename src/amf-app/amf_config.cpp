@@ -78,7 +78,7 @@ amf_config::amf_config() {
   statistics_interval                     = 0;
   guami                                   = {};
   guami_list                              = {};
-  relativeAMFCapacity                     = 0;
+  relative_amf_capacity                   = 0;
   plmn_list                               = {};
   auth_conf auth_para                     = {};
   nas_cfg                                 = {};
@@ -158,7 +158,7 @@ int amf_config::load(const std::string& config_file) {
 
   // AMF Name
   try {
-    amf_cfg.lookupValue(AMF_CONFIG_STRING_AMF_NAME, AMF_Name);
+    amf_cfg.lookupValue(AMF_CONFIG_STRING_AMF_NAME, amf_name);
   } catch (const SettingNotFoundException& nfex) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
@@ -200,7 +200,7 @@ int amf_config::load(const std::string& config_file) {
   // AMF Capacity
   try {
     amf_cfg.lookupValue(
-        AMF_CONFIG_STRING_RELATIVE_AMF_CAPACITY, relativeAMFCapacity);
+        AMF_CONFIG_STRING_RELATIVE_AMF_CAPACITY, relative_amf_capacity);
   } catch (const SettingNotFoundException& nfex) {
     Logger::amf_app().error(
         "%s : %s, using defaults", nfex.what(), nfex.getPath());
@@ -375,6 +375,9 @@ int amf_config::load(const std::string& config_file) {
       std::string smf_api_version  = {};
       std::string selected         = {};
 
+      // Store FQDN
+      smf_addr_item.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, smf_inst.fqdn);
+
       smf_addr_item.lookupValue(AMF_CONFIG_STRING_SMF_INSTANCE_ID, smf_inst.id);
       if (!support_features.use_fqdn_dns) {
         smf_addr_item.lookupValue(
@@ -401,9 +404,7 @@ int amf_config::load(const std::string& config_file) {
           throw(AMF_CONFIG_STRING_SMF_INSTANCE_VERSION "failed");
         }
       } else {
-        std::string smf_fqdn = {};
-        smf_addr_item.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, smf_fqdn);
-        smf_inst.fqdn = smf_fqdn;
+        smf_addr_item.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, smf_inst.fqdn);
       }
 
       smf_addr_item.lookupValue(
@@ -423,6 +424,9 @@ int amf_config::load(const std::string& config_file) {
     string address               = {};
 
     if (!support_features.use_fqdn_dns) {
+      // Store FQDN
+      nrf_cfg.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, nrf_addr.fqdn);
+
       nrf_cfg.lookupValue(AMF_CONFIG_STRING_NRF_IPV4_ADDRESS, address);
       IPV4_STR_ADDR_TO_INADDR(
           util::trim(address).c_str(), nrf_ipv4_addr,
@@ -440,10 +444,9 @@ int amf_config::load(const std::string& config_file) {
       }
       nrf_addr.api_version = nrf_api_version;
     } else {
-      std::string nrf_fqdn = {};
-      nrf_cfg.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, nrf_fqdn);
+      nrf_cfg.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, nrf_addr.fqdn);
       uint8_t addr_type = {};
-      fqdn::resolve(nrf_fqdn, address, nrf_port, addr_type);
+      fqdn::resolve(nrf_addr.fqdn, address, nrf_port, addr_type);
       if (addr_type != 0) {  // IPv6: TODO
         throw("DO NOT SUPPORT IPV6 ADDR FOR NRF!");
       } else {  // IPv4
@@ -472,6 +475,9 @@ int amf_config::load(const std::string& config_file) {
       std::string ausf_api_version  = {};
 
       if (!support_features.use_fqdn_dns) {
+        // Store FQDN
+        ausf_cfg.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, ausf_addr.fqdn);
+
         ausf_cfg.lookupValue(AMF_CONFIG_STRING_IPV4_ADDRESS, address);
         IPV4_STR_ADDR_TO_INADDR(
             util::trim(address).c_str(), ausf_ipv4_addr,
@@ -490,10 +496,9 @@ int amf_config::load(const std::string& config_file) {
         }
         ausf_addr.api_version = ausf_api_version;
       } else {
-        std::string ausf_fqdn = {};
-        ausf_cfg.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, ausf_fqdn);
+        ausf_cfg.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, ausf_addr.fqdn);
         uint8_t addr_type = {};
-        fqdn::resolve(ausf_fqdn, address, ausf_port, addr_type);
+        fqdn::resolve(ausf_addr.fqdn, address, ausf_port, addr_type);
         if (addr_type != 0) {  // IPv6: TODO
           throw("DO NOT SUPPORT IPV6 ADDR FOR AUSF!");
         } else {  // IPv4
@@ -520,6 +525,9 @@ int amf_config::load(const std::string& config_file) {
       std::string udm_api_version  = {};
 
       if (!support_features.use_fqdn_dns) {
+        // Store FQDN
+        udm_cfg.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, udm_addr.fqdn);
+
         udm_cfg.lookupValue(AMF_CONFIG_STRING_IPV4_ADDRESS, address);
         IPV4_STR_ADDR_TO_INADDR(
             util::trim(address).c_str(), udm_ipv4_addr,
@@ -538,10 +546,9 @@ int amf_config::load(const std::string& config_file) {
         }
         udm_addr.api_version = udm_api_version;
       } else {
-        std::string udm_fqdn = {};
-        udm_cfg.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, udm_fqdn);
+        udm_cfg.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, udm_addr.fqdn);
         uint8_t addr_type = {};
-        fqdn::resolve(udm_fqdn, address, udm_port, addr_type);
+        fqdn::resolve(udm_addr.fqdn, address, udm_port, addr_type);
         if (addr_type != 0) {  // IPv6: TODO
           throw("DO NOT SUPPORT IPV6 ADDR FOR UDM!");
         } else {  // IPv4
@@ -563,6 +570,8 @@ int amf_config::load(const std::string& config_file) {
       std::string nssf_api_version  = {};
 
       if (!support_features.use_fqdn_dns) {
+        // Store FQDN
+        nssf_cfg.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, nssf_addr.fqdn);
         nssf_cfg.lookupValue(AMF_CONFIG_STRING_IPV4_ADDRESS, address);
         IPV4_STR_ADDR_TO_INADDR(
             util::trim(address).c_str(), nssf_ipv4_addr,
@@ -581,10 +590,9 @@ int amf_config::load(const std::string& config_file) {
         }
         nssf_addr.api_version = nssf_api_version;
       } else {
-        std::string nssf_fqdn = {};
-        nssf_cfg.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, nssf_fqdn);
+        nssf_cfg.lookupValue(AMF_CONFIG_STRING_FQDN_DNS, nssf_addr.fqdn);
         uint8_t addr_type = {};
-        fqdn::resolve(nssf_fqdn, address, nssf_port, addr_type);
+        fqdn::resolve(nssf_addr.fqdn, address, nssf_port, addr_type);
         if (addr_type != 0) {  // IPv6: TODO
           throw("DO NOT SUPPORT IPV6 ADDR FOR NSSF!");
         } else {  // IPv4
@@ -682,7 +690,7 @@ void amf_config::display() {
   Logger::config().info("Configuration AMF:");
   Logger::config().info("- Instance ................: %d", instance);
   Logger::config().info("- PID dir .................: %s", pid_dir.c_str());
-  Logger::config().info("- AMF NAME.................: %s", AMF_Name.c_str());
+  Logger::config().info("- AMF NAME.................: %s", amf_name.c_str());
   Logger::config().info(
       "- GUAMI (MCC, MNC, Region ID, AMF Set ID, AMF pointer): ");
   Logger::config().info(
@@ -695,7 +703,8 @@ void amf_config::display() {
         guami_list[i].mnc.c_str(), guami_list[i].regionID.c_str(),
         guami_list[i].AmfSetID.c_str(), guami_list[i].AmfPointer.c_str());
   }
-  Logger::config().info("- Relative Capacity .......: %d", relativeAMFCapacity);
+  Logger::config().info(
+      "- Relative Capacity .......: %d", relative_amf_capacity);
   Logger::config().info("- PLMN Support: ");
   for (int i = 0; i < plmn_list.size(); i++) {
     Logger::config().info(
@@ -707,12 +716,16 @@ void amf_config::display() {
       std::string str = {};
       str             = str.append("        SST")
                 .append(
-                    (plmn_list[i].slice_list[j].sst > 127) ? ", SD " : " ....")
+                    (plmn_list[i].slice_list[j].sst >
+                     SST_MAX_STANDARDIZED_VALUE) ?
+                        ", SD " :
+                        " ....")
                 .append("...........: ")
                 .append(std::to_string(plmn_list[i].slice_list[j].sst))
                 .append("")
                 .append(
-                    (plmn_list[i].slice_list[j].sst > 127) ?
+                    (plmn_list[i].slice_list[j].sst >
+                     SST_MAX_STANDARDIZED_VALUE) ?
                         ", " + std::to_string(plmn_list[i].slice_list[j].sd) :
                         " ");
       Logger::config().info(str.c_str());
@@ -721,7 +734,7 @@ void amf_config::display() {
   Logger::config().info(
       "- Emergency Support .......: %s", is_emergency_support.c_str());
 
-  Logger::config().info("- Database : ");
+  Logger::config().info("- Database: ");
   Logger::config().info(
       "    MySQL Server Addr .....: %s", auth_para.mysql_server.c_str());
   Logger::config().info(
@@ -730,6 +743,19 @@ void amf_config::display() {
       "    MySQL pass ............: %s", auth_para.mysql_pass.c_str());
   Logger::config().info(
       "    MySQL DB ..............: %s", auth_para.mysql_db.c_str());
+
+  // TODO:
+  /*
+    Logger::config().info("- Supported NAS Algorithm: ");
+    Logger::config().info(
+        "    Integrity Algorithm ...: %s","");
+    Logger::config().info(
+        "    Ciphering Algorithm ...: %s", "");
+
+    st::string nas_itegrity_algorithm_list = {};
+    for(auto s: nas_cfg.prefered_integrity_algorithm){
+    }
+  */
 
   Logger::config().info("- N2 Networking:");
   Logger::config().info("    Iface .................: %s", n2.if_name.c_str());
@@ -872,6 +898,26 @@ int amf_config::load_interface(
 }
 
 //------------------------------------------------------------------------------
+bool amf_config::resolve_fqdn(
+    const std::string& fqdn, struct in_addr& ipv4_addr) {
+  uint8_t addr_type = {};
+  unsigned int port = 0;
+  string address    = {};
+
+  fqdn::resolve(fqdn, address, port, addr_type);
+  if (addr_type != 0) {  // IPv6: TODO
+    Logger::amf_app().error("DO NOT SUPPORT IPV6 ADDR FOR THIS NF");
+    return false;
+  } else {  // IPv4
+    if (inet_aton(util::trim(address).c_str(), &ipv4_addr) <= 0) return false;
+    //    IPV4_STR_ADDR_TO_INADDR(
+    //        util::trim(address).c_str(), ipv4_addr,
+    //        "BAD IPv4 ADDRESS FORMAT FOR NF !");
+  }
+  return true;
+}
+
+//------------------------------------------------------------------------------
 std::string amf_config::get_amf_n1n2_message_subscribe_uri(
     const std::string& ue_cxt_id) {
   unsigned int sbi_port = 80;
@@ -926,14 +972,14 @@ std::string amf_config::get_ausf_ue_authentications_uri() {
 void amf_config::to_json(nlohmann::json& json_data) const {
   json_data["instance"]   = instance;
   json_data["pid_dir"]    = pid_dir;
-  json_data["amf_name"]   = AMF_Name;  // TODO: amf_name
+  json_data["amf_name"]   = amf_name;
   json_data["guami"]      = guami.to_json();
   json_data["guami_list"] = nlohmann::json::array();
   for (auto s : guami_list) {
     json_data["guami_list"].push_back(s.to_json());
   }
 
-  json_data["relativeAMFCapacity"] = relativeAMFCapacity;
+  json_data["relative_amf_capacity"] = relative_amf_capacity;
 
   json_data["plmn_list"] = nlohmann::json::array();
   for (auto s : plmn_list) {
@@ -954,20 +1000,151 @@ void amf_config::to_json(nlohmann::json& json_data) const {
   }
 
   if (support_features.enable_external_nssf) {
-    json_data["nrf"] = nssf_addr.to_json();
+    json_data["nssf"] = nssf_addr.to_json();
   }
 
   if (support_features.enable_external_ausf) {
-    json_data["nrf"] = ausf_addr.to_json();
+    json_data["ausf"] = ausf_addr.to_json();
   }
 
   if (support_features.enable_external_udm) {
-    json_data["nrf"] = udm_addr.to_json();
+    json_data["udm"] = udm_addr.to_json();
   }
 
   json_data["smf_pool"] = nlohmann::json::array();
   for (auto s : smf_pool) {
     json_data["smf_pool"].push_back(s.to_json());
   }
+}
+
+//------------------------------------------------------------------------------
+bool amf_config::from_json(nlohmann::json& json_data) {
+  try {
+    if (json_data.find("instance") != json_data.end()) {
+      instance = json_data["instance"].get<int>();
+    }
+
+    if (json_data.find("pid_dir") != json_data.end()) {
+      pid_dir = json_data["pid_dir"].get<std::string>();
+    }
+    if (json_data.find("amf_name") != json_data.end()) {
+      amf_name = json_data["amf_name"].get<std::string>();
+    }
+    if (json_data.find("guami") != json_data.end()) {
+      guami.from_json(json_data["guami"]);
+    }
+
+    if (json_data.find("guami_list") != json_data.end()) {
+      guami_list.clear();
+      for (auto s : json_data["guami_list"]) {
+        guami_t g = {};
+        g.from_json(s);
+        guami_list.push_back(g);
+      }
+    }
+
+    if (json_data.find("relative_amf_capacity") != json_data.end()) {
+      relative_amf_capacity = json_data["relative_amf_capacity"].get<int>();
+    }
+
+    if (json_data.find("plmn_list") != json_data.end()) {
+      plmn_list.clear();
+      for (auto s : json_data["plmn_list"]) {
+        plmn_item_t p = {};
+        p.from_json(s);
+        plmn_list.push_back(p);
+      }
+    }
+
+    if (json_data.find("is_emergency_support") != json_data.end()) {
+      is_emergency_support =
+          json_data["is_emergency_support"].get<std::string>();
+    }
+
+    if (json_data.find("auth_para") != json_data.end()) {
+      auth_para.from_json(json_data["auth_para"]);
+    }
+
+    if (json_data.find("n2") != json_data.end()) {
+      n2.from_json(json_data["n2"]);
+    }
+    if (json_data.find("n11") != json_data.end()) {
+      n11.from_json(json_data["n11"]);
+    }
+
+    if (json_data.find("sbi_http2_port") != json_data.end()) {
+      sbi_http2_port = json_data["sbi_http2_port"].get<int>();
+    }
+
+    if (json_data.find("support_features") != json_data.end()) {
+      support_features.from_json(json_data["support_features"]);
+    }
+
+    if (support_features.enable_external_nrf) {
+      if (json_data.find("nrf") != json_data.end()) {
+        nrf_addr.from_json(json_data["nrf"]);
+        // if use FQDN -> update IP addr accordingly
+        if (support_features.use_fqdn_dns) {
+          resolve_fqdn(nrf_addr.fqdn, nrf_addr.ipv4_addr);
+        }
+      }
+    }
+
+    if (support_features.enable_external_nssf) {
+      if (json_data.find("nssf") != json_data.end()) {
+        nssf_addr.from_json(json_data["nssf"]);
+        // if use FQDN -> update IP addr accordingly
+        if (support_features.use_fqdn_dns) {
+          resolve_fqdn(nssf_addr.fqdn, nssf_addr.ipv4_addr);
+        }
+      }
+    }
+
+    if (support_features.enable_external_ausf) {
+      if (json_data.find("ausf") != json_data.end()) {
+        ausf_addr.from_json(json_data["ausf"]);
+        // if use FQDN -> update IP addr accordingly
+        if (support_features.use_fqdn_dns) {
+          resolve_fqdn(ausf_addr.fqdn, ausf_addr.ipv4_addr);
+        }
+      }
+    }
+
+    if (support_features.enable_external_udm) {
+      if (json_data.find("udm") != json_data.end()) {
+        udm_addr.from_json(json_data["udm"]);
+        // if use FQDN -> update IP addr accordingly
+        if (support_features.use_fqdn_dns) {
+          resolve_fqdn(udm_addr.fqdn, udm_addr.ipv4_addr);
+        }
+      }
+    }
+
+    if (json_data.find("smf_pool") != json_data.end()) {
+      smf_pool.clear();
+      for (auto s : json_data["smf_pool"]) {
+        smf_inst_t smf_item      = {};
+        struct in_addr ipv4_addr = {};
+        smf_item.from_json(s);
+        // if use FQDN -> update IP addr accordingly
+        if (support_features.use_fqdn_dns) {
+          resolve_fqdn(smf_item.fqdn, ipv4_addr);
+          smf_item.ipv4 = inet_ntoa(ipv4_addr);
+        }
+        smf_pool.push_back(smf_item);
+      }
+    }
+
+  } catch (nlohmann::detail::exception& e) {
+    Logger::amf_app().error(
+        "Exception when reading configuration from json %s", e.what());
+    return false;
+  } catch (std::exception& e) {
+    Logger::amf_app().error(
+        "Exception when reading configuration from json %s", e.what());
+    return false;
+  }
+
+  return true;
 }
 }  // namespace config

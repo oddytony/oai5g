@@ -151,6 +151,7 @@ void nf_profile::get_nf_snssais(std::vector<snssai_t>& s) const {
 void nf_profile::add_snssai(const snssai_t& s) {
   snssais.push_back(s);
 }
+
 //------------------------------------------------------------------------------
 void nf_profile::set_nf_ipv4_addresses(const std::vector<struct in_addr>& a) {
   ipv4_addresses = a;
@@ -165,6 +166,10 @@ void nf_profile::get_nf_ipv4_addresses(std::vector<struct in_addr>& a) const {
   a = ipv4_addresses;
 }
 
+//------------------------------------------------------------------------------
+void nf_profile::delete_nf_ipv4_addresses() {
+  ipv4_addresses.clear();
+}
 //------------------------------------------------------------------------------
 void nf_profile::display() const {
   Logger::amf_app().debug("NF instance info");
@@ -294,6 +299,11 @@ void amf_profile::add_nf_service(const nf_service_t& n) {
 //------------------------------------------------------------------------------
 void amf_profile::get_nf_services(std::vector<nf_service_t>& n) const {
   n = nf_services;
+}
+
+//------------------------------------------------------------------------------
+void amf_profile::delete_nf_services() {
+  nf_services.clear();
 }
 
 //------------------------------------------------------------------------------

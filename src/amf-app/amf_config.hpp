@@ -37,9 +37,14 @@
 #include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
+#include <boost/algorithm/string.hpp>
 
 #include "amf_config.hpp"
+#include "amf.hpp"
+#include "if.hpp"
+#include "string.hpp"
 #include "thread_sched.hpp"
+#include "common_defs.h"
 
 #define AMF_CONFIG_STRING_AMF_CONFIG "AMF"
 #define AMF_CONFIG_STRING_PID_DIRECTORY "PID_DIRECTORY"
@@ -134,6 +139,15 @@ typedef struct {
     json_data["random"]       = this->random;
     return json_data;
   }
+
+  void from_json(nlohmann::json& json_data) {
+    this->mysql_server = json_data["mysql_server"].get<std::string>();
+    this->mysql_user   = json_data["mysql_user"].get<std::string>();
+    this->mysql_pass   = json_data["mysql_pass"].get<std::string>();
+    this->mysql_db     = json_data["mysql_db"].get<std::string>();
+    this->random       = json_data["random"].get<std::string>();
+  }
+
 } auth_conf;
 
 typedef struct interface_cfg_s {
@@ -155,6 +169,33 @@ typedef struct interface_cfg_s {
     json_data["mtu"]   = this->mtu;
     json_data["port"]  = this->port;
     return json_data;
+  }
+
+  void from_json(nlohmann::json& json_data) {
+    this->if_name         = json_data["if_name"].get<std::string>();
+    std::string addr4_str = {};
+    addr4_str             = json_data["addr4"].get<std::string>();
+
+    if (boost::iequals(addr4_str, "read")) {
+      if (get_inet_addr_infos_from_iface(
+              this->if_name, this->addr4, this->network4, this->mtu)) {
+        Logger::amf_app().error(
+            "Could not read %s network interface configuration", this->if_name);
+        return;
+      }
+    } else {
+      IPV4_STR_ADDR_TO_INADDR(
+          util::trim(addr4_str).c_str(), this->addr4,
+          "BAD IPv4 ADDRESS FORMAT FOR INTERFACE !");
+
+      std::string network4_str = json_data["network4"].get<std::string>();
+      IPV4_STR_ADDR_TO_INADDR(
+          util::trim(network4_str).c_str(), this->network4,
+          "BAD IPv4 ADDRESS FORMAT FOR INTERFACE !");
+      // TODO: addr6
+      this->mtu  = json_data["mtu"].get<int>();
+      this->port = json_data["port"].get<int>();
+    }
   }
 
 } interface_cfg_t;
@@ -183,6 +224,14 @@ typedef struct guami_s {
     json_data["AmfPointer"]  = this->AmfPointer;
     return json_data;
   }
+
+  void from_json(nlohmann::json& json_data) {
+    this->mcc        = json_data["mcc"].get<std::string>();
+    this->mnc        = json_data["mnc"].get<std::string>();
+    this->regionID   = json_data["regionID"].get<std::string>();
+    this->AmfSetID   = json_data["AmfSetID"].get<std::string>();
+    this->AmfPointer = json_data["AmfPointer"].get<std::string>();
+  }
 } guami_t;
 
 typedef struct slice_s {
@@ -205,10 +254,15 @@ typedef struct slice_s {
   nlohmann::json to_json() const {
     nlohmann::json json_data = {};
     json_data["sst"]         = this->sst;
-    if (sst > 127) json_data["sd"] = this->sd;
+    if (sst > SST_MAX_STANDARDIZED_VALUE) json_data["sd"] = this->sd;
     return json_data;
   }
 
+  void from_json(nlohmann::json& json_data) {
+    this->sst = json_data["sst"].get<int>();
+    if (this->sst > SST_MAX_STANDARDIZED_VALUE)
+      this->sd = json_data["sd"].get<int>();
+  }
 } slice_t;
 
 typedef struct plmn_support_item_s {
@@ -228,6 +282,19 @@ typedef struct plmn_support_item_s {
     }
     return json_data;
   }
+
+  void from_json(nlohmann::json& json_data) {
+    this->mcc = json_data["mcc"].get<std::string>();
+    this->mnc = json_data["mnc"].get<std::string>();
+    this->tac = json_data["tac"].get<int>();
+
+    for (auto s : json_data["slice_list"]) {
+      slice_t sl = {};
+      sl.from_json(s);
+      slice_list.push_back(sl);
+    }
+  }
+
 } plmn_item_t;
 
 typedef struct {
@@ -238,14 +305,29 @@ typedef struct {
     nlohmann::json json_data                  = {};
     json_data["prefered_integrity_algorithm"] = nlohmann::json::array();
     json_data["prefered_ciphering_algorithm"] = nlohmann::json::array();
-    for (auto s : prefered_integrity_algorithm) {
+    for (auto s : this->prefered_integrity_algorithm) {
       json_data["prefered_integrity_algorithm"].push_back(s);
     }
-    for (auto s : prefered_ciphering_algorithm) {
+    for (auto s : this->prefered_ciphering_algorithm) {
       json_data["prefered_ciphering_algorithm"].push_back(s);
     }
     return json_data;
   }
+  /*
+    void from_json(nlohmann::json& json_data) {
+      uint8_t i = 0;
+      for (auto s : json_data["prefered_integrity_algorithm"]) {
+        uint8_t integ_alg               = s.get<int>();
+        prefered_integrity_algorithm[i] = integ_alg;
+        ++i;
+      }
+      i = 0;
+      for (auto s : json_data["prefered_ciphering_algorithm"]) {
+        uint8_t cipher_alg              = s.get<int>();
+        prefered_ciphering_algorithm[i] = cipher_alg;
+        ++i;
+      }
+    }*/
 } nas_conf_t;
 
 typedef struct {
@@ -269,20 +351,44 @@ typedef struct {
     return json_data;
   }
 
+  void from_json(nlohmann::json& json_data) {
+    this->id   = json_data["id"].get<int>();
+    this->ipv4 = json_data["ipv4"].get<std::string>();
+    this->port = json_data["port"]
+                     .get<std::string>();  // TODO: use int instead of string
+    this->http2_port = json_data["http2_port"].get<int>();
+    this->version    = json_data["version"].get<std::string>();
+    this->selected   = json_data["selected"].get<bool>();
+    this->fqdn       = json_data["fqdn"].get<std::string>();
+  }
+
 } smf_inst_t;
 
 typedef struct nf_addr_s {
   struct in_addr ipv4_addr;
   unsigned int port;
   std::string api_version;
+  std::string fqdn;
 
   nlohmann::json to_json() const {
     nlohmann::json json_data = {};
     json_data["ipv4_addr"]   = inet_ntoa(this->ipv4_addr);
     json_data["port"]        = this->port;
     json_data["api_version"] = this->api_version;
+    json_data["fqdn"]        = this->fqdn;
     return json_data;
   }
+
+  void from_json(nlohmann::json& json_data) {
+    std::string ipv4_addr_str = json_data["ipv4_addr"].get<std::string>();
+    IPV4_STR_ADDR_TO_INADDR(
+        util::trim(ipv4_addr_str).c_str(), this->ipv4_addr,
+        "BAD IPv4 ADDRESS FORMAT FOR INTERFACE !");
+    this->port        = json_data["port"].get<int>();
+    this->api_version = json_data["api_version"].get<std::string>();
+    this->fqdn        = json_data["fqdn"].get<std::string>();
+  }
+
 } nf_addr_t;
 
 class amf_config {
@@ -304,6 +410,8 @@ class amf_config {
    * @return RETURNclear/RETURNerror/RETURNok
    */
   int load_interface(const Setting& if_cfg, interface_cfg_t& cfg);
+
+  bool resolve_fqdn(const std::string& fqdn, struct in_addr& ipv4_addr);
 
   /*
    * Get the URI of AMF N1N2MessageSubscribe
@@ -362,6 +470,13 @@ class amf_config {
    */
   void to_json(nlohmann::json& json_data) const;
 
+  /*
+   * Update AMF's config from Json
+   * @param [nlohmann::json &] json_data: Updated configuration in json format
+   * @return true if success otherwise return false
+   */
+  bool from_json(nlohmann::json& json_data);
+
   unsigned int instance;
   std::string pid_dir;
   interface_cfg_t n2;
@@ -371,10 +486,10 @@ class amf_config {
   unsigned int sbi_http2_port;
 
   unsigned int statistics_interval;
-  std::string AMF_Name;
+  std::string amf_name;
   guami_t guami;
   std::vector<guami_t> guami_list;
-  unsigned int relativeAMFCapacity;
+  unsigned int relative_amf_capacity;
   std::vector<plmn_item_t> plmn_list;
   std::string is_emergency_support;
   auth_conf auth_para;
@@ -404,6 +519,23 @@ class amf_config {
       json_data["use_http2"]              = this->use_http2;
       return json_data;
     }
+
+    void from_json(nlohmann::json& json_data) {
+      this->enable_nf_registration =
+          json_data["enable_nf_registration"].get<bool>();
+      this->enable_external_nrf = json_data["enable_external_nrf"].get<bool>();
+      this->enable_smf_selection =
+          json_data["enable_smf_selection"].get<bool>();
+      this->enable_external_nrf = json_data["enable_external_nrf"].get<bool>();
+      this->enable_external_ausf =
+          json_data["enable_external_ausf"].get<bool>();
+      this->enable_external_udm = json_data["enable_external_udm"].get<bool>();
+      this->enable_external_nssf =
+          json_data["enable_external_nssf"].get<bool>();
+      this->use_fqdn_dns = json_data["use_fqdn_dns"].get<bool>();
+      this->use_http2    = json_data["use_http2"].get<bool>();
+    }
+
   } support_features;
 
   nf_addr_t nrf_addr;

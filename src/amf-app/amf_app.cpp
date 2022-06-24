@@ -88,7 +88,10 @@ amf_app::amf_app(const amf_config& amf_cfg)
     throw;
   }
 
-  // Generate an AMF profile (including NF instance)
+  // Generate NF Instance ID (UUID)
+  generate_uuid();
+
+  // Generate an AMF profile
   generate_amf_profile();
 
   // Register to NRF if needed
@@ -152,9 +155,16 @@ void amf_app_task(void*) {
       } break;
 
       case SBI_AMF_CONFIGURATION: {
-        Logger::amf_app().debug("Received N11_AMF_CONFIGURATION");
+        Logger::amf_app().debug("Received SBI_AMF_CONFIGURATION");
         itti_sbi_amf_configuration* m =
             dynamic_cast<itti_sbi_amf_configuration*>(msg);
+        amf_app_inst->handle_itti_message(ref(*m));
+      } break;
+
+      case SBI_UPDATE_AMF_CONFIGURATION: {
+        Logger::amf_app().debug("Received SBI_UPDATE_AMF_CONFIGURATION");
+        itti_sbi_update_amf_configuration* m =
+            dynamic_cast<itti_sbi_update_amf_configuration*>(msg);
         amf_app_inst->handle_itti_message(ref(*m));
       } break;
 
@@ -734,11 +744,72 @@ void amf_app::handle_itti_message(itti_sbi_amf_configuration& itti_msg) {
 }
 
 //---------------------------------------------------------------------------------------------
+void amf_app::handle_itti_message(itti_sbi_update_amf_configuration& itti_msg) {
+  Logger::amf_app().info(
+      "Handle a request UpdateAMFConfiguration from a NF (HTTP version "
+      "%d)",
+      itti_msg.http_version);
+
+  // Process the request and trigger the response from AMF API Server
+  nlohmann::json response_data = {};
+  response_data["content"]     = itti_msg.configuration;
+
+  if (update_amf_configuration(response_data["content"])) {
+    Logger::amf_app().debug(
+        "AMF configuration:\n %s", response_data["content"].dump().c_str());
+    response_data["httpResponseCode"] = 200;  // TODO:
+
+    // Update AMF profile
+    generate_amf_profile();
+
+    // Update AMF profile (complete replacement of the existing profile by a new
+    // one)
+    if (amf_cfg.support_features.enable_nf_registration and
+        amf_cfg.support_features.enable_external_nrf)
+      register_to_nrf();
+
+  } else {
+    response_data["httpResponseCode"]               = 400;  // TODO:
+    oai::amf::model::ProblemDetails problem_details = {};
+    // TODO set problem_details
+    to_json(response_data["ProblemDetails"], problem_details);
+  }
+
+  // Notify to the result
+  if (itti_msg.promise_id > 0) {
+    trigger_process_response(itti_msg.promise_id, response_data);
+    return;
+  }
+}
+
+//---------------------------------------------------------------------------------------------
 bool amf_app::read_amf_configuration(nlohmann::json& json_data) {
   amf_cfg.to_json(json_data);
   return true;
 }
 
+//---------------------------------------------------------------------------------------------
+bool amf_app::update_amf_configuration(nlohmann::json& json_data) {
+  if (stacs.get_number_connected_gnbs() > 0) {
+    Logger::amf_app().info(
+        "Could not update AMF configuration (connected with gNBs)");
+    return false;
+  }
+  return amf_cfg.from_json(json_data);
+}
+
+//---------------------------------------------------------------------------------------------
+void amf_app::get_number_registered_ues(uint32_t& num_ues) const {
+  std::shared_lock lock(m_amf_ue_ngap_id2ue_ctx);
+  num_ues = amf_ue_ngap_id2ue_ctx.size();
+  return;
+}
+
+//---------------------------------------------------------------------------------------------
+uint32_t amf_app::get_number_registered_ues() const {
+  std::shared_lock lock(m_amf_ue_ngap_id2ue_ctx);
+  return amf_ue_ngap_id2ue_ctx.size();
+}
 //---------------------------------------------------------------------------------------------
 void amf_app::add_n1n2_message_subscription(
     const std::string& ue_ctx_id, const n1n2sub_id_t& sub_id,
@@ -939,15 +1010,14 @@ void amf_app::get_ee_subscriptions(
 
 //---------------------------------------------------------------------------------------------
 void amf_app::generate_amf_profile() {
-  // generate UUID
-  generate_uuid();
   nf_instance_profile.set_nf_instance_id(amf_instance_id);
-  nf_instance_profile.set_nf_instance_name("OAI-AMF");
+  nf_instance_profile.set_nf_instance_name(amf_cfg.amf_name);
   nf_instance_profile.set_nf_type("AMF");
   nf_instance_profile.set_nf_status("REGISTERED");
   nf_instance_profile.set_nf_heartBeat_timer(50);
   nf_instance_profile.set_nf_priority(1);
   nf_instance_profile.set_nf_capacity(100);
+  nf_instance_profile.delete_nf_ipv4_addresses();
   nf_instance_profile.add_nf_ipv4_addresses(amf_cfg.n11.addr4);
 
   // NF services
@@ -955,7 +1025,7 @@ void amf_app::generate_amf_profile() {
   nf_service.service_instance_id = "namf_communication";
   nf_service.service_name        = "namf_communication";
   nf_service_version_t version   = {};
-  version.api_version_in_uri     = "v1";
+  version.api_version_in_uri     = amf_cfg.sbi_api_version;
   version.api_full_version       = "1.0.0";  // TODO: to be updated
   nf_service.versions.push_back(version);
   nf_service.scheme            = "http";
@@ -967,6 +1037,7 @@ void amf_app::generate_amf_profile() {
   endpoint.port          = amf_cfg.n11.port;
   nf_service.ip_endpoints.push_back(endpoint);
 
+  nf_instance_profile.delete_nf_services();
   nf_instance_profile.add_nf_service(nf_service);
 
   // TODO: custom info

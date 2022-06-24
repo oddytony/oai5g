@@ -124,6 +124,13 @@ class statistics {
    */
   void update_gnb(const uint32_t& gnb_id, const gnb_infos& gnb);
 
+  /*
+   * Get number of connected gNBs
+   * @param void
+   * @return number of connected gNBs
+   */
+  uint32_t get_number_connected_gnbs() const;
+
  public:
   uint32_t gNB_connected;
   uint32_t UE_connected;

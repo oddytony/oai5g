@@ -420,7 +420,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
   // file and send_msg
   uint8_t* buffer = (uint8_t*) calloc(1, BUFFER_SIZE_1024);
   NGSetupResponseMsg ngSetupResp;
-  ngSetupResp.setAMFName(amf_cfg.AMF_Name);
+  ngSetupResp.setAMFName(amf_cfg.amf_name);
   std::vector<struct GuamiItem_s> guami_list;
   for (int i = 0; i < amf_cfg.guami_list.size(); i++) {
     struct GuamiItem_s tmp;
@@ -433,7 +433,7 @@ void amf_n2::handle_itti_message(itti_ng_setup_request& itti_msg) {
   }
   ngSetupResp.setGUAMIList(guami_list);
 
-  ngSetupResp.setRelativeAmfCapacity(amf_cfg.relativeAMFCapacity);
+  ngSetupResp.setRelativeAmfCapacity(amf_cfg.relative_amf_capacity);
   std::vector<PlmnSliceSupport_t> plmn_list;
   for (int i = 0; i < amf_cfg.plmn_list.size(); i++) {
     PlmnSliceSupport_t tmp;

@@ -159,7 +159,40 @@ class amf_app {
    */
   void handle_itti_message(itti_sbi_amf_configuration& itti_msg);
 
+  /*
+   * Handle ITTI message (Update AMF configuration)
+   * @param [itti_sbi_update_amf_configuration&]: ITTI message
+   * @return void
+   */
+  void handle_itti_message(itti_sbi_update_amf_configuration& itti_msg);
+
+  /*
+   * Get the current AMF's configuration
+   * @param [nlohmann::json&]: json_data: Store AMF configuration
+   * @return true if success, otherwise return false
+   */
   bool read_amf_configuration(nlohmann::json& json_data);
+
+  /*
+   * Update AMF configuration
+   * @param [nlohmann::json&]: json_data: New AMF configuration
+   * @return true if success, otherwise return false
+   */
+  bool update_amf_configuration(nlohmann::json& json_data);
+
+  /*
+   * Get number of registered UEs to this AMF
+   * @param [uint32_t&]: num_ues: Store the number of registered UEs
+   * @return void
+   */
+  void get_number_registered_ues(uint32_t& num_ues) const;
+
+  /*
+   * Get number of registered UEs to this AMF
+   * @param void
+   * @return: number of registered UEs
+   */
+  uint32_t get_number_registered_ues() const;
 
   /*
    * Verify if a UE context associated with an AMF UE NGAP ID exist
