@@ -31,8 +31,9 @@
 #include <vector>
 
 #include "logger.hpp"
+#include "amf.hpp"
+
 using namespace nas;
-using namespace std;
 
 //------------------------------------------------------------------------------
 NSSAI::NSSAI(uint8_t iei) {
@@ -48,9 +49,9 @@ NSSAI::NSSAI(const uint8_t iei, std::vector<struct SNSSAI_s> nssai) {
   S_NSSAI.assign(nssai.begin(), nssai.end());
   for (int i = 0; i < nssai.size(); i++) {
     length += 2;  // 1 for IEI and 1 for sst
-    if (nssai[i].sd != -1) length += 3;
+    if (nssai[i].sd != SD_NO_VALUE) length += 3;
     if (nssai[i].mHplmnSst != -1) length += 1;
-    if (nssai[i].mHplmnSd != -1) length += 3;
+    if (nssai[i].mHplmnSd != SD_NO_VALUE) length += 3;
   }
 }
 
@@ -87,7 +88,7 @@ int NSSAI::encode2buffer(uint8_t* buf, int len) {
       encoded_size++;
       *(buf + encoded_size) = S_NSSAI.at(i).sst;
       encoded_size++;
-      if (S_NSSAI.at(i).sd != -1) {
+      if (S_NSSAI.at(i).sd != SD_NO_VALUE) {
         len_s_nssai += 3;
         *(buf + encoded_size) = (S_NSSAI.at(i).sd & 0x00ff0000) >> 16;
         encoded_size++;
@@ -107,7 +108,7 @@ int NSSAI::encode2buffer(uint8_t* buf, int len) {
         *(buf + encoded_size) = S_NSSAI.at(i).mHplmnSst;
         encoded_size++;
       }
-      if (S_NSSAI.at(i).mHplmnSd != -1) {
+      if (S_NSSAI.at(i).mHplmnSd != SD_NO_VALUE) {
         len_s_nssai += 3;
         *(buf + encoded_size) = (S_NSSAI.at(i).mHplmnSd & 0x00ff0000) >> 16;
         encoded_size++;
@@ -145,7 +146,7 @@ int NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
         a.sst = *(buf + decoded_size);
         decoded_size++;
         length_tmp--;
-        a.sd        = 0;
+        a.sd        = SD_NO_VALUE;
         a.mHplmnSst = 0;
         a.mHplmnSd  = 0;
       } break;
@@ -189,7 +190,7 @@ int NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
         a.mHplmnSst = *(buf + decoded_size);
         decoded_size++;
         length_tmp--;
-        a.mHplmnSd = 0;
+        a.mHplmnSd = SD_NO_VALUE;
       } break;
       case 8: {
         decoded_size++;
