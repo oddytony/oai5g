@@ -152,11 +152,10 @@ bool S_NSSAI::encode2S_NSSAI(Ngap_S_NSSAI_t* s_NSSAI) {
 //------------------------------------------------------------------------------
 bool S_NSSAI::decodefromS_NSSAI(Ngap_S_NSSAI_t* s_NSSAI) {
   if (!sSTdecodefromOctetString(s_NSSAI->sST)) return false;
+  sd = SD_NO_VALUE;
   if (s_NSSAI->sD) {
     sdIsSet = true;
     if (!sDdecodefromOctetString(s_NSSAI->sD)) return false;
-  } else {
-    sd = SD_NO_VALUE;
   }
   return true;
 }

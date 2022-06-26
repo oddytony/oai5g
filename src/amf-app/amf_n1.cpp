@@ -3766,7 +3766,11 @@ void amf_n1::initialize_registration_accept(
     for (auto s : p.slice_list) {
       SNSSAI_t snssai = {};
       snssai.sst      = s.sst;
-      snssai.sd       = s.sd;
+      snssai.sd       = SD_NO_VALUE;  // Default value
+      // Get SD if available for non standardized SST
+      if (s.sst > SST_MAX_STANDARDIZED_VALUE) {
+        snssai.sd = s.sd;
+      }
       nssai.push_back(snssai);
     }
   }
