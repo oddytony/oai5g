@@ -909,18 +909,6 @@ bool amf_n11::discover_smf(
                 break;  // NSSAI is included in the list of supported slices
                         // from SMF
               }
-              /*
-                // Match SD (optional) only if it is provided
-              if ((sst <= SST_MAX_STANDARDIZED_VALUE) or sd.empty() or
-                  (snssai.sD.compare(sd) == 0)) {
-                Logger::amf_n11().debug(
-                    "S-NSSAI [SST- %d, SD -%s] is matched for SMF profile",
-                    snssai.sST, snssai.sD.c_str());
-                result = true;
-                break;  // NSSAI is included in the list of supported slices
-                        // from SMF
-              }
-              */
             }
           }
         }

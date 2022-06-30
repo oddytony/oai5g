@@ -4193,25 +4193,13 @@ bool amf_n1::check_subscribed_nssai(
       for (auto n : nssai.getDefaultSingleNssais()) {
         if (s.sst == n.getSst()) {
           uint32_t sd = SD_NO_VALUE;
-          if (!n.getSd().empty()) {
-            conv::sd_string_to_int(n.getSd(), sd);
-          }
+          conv::sd_string_to_int(n.getSd(), sd);
           if (sd == s.sd) {
             common_snssais.push_back(n);
             Logger::amf_n1().debug(
                 "Common S-NSSAI (SST %d, SD %ld)", s.sst, sd);
             break;
           }
-          /*
-                    if ((s.sst <= SST_MAX_STANDARDIZED_VALUE) or
-                        (n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
-                        (!n.sdIsSet() and sd.empty())) {
-                      common_snssais.push_back(n);
-                      Logger::amf_n1().debug(
-                          "Common S-NSSAI (SST %d, SD %s)", s.sst, sd.c_str());
-                      break;
-                    }
-                    */
         }
       }
 
@@ -4219,25 +4207,13 @@ bool amf_n1::check_subscribed_nssai(
       for (auto n : nssai.getSingleNssais()) {
         if (s.sst == n.getSst()) {
           uint32_t sd = SD_NO_VALUE;
-          if (!n.getSd().empty()) {
-            conv::sd_string_to_int(n.getSd(), sd);
-          }
+          conv::sd_string_to_int(n.getSd(), sd);
           if (sd == s.sd) {
             common_snssais.push_back(n);
             Logger::amf_n1().debug(
                 "Common S-NSSAI (SST %d, SD %ld)", s.sst, sd);
             break;
           }
-          /*
-         if ((s.sst <= SST_MAX_STANDARDIZED_VALUE) or
-             (n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
-             (!n.sdIsSet() and sd.empty())) {
-           common_snssais.push_back(n);
-           Logger::amf_n1().debug(
-               "Common S-NSSAI (SST %d, SD %s)", s.sst, sd.c_str());
-           break;
-         }
-         */
         }
       }
     }
@@ -4250,28 +4226,15 @@ bool amf_n1::check_subscribed_nssai(
       for (auto n : nssai.getDefaultSingleNssais()) {
         bool found_nssai = false;
         for (auto s : p.slice_list) {
-          // std::string sd = std::to_string(s.sd);
           if (s.sst == n.getSst()) {
             uint32_t sd = SD_NO_VALUE;
-            if (!n.getSd().empty()) {
-              conv::sd_string_to_int(n.getSd(), sd);
-            }
+            conv::sd_string_to_int(n.getSd(), sd);
             if (sd == s.sd) {
               found_nssai = true;
               Logger::amf_n1().debug(
                   "Found S-NSSAI (SST %d, SD %s)", s.sst, n.getSd().c_str());
               break;
             }
-            /*
-            if ((s.sst <= SST_MAX_STANDARDIZED_VALUE) or
-                (n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
-                (!n.sdIsSet() and sd.empty())) {
-              found_nssai = true;
-              Logger::amf_n1().debug(
-                  "Found S-NSSAI (SST %d, SD %s)", s.sst, n.getSd().c_str());
-              break;
-            }
-            */
           }
         }
 
@@ -4285,28 +4248,15 @@ bool amf_n1::check_subscribed_nssai(
       for (auto n : common_snssais) {
         bool found_nssai = false;
         for (auto s : p.slice_list) {
-          // std::string sd = std::to_string(s.sd);
           if (s.sst == n.getSst()) {
             uint32_t sd = SD_NO_VALUE;
-            if (!n.getSd().empty()) {
-              conv::sd_string_to_int(n.getSd(), sd);
-            }
+            conv::sd_string_to_int(n.getSd(), sd);
             if (sd == s.sd) {
               found_nssai = true;
               Logger::amf_n1().debug(
                   "Found S-NSSAI (SST %d, SD %s)", s.sst, n.getSd().c_str());
               break;
             }
-            /*
-         if ((s.sst <= SST_MAX_STANDARDIZED_VALUE) or
-             (n.sdIsSet() and (n.getSd().compare(sd) == 0)) or
-             (!n.sdIsSet() and sd.empty())) {
-           found_nssai = true;
-           Logger::amf_n1().debug(
-               "Found S-NSSAI (SST %d, SD %s)", s.sst, n.getSd().c_str());
-           break;
-         }
-         */
           }
         }
 

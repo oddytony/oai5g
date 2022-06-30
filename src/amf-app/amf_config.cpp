@@ -230,12 +230,11 @@ int amf_config::load(const std::string& config_file) {
         slice.sd = SD_NO_VALUE;  // Default value
         try {
           slice.sst = std::stoi(sst);
-          // Get SD if available
-          if (!sd.empty()) slice.sd = std::stoi(sd);
+          conv::sd_string_to_int(sd, slice.sd);
         } catch (const std::exception& err) {
           Logger::amf_app().error("Invalid SST/SD");
         }
-        conv::sd_string_to_int(sd, slice.sd);
+
         plmn_item.slice_list.push_back(slice);
       }
       plmn_list.push_back(plmn_item);
