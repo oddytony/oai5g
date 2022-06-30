@@ -49,9 +49,9 @@ NSSAI::NSSAI(const uint8_t iei, std::vector<struct SNSSAI_s> nssai) {
   S_NSSAI.assign(nssai.begin(), nssai.end());
   for (int i = 0; i < nssai.size(); i++) {
     length += 2;  // 1 for IEI and 1 for sst
-    if (nssai[i].sd != SD_NO_VALUE) length += 3;
-    if (nssai[i].mHplmnSst != -1) length += 1;
-    if (nssai[i].mHplmnSd != SD_NO_VALUE) length += 3;
+    if (nssai[i].sd != SD_NO_VALUE) length += SD_LENGTH;
+    if (nssai[i].mHplmnSst != -1) length += SST_LENGTH;
+    if (nssai[i].mHplmnSd != SD_NO_VALUE) length += SD_LENGTH;
   }
 }
 
@@ -84,12 +84,12 @@ int NSSAI::encode2buffer(uint8_t* buf, int len) {
     encoded_size++;
 
     for (int i = 0; i < S_NSSAI.size(); i++) {
-      int len_s_nssai = 1;
+      int len_s_nssai = SST_LENGTH;
       encoded_size++;
       *(buf + encoded_size) = S_NSSAI.at(i).sst;
       encoded_size++;
       if (S_NSSAI.at(i).sd != SD_NO_VALUE) {
-        len_s_nssai += 3;
+        len_s_nssai += SD_LENGTH;
         *(buf + encoded_size) = (S_NSSAI.at(i).sd & 0x00ff0000) >> 16;
         encoded_size++;
         Logger::nas_mm().debug(
@@ -104,12 +104,12 @@ int NSSAI::encode2buffer(uint8_t* buf, int len) {
             "Encoded NSSAI SD third octet (%x)", *(buf + encoded_size - 1));
       }
       if (S_NSSAI.at(i).mHplmnSst != -1) {
-        len_s_nssai += 1;
+        len_s_nssai += SST_LENGTH;
         *(buf + encoded_size) = S_NSSAI.at(i).mHplmnSst;
         encoded_size++;
       }
       if (S_NSSAI.at(i).mHplmnSd != SD_NO_VALUE) {
-        len_s_nssai += 3;
+        len_s_nssai += SD_LENGTH;
         *(buf + encoded_size) = (S_NSSAI.at(i).mHplmnSd & 0x00ff0000) >> 16;
         encoded_size++;
         *(buf + encoded_size) = (S_NSSAI.at(i).mHplmnSd & 0x0000ff00) >> 8;
@@ -138,10 +138,13 @@ int NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   length = *(buf + decoded_size);
   decoded_size++;
   int length_tmp = length;
+  a.sd           = SD_NO_VALUE;  // Default value
+  a.mHplmnSd     = SD_NO_VALUE;  // Default value
+
   while (length_tmp) {
     switch (*(buf + decoded_size)) {
       case 1: {
-        decoded_size++;  // snssai—leagth
+        decoded_size++;  // snssai—length
         length_tmp--;
         a.sst = *(buf + decoded_size);
         decoded_size++;
@@ -227,7 +230,9 @@ int NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
     }
 
     S_NSSAI.insert(S_NSSAI.end(), a);
-    a = {0, 0, 0, 0};
+    a          = {0, 0, 0, 0};
+    a.sd       = SD_NO_VALUE;  // Default value
+    a.mHplmnSd = SD_NO_VALUE;  // Default value
   }
 
   for (int i = 0; i < S_NSSAI.size(); i++) {

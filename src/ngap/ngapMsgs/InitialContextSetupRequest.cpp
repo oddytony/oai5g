@@ -22,6 +22,7 @@
 #include "InitialContextSetupRequest.hpp"
 #include "logger.hpp"
 #include "amf.hpp"
+#include "conversions.hpp"
 
 extern "C" {
 #include "dynamic_memory_check.h"
@@ -290,9 +291,11 @@ void InitialContextSetupRequestMsg::setAllowedNssai(
   for (int i = 0; i < list.size(); i++) {
     S_NSSAI snssai = {};
     snssai.setSst(list[i].sst);
-    if (!list[i].sd.empty() &&
-        ((list[i].sd.compare(std::to_string(SD_NO_VALUE)) != 0)))
-      snssai.setSd(list[i].sd);
+    uint32_t sd = SD_NO_VALUE;
+    if (!list[i].sd.empty()) {
+      conv::sd_string_to_int(list[i].sd, sd);
+    }
+    snssai.setSd(sd);
     snssaiList.push_back(snssai);
   }
   allowedNssai.setAllowedNSSAI(snssaiList);

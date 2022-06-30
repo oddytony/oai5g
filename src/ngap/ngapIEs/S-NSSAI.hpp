@@ -55,6 +55,7 @@ class S_NSSAI {
   void setSd(const uint32_t s);
   bool getSd(std::string& s_nssaiSd) const;
   std::string getSd() const;
+  bool getSd(uint32_t& s_nssaiSd) const;
   bool encode2S_NSSAI(Ngap_S_NSSAI_t*);
   bool decodefromS_NSSAI(Ngap_S_NSSAI_t*);
 
