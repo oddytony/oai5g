@@ -128,6 +128,16 @@ bool S_NSSAI::getSd(std::string& s_nssaiSd) const {
 }
 
 //------------------------------------------------------------------------------
+bool S_NSSAI::getSd(uint32_t& s_nssaiSd) const {
+  if (sdIsSet) {
+    s_nssaiSd = sd;
+  } else {
+    s_nssaiSd = SD_NO_VALUE;
+  }
+  return sdIsSet;
+}
+
+//------------------------------------------------------------------------------
 std::string S_NSSAI::getSd() const {
   if (sdIsSet) {
     return to_string(sd);

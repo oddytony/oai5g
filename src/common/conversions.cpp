@@ -26,12 +26,15 @@
  */
 #include "conversions.hpp"
 
+#include "logger.hpp"
+
 #include <arpa/inet.h>
 #include <ctype.h>
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <boost/algorithm/string.hpp>
 
 static const char hex_to_ascii_table[16] = {
     '0', '1', '2', '3', '4', '5', '6', '7',
@@ -261,4 +264,24 @@ void conv::octet_string_2_bstring(
 //------------------------------------------------------------------------------
 void conv::bstring_2_octet_string(bstring& b_str, OCTET_STRING_t& octet_str) {
   OCTET_STRING_fromBuf(&octet_str, (char*) bdata(b_str), blength(b_str));
+}
+
+//------------------------------------------------------------------------------
+void conv::sd_string_to_int(const std::string& sd_str, uint32_t& sd) {
+  sd = 0xFFFFFF;
+  if (sd_str.empty()) return;
+  uint8_t base = 10;
+  try {
+    if (sd_str.size() > 2) {
+      if (boost::iequals(sd_str.substr(0, 2), "0x")) {
+        base = 16;
+      }
+    }
+    sd = std::stoul(sd_str, nullptr, base);
+  } catch (const std::exception& e) {
+    Logger::amf_app().error(
+        "Error when converting from string to int for S-NSSAI SD, error: %s",
+        e.what());
+    sd = 0xFFFFFF;
+  }
 }

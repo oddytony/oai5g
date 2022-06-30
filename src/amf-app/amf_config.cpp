@@ -41,6 +41,7 @@
 #include "string.hpp"
 #include "thread_sched.hpp"
 #include "fqdn.hpp"
+#include "conversions.hpp"
 
 extern "C" {
 #include <arpa/inet.h>
@@ -226,16 +227,15 @@ int amf_config::load(const std::string& config_file) {
         std::string sd            = {};
         slice_item.lookupValue(AMF_CONFIG_STRING_SST, sst);
         slice_item.lookupValue(AMF_CONFIG_STRING_SD, sd);
+        slice.sd = SD_NO_VALUE;  // Default value
         try {
           slice.sst = std::stoi(sst);
-          slice.sd  = SD_NO_VALUE;  // Default value
-          // Get SD if available for non standardized SST
-          if (slice.sst > SST_MAX_STANDARDIZED_VALUE) {
-            if (!sd.empty()) slice.sd = std::stoi(sd);
-          }
+          // Get SD if available
+          if (!sd.empty()) slice.sd = std::stoi(sd);
         } catch (const std::exception& err) {
           Logger::amf_app().error("Invalid SST/SD");
         }
+        conv::sd_string_to_int(sd, slice.sd);
         plmn_item.slice_list.push_back(slice);
       }
       plmn_list.push_back(plmn_item);
@@ -713,24 +713,15 @@ void amf_config::display() {
     Logger::config().info("    TAC ...................: %d", plmn_list[i].tac);
     Logger::config().info("    Slice Support .........:");
     for (int j = 0; j < plmn_list[i].slice_list.size(); j++) {
-      std::string str = {};
-      str             = str.append("        SST")
-                .append(
-                    (plmn_list[i].slice_list[j].sst >
-                         SST_MAX_STANDARDIZED_VALUE &&
-                     (plmn_list[i].slice_list[j].sd != SD_NO_VALUE)) ?
-                        ", SD " :
-                        " ....")
-                .append("...........: ")
-                .append(std::to_string(plmn_list[i].slice_list[j].sst))
-                .append("")
-                .append(
-                    (plmn_list[i].slice_list[j].sst >
-                         SST_MAX_STANDARDIZED_VALUE &&
-                     (plmn_list[i].slice_list[j].sd != SD_NO_VALUE)) ?
-                        ", " + std::to_string(plmn_list[i].slice_list[j].sd) :
-                        " ");
-      Logger::config().info(str.c_str());
+      if (plmn_list[i].slice_list[j].sd != SD_NO_VALUE) {
+        Logger::config().info(
+            "        SST, SD ...........: %d, %ld (0x%x)",
+            plmn_list[i].slice_list[j].sst, plmn_list[i].slice_list[j].sd,
+            plmn_list[i].slice_list[j].sd);
+      } else {
+        Logger::config().info(
+            "        SST ...............: %d", plmn_list[i].slice_list[j].sst);
+      }
     }
   }
   Logger::config().info(

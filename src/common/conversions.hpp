@@ -73,5 +73,6 @@ class conv {
       std::string& input_str, std::string& output_str);
   void octet_string_2_bstring(const OCTET_STRING_t& octet_str, bstring& b_str);
   void bstring_2_octet_string(bstring& b_str, OCTET_STRING_t& octet_str);
+  static void sd_string_to_int(const std::string& sd_str, uint32_t& sd);
 };
 #endif /* FILE_CONVERSIONS_HPP_SEEN */
