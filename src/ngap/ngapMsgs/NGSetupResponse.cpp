@@ -140,7 +140,7 @@ void NGSetupResponseMsg::setPlmnSupportList(
       S_NSSAI snssai = {};
       snssai.setSst(list[i].slice_list[j].sst);
 
-      uint32_t sd = 0xFFFFFF;
+      uint32_t sd = SD_NO_VALUE;
       if (!list[i].slice_list[j].sd.empty()) {
         conv::sd_string_to_int(list[i].slice_list[j].sd, sd);
       }

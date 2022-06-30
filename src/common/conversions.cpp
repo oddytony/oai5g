@@ -26,6 +26,7 @@
  */
 #include "conversions.hpp"
 
+#include "amf.hpp"
 #include "logger.hpp"
 
 #include <arpa/inet.h>
@@ -268,7 +269,7 @@ void conv::bstring_2_octet_string(bstring& b_str, OCTET_STRING_t& octet_str) {
 
 //------------------------------------------------------------------------------
 void conv::sd_string_to_int(const std::string& sd_str, uint32_t& sd) {
-  sd = 0xFFFFFF;
+  sd = SD_NO_VALUE;
   if (sd_str.empty()) return;
   uint8_t base = 10;
   try {
@@ -282,6 +283,6 @@ void conv::sd_string_to_int(const std::string& sd_str, uint32_t& sd) {
     Logger::amf_app().error(
         "Error when converting from string to int for S-NSSAI SD, error: %s",
         e.what());
-    sd = 0xFFFFFF;
+    sd = SD_NO_VALUE;
   }
 }

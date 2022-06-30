@@ -2326,15 +2326,28 @@ bool amf_n2::get_common_plmn(
                   "S-NSSAI from AMF (SST %d, SD %s)", s2.sst,
                   std::to_string(s2.sd).c_str());
               if (s1.sst.compare(std::to_string(s2.sst)) == 0) {
-                if ((s2.sst <= SST_MAX_STANDARDIZED_VALUE) or
-                    (s1.sd.compare(std::to_string(s2.sd)) ==
-                     0)) {  // don't need to check SD for standard NSSAI
+                uint32_t s1_sd = SD_NO_VALUE;
+                if (!s1.sd.empty()) {
+                  conv::sd_string_to_int(s1.sd, s1_sd);
+                }
+                if (s1_sd == s2.sd) {
                   Logger::amf_n2().debug(
                       "Common S-NSSAI (SST %s, SD %s)", s1.sst.c_str(),
                       s1.sd.c_str());
                   plmn_slice_support_item.slice_list.push_back(s1);
                   found_common_plmn = true;
                 }
+
+                /*
+                                if ((s2.sst <= SST_MAX_STANDARDIZED_VALUE) or
+                                    (s1.sd.compare(std::to_string(s2.sd)) ==
+                                     0)) {  // don't need to check SD for
+                   standard NSSAI Logger::amf_n2().debug( "Common S-NSSAI (SST
+                   %s, SD %s)", s1.sst.c_str(), s1.sd.c_str());
+                                  plmn_slice_support_item.slice_list.push_back(s1);
+                                  found_common_plmn = true;
+                                }
+                                */
               }
             }
           }

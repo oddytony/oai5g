@@ -254,14 +254,15 @@ typedef struct slice_s {
   nlohmann::json to_json() const {
     nlohmann::json json_data = {};
     json_data["sst"]         = this->sst;
-    if (sst > SST_MAX_STANDARDIZED_VALUE) json_data["sd"] = this->sd;
+    if (this->sd != SD_NO_VALUE) json_data["sd"] = this->sd;
     return json_data;
   }
 
   void from_json(nlohmann::json& json_data) {
     this->sst = json_data["sst"].get<int>();
-    if (this->sst > SST_MAX_STANDARDIZED_VALUE)
+    if (json_data.find("sd") != json_data.end()) {
       this->sd = json_data["sd"].get<int>();
+    }
   }
 } slice_t;
 

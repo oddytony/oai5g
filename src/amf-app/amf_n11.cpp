@@ -893,11 +893,24 @@ bool amf_n11::discover_smf(
           for (auto& s : instance_json["sNssais"].items()) {
             nlohmann::json Snssai = s.value();
             int sst               = 0;
-            std::string sd        = {};
+            uint32_t sd           = SD_NO_VALUE;  // Default value
             if (Snssai.count("sst") > 0) sst = Snssai["sst"].get<int>();
-            if (Snssai.count("sd") > 0) sd = Snssai["sd"].get<string>();
+            if (Snssai.count("sd") > 0) {
+              conv::sd_string_to_int(Snssai["sd"].get<string>(), sd);
+            }
             if (sst == snssai.sST) {
-              // Match SD (optional) only if it is provided
+              uint32_t input_sd = SD_NO_VALUE;  // Default value
+              conv::sd_string_to_int(snssai.sD, input_sd);
+              if (sd == input_sd) {
+                Logger::amf_n11().debug(
+                    "S-NSSAI [SST- %d, SD -%s] is matched for SMF profile",
+                    snssai.sST, snssai.sD.c_str());
+                result = true;
+                break;  // NSSAI is included in the list of supported slices
+                        // from SMF
+              }
+              /*
+                // Match SD (optional) only if it is provided
               if ((sst <= SST_MAX_STANDARDIZED_VALUE) or sd.empty() or
                   (snssai.sD.compare(sd) == 0)) {
                 Logger::amf_n11().debug(
@@ -907,6 +920,7 @@ bool amf_n11::discover_smf(
                 break;  // NSSAI is included in the list of supported slices
                         // from SMF
               }
+              */
             }
           }
         }

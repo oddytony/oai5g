@@ -113,7 +113,7 @@ void RerouteNASRequest::setAllowedNssai(const std::vector<S_Nssai>& list) {
     S_NSSAI snssai = {};
     snssai.setSst(list[i].sst);
 
-    uint32_t sd = 0xFFFFFF;
+    uint32_t sd = SD_NO_VALUE;
     if (!list[i].sd.empty()) {
       conv::sd_string_to_int(list[i].sd, sd);
     }
