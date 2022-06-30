@@ -717,7 +717,8 @@ void amf_config::display() {
       str             = str.append("        SST")
                 .append(
                     (plmn_list[i].slice_list[j].sst >
-                     SST_MAX_STANDARDIZED_VALUE) ?
+                         SST_MAX_STANDARDIZED_VALUE &&
+                     (plmn_list[i].slice_list[j].sd != SD_NO_VALUE)) ?
                         ", SD " :
                         " ....")
                 .append("...........: ")
@@ -725,7 +726,8 @@ void amf_config::display() {
                 .append("")
                 .append(
                     (plmn_list[i].slice_list[j].sst >
-                     SST_MAX_STANDARDIZED_VALUE) ?
+                         SST_MAX_STANDARDIZED_VALUE &&
+                     (plmn_list[i].slice_list[j].sd != SD_NO_VALUE)) ?
                         ", " + std::to_string(plmn_list[i].slice_list[j].sd) :
                         " ");
       Logger::config().info(str.c_str());
