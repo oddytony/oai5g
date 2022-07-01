@@ -90,7 +90,7 @@ void statistics::display() {
   i = 0;
   for (auto const& ue : ue_infos) {
     Logger::amf_app().info(
-        "|%7d|%22s|%18s|%15s|%16d|%11d| %3s,%3s |%7d|", i + 1,
+        "|%7d|%22s|%18s|%15s|%16ld|%11ld| %3s,%3s |%7d|", i + 1,
         ue.second.registerStatus.c_str(), ue.second.imsi.c_str(),
         ue.second.guti.c_str(), ue.second.ranid, ue.second.amfid,
         ue.second.mcc.c_str(), ue.second.mnc.c_str(), ue.second.cellId);
