@@ -138,8 +138,6 @@ int NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
   length = *(buf + decoded_size);
   decoded_size++;
   int length_tmp = length;
-  a.sd           = SD_NO_VALUE;  // Default value
-  a.mHplmnSd     = SD_NO_VALUE;  // Default value
 
   while (length_tmp) {
     switch (*(buf + decoded_size)) {
@@ -230,9 +228,7 @@ int NSSAI::decodefrombuffer(uint8_t* buf, int len, bool is_option) {
     }
 
     S_NSSAI.insert(S_NSSAI.end(), a);
-    a          = {0, 0, 0, 0};
-    a.sd       = SD_NO_VALUE;  // Default value
-    a.mHplmnSd = SD_NO_VALUE;  // Default value
+    a = {0, 0, 0, 0};
   }
 
   for (int i = 0; i < S_NSSAI.size(); i++) {
