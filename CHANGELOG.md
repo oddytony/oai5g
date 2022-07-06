@@ -1,5 +1,18 @@
 # RELEASE NOTES: #
 
+## v1.4.0 -- July 2022 ##
+
+* Fix SCTP NG Shutdown issue
+* Fix 100% CPU consumption issue
+* Fix RAN UE ID display
+* Fix issue for TMSI and GUTI value
+* Fix for handling S-NSSAI 
+* Remove OPC value from AMF configuration
+* Support for Ubuntu 20.04 bare-metal installation
+* Official images produced by CI are pushed to `oaisoftwarealliance` Docker-Hub Team account
+* Reduce image size
+
+
 ## v1.3.0 -- January 2022 ##
 
 * Periodic Registration Update
