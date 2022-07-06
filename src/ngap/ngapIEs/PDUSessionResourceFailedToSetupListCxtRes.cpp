@@ -35,10 +35,7 @@ namespace ngap {
 
 //------------------------------------------------------------------------------
 PDUSessionResourceFailedToSetupListCxtRes::
-    PDUSessionResourceFailedToSetupListCxtRes() {
-  pduSessionResourceFailedToSetupItemCxtRes      = NULL;
-  numofpduSessionResourceFailedToSetupItemCxtRes = 0;
-}
+    PDUSessionResourceFailedToSetupListCxtRes() {}
 
 //------------------------------------------------------------------------------
 PDUSessionResourceFailedToSetupListCxtRes::
@@ -47,12 +44,15 @@ PDUSessionResourceFailedToSetupListCxtRes::
 //------------------------------------------------------------------------------
 void PDUSessionResourceFailedToSetupListCxtRes::
     setPDUSessionResourceFailedToSetupListCxtRes(
-        PDUSessionResourceFailedToSetupItemCxtRes*
-            m_pduSessionResourceFailedToSetupItemCxtRes,
-        int num) {
-  pduSessionResourceFailedToSetupItemCxtRes =
-      m_pduSessionResourceFailedToSetupItemCxtRes;
-  numofpduSessionResourceFailedToSetupItemCxtRes = num;
+        const std::vector<PDUSessionResourceFailedToSetupItemCxtRes>& list) {
+  itemList = list;
+}
+
+//------------------------------------------------------------------------------
+void PDUSessionResourceFailedToSetupListCxtRes::
+    getPDUSessionResourceFailedToSetupListCxtRes(
+        std::vector<PDUSessionResourceFailedToSetupItemCxtRes>& list) {
+  list = itemList;
 }
 
 //------------------------------------------------------------------------------
@@ -60,14 +60,15 @@ bool PDUSessionResourceFailedToSetupListCxtRes::
     encode2PDUSessionResourceFailedToSetupListCxtRes(
         Ngap_PDUSessionResourceFailedToSetupListCxtRes_t*
             pduSessionResourceFailedToSetupListCxtRes) {
-  for (int i = 0; i < numofpduSessionResourceFailedToSetupItemCxtRes; i++) {
+  for (std::vector<PDUSessionResourceFailedToSetupItemCxtRes>::iterator it =
+           std::begin(itemList);
+       it < std::end(itemList); ++it) {
     Ngap_PDUSessionResourceFailedToSetupItemCxtRes_t* failedToResponse =
         (Ngap_PDUSessionResourceFailedToSetupItemCxtRes_t*) calloc(
             1, sizeof(Ngap_PDUSessionResourceFailedToSetupItemCxtRes_t));
     if (!failedToResponse) return false;
-    if (!pduSessionResourceFailedToSetupItemCxtRes[i]
-             .encode2PDUSessionResourceFailedToSetupItemCxtRes(
-                 failedToResponse))
+
+    if (!it->encode2PDUSessionResourceFailedToSetupItemCxtRes(failedToResponse))
       return false;
     if (ASN_SEQUENCE_ADD(
             &pduSessionResourceFailedToSetupListCxtRes->list,
@@ -83,30 +84,17 @@ bool PDUSessionResourceFailedToSetupListCxtRes::
     decodefromPDUSessionResourceFailedToSetupListCxtRes(
         Ngap_PDUSessionResourceFailedToSetupListCxtRes_t*
             pduSessionResourceFailedToSetupListCxtRes) {
-  numofpduSessionResourceFailedToSetupItemCxtRes =
-      pduSessionResourceFailedToSetupListCxtRes->list.count;
-  pduSessionResourceFailedToSetupItemCxtRes =
-      new PDUSessionResourceFailedToSetupItemCxtRes
-          [numofpduSessionResourceFailedToSetupItemCxtRes]();
-  for (int i = 0; i < numofpduSessionResourceFailedToSetupItemCxtRes; i++) {
-    if (!pduSessionResourceFailedToSetupItemCxtRes[i]
-             .decodefromPDUSessionResourceFailedToSetupItemCxtRes(
-                 pduSessionResourceFailedToSetupListCxtRes->list.array[i]))
+  itemList.reserve(pduSessionResourceFailedToSetupListCxtRes->list.count);
+  for (int i = 0; i < pduSessionResourceFailedToSetupListCxtRes->list.count;
+       i++) {
+    PDUSessionResourceFailedToSetupItemCxtRes item = {};
+    if (!item.decodefromPDUSessionResourceFailedToSetupItemCxtRes(
+            pduSessionResourceFailedToSetupListCxtRes->list.array[i]))
       return false;
+    itemList.push_back(item);
   }
 
   return true;
-}
-
-//------------------------------------------------------------------------------
-void PDUSessionResourceFailedToSetupListCxtRes::
-    getPDUSessionResourceFailedToSetupListCxtRes(
-        PDUSessionResourceFailedToSetupItemCxtRes*&
-            m_pduSessionResourceFailedToSetupItemCxtRes,
-        int& num) {
-  m_pduSessionResourceFailedToSetupItemCxtRes =
-      pduSessionResourceFailedToSetupItemCxtRes;
-  num = numofpduSessionResourceFailedToSetupItemCxtRes;
 }
 
 }  // namespace ngap

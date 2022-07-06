@@ -31,16 +31,18 @@
 #include <string>
 
 #include "3gpp_ts24501.hpp"
-#include "String2Value.hpp"
+#include "conversions.hpp"
 #include "logger.hpp"
+#include "String2Value.hpp"
+
 using namespace nas;
 
 //------------------------------------------------------------------------------
 DeregistrationRequest::DeregistrationRequest() {
-  plain_header          = NULL;
-  ie_deregistrationtype = NULL;
-  ie_ngKSI              = NULL;
-  ie_5gs_mobility_id    = NULL;
+  plain_header          = nullptr;
+  ie_deregistrationtype = nullptr;
+  ie_ngKSI              = nullptr;
+  ie_5gs_mobility_id    = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -72,13 +74,13 @@ void DeregistrationRequest::setngKSI(uint8_t tsc, uint8_t key_set_id) {
 
 //------------------------------------------------------------------------------
 void DeregistrationRequest::getDeregistrationType(uint8_t& dereg_type) {
-  ie_deregistrationtype->get(dereg_type);
+  if (ie_deregistrationtype) ie_deregistrationtype->get(dereg_type);
 }
 
 //------------------------------------------------------------------------------
 void DeregistrationRequest::getDeregistrationType(
     _5gs_deregistration_type_t& type) {
-  ie_deregistrationtype->get(type);
+  if (ie_deregistrationtype) ie_deregistrationtype->get(type);
 }
 
 //------------------------------------------------------------------------------
@@ -99,8 +101,8 @@ void DeregistrationRequest::setSUCI_SUPI_format_IMSI(
     uint8_t protection_sch_id, const string msin) {
   if (protection_sch_id != NULL_SCHEME) {
     Logger::nas_mm().error(
-        "encoding suci and supi format for imsi error, please choose right "
-        "interface");
+        "Encoding SUCI and SUPI format for IMSI error, please choose correct "
+        "protection scheme");
     return;
   } else {
     ie_5gs_mobility_id =
@@ -132,10 +134,14 @@ std::string DeregistrationRequest::get_5g_guti() {
   if (ie_5gs_mobility_id) {
     nas::_5G_GUTI_t guti;
     ie_5gs_mobility_id->get5GGUTI(guti);
-    std::string str;  //= guti.toString();
-    return str;
+    std::string guti_str =
+        guti.mcc + guti.mnc + std::to_string(guti.amf_region_id) +
+        std::to_string(guti.amf_set_id) + std::to_string(guti.amf_pointer) +
+        conv::tmsi_to_string(guti._5g_tmsi);
+    Logger::nas_mm().debug("5G GUTI %s", guti_str.c_str());
+    return guti_str;
   } else {
-    return "error";
+    return {};
   }
 }
 
@@ -184,7 +190,7 @@ int DeregistrationRequest::encode2buffer(uint8_t* buf, int len) {
       return 0;
     }
   } else {
-    Logger::nas_mm().error("Encoding IE Deregistrationt Type error");
+    Logger::nas_mm().error("Encoding IE Deregistration Type error");
     return 0;
   }
   if (int size = ie_5gs_mobility_id->encode2buffer(

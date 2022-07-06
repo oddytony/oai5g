@@ -19,56 +19,38 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
+#ifndef _INITIAL_CONTEXT_SETUP_FAILURE_H_
+#define _INITIAL_CONTEXT_SETUP_FAILURE_H_
 
-#ifndef _INITIALCONTEXTSETUPFAILURE_H_
-#define _INITIALCONTEXTSETUPFAILURE_H_
-
-#include "AMF-UE-NGAP-ID.hpp"
-#include "MessageType.hpp"
-#include "NgapIEsStruct.hpp"
 #include "PDUSessionResourceFailedToSetupListCxtFail.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
+#include "NgapUEMessage.hpp"
 
 extern "C" {
 #include "Ngap_InitialContextSetupFailure.h"
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
 }
 
 namespace ngap {
 
-class InitialContextSetupFailureMsg {
+class InitialContextSetupFailureMsg : public NgapUEMessage {
  public:
   InitialContextSetupFailureMsg();
   virtual ~InitialContextSetupFailureMsg();
 
-  void setMessageType();
-  void setAmfUeNgapId(unsigned long id);  // 40 bits
-  void setRanUeNgapId(uint32_t id);       // 32 bits
-  void setPduSessionResourceFailedToSetupList(
-      std::vector<PDUSessionResourceFailedToSetupItem_t> list);
+  void initialize();
+  void setAmfUeNgapId(const unsigned long& id) override;
+  void setRanUeNgapId(const uint32_t& id) override;
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
 
-  int encode2buffer(uint8_t* buf, int buf_size);
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
-  unsigned long getAmfUeNgapId();
-  uint32_t getRanUeNgapId();
+  void setPduSessionResourceFailedToSetupList(
+      const std::vector<PDUSessionResourceFailedToSetupItem_t>& list);
   bool getPduSessionResourceFailedToSetupList(
       std::vector<PDUSessionResourceFailedToSetupItem_t>& list);
 
  private:
-  Ngap_NGAP_PDU_t* initialContextSetupFailurePdu;
   Ngap_InitialContextSetupFailure_t* initialContextSetupFailureIEs;
 
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
   PDUSessionResourceFailedToSetupListCxtFail*
-      pduSessionResourceFailedToSetupFailureList;
+      pduSessionResourceFailedToSetupFailureList;  // Optional
 };
 
 }  // namespace ngap

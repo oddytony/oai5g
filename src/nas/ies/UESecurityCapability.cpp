@@ -60,6 +60,8 @@ UESecurityCapability::UESecurityCapability(
   _iei      = iei;
   _5g_EASel = _5gg_EASel;
   _5g_IASel = _5gg_IASel;
+  EEASel    = 0;
+  EIASel    = 0;
   length    = 2;
 }
 

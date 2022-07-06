@@ -45,11 +45,11 @@ _5GSDeregistrationType::_5GSDeregistrationType(uint8_t type) {
 //------------------------------------------------------------------------------
 _5GSDeregistrationType::_5GSDeregistrationType(
     _5gs_deregistration_type_t type) {
-  u1.b                 = 0;
-  u1.bf.switch_off     = type.switch_off;
-  u1.bf.dereg_required = type.dereg_required;
-  u1.bf.access_type    = type.access_type;
-  u1.bf.iei            = type.iei;
+  u1.b                           = 0;
+  u1.bf.switch_off               = type.switch_off;
+  u1.bf.re_registration_required = type.re_registration_required;
+  u1.bf.access_type              = type.access_type;
+  u1.bf.iei                      = type.iei;
 }
 
 //------------------------------------------------------------------------------
@@ -57,19 +57,19 @@ _5GSDeregistrationType::~_5GSDeregistrationType() {}
 
 //------------------------------------------------------------------------------
 void _5GSDeregistrationType::set(_5gs_deregistration_type_t type) {
-  u1.b                 = 0;
-  u1.bf.switch_off     = type.switch_off;
-  u1.bf.dereg_required = type.dereg_required;
-  u1.bf.access_type    = type.access_type;
-  u1.bf.iei            = type.iei;
+  u1.b                           = 0;
+  u1.bf.switch_off               = type.switch_off;
+  u1.bf.re_registration_required = type.re_registration_required;
+  u1.bf.access_type              = type.access_type;
+  u1.bf.iei                      = type.iei;
 }
 
 //------------------------------------------------------------------------------
 void _5GSDeregistrationType::get(_5gs_deregistration_type_t& type) {
-  type.switch_off     = u1.bf.switch_off;
-  type.dereg_required = u1.bf.dereg_required;
-  type.access_type    = u1.bf.access_type;
-  type.iei            = u1.bf.iei;
+  type.switch_off               = u1.bf.switch_off;
+  type.re_registration_required = u1.bf.re_registration_required;
+  type.access_type              = u1.bf.access_type;
+  type.iei                      = u1.bf.iei;
 }
 
 //------------------------------------------------------------------------------

@@ -39,8 +39,10 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <netdb.h>
 
 #include "bstrlib.h"
 }
@@ -66,20 +68,28 @@ sctp_server::~sctp_server() {}
 
 //------------------------------------------------------------------------------
 int sctp_server::create_socket(const char* address, const uint16_t port_num) {
-  if ((socket_ = socket(AF_INET6, SOCK_STREAM, IPPROTO_SCTP)) < 0) {
+  struct addrinfo* res;
+  if (getaddrinfo(address, 0, NULL, &res) < 0) {
+    Logger::sctp().error(
+        "getaddrinfo on %s: %s:%d", address, strerror(errno), errno);
+    return RETURNerror;
+  } else {
+    Logger::sctp().debug("getaddrinfo on %s was OK", address);
+  }
+  if ((socket_ = socket(res->ai_family, SOCK_STREAM, IPPROTO_SCTP)) < 0) {
     Logger::sctp().error("socket: %s:%d", strerror(errno), errno);
-    return -1;
+    return RETURNerror;
   }
   Logger::sctp().info("Created socket (%d)", socket_);
   bzero(&serverAddr_, sizeof(serverAddr_));
-  serverAddr_.sin_family      = AF_INET;
+  serverAddr_.sin_family      = res->ai_family;
   serverAddr_.sin_addr.s_addr = htonl(INADDR_ANY);
   serverAddr_.sin_port        = htons(port_num);
   inet_pton(AF_INET, address, &serverAddr_.sin_addr);
   if (bind(socket_, (struct sockaddr*) &serverAddr_, sizeof(serverAddr_)) !=
       0) {
     Logger::sctp().error("Socket bind: %s:%d", strerror(errno), errno);
-    return -1;
+    return RETURNerror;
   }
   bzero(&events_, sizeof(events_));
   events_.sctp_data_io_event     = 1;
@@ -156,7 +166,7 @@ int sctp_server::sctp_read_from_socket(int sd, uint32_t ppid) {
   struct sctp_sndrcvinfo sinfo = {0};
   struct sockaddr_in6 addr     = {0};
   uint8_t buffer[SCTP_RECV_BUFFER_SIZE];
-  if (sd < 0) return -1;
+  if (sd < 0) return RETURNerror;
   memset((void*) &addr, 0, sizeof(struct sockaddr_in6));
   from_len = (socklen_t) sizeof(struct sockaddr_in6);
   memset((void*) &sinfo, 0, sizeof(struct sctp_sndrcvinfo));
@@ -215,7 +225,7 @@ int sctp_server::sctp_read_from_socket(int sd, uint32_t ppid) {
 //------------------------------------------------------------------------------
 int sctp_server::sctp_handle_com_down(sctp_assoc_id_t assoc_id) {
   app_->handle_sctp_shutdown(assoc_id);
-  return 0;
+  return SCTP_RC_DISCONNECT;
 }
 
 //------------------------------------------------------------------------------
@@ -309,7 +319,7 @@ int sctp_server::sctp_get_peeraddresses(
   struct sockaddr* temp_addr_p = NULL;
   if ((nb = sctp_getpaddrs(sock, -1, &temp_addr_p)) <= 0) {
     Logger::sctp().error("Failed to retrieve peer addresses");
-    return -1;
+    return RETURNerror;
   }
   Logger::sctp().info("----------------------");
   Logger::sctp().info("Peer addresses:");
@@ -350,7 +360,7 @@ int sctp_server::sctp_get_localaddresses(
   struct sockaddr* temp_addr_p = NULL;
   if ((nb = sctp_getladdrs(sock, -1, &temp_addr_p)) <= 0) {
     Logger::sctp().error("Failed to retrieve local addresses");
-    return -1;
+    return RETURNerror;
   }
   if (temp_addr_p) {
     Logger::sctp().info("----------------------");
@@ -395,12 +405,12 @@ int sctp_server::sctp_send_msg(
   if ((assoc_desc = sctp_is_assoc_in_list(sctp_assoc_id)) == NULL) {
     Logger::sctp().error(
         "This assoc id (%d) has not been fount in list", sctp_assoc_id);
-    return -1;
+    return RETURNerror;
   }
   if (assoc_desc->sd == -1) {
     Logger::sctp().error(
         "The socket is invalid may be closed (assoc id %d)", sctp_assoc_id);
-    return -1;
+    return RETURNerror;
   }
   Logger::sctp().debug(
       "[Socket %d, Assoc ID %d] Sending buffer %p of %d bytes on stream %d "
@@ -416,7 +426,7 @@ int sctp_server::sctp_send_msg(
         assoc_desc->sd, stream, htonl(assoc_desc->ppid), blength(*payload),
         strerror(errno), errno);
     *payload = NULL;
-    return -1;
+    return RETURNerror;
   }
   Logger::sctp().debug(
       "Successfully sent %d bytes on stream %d", blength(*payload), stream);

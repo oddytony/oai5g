@@ -19,23 +19,14 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author
- \date
- \email: contact@openairinterface.org
- */
-
 #include "PDUSessionResourceModifyItemModReq.hpp"
-
-#include <iostream>
-using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
 PDUSessionResourceModifyItemModReq::PDUSessionResourceModifyItemModReq() {
   nAS_PDU = nullptr;
+  s_NSSAI = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -44,7 +35,7 @@ PDUSessionResourceModifyItemModReq::~PDUSessionResourceModifyItemModReq() {}
 //------------------------------------------------------------------------------
 void PDUSessionResourceModifyItemModReq::setPDUSessionResourceModifyItemModReq(
     const PDUSessionID& m_pDUSessionID, const NAS_PDU& m_nAS_PDU,
-    const OCTET_STRING_t m_pDUSessionResourceModifyRequestTransfer,
+    const OCTET_STRING_t& m_pDUSessionResourceModifyRequestTransfer,
     const S_NSSAI& m_s_NSSAI) {
   pDUSessionID     = m_pDUSessionID;
   uint8_t* nas_buf = nullptr;

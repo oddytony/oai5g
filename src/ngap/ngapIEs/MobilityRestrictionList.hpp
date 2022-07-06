@@ -25,8 +25,8 @@
  \date 2020
  \email: contact@openairinterface.org
  */
-#ifndef _MOBILITYRESTRICETIONLIST_H_
-#define _MOBILITYRESTRICETIONLIST_H_
+#ifndef _MOBILITY_RESTRICTION_LIST_H_
+#define _MOBILITYRESTRICTION_LIST_H_
 #include "PlmnId.hpp"
 
 extern "C" {
@@ -37,12 +37,22 @@ class MobilityRestrictionList {
  public:
   MobilityRestrictionList();
   virtual ~MobilityRestrictionList();
-  void setMobilityRestrictionList(PlmnId* servingplmn);
+
+  void setMobilityRestrictionList(const PlmnId& sPlmn);
+  void getMobilityRestrictionList(PlmnId& sPlmn);
+
   bool encodeMobilityRestrictionList(
       Ngap_MobilityRestrictionList_t* mobilityrestrictionlist);
 
  private:
-  PlmnId* Servingplmn;
+  PlmnId servingPLMN;  // Mandatory
+  // TODO: Equivalent PLMNs (optional)
+  // TODO: RAT Restrictions (optional)
+  // TODO: Forbidden Area Information (optional)
+  // TODO: Service Area Information (optional)
+  // TODO: Last E-UTRAN PLMN Identity (optional)
+  // TODO: Core Network Type Restriction for Serving PLMN (optional)
+  // TODO: Core Network Type Restriction for Equivalent PLMNs (optional)
 };
 }  // namespace ngap
 #endif

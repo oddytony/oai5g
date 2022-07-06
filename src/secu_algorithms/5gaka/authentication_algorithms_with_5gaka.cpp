@@ -546,11 +546,7 @@ uint8_t* Authentication_5gaka::sqn_ms_derive(
   conc_sqn_ms = auts;
   mac_s       = &auts[6];
   sqn_ms      = (uint8_t*) malloc(SQN_LENGTH_OCTEST);
-  /*
-   * if (hss_config.valid_opc == 0) {
-   * SetOP(hss_config.operator_key);
-   * }
-   */
+
   /*
    * Derive AK from key and rand
    */

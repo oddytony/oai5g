@@ -26,12 +26,16 @@
  */
 #include "conversions.hpp"
 
+#include "amf.hpp"
+#include "logger.hpp"
+
 #include <arpa/inet.h>
 #include <ctype.h>
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <boost/algorithm/string.hpp>
 
 static const char hex_to_ascii_table[16] = {
     '0', '1', '2', '3', '4', '5', '6', '7',
@@ -121,6 +125,18 @@ std::string conv::mncToString(
 }
 
 //------------------------------------------------------------------------------
+std::string conv::tmsi_to_string(const uint32_t tmsi) {
+  std::string s        = {};
+  std::string tmsi_str = std::to_string(tmsi);
+  uint8_t length       = 4 - tmsi_str.size();
+  for (uint8_t i = 0; i < length; i++) {
+    s.append("0");
+  }
+  s.append(std::to_string(tmsi));
+  return s;
+}
+
+//------------------------------------------------------------------------------
 struct in_addr conv::fromString(const std::string addr4) {
   unsigned char buf[sizeof(struct in6_addr)] = {};
   int s              = inet_pton(AF_INET, addr4.c_str(), buf);
@@ -172,6 +188,8 @@ void conv::convert_string_2_hex(
     sprintf(datahex + i * 2, "%02x", data[i]);
 
   output_str = reinterpret_cast<char*>(datahex);
+  free_wrapper((void**) &datahex);
+  free_wrapper((void**) &data);
 }
 
 //------------------------------------------------------------------------------
@@ -236,4 +254,35 @@ void conv::msg_str_2_msg_hex(std::string msg, bstring& b) {
   uint8_t* msg_hex = (uint8_t*) malloc(msg_len / 2 + 1);
   conv::ascii_to_hex(msg_hex, (const char*) data);
   b = blk2bstr(msg_hex, (msg_len / 2));
+}
+
+//------------------------------------------------------------------------------
+void conv::octet_string_2_bstring(
+    const OCTET_STRING_t& octet_str, bstring& b_str) {
+  b_str = blk2bstr(octet_str.buf, octet_str.size);
+}
+
+//------------------------------------------------------------------------------
+void conv::bstring_2_octet_string(bstring& b_str, OCTET_STRING_t& octet_str) {
+  OCTET_STRING_fromBuf(&octet_str, (char*) bdata(b_str), blength(b_str));
+}
+
+//------------------------------------------------------------------------------
+void conv::sd_string_to_int(const std::string& sd_str, uint32_t& sd) {
+  sd = SD_NO_VALUE;
+  if (sd_str.empty()) return;
+  uint8_t base = 10;
+  try {
+    if (sd_str.size() > 2) {
+      if (boost::iequals(sd_str.substr(0, 2), "0x")) {
+        base = 16;
+      }
+    }
+    sd = std::stoul(sd_str, nullptr, base);
+  } catch (const std::exception& e) {
+    Logger::amf_app().error(
+        "Error when converting from string to int for S-NSSAI SD, error: %s",
+        e.what());
+    sd = SD_NO_VALUE;
+  }
 }

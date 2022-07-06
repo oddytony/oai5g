@@ -19,65 +19,43 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author Keliang DU (BUPT), Tien-Thinh NGUYEN (EURECOM)
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #ifndef _PDU_SESSION_RESOURCE_RELEASE_RESPONSE_H_
 #define _PDU_SESSION_RESOURCE_RELEASE_RESPONSE_H_
 
-#include "AMF-UE-NGAP-ID.hpp"
 #include "CriticalityDiagnostics.hpp"
-#include "MessageType.hpp"
-#include "NgapIEsStruct.hpp"
 #include "PDUSessionResourceReleasedListRelRes.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
 #include "UserLocationInformation.hpp"
-
-extern "C" {
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
-}
+#include "NgapUEMessage.hpp"
 
 namespace ngap {
 
-class PduSessionResourceReleaseResponseMsg {
+class PduSessionResourceReleaseResponseMsg : public NgapUEMessage {
  public:
   PduSessionResourceReleaseResponseMsg();
   virtual ~PduSessionResourceReleaseResponseMsg();
 
-  void setMessageType();
-  void setAmfUeNgapId(unsigned long id);  // 40 bits
-  void setRanUeNgapId(uint32_t id);       // 32 bits
-  void setPduSessionResourceReleasedList(
-      std::vector<PDUSessionResourceReleasedItem_t> list);
-  void setUserLocationInfoNR(struct NrCgi_s cig, struct Tai_s tai);
+  void initialize();
 
-  unsigned long getAmfUeNgapId();
-  uint32_t getRanUeNgapId();
+  void setAmfUeNgapId(const unsigned long& id) override;
+  void setRanUeNgapId(const uint32_t& id) override;
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
+
+  void setPduSessionResourceReleasedList(
+      const std::vector<PDUSessionResourceReleasedItem_t>& list);
   bool getPduSessionResourceReleasedList(
       std::vector<PDUSessionResourceReleasedItem_t>& list);
-  bool getUserLocationInfoNR(struct NrCgi_s& cig, struct Tai_s& tai);
 
-  int encode2buffer(uint8_t* buf, int buf_size);
-  void encode2buffer_new(char* buf, int& encoded_size);
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
+  void setUserLocationInfoNR(const NrCgi_t& cig, const Tai_t& tai);
+  bool getUserLocationInfoNR(NrCgi_t& cig, Tai_t& tai);
 
  private:
-  Ngap_NGAP_PDU_t* pduSessionResourceReleaseResponsePdu;
   Ngap_PDUSessionResourceReleaseResponse_t*
-      pduSessionResourceReleaseResponseIEs;  // store list of IEs
+      pduSessionResourceReleaseResponseIEs;
 
-  // section 9.2.1.4 PDU Session Resource Release Response (3GPP TS 38.413
-  // V16.0.0 (2019-12))
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
-  PDUSessionResourceReleasedListRelRes* pduSessionResourceReleasedList;
-  UserLocationInformation* userLocationInformation;
-  // CriticalityDiagnostics *criticalityDiagnostics;
+  PDUSessionResourceReleasedListRelRes
+      pduSessionResourceReleasedList;                // Mandatory
+  UserLocationInformation* userLocationInformation;  // Optional
+  // TODO: CriticalityDiagnostics *criticalityDiagnostics; //Optional
 };
 
 }  // namespace ngap

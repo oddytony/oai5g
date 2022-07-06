@@ -423,27 +423,22 @@ check_install_amf_deps(){
       if [ $IS_CONTAINER -eq 0 ]; then
         specific_packages="libconfig++-dev libasio-dev libboost-all-dev mysql-server"
       else
-        specific_packages="libconfig++-dev"
-      fi
-        ;;
-      *)
-      if [ $IS_CONTAINER -eq 0 ]; then
-        specific_packages="libconfig++-dev libasio-dev libboost-all-dev mysql-server"
-      else
         specific_packages="libconfig++-dev libasio-dev libboost-all-dev"
       fi
+        ;;
+      "ubuntu20.04")
+        specific_packages="libconfig++-dev libasio-dev libboost-all-dev libmysqlclient-dev"
         ;;
     esac
     # removed libspdlog-dev
     PACKAGE_LIST="\
       $specific_packages \
-      mysql-server \
       mysql-client \
       libmysqlclient-dev \
       guile-2.0-dev \
       libcurl4-gnutls-dev \
       libevent-dev \
-      libgcrypt11-dev \
+      libgcrypt?-dev \
       libgmp-dev \
       libhogweed? \
       libidn2-0-dev \
@@ -462,7 +457,7 @@ check_install_amf_deps(){
       pkg-config \
       ninja-build \
       wget \
-      libasan2"
+      libasan?"
   elif [[ "$OS_BASEDISTRO" == "fedora" ]]; then
     PACKAGE_LIST="\
       guile-devel \
@@ -500,7 +495,7 @@ check_install_amf_deps(){
       "ubuntu18.04")
         $SUDO $INSTALLER remove $OPTION libboost1.65-dev || true
         $SUDO $INSTALLER install $OPTION libboost1.67-dev
-        ;;
+        ;;    
     esac
   fi  
 

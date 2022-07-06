@@ -19,20 +19,12 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _PDUSESSIONRESOURCESETUPITEMSUREQ_H_
-#define _PDUSESSIONRESOURCESETUPITEMSUREQ_H_
+#ifndef _PDU_SESSION_RESOURCE_SETUP_ITEM_SU_REQ_H_
+#define _PDU_SESSION_RESOURCE_SETUP_ITEM_SU_REQ_H_
 
 #include "NAS-PDU.hpp"
 #include "PDUSessionID.hpp"
 #include "S-NSSAI.hpp"
-//#include "PDUSessionResourceSetupRequestTransfer.hpp"
 
 extern "C" {
 #include "Ngap_PDUSessionResourceSetupItemSUReq.h"
@@ -46,10 +38,11 @@ class PDUSessionResourceSetupItemSUReq {
   virtual ~PDUSessionResourceSetupItemSUReq();
 
   void setPDUSessionResourceSetupItemSUReq(
-      PDUSessionID* m_pDUSessionID, NAS_PDU* m_nAS_PDU, S_NSSAI* m_s_NSSAI,
-      OCTET_STRING_t m_pDUSessionResourceSetupRequestTransfer);
+      const PDUSessionID& m_pDUSessionID, NAS_PDU* m_nAS_PDU,
+      const S_NSSAI& m_s_NSSAI,
+      const OCTET_STRING_t& m_pDUSessionResourceSetupRequestTransfer);
   void getPDUSessionResourceSetupItemSUReq(
-      PDUSessionID*& m_pDUSessionID, NAS_PDU*& m_nAS_PDU, S_NSSAI*& m_s_NSSAI,
+      PDUSessionID& m_pDUSessionID, NAS_PDU*& m_nAS_PDU, S_NSSAI& m_s_NSSAI,
       OCTET_STRING_t& m_pDUSessionResourceSetupRequestTransfer);
 
   bool encode2PDUSessionResourceSetupItemSUReq(
@@ -60,12 +53,11 @@ class PDUSessionResourceSetupItemSUReq {
           pduSessionResourceSetupItemSUReq);
 
  private:
-  PDUSessionID* pDUSessionID;
-  NAS_PDU* nAS_PDU; /* OPTIONAL */
-  S_NSSAI* s_NSSAI;
-  // PduSessionResourceSetupRequestTransferIE
-  // *pduSessionResourceSetupRequestTransfer;
-  OCTET_STRING_t pDUSessionResourceSetupRequestTransfer;
+  PDUSessionID pDUSessionID;                              // Mandatory
+  NAS_PDU* nAS_PDU;                                       // Optional
+  S_NSSAI s_NSSAI;                                        // Mandatory
+  OCTET_STRING_t pDUSessionResourceSetupRequestTransfer;  // Mandatory
+  // TODO: UE Aggregate Maximum Bit Rate (Optional)
 };
 
 }  // namespace ngap

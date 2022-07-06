@@ -19,67 +19,46 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author Keliang DU (BUPT), Tien-Thinh NGUYEN (EURECOM)
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #ifndef _PDU_SESSION_RESOURCE_RELEASE_COMMAND_H_
 #define _PDU_SESSION_RESOURCE_RELEASE_COMMAND_H_
 
-#include "AMF-UE-NGAP-ID.hpp"
-#include "MessageType.hpp"
-#include "NAS-PDU.hpp"
-#include "NgapIEsStruct.hpp"
 #include "PDUSessionResourceToReleaseListRelCmd.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
-#include "RANPagingPriority.hpp"
 
-extern "C" {
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_ProtocolIE-Field.h"
-}
+#include "RANPagingPriority.hpp"
+#include "NAS-PDU.hpp"
+#include "NgapUEMessage.hpp"
 
 namespace ngap {
 
-class PduSessionResourceReleaseCommandMsg {
+class PduSessionResourceReleaseCommandMsg : public NgapUEMessage {
  public:
   PduSessionResourceReleaseCommandMsg();
   virtual ~PduSessionResourceReleaseCommandMsg();
 
-  void setMessageType();
-  void setAmfUeNgapId(unsigned long id);  // 40 bits
-  void setRanUeNgapId(uint32_t id);       // 32 bits
-  void setRanPagingPriority(uint8_t priority);
-  void setNasPdu(uint8_t* nas, size_t sizeofnas);
-  void setPduSessionResourceToReleaseList(
-      std::vector<PDUSessionResourceToReleaseItem_t> list);
+  void initialize();
 
-  unsigned long getAmfUeNgapId();
-  uint32_t getRanUeNgapId();
+  void setAmfUeNgapId(const unsigned long& id) override;
+  void setRanUeNgapId(const uint32_t& id) override;
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
+
+  void setRanPagingPriority(const uint8_t& priority);
   int getRanPagingPriority();
+
+  void setNasPdu(uint8_t* nas, size_t sizeofnas);
   bool getNasPdu(uint8_t*& nas, size_t& sizeofnas);
+
+  void setPduSessionResourceToReleaseList(
+      const std::vector<PDUSessionResourceToReleaseItem_t>& list);
   bool getPduSessionResourceToReleaseList(
       std::vector<PDUSessionResourceToReleaseItem_t>& list);
 
-  int encode2buffer(uint8_t* buf, int buf_size);
-  void encode2buffer_new(char* buf, int& encoded_size);
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
-
  private:
-  Ngap_NGAP_PDU_t* pduSessionResourceReleaseCommandPdu;
-  Ngap_PDUSessionResourceReleaseCommand_t*
-      pduSessionResourceReleaseCommandIEs;  // store list of IEs
+  Ngap_PDUSessionResourceReleaseCommand_t* pduSessionResourceReleaseCommandIEs;
 
-  // section 9.2.1.3 PDU Session Resource Release Command (3GPP TS 38.413
-  // V16.0.0 (2019-12))
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
-  RANPagingPriority* ranPagingPriority;
-  NAS_PDU* nasPdu;
-  PDUSessionResourceToReleaseListRelCmd* pduSessionResourceToReleaseList;
+  RANPagingPriority* ranPagingPriority;  // Optional
+  NAS_PDU* nasPdu;                       // Optional
+  PDUSessionResourceToReleaseListRelCmd
+      pduSessionResourceToReleaseList;  // Mandatory
 };
 
 }  // namespace ngap

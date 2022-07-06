@@ -19,19 +19,11 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _USERLOCATIONINFORMATIONNR_H_
-#define _USERLOCATIONINFORMATIONNR_H_
+#ifndef _USER_LOCATION_INFORMATION_NR_H_
+#define _USER_LOCATION_INFORMATION_NR_H_
 
 #include "NR-CGI.hpp"
 #include "TAI.hpp"
-//#include "TimeStamp.hpp"
 
 extern "C" {
 #include "Ngap_UserLocationInformationNR.h"
@@ -43,21 +35,18 @@ class UserLocationInformationNR {
   UserLocationInformationNR();
   virtual ~UserLocationInformationNR();
 
-  void setInformationNR(NR_CGI*, TAI*);
-  // void setInformationEUTRA(EUTRA_CGI* m_eUTRA_CGI,TAI* m_tAI,TimeStamp*
-  // m_timeStamp);
+  void setInformationNR(const NR_CGI&, const TAI&);
+  void getInformationNR(NR_CGI&, TAI&);
+
   bool encode2UserLocationInformationNR(Ngap_UserLocationInformationNR_t*);
   bool decodefromUserLocationInformationNR(Ngap_UserLocationInformationNR_t*);
-  // void getInformationEUTRA(EUTRA_CGI* &m_eUTRA_CGI,TAI* &m_tAI,TimeStamp*
-  // &m_timeStamp);
-  void getInformationNR(NR_CGI*&, TAI*&);
-  // bool getTimeStampPresence();
 
  private:
-  NR_CGI* nR_CGI;
-  TAI* tAI;
-  // bool istimeStampSet;
-  // TimeStamp *timeStamp;
+  NR_CGI nR_CGI;  // Mandatory
+  TAI tAI;        // Mandatory
+  // bool timeStampIsSet;
+  // TODO: TimeStamp timeStamp; //Age of Location (Optional)
+  // TODO: PSCell Information
 };
 
 }  // namespace ngap

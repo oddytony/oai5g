@@ -19,69 +19,65 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _NGSETUPFAILURE_H_
-#define _NGSETUPFAILURE_H_
+#ifndef _NG_SETUP_FAILURE_H_
+#define _NG_SETUP_FAILURE_H_
 
 #include "Cause.hpp"
 #include "MessageType.hpp"
 #include "TimeToWait.hpp"
 //#include "CriticalityDiagnostics.hpp"
-
-extern "C" {
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_NGSetupFailure.h"
-#include "Ngap_ProtocolIE-Field.h"
-}
+#include "NgapMessage.hpp"
 
 namespace ngap {
 
-class NGSetupFailureMsg {
+class NGSetupFailureMsg : public NgapMessage {
  public:
   NGSetupFailureMsg();
   virtual ~NGSetupFailureMsg();
 
-  // External interfaces
-  // Encapsulation
-  void setMessageType();
+  void initialize();
+
   void setCauseRadioNetwork(
-      e_Ngap_CauseRadioNetwork cause_value, e_Ngap_TimeToWait time_to_wait);
-  void setCauseRadioNetwork(e_Ngap_CauseRadioNetwork cause_value);
-  void setCauseTransport(
-      e_Ngap_CauseTransport cause_value, e_Ngap_TimeToWait time_to_wait);
-  void setCauseTransport(e_Ngap_CauseTransport cause_value);
-  void setCauseNas(e_Ngap_CauseNas cause_value, e_Ngap_TimeToWait time_to_wait);
-  void setCauseNas(e_Ngap_CauseNas cause_value);
-  void setCauseProtocol(
-      e_Ngap_CauseProtocol cause_value, e_Ngap_TimeToWait time_to_wait);
-  void setCauseProtocol(e_Ngap_CauseProtocol cause_value);
-  void setCauseMisc(
-      e_Ngap_CauseMisc cause_value, e_Ngap_TimeToWait time_to_wait);
-  void setCauseMisc(e_Ngap_CauseMisc cause_value);
-  int encode2buffer(uint8_t* buf, int buf_size);
-  // Decapsulation
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
-  bool getCauseType(Ngap_Cause_PR&);
+      const e_Ngap_CauseRadioNetwork& cause_value,
+      const e_Ngap_TimeToWait& time_to_wait);
+  void setCauseRadioNetwork(const e_Ngap_CauseRadioNetwork& cause_value);
   bool getCauseRadioNetwork(e_Ngap_CauseRadioNetwork&);
+
+  void setCauseTransport(
+      const e_Ngap_CauseTransport& cause_value,
+      const e_Ngap_TimeToWait& time_to_wait);
+  void setCauseTransport(const e_Ngap_CauseTransport& cause_value);
   bool getCauseTransport(e_Ngap_CauseTransport&);
+
+  void setCauseNas(
+      const e_Ngap_CauseNas& cause_value,
+      const e_Ngap_TimeToWait& time_to_wait);
+  void setCauseNas(const e_Ngap_CauseNas& cause_value);
   bool getCauseNas(e_Ngap_CauseNas&);
+
+  void setCauseProtocol(
+      const e_Ngap_CauseProtocol& cause_value,
+      const e_Ngap_TimeToWait& time_to_wait);
+  void setCauseProtocol(const e_Ngap_CauseProtocol& cause_value);
   bool getCauseProtocol(e_Ngap_CauseProtocol&);
+
+  void setCauseMisc(
+      const e_Ngap_CauseMisc& cause_value,
+      const e_Ngap_TimeToWait& time_to_wait);
+  void setCauseMisc(const e_Ngap_CauseMisc& cause_value);
   bool getCauseMisc(e_Ngap_CauseMisc&);
+
+  bool getCauseType(Ngap_Cause_PR&);
   bool getTime2Wait(e_Ngap_TimeToWait&);
 
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
+
  private:
-  Ngap_NGAP_PDU_t* ngSetupFailurePdu;
   Ngap_NGSetupFailure_t* ngSetupFailureIEs;
 
-  Cause* cause;
-  TimeToWait* timeToWait;
-  // CriticalityDiagnostics *criticalityDiagnostics;
+  Cause cause;            // Mandatory
+  TimeToWait timeToWait;  // Mandatory
+  // TODO: CriticalityDiagnostics *criticalityDiagnostics; //Optional
 
   void addCauseIE();
   void addTimeToWaitIE();

@@ -43,6 +43,7 @@ Payload_Container::Payload_Container(uint8_t iei, bstring b) {
   _iei    = iei;
   content = b;
   CONTENT = {};
+  length  = 1 + blength(b);
 }
 
 //------------------------------------------------------------------------------
@@ -66,6 +67,7 @@ Payload_Container::Payload_Container(
 //------------------------------------------------------------------------------
 Payload_Container::Payload_Container() : content() {
   _iei    = 0;
+  length  = 0;
   CONTENT = {};
 }
 
@@ -104,7 +106,8 @@ int Payload_Container::encode2buffer(uint8_t* buf, int len) {
   encoded_size++;
   *(buf + encoded_size) = (blength(content) & 0x00ff);
   encoded_size++;
-  memcpy(buf + encoded_size, (uint8_t*) bdata(content), blength(content));
+  uint8_t* buf_tmp = (uint8_t*) bdata(content);
+  if (buf_tmp != nullptr) memcpy(buf + encoded_size, buf_tmp, blength(content));
   encoded_size += blength(content);
 
 #if 0

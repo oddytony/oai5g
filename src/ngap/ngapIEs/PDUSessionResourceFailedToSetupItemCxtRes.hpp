@@ -19,15 +19,8 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _PDUSESSIONRESOURCEFAILEDTOSETUPITEMCXTRES_H_
-#define _PDUSESSIONRESOURCEFAILEDTOSETUPITEMCXTRES_H_
+#ifndef _PDU_SESSION_RESOURCE_FAILED_TO_SETUP_ITEM_CXT_RES_H_
+#define _PDU_SESSION_RESOURCE_FAILED_TO_SETUP_ITEM_CXT_RES_H_
 
 #include "PDUSessionID.hpp"
 
@@ -43,10 +36,10 @@ class PDUSessionResourceFailedToSetupItemCxtRes {
   virtual ~PDUSessionResourceFailedToSetupItemCxtRes();
 
   void setPDUSessionResourceFailedToSetupItemCxtRes(
-      PDUSessionID* m_pDUSessionID,
-      OCTET_STRING_t m_pDUSessionResourceSetupUnsuccessfulTransfer);
+      const PDUSessionID& m_pDUSessionID,
+      const OCTET_STRING_t& m_pDUSessionResourceSetupUnsuccessfulTransfer);
   void getPDUSessionResourceFailedToSetupItemCxtRes(
-      PDUSessionID*& m_pDUSessionID,
+      PDUSessionID& m_pDUSessionID,
       OCTET_STRING_t& m_pDUSessionResourceSetupUnsuccessfulTransfer);
 
   bool encode2PDUSessionResourceFailedToSetupItemCxtRes(
@@ -57,8 +50,8 @@ class PDUSessionResourceFailedToSetupItemCxtRes {
           pduSessionResourceFailedToSetupItemCxtRes);
 
  private:
-  PDUSessionID* pDUSessionID;
-  OCTET_STRING_t pDUSessionResourceSetupUnsuccessfulTransfer;
+  PDUSessionID pDUSessionID;                                   // Mandatory
+  OCTET_STRING_t pDUSessionResourceSetupUnsuccessfulTransfer;  // Mandatory
 };
 
 }  // namespace ngap

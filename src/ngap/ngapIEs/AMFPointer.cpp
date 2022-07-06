@@ -49,6 +49,11 @@ void AMFPointer::setAMFPointer(const std::string charPointer) {
 }
 
 //------------------------------------------------------------------------------
+void AMFPointer::setAMFPointer(const uint8_t& p) {
+  pointer = p;
+}
+
+//------------------------------------------------------------------------------
 void AMFPointer::getAMFPointer(std::string& charPointer) {
   charPointer = to_string(pointer);
 }

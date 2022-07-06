@@ -18,47 +18,46 @@
  * For more information about the OpenAirInterface (OAI) Software Alliance:
  *      contact@openairinterface.org
  */
-
-/*! \file
- \brief
- \author  niuxiansheng-niu, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
 #include "dRBStatusDL.hpp"
 
-#include <iostream>
-#include <vector>
-using namespace std;
+#include "logger.hpp"
+
 namespace ngap {
-dRBStatusDL::dRBStatusDL() {
-  dl18 = (DRBStatusDL18*) calloc(1, sizeof(DRBStatusDL18));
-}
+
+//------------------------------------------------------------------------------
+dRBStatusDL::dRBStatusDL() {}
+
+//------------------------------------------------------------------------------
 dRBStatusDL::~dRBStatusDL() {}
-void dRBStatusDL::setDRBStatusDL18(DRBStatusDL18* dL18) {
+
+//------------------------------------------------------------------------------
+void dRBStatusDL::setDRBStatusDL18(const DRBStatusDL18& dL18) {
   dl18 = dL18;
 }
-void dRBStatusDL::getDRBStatusDL18(DRBStatusDL18*& dL18) {
+
+//------------------------------------------------------------------------------
+void dRBStatusDL::getDRBStatusDL18(DRBStatusDL18& dL18) {
   dL18 = dl18;
 }
+
+//------------------------------------------------------------------------------
 bool dRBStatusDL::encodedRBStatusDL(Ngap_DRBStatusDL_t* dL) {
   dL->present = Ngap_DRBStatusDL_PR_dRBStatusDL18;
   dL->choice.dRBStatusDL18 =
       (Ngap_DRBStatusDL18_t*) calloc(1, sizeof(Ngap_DRBStatusDL18_t));
-  if (!dl18->encodeddRBStatusDL18(dL->choice.dRBStatusDL18)) {
-    cout << "encodedRBStatusDL error" << endl;
+  if (!dl18.encodeddRBStatusDL18(dL->choice.dRBStatusDL18)) {
+    Logger::ngap().error("Encode DRBStatusDL18 IE error");
     return false;
   }
-  cout << "encodedRBStatusDL successfully" << endl;
   return true;
 }
+
+//------------------------------------------------------------------------------
 bool dRBStatusDL::decodedRBStatusDL(Ngap_DRBStatusDL_t* dL) {
-  if (dl18 == nullptr) dl18 = new DRBStatusDL18();
-  if (!dl18->decodeddRBStatusDL18(dL->choice.dRBStatusDL18)) {
-    cout << "decodedRBStatusDL error" << endl;
+  if (!dl18.decodeddRBStatusDL18(dL->choice.dRBStatusDL18)) {
+    Logger::ngap().error("Decode DRBStatusDL18 IE error");
     return false;
   }
-  cout << "decodedRBStatusDL successfully" << endl;
   return true;
 }
 }  // namespace ngap

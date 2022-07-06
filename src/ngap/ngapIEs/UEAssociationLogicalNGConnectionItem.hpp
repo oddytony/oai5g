@@ -45,11 +45,15 @@ class UEAssociationLogicalNGConnectionItem {
   virtual ~UEAssociationLogicalNGConnectionItem(){};
 
   void setAmfUeNgapId(unsigned long id);
+  bool getAmfUeNgapId(unsigned long& id);
   void setRanUeNgapId(uint32_t id);
+  bool getRanUeNgapId(uint32_t& id);
 
   bool encode(Ngap_UE_associatedLogicalNG_connectionItem_t& item);
+  bool encode(Ngap_UE_associatedLogicalNG_connectionItem_t* item);
   bool encode(UEAssociationLogicalNGConnectionItem& item);
   bool decode(Ngap_UE_associatedLogicalNG_connectionItem_t* item);
+  bool decode(UEAssociationLogicalNGConnectionItem& item);
 
  private:
   AMF_UE_NGAP_ID* amfUeNgapId;

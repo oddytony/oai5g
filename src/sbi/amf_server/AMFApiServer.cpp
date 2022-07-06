@@ -8,6 +8,8 @@ void AMFApiServer::init(size_t thr) {
   opts.flags(Pistache::Tcp::Options::ReuseAddr);
   opts.maxRequestSize(PISTACHE_SERVER_MAX_PAYLOAD);
   m_httpEndpoint->init(opts);
+
+  m_aMFConfigurationApiImpl->init();
   m_individualSubscriptionDocumentApiImpl->init();
   m_individualSubscriptionDocumentApiImplEventExposure->init();
   m_individualUeContextDocumentApiImpl->init();
@@ -19,10 +21,14 @@ void AMFApiServer::init(size_t thr) {
   m_nonUEN2MessagesSubscriptionsCollectionDocumentApiImpl->init();
   m_subscriptionsCollectionDocumentApiImpl->init();
   m_subscriptionsCollectionDocumentApiImplEventExposure->init();
+  m_n1MessageNotifyApiImpl->init();
   Logger::amf_server().debug("Initiate AMF Server Endpoints done!");
 }
 
 void AMFApiServer::start() {
+  if (m_aMFConfigurationApiImpl != nullptr)
+    Logger::amf_server().debug("AMF handler for AMFConfigurationApiImpl");
+
   if (m_individualSubscriptionDocumentApiImpl != nullptr)
     Logger::amf_server().debug(
         "AMF handler for IndividualSubscriptionDocumentApiImpl");
@@ -62,6 +68,9 @@ void AMFApiServer::start() {
   if (m_subscriptionsCollectionDocumentApiImplEventExposure != nullptr)
     Logger::amf_server().debug(
         "AMF handler for SubscriptionsCollectionDocumentApiImplEventExposure");
+
+  if (m_n1MessageNotifyApiImpl != nullptr)
+    Logger::amf_server().debug("AMF handler for N1MessageNotifyApiImpl");
 
   m_httpEndpoint->setHandler(m_router->handler());
   m_httpEndpoint->serveThreaded();

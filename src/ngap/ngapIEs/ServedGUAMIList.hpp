@@ -30,6 +30,7 @@
 #define _SERVEDGUAMILIST_H_
 
 #include "ServedGUAMIItem.hpp"
+#include <vector>
 
 extern "C" {
 #include "Ngap_ServedGUAMIList.h"
@@ -44,12 +45,14 @@ class ServedGUAMIList {
 
   bool encode2ServedGUAMIList(Ngap_ServedGUAMIList_t*);
   bool decodefromServedGUAMIList(Ngap_ServedGUAMIList_t*);
-  void addServedGUAMIItems(ServedGUAMIItem* m_servedGUAMIItem, int numOfItem);
-  void getServedGUAMIItems(ServedGUAMIItem*& m_servedGUAMIItem, int& numOfItem);
+
+  void addServedGUAMIItems(const std::vector<ServedGUAMIItem>& list);
+  void getServedGUAMIItems(std::vector<ServedGUAMIItem>& list) const;
+
+  void addServedGUAMIItem(const ServedGUAMIItem& item);
 
  private:
-  ServedGUAMIItem* servedGUAMIItem;
-  int numberOfservedGUAMIItem;
+  std::vector<ServedGUAMIItem> itemList;
 };
 
 }  // namespace ngap

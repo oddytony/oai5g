@@ -19,17 +19,8 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #include "UESecurityCapabilities.hpp"
-
-#include <iostream>
-using namespace std;
+#include "conversions.h"
 
 namespace ngap {
 

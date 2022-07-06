@@ -90,7 +90,17 @@ class nas_context {
   uint8_t ueSecurityCapEEA;
   uint8_t ueSecurityCapEIA;
 
-  std::vector<nas::SNSSAI_t> requestedNssai;
+  std::vector<nas::SNSSAI_t>
+      requestedNssai;  // TODO: update with naming convention
+  std::vector<nas::SNSSAI_t> allowed_nssai;  // in Registration Accept
+  // Set to true if marked as default
+  std::vector<std::pair<bool, nas::SNSSAI_t>> subscribed_snssai;
+  std::vector<nas::SNSSAI_t> configured_nssai;
+  // std::vector<nas::SNSSAI_t>  default_configured_nssai;
+  // std::vector<nas::SNSSAI_t> s_nssai; //for Network Slice selection
+
+  bstring registration_request;  // for AMF re-allocation procedure
+  bool registration_request_is_set;
   std::string serving_network;
   bstring auts;
   // NAS EP(s)

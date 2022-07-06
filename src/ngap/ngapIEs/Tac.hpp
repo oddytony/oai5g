@@ -39,10 +39,12 @@ class TAC {
  public:
   TAC();
   virtual ~TAC();
-  bool encode2octetstring(Ngap_TAC_t&);
-  bool decodefromoctetstring(Ngap_TAC_t& m_tac);
+
   uint32_t getTac();
   void setTac(uint32_t m_tac);
+
+  bool encode2octetstring(Ngap_TAC_t&);
+  bool decodefromoctetstring(Ngap_TAC_t& m_tac);
 
  private:
   uint32_t tac : 24;

@@ -21,7 +21,7 @@
 
 /*! \file
  \brief
- \author  Keliang DU, BUPT
+ \author
  \date 2020
  \email: contact@openairinterface.org
  */
@@ -29,11 +29,12 @@
 #ifndef _SUPPORTED_TA_LIST_H_
 #define _SUPPORTED_TA_LIST_H_
 
+#include "SupportedTaItem.hpp"
+#include <vector>
+
 extern "C" {
 #include "Ngap_SupportedTAList.h"
 }
-
-#include "SupportedTaItem.hpp"
 
 namespace ngap {
 
@@ -44,12 +45,12 @@ class SupportedTAList {
 
   bool encode2SupportedTAList(Ngap_SupportedTAList_t* ngSetupRequest);
   bool decodefromSupportedTAList(Ngap_SupportedTAList_t* pdu);
-  void setSupportedTaItems(SupportedTaItem* m_supportedTaItem, int numOfItem);
-  void getSupportedTaItems(SupportedTaItem*& m_supportedTaItem, int& numOfItem);
+
+  void setSupportedTaItems(const std::vector<SupportedTaItem>& items);
+  void getSupportedTaItems(std::vector<SupportedTaItem>& items);
 
  private:
-  SupportedTaItem* supportedTaItem;
-  int numberOfSupportedTaItem;
+  std::vector<SupportedTaItem> supportedTAItems;
 };
 }  // namespace ngap
 

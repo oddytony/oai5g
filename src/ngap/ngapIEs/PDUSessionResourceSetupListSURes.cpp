@@ -19,48 +19,37 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #include "PDUSessionResourceSetupListSURes.hpp"
-
-#include <iostream>
-using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
-PDUSessionResourceSetupListSURes::PDUSessionResourceSetupListSURes() {
-  pduSessionResourceSetupItemSURes      = NULL;
-  numofpduSessionResourceSetupItemSURes = 0;
-}
+PDUSessionResourceSetupListSURes::PDUSessionResourceSetupListSURes() {}
 
 //------------------------------------------------------------------------------
 PDUSessionResourceSetupListSURes::~PDUSessionResourceSetupListSURes() {}
 
 //------------------------------------------------------------------------------
 void PDUSessionResourceSetupListSURes::setPDUSessionResourceSetupListSURes(
-    PDUSessionResourceSetupItemSURes* m_pduSessionResourceSetupItemSURes,
-    int num) {
-  pduSessionResourceSetupItemSURes      = m_pduSessionResourceSetupItemSURes;
-  numofpduSessionResourceSetupItemSURes = num;
+    const std::vector<PDUSessionResourceSetupItemSURes>& list) {
+  itemSUResList = list;
+}
+
+//------------------------------------------------------------------------------
+void PDUSessionResourceSetupListSURes::getPDUSessionResourceSetupListSURes(
+    std::vector<PDUSessionResourceSetupItemSURes>& list) {
+  list = itemSUResList;
 }
 
 //------------------------------------------------------------------------------
 bool PDUSessionResourceSetupListSURes::encode2PDUSessionResourceSetupListSURes(
     Ngap_PDUSessionResourceSetupListSURes_t* pduSessionResourceSetupListSURes) {
-  for (int i = 0; i < numofpduSessionResourceSetupItemSURes; i++) {
+  for (auto& item : itemSUResList) {
     Ngap_PDUSessionResourceSetupItemSURes_t* response =
         (Ngap_PDUSessionResourceSetupItemSURes_t*) calloc(
             1, sizeof(Ngap_PDUSessionResourceSetupItemSURes_t));
     if (!response) return false;
-    if (!pduSessionResourceSetupItemSURes[i]
-             .encode2PDUSessionResourceSetupItemSURes(response))
-      return false;
+    if (!item.encode2PDUSessionResourceSetupItemSURes(response)) return false;
     if (ASN_SEQUENCE_ADD(&pduSessionResourceSetupListSURes->list, response) !=
         0)
       return false;
@@ -74,26 +63,15 @@ bool PDUSessionResourceSetupListSURes::
     decodefromPDUSessionResourceSetupListSURes(
         Ngap_PDUSessionResourceSetupListSURes_t*
             pduSessionResourceSetupListSURes) {
-  numofpduSessionResourceSetupItemSURes =
-      pduSessionResourceSetupListSURes->list.count;
-  pduSessionResourceSetupItemSURes = new PDUSessionResourceSetupItemSURes
-      [numofpduSessionResourceSetupItemSURes]();
-  for (int i = 0; i < numofpduSessionResourceSetupItemSURes; i++) {
-    if (!pduSessionResourceSetupItemSURes[i]
-             .decodefromPDUSessionResourceSetupItemSURes(
-                 pduSessionResourceSetupListSURes->list.array[i]))
+  for (int i = 0; i < pduSessionResourceSetupListSURes->list.count; i++) {
+    PDUSessionResourceSetupItemSURes item = {};
+    if (!item.decodefromPDUSessionResourceSetupItemSURes(
+            pduSessionResourceSetupListSURes->list.array[i]))
       return false;
+    itemSUResList.push_back(item);
   }
 
   return true;
-}
-
-//------------------------------------------------------------------------------
-void PDUSessionResourceSetupListSURes::getPDUSessionResourceSetupListSURes(
-    PDUSessionResourceSetupItemSURes*& m_pduSessionResourceSetupItemSURes,
-    int& num) {
-  m_pduSessionResourceSetupItemSURes = pduSessionResourceSetupItemSURes;
-  num                                = numofpduSessionResourceSetupItemSURes;
 }
 
 }  // namespace ngap

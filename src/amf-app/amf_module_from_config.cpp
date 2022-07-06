@@ -27,6 +27,7 @@
  */
 
 #include "amf_module_from_config.hpp"
+#include "common_defs.h"
 
 #include <iostream>
 #include <string>
@@ -58,7 +59,7 @@ int amf_modules::load(const std::string& config_file) {
     const Setting& modules = root[MODULES_CONFIG_STRING_AMF_MODULES];
   } catch (const SettingNotFoundException& nfex) {
     Logger::amf_app().error("%s : %s", nfex.what(), nfex.getPath());
-    return -1;
+    return RETURNerror;
   }
   const Setting& modules = root[MODULES_CONFIG_STRING_AMF_MODULES];
   const Setting& msg = modules[MODULES_CONFIG_STRING_AMF_MODULES_NGAP_MESSAGE];

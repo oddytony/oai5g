@@ -19,58 +19,58 @@
  *      contact@openairinterface.org
  */
 
-#ifndef _HANDOVERREQUIRED_H_
-#define _HANDOVERREQUIRED_H_
+#ifndef _HANDOVER_REQUIRED_H_
+#define _HANDOVER_REQUIRED_H_
 
-#include "AMF-UE-NGAP-ID.hpp"
 #include "Cause.hpp"
-#include "DefaultPagingDRX.hpp"
-#include "GlobalRanNodeId.hpp"
-#include "MessageType.hpp"
-#include "NgapIEsStruct.hpp"
-#include "RAN-UE-NGAP-ID.hpp"
-#include "RanNodeName.hpp"
-#include "SupportedTAList.hpp"
-extern "C" {
-#include "Ngap_NGAP-PDU.h"
-#include "Ngap_NGSetupRequest.h"
-#include "Ngap_ProtocolIE-Field.h"
-}
-#include "NgapIEsStruct.hpp"
+#include "NgapUEMessage.hpp"
 #include "PDUSessionResourceListHORqd.hpp"
+#include "GlobalgNBId.hpp"
 #include "TAI.hpp"
+
+extern "C" {
+#include "Ngap_HandoverRequired.h"
+#include "Ngap_TargetID.h"
+}
+
 namespace ngap {
 
-class HandoverRequiredMsg {
+class HandoverRequiredMsg : public NgapUEMessage {
  public:
   HandoverRequiredMsg();
   virtual ~HandoverRequiredMsg();
 
-  int encode2buffer(uint8_t* buf, int buf_size);
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
-  unsigned long getAmfUeNgapId();
-  uint32_t getRanUeNgapId();
+  void initialize();
+
+  void setAmfUeNgapId(const unsigned long& id) override;
+  void setRanUeNgapId(const uint32_t& id) override;
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
+
   Ngap_HandoverType_t getHandoverType();
+
   Ngap_Cause_PR getChoiceOfCause();
   long getCauseValue();
-  OCTET_STRING_t getSourceToTarget_TransparentContainer();
-  void getGlobalRanNodeId(GlobalgNBId*& ptr);
-  void getTAI(TAI*& ptr);
-  bool getPDUSessionResourceList(std::vector<PDUSessionResourceItem_t>& list);
+
+  bool getTargetID(GlobalgNBId& gnbId, TAI& tai);
+
   long getDirectForwardingPathAvailability();
 
+  bool getPDUSessionResourceList(PDUSessionResourceListHORqd& list);
+
+  OCTET_STRING_t getSourceToTarget_TransparentContainer();
+
  private:
-  Ngap_NGAP_PDU_t* handoverRequiredPdu;
   Ngap_HandoverRequired_t* handoverRequiredIEs;
-  AMF_UE_NGAP_ID* amfUeNgapId;
-  RAN_UE_NGAP_ID* ranUeNgapId;
-  Ngap_HandoverType_t* handovertype;
-  Cause* cause;
-  Ngap_TargetID_t* targetid;
-  Ngap_DirectForwardingPathAvailability_t* directforwardingPathAvailability;
-  PDUSessionResourceListHORqd* PDUSessionResourceList;
-  Ngap_SourceToTarget_TransparentContainer_t*
-      SourceToTarget_TransparentContainer;
+  // AMF_UE_NGAP_ID (Mandatory)
+  // RAN_UE_NGAP_ID (Mandatory)
+  Ngap_HandoverType_t handoverType;  // Mandatory
+  Cause cause;                       // Mandatory
+  Ngap_TargetID_t targetID;          // Mandatory
+  Ngap_DirectForwardingPathAvailability_t*
+      directForwardingPathAvailability;                // Optional
+  PDUSessionResourceListHORqd pDUSessionResourceList;  // Mandatory
+  Ngap_SourceToTarget_TransparentContainer_t
+      sourceToTarget_TransparentContainer;  // Mandatory
 };
 
 }  // namespace ngap

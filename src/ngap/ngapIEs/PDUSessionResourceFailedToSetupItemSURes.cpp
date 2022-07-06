@@ -19,25 +19,13 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #include "PDUSessionResourceFailedToSetupItemSURes.hpp"
-
-#include <iostream>
-using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
 PDUSessionResourceFailedToSetupItemSURes::
-    PDUSessionResourceFailedToSetupItemSURes() {
-  pDUSessionID = NULL;
-}
+    PDUSessionResourceFailedToSetupItemSURes() {}
 
 //------------------------------------------------------------------------------
 PDUSessionResourceFailedToSetupItemSURes::
@@ -46,11 +34,21 @@ PDUSessionResourceFailedToSetupItemSURes::
 //------------------------------------------------------------------------------
 void PDUSessionResourceFailedToSetupItemSURes::
     setPDUSessionResourceFailedToSetupItemSURes(
-        PDUSessionID* m_pDUSessionID,
-        OCTET_STRING_t m_pDUSessionResourceSetupUnsuccessfulTransfer) {
+        const PDUSessionID& m_pDUSessionID,
+        const OCTET_STRING_t& m_pDUSessionResourceSetupUnsuccessfulTransfer) {
   pDUSessionID = m_pDUSessionID;
   pDUSessionResourceSetupUnsuccessfulTransfer =
       m_pDUSessionResourceSetupUnsuccessfulTransfer;
+}
+
+//------------------------------------------------------------------------------
+void PDUSessionResourceFailedToSetupItemSURes::
+    getPDUSessionResourceFailedToSetupItemSURes(
+        PDUSessionID& m_pDUSessionID,
+        OCTET_STRING_t& m_pDUSessionResourceSetupUnsuccessfulTransfer) {
+  m_pDUSessionID = pDUSessionID;
+  m_pDUSessionResourceSetupUnsuccessfulTransfer =
+      pDUSessionResourceSetupUnsuccessfulTransfer;
 }
 
 //------------------------------------------------------------------------------
@@ -58,8 +56,7 @@ bool PDUSessionResourceFailedToSetupItemSURes::
     encode2PDUSessionResourceFailedToSetupItemSURes(
         Ngap_PDUSessionResourceFailedToSetupItemSURes_t*
             pduSessionResourceFailedToSetupItemSURes) {
-  if (!pDUSessionID) return false;
-  if (!pDUSessionID->encode2PDUSessionID(
+  if (!pDUSessionID.encode2PDUSessionID(
           pduSessionResourceFailedToSetupItemSURes->pDUSessionID))
     return false;
   pduSessionResourceFailedToSetupItemSURes
@@ -74,8 +71,7 @@ bool PDUSessionResourceFailedToSetupItemSURes::
     decodefromPDUSessionResourceFailedToSetupItemSURes(
         Ngap_PDUSessionResourceFailedToSetupItemSURes_t*
             pduSessionResourceFailedToSetupItemSURes) {
-  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
-  if (!pDUSessionID->decodefromPDUSessionID(
+  if (!pDUSessionID.decodefromPDUSessionID(
           pduSessionResourceFailedToSetupItemSURes->pDUSessionID))
     return false;
   pDUSessionResourceSetupUnsuccessfulTransfer =
@@ -83,16 +79,6 @@ bool PDUSessionResourceFailedToSetupItemSURes::
           ->pDUSessionResourceSetupUnsuccessfulTransfer;
 
   return true;
-}
-
-//------------------------------------------------------------------------------
-void PDUSessionResourceFailedToSetupItemSURes::
-    getPDUSessionResourceFailedToSetupItemSURes(
-        PDUSessionID*& m_pDUSessionID,
-        OCTET_STRING_t& m_pDUSessionResourceSetupUnsuccessfulTransfer) {
-  m_pDUSessionID = pDUSessionID;
-  m_pDUSessionResourceSetupUnsuccessfulTransfer =
-      pDUSessionResourceSetupUnsuccessfulTransfer;
 }
 
 }  // namespace ngap

@@ -21,48 +21,50 @@
 
 #include "PDUSessionResourceAdmittedItem.hpp"
 
-#include <iostream>
-using namespace std;
-
 namespace ngap {
-PDUSessionResourceAdmittedItem::PDUSessionResourceAdmittedItem() {
-  pDUSessionID = NULL;
-}
+
+//------------------------------------------------------------------------------
+PDUSessionResourceAdmittedItem::PDUSessionResourceAdmittedItem() {}
+
+//------------------------------------------------------------------------------
 PDUSessionResourceAdmittedItem::~PDUSessionResourceAdmittedItem() {}
 
+//------------------------------------------------------------------------------
 void PDUSessionResourceAdmittedItem::setPDUSessionResourceAdmittedItem(
-    PDUSessionID* m_pDUSessionID, OCTET_STRING_t m_handoverrequestAcktransfer) {
+    const PDUSessionID& m_pDUSessionID,
+    const OCTET_STRING_t& m_handoverRequestAckTransfer) {
   pDUSessionID               = m_pDUSessionID;
-  handoverrequestAcktransfer = m_handoverrequestAcktransfer;
+  handoverRequestAckTransfer = m_handoverRequestAckTransfer;
 }
+//------------------------------------------------------------------------------
+void PDUSessionResourceAdmittedItem::getPDUSessionResourceAdmittedItem(
+    PDUSessionID& m_pDUSessionID,
+    OCTET_STRING_t& m_handoverRequestAckTransfer) {
+  m_pDUSessionID               = pDUSessionID;
+  m_handoverRequestAckTransfer = handoverRequestAckTransfer;
+}
+
+//------------------------------------------------------------------------------
 bool PDUSessionResourceAdmittedItem::encode2PDUSessionResourceAdmittedItem(
     Ngap_PDUSessionResourceAdmittedItem_t* pdUSessionResourceAdmittedItem) {
-  if (!pDUSessionID) return false;
-  if (!pDUSessionID->encode2PDUSessionID(
+  if (!pDUSessionID.encode2PDUSessionID(
           pdUSessionResourceAdmittedItem->pDUSessionID))
     return false;
   pdUSessionResourceAdmittedItem->handoverRequestAcknowledgeTransfer =
-      handoverrequestAcktransfer;
+      handoverRequestAckTransfer;
 
   return true;
 }
 
+//------------------------------------------------------------------------------
 bool PDUSessionResourceAdmittedItem::decodefromPDUSessionResourceAdmittedItem(
     Ngap_PDUSessionResourceAdmittedItem_t* pdUSessionResourceAdmittedItem) {
-  if (pDUSessionID == nullptr) pDUSessionID = new PDUSessionID();
-  if (!pDUSessionID->decodefromPDUSessionID(
+  if (!pDUSessionID.decodefromPDUSessionID(
           pdUSessionResourceAdmittedItem->pDUSessionID))
     return false;
-  handoverrequestAcktransfer =
+  handoverRequestAckTransfer =
       pdUSessionResourceAdmittedItem->handoverRequestAcknowledgeTransfer;
 
   return true;
 }
-void PDUSessionResourceAdmittedItem::getPDUSessionResourceAdmittedItem(
-    PDUSessionID*& m_pDUSessionID,
-    OCTET_STRING_t& m_handoverrequestAcktransfer) {
-  m_pDUSessionID               = pDUSessionID;
-  m_handoverrequestAcktransfer = handoverrequestAcktransfer;
-}
-
 }  // namespace ngap

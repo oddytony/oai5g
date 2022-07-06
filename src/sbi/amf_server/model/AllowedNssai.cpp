@@ -12,6 +12,9 @@
  */
 
 #include "AllowedNssai.h"
+#include "Helpers.h"
+
+#include <sstream>
 
 namespace oai {
 namespace amf {
@@ -19,10 +22,63 @@ namespace model {
 
 AllowedNssai::AllowedNssai() {}
 
-AllowedNssai::~AllowedNssai() {}
+void AllowedNssai::validate() const {
+  std::stringstream msg;
+  // if (!validate(msg))
+  // {
+  //     throw oai::nssf_server::helpers::ValidationException(msg.str());
+  // }
+}
 
-void AllowedNssai::validate() {
-  // TODO: implement validation
+bool AllowedNssai::validate(std::stringstream& msg) const {
+  return validate(msg, "");
+}
+
+bool AllowedNssai::validate(
+    std::stringstream& msg, const std::string& pathPrefix) const {
+  bool success = true;
+  const std::string _pathPrefix =
+      pathPrefix.empty() ? "AllowedNssai" : pathPrefix;
+
+  /* AllowedSnssaiList */ {
+    const std::vector<AllowedSnssai>& value = m_AllowedSnssaiList;
+    const std::string currentValuePath = _pathPrefix + ".allowedSnssaiList";
+
+    if (value.size() < 1) {
+      success = false;
+      msg << currentValuePath << ": must have at least 1 elements;";
+    }
+    {  // Recursive validation of array elements
+      const std::string oldValuePath = currentValuePath;
+      int i                          = 0;
+      for (const AllowedSnssai& value : value) {
+        const std::string currentValuePath =
+            oldValuePath + "[" + std::to_string(i) + "]";
+
+        success =
+            value.validate(msg, currentValuePath + ".allowedSnssaiList") &&
+            success;
+
+        i++;
+      }
+    }
+  }
+
+  return success;
+}
+
+bool AllowedNssai::operator==(const AllowedNssai& rhs) const {
+  return
+
+      (getAllowedSnssaiList() == rhs.getAllowedSnssaiList())  // &&
+
+      // (getAccessType() == rhs.getAccessType())
+
+      ;
+}
+
+bool AllowedNssai::operator!=(const AllowedNssai& rhs) const {
+  return !(*this == rhs);
 }
 
 void to_json(nlohmann::json& j, const AllowedNssai& o) {
@@ -36,8 +92,12 @@ void from_json(const nlohmann::json& j, AllowedNssai& o) {
   j.at("accessType").get_to(o.m_AccessType);
 }
 
-std::vector<AllowedSnssai>& AllowedNssai::getAllowedSnssaiList() {
+std::vector<AllowedSnssai> AllowedNssai::getAllowedSnssaiList() const {
   return m_AllowedSnssaiList;
+}
+void AllowedNssai::setAllowedSnssaiList(
+    std::vector<AllowedSnssai> const& value) {
+  m_AllowedSnssaiList = value;
 }
 AccessType AllowedNssai::getAccessType() const {
   return m_AccessType;

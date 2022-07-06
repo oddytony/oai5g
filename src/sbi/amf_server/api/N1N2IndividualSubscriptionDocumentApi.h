@@ -27,6 +27,7 @@
 #include <nlohmann/json.hpp>
 
 #include "ProblemDetails.h"
+#include "amf.hpp"
 #include <string>
 
 namespace oai {
@@ -40,7 +41,7 @@ class N1N2IndividualSubscriptionDocumentApi {
   virtual ~N1N2IndividualSubscriptionDocumentApi() {}
   void init();
 
-  const std::string base = "/namf-comm/";
+  const std::string base = NAMF_COMMUNICATION_BASE;
 
  private:
   void setupRoutes();

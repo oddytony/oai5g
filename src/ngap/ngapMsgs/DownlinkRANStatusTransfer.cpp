@@ -20,34 +20,35 @@
  */
 
 #include "DownlinkRANStatusTransfer.hpp"
-#include "logger.hpp"
 
-#include <iostream>
-#include <vector>
+#include "logger.hpp"
 
 extern "C" {
 #include "dynamic_memory_check.h"
 }
 
-using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-DownlinkRANStatusTransfer::DownlinkRANStatusTransfer() {
-  amfUeNgapId                            = nullptr;
-  ranUeNgapId                            = nullptr;
-  ranStatusTransfer_TransparentContainer = nullptr;
-  DownlinkranstatustransferIEs           = nullptr;
-  DownlinkranstatustransferPDU           = nullptr;
+DownlinkRANStatusTransfer::DownlinkRANStatusTransfer() : NgapUEMessage() {
+  downlinkranstatustransferIEs = nullptr;
+
+  setMessageType(NgapMessageType::DOWNLINK_RAN_STATUS_TRANSFER);
+  initialize();
 }
 
 //------------------------------------------------------------------------------
 DownlinkRANStatusTransfer::~DownlinkRANStatusTransfer() {}
 
 //------------------------------------------------------------------------------
-void DownlinkRANStatusTransfer::setAmfUeNgapId(unsigned long id) {
-  if (!amfUeNgapId) amfUeNgapId = new AMF_UE_NGAP_ID();
-  amfUeNgapId->setAMF_UE_NGAP_ID(id);
+void DownlinkRANStatusTransfer::initialize() {
+  downlinkranstatustransferIEs = &(ngapPdu->choice.initiatingMessage->value
+                                       .choice.DownlinkRANStatusTransfer);
+}
+
+//------------------------------------------------------------------------------
+void DownlinkRANStatusTransfer::setAmfUeNgapId(const unsigned long& id) {
+  amfUeNgapId.setAMF_UE_NGAP_ID(id);
 
   Ngap_DownlinkRANStatusTransferIEs_t* ie =
       (Ngap_DownlinkRANStatusTransferIEs_t*) calloc(
@@ -57,23 +58,20 @@ void DownlinkRANStatusTransfer::setAmfUeNgapId(unsigned long id) {
   ie->value.present =
       Ngap_DownlinkRANStatusTransferIEs__value_PR_AMF_UE_NGAP_ID;
 
-  int ret = amfUeNgapId->encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
+  int ret = amfUeNgapId.encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
   if (!ret) {
     Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error");
-
     free_wrapper((void**) &ie);
     return;
   }
 
-  ret = ASN_SEQUENCE_ADD(&DownlinkranstatustransferIEs->protocolIEs.list, ie);
+  ret = ASN_SEQUENCE_ADD(&downlinkranstatustransferIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
-void DownlinkRANStatusTransfer::setRanUeNgapId(uint32_t id) {
-  if (!ranUeNgapId) ranUeNgapId = new RAN_UE_NGAP_ID();
-  ranUeNgapId->setRanUeNgapId(id);
+void DownlinkRANStatusTransfer::setRanUeNgapId(const uint32_t& id) {
+  ranUeNgapId.setRanUeNgapId(id);
 
   Ngap_DownlinkRANStatusTransferIEs_t* ie =
       (Ngap_DownlinkRANStatusTransferIEs_t*) calloc(
@@ -83,47 +81,44 @@ void DownlinkRANStatusTransfer::setRanUeNgapId(uint32_t id) {
   ie->value.present =
       Ngap_DownlinkRANStatusTransferIEs__value_PR_RAN_UE_NGAP_ID;
 
-  int ret = ranUeNgapId->encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
+  int ret = ranUeNgapId.encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
   if (!ret) {
     Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error");
     free_wrapper((void**) &ie);
     return;
   }
 
-  ret = ASN_SEQUENCE_ADD(&DownlinkranstatustransferIEs->protocolIEs.list, ie);
+  ret = ASN_SEQUENCE_ADD(&downlinkranstatustransferIEs->protocolIEs.list, ie);
   if (ret != 0) Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error");
-  // free_wrapper((void**) &ie);
 }
 
 //------------------------------------------------------------------------------
 void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
-    long drb_id, long ul_pcdp, long ul_hfn_pdcp, long dl_pcdp,
-    long dl_hfn_pdcp) {
-  if (!ranStatusTransfer_TransparentContainer) {
-    ranStatusTransfer_TransparentContainer =
-        new RANStatusTransferTransparentContainer();
-  }
-  Ngap_DRB_ID_t* dRB_id = (Ngap_DRB_ID_t*) calloc(1, sizeof(Ngap_DRB_ID_t));
-  *dRB_id               = drb_id;
-  COUNTValueForPDCP_SN18* UL_value =
-      (COUNTValueForPDCP_SN18*) calloc(1, sizeof(COUNTValueForPDCP_SN18));
-  UL_value->setvalue(ul_pcdp, ul_hfn_pdcp);
-  COUNTValueForPDCP_SN18* DL_value =
-      (COUNTValueForPDCP_SN18*) calloc(1, sizeof(COUNTValueForPDCP_SN18));
-  DL_value->setvalue(dl_pcdp, dl_hfn_pdcp);
-  dRBStatusUL18* UL18 = (dRBStatusUL18*) calloc(1, sizeof(dRBStatusUL18));
-  UL18->setcountvalue(UL_value);
-  DRBStatusDL18* DL18 = (DRBStatusDL18*) calloc(1, sizeof(DRBStatusDL18));
-  DL18->setcountvalue(DL_value);
-  dRBStatusDL* DL = (dRBStatusDL*) calloc(1, sizeof(dRBStatusDL));
-  DL->setDRBStatusDL18(DL18);
-  dRBStatusUL* UL = (dRBStatusUL*) calloc(1, sizeof(dRBStatusUL));
-  UL->setdRBStatusUL(UL18);
-  dRBSubjectItem* m_item = (dRBSubjectItem*) calloc(1, sizeof(dRBSubjectItem));
-  m_item->setdRBSubjectItem(dRB_id, UL, DL);
-  dRBSubjectList* m_list = (dRBSubjectList*) calloc(1, sizeof(dRBSubjectList));
-  m_list->setdRBSubjectItem(m_item, 1);
-  ranStatusTransfer_TransparentContainer->setdRBSubject_list(m_list);
+    const long& drbIDValue, const long& ulPdcpValue, const long& ulHfnPdcpValue,
+    const long& dlPdcpValue, const long& dlHfnPdcpValue) {
+  Ngap_DRB_ID_t dRB_id                = {};
+  dRB_id                              = drbIDValue;
+  COUNTValueForPDCP_SN18 countValueUL = {};
+  countValueUL.setvalue(ulPdcpValue, ulHfnPdcpValue);
+  COUNTValueForPDCP_SN18 countValueDL{};
+  countValueDL.setvalue(dlPdcpValue, dlHfnPdcpValue);
+  dRBStatusUL18 statusUL18 = {};
+  statusUL18.setcountvalue(countValueUL);
+  DRBStatusDL18 statusDL18 = {};
+  statusDL18.setcountvalue(countValueDL);
+
+  dRBStatusDL statusDL = {};
+  statusDL.setDRBStatusDL18(statusDL18);
+  dRBStatusUL statusUL = {};
+  statusUL.setdRBStatusUL(statusUL18);
+  std::vector<dRBSubjectItem> dRBSubjectItemList;
+  dRBSubjectItem m_item = {};
+  m_item.setdRBSubjectItem(dRB_id, statusUL, statusDL);
+  dRBSubjectItemList.push_back(m_item);
+  dRBSubjectList m_list = {};
+  m_list.setdRBSubjectItem(dRBSubjectItemList);
+  ranStatusTransfer_TransparentContainer.setdRBSubject_list(m_list);
+
   Ngap_DownlinkRANStatusTransferIEs_t* ie =
       (Ngap_DownlinkRANStatusTransferIEs_t*) calloc(
           1, sizeof(Ngap_DownlinkRANStatusTransferIEs_t));
@@ -132,76 +127,118 @@ void DownlinkRANStatusTransfer::setRANStatusTransfer_TransparentContainer(
   ie->value.present =
       Ngap_DownlinkRANStatusTransferIEs__value_PR_RANStatusTransfer_TransparentContainer;
   bool ret = ranStatusTransfer_TransparentContainer
-                 ->encoderanstatustransfer_transparentcontainer(
+                 .encoderanstatustransfer_transparentcontainer(
                      &ie->value.choice.RANStatusTransfer_TransparentContainer);
   if (!ret) {
     Logger::ngap().error(
         "Encode RANStatusTransfer_TransparentContainer IE error");
-    // free_wrapper((void**) &dRB_id);
-    free_wrapper((void**) &UL_value);
-    free_wrapper((void**) &DL_value);
-    free_wrapper((void**) &UL18);
-    free_wrapper((void**) &DL18);
-    free_wrapper((void**) &DL);
-    free_wrapper((void**) &UL);
-    free_wrapper((void**) &m_item);
-    free_wrapper((void**) &m_list);
     free_wrapper((void**) &ie);
   }
-  if (ASN_SEQUENCE_ADD(&DownlinkranstatustransferIEs->protocolIEs.list, ie) !=
+  if (ASN_SEQUENCE_ADD(&downlinkranstatustransferIEs->protocolIEs.list, ie) !=
       0) {
     Logger::ngap().error(
         "Encode ranstatustransfer_transparentcontainer IE error");
   }
-  /* free_wrapper((void**) &dRB_id);
-   free_wrapper((void**) &UL_value);
-   free_wrapper((void**) &DL_value);
-   free_wrapper((void**) &UL18);
-   free_wrapper((void**) &DL18);
-   free_wrapper((void**) &DL);
-   free_wrapper((void**) &UL);
-   free_wrapper((void**) &m_list);
-   free_wrapper((void**) &m_item);
-   free_wrapper((void**) &ie);
-   */
 }
 
 //------------------------------------------------------------------------------
-void DownlinkRANStatusTransfer::setmessagetype() {
-  if (!DownlinkranstatustransferPDU) {
-    DownlinkranstatustransferPDU =
-        (Ngap_NGAP_PDU_t*) calloc(1, sizeof(Ngap_NGAP_PDU_t));
-  }
-  MessageType downlinkranstatustransfermessageIEs;
-  downlinkranstatustransfermessageIEs.setProcedureCode(
-      Ngap_ProcedureCode_id_DownlinkRANStatusTransfer);
-  downlinkranstatustransfermessageIEs.setTypeOfMessage(
-      Ngap_NGAP_PDU_PR_initiatingMessage);
-  downlinkranstatustransfermessageIEs.setCriticality(Ngap_Criticality_ignore);
-  downlinkranstatustransfermessageIEs.setValuePresent(
-      Ngap_InitiatingMessage__value_PR_DownlinkRANStatusTransfer);
-  if (downlinkranstatustransfermessageIEs.getProcedureCode() ==
-          Ngap_ProcedureCode_id_DownlinkRANStatusTransfer &&
-      downlinkranstatustransfermessageIEs.getTypeOfMessage() ==
-          Ngap_NGAP_PDU_PR_initiatingMessage) {
-    downlinkranstatustransfermessageIEs.encode2pdu(
-        DownlinkranstatustransferPDU);
-    DownlinkranstatustransferIEs =
-        &(DownlinkranstatustransferPDU->choice.initiatingMessage->value.choice
-              .DownlinkRANStatusTransfer);
+void DownlinkRANStatusTransfer::getRANStatusTransfer_TransparentContainer(
+    long& drbIDValue, long& ulPdcpValue, long& ulHfnPdcpValue,
+    long& dlPdcpValue, long& dlHfnPdcpValue) {
+  // TODO:
+}
+
+//------------------------------------------------------------------------------
+bool DownlinkRANStatusTransfer::decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) {
+  ngapPdu = ngapMsgPdu;
+
+  if (ngapPdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
+    if (ngapPdu->choice.initiatingMessage &&
+        ngapPdu->choice.initiatingMessage->procedureCode ==
+            Ngap_ProcedureCode_id_DownlinkRANStatusTransfer &&
+        ngapPdu->choice.initiatingMessage->criticality ==
+            Ngap_Criticality_ignore &&
+        ngapPdu->choice.initiatingMessage->value.present ==
+            Ngap_InitiatingMessage__value_PR_DownlinkRANStatusTransfer) {
+      downlinkranstatustransferIEs = &ngapPdu->choice.initiatingMessage->value
+                                          .choice.DownlinkRANStatusTransfer;
+    } else {
+      Logger::ngap().error("Check DownlinkRANStatusTransfer message error!");
+
+      return false;
+    }
   } else {
-    Logger::ngap().warn(
-        "This information doesn't refer to DownlinkRANStatusTransfer Message");
+    Logger::ngap().error("MessageType error!");
+    return false;
   }
+  for (int i = 0; i < downlinkranstatustransferIEs->protocolIEs.list.count;
+       i++) {
+    switch (downlinkranstatustransferIEs->protocolIEs.list.array[i]->id) {
+      case Ngap_ProtocolIE_ID_id_AMF_UE_NGAP_ID: {
+        if (downlinkranstatustransferIEs->protocolIEs.list.array[i]
+                    ->criticality == Ngap_Criticality_reject &&
+            downlinkranstatustransferIEs->protocolIEs.list.array[i]
+                    ->value.present ==
+                Ngap_DownlinkRANStatusTransferIEs__value_PR_AMF_UE_NGAP_ID) {
+          if (!amfUeNgapId.decodefromAMF_UE_NGAP_ID(
+                  downlinkranstatustransferIEs->protocolIEs.list.array[i]
+                      ->value.choice.AMF_UE_NGAP_ID)) {
+            Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
+            return false;
+          }
+        } else {
+          Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
+          return false;
+        }
+      } break;
+      case Ngap_ProtocolIE_ID_id_RAN_UE_NGAP_ID: {
+        if (downlinkranstatustransferIEs->protocolIEs.list.array[i]
+                    ->criticality == Ngap_Criticality_reject &&
+            downlinkranstatustransferIEs->protocolIEs.list.array[i]
+                    ->value.present ==
+                Ngap_DownlinkRANStatusTransferIEs__value_PR_RAN_UE_NGAP_ID) {
+          if (!ranUeNgapId.decodefromRAN_UE_NGAP_ID(
+                  downlinkranstatustransferIEs->protocolIEs.list.array[i]
+                      ->value.choice.RAN_UE_NGAP_ID)) {
+            Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
+            return false;
+          }
+        } else {
+          Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
+          return false;
+        }
+      } break;
+      case Ngap_ProtocolIE_ID_id_RANStatusTransfer_TransparentContainer: {
+        if (downlinkranstatustransferIEs->protocolIEs.list.array[i]
+                    ->criticality == Ngap_Criticality_reject &&
+            downlinkranstatustransferIEs->protocolIEs.list.array[i]
+                    ->value.present ==
+                Ngap_DownlinkRANStatusTransferIEs__value_PR_RANStatusTransfer_TransparentContainer) {
+          if (!ranStatusTransfer_TransparentContainer
+                   .decoderanstatustransfer_transparentcontainer(
+                       downlinkranstatustransferIEs->protocolIEs.list.array[i]
+                           ->value.choice
+                           .RANStatusTransfer_TransparentContainer)) {
+            Logger::ngap().error(
+                "Decoded NGAP RANStatusTransfer_TransparentContainer IE error");
+            return false;
+          }
+        } else {
+          Logger::ngap().error(
+              "Decoded NGAP RANStatusTransfer_TransparentContainer IE error");
+          return false;
+        }
+
+      } break;
+      default: {
+        Logger::ngap().error("Decoded NGAP Message PDU error");
+
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
-//------------------------------------------------------------------------------
-int DownlinkRANStatusTransfer::encodetobuffer(uint8_t* buf, int buf_size) {
-  asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, DownlinkranstatustransferPDU);
-  asn_enc_rval_t er = aper_encode_to_buffer(
-      &asn_DEF_Ngap_NGAP_PDU, NULL, DownlinkranstatustransferPDU, buf,
-      buf_size);
-  Logger::ngap().debug("er.encoded( %d )", er.encoded);
-  return er.encoded;
-}
 }  // namespace ngap

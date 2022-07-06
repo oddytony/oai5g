@@ -57,7 +57,6 @@ long RelativeAMFCapacity::getValue() {
 bool RelativeAMFCapacity::encode2RelativeAMFCapacity(
     Ngap_RelativeAMFCapacity_t* amfCapacityIe) {
   *amfCapacityIe = amfcapacity;
-
   return true;
 }
 

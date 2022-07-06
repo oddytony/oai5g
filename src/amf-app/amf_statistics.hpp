@@ -76,20 +76,69 @@ typedef struct ue_info_s {
 
 class statistics {
  public:
-  void display();
   statistics();
   ~statistics();
+
+  /*
+   * Display the AMF configuration parameters
+   * @param void
+   * @return void
+   */
+  void display();
+
+  /*
+   * Update UE information
+   * @param [const ue_info_t&] ue_info: UE information
+   * @return void
+   */
   void update_ue_info(const ue_info_t& ue_info);
+
+  /*
+   * Update UE 5GMM state
+   * @param [const std::string&] imsi: UE IMSI
+   * @param [const std::string&] state: UE State
+   * @return void
+   */
   void update_5gmm_state(const std::string& imsi, const std::string& state);
-  void remove_gnb(const uint32_t gnb_id);
+
+  /*
+   * Remove gNB from the list connected gNB to this AMF
+   * @param [const uint32_t] gnb_id: gNB ID
+   * @return void
+   */
+  void remove_gnb(const uint32_t& gnb_id);
+
+  /*
+   * Add gNB to the list connected gNB to this AMF
+   * @param [const uint32_t&] gnb_id: gNB ID
+   * @param [const gnb_infos&] gnb: gNB Info
+   * @return void
+   */
+  void add_gnb(const uint32_t& gnb_id, const gnb_infos& gnb);
+
+  /*
+   * Update gNB info
+   * @param [const uint32_t&] gnb_id: gNB ID
+   * @param [const gnb_infos&] gnb: gNB Info
+   * @return void
+   */
+  void update_gnb(const uint32_t& gnb_id, const gnb_infos& gnb);
+
+  /*
+   * Get number of connected gNBs
+   * @param void
+   * @return number of connected gNBs
+   */
+  uint32_t get_number_connected_gnbs() const;
 
  public:
   uint32_t gNB_connected;
   uint32_t UE_connected;
   uint32_t UE_registred;
-  // uint32_t        system_pdu_sessions;
   std::map<uint32_t, gnb_infos> gnbs;
+  mutable std::shared_mutex m_gnbs;
   std::map<std::string, ue_info_t> ue_infos;
+  mutable std::shared_mutex m_ue_infos;
 };
 
 #endif

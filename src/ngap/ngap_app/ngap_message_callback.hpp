@@ -19,18 +19,12 @@
  *      contact@openairinterface.org
  */
 
-/*! \file ngap_message_callback.cpp
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #ifndef _NGAP_MESSAGE_CALLBACK_H_
 #define _NGAP_MESSAGE_CALLBACK_H_
 
 #include "InitialContextSetupResponse.hpp"
 #include "NGReset.hpp"
+#include "NGResetAck.hpp"
 #include "NGSetupRequest.hpp"
 #include "PDUSessionResourceSetupUnsuccessfulTransfer.hpp"
 #include "PduSessionResourceReleaseResponse.hpp"
@@ -68,9 +62,9 @@ int ngap_amf_handle_ng_setup_request(
   Logger::ngap().debug("Sending ITTI NG Setup Request message to TASK_AMF_N2");
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   NGSetupRequestMsg* ngSetupReq = new NGSetupRequestMsg();
-  if (!ngSetupReq->decodefrompdu(message_p)) {
+  if (!ngSetupReq->decodeFromPdu(message_p)) {
     Logger::ngap().error("Decoding NGSetupRequest message error");
-    return -1;
+    return RETURNerror;
   }
   // after decoding, need free(message_p)
   itti_ng_setup_request* itti_msg =
@@ -97,9 +91,9 @@ int ngap_amf_handle_initial_ue_message(
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   // decode INITIAL_UE_MESSAGE
   InitialUEMessageMsg* initUeMsg = new InitialUEMessageMsg();
-  if (!initUeMsg->decodefrompdu(message_p)) {
+  if (!initUeMsg->decodeFromPdu(message_p)) {
     Logger::ngap().error("Decoding InitialUEMessage error");
-    return -1;
+    return RETURNerror;
   }
   itti_initial_ue_message* init_ue_msg =
       new itti_initial_ue_message(TASK_NGAP, TASK_AMF_N2);
@@ -125,9 +119,9 @@ int ngap_amf_handle_uplink_nas_transport(
       "Sending ITTI Uplink NAS Transport message to TASK_AMF_N2");
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   UplinkNASTransportMsg* uplinkNasT = new UplinkNASTransportMsg();
-  if (!uplinkNasT->decodefrompdu(message_p)) {
+  if (!uplinkNasT->decodeFromPdu(message_p)) {
     Logger::ngap().error("Decoding UplinkNasTransport message error");
-    return -1;
+    return RETURNerror;
   }
   itti_ul_nas_transport* itti_ul_nas =
       new itti_ul_nas_transport(TASK_NGAP, TASK_AMF_N2);
@@ -152,9 +146,9 @@ int ngap_amf_handle_initial_context_setup_response(
   Logger::ngap().debug("Handling Initial Context Setup Response");
   InitialContextSetupResponseMsg* initCtxResp =
       new InitialContextSetupResponseMsg();
-  if (!initCtxResp->decodefrompdu(message_p)) {
+  if (!initCtxResp->decodeFromPdu(message_p)) {
     Logger::ngap().error("Decoding InitialContextSetupResponse message error");
-    return -1;
+    return RETURNerror;
   }
   std::vector<PDUSessionResourceSetupResponseItem_t> list;
   if (!initCtxResp->getPduSessionResourceSetupResponseList(list)) {
@@ -210,9 +204,9 @@ int ngap_amf_handle_ue_radio_cap_indication(
       "Sending ITTI UE Radio Capability Indication to TASK_AMF_N2");
   UeRadioCapabilityInfoIndicationMsg* ueRadioCap =
       new UeRadioCapabilityInfoIndicationMsg();
-  if (!ueRadioCap->decodefrompdu(message_p)) {
+  if (!ueRadioCap->decodeFromPdu(message_p)) {
     Logger::ngap().error("Decoding UEContextReleaseRequest message error");
-    return -1;
+    return RETURNerror;
   }
   itti_ue_radio_capability_indication* itti_msg =
       new itti_ue_radio_capability_indication(TASK_NGAP, TASK_AMF_N2);
@@ -237,9 +231,9 @@ int ngap_amf_handle_ue_context_release_request(
   Logger::ngap().debug(
       "Sending ITTI UE Context Release Request to TASK_AMF_N2");
   UEContextReleaseRequestMsg* ueCtxRelReq = new UEContextReleaseRequestMsg();
-  if (!ueCtxRelReq->decodefrompdu(message_p)) {
+  if (!ueCtxRelReq->decodeFromPdu(message_p)) {
     Logger::ngap().error("Decoding UEContextReleaseRequest message error");
-    return -1;
+    return RETURNerror;
   }
   itti_ue_context_release_request* itti_msg =
       new itti_ue_context_release_request(TASK_NGAP, TASK_AMF_N2);
@@ -265,9 +259,9 @@ int ngap_amf_handle_ue_context_release_complete(
       "Sending ITTI UE Context Release Complete to TASK_AMF_N2");
 
   UEContextReleaseCompleteMsg* ueCtxRelCmpl = new UEContextReleaseCompleteMsg();
-  if (!ueCtxRelCmpl->decodefrompdu(message_p)) {
+  if (!ueCtxRelCmpl->decodeFromPdu(message_p)) {
     Logger::ngap().error("Decoding UEContextReleaseComplete message error");
-    return -1;
+    return RETURNerror;
   }
   itti_ue_context_release_complete* itti_msg =
       new itti_ue_context_release_complete(TASK_NGAP, TASK_AMF_N2);
@@ -293,10 +287,10 @@ int ngap_amf_handle_pdu_session_resource_release_response(
 
   PduSessionResourceReleaseResponseMsg* pduresp =
       new PduSessionResourceReleaseResponseMsg();
-  if (!pduresp->decodefrompdu(message_p)) {
+  if (!pduresp->decodeFromPdu(message_p)) {
     Logger::ngap().error(
         "Decoding PduSessionResourceReleaseResponseMsg message error");
-    return -1;
+    return RETURNerror;
   }
   // TODO: process User Location Information if this IE is available
 
@@ -306,7 +300,7 @@ int ngap_amf_handle_pdu_session_resource_release_response(
     Logger::ngap().error(
         "Decoding PduSessionResourceReleaseResponseMsg "
         "getPduSessionResourceReleasedList IE error");
-    return -1;
+    return RETURNerror;
   }
   // TODO: add the full list
   uint8_t transferIe[500];
@@ -345,17 +339,17 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
   Logger::ngap().debug("Handle PDU Session Resource Setup Response");
   PduSessionResourceSetupResponseMsg* pduresp =
       new PduSessionResourceSetupResponseMsg();
-  if (!pduresp->decodefrompdu(message_p)) {
+  if (!pduresp->decodeFromPdu(message_p)) {
     Logger::ngap().error(
         "Decoding PduSessionResourceSetupResponseMsg message error");
-    return -1;
+    return RETURNerror;
   }
   std::vector<PDUSessionResourceSetupResponseItem_t> list;
   if (!pduresp->getPduSessionResourceSetupResponseList(list)) {
     Logger::ngap().error(
         "Decoding PduSessionResourceSetupResponseMsg "
         "getPduSessionResourceSetupResponseList IE error");
-    // return -1;
+    // return RETURNerror;
   } else {
     // TODO: for multiple PDU Sessions
     uint8_t transferIe[500];
@@ -370,7 +364,7 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
     if (!amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
       Logger::ngap().error(
           "No UE NAS context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
-      return -1;
+      return RETURNerror;
     }
     std::shared_ptr<nas_context> nct =
         amf_n1_inst->amf_ue_id_2_nas_context(amf_ue_ngap_id);
@@ -432,7 +426,7 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
       if (!amf_n1_inst->is_amf_ue_id_2_nas_context(amf_ue_ngap_id)) {
         Logger::ngap().error(
             "No UE NAS context with amf_ue_ngap_id (0x%x)", amf_ue_ngap_id);
-        return -1;
+        return RETURNerror;
       }
 
       std::shared_ptr<nas_context> nct =
@@ -443,7 +437,7 @@ int ngap_amf_handle_pdu_session_resource_setup_response(
               supi, list_fail[0].pduSessionId, psc)) {
         if (psc.get() == nullptr) {
           Logger::ngap().error("Cannot get pdu_session_context");
-          return -1;
+          return RETURNerror;
         }
       }
       psc.get()->isn2sm_avaliable = false;
@@ -477,10 +471,10 @@ int ngap_amf_handle_pdu_session_resource_modify_response(
   std::unique_ptr<PduSessionResourceModifyResponseMsg> response_msg =
       std::make_unique<PduSessionResourceModifyResponseMsg>();
 
-  if (!response_msg->decodefrompdu(message_p)) {
+  if (!response_msg->decodeFromPdu(message_p)) {
     Logger::ngap().error(
         "Decoding PduSessionResourceModifyResponseMsg message error");
-    return -1;
+    return RETURNerror;
   }
 
   // Transfer pduSessionResourceModifyResponseTransfer to SMF
@@ -489,7 +483,7 @@ int ngap_amf_handle_pdu_session_resource_modify_response(
     Logger::ngap().error(
         "Decoding PduSessionResourceModifyResponseMsg "
         "getPduSessionResourceModifyResponseList IE error");
-    return -1;
+    return RETURNerror;
   }
 
   for (auto response_item : list) {
@@ -625,9 +619,9 @@ int handover_preparation(
   Logger::ngap().debug("Sending ITTI Handover Preparation to TASK_AMF_N2");
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   HandoverRequiredMsg* handover_required = new HandoverRequiredMsg();
-  if (!handover_required->decodefrompdu(message_p)) {
+  if (!handover_required->decodeFromPdu(message_p)) {
     Logger::ngap().error("Decoding HandoverRequired message error");
-    return -1;
+    return RETURNerror;
   }
   itti_handover_required* itti_handover_requ =
       new itti_handover_required(TASK_NGAP, TASK_AMF_N2);
@@ -652,9 +646,9 @@ int handover_notification(
   Logger::ngap().debug("Sending ITTI Handover Notification to TASK_AMF_N2");
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   HandoverNotifyMsg* handoverNotify = new HandoverNotifyMsg();
-  if (!handoverNotify->decodefrompdu(message_p)) {
+  if (!handoverNotify->decodeFromPdu(message_p)) {
     Logger::ngap().error("Decoding HandoverNotify message error");
-    return -1;
+    return RETURNerror;
   }
   itti_handover_notify* itti_handover_NOTIFY =
       new itti_handover_notify(TASK_NGAP, TASK_AMF_N2);
@@ -680,9 +674,9 @@ int handover_resource_allocation(
       "Sending ITTI Handover Resource Allocation to TASK_AMF_N2");
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   HandoverRequestAck* handoverRequestAck = new HandoverRequestAck();
-  if (!handoverRequestAck->decodefrompdu(message_p)) {
+  if (!handoverRequestAck->decodeFromPdu(message_p)) {
     Logger::ngap().error("Decoding Handover Request Acknowledge message error");
-    return -1;
+    return RETURNerror;
   }
   itti_handover_request_Ack* itti_handover_requ_Ack =
       new itti_handover_request_Ack(TASK_NGAP, TASK_AMF_N2);
@@ -743,9 +737,9 @@ int ng_reset(
 
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   NGResetMsg* ngReset = new NGResetMsg();
-  if (!ngReset->decodefrompdu(message_p)) {
+  if (!ngReset->decodeFromPdu(message_p)) {
     Logger::ngap().error("Decoding NGReset message error");
-    return -1;
+    return RETURNerror;
   }
 
   itti_ng_reset* itti_msg          = new itti_ng_reset(TASK_NGAP, TASK_AMF_N2);
@@ -938,9 +932,9 @@ int uplink_ran_status_transfer(
   asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, message_p);
   UplinkRANStatusTransfer* Uplinkranstatustransfer =
       new UplinkRANStatusTransfer();
-  if (!Uplinkranstatustransfer->defromPDU(message_p)) {
+  if (!Uplinkranstatustransfer->decodeFromPdu(message_p)) {
     Logger::ngap().error("Decoding Uplink RAN Status Transfer message error");
-    return -1;
+    return RETURNerror;
   }
   itti_uplink_ran_status_transfer* itti_uplinkran_sta_tran =
       new itti_uplink_ran_status_transfer(TASK_NGAP, TASK_AMF_N2);

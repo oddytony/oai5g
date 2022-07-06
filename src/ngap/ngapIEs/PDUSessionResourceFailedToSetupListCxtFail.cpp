@@ -19,26 +19,13 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #include "PDUSessionResourceFailedToSetupListCxtFail.hpp"
-
-#include <iostream>
-using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
 PDUSessionResourceFailedToSetupListCxtFail::
-    PDUSessionResourceFailedToSetupListCxtFail() {
-  pduSessionResourceFailedToSetupItemCxtFail      = NULL;
-  numofpduSessionResourceFailedToSetupItemCxtFail = 0;
-}
+    PDUSessionResourceFailedToSetupListCxtFail() {}
 
 //------------------------------------------------------------------------------
 PDUSessionResourceFailedToSetupListCxtFail::
@@ -47,12 +34,15 @@ PDUSessionResourceFailedToSetupListCxtFail::
 //------------------------------------------------------------------------------
 void PDUSessionResourceFailedToSetupListCxtFail::
     setPDUSessionResourceFailedToSetupListCxtFail(
-        PDUSessionResourceFailedToSetupItemCxtFail*
-            m_pduSessionResourceFailedToSetupItemCxtFail,
-        int num) {
-  pduSessionResourceFailedToSetupItemCxtFail =
-      m_pduSessionResourceFailedToSetupItemCxtFail;
-  numofpduSessionResourceFailedToSetupItemCxtFail = num;
+        const std::vector<PDUSessionResourceFailedToSetupItemCxtFail>& list) {
+  itemList = list;
+}
+
+//------------------------------------------------------------------------------
+void PDUSessionResourceFailedToSetupListCxtFail::
+    getPDUSessionResourceFailedToSetupListCxtFail(
+        std::vector<PDUSessionResourceFailedToSetupItemCxtFail>& list) {
+  list = itemList;
 }
 
 //------------------------------------------------------------------------------
@@ -60,14 +50,14 @@ bool PDUSessionResourceFailedToSetupListCxtFail::
     encode2PDUSessionResourceFailedToSetupListCxtFail(
         Ngap_PDUSessionResourceFailedToSetupListCxtFail_t*
             pduSessionResourceFailedToSetupListCxtFail) {
-  for (int i = 0; i < numofpduSessionResourceFailedToSetupItemCxtFail; i++) {
+  for (std::vector<PDUSessionResourceFailedToSetupItemCxtFail>::iterator it =
+           std::begin(itemList);
+       it < std::end(itemList); ++it) {
     Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t* failedToFailure =
         (Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t*) calloc(
             1, sizeof(Ngap_PDUSessionResourceFailedToSetupItemCxtFail_t));
     if (!failedToFailure) return false;
-    if (!pduSessionResourceFailedToSetupItemCxtFail[i]
-             .encode2PDUSessionResourceFailedToSetupItemCxtFail(
-                 failedToFailure))
+    if (!it->encode2PDUSessionResourceFailedToSetupItemCxtFail(failedToFailure))
       return false;
     if (ASN_SEQUENCE_ADD(
             &pduSessionResourceFailedToSetupListCxtFail->list,
@@ -83,30 +73,18 @@ bool PDUSessionResourceFailedToSetupListCxtFail::
     decodefromPDUSessionResourceFailedToSetupListCxtFail(
         Ngap_PDUSessionResourceFailedToSetupListCxtFail_t*
             pduSessionResourceFailedToSetupListCxtFail) {
-  numofpduSessionResourceFailedToSetupItemCxtFail =
-      pduSessionResourceFailedToSetupListCxtFail->list.count;
-  pduSessionResourceFailedToSetupItemCxtFail =
-      new PDUSessionResourceFailedToSetupItemCxtFail
-          [numofpduSessionResourceFailedToSetupItemCxtFail]();
-  for (int i = 0; i < numofpduSessionResourceFailedToSetupItemCxtFail; i++) {
-    if (!pduSessionResourceFailedToSetupItemCxtFail[i]
-             .decodefromPDUSessionResourceFailedToSetupItemCxtFail(
-                 pduSessionResourceFailedToSetupListCxtFail->list.array[i]))
+  itemList.reserve(pduSessionResourceFailedToSetupListCxtFail->list.count);
+
+  for (int i = 0; i < pduSessionResourceFailedToSetupListCxtFail->list.count;
+       i++) {
+    PDUSessionResourceFailedToSetupItemCxtFail itemCxtFail = {};
+    if (!itemCxtFail.decodefromPDUSessionResourceFailedToSetupItemCxtFail(
+            pduSessionResourceFailedToSetupListCxtFail->list.array[i]))
       return false;
+    itemList.push_back(itemCxtFail);
   }
 
   return true;
-}
-
-//------------------------------------------------------------------------------
-void PDUSessionResourceFailedToSetupListCxtFail::
-    getPDUSessionResourceFailedToSetupListCxtFail(
-        PDUSessionResourceFailedToSetupItemCxtFail*&
-            m_pduSessionResourceFailedToSetupItemCxtFail,
-        int& num) {
-  m_pduSessionResourceFailedToSetupItemCxtFail =
-      pduSessionResourceFailedToSetupItemCxtFail;
-  num = numofpduSessionResourceFailedToSetupItemCxtFail;
 }
 
 }  // namespace ngap

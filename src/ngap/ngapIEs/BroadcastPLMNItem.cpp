@@ -21,7 +21,7 @@
 
 /*! \file
  \brief
- \author  Keliang DU, BUPT
+ \author
  \date 2020
  \email: contact@openairinterface.org
  */
@@ -42,42 +42,36 @@ using namespace std;
 namespace ngap {
 
 //------------------------------------------------------------------------------
-BroadcastPLMNItem::BroadcastPLMNItem() {
-  plmn        = nullptr;
-  snssai      = nullptr;
-  numOfSnssai = 0;
-}
+BroadcastPLMNItem::BroadcastPLMNItem() {}
 
 //------------------------------------------------------------------------------
 BroadcastPLMNItem::~BroadcastPLMNItem() {}
 
 //------------------------------------------------------------------------------
 void BroadcastPLMNItem::setPlmnSliceSupportList(
-    PlmnId* m_plmn, S_NSSAI* m_snssai, int num) {
-  plmn        = m_plmn;
-  snssai      = m_snssai;
-  numOfSnssai = num;
+    const PlmnId& m_plmn, const std::vector<S_NSSAI>& sliceList) {
+  plmn               = m_plmn;
+  supportedSliceList = sliceList;
 }
 
 //------------------------------------------------------------------------------
 void BroadcastPLMNItem::getPlmnSliceSupportList(
-    PlmnId*& m_plmn, S_NSSAI*& m_snssai, int& snssainum) {
+    PlmnId& m_plmn, std::vector<S_NSSAI>& sliceList) {
   m_plmn    = plmn;
-  m_snssai  = snssai;
-  snssainum = numOfSnssai;
+  sliceList = supportedSliceList;
 }
 
 //------------------------------------------------------------------------------
 bool BroadcastPLMNItem::encode2BroadcastPLMNItem(
     Ngap_BroadcastPLMNItem_t* plmnItem) {
-  if (!plmn) return false;
-  if (!snssai) return false;
-  if (!plmn->encode2octetstring(plmnItem->pLMNIdentity)) return false;
-  for (int i = 0; i < numOfSnssai; i++) {
+  if (!plmn.encode2octetstring(plmnItem->pLMNIdentity)) return false;
+
+  for (std::vector<S_NSSAI>::iterator it = std::begin(supportedSliceList);
+       it < std::end(supportedSliceList); ++it) {
     Ngap_SliceSupportItem_t* slice =
         (Ngap_SliceSupportItem_t*) calloc(1, sizeof(Ngap_SliceSupportItem_t));
     if (!slice) return false;
-    if (!snssai[i].encode2S_NSSAI(&slice->s_NSSAI)) return false;
+    if (!it->encode2S_NSSAI(&slice->s_NSSAI)) return false;
     if (ASN_SEQUENCE_ADD(&plmnItem->tAISliceSupportList.list, slice) != 0)
       return false;
   }
@@ -87,14 +81,13 @@ bool BroadcastPLMNItem::encode2BroadcastPLMNItem(
 //------------------------------------------------------------------------------
 bool BroadcastPLMNItem::decodefromBroadcastPLMNItem(
     Ngap_BroadcastPLMNItem_t* pdu) {
-  if (plmn == nullptr) plmn = new PlmnId();
-  if (!plmn->decodefromoctetstring(pdu->pLMNIdentity)) return false;
-  numOfSnssai = pdu->tAISliceSupportList.list.count;
-  if (snssai == nullptr) snssai = new S_NSSAI[numOfSnssai]();
-  for (int i = 0; i < numOfSnssai; i++) {
-    if (!snssai[i].decodefromS_NSSAI(
+  if (!plmn.decodefromoctetstring(pdu->pLMNIdentity)) return false;
+  for (int i = 0; i < pdu->tAISliceSupportList.list.count; i++) {
+    S_NSSAI snssai = {};
+    if (!snssai.decodefromS_NSSAI(
             &pdu->tAISliceSupportList.list.array[i]->s_NSSAI))
       return false;
+    supportedSliceList.push_back(snssai);
   }
   return true;
 }

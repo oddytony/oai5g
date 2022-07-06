@@ -7,6 +7,7 @@
 #include <unistd.h>
 #endif
 
+#include "AMFConfigurationApiImpl.h"
 #include "IndividualSubscriptionDocumentApiImpl.h"
 #include "IndividualSubscriptionDocumentApiImplEventExposure.h"
 #include "IndividualUeContextDocumentApiImpl.h"
@@ -18,6 +19,7 @@
 #include "NonUEN2MessagesSubscriptionsCollectionDocumentApiImpl.h"
 #include "SubscriptionsCollectionDocumentApiImpl.h"
 #include "SubscriptionsCollectionDocumentApiImplEventExposure.h"
+#include "N1MessageNotifyApiImpl.h"
 
 #define PISTACHE_SERVER_THREADS 2
 #define PISTACHE_SERVER_MAX_PAYLOAD 32768
@@ -33,6 +35,9 @@ class AMFApiServer {
       : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address)) {
     m_router  = std::make_shared<Pistache::Rest::Router>();
     m_address = address.host() + ":" + (address.port()).toString();
+
+    m_aMFConfigurationApiImpl =
+        std::make_shared<AMFConfigurationApiImpl>(m_router, amf_app_inst);
     m_individualSubscriptionDocumentApiImpl =
         std::make_shared<IndividualSubscriptionDocumentApiImpl>(
             m_router, amf_app_inst);
@@ -68,6 +73,8 @@ class AMFApiServer {
     m_subscriptionsCollectionDocumentApiImplEventExposure =
         std::make_shared<SubscriptionsCollectionDocumentApiImplEventExposure>(
             m_router, amf_app_inst);
+    m_n1MessageNotifyApiImpl =
+        std::make_shared<N1MessageNotifyApiImpl>(m_router, amf_app_inst);
   }
 
   void init(size_t thr = 1);
@@ -77,6 +84,8 @@ class AMFApiServer {
  private:
   std::shared_ptr<Pistache::Http::Endpoint> m_httpEndpoint;
   std::shared_ptr<Pistache::Rest::Router> m_router;
+
+  std::shared_ptr<AMFConfigurationApiImpl> m_aMFConfigurationApiImpl;
   std::shared_ptr<IndividualSubscriptionDocumentApiImpl>
       m_individualSubscriptionDocumentApiImpl;
   std::shared_ptr<IndividualSubscriptionDocumentApiImplEventExposure>
@@ -101,6 +110,7 @@ class AMFApiServer {
       m_subscriptionsCollectionDocumentApiImpl;
   std::shared_ptr<SubscriptionsCollectionDocumentApiImplEventExposure>
       m_subscriptionsCollectionDocumentApiImplEventExposure;
+  std::shared_ptr<N1MessageNotifyApiImpl> m_n1MessageNotifyApiImpl;
 
   std::string m_address;
 };

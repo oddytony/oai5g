@@ -19,8 +19,8 @@
  *      contact@openairinterface.org
  */
 
-#ifndef _UEPAGINGIDENTITY_H_
-#define _UEPAGINGIDENTITY_H_
+#ifndef _UE_PAGING_IDENTITY_H_
+#define _UE_PAGING_IDENTITY_H_
 
 #include "FiveGSTmsi.hpp"
 
@@ -36,10 +36,12 @@ class UEPagingIdentity {
   virtual ~UEPagingIdentity();
 
   void setUEPagingIdentity(
-      std::string& setid, std::string& pointer, std::string& tmsi);
+      const std::string& setid, const std::string& pointer,
+      const std::string& tmsi);
   void getUEPagingIdentity(std::string& _5g_s_tmsi);
   void getUEPagingIdentity(
       std::string& setid, std::string& pointer, std::string& tmsi);
+
   bool encode2pdu(Ngap_UEPagingIdentity_t* pdu);
   bool decodefrompdu(Ngap_UEPagingIdentity_t pdu);
 

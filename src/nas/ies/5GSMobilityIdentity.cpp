@@ -31,6 +31,7 @@
 #include <math.h>
 
 #include "3gpp_ts24501.hpp"
+#include "conversions.hpp"
 #include "String2Value.hpp"
 #include "logger.hpp"
 
@@ -164,7 +165,7 @@ int _5GSMobilityIdentity::_5g_s_tmsi_decodefrombuffer(uint8_t* buf, int len) {
   Logger::nas_mm().debug("Octet 0x%x", octet);
   digit[3] = octet;
   tmsi |= octet << 24;
-  _5g_s_tmsi->_5g_tmsi = (const string)(std::to_string(tmsi));
+  _5g_s_tmsi->_5g_tmsi = conv::tmsi_to_string(tmsi);
   return decoded_size;
 }
 
@@ -609,6 +610,8 @@ int _5GSMobilityIdentity::suci_decodefrombuffer(
       decoded_size++;
       supi_format_imsi->homeNetworkPKI = octet;
       string msin                      = "";
+      // TODO: get MSIN according to Protection Scheme ID to support
+      // ECIES scheme profile A/B
       int digit_low = 0, digit_high = 0, numMsin = ie_len - decoded_size;
       for (int i = 0; i < numMsin; i++) {
         octet = *(buf + decoded_size);
@@ -682,30 +685,12 @@ int _5GSMobilityIdentity::_5g_guti_decodefrombuffer(uint8_t* buf, int len) {
   decoded_size++;
   _5g_guti->amf_pointer = *(buf + decoded_size);
   decoded_size++;
-  uint32_t tmsi = 0;
-  uint8_t digit[4];
-  octet = *(buf + decoded_size);
-  decoded_size++;
-  Logger::nas_mm().debug("Octet 0x%x", octet);
-  digit[0] = octet;
-  tmsi |= octet;
-  octet = *(buf + decoded_size);
-  decoded_size++;
-  Logger::nas_mm().debug("Octet 0x%x", octet);
-  digit[1] = octet;
-  tmsi |= octet << 8;
-  octet = *(buf + decoded_size);
-  decoded_size++;
-  Logger::nas_mm().debug("Octet 0x%x", octet);
-  digit[2] = octet;
-  tmsi |= octet << 16;
-  octet = *(buf + decoded_size);
-  decoded_size++;
-  Logger::nas_mm().debug("Octet 0x%x", octet);
-  digit[3] = octet;
-  tmsi |= octet << 24;
-  _5g_guti->_5g_tmsi = tmsi;
-  Logger::nas_mm().debug("decoding 5GSMobilityIdentity 5G-GUTI");
+
+  // TMSI, 4 octets
+  DECODE_U32(buf + decoded_size, _5g_guti->_5g_tmsi, decoded_size);
+
+  Logger::nas_mm().debug("TMSI 0x%x", _5g_guti->_5g_tmsi);
+  Logger::nas_mm().debug("Decoding 5GSMobilityIdentity 5G-GUTI");
   return decoded_size;
 }
 

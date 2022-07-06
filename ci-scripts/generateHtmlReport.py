@@ -603,7 +603,7 @@ class HtmlReport():
 				status = False
 				if nfType == 'AMF':
 					section_start_pattern = 'build_amf --clean --Verbose --build-type Release --jobs'
-					section_end_pattern = 'FROM ubuntu:bionic as oai-amf$'
+					section_end_pattern = 'FROM .* as oai-amf$'
 					pass_pattern = 'amf installed'
 				section_status = False
 				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
@@ -653,7 +653,7 @@ class HtmlReport():
 			if os.path.isfile(cwd + '/archives/' + logFileName):
 				if nfType == 'AMF':
 					section_start_pattern = 'build_amf --clean --Verbose --build-type Release --jobs'
-					section_end_pattern = 'FROM ubuntu:bionic as oai-amf$'
+					section_end_pattern = 'FROM .* as oai-amf$'
 				section_status = False
 				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
 					for line in logfile:
@@ -723,7 +723,7 @@ class HtmlReport():
 		for variant in variants:
 			logFileName = 'amf_' + variant + '_image_build.log'
 			if os.path.isfile(cwd + '/archives/' + logFileName):
-				section_start_pattern = 'FROM ubuntu:bionic as oai-amf$'
+				section_start_pattern = 'FROM .* as oai-amf$'
 				section_end_pattern = 'WORKDIR /openair-amf/etc'
 				section_status = False
 				status = False
@@ -843,7 +843,7 @@ class HtmlReport():
 									result = re.search('oai-amf *ci-tmp', line)
 								else:
 									result = re.search('oai-amf *develop', line)
-							if result is not None:
+							if result is not None and not status:
 								result = re.search('ago  *([0-9A-Z ]+)', line)
 								if result is not None:
 									size = result.group(1)

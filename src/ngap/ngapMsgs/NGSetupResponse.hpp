@@ -19,15 +19,8 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
-#ifndef _NGSETUPRESPONSE_H_
-#define _NGSETUPRESPONSE_H_
+#ifndef _NG_SETUP_RESPONSE_H_
+#define _NG_SETUP_RESPONSE_H_
 
 #include "AMFName.hpp"
 #include "MessageType.hpp"
@@ -35,45 +28,45 @@
 #include "PLMNSupportList.hpp"
 #include "RelativeAMFCapacity.hpp"
 #include "ServedGUAMIList.hpp"
+#include "NgapMessage.hpp"
 //#include "CriticalityDiagnostics.hpp"
 
 extern "C" {
-#include "Ngap_NGAP-PDU.h"
 #include "Ngap_NGSetupResponse.h"
-#include "Ngap_ProtocolIE-Field.h"
 }
 
 namespace ngap {
 
-class NGSetupResponseMsg {
+class NGSetupResponseMsg : public NgapMessage {
  public:
   NGSetupResponseMsg();
   virtual ~NGSetupResponseMsg();
 
-  // External interfaces
-  // Encapsulation
-  void setMessageType();  // Initialize the PDU and populate the MessageType;
+  void initialize();
+
   void setAMFName(const std::string name);
-  void setGUAMIList(std::vector<struct GuamiItem_s> list);
-  void setRelativeAmfCapacity(long capacity);
-  void setPlmnSupportList(std::vector<PlmnSliceSupport_t> list);
-  int encode2buffer(uint8_t* buf, int buf_size);
-  // Decapsulation
-  bool decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu);
   bool getAMFName(std::string& name);
+
+  void setGUAMIList(std::vector<struct GuamiItem_s> list);
   bool getGUAMIList(std::vector<struct GuamiItem_s>& list);
+
+  void setRelativeAmfCapacity(long capacity);
   long getRelativeAmfCapacity();
+
+  void setPlmnSupportList(std::vector<PlmnSliceSupport_t> list);
   bool getPlmnSupportList(std::vector<PlmnSliceSupport_t>& list);
 
+  bool decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) override;
+
  private:
-  Ngap_NGAP_PDU_t* ngSetupResponsePdu;
   Ngap_NGSetupResponse_t* ngSetupResponsIEs;
 
-  AmfName* amfName;
-  ServedGUAMIList* servedGUAMIList;
-  RelativeAMFCapacity* relativeAmfCapacity;
-  PLMNSupportList* plmnSupportList;
-  // CriticalityDiagnostics *criticalityDiagnostics;
+  AmfName amfName;                          // Mandatory
+  ServedGUAMIList servedGUAMIList;          // Mandatory
+  RelativeAMFCapacity relativeAmfCapacity;  // Mandatory
+  PLMNSupportList plmnSupportList;          // Mandatory
+  // CriticalityDiagnostics //Optional, TODO
+  // UE Retention Information //Optional, TODO
 };
 
 }  // namespace ngap

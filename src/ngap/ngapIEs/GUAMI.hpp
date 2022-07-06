@@ -46,20 +46,32 @@ class GUAMI {
   virtual ~GUAMI();
 
   void setGUAMI(
-      PlmnId* m_plmnId, AMFRegionID* m_aMFRegionID, AMFSetID* m_aMFSetID,
-      AMFPointer* m_aMFPointer);
+      const PlmnId& m_plmnId, const AMFRegionID& m_aMFRegionID,
+      const AMFSetID& m_aMFSetID, const AMFPointer& m_aMFPointer);
+  void setGUAMI(
+      const std::string& mcc, const std::string& mnc, const uint8_t& regionId,
+      const uint16_t& setId, const uint8_t& pointer);
+
+  void setGUAMI(
+      const std::string& mcc, const std::string& mnc,
+      const std::string& regionId, const std::string& setId,
+      const std::string& pointer);
+
   void getGUAMI(
-      PlmnId*& m_plmnId, AMFRegionID*& m_aMFRegionID, AMFSetID*& m_aMFSetID,
-      AMFPointer*& m_aMFPointer);
+      PlmnId& m_plmnId, AMFRegionID& m_aMFRegionID, AMFSetID& m_aMFSetID,
+      AMFPointer& m_aMFPointer);
+  void getGUAMI(
+      std::string& mcc, std::string& mnc, std::string& regionId,
+      std::string& setId, std::string& pointer);
 
   bool encode2GUAMI(Ngap_GUAMI_t* guami);
   bool decodefromGUAMI(Ngap_GUAMI_t* pdu);
 
  private:
-  PlmnId* plmnId;
-  AMFRegionID* aMFRegionID;
-  AMFSetID* aMFSetID;
-  AMFPointer* aMFPointer;
+  PlmnId plmnId;            // Mandatory
+  AMFRegionID aMFRegionID;  // Mandatory
+  AMFSetID aMFSetID;        // Mandatory
+  AMFPointer aMFPointer;    // Mandatory
 };
 
 }  // namespace ngap

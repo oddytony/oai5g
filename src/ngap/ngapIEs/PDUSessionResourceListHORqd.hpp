@@ -19,10 +19,11 @@
  *      contact@openairinterface.org
  */
 
-#ifndef _PDUSESSIONRESOURCELISTHORqd_H_
-#define _PDUSESSIONRESOURCELISTHORqd_H_
+#ifndef _PDU_SESSION_RESOURCE_LIST_HO_RQD_H_
+#define _PDU_SESSION_RESOURCE_LIST_HO_RQD_H_
 
 #include "PDUSessionResourceItemHORqd.hpp"
+#include <vector>
 
 extern "C" {
 #include "Ngap_PDUSessionResourceListHORqd.h"
@@ -36,9 +37,9 @@ class PDUSessionResourceListHORqd {
   virtual ~PDUSessionResourceListHORqd();
 
   void setPDUSessionResourceListHORqd(
-      PDUSessionResourceItemHORqd* m_pduSessionResourceItemHORqd, int num);
+      const std::vector<PDUSessionResourceItemHORqd>& list);
   void getPDUSessionResourceListHORqd(
-      PDUSessionResourceItemHORqd*& m_pduSessionResourceItemHORqd, int& num);
+      std::vector<PDUSessionResourceItemHORqd>& list);
 
   bool encode2PDUSessionResourceListHORqd(
       Ngap_PDUSessionResourceListHORqd_t* pduSessionResourceListHORQqd);
@@ -46,8 +47,7 @@ class PDUSessionResourceListHORqd {
       Ngap_PDUSessionResourceListHORqd_t* pduSessionResourceListHORQqd);
 
  private:
-  PDUSessionResourceItemHORqd* pduSessionResourceItemHORqd;
-  int numofpduSessionResourceItemHORqd;
+  std::vector<PDUSessionResourceItemHORqd> itemHORqdList;
 };
 
 }  // namespace ngap

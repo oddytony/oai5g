@@ -28,6 +28,7 @@
 #include "amf_profile.hpp"
 #include "bstrlib.h"
 #include "itti_msg.hpp"
+#include "SliceInfoForRegistration.h"
 
 class itti_msg_n11 : public itti_msg {
  public:
@@ -116,13 +117,17 @@ class itti_nsmf_pdusession_release_sm_context : public itti_msg_n11 {
   itti_nsmf_pdusession_release_sm_context(
       const itti_nsmf_pdusession_release_sm_context& i)
       : itti_msg_n11(i) {
-    supi           = i.supi;
-    pdu_session_id = i.pdu_session_id;
+    supi             = i.supi;
+    pdu_session_id   = i.pdu_session_id;
+    promise_id       = i.promise_id;
+    context_location = i.context_location;
   }
 
  public:
   std::string supi;
   uint8_t pdu_session_id;
+  uint32_t promise_id;
+  std::string context_location;
 };
 
 //-----------------------------------------------------------------------------
@@ -189,6 +194,72 @@ class itti_n11_deregister_nf_instance : public itti_msg_n11 {
 
   uint8_t http_version;
   std::string amf_instance_id;
+};
+
+//-----------------------------------------------------------------------------
+class itti_n11_slice_selection_subscription_data : public itti_msg_n11 {
+ public:
+  itti_n11_slice_selection_subscription_data(
+      const task_id_t orig, const task_id_t dest)
+      : itti_msg_n11(N11_SLICE_SELECTION_SUBSCRIPTION_DATA, orig, dest),
+        http_version(1) {}
+  const char* get_msg_name() {
+    return "N11_SLICE_SELECTION_SUBSCRIPTION_DATA";
+  };
+
+  uint8_t http_version;
+  std::string supi;
+  plmn_t plmn;
+  uint32_t promise_id;
+};
+
+//-----------------------------------------------------------------------------
+class itti_n11_network_slice_selection_information : public itti_msg_n11 {
+ public:
+  itti_n11_network_slice_selection_information(
+      const task_id_t orig, const task_id_t dest)
+      : itti_msg_n11(N11_NETWORK_SLICE_SELECTION_INFORMATION, orig, dest),
+        http_version(1) {}
+  const char* get_msg_name() {
+    return "N11_NETWORK_SLICE_SELECTION_INFORMATION";
+  };
+
+  uint8_t http_version;
+  std::string nf_instance_id;
+  oai::amf::model::SliceInfoForRegistration slice_info;
+  // plmn_t plmn;
+  tai_t tai;
+  uint32_t promise_id;
+};
+
+//-----------------------------------------------------------------------------
+class itti_n11_nf_instance_discovery : public itti_msg_n11 {
+ public:
+  itti_n11_nf_instance_discovery(const task_id_t orig, const task_id_t dest)
+      : itti_msg_n11(N11_NF_INSTANCE_DISCOVERY, orig, dest),
+        target_amf_set_is_set(false),
+        http_version(1) {}
+  const char* get_msg_name() { return "N11_NF_INSTANCE_DISCOVERY"; };
+
+  uint8_t http_version;
+  std::string target_amf_set;
+  bool target_amf_set_is_set;
+  std::string target_nf_type;
+  std::string nrf_amf_set;
+  uint32_t promise_id;
+};
+
+//-----------------------------------------------------------------------------
+class itti_n11_n1_message_notify : public itti_msg_n11 {
+ public:
+  itti_n11_n1_message_notify(const task_id_t orig, const task_id_t dest)
+      : itti_msg_n11(N11_N1_MESSAGE_NOTIFY, orig, dest), http_version(1) {}
+  const char* get_msg_name() { return "N11_N1_MESSAGE_NOTIFY"; };
+
+  uint8_t http_version;
+  std::string target_amf_uri;
+  std::string supi;
+  bstring registration_request;
 };
 
 #endif

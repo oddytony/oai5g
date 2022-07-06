@@ -297,4 +297,15 @@ class itti_uplink_ran_status_transfer : public itti_msg_n2 {
   UplinkRANStatusTransfer* uplinkrantransfer;
 };
 
+class itti_rereoute_nas : public itti_msg_n2 {
+ public:
+  itti_rereoute_nas(const task_id_t origin, const task_id_t destination)
+      : itti_msg_n2(REROUTE_NAS_REQ, origin, destination) {}
+  itti_rereoute_nas(const itti_rereoute_nas& i) : itti_msg_n2(i) {}
+
+  uint32_t ran_ue_ngap_id;
+  long amf_ue_ngap_id;
+  uint16_t amf_set_id;
+};
+
 #endif

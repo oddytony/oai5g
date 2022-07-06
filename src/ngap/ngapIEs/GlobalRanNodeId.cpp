@@ -19,31 +19,20 @@
  *      contact@openairinterface.org
  */
 
-/*! \file
- \brief
- \author  Keliang DU, BUPT
- \date 2020
- \email: contact@openairinterface.org
- */
-
 #include "GlobalRanNodeId.hpp"
-
-#include <iostream>
-using namespace std;
+#include "logger.hpp"
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
-GlobalRanNodeId::GlobalRanNodeId() {
-  globalgNBId = NULL;
-}
+GlobalRanNodeId::GlobalRanNodeId() {}
 
 //------------------------------------------------------------------------------
 GlobalRanNodeId::~GlobalRanNodeId() {}
 
 //------------------------------------------------------------------------------
 void GlobalRanNodeId::setChoiceOfRanNodeId(
-    Ngap_GlobalRANNodeID_PR m_idPresent) {
+    const Ngap_GlobalRANNodeID_PR& m_idPresent) {
   idPresent = m_idPresent;
 }
 
@@ -53,13 +42,13 @@ Ngap_GlobalRANNodeID_PR GlobalRanNodeId::getChoiceOfRanNodeId() {
 }
 
 //------------------------------------------------------------------------------
-void GlobalRanNodeId::setGlobalgNBID(GlobalgNBId* m_globalgNBId) {
+void GlobalRanNodeId::setGlobalgNBID(const GlobalgNBId& m_globalgNBId) {
   globalgNBId = m_globalgNBId;
 }
 
 //------------------------------------------------------------------------------
-void GlobalRanNodeId::getGlobalgNBID(GlobalgNBId*& ptr) {
-  ptr = globalgNBId;
+void GlobalRanNodeId::getGlobalgNBID(GlobalgNBId& id) {
+  id = globalgNBId;
 }
 
 //------------------------------------------------------------------------------
@@ -72,7 +61,7 @@ bool GlobalRanNodeId::encode2GlobalRANNodeID(
       Ngap_GlobalGNB_ID_t* globalGNB_ID =
           (Ngap_GlobalGNB_ID_t*) calloc(1, sizeof(struct Ngap_GlobalGNB_ID));
       if (!globalGNB_ID) return false;
-      if (!globalgNBId->encode2GlobalgNBId(globalGNB_ID)) return false;
+      if (!globalgNBId.encode2GlobalgNBId(globalGNB_ID)) return false;
       globalRANNodeID->choice.globalGNB_ID = globalGNB_ID;
       break;
     }
@@ -83,7 +72,7 @@ bool GlobalRanNodeId::encode2GlobalRANNodeID(
       break;
     }
     default:
-      cout << "[Warning] GlobalRanNodeId Present encode error!" << endl;
+      Logger::ngap().warn("GlobalRanNodeId Present encode error!");
       return false;
   }
   return true;
@@ -95,22 +84,21 @@ bool GlobalRanNodeId::decodefromGlobalRANNodeID(
   idPresent = globalRANNodeID->present;
   switch (idPresent) {
     case Ngap_GlobalRANNodeID_PR_globalGNB_ID: {
-      globalgNBId = new GlobalgNBId();
-      if (!globalgNBId->decodefromGlobalgNBId(
+      if (!globalgNBId.decodefromGlobalgNBId(
               globalRANNodeID->choice.globalGNB_ID))
         return false;
       break;
     }
     case Ngap_GlobalRANNodeID_PR_globalNgENB_ID: {
-      cout << "[Warning] GlobalRANNodeID Present is globalNgENB!" << endl;
+      Logger::ngap().warn("GlobalRANNodeID Present is globalNgENB!");
       break;
     }
     case Ngap_GlobalRANNodeID_PR_globalN3IWF_ID: {
-      cout << "[Warning] GlobalRanNodeId Present is globalN3IWF!" << endl;
+      Logger::ngap().warn("GlobalRANNodeID Present is globalN3IWF!");
       break;
     }
     default:
-      cout << "[Warning] GlobalRanNodeId Present decode error!" << endl;
+      Logger::ngap().warn("GlobalRanNodeId Present decode error!");
       return false;
   }
   return true;

@@ -43,6 +43,8 @@ namespace ngap {
 class MessageType {
  public:
   MessageType();
+  MessageType(
+      Ngap_ProcedureCode_t m_procedureCode, Ngap_NGAP_PDU_PR m_typeOfMessage);
   virtual ~MessageType();
 
   int encode2pdu(Ngap_NGAP_PDU_t*&);

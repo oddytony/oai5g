@@ -19,25 +19,30 @@
  *      contact@openairinterface.org
  */
 
-#ifndef _DRBSTATUSDL18_H_
-#define _DRBSTATUSDL18_H_
+#ifndef _DRB_STATUS_DL18_H_
+#define _DRB_STATUS_DL18_H_
+
 #include "COUNTValueForPDCP_SN18.hpp"
+#include "logger.hpp"
+
 extern "C" {
 #include "Ngap_DRBStatusDL18.h"
 }
 namespace ngap {
 class DRBStatusDL18 {
- private:
-  /* data */
-  COUNTValueForPDCP_SN18* pdcp_value;
-
  public:
-  DRBStatusDL18(/* args */);
+  DRBStatusDL18();
   virtual ~DRBStatusDL18();
-  void getcountvalue(COUNTValueForPDCP_SN18*& count_value);
-  void setcountvalue(COUNTValueForPDCP_SN18* count_value);
+
+  void getcountvalue(COUNTValueForPDCP_SN18& value);
+  void setcountvalue(const COUNTValueForPDCP_SN18& value);
+
   bool encodeddRBStatusDL18(Ngap_DRBStatusDL18_t* DL18);
   bool decodeddRBStatusDL18(Ngap_DRBStatusDL18_t* DL18);
+
+ private:
+  COUNTValueForPDCP_SN18 pdcp_value;  // Mandatory
+  // TODO: Old Associated QoS Flow List - UL End Marker Expected (Optional)
 };
 }  // namespace ngap
 #endif

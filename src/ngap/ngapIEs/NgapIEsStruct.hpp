@@ -48,6 +48,13 @@ namespace ngap {
 typedef struct S_Nssai_s {
   std::string sst;
   std::string sd;
+
+  S_Nssai_s& operator=(const S_Nssai_s& s) {
+    sst = s.sst;
+    sd  = s.sd;
+    return *this;
+  }
+
   bool operator==(const struct S_Nssai_s& s) const {
     if ((s.sst == this->sst) && (s.sd.compare(this->sd) == 0)) {
       return true;

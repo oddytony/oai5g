@@ -31,6 +31,16 @@
 #include "logger.hpp"
 
 //------------------------------------------------------------------------------
+statistics::statistics() : m_ue_infos(), m_gnbs() {
+  gNB_connected = 0;
+  UE_connected  = 0;
+  UE_registred  = 0;
+}
+
+//------------------------------------------------------------------------------
+statistics::~statistics() {}
+
+//------------------------------------------------------------------------------
 void statistics::display() {
   Logger::amf_app().info("");
 
@@ -80,7 +90,7 @@ void statistics::display() {
   i = 0;
   for (auto const& ue : ue_infos) {
     Logger::amf_app().info(
-        "|%7d|%22s|%18s|%15s|%16d|%11d| %3s,%3s |%7d|", i + 1,
+        "|%7d|%22s|%18s|%15s|%16ld|%11ld| %3s,%3s |%7d|", i + 1,
         ue.second.registerStatus.c_str(), ue.second.imsi.c_str(),
         ue.second.guti.c_str(), ue.second.ranid, ue.second.amfid,
         ue.second.mcc.c_str(), ue.second.mnc.c_str(), ue.second.cellId);
@@ -93,18 +103,13 @@ void statistics::display() {
 }
 
 //------------------------------------------------------------------------------
-statistics::statistics() {
-  gNB_connected = 0;
-  UE_connected  = 0;
-  UE_registred  = 0;
-}
-
-//------------------------------------------------------------------------------
 void statistics::update_ue_info(const ue_info_t& ue_info) {
   if (!(ue_info.imsi.size() > 0)) {
     Logger::amf_app().warn("Update UE Info with invalid IMSI");
+    return;
   }
 
+  std::unique_lock lock(m_ue_infos);
   if (ue_infos.count(ue_info.imsi) > 0) {
     ue_infos.erase(ue_info.imsi);
     ue_infos.insert(std::pair<std::string, ue_info_t>(ue_info.imsi, ue_info));
@@ -120,6 +125,7 @@ void statistics::update_ue_info(const ue_info_t& ue_info) {
 //------------------------------------------------------------------------------
 void statistics::update_5gmm_state(
     const std::string& imsi, const std::string& state) {
+  std::unique_lock lock(m_ue_infos);
   if (ue_infos.count(imsi) > 0) {
     ue_info_t ue_info      = ue_infos.at(imsi);
     ue_info.registerStatus = state;
@@ -134,6 +140,32 @@ void statistics::update_5gmm_state(
   }
 }
 
-void statistics::remove_gnb(const uint32_t gnb_id) {}
 //------------------------------------------------------------------------------
-statistics::~statistics() {}
+void statistics::remove_gnb(const uint32_t& gnb_id) {
+  std::unique_lock lock(m_gnbs);
+  if (gnbs.count(gnb_id) > 0) {
+    gnbs.erase(gnb_id);
+    gNB_connected -= 1;
+  }
+}
+
+//------------------------------------------------------------------------------
+void statistics::add_gnb(const uint32_t& gnb_id, const gnb_infos& gnb) {
+  std::unique_lock lock(m_gnbs);
+  gnbs.insert(std::pair<uint32_t, gnb_infos>(gnb_id, gnb));
+  gNB_connected += 1;
+}
+
+//------------------------------------------------------------------------------
+void statistics::update_gnb(const uint32_t& gnb_id, const gnb_infos& gnb) {
+  std::unique_lock lock(m_gnbs);
+  if (gnbs.count(gnb_id) > 0) {
+    gnbs[gnb_id] = gnb;
+  }
+}
+
+//------------------------------------------------------------------------------
+uint32_t statistics::get_number_connected_gnbs() const {
+  std::shared_lock lock(m_gnbs);
+  return gnbs.size();
+}

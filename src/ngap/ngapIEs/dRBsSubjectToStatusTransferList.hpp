@@ -19,28 +19,32 @@
  *      contact@openairinterface.org
  */
 
-#ifndef _DRBSSUBJECTTOSTATUSTRANSFERLIST_H_
-#define _DRBSSUBJECTTOSTATUSTRANSFERLIST_H_
+#ifndef _DRBS_SUBJECT_TO_STATUS_TRANSFER_LIST_H_
+#define _DRBS_SUBJECT_TO_STATUS_TRANSFER_LIST_H_
+
 #include "dRBsSubjectToStatusTransferItem.hpp"
+#include <vector>
+
 extern "C" {
 #include "Ngap_DRBsSubjectToStatusTransferList.h"
-#include "asn_SEQUENCE_OF.h"
 }
+
 namespace ngap {
 class dRBSubjectList {
  public:
   dRBSubjectList();
   virtual ~dRBSubjectList();
-  void setdRBSubjectItem(dRBSubjectItem* m_item, int num);
-  void getdRBSubjectItem(dRBSubjectItem*& m_item, int& num);
+
+  void setdRBSubjectItem(const std::vector<dRBSubjectItem>& list);
+  void getdRBSubjectItem(std::vector<dRBSubjectItem>& list);
+
   bool decodefromdRBSubjectlist(
-      Ngap_DRBsSubjectToStatusTransferList_t& DRBsSubjectToStatusTransferList);
+      Ngap_DRBsSubjectToStatusTransferList_t& dRBsSubjectToStatusTransferList);
   bool encodefromdRBSubjectlist(
-      Ngap_DRBsSubjectToStatusTransferList_t& DRBsSubjectToStatusTransferList);
+      Ngap_DRBsSubjectToStatusTransferList_t& dRBsSubjectToStatusTransferList);
 
  private:
-  dRBSubjectItem* drbsubjectitem;
-  int numofitem;
+  std::vector<dRBSubjectItem> itemList;
 };
 }  // namespace ngap
 #endif

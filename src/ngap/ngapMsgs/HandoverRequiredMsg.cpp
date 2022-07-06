@@ -21,158 +21,135 @@
 
 #include "HandoverRequiredMsg.hpp"
 #include "logger.hpp"
-#include "TAI.hpp"
 
 extern "C" {
-#include "Ngap_NGAP-PDU.h"
-#include "asn_codecs.h"
-#include "constr_TYPE.h"
-#include "constraints.h"
-#include "per_decoder.h"
-#include "per_encoder.h"
+#include "dynamic_memory_check.h"
 }
-#include <iostream>
-#include <vector>
-
-using namespace std;
 
 namespace ngap {
 
 //------------------------------------------------------------------------------
-HandoverRequiredMsg::HandoverRequiredMsg() {
-  amfUeNgapId                         = nullptr;
-  ranUeNgapId                         = nullptr;
-  handovertype                        = nullptr;
-  cause                               = nullptr;
-  targetid                            = nullptr;
-  directforwardingPathAvailability    = nullptr;
-  PDUSessionResourceList              = nullptr;
-  SourceToTarget_TransparentContainer = nullptr;
-  handoverRequiredPdu                 = nullptr;
-  handoverRequiredIEs                 = nullptr;
+HandoverRequiredMsg::HandoverRequiredMsg() : NgapUEMessage() {
+  directForwardingPathAvailability = nullptr;
+  handoverRequiredIEs              = nullptr;
+
+  setMessageType(NgapMessageType::HANDOVER_REQUIRED);
+  initialize();
 }
 
 //------------------------------------------------------------------------------
 HandoverRequiredMsg::~HandoverRequiredMsg() {}
 
 //------------------------------------------------------------------------------
-unsigned long HandoverRequiredMsg::getAmfUeNgapId() {
-  if (amfUeNgapId)
-    return amfUeNgapId->getAMF_UE_NGAP_ID();
-  else
-    return 0;
+void HandoverRequiredMsg::initialize() {
+  handoverRequiredIEs =
+      &ngapPdu->choice.initiatingMessage->value.choice.HandoverRequired;
 }
 
 //------------------------------------------------------------------------------
-uint32_t HandoverRequiredMsg::getRanUeNgapId() {
-  if (ranUeNgapId)
-    return ranUeNgapId->getRanUeNgapId();
-  else
-    return 0;
+void HandoverRequiredMsg::setAmfUeNgapId(const unsigned long& id) {
+  amfUeNgapId.setAMF_UE_NGAP_ID(id);
+
+  Ngap_HandoverRequiredIEs_t* ie = (Ngap_HandoverRequiredIEs_t*) calloc(
+      1, sizeof(Ngap_HandoverRequiredIEs_t));
+  ie->id            = Ngap_ProtocolIE_ID_id_AMF_UE_NGAP_ID;
+  ie->criticality   = Ngap_Criticality_reject;
+  ie->value.present = Ngap_HandoverRequiredIEs__value_PR_AMF_UE_NGAP_ID;
+
+  int ret = amfUeNgapId.encode2AMF_UE_NGAP_ID(ie->value.choice.AMF_UE_NGAP_ID);
+  if (!ret) {
+    Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error!");
+    free_wrapper((void**) &ie);
+    return;
+  }
+
+  ret = ASN_SEQUENCE_ADD(&handoverRequiredIEs->protocolIEs.list, ie);
+  if (ret != 0) Logger::ngap().error("Encode AMF_UE_NGAP_ID IE error!");
+}
+
+//------------------------------------------------------------------------------
+void HandoverRequiredMsg::setRanUeNgapId(const uint32_t& ran_ue_ngap_id) {
+  ranUeNgapId.setRanUeNgapId(ran_ue_ngap_id);
+
+  Ngap_HandoverRequiredIEs_t* ie = (Ngap_HandoverRequiredIEs_t*) calloc(
+      1, sizeof(Ngap_HandoverRequiredIEs_t));
+  ie->id            = Ngap_ProtocolIE_ID_id_RAN_UE_NGAP_ID;
+  ie->criticality   = Ngap_Criticality_reject;
+  ie->value.present = Ngap_HandoverRequiredIEs__value_PR_RAN_UE_NGAP_ID;
+
+  int ret = ranUeNgapId.encode2RAN_UE_NGAP_ID(ie->value.choice.RAN_UE_NGAP_ID);
+  if (!ret) {
+    Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error!");
+    free_wrapper((void**) &ie);
+    return;
+  }
+
+  ret = ASN_SEQUENCE_ADD(&handoverRequiredIEs->protocolIEs.list, ie);
+  if (ret != 0) Logger::ngap().error("Encode RAN_UE_NGAP_ID IE error!");
 }
 
 //------------------------------------------------------------------------------
 Ngap_HandoverType_t HandoverRequiredMsg::getHandoverType() {
-  if (handovertype)
-    return *handovertype;
-  else
-    return Ngap_HandoverType_t();
+  return handoverType;
 }
 
 //------------------------------------------------------------------------------
 Ngap_Cause_PR HandoverRequiredMsg::getChoiceOfCause() {
-  if (cause)
-    return cause->getChoiceOfCause();
-  else
-    return Ngap_Cause_PR();
+  return cause.getChoiceOfCause();
 }
 
 //------------------------------------------------------------------------------
 long HandoverRequiredMsg::getCauseValue() {
-  if (cause)
-    return cause->getValue();
-  else
-    return 0;
+  return cause.getValue();
 }
 
-//------------------------------------------------------------------------------
-void HandoverRequiredMsg::getGlobalRanNodeId(GlobalgNBId*& ptr) {
-  if (ptr && targetid) {
-    if (targetid->present == Ngap_TargetID_PR_targetRANNodeID) {
-      if (targetid->choice.targetRANNodeID->globalRANNodeID.present ==
-          Ngap_GlobalRANNodeID_PR_globalGNB_ID) {
-        ptr->decodefromGlobalgNBId(targetid->choice.targetRANNodeID
-                                       ->globalRANNodeID.choice.globalGNB_ID);
-        return;
-      }
+bool HandoverRequiredMsg::getTargetID(GlobalgNBId& gnbId, TAI& tai) {
+  if (targetID.present == Ngap_TargetID_PR_targetRANNodeID) {
+    if (targetID.choice.targetRANNodeID->globalRANNodeID.present ==
+        Ngap_GlobalRANNodeID_PR_globalGNB_ID) {
+      gnbId.decodefromGlobalgNBId(
+          targetID.choice.targetRANNodeID->globalRANNodeID.choice.globalGNB_ID);
+      tai.decodefromTAI(&targetID.choice.targetRANNodeID->selectedTAI);
+      return true;
     }
   }
-  return;
-}
-
-//------------------------------------------------------------------------------
-void HandoverRequiredMsg::getTAI(TAI*& ptr) {
-  if (ptr) {
-    if (targetid->present == Ngap_TargetID_PR_targetRANNodeID)
-      ptr->decodefromTAI(&(targetid->choice.targetRANNodeID->selectedTAI));
-  }
+  return false;
 }
 
 //------------------------------------------------------------------------------
 OCTET_STRING_t HandoverRequiredMsg::getSourceToTarget_TransparentContainer() {
-  if (SourceToTarget_TransparentContainer)
-    return *SourceToTarget_TransparentContainer;
-  else
-    return OCTET_STRING_t();
+  return sourceToTarget_TransparentContainer;
 }
 
 //------------------------------------------------------------------------------
 bool HandoverRequiredMsg::getPDUSessionResourceList(
-    std::vector<PDUSessionResourceItem_t>& list) {
-  if (!PDUSessionResourceList) return false;
-
-  PDUSessionResourceItemHORqd* m_pduSessionResourceItemHORqd = nullptr;
-  int num                                                    = 0;
-  PDUSessionResourceList->getPDUSessionResourceListHORqd(
-      m_pduSessionResourceItemHORqd, num);
-  if (!m_pduSessionResourceItemHORqd) return false;
-
-  for (int i = 0; i < num; i++) {
-    PDUSessionResourceItem_t response = {};
-
-    PDUSessionID* m_pDUSessionID = nullptr;
-    m_pduSessionResourceItemHORqd[i].getPDUSessionResourceItemHORqd(
-        m_pDUSessionID, response.HandoverRequiredTransfer);
-    m_pDUSessionID->getPDUSessionID(response.pduSessionId);
-
-    list.push_back(response);
-  }
-
+    PDUSessionResourceListHORqd& list) {
+  list = pDUSessionResourceList;
   return true;
 }
 
 //------------------------------------------------------------------------------
 long HandoverRequiredMsg::getDirectForwardingPathAvailability() {
-  if (directforwardingPathAvailability)
-    return *directforwardingPathAvailability;
+  if (directForwardingPathAvailability)
+    return *directForwardingPathAvailability;
   else
     return 0;
 }
 
 //------------------------------------------------------------------------------
-bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
-  handoverRequiredPdu = ngap_msg_pdu;
+bool HandoverRequiredMsg::decodeFromPdu(Ngap_NGAP_PDU_t* ngapMsgPdu) {
+  ngapPdu = ngapMsgPdu;
 
-  if (handoverRequiredPdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
-    if (handoverRequiredPdu->choice.initiatingMessage &&
-        handoverRequiredPdu->choice.initiatingMessage->procedureCode ==
+  if (ngapPdu->present == Ngap_NGAP_PDU_PR_initiatingMessage) {
+    if (ngapPdu->choice.initiatingMessage &&
+        ngapPdu->choice.initiatingMessage->procedureCode ==
             Ngap_ProcedureCode_id_HandoverPreparation &&
-        handoverRequiredPdu->choice.initiatingMessage->criticality ==
+        ngapPdu->choice.initiatingMessage->criticality ==
             Ngap_Criticality_reject &&
-        handoverRequiredPdu->choice.initiatingMessage->value.present ==
+        ngapPdu->choice.initiatingMessage->value.present ==
             Ngap_InitiatingMessage__value_PR_HandoverRequired) {
-      handoverRequiredIEs = &handoverRequiredPdu->choice.initiatingMessage
-                                 ->value.choice.HandoverRequired;
+      handoverRequiredIEs =
+          &ngapPdu->choice.initiatingMessage->value.choice.HandoverRequired;
     } else {
       Logger::ngap().error("Check HandoverRequired message error!");
       return false;
@@ -188,15 +165,14 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                 Ngap_Criticality_reject &&
             handoverRequiredIEs->protocolIEs.list.array[i]->value.present ==
                 Ngap_HandoverRequiredIEs__value_PR_AMF_UE_NGAP_ID) {
-          amfUeNgapId = new AMF_UE_NGAP_ID();
-          if (!amfUeNgapId->decodefromAMF_UE_NGAP_ID(
+          if (!amfUeNgapId.decodefromAMF_UE_NGAP_ID(
                   handoverRequiredIEs->protocolIEs.list.array[i]
                       ->value.choice.AMF_UE_NGAP_ID)) {
-            Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
+            Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          Logger::ngap().error("Decoded ngap AMF_UE_NGAP_ID IE error");
+          Logger::ngap().error("Decoded NGAP AMF_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -205,15 +181,14 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                 Ngap_Criticality_reject &&
             handoverRequiredIEs->protocolIEs.list.array[i]->value.present ==
                 Ngap_HandoverRequiredIEs__value_PR_RAN_UE_NGAP_ID) {
-          ranUeNgapId = new RAN_UE_NGAP_ID();
-          if (!ranUeNgapId->decodefromRAN_UE_NGAP_ID(
+          if (!ranUeNgapId.decodefromRAN_UE_NGAP_ID(
                   handoverRequiredIEs->protocolIEs.list.array[i]
                       ->value.choice.RAN_UE_NGAP_ID)) {
-            Logger::ngap().error("Decoded ngap RAN_UE_NGAP_ID IE error");
+            Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
             return false;
           }
         } else {
-          Logger::ngap().error("Decoded ngap RAN_UE_NGAP_ID IE error");
+          Logger::ngap().error("Decoded NGAP RAN_UE_NGAP_ID IE error");
           return false;
         }
       } break;
@@ -222,11 +197,10 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                 Ngap_Criticality_reject &&
             handoverRequiredIEs->protocolIEs.list.array[i]->value.present ==
                 Ngap_HandoverRequiredIEs__value_PR_HandoverType) {
-          handovertype  = new Ngap_HandoverType_t();
-          *handovertype = handoverRequiredIEs->protocolIEs.list.array[i]
-                              ->value.choice.HandoverType;
+          handoverType = handoverRequiredIEs->protocolIEs.list.array[i]
+                             ->value.choice.HandoverType;
         } else {
-          Logger::ngap().error("Decoded ngap Handover Type error");
+          Logger::ngap().error("Decoded NGAP Handover Type error");
           return false;
         }
       } break;
@@ -235,15 +209,14 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                 Ngap_Criticality_ignore &&
             handoverRequiredIEs->protocolIEs.list.array[i]->value.present ==
                 Ngap_HandoverRequiredIEs__value_PR_Cause) {
-          cause = new Cause();
-          if (!cause->decodefromCause(
+          if (!cause.decodefromCause(
                   &handoverRequiredIEs->protocolIEs.list.array[i]
                        ->value.choice.Cause)) {
-            Logger::ngap().error("Decoded ngap Cause IE error");
+            Logger::ngap().error("Decoded NGAP Cause IE error");
             return false;
           }
         } else {
-          Logger::ngap().error("Decoded ngap Cause IE error");
+          Logger::ngap().error("Decoded NGAP Cause IE error");
           return false;
         }
       } break;
@@ -252,11 +225,10 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                 Ngap_Criticality_reject &&
             handoverRequiredIEs->protocolIEs.list.array[i]->value.present ==
                 Ngap_HandoverRequiredIEs__value_PR_TargetID) {
-          targetid  = new Ngap_TargetID_t();
-          *targetid = handoverRequiredIEs->protocolIEs.list.array[i]
-                          ->value.choice.TargetID;
+          targetID = handoverRequiredIEs->protocolIEs.list.array[i]
+                         ->value.choice.TargetID;
         } else {
-          Logger::ngap().error("Decoded ngap TargetID IE error");
+          Logger::ngap().error("Decoded NGAP TargetID IE error");
           return false;
         }
       } break;
@@ -265,14 +237,14 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                 Ngap_Criticality_ignore &&
             handoverRequiredIEs->protocolIEs.list.array[i]->value.present ==
                 Ngap_HandoverRequiredIEs__value_PR_DirectForwardingPathAvailability) {
-          directforwardingPathAvailability =
+          directForwardingPathAvailability =
               new Ngap_DirectForwardingPathAvailability_t();
-          *directforwardingPathAvailability =
+          *directForwardingPathAvailability =
               handoverRequiredIEs->protocolIEs.list.array[i]
                   ->value.choice.DirectForwardingPathAvailability;
         } else {
           Logger::ngap().error(
-              "Decoded ngap DirectForwardingPathAvailability IE error");
+              "Decoded NGAP DirectForwardingPathAvailability IE error");
           return false;
         }
       } break;
@@ -281,17 +253,16 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                 Ngap_Criticality_reject &&
             handoverRequiredIEs->protocolIEs.list.array[i]->value.present ==
                 Ngap_HandoverRequiredIEs__value_PR_PDUSessionResourceListHORqd) {
-          PDUSessionResourceList = new PDUSessionResourceListHORqd();
-          if (!PDUSessionResourceList->decodefromPDUSessionResourceListHORqd(
+          if (!pDUSessionResourceList.decodefromPDUSessionResourceListHORqd(
                   &handoverRequiredIEs->protocolIEs.list.array[i]
                        ->value.choice.PDUSessionResourceListHORqd)) {
             Logger::ngap().error(
-                "Decoded ngap PDUSessionResourceSetupListCxtRes IE error");
+                "Decoded NGAP PDUSessionResourceSetupListCxtRes IE error");
             return false;
           }
         } else {
           Logger::ngap().error(
-              "Decoded ngap PDUSessionResourceSetupListCxtRes IE error");
+              "Decoded NGAP PDUSessionResourceSetupListCxtRes IE error");
           return false;
         }
       } break;
@@ -300,35 +271,23 @@ bool HandoverRequiredMsg::decodefrompdu(Ngap_NGAP_PDU_t* ngap_msg_pdu) {
                 Ngap_Criticality_reject &&
             handoverRequiredIEs->protocolIEs.list.array[i]->value.present ==
                 Ngap_HandoverRequiredIEs__value_PR_SourceToTarget_TransparentContainer) {
-          SourceToTarget_TransparentContainer =
-              new Ngap_SourceToTarget_TransparentContainer_t();
-          *SourceToTarget_TransparentContainer =
+          sourceToTarget_TransparentContainer =
               handoverRequiredIEs->protocolIEs.list.array[i]
                   ->value.choice.SourceToTarget_TransparentContainer;
         } else {
           Logger::ngap().error(
-              "Decoded ngap SourceToTarget_TransparentContainer IE error");
+              "Decoded NGAP SourceToTarget_TransparentContainer IE error");
           return false;
         }
       } break;
       default: {
-        Logger::ngap().error("Decoded ngap message PDU error");
+        Logger::ngap().error("Decoded NGAP message PDU error");
         return false;
       }
     }
   }
 
   return true;
-}
-
-//------------------------------------------------------------------------------
-int HandoverRequiredMsg::encode2buffer(uint8_t* buf, int buf_size) {
-  asn_fprint(stderr, &asn_DEF_Ngap_NGAP_PDU, handoverRequiredPdu);
-  asn_enc_rval_t er = aper_encode_to_buffer(
-      &asn_DEF_Ngap_NGAP_PDU, NULL, handoverRequiredPdu, buf, buf_size);
-  Logger::ngap().debug(
-      "Encode Handover Required to buffer, er.encoded( %d)", er.encoded);
-  return er.encoded;
 }
 
 }  // namespace ngap

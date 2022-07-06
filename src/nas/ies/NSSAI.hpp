@@ -33,6 +33,9 @@
 #include <vector>
 
 #include "nas_ie_header.hpp"
+
+#define SST_LENGTH 1
+#define SD_LENGTH 3
 namespace nas {
 
 class NSSAI {
